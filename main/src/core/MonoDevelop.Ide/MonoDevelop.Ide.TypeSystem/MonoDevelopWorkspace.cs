@@ -375,6 +375,44 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
+		internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
+		{
+			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+		}
+
+		/// <summary>
+		/// TODO: Use AnalysisTimer?
+		/// TODO: What locking do we need here?
+		/// </summary>
+		internal async Task ReloadProjects (CancellationToken cancellationToken)
+		{
+			try {
+				var projects = MonoDevelopSolution.GetAllProjects ();
+				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
+
+				var projectInfos = await ProjectHandler.CreateProjectInfos (projects, cts.Token).ConfigureAwait (false);
+				if (projectInfos == null)
+					return;
+
+				foreach (var projectInfo in projectInfos) {
+					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
+						// Cache did not contain project so add it to the solution.
+						OnProjectAdded (projectInfo);
+					}
+
+					lock (projectModifyLock) {
+						// TODO: Need to do anything with docs?
+						// correct openDocument ids - they may change due to project reload.
+						//OpenDocuments.CorrectDocumentIds (project, t.Result);
+						OnProjectReloaded (projectInfo);
+						ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+		}
+
 		internal void UnloadSolution ()
 		{
 			OnSolutionRemoved ();
@@ -1196,7 +1234,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					cts = new CancellationTokenSource ();
 					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null).ContinueWith (t => {
+						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null).ContinueWith (t => {
 							if (t.IsCanceled)
 								return;
 							if (t.IsFaulted) {

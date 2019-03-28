@@ -105,6 +105,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		public void Update (ProjectConfiguration projConfig, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap, ProjectCacheInfo info)
+		{
+			Update (projConfig, proj, projectMap, info.SourceFiles, info.AnalyzerFiles, info.References, info.ProjectReferences);
+		}
+
 		public void Update (ProjectConfiguration projConfig, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap,
 			ImmutableArray<ProjectFile> files,
 			ImmutableArray<FilePath> analyzers,
@@ -157,6 +162,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap,
+			out ProjectCacheInfo info)
+		{
+			info = new ProjectCacheInfo ();
+			return TryGetCachedItems (p, provider, projectMap, out info.SourceFiles, out info.AnalyzerFiles, out info.References, out info.ProjectReferences);
+		}
 
 		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap,
 			out ImmutableArray<ProjectFile> files,
@@ -236,5 +247,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			public string FilePath;
 			public string [] Aliases = Array.Empty<string> ();
 		}
+	}
+
+	internal class ProjectCacheInfo
+	{
+		public ImmutableArray<ProjectFile> SourceFiles;
+		public ImmutableArray<FilePath> AnalyzerFiles;
+		public ImmutableArray<MonoDevelopMetadataReference> References;
+		public ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> ProjectReferences;
 	}
 }

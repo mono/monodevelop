@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (showStatusIcon)
 					workspace.ShowStatusIcon ();
 
-				var (solution, solutionInfo) = await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
+				var (solution, solutionInfo) = await InternalLoad (workspace, cancellationToken).ConfigureAwait (false);
 
 				if (workspaceRequests.TryGetValue (solution, out var request)) {
 					if (solutionInfo == null) {
@@ -168,6 +168,20 @@ namespace MonoDevelop.Ide.TypeSystem
 					workspace.HideStatusIcon ();
 
 			}
+		}
+
+		static async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoad (MonoDevelopWorkspace workspace, CancellationToken cancellationToken)
+		{
+			// Try the cache first.
+			var (solution, solutionInfo) = await workspace.TryLoadSolutionFromCache (cancellationToken).ConfigureAwait (false);
+			if (solutionInfo != null) {
+				// Start full load of projects in the background.
+				workspace.ReloadProjects (cancellationToken).Ignore ();
+				return (solution, solutionInfo);
+			}
+
+			// No cache.
+			return await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
 		}
 
 		internal static void Unload (MonoDevelop.Projects.WorkspaceItem item)
