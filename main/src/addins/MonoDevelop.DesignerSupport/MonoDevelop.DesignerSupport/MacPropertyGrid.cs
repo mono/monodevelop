@@ -116,15 +116,15 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		Tuple<object, object []> currentSelectedObject;
+		PropertyPadItem currentSelectedObject;
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				var selection = new Tuple<object, object []> (lastComponent, propertyProviders);
+				var selection = new PropertyPadItem (lastComponent, propertyProviders);
 				if (currentSelectedObject != selection) {
 					propertyEditorPanel.SelectedItems.Clear ();
-					propertyEditorPanel.SelectedItems.Add (new Tuple<object, object []> (lastComponent, propertyProviders));
+					propertyEditorPanel.SelectedItems.Add (selection);
 					currentSelectedObject = selection;
 				}
 			}
