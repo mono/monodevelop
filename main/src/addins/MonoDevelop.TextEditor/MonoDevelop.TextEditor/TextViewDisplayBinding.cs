@@ -36,6 +36,8 @@ namespace MonoDevelop.TextEditor
 	{
 		ThemeToClassification themeToClassification;
 
+		public override string Id => "MonoDevelop.TextEditor.TextViewControllerFactory";
+
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
 			if (!DefaultSourceEditorOptions.Instance.EnableNewEditor) {

@@ -48,19 +48,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		DocumentController content;
 		DocumentViewContainer container;
 		Dictionary<Gtk.Widget, DocumentViewContent> pages = new Dictionary<Widget, DocumentViewContent> ();
+		FileDescriptor fileDescriptor;
 
-		public CombinedDesignView (DocumentController content)
+		public CombinedDesignView ()
 		{
-			this.content = content;
-			/* This code causes that chagnes in a version control view always select the source code view.
-				if (content is IEditableTextBuffer) {
-				((IEditableTextBuffer)content).CaretPositionSet += delegate {
-					ShowPage (0);
-				};
-			}*/
-			content.HasUnsavedChangesChanged += new EventHandler (OnTextDirtyChanged);
-			
 			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
+		}
+
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			await base.OnInitialize (modelDescriptor, status);
+			fileDescriptor = (FileDescriptor)modelDescriptor;
 		}
 
 		protected override async Task<DocumentView> OnInitializeView ()
@@ -68,9 +66,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			container = new DocumentViewContainer ();
 			container.SupportedModes = DocumentViewContainerMode.Tabs | DocumentViewContainerMode.VerticalSplit;
 			container.ActiveViewChanged += Container_ActiveViewChanged;
+
+			content = await IdeServices.DocumentControllerService.CreateTextEditorController (fileDescriptor);
+			await content.Initialize (fileDescriptor);
+			content.HasUnsavedChangesChanged += OnTextDirtyChanged;
 			var sourceView = await content.GetDocumentView ();
 			sourceView.Title = GettextCatalog.GetString ("Source");
 			container.Views.Add (sourceView);
+
 			return container;
 		}
 
@@ -113,7 +116,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected override void OnOwnerChanged ()
 		{
 			base.OnOwnerChanged ();
-			content.Owner = Owner;
+			if (content != null)
+				content.Owner = Owner;
 		}
 
 		internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()

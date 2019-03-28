@@ -81,6 +81,36 @@ namespace MonoDevelop.Ide.Gui.Documents
 			registeredFactories.Remove (factory);
 		}
 
+		/// <summary>
+		/// Creates text editor controller that is valid for editing the provided file. The returned controller is not initialized.
+		/// </summary>
+		/// <param name="fileDescriptor">Describes a file</param>
+		/// <returns></returns>
+		public async Task<FileDocumentController> CreateTextEditorController (FileDescriptor fileDescriptor)
+		{
+			// The editor returned first is the one enabled by default
+			var desc = (await GetSupportedControllers (fileDescriptor)).FirstOrDefault (d => d.Factory.Id == "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" || d.Factory.Id == "MonoDevelop.TextEditor.TextViewControllerFactory");
+			if (desc != null)
+				return (FileDocumentController)await desc.CreateController (fileDescriptor);
+			throw new InvalidOperationException ("Editor not found");
+		}
+
+		/// <summary>
+		/// Creates text editor controller that is valid for editing the provided file. The returned controller is not initialized.
+		/// </summary>
+		/// <param name="fileDescriptor">Describes a file</param>
+		/// <param name="useLegacyEditor">If set to True it will return the old editor, otherwise it will return the new editor.</param>
+		/// <returns></returns>
+		public async Task<FileDocumentController> CreateTextEditorController (FileDescriptor fileDescriptor, bool useLegacyEditor)
+		{
+			var id = useLegacyEditor ? "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" : "MonoDevelop.TextEditor.TextViewControllerFactory";
+			var desc = (await GetSupportedControllers (fileDescriptor)).FirstOrDefault (d => d.Factory.Id == id);
+			if (desc != null)
+				return (FileDocumentController)await desc.CreateController (fileDescriptor);
+
+			throw new InvalidOperationException ("Editor not found");
+		}
+
 		internal IEnumerable<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> GetModelExtensions (ExtensionContext ctx)
 		{
 			return ctx.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> (DocumentController.DocumentControllerExtensionsPath).Concat (customExtensionNodes);

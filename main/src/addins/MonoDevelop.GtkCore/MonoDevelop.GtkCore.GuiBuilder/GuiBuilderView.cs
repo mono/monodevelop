@@ -66,7 +66,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		string rootName;
 		object designerStatus;
 
-		public GuiBuilderView (DocumentController content, GuiBuilderWindow window): base (content)
+		public GuiBuilderView (GuiBuilderWindow window)
 		{
 			rootName = window.Name;
 			this.window = window;

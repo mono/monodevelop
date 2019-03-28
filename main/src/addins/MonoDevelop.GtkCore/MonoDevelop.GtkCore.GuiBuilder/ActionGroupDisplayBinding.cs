@@ -51,14 +51,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	[ExportDocumentControllerFactory (FileExtension = ".cs")]
 	public class ActionGroupDisplayBinding : FileDocumentControllerFactory
 	{
-		bool excludeThis = false;
-		
 		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor file)
 		{
 			var list = ImmutableList<DocumentControllerDescription>.Empty;
-
-			if (excludeThis)
-				return list;
 
 			if (file.FilePath.IsNullOrEmpty || !(file.Owner is DotNetProject))
 				return list;
@@ -69,29 +64,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (GetActionGroup (file.FilePath) == null)
 				return list;
 
-			excludeThis = true;
-			var db = (await IdeServices.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
-			excludeThis = false;
-			if (db != null) {
-				list = list.Add (
-				new DocumentControllerDescription {
-					CanUseAsDefault = true,
-					Role = DocumentControllerRole.VisualDesign,
-					Name = MonoDevelop.Core.GettextCatalog.GetString ("Action Group Editor")
-				});
-			}
+			list = list.Add (
+			new DocumentControllerDescription {
+				CanUseAsDefault = true,
+				Role = DocumentControllerRole.VisualDesign,
+				Name = MonoDevelop.Core.GettextCatalog.GetString ("Action Group Editor")
+			});
+
 			return list;
 		}
 
 		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
-			excludeThis = true;
-			var db = (await IdeServices.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			var info = GtkDesignInfo.FromProject ((DotNetProject)file.Owner);
-			
-			var content = await db.CreateController (file);
-			var view = new ActionGroupView (content, GetActionGroup (file.FilePath), info.GuiBuilderProject);
-			excludeThis = false;
+			var view = new ActionGroupView (GetActionGroup (file.FilePath), info.GuiBuilderProject);
 			return view;
 		}
 		

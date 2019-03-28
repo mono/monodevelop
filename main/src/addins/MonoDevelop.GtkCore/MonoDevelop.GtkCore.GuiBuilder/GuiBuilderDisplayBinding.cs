@@ -45,8 +45,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	[ExportDocumentControllerFactory (FileExtension = ".cs", InsertBefore = "DefaultDisplayBinding")]
 	public class GuiBuilderDisplayBinding : FileDocumentControllerFactory
 	{
-		bool excludeThis = false;
-		
 		public string Name {
 			get { return MonoDevelop.Core.GettextCatalog.GetString ("Window Designer"); }
 		}
@@ -59,9 +57,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			var list = ImmutableList<DocumentControllerDescription>.Empty;
 
-			if (excludeThis)
-				return list;
-
 			if (file.FilePath.IsNullOrEmpty || !(file.Owner is DotNetProject))
 				return list;
 
@@ -71,31 +66,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (GetWindow (file.FilePath, (DotNetProject)file.Owner) == null)
 				return list;
 
-			excludeThis = true;
-			var db = (await IdeServices.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
-			excludeThis = false;
-			if (db != null) {
-				list = list.Add (
-					new DocumentControllerDescription {
-						CanUseAsDefault = true,
-						Role = DocumentControllerRole.VisualDesign,
-						Name = MonoDevelop.Core.GettextCatalog.GetString ("Window Designer")
-					});
-			}
+			list = list.Add (
+				new DocumentControllerDescription {
+					CanUseAsDefault = true,
+					Role = DocumentControllerRole.VisualDesign,
+					Name = MonoDevelop.Core.GettextCatalog.GetString ("Window Designer")
+				});
+
 			return list;
 		}
 
 		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
-			excludeThis = true;
-			var db = (await IdeServices.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
-			var content = await db.CreateController (file);
-			await content.Initialize (file);
 			var window = GetWindow (file.FilePath, (Project)file.Owner);
 			if (window == null)
 				throw new InvalidOperationException ("GetWindow == null");
-			var view = new GuiBuilderView (content, window);
-			excludeThis = false;
+			var view = new GuiBuilderView (window);
 			return view;
 		}
 		
