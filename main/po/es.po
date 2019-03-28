@@ -26292,7 +26292,7 @@ msgstr "Seleccione la versión de C# que se usará"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:150
 msgid "Check to allow 'unsafe' code"
-msgstr "Marque esta opción para permitir código \"\poco seguro\"\"
+msgstr "Marque esta opción para permitir código \"poco seguro\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:204
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:150
@@ -27450,7 +27450,7 @@ msgstr ""
 "\"all\": todos los ensamblados, \"none\": ningún ensamblado, \"program\": "
 "ensamblado de punto de entrada, \"assembly\": especifica un ensamblado, "
 "\"T:Type\": especifica un tipo, \"M:Type:Method\": especifica un método, "
-"\"N:Namespace\\": especifica un espacio de nombres. \"disabled\" no imprime "
+"\"N:Namespace\": especifica un espacio de nombres. \"disabled\" no imprime "
 "ninguna salida hasta que se cambia con SIGUSR2. El prefijo \"-\" excluye una "
 "expresión."
 
