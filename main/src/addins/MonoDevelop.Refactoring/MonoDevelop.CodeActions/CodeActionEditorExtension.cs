@@ -186,7 +186,18 @@ namespace MonoDevelop.CodeActions
 		{
 			Runtime.AssertMainThread ();
 			var caretOffset = Editor.CaretOffset;
-			return collections.Select (c => FilterOnUIThread (c, workspace)).Where(x => x != null).OrderBy(x => GetDistance (x, caretOffset)).ToImmutableArray ();
+			var builder = ImmutableArray.CreateBuilder<CodeFixCollection> (collections.Length);
+			var ids = new HashSet<string> ();
+			foreach (var c in collections) {
+				if (!ids.Add (c.FirstDiagnostic.Id))
+					continue;
+				var filtered = FilterOnUIThread (c, workspace);
+				if (filtered == null)
+					continue;
+				builder.Add (filtered);
+			}
+			builder.Sort ((x, y) => GetDistance (x, caretOffset).CompareTo (GetDistance (y, caretOffset)));
+			return builder.ToImmutableArray ();
 		}
 
 		static int GetDistance (CodeFixCollection fixCollection, int caretOffset)
