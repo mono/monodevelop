@@ -245,7 +245,7 @@ namespace MonoDevelop.Platform
 				i++;
 			}
 
-			foreach (var vw in DisplayBindingService.GetFileViewers (fileName, null))
+			foreach (var vw in IdeServices.DisplayBindingService.GetFileViewers (fileName, null).Result)
 				if (!vw.IsExternal) {
 					combo.Items.Add (new ViewerComboItem (vw, vw.Title));
 
