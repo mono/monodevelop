@@ -352,10 +352,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			try {
-				ProjectHandler.ReloadProjectCache ();
-				var (solution, si) = await TypeSystemService.Load (this, token).ConfigureAwait (false);
-				if (si != null)
-					OnSolutionReloaded (si);
+				await Task.Run (async () => {
+					ProjectHandler.ReloadProjectCache ();
+					var (solution, si) = await InternalLoadSolution (token).ConfigureAwait (false);
+					if (si != null)
+						OnSolutionReloaded (si);
+				});
 			} catch (OperationCanceledException) {
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (x => x is OperationCanceledException);
@@ -376,12 +378,26 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
-		internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
+		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
 		{
 			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
-		internal async Task ReloadProjects (CancellationToken cancellationToken)
+		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoadSolution (CancellationToken cancellationToken)
+		{
+			// Try the cache first.
+			var (solution, solutionInfo) = await TryLoadSolutionFromCache (cancellationToken).ConfigureAwait (false);
+			if (solutionInfo != null) {
+				// Start full load of projects in the background.
+				ReloadProjects (cancellationToken).Ignore ();
+				return (solution, solutionInfo);
+			}
+
+			// No cache.
+			return await TryLoadSolution (cancellationToken).ConfigureAwait (false);
+		}
+
+		async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
 				var projects = MonoDevelopSolution.GetAllProjects ();
