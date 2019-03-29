@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			if (activeView) {
 				// Maybe for pads also? Not sure if we should.
-				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
+				infoBarHost = IdeApp.Workbench.ActiveDocument?.GetContent<IInfoBarHost> (true);
 			}
 
 			if (infoBarHost == null)

@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui
 			IInfoBarHost infoBarHost = null;
 			if (inActiveView) {
 				// Maybe for pads also? Not sure if we should.
-				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
+				infoBarHost = IdeApp.Workbench.ActiveDocument?.GetContent<IInfoBarHost> (true);
 			}
 
 			if (infoBarHost == null)
