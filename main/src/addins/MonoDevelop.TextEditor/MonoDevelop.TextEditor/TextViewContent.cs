@@ -152,6 +152,9 @@ namespace MonoDevelop.TextEditor
 			UpdateBufferOptions ();
 			SubscribeToEvents ();
 
+			// Content providers can provide additional content
+			NotifyContentChanged ();
+
 			return control;
 		}
 
