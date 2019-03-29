@@ -422,7 +422,7 @@ namespace MonoDevelop.Ide.Commands
 #if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			// HACK: GdkQuartzView always responds to "selectAll:" without handling it
-			info.Enabled |= macfocus is AppKit.NSText || (macfocus.Class.Name != "GdkQuartzView" && macfocus?.RespondsToSelector (selectAllSelector) == true);
+			info.Enabled |= macfocus is AppKit.NSText || (macfocus?.Class?.Name != "GdkQuartzView" && macfocus?.RespondsToSelector (selectAllSelector) == true);
 #endif
 
 #if WIN32
