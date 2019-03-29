@@ -43,6 +43,8 @@ namespace Mono.MHex.Data
 			ByteBufferInstanceChanged?.Invoke (this, EventArgs.Empty);
 		}
 
+		protected override Type RepresentationType => typeof (ByteBufferModelRepresentation);
+
 		protected class ByteBufferModelRepresentation : FileModelRepresentation
 		{
 			ByteBuffer byteBuffer;
@@ -66,6 +68,7 @@ namespace Mono.MHex.Data
 			protected override void OnCreateNew ()
 			{
 				byteBuffer = new ByteBuffer ();
+				byteBuffer.Replaced += ByteBuffer_Replaced;
 				byteBuffer.Buffer = new ArrayBuffer (new byte [0]);
 			}
 

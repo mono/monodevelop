@@ -54,8 +54,10 @@ namespace Mono.MHex.Data
 				return this.buffer;
 			}
 			set {
+				var oldCount = Length;
 				this.buffer = value;
 				pieceTable.SetBuffer (buffer);
+				OnReplaced (new ReplaceEventArgs (0, oldCount, Bytes));
 			}
 		}
 
