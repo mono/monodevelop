@@ -185,8 +185,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!cachedItems.TryGetValue (p.FileName, out cachedData)) {
 					return false;
 				}
-
-				cachedItems.Remove (p.FileName);
 			}
 
 			var filesBuilder = ImmutableArray.CreateBuilder<ProjectFile> (cachedData.Files.Length);
@@ -249,11 +247,78 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 
-	internal class ProjectCacheInfo
+	internal class ProjectCacheInfo : IEquatable<ProjectCacheInfo>
 	{
 		public ImmutableArray<ProjectFile> SourceFiles;
 		public ImmutableArray<FilePath> AnalyzerFiles;
 		public ImmutableArray<MonoDevelopMetadataReference> References;
 		public ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> ProjectReferences;
+
+		public override bool Equals (object obj)
+		{
+			if (obj is ProjectCacheInfo cacheInfo)
+				return Equals (cacheInfo);
+			return false;
+		}
+
+		public bool Equals (ProjectCacheInfo other)
+		{
+			if (other == null)
+				return false;
+
+			if (AnalyzerFiles.Length != other.AnalyzerFiles.Length ||
+				SourceFiles.Length != other.SourceFiles.Length ||
+				References.Length != other.References.Length ||
+				ProjectReferences.Length != other.ProjectReferences.Length) {
+				return false;
+			}
+
+			for (int i = 0; i < SourceFiles.Length; ++i) {
+				var file = SourceFiles [i];
+				var otherFile = other.SourceFiles [i];
+				if (file.FilePath != otherFile.FilePath ||
+					file.BuildAction != otherFile.BuildAction) {
+					return false;
+				}
+			}
+
+			for (int i = 0; i < AnalyzerFiles.Length; ++i) {
+				if (AnalyzerFiles [i] != other.AnalyzerFiles [i]) {
+					return false;
+				}
+			}
+
+			for (int i = 0; i < References.Length; ++i) {
+				var reference = References [i];
+				var otherReference = other.References [i];
+				if (reference.FilePath != otherReference.FilePath ||
+					reference.Properties.Aliases.Length != otherReference.Properties.Aliases.Length) {
+					return false;
+				}
+
+				for (int j = 0; j < reference.Properties.Aliases.Length; ++j) {
+					if (reference.Properties.Aliases [j] != otherReference.Properties.Aliases [j]) {
+						return false;
+					}
+				}
+			}
+
+			for (int i = 0; i < ProjectReferences.Length; ++i) {
+				var reference = ProjectReferences [i];
+				var otherReference = other.ProjectReferences [i];
+				if (reference.ProjectId != otherReference.ProjectId ||
+					reference.Aliases.Length != otherReference.Aliases.Length) {
+					return false;
+				}
+
+				for (int j = 0; j < reference.Aliases.Length; ++j) {
+					if (reference.Aliases [j] != otherReference.Aliases [j]) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
 	}
 }

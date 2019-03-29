@@ -380,21 +380,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
-		/// <summary>
-		/// TODO: Use AnalysisTimer?
-		/// TODO: What locking do we need here?
-		/// </summary>
 		internal async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
 				var projects = MonoDevelopSolution.GetAllProjects ();
 				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
 
-				var projectInfos = await ProjectHandler.CreateProjectInfos (projects, cts.Token).ConfigureAwait (false);
-				if (projectInfos == null)
-					return;
+				foreach (var project in projects) {
+					if (cts.IsCancellationRequested)
+						return;
+					if (!ProjectHandler.CanLoadProject (project))
+						continue;
 
-				foreach (var projectInfo in projectInfos) {
+					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, cts.Token).ConfigureAwait (false);
+					if (projectInfo == null)
+						continue;
+
 					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
 						// Cache did not contain project so add it to the solution.
 						OnProjectAdded (projectInfo);
