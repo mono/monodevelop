@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 				// in notifying it
 
 				GtkShellDocumentViewItem last;
-				if (lastViewFocused.TryGetTarget (out last) && last != this && last.Item != null)
+				if (lastViewFocused.TryGetTarget (out last) && last != this && !IsChildView (last) && last.Item != null)
 					last.NotifyLostFocus ();
 				
 				NotifyGotFocus ();
@@ -171,6 +171,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 			}
 			base.OnFocusChildSet (widget);
+		}
+
+		bool IsChildView (Gtk.Widget view)
+		{
+			return view.Parent == this || (view.Parent != null && IsChildView (view.Parent));
 		}
 
 		void NotifyLostFocus ()

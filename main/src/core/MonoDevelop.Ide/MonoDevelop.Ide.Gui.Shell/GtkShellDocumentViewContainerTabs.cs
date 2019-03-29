@@ -1,4 +1,4 @@
-//
+﻿//
 // GtkShellDocumentViewContainerTabs.cs
 //
 // Author:
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			notebook.ShowTabs = false;
 			notebook.ShowBorder = false;
 			notebook.Show ();
-			rootTabsBox.PackStart (notebook, true, true, 1);
+			rootTabsBox.PackStart (notebook, true, true, 0);
 
 			tabstrip = new Tabstrip ();
 			//tabstrip.Show ();
@@ -83,8 +83,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void InsertView (int position, GtkShellDocumentViewItem view)
 		{
-			notebook.InsertPage (view, new Gtk.Label (), position);
 			tabstrip.InsertTab (position, CreateTab (view));
+			notebook.InsertPage (view, new Gtk.Label (), position);
 		}
 
 		Tab CreateTab (GtkShellDocumentViewItem view)
@@ -162,8 +162,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public void AddViews (IEnumerable<GtkShellDocumentViewItem> views)
 		{
 			foreach (var view in views) {
-				notebook.AppendPage (view, new Gtk.Label ());
 				tabstrip.AddTab (CreateTab (view));
+				notebook.AppendPage (view, new Gtk.Label ());
 			}
 		}
 	}

@@ -309,12 +309,12 @@ namespace MonoDevelop.Ide.Gui.Shell
 			// If command checks are flowing through this view, it means the view's notebook
 			// is the active notebook.
 			if (!(Toplevel is Gtk.Window))
-				return null;
+				return Document;
 
 			if (((Gtk.Window)Toplevel).HasToplevelFocus)
 				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 
-			return null;
+			return Document;
 		}
 
 		void SetDockNotebookTabTitle ()

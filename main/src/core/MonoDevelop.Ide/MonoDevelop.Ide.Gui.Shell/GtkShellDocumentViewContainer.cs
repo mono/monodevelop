@@ -75,10 +75,16 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
+			this.supportedModes = supportedModes;
+			UpdateTabstrip ();
+		}
+
+		void UpdateTabstrip ()
+		{
 			var hadSplit = hasSplit;
 
-			this.supportedModes = supportedModes;
-			tabstrip.Visible = (supportedModes & DocumentViewContainerMode.Tabs) != 0;
+			var hasMultipleViews = currentContainer != null && currentContainer.GetAllViews ().Skip (1).Any ();
+			tabstrip.Visible = hasMultipleViews && (supportedModes & DocumentViewContainerMode.Tabs) != 0;
 
 			hasSplit = (this.supportedModes & DocumentViewContainerMode.VerticalSplit) != 0 || (this.supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0;
 			if (hasSplit && !hadSplit) {
@@ -92,6 +98,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 		}
 
 		public void SetCurrentMode (DocumentViewContainerMode mode)
+		{
+			SetCurrentMode (mode, null);
+		}
+
+		public void SetCurrentMode (DocumentViewContainerMode mode, GtkShellDocumentViewItem newActive)
 		{
 			if (this.currentMode == mode)
 				return;
@@ -116,15 +127,17 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (mode == DocumentViewContainerMode.Tabs) {
 				if (tabsContainer == null) {
 					tabsContainer = new GtkShellDocumentViewContainerTabs ();
-					rootTabsBox.PackStart (tabsContainer.Widget, true, true, 1);
+					rootTabsBox.PackStart (tabsContainer.Widget, true, true, 0);
 				}
 				currentContainer = tabsContainer;
 			} else {
 				if (splitContainer == null) {
 					splitContainer = new GtkShellDocumentViewContainerSplit (mode);
-					rootTabsBox.PackStart (splitContainer.Widget, true, true, 1);
+					rootTabsBox.PackStart (splitContainer.Widget, true, true, 0);
 				}
 				currentContainer = splitContainer;
+				if (hasSplit)
+					tabstrip.ActiveTab = tabstrip.TabCount - 1;
 			}
 
 			if (allViews != null)
@@ -134,7 +147,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (splitSizes != null && currentContainer is GtkShellDocumentViewContainerSplit newSplit)
 				newSplit.SetRelativeSplitSizes (splitSizes);
 
-			currentContainer.ActiveView = activeView;
+			currentContainer.ActiveView = newActive ?? activeView;
 			currentContainer.ActiveViewChanged += Container_ActiveViewChanged;
 			currentContainer.Widget.Show ();
 		}
@@ -171,6 +184,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			widget.Show ();
 			currentContainer.InsertView (position, widget);
 			tabstrip.InsertTab (position, CreateTab ((GtkShellDocumentViewItem)shellView));
+			UpdateTabstrip ();
 		}
 
 		Tab CreateTab (GtkShellDocumentViewItem view)
@@ -186,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 				SetCurrentMode (DocumentViewContainerMode.VerticalSplit);
 			} else {
 				var tab = (Tab)s;
-				SetCurrentMode (DocumentViewContainerMode.Tabs);
+				SetCurrentMode (DocumentViewContainerMode.Tabs, (GtkShellDocumentViewItem)tab.Tag);
 				currentContainer.ActiveView = (GtkShellDocumentViewItem)tab.Tag;
 			}
 		}
@@ -203,6 +217,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		{
 			currentContainer.RemoveView (tabPos);
 			tabstrip.RemoveTab (tabPos);
+			UpdateTabstrip ();
 		}
 
 		public void ReorderView (int currentIndex, int newIndex)
@@ -216,6 +231,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			currentContainer.RemoveAllViews ();
 			while (tabstrip.TabCount > 1)
 				tabstrip.RemoveTab (0);
+			UpdateTabstrip ();
 		}
 
 		IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
@@ -228,7 +244,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 			set {
 				currentContainer.ActiveView = (GtkShellDocumentViewItem)value;
 				var activeTab = tabstrip.Tabs.FindIndex (t => t.Tag == value);
-				tabstrip.ActiveTab = activeTab;
+				if (currentMode == DocumentViewContainerMode.Tabs)
+					tabstrip.ActiveTab = activeTab;
 			}
 		}
 
