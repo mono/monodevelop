@@ -240,7 +240,7 @@ namespace MonoDevelop.TextEditor
 			textBufferRegistration = null;
 
 			UnsubscribeFromEvents ();
-			TextDocument.Dispose ();
+			TextDocument?.Dispose ();
 
 			if (policyContainer != null)
 				policyContainer.PolicyChanged -= PolicyChanged;
@@ -265,11 +265,13 @@ namespace MonoDevelop.TextEditor
 		protected virtual void UnsubscribeFromEvents ()
 		{
 			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
-			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
-			TextBuffer.Changed -= HandleTextBufferChanged;
-			TextView.Caret.PositionChanged -= CaretPositionChanged;
-			TextView.TextBuffer.Changed -= TextBufferChanged;
-			TextView.Options.OptionChanged -= TextBufferOptionsChanged;
+			if (TextDocument != null) {
+				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+				TextBuffer.Changed -= HandleTextBufferChanged;
+				TextView.Caret.PositionChanged -= CaretPositionChanged;
+				TextView.TextBuffer.Changed -= TextBufferChanged;
+				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
+			}
 		}
 
 		void UpdateBufferOptions ()
