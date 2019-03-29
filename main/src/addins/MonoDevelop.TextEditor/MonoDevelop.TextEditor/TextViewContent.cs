@@ -51,6 +51,7 @@ using AutoSave = MonoDevelop.Ide.Editor.AutoSave;
 using EditorConfigService = MonoDevelop.Ide.Editor.EditorConfigService;
 using DefaultSourceEditorOptions = MonoDevelop.Ide.Editor.DefaultSourceEditorOptions;
 using MonoDevelop.Components;
+using System.Threading;
 
 #if WINDOWS
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
@@ -105,10 +106,9 @@ namespace MonoDevelop.TextEditor
 		{
 			await base.OnInitialize (modelDescriptor, status);
 			await Model.Load ();
-			await Load (false);
 		}
 
-		protected override Control OnGetViewControl (DocumentViewContent view)
+		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
 			// FIXME: move this to the end of the .ctor after fixing margin options responsiveness
 			UpdateLineNumberMarginOption ();
@@ -154,6 +154,8 @@ namespace MonoDevelop.TextEditor
 
 			// Content providers can provide additional content
 			NotifyContentChanged ();
+
+			await Load (false);
 
 			return control;
 		}
