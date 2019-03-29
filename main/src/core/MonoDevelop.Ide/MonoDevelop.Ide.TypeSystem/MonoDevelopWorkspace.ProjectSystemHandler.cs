@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectionData projections;
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
-			readonly HackyWorkspaceFilesCache hackyCache;
+			HackyWorkspaceFilesCache hackyCache;
 			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
 			IDisposable persistentStorageLocationServiceRegistration;
 
@@ -565,6 +565,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			static IEnumerable<string> GetFolders (string projectName, MonoDevelop.Projects.ProjectFile f)
 			{
 				return new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+			}
+
+			internal void ReloadProjectCache ()
+			{
+				hackyCache = new HackyWorkspaceFilesCache (workspace.MonoDevelopSolution);
 			}
 
 			public void Dispose ()

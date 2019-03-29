@@ -352,7 +352,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			try {
-				var (solution, si) = await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, token).ConfigureAwait (false);
+				ProjectHandler.ReloadProjectCache ();
+				var (solution, si) = await TypeSystemService.Load (this, token).ConfigureAwait (false);
 				if (si != null)
 					OnSolutionReloaded (si);
 			} catch (OperationCanceledException) {

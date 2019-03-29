@@ -170,6 +170,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal static Task<(MonoDevelop.Projects.Solution, SolutionInfo)> Load (MonoDevelopWorkspace workspace, CancellationToken cancellationToken)
+		{
+			return Task.Run (() => {
+				return InternalLoad (workspace, cancellationToken);
+			});
+		}
+
 		static async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoad (MonoDevelopWorkspace workspace, CancellationToken cancellationToken)
 		{
 			// Try the cache first.
