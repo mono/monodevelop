@@ -24,7 +24,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private sealed class Factory : IHostDependentFormattingRuleFactoryService
 		{
-			private readonly IFormattingRule _noopRule = new NoOpFormattingRule ();
+			private readonly AbstractFormattingRule _noopRule = NoOpFormattingRule.Instance;
 
 			public bool ShouldUseBaseIndentation (Document document)
 			{
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 				return (containedDocument != null);
 			}
 
-			public IFormattingRule CreateRule (Document document, int position)
+			public AbstractFormattingRule CreateRule (Document document, int position)
 			{
 				MonoDevelopContainedDocument containedDocument = MonoDevelopContainedDocument.FromDocument (document);
 				if (containedDocument == null)
