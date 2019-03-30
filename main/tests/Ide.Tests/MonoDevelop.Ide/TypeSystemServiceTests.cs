@@ -40,6 +40,7 @@ using Microsoft.CodeAnalysis.SolutionCrawler;
 using Microsoft.CodeAnalysis.SolutionSize;
 using System.IO;
 using System.Collections.Immutable;
+using System.Text;
 
 namespace MonoDevelop.Ide
 {
@@ -162,6 +163,8 @@ namespace MonoDevelop.Ide
 		public async Task TestWorkspacePersistentStorageImplementation ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var streamName1 = "PersistentService_Solution_WriteReadDifferentInstances1";
+			var streamName2 = "PersistentService_Solution_WriteReadDifferentInstances2";
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -185,6 +188,9 @@ namespace MonoDevelop.Ide
 
 					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
 						Assert.That (persistentStorage, Is.Not.TypeOf (typeof (NoOpPersistentStorage)));
+
+						Assert.True (await persistentStorage.WriteStreamAsync (streamName1, EncodeString ("MyString")));
+						Assert.True (await persistentStorage.WriteStreamAsync (streamName1, EncodeString ("MyString2")));
 					}
 
 					var initialFieldValue = fieldInfo.GetValue (sqlitePersistentStorageService);
@@ -197,8 +203,33 @@ namespace MonoDevelop.Ide
 
 					Assert.AreSame (initialFieldValue, secondFieldValue);
 
+					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
+						Assert.AreEqual ("MyString", ReadStringToEnd (await persistentStorage.ReadStreamAsync (streamName1)));
+						Assert.AreEqual ("MyString2", ReadStringToEnd (await persistentStorage.ReadStreamAsync (streamName2)));
+					}
+
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+
+			Stream EncodeString (string text)
+			{
+				var bytes = Encoding.UTF8.GetBytes (text);
+				var stream = new MemoryStream (bytes);
+				return stream;
+			}
+
+			string ReadStringToEnd (Stream stream)
+			{
+				using (stream) {
+					var bytes = new byte [stream.Length];
+					int count = 0;
+					while (count < stream.Length) {
+						count = stream.Read (bytes, count, (int)stream.Length - count);
+					}
+
+					return Encoding.UTF8.GetString (bytes);
 				}
 			}
 		}
