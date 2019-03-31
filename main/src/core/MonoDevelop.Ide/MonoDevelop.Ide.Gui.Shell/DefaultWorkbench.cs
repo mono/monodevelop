@@ -49,8 +49,9 @@ using MonoDevelop.Components.DockNotebook;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
 
-namespace MonoDevelop.Ide.Gui.Shell
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
