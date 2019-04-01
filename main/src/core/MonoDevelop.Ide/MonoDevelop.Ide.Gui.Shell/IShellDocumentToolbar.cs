@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void Insert (Control w, int index);
 		void Remove (Control widget);
 		bool Visible { get; set; }
+		void ShowAll ();
 		bool Sensitive { get; set; }
 		Control [] Children { get; }
 	}

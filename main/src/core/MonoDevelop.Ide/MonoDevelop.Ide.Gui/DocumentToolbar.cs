@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ShowAll ()
 		{
-			shellToolbar.Visible = true;
+			shellToolbar.ShowAll ();
 		}
 		
 		public Control[] Children {
