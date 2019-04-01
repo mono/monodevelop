@@ -77,14 +77,14 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		public override void PreprocessMouseRightButtonUp (MouseEvent e)
 		{
-			var view = (ViewContent)textView.Properties [typeof (ViewContent)];
+			var view = (CocoaTextViewContent)textView.Properties [typeof (ViewContent)];
 			var extensionContext = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
 			var commandEntrySet = IdeApp.CommandService.CreateCommandEntrySet (extensionContext, menuPath);
 
 			var menuPosition = GetViewRelativeMousePosition (textView, e.Event);
 
 			IdeApp.CommandService.ShowContextMenu (
-				textView.VisualElement,
+				view.Control,
 				(int)menuPosition.X,
 				(int)menuPosition.Y,
 				commandEntrySet,
