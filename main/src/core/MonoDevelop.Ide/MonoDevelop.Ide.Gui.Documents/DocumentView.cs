@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentController sourceController;
 		bool contentVisible;
 		DocumentView parent;
+		bool disposed;
 
 		bool hasFocus;
 		bool shown;
@@ -290,7 +291,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void Dispose ()
 		{
-			OnDispose ();
+			if (!disposed) {
+				disposed = true;
+				OnDispose ();
+			}
 		}
 
 		internal virtual void SetActiveChild (DocumentView child)
