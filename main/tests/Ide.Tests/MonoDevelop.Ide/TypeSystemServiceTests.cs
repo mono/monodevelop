@@ -241,30 +241,54 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			await RunTest (12, 0);
-			await RunTest (12, 12);
+			var checkSum1 = await RunTest (usedCache: false);
+			var checkSum2 = await RunTest (usedCache: true);
 
-			async Task RunTest (int queriedCount, int usedCacheCount)
+			Assert.AreEqual (checkSum1, checkSum2);
+
+			async Task<Microsoft.CodeAnalysis.Checksum> RunTest (bool usedCache)
 			{
 				var initial = Logger.GetLogger ();
 
 				using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
 					try {
+						var persistentStorageService = ws.Services.GetService<IPersistentStorageService> ();
+						Assert.That (persistentStorageService, Is.TypeOf (typeof (Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService)));
+
+						if (!(persistentStorageService is Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService sqlitePersistentStorageService))
+							return null;
+
+						var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+						// This will return the tracker, since it's a singleton.
+						var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+
+						// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+						await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+
 						var storageLogger = new StorageCheckingLogger ();
 						var aggregateLogger = AggregateLogger.Create (initial, storageLogger);
 						Logger.SetLogger (aggregateLogger);
 
-						var cacheService = new SymbolTreeInfoIncrementalAnalyzerProvider ();
+						var provider = new SymbolTreeInfoIncrementalAnalyzerProvider ();
+						var cacheService = (Microsoft.CodeAnalysis.FindSymbols.SymbolTree.ISymbolTreeInfoCacheService)provider.CreateService (ws.Services);
 
-						var incrementalAnalyzer = cacheService.CreateIncrementalAnalyzer (ws);
+						var incrementalAnalyzer = provider.CreateIncrementalAnalyzer (ws);
 
 						var project = sol.GetAllProjects ().Single ();
 						var roslynProject = TypeSystemService.GetProject (project);
+
 						await incrementalAnalyzer.AnalyzeProjectAsync (roslynProject, default, default, CancellationToken.None);
 
-						Assert.AreEqual (queriedCount, storageLogger.QueriedCount);
-						Assert.AreEqual (usedCacheCount, storageLogger.UsedCacheCount);
+						Assert.That (storageLogger.QueriedCount, Is.GreaterThan (0));
+						if (usedCache) {
+							Assert.AreEqual (storageLogger.QueriedCount, storageLogger.UsedCacheCount);
+						} else
+							Assert.AreEqual (storageLogger.QueriedCount, storageLogger.CreatedCount);
+
+						Assert.IsNotNull (await cacheService.TryGetSourceSymbolTreeInfoAsync (roslynProject, CancellationToken.None));
+
+						return await Microsoft.CodeAnalysis.FindSymbols.SymbolTreeInfo.GetSourceSymbolsChecksumAsync (roslynProject, CancellationToken.None);
 					} finally {
 						Logger.SetLogger (initial);
 						TypeSystemServiceTestExtensions.UnloadSolution (sol);

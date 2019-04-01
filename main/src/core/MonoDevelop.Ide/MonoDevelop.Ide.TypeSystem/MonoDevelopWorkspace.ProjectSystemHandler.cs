@@ -104,8 +104,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
 				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
-				if (fileName.IsNullOrEmpty)
+
+				if (fileName.IsNullOrEmpty) {
 					fileName = new FilePath (p.Name + ".dll");
+				}
 
 				if (!hackyCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var sourceFiles, out var analyzerFiles, out var references, out var projectReferences)) {
 					(references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token).ConfigureAwait (false);
@@ -148,7 +150,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
 				var info = ProjectInfo.Create (
 					projectId,
-					VersionStamp.Create (),
+					GetVersionStamp (p),
 					p.Name,
 					fileName.FileNameWithoutExtension,
 					(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
@@ -167,6 +169,16 @@ namespace MonoDevelop.Ide.TypeSystem
 					additionalDocuments: additionalDocuments
 				);
 				return info;
+			}
+
+			VersionStamp GetVersionStamp (MonoDevelop.Projects.Project project)
+			{
+				try {
+					return VersionStamp.Create (File.GetLastWriteTimeUtc (project.FileName));
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Failed to create version stamp", e);
+					return VersionStamp.Create ();
+				}
 			}
 
 			async Task<ConcurrentBag<ProjectInfo>> CreateProjectInfos (IEnumerable<MonoDevelop.Projects.Project> mdProjects, CancellationToken token)
