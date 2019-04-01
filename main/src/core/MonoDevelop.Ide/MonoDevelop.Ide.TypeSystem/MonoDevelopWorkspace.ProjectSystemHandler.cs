@@ -289,6 +289,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (updatedCacheInfo == null)
 					return null;
 
+				workspaceCache.OnCacheInfoUsed (p);
+
 				if (updatedCacheInfo.Equals (cacheInfo))
 					return null;
 

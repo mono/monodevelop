@@ -220,6 +220,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return true;
 		}
 
+		/// <summary>
+		/// Clears the in-memory cache for this project now that the loaded cache information has been used.
+		/// Updates for the cache are written to disk.
+		/// </summary>
+		public bool OnCacheInfoUsed (Project p)
+		{
+			lock (cachedItems) {
+				return cachedItems.Remove (p.FileName);
+			}
+		}
+
 		[Serializable]
 		class ProjectCache
 		{
