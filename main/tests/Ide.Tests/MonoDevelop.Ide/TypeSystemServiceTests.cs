@@ -36,6 +36,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.IncrementalCaches;
+using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using Microsoft.CodeAnalysis.SolutionSize;
 using System.IO;
@@ -231,6 +233,70 @@ namespace MonoDevelop.Ide
 
 					return Encoding.UTF8.GetString (bytes);
 				}
+			}
+		}
+
+		[Test]
+		public async Task TestStorageDataIsNotRecomputed ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			await RunTest (12, 0);
+			await RunTest (12, 12);
+
+			async Task RunTest (int queriedCount, int usedCacheCount)
+			{
+				var initial = Logger.GetLogger ();
+
+				using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					try {
+						var storageLogger = new StorageCheckingLogger ();
+						var aggregateLogger = AggregateLogger.Create (initial, storageLogger);
+						Logger.SetLogger (aggregateLogger);
+
+						var cacheService = new SymbolTreeInfoIncrementalAnalyzerProvider ();
+
+						var incrementalAnalyzer = cacheService.CreateIncrementalAnalyzer (ws);
+
+						var project = sol.GetAllProjects ().Single ();
+						var roslynProject = TypeSystemService.GetProject (project);
+						await incrementalAnalyzer.AnalyzeProjectAsync (roslynProject, default, default, CancellationToken.None);
+
+						Assert.AreEqual (queriedCount, storageLogger.QueriedCount);
+						Assert.AreEqual (usedCacheCount, storageLogger.UsedCacheCount);
+					} finally {
+						Logger.SetLogger (initial);
+						TypeSystemServiceTestExtensions.UnloadSolution (sol);
+					}
+				}
+			}
+		}
+
+		class StorageCheckingLogger : ILogger
+		{
+			public int QueriedCount { get; private set; }
+			public int CreatedCount { get; private set; }
+			public int UsedCacheCount => QueriedCount - CreatedCount;
+
+			public bool IsEnabled (FunctionId functionId) => true;
+
+			public void Log (FunctionId functionId, LogMessage logMessage)
+			{
+				// nothing
+			}
+
+			public void LogBlockEnd (FunctionId functionId, LogMessage logMessage, int uniquePairId, int delta, CancellationToken cancellationToken)
+			{
+				// nothing
+			}
+
+			public void LogBlockStart (FunctionId functionId, LogMessage logMessage, int uniquePairId, CancellationToken cancellationToken)
+			{
+				if (functionId == FunctionId.SymbolTreeInfo_TryLoadOrCreate)
+					QueriedCount++;
+				else if (functionId == FunctionId.SymbolTreeInfo_Create)
+					CreatedCount++;
 			}
 		}
 
