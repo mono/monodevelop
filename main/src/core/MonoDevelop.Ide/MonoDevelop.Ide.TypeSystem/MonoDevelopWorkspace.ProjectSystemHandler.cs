@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectionData projections;
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
-			HackyWorkspaceFilesCache hackyCache;
+			WorkspaceFilesCache workspaceCache;
 			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
 			IDisposable persistentStorageLocationServiceRegistration;
 
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.workspace = workspace;
 				this.projectMap = projectMap;
 				this.projections = projections;
-				this.hackyCache = new HackyWorkspaceFilesCache (workspace.MonoDevelopSolution);
+				this.workspaceCache = new WorkspaceFilesCache (workspace.MonoDevelopSolution);
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (cacheInfo == null) {
 					cacheInfo = await LoadProjectCacheInfo (p, config, token);
 					if (config != null)
-						hackyCache.Update (config, p, projectMap, cacheInfo);
+						workspaceCache.Update (config, p, projectMap, cacheInfo);
 				}
 
 				if (token.IsCancellationRequested)
@@ -234,7 +234,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						return null;
 					if (!CanLoadProject (proj))
 						continue;
-					if (!hackyCache.TryGetCachedItems (proj, workspace.MetadataReferenceManager, projectMap, out var cacheInfo))
+					if (!workspaceCache.TryGetCachedItems (proj, workspace.MetadataReferenceManager, projectMap, out var cacheInfo))
 						continue;
 
 					var tp = LoadProject (proj, token, null, cacheInfo).ContinueWith (t => {
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal async Task<ProjectInfo> LoadProjectIfCacheOutOfDate (MonoDevelop.Projects.Project p, CancellationToken token)
 			{
-				if (!hackyCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var cacheInfo)) {
+				if (!workspaceCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var cacheInfo)) {
 					// No cached info need to load the project
 					return await LoadProject (p, token, null, null).ConfigureAwait (false);
 				}
@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				// Update cache.
 				if (config != null)
-					hackyCache.Update (config, p, projectMap, updatedCacheInfo);
+					workspaceCache.Update (config, p, projectMap, updatedCacheInfo);
 
 				return await LoadProject (p, token, null, updatedCacheInfo).ConfigureAwait (false);
 			}
@@ -569,7 +569,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal void ReloadProjectCache ()
 			{
-				hackyCache = new HackyWorkspaceFilesCache (workspace.MonoDevelopSolution);
+				workspaceCache = new WorkspaceFilesCache (workspace.MonoDevelopSolution);
 			}
 
 			public void Dispose ()

@@ -1,5 +1,5 @@
 //
-// HackyWorkspaceFilesCache.cs
+// WorkspaceFilesCache.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -29,31 +29,28 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Projects;
 using Newtonsoft.Json;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	class HackyWorkspaceFilesCache
+	class WorkspaceFilesCache
 	{
 		const int format = 1;
-		readonly bool enabled = FeatureSwitchService.IsFeatureEnabled ("HackyCache").GetValueOrDefault ();
 
 		readonly FilePath cacheDir;
 
 		Dictionary<FilePath, ProjectCache> cachedItems = new Dictionary<FilePath, ProjectCache> ();
 
-		public HackyWorkspaceFilesCache (Solution solution)
+		public WorkspaceFilesCache (Solution solution)
 		{
-			if (!IdeApp.IsInitialized || !enabled || solution == null)
+			if (!IdeApp.IsInitialized || solution == null)
 				return;
 
 			if (solution.FileName.IsNullOrEmpty)
 				return;
 
-			LoggingService.LogDebug ("HackyWorkspaceCache enabled");
-			cacheDir = solution.GetPreferencesDirectory ().Combine ("hacky-project-cache");
+			cacheDir = solution.GetPreferencesDirectory ().Combine ("project-cache");
 			Directory.CreateDirectory (cacheDir);
 
 			LoadCache (solution);
@@ -116,9 +113,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
 			ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> projectReferences)
 		{
-			if (!enabled)
-				return;
-
 			var paths = new string [files.Length];
 			var actions = new string [files.Length];
 
