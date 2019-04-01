@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide
 						Assert.That (persistentStorage, Is.Not.TypeOf (typeof (NoOpPersistentStorage)));
 
 						Assert.True (await persistentStorage.WriteStreamAsync (streamName1, EncodeString ("MyString")));
-						Assert.True (await persistentStorage.WriteStreamAsync (streamName1, EncodeString ("MyString2")));
+						Assert.True (await persistentStorage.WriteStreamAsync (streamName2, EncodeString ("MyString2")));
 					}
 
 					var initialFieldValue = fieldInfo.GetValue (sqlitePersistentStorageService);
