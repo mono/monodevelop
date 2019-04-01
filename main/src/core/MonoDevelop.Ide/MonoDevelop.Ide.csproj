@@ -1,6 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems" Label="Shared Mac"
-    Condition="Exists('..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems') And ('$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac')" />
+  <Import Project="..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems" Label="Shared Mac" Condition="Exists('..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems') And ('$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <Import Project="$(ReferencesVSEditor)" />
@@ -4236,6 +4235,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\IProjectPadNodeSelector.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\IPropertyGrid.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\FileNameEvalutor.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

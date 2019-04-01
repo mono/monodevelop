@@ -43,22 +43,28 @@ namespace MonoDevelop.Ide.Gui.Documents
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = ".foo" }, false).SetName ("FileExtension=foo"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = ".test" }, true).SetName ("FileExtension=.test"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = "test" }, false).SetName ("FileExtension=test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtensions = new string[] {".foo", ".bar" } }, false).SetName ("FileExtensions=.foo,.bar"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtensions = new string[] {".foo", ".test" } }, true).SetName ("FileExtensions=.foo,.test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtensions = new string[0] }, false).SetName ("FileExtensions=empty"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = ".foo, .bar" }, false).SetName ("FileExtensions=.foo,.bar"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = ".foo, .test" }, true).SetName ("FileExtensions=.foo,.test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = "" }, false).SetName ("FileExtensions=empty"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeType = "*" }, true).SetName ("MimeType=*"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeType = "application/bar" }, false).SetName ("MimeType=application_bar"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeType = "application/test" }, true).SetName ("MimeType=application_test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeTypes = new string[] { "application/bar", "application/foo" } }, false).SetName ("MimeTypes=foo,bar"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeTypes = new string[] { "application/bar", "application/test" } }, true).SetName ("MimeTypes=bar,test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeTypes = new string[0] }, false).SetName ("MimeTypes=empty"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileName = "*" }, true).SetName ("FileName=*"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileName = "base.foo" }, false).SetName ("FileName=base.foo"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileName = "foo.test" }, true).SetName ("FileName=foo.test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileName = "test" }, false).SetName ("FileName=test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileNames = new string[] { "base.foo", "base.bar" } }, false).SetName ("FileNames=base.foo,base.bar"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileNames = new string[] { "base.foo", "foo.test" } }, true).SetName ("FileNames=base.foo,foo.test"),
-			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileNames = new string[0] }, false).SetName ("FileNames=empty"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeType = "application/bar, application/foo" }, false).SetName ("MimeTypes=foo,bar"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeType = "application/bar, application/test" }, true).SetName ("MimeTypes=bar,test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { MimeType = "" }, false).SetName ("MimeTypes=empty"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "*" }, true).SetName ("FileName=*"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "base.foo" }, false).SetName ("FileName=base.foo"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "foo.test" }, true).SetName ("FileName=foo.test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "test" }, false).SetName ("FileName=test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "base.foo, base.bar" }, false).SetName ("FileNames=base.foo,base.bar"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "base.foo, foo.test" }, true).SetName ("FileNames=base.foo,foo.test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "foo.*" }, true).SetName ("FileNames=foo.*"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "fo?.*" }, true).SetName ("FileNames=fo?.*"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "?oo.test" }, true).SetName ("FileNames=?oo.test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "*.test" }, true).SetName ("FileNames=*.test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "*.t, *.te, *.tes" }, false).SetName ("FileNames=*.t, *.te, *.tes"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "*.t, *.te, *.tes,*.test" }, true).SetName ("FileNames=*.t, *.te, *.tes,*.test"),
+			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FilePattern = "" }, false).SetName ("FileNames=empty"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = ".test",MimeType = "application/bar" }, true).SetName ("FileExtension=.test,Type=bar"),
 			new TestCaseData (new ExportDocumentControllerExtensionAttribute { FileExtension = ".car",MimeType = "application/test" }, true).SetName ("FileExtension=.car,Type=test"),
 		};
@@ -154,7 +160,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			// When reloading extensions, if an extension still applies it should be reused, not re-created
 
 			var attr1 = new ExportDocumentControllerExtensionAttribute {
-				FileExtensions = new string [] { ".test1", ".test2" }
+				FileExtension = ".test1, .test2"
 			};
 			var attr2 = new ExportDocumentControllerExtensionAttribute {
 				FileExtension = ".test1"
@@ -415,10 +421,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		[Test]
 		public async Task ProjectReloadCapabilityOverride ()
 		{
-			var attr1 = new ExportDocumentControllerExtensionAttribute { FileExtensions = new string [] { ".full", ".full-unsaved-default", ".full-unsaved-default-none" } };
-			var attr2 = new ExportDocumentControllerExtensionAttribute { FileExtensions = new string [] { ".unsaved", ".full-unsaved-default", ".full-unsaved-default-none" } };
-			var attr3 = new ExportDocumentControllerExtensionAttribute { FileExtensions = new string [] { ".none", ".full-unsaved-default-none" } };
-			var attr4 = new ExportDocumentControllerExtensionAttribute { FileExtensions = new string [] { ".default", ".full-unsaved-default" } };
+			var attr1 = new ExportDocumentControllerExtensionAttribute { FileExtension = ".full, .full-unsaved-default, .full-unsaved-default-none" };
+			var attr2 = new ExportDocumentControllerExtensionAttribute { FileExtension = ".unsaved, .full-unsaved-default, .full-unsaved-default-none" };
+			var attr3 = new ExportDocumentControllerExtensionAttribute { FileExtension = ".none, .full-unsaved-default-none" };
+			var attr4 = new ExportDocumentControllerExtensionAttribute { FileExtension = ".default, .full-unsaved-default" };
 			try {
 				ProducerExtension.ResetCounters ();
 				IdeServices.DocumentControllerService.RegisterControllerExtension (attr1, typeof (FullReloadExtension));

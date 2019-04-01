@@ -125,6 +125,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorPreferencesTests.cs" />
     <Compile Include="MonoDevelop.Ide\BaseCredentialsProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide\FileNameEvaluatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

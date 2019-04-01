@@ -28,85 +28,90 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
 	[AttributeUsage (AttributeTargets.Class)]
 	public class ExportDocumentControllerBaseAttribute : CustomExtensionAttribute
 	{
+		string [] fileExtensions;
+		string [] mimeTypes;
+		FileNameEvalutor patternEvaluator;
+
+		/// <summary>
+		/// File extension to which the controller applies. Several extensions can be provided using comma as separator.
+		/// </summary>
 		[NodeAttribute ("fileExtension")]
-		public string FileExtension {
-			get => FileExtensions?.FirstOrDefault ();
-			set => FileExtensions = new [] { value };
-		}
+		public string FileExtension { get; set; }
 
-		[NodeAttribute ("fileExtensions")]
-		public string [] FileExtensions { get; set; }
-
+		/// <summary>
+		/// Mime types to which the controller applies. Several extensions can be provided using comma as separator.
+		/// </summary>
 		[NodeAttribute ("mimeType")]
-		public string MimeType {
-			get => MimeTypes?.FirstOrDefault ();
-			set => MimeTypes = new [] { value };
-		}
+		public string MimeType { get; set; }
 
-		[NodeAttribute ("mimeTypes")]
-		public string [] MimeTypes { get; set; }
-
-		[NodeAttribute ("fileName")]
-		public string FileName {
-			get => FileNames?.FirstOrDefault ();
-			set => FileNames = new [] { value };
-		}
-
-		[NodeAttribute ("fileNames")]
-		public string [] FileNames { get; set; }
+		/// <summary>
+		/// File pattern to which the controller applies. Several patterns can be provided using comma as separator, for example "foo.*, *.txt"
+		/// </summary>
+		[NodeAttribute ("filePattern")]
+		public string FilePattern { get; set; }
 
 		public bool HasFileFilter {
 			get {
-				return FileExtension != null && FileExtension.Any () || MimeTypes != null && MimeTypes.Any () || FileNames != null && FileNames.Any ();
+				return !string.IsNullOrEmpty (FileExtension) ||
+					!string.IsNullOrEmpty (MimeType) ||
+					!string.IsNullOrEmpty (FilePattern);
 			}
+		}
+
+		string [] ParseList (string arg)
+		{
+			if (!string.IsNullOrEmpty (arg)) {
+				return arg.Split (',').Select (e => e.Trim ()).Where (e => e.Length > 0).ToArray ();
+			}
+			return Array.Empty<string> ();
 		}
 
 		public bool CanHandle (FilePath filePath, string mimeType)
 		{
-			if (FileExtensions != null && FileExtensions.Contains ("*"))
-				return true;
-			if (MimeTypes != null && MimeTypes.Contains ("*"))
-				return true;
-			if (FileNames != null && FileNames.Contains ("*"))
+			if (fileExtensions == null) {
+				fileExtensions = ParseList (FileExtension);
+				mimeTypes = ParseList (MimeType);
+				var filePatterns = ParseList (FilePattern);
+				if (filePatterns.Length > 0)
+					patternEvaluator = FileNameEvalutor.CreateFileNameEvaluator (filePatterns, ',');
+			}
+
+			if (fileExtensions.Contains ("*") || mimeTypes.Contains ("*") || FilePattern == "*")
 				return true;
 
-			if (!string.IsNullOrEmpty (filePath) && FileExtensions != null && FileExtensions.Length > 0) {
+			if (fileExtensions.Length > 0) {
 				string ext = System.IO.Path.GetExtension (filePath);
-				foreach (var allowedExtension in FileExtensions) {
-					if (string.Equals (ext, allowedExtension, StringComparison.OrdinalIgnoreCase)) {
+				foreach (var allowedExtension in fileExtensions) {
+					if (string.Equals (ext, allowedExtension, StringComparison.OrdinalIgnoreCase))
 						return true;
-					}
 				}
 			}
 
-			if (MimeTypes != null && MimeTypes.Length > 0) {
+			if (mimeTypes.Length > 0) {
 				IEnumerable<string> mimeTypeChain;
 				if (!string.IsNullOrEmpty (mimeType))
 					mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 				else
 					mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (filePath);
 				foreach (var mt in mimeTypeChain) {
-					foreach (var allowedMime in MimeTypes) {
-						if (mt == allowedMime) {
+					foreach (var allowedMime in mimeTypes) {
+						if (mt == allowedMime)
 							return true;
-						}
 					}
 				}
 			}
 
-			if (FileNames != null && FileNames.Length > 0 && !string.IsNullOrEmpty (filePath)) {
+			if (patternEvaluator != null) {
 				string name = filePath.FileName;
-				foreach (var allowedName in FileNames) {
-					if (string.Equals (name, allowedName, StringComparison.OrdinalIgnoreCase)) {
-						return true;
-					}
-				}
+				if (patternEvaluator.SupportsFile (name))
+					return true;
 			}
 
 			return false;
