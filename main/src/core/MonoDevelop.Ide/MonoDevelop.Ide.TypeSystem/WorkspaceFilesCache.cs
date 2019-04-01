@@ -38,12 +38,16 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		const int format = 1;
 
-		readonly FilePath cacheDir;
+		FilePath cacheDir;
 
 		Dictionary<FilePath, ProjectCache> cachedItems = new Dictionary<FilePath, ProjectCache> ();
+		bool loaded;
 
-		public WorkspaceFilesCache (Solution solution)
+		public void Load (Solution solution)
 		{
+			if (loaded)
+				return;
+
 			if (!IdeApp.IsInitialized || solution == null)
 				return;
 
@@ -53,7 +57,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("project-cache");
 			Directory.CreateDirectory (cacheDir);
 
-			LoadCache (solution);
+			lock (cachedItems) {
+				if (loaded)
+					return;
+
+				loaded = true;
+				LoadCache (solution);
+			}
 		}
 
 		void LoadCache (Solution sol)

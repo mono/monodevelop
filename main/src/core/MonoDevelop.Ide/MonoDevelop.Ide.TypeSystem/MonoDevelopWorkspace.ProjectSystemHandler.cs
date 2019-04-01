@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.workspace = workspace;
 				this.projectMap = projectMap;
 				this.projections = projections;
-				this.workspaceCache = new WorkspaceFilesCache (workspace.MonoDevelopSolution);
+				this.workspaceCache = new WorkspaceFilesCache ();
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
@@ -391,6 +391,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					projections.ClearOldProjectionList ();
 					solutionData = new SolutionData ();
 
+					workspaceCache.Load (solution);
+
 					var projectInfos = await CreateProjectInfosFromCache (solution.GetAllProjects (), token).ConfigureAwait (false);
 					if (projectInfos == null)
 						return (solution, null);
@@ -571,7 +573,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal void ReloadProjectCache ()
 			{
-				workspaceCache = new WorkspaceFilesCache (workspace.MonoDevelopSolution);
+				workspaceCache = new WorkspaceFilesCache ();
+				workspaceCache.Load (workspace.MonoDevelopSolution);
 			}
 
 			public void Dispose ()
