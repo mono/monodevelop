@@ -400,10 +400,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
-				var projects = MonoDevelopSolution.GetAllProjects ();
 				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
 
-				foreach (var project in projects) {
+				foreach (var project in GetProjectsOrderedByMostRecentlyUsed ()) {
 					if (cts.IsCancellationRequested)
 						return;
 					if (!ProjectHandler.CanLoadProject (project))
@@ -429,6 +428,34 @@ namespace MonoDevelop.Ide.TypeSystem
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			}
+		}
+
+		/// <summary>
+		/// Returns an ordered list of projects with the most recently used projects first.
+		/// </summary>
+		IEnumerable<MonoDevelop.Projects.Project> GetProjectsOrderedByMostRecentlyUsed ()
+		{
+			var projects = MonoDevelopSolution.GetAllProjects ();
+
+			var userPrefs = MonoDevelopSolution.UserProperties.GetValue<Gui.WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
+			if (userPrefs == null || userPrefs.Files.Count == 0)
+				return projects;
+
+			var set = new HashSet<MonoDevelop.Projects.Project> (projects);
+			var orderedProjects = new List<MonoDevelop.Projects.Project> (set.Count);
+
+			foreach (var documentUserPrefs in userPrefs.Files) {
+				var fileName = MonoDevelopSolution.BaseDirectory.Combine (documentUserPrefs.FileName);
+				foreach (var project in MonoDevelopSolution.GetProjectsContainingFile (fileName)) {
+					if (set.Remove (project)) {
+						orderedProjects.Add (project);
+					}
+				}
+			}
+
+			orderedProjects.AddRange (set);
+
+			return orderedProjects;
 		}
 
 		internal void UnloadSolution ()
