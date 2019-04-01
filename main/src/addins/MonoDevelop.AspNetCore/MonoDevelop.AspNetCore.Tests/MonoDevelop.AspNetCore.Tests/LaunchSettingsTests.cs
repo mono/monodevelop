@@ -135,7 +135,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			Assert.That (config, Is.Not.Null, "GetDefaultRunConfiguration cast to AspNetCoreRunConfiguration is null");
 			Assert.That (config.ActiveProfile, Is.EqualTo ("EnvironmentsSample"));
 			Assert.That (config.CurrentProfile, Is.Not.Null);
-			Assert.That (config.CurrentProfile.TryGetOtherSettings<string> ("applicationUrl"), Is.EqualTo ("http://localhost:54340/"));
+			Assert.That (config.CurrentProfile.TryGetApplicationUrl (), Is.EqualTo ("http://localhost:54340/"));
 		}
 
 		[Test]
@@ -163,7 +163,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			var profiles = launchSettingsJson?.GetValue ("profiles") as JObject;
 			var profilesData = LaunchProfileData.DeserializeProfiles (profiles);
 
-			var appUrl = profilesData ["EnvironmentsSample"].TryGetOtherSettings<string> ("applicationUrl");
+			var appUrl = profilesData ["EnvironmentsSample"].TryGetApplicationUrl ();
 
 			Assert.That (appUrl, Is.EqualTo ("http://localhost:54340/"));
 		}

@@ -124,7 +124,7 @@ namespace MonoDevelop.AspNetCore
 
 		public string GetApplicationUrl ()
 		{
-			var applicationUrl = CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
+			var applicationUrl = CurrentProfile.TryGetApplicationUrl ();
 			if (applicationUrl != null)
 				return applicationUrl;
 
@@ -173,8 +173,8 @@ namespace MonoDevelop.AspNetCore
 
 			CurrentProfile.LaunchBrowser = other.CurrentProfile.LaunchBrowser;
 			CurrentProfile.LaunchUrl = other.CurrentProfile.LaunchUrl;
-			var applicationUrl = other.CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
-			if (!string.IsNullOrEmpty ("applicationUrl"))
+			var applicationUrl = other.CurrentProfile.TryGetApplicationUrl ();
+			if (!string.IsNullOrEmpty (applicationUrl))
 				CurrentProfile.OtherSettings ["applicationUrl"] = applicationUrl;
 
 			if (other.PipeTransport == null)
@@ -185,7 +185,7 @@ namespace MonoDevelop.AspNetCore
 
 		internal bool UsingHttps ()
 		{
-			var applicationUrl = CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
+			var applicationUrl = CurrentProfile.TryGetApplicationUrl ();
 
 			if (!string.IsNullOrEmpty (applicationUrl)) {
 				return applicationUrl.IndexOf ("https://", StringComparison.OrdinalIgnoreCase) >= 0;

@@ -84,7 +84,7 @@ namespace MonoDevelop.AspNetCore
 				ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
 				LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
 				LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
-				ApplicationURL = aspnetCoreRunConfiguration.CurrentProfile.TryGetOtherSettings<string> ("applicationUrl"),
+				ApplicationURL = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl (),
 				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
 			};
 		}
