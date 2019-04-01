@@ -58,5 +58,9 @@ namespace IdeUnitTests
 		public void Remove (Control widget)
 		{
 		}
+
+		public void ShowAll ()
+		{
+		}
 	}
 }
