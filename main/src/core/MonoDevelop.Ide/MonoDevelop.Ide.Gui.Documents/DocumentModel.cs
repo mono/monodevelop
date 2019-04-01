@@ -96,6 +96,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public event EventHandler HasUnsavedChangesChanged;
 
+		/// <summary>
+		/// Raised when a linked model has been modified and the current model is out of sync
+		/// </summary>
+		public event EventHandler SynchronizationRequested;
+
 		public void CreateNew ()
 		{
 			if (IsLoaded)
@@ -256,6 +261,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 				} catch (Exception ex) {
 					LoggingService.LogInternalError ("RaiseChanged failed", ex);
 				}
+			}
+		}
+
+		internal void RaiseSynchronizationRequestedEvent ()
+		{
+			try {
+				SynchronizationRequested?.Invoke (this, EventArgs.Empty);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("RaiseSynchronizationRequiredEvent failed", ex);
 			}
 		}
 
@@ -512,6 +526,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 				foreach (var m in linkedModels)
 					if (m.RepresentationType == repType)
 						m.RaiseChangeEvent ();
+					else
+						m.RaiseSynchronizationRequestedEvent ();
 			}
 		}
 	}

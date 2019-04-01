@@ -66,6 +66,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		Xwt.Drawing.Image documentIcon;
 		bool usingIconId;
 		Properties lastKnownStatus;
+		bool shown;
+		bool hasFocus;
+		bool disposed;
 
 		internal IWorkbenchWindow WorkbenchWindow { get; set; }
 
@@ -397,6 +400,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void Dispose ()
 		{
+			disposed = true;
 			OnDispose ();
 			extensionChain?.Dispose ();
 		}
@@ -637,20 +641,51 @@ namespace MonoDevelop.Ide.Gui.Documents
 		protected void SetModel (DocumentModel value)
 		{
 			if (value != model) {
-				if (model != null)
-					model.Changed -= Model_Changed;
+				UnscheduleModelSynchronization ();
+				if (model != null) {
+					model.SynchronizationRequested -= Model_SynchronizationRequested;
+				}
 				var oldModel = model;
 				model = value;
-				if (model != null)
-					model.Changed += Model_Changed;
+				if (model != null) {
+					model.SynchronizationRequested += Model_SynchronizationRequested;
+					model.Synchronize ().Ignore ();
+
+				}
 				OnModelChanged (oldModel, model);
 				RefreshExtensions ().Ignore ();
 				ModelChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
-		void Model_Changed (object sender, EventArgs e)
+		void Model_SynchronizationRequested (object sender, EventArgs e)
 		{
+			if (Model != null)
+				ScheduleModelSynchronization ();
+		}
+
+		IDisposable modelSynchronizationCallback;
+
+		void UnscheduleModelSynchronization ()
+		{
+			if (modelSynchronizationCallback != null) {
+				modelSynchronizationCallback.Dispose ();
+				modelSynchronizationCallback = null;
+			}
+		}
+
+		void ScheduleModelSynchronization ()
+		{
+			if (Model != null && shown && !hasFocus) {
+				// The view is being shown but it doesn't have the focus. It should auto-synchronize
+				if (modelSynchronizationCallback == null)
+					modelSynchronizationCallback = Xwt.Application.TimeoutInvoke (1000, () => {
+						if (!disposed && Model != null && shown && !hasFocus)
+							Model.Synchronize ().Ignore ();
+						modelSynchronizationCallback = null;
+						return false;
+					});
+			}
 		}
 
 		async Task InitializeExtensionChain ()
@@ -757,11 +792,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void NotifyFocused ()
 		{
+			// When getting the focus make sure the model is up to date
+			UnscheduleModelSynchronization ();
+			Model?.Synchronize ().Ignore ();
+
+			hasFocus = true;
 			OnFocused ();
 		}
 
 		internal void NotifyUnfocused ()
 		{
+			hasFocus = false;
 			OnUnfocused ();
 		}
 
@@ -772,6 +813,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void NotifyShown ()
 		{
+			shown = true;
 			try {
 				OnContentShown ();
 			} catch (Exception ex) {
@@ -787,10 +829,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 					}
 				}
 			}
+			Model?.Synchronize ().Ignore ();
 		}
 
 		internal void NotifyHidden ()
 		{
+			shown = false;
 			try {
 				OnContentHidden ();
 			} catch (Exception ex) {
@@ -806,6 +850,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					}
 				}
 			}
+			UnscheduleModelSynchronization ();
 		}
 
 
@@ -999,6 +1044,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnDispose ()
 		{
+			disposed = true;
+
+			UnscheduleModelSynchronization ();
+
 			if (Model != null)
 				Model.Dispose ();
 		}
