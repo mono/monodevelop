@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				if (cacheInfo == null) {
-					cacheInfo = await LoadProjectCacheInfo (p, config, token);
+					cacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
 					if (config != null)
 						workspaceCache.Update (config, p, projectMap, cacheInfo);
 				}
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				var config = GetDotNetProjectConfiguration (p);
-				var updatedCacheInfo = await LoadProjectCacheInfo (p, config, token);
+				var updatedCacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
 				if (updatedCacheInfo == null)
 					return null;
 
