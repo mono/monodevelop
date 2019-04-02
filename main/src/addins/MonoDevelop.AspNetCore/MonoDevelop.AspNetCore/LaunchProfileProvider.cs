@@ -96,11 +96,8 @@ namespace MonoDevelop.AspNetCore
 			doc.Add ("profiles", ProfilesObject);
 
 			string jsonDocString = doc.ToString (Formatting.Indented);
-
 			string propertiesDirectory = Path.GetDirectoryName (launchSettingsJsonPath);
-			if (!Directory.Exists (propertiesDirectory)) {
-				Directory.CreateDirectory (propertiesDirectory);
-			}
+			Directory.CreateDirectory (propertiesDirectory);
 
 			lock (fileLocker) {
 				File.WriteAllText (launchSettingsJsonPath, jsonDocString);
