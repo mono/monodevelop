@@ -147,7 +147,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				Analyzers = analyzers.Select(x => (string)x).ToArray (),
 				Files = paths,
 				BuildActions = actions,
-				TimeStamp = File.GetLastWriteTimeUtc (proj.FileName),
 				MetadataReferences = metadataReferences.Select(x => {
 					var ri = new ReferenceItem {
 						FilePath = x.FilePath,
@@ -248,7 +247,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		class ProjectCache
 		{
 			public int Format;
-			public DateTime TimeStamp;
 
 			public ReferenceItem [] ProjectReferences;
 			public ReferenceItem[] MetadataReferences;
