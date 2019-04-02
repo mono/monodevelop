@@ -37,13 +37,13 @@ namespace MonoDevelop.DotNetCore
 	{
 		string msbuildSDKsPath;
 		static IEnumerable<DotNetCoreVersion> cachedInstalledSdkVersions;
-		readonly object locker = new object ();
+		static readonly object locker = new object ();
 
 		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
 		public string SdkRootPath { get; internal set; }
 		public string GlobalJsonPath { get; set; }
 
-		public DotNetCoreSdkPaths (string dotNetCorePath = "", bool initializeSdkLocaltion = false)
+		public DotNetCoreSdkPaths (string dotNetCorePath = "", bool initializeSdkLocation = false)
 		{
 			if (string.IsNullOrEmpty (dotNetCorePath)) {
 				if (DotNetCoreRuntime.IsInstalled)
@@ -52,8 +52,8 @@ namespace MonoDevelop.DotNetCore
 					return;
 			}
 
-			if (initializeSdkLocaltion)
-				cachedInstalledSdkVersions = null;
+			if (initializeSdkLocation)
+				ResetInstalledSdkVersions ();
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
 			SdkRootPath = Path.Combine (rootDirectory, "sdk");
@@ -176,8 +176,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			try {
 				string sdkVersion = Path.GetFileName (sdkDirectory);
-				DotNetCoreVersion version = null;
-				if (DotNetCoreVersion.TryParse (sdkVersion, out version)) {
+				if (DotNetCoreVersion.TryParse (sdkVersion, out var version)) {
 					if (version < DotNetCoreVersion.MinimumSupportedVersion) {
 						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0. '{1}'", sdkVersion, sdkDirectory);
 						return false;
@@ -215,6 +214,13 @@ namespace MonoDevelop.DotNetCore
 				} 
 
 				return cachedInstalledSdkVersions;
+			}
+		}
+
+		void ResetInstalledSdkVersions ()
+		{
+			lock (locker) {
+				cachedInstalledSdkVersions = null;
 			}
 		}
 
