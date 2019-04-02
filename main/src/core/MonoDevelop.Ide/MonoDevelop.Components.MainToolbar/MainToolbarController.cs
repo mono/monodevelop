@@ -528,6 +528,10 @@ namespace MonoDevelop.Components.MainToolbar
 						var multipleRuntime = new RuntimeModel (this, multiProjectTarget, false, null);
 						foreach (var startupProject in startupProjects) {
 							var runtimeModel = SelectActiveRuntime (startupProject.Item1, preferedRuntimeModel);
+							if (runtimeModel == null) {
+								LoggingService.LogError ($"No runtimeModel for {startupProject.Item1.Name}");
+								continue;
+							}
 							multiProjectTarget.SetExecutionTarget (startupProject.Item1, runtimeModel.ExecutionTarget);
 							multipleRuntime.AddChild (runtimeModel);
 						}
