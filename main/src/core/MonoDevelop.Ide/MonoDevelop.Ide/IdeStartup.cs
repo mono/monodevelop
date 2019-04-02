@@ -62,10 +62,6 @@ namespace MonoDevelop.Ide
 
 		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
-		static Stopwatch startupTimer = new Stopwatch ();
-		static Stopwatch startupSectionTimer = new Stopwatch ();
-		static Stopwatch timeToCodeTimer = new Stopwatch ();
-		static Dictionary<string, long> sectionTimings = new Dictionary<string, long> ();
 		static bool hideWelcomePage;
 		static StartupInfo startupInfo;
 
@@ -87,12 +83,10 @@ namespace MonoDevelop.Ide
 
 			//ensure native libs initialized before we hit anything that p/invokes
 			Platform.Initialize ();
-			sectionTimings ["PlatformInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("PlatformInitialization");
 
 			GettextCatalog.Initialize ();
-			sectionTimings ["GettextInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("GettextInitialization");
 
 			LoggingService.LogInfo ("Operating System: {0}", SystemInformation.GetOperatingSystemDescription ());
 
@@ -138,8 +132,7 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			sectionTimings ["GtkInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("GtkInitialization");
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
 			// XWT initialization
@@ -150,8 +143,7 @@ namespace MonoDevelop.Ide
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend, GtkExtendedTitleBarDialogBackend> ();
 			IdeTheme.SetupXwtTheme ();
 
-			sectionTimings ["XwtInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("XwtInitialization");
 
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && GtkWorkarounds.GtkMinorVersion >= 16) {
@@ -167,14 +159,12 @@ namespace MonoDevelop.Ide
 			SynchronizationContext.SetSynchronizationContext (DispatchService.SynchronizationContext);
 			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
 
-			sectionTimings ["DispatchInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("DispatchInitialization");
 
 			// Initialize Roslyn's synchronization context
 			RoslynServices.RoslynService.Initialize ();
 
-			sectionTimings ["RoslynInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("RoslynInitialization");
 
 			AddinManager.AddinLoadError += OnAddinError;
 
@@ -203,8 +193,7 @@ namespace MonoDevelop.Ide
 			if (!options.NewWindow && startupInfo.HasFiles && instanceConnection.TryConnect (startupInfo))
 				return 0;
 
-			sectionTimings ["RuntimeInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("RuntimeInitialization");
 
 			bool restartRequested = PropertyService.Get ("MonoDevelop.Core.RestartRequested", false);
 			startupInfo.Restarted = restartRequested;
@@ -216,8 +205,7 @@ namespace MonoDevelop.Ide
 
 			IdeApp.Customizer.OnCoreInitialized ();
 
-			sectionTimings ["ThemeInitialized"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("ThemeInitialized");
 
 			IdeApp.IsRunning = true;
 
@@ -255,8 +243,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Platform Service");
 			await Runtime.GetService<DesktopService> ();
 
-			sectionTimings["PlatformInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("PlatformInitialization");
 
 			monitor.Step (1);
 
@@ -264,8 +251,7 @@ namespace MonoDevelop.Ide
 
 			CheckFileWatcher ();
 
-			sectionTimings["FileWatcherInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("FileWatcherInitialization");
 
 			Exception error = null;
 			int reportedFailures = 0;
@@ -275,8 +261,7 @@ namespace MonoDevelop.Ide
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				ImageService.Initialize ();
 
-				sectionTimings ["ImageInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-				startupSectionTimer.Restart ();
+				IdeStartupTracker.StartupTracker.MarkSection ("ImageInitialization");
 
 				// If we display an error dialog before the main workbench window on OS X then a second application menu is created
 				// which is then replaced with a second empty Apple menu.
@@ -286,8 +271,7 @@ namespace MonoDevelop.Ide
 				hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				await IdeApp.Initialize (monitor);
 
-				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-				startupSectionTimer.Restart ();
+				IdeStartupTracker.StartupTracker.MarkSection ("AppInitialization");
 
 				if (errorsList.Count > 0) {
 					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errorsList.ToArray (), false)) {
@@ -342,8 +326,7 @@ namespace MonoDevelop.Ide
 			errorsList = null;
 			AddinManager.AddinLoadError -= OnAddinError;
 
-			sectionTimings["BasicInitializationCompleted"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("BasicInitializationCompleted");
 
 			instanceConnection.FileOpenRequested += (sender, a) => {
 				foreach (var e in a)
@@ -352,15 +335,13 @@ namespace MonoDevelop.Ide
 
 			instanceConnection.StartListening ();
 
-			sectionTimings["SocketInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("SocketInitialization");
 
 			initialized = true;
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
 			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
 
-			sectionTimings["WindowOpened"] = startupSectionTimer.ElapsedMilliseconds;
-			startupSectionTimer.Restart ();
+			IdeStartupTracker.StartupTracker.MarkSection ("WindowOpened");
 
 			Thread.CurrentThread.Name = "GUI Thread";
 			Counters.Initialization.Trace ("Running IdeApp");
@@ -375,11 +356,8 @@ namespace MonoDevelop.Ide
 			// we show the main window.
 			DispatchService.RunPendingEvents ();
 
-			sectionTimings ["PumpEventLoop"] = startupSectionTimer.ElapsedMilliseconds;
-			startupTimer.Stop ();
-			startupSectionTimer.Stop ();
-
-			CreateStartupMetadata (startupInfo, sectionTimings);
+			IdeStartupTracker.StartupTracker.MarkSection ("PumpEventLoop");
+			IdeStartupTracker.StartupTracker.Stop (startupInfo);
 
 			GLib.Idle.Add (OnIdle);
 
@@ -448,19 +426,6 @@ namespace MonoDevelop.Ide
 			}
 
 			return false;
-		}
-
-		void CreateStartupMetadata (StartupInfo si, Dictionary<string, long> timings)
-		{
-			var result = IdeServices.DesktopService.PlatformTelemetry;
-			if (result == null) {
-				return;
-			}
-
-			var startupMetadata = GetStartupMetadata (si, result, timings);
-			Counters.Startup.Inc (startupMetadata);
-
-			IdeApp.OnStartupCompleted (startupMetadata, timeToCodeTimer);
 		}
 
 		static DateTime lastIdle;
@@ -566,10 +531,11 @@ namespace MonoDevelop.Ide
 		{
 			if (args.Change == ExtensionChange.Add) {
 				try {
-					if (typeof(CommandHandler).IsInstanceOfType (args.ExtensionObject))
-						typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
-					else
+					if (args.ExtensionObject is CommandHandler handler) {
+						handler.InternalRun ();
+					} else {
 						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+					}
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 				}
@@ -707,13 +673,8 @@ namespace MonoDevelop.Ide
 		
 		public static int Main (string[] args, IdeCustomizer customizer = null)
 		{
-			// Using a Stopwatch instead of a TimerCounter since calling
-			// TimerCounter.BeginTiming here would occur before any timer
-			// handlers can be registered. So instead the startup duration is
-			// set as a metadata property on the Counters.Startup counter.
-			startupTimer.Start ();
-			startupSectionTimer.Start ();
-			timeToCodeTimer.Start ();
+
+			IdeStartupTracker.StartupTracker.Start ();
 
 			var options = MonoDevelopOptions.Parse (args);
 			if (options.ShowHelp || options.Error != null)
@@ -738,8 +699,7 @@ namespace MonoDevelop.Ide
 					exename = exename.ToLower ();
 				Runtime.SetProcessName (exename);
 
-				sectionTimings ["mainInitialization"] = startupSectionTimer.ElapsedMilliseconds;
-				startupSectionTimer.Restart ();
+				IdeStartupTracker.StartupTracker.MarkSection ("mainInitialization");
 
 				var app = new IdeStartup ();
 				ret = app.Run (options);
@@ -781,49 +741,6 @@ namespace MonoDevelop.Ide
 				}
 			}
 			return null;
-		}
-
-		enum StartupType
-		{
-			Normal = 0x0,
-			ConfigurationChange = 0x1,
-			FirstLaunch = 0x2,
-			DebuggerPresent = 0x10,
-			CommandExecuted = 0x20,
-			LaunchedAsDebugger = 0x40,
-			FirstLaunchSetup = 0x80,
-
-			// Monodevelop specific
-			FirstLaunchAfterUpgrade = 0x10000
-		}
-
-		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails, Dictionary<string, long> timings)
-		{
-			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
-			StartupType startupType = StartupType.Normal;
-
-			if (startupInfo.Restarted && !IdeApp.IsInitialRunAfterUpgrade) {
-				startupType = StartupType.ConfigurationChange; // Assume a restart without upgrading was the result of a config change
-			} else if (IdeApp.IsInitialRun) {
-				startupType = StartupType.FirstLaunch;
-			} else if (IdeApp.IsInitialRunAfterUpgrade) {
-				startupType = StartupType.FirstLaunchAfterUpgrade;
-			} else if (Debugger.IsAttached) {
-				startupType = StartupType.DebuggerPresent;
-			}
-
-			return new StartupMetadata {
-				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
-				StartupType = Convert.ToInt32 (startupType),
-				AssetTypeId = assetType.Id,
-				AssetTypeName = assetType.Name,
-				IsInitialRun = IdeApp.IsInitialRun,
-				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
-				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
-				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
-				Timings = timings,
-				StartupBehaviour = IdeApp.Preferences.StartupBehaviour.Value
-			};
 		}
 
 		internal static OpenWorkspaceItemMetadata GetOpenWorkspaceOnStartupMetadata ()

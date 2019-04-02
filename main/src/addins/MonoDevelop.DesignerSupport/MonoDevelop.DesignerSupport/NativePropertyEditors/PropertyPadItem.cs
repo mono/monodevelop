@@ -1,5 +1,5 @@
-﻿//
-// DescriptorPropertyInfo.cs
+//
+// PropertyPadItem.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>
@@ -28,37 +28,40 @@
 
 using System;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using Xamarin.PropertyEditing;
-using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class FilePathPropertyInfo
-		: DescriptorPropertyInfo, IEquatable<DescriptorPropertyInfo>
+	class PropertyPadItem
 	{
-		public FilePathPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider, ValueSources valueSources) : base (propertyInfo, propertyProvider, valueSources)
+		public PropertyPadItem (object target, object [] providers)
 		{
+			Target = target;
+			Providers = providers;
 		}
 
-		public override Type Type => typeof (Xamarin.PropertyEditing.Common.FilePath);
+		public object Target { get; }
+		public object[] Providers { get; }
 
-		internal override void SetValue<T> (object target, T value)
+		public async Task<ValueInfo<T>> GetPropertyValueInfoAsProppyType<T> (DescriptorPropertyInfo propertyInfo)
 		{
-			if (value is Xamarin.PropertyEditing.Common.FilePath filePath) {
-				PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (filePath.Source));
-			} else {
-				throw new Exception (string.Format ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ()));
-			}
+			T value = await propertyInfo.GetValueAsync<T> (this);
+			return new ValueInfo<T> {
+				Value = value,
+				Source = ValueSource.Local,
+				//ValueDescriptor = valueInfoString.ValueDescriptor,
+				//CustomExpression = valueString
+			};
 		}
 
-		internal override Task<T> GetValueAsync<T> (object target)
+		public void SetPropertyValueInfoAsProppyType<T> (DescriptorPropertyInfo info, ValueInfo<T> value, PropertyVariation variations)
 		{
-			if (target is MonoDevelop.Core.FilePath directoryPath) {
-				T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (directoryPath.FullPath);
-				return Task.FromResult (result);
+			try {
+				info.SetValue (this, value.Value);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error setting the value", ex);
 			}
-			Core.LoggingService.LogWarning ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
-			return base.GetValueAsync<T> (target);
 		}
 	}
 }

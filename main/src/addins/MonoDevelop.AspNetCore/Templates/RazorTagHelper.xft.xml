@@ -14,7 +14,10 @@
 	</TemplateConfiguration>
 
 	<Conditions>
-		<AspNetCore />
+		<Or>
+			<AspNetCore />
+			<ProjectCapability Name="DotNetCoreRazor"/>
+		</Or>
 	</Conditions>
 	
 	<!-- Template Content -->

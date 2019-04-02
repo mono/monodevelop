@@ -473,7 +473,7 @@ namespace MonoDevelop.Xml.Editor
 					var encoding = Editor.Encoding.WebName;
 					list.Add (new BaseXmlCompletionData($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>"));
 				}
-				AddCloseTag (list, Tracker.Engine.Nodes);
+				AddCloseTag (list, Tracker.Engine.Nodes, currentChar);
 				if (tracker.Engine.CurrentState is XmlNameState)
 					if (GetCompletionCommandOffset (out var cpos, out var wlen))
 						list.TriggerWordLength = wlen;
@@ -679,8 +679,8 @@ namespace MonoDevelop.Xml.Editor
 			}
 			return null;
 		}
-		
-		protected static void AddCloseTag (CompletionDataList completionList, NodeStack stack)
+
+		protected static void AddCloseTag (CompletionDataList completionList, NodeStack stack, char currentChar)
 		{
 			//FIXME: search forward to see if tag's closed already
 			var elements = new List<XElement> ();
@@ -693,7 +693,12 @@ namespace MonoDevelop.Xml.Editor
 				
 				if (elements.Count == 0) {
 					string name = el.Name.FullName;
-					completionList.Add (new XmlTagCompletionData ("/" + name + ">", 0, true) {
+					var sb = StringBuilderCache.Allocate ();
+					if (currentChar != '/')
+						sb.Append ("/");
+					sb.Append (name);
+					sb.Append (">");
+					completionList.Add (new XmlTagCompletionData (StringBuilderCache.ReturnAndFree (sb), 0, true) {
 						Description = GettextCatalog.GetString ("Closing tag for '{0}'", name)
 					});
 				} else {

@@ -34,7 +34,7 @@ using UserInterfaceTests;
 namespace MonoDevelop.StressTest
 {
 	[NoLeak(typeof (Projects.Solution))]
-	public class DefaultScenario : ITestScenario
+	public class DefaultScenario : IEditorTestScenario
 	{
 		List<FilePath> filesToOpen;
 
@@ -64,6 +64,8 @@ namespace MonoDevelop.StressTest
 		bool firstRun = true;
 
 		[NoLeak ("MonoDevelop.SourceEditor.ExtensibleTextEditor")]
+		[NoLeak ("Microsoft.VisualStudio.Text.Editor.Implementation.CocoaTextViewControl")] // vs-editor-core part of the chain
+		[NoLeak ("MonoDevelop.TextEditor.CocoaTextViewContent")] // MD part of the chain.
 		public void Run ()
 		{
 			if (firstRun) {
@@ -109,5 +111,7 @@ namespace MonoDevelop.StressTest
 			// Close all documents.
 			WorkbenchExtensions.CloseAllOpenFiles ();
 		}
+
+		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
 	}
 }

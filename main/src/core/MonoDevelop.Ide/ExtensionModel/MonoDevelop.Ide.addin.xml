@@ -75,7 +75,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/InitCompleteHandlers" name = "Post inialization handlers">
 		<Description>Commands to be automatically executed when the IDE finishes initalization.</Description>
-		<ExtensionNode name="Class">
+		<ExtensionNode name="Class" objectType="MonoDevelop.Components.Commands.CommandHandler">
 			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
 		</ExtensionNode>
 	</ExtensionPoint>

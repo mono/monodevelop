@@ -630,7 +630,7 @@ namespace MonoDevelop.MacIntegration
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent
 					GLib.Idle.Add (delegate {
 						Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
-						var trackTTC = IdeApp.StartTimeToCodeLoadTimer ();
+						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						IdeApp.OpenFiles (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal)),
 							null
@@ -641,7 +641,7 @@ namespace MonoDevelop.MacIntegration
 
 							var firstFile = e.Documents.First ().Key;
 
-							IdeApp.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+							IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
 						});
 						return false;
 					});
@@ -650,7 +650,7 @@ namespace MonoDevelop.MacIntegration
 
 				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
 					GLib.Idle.Add (delegate {
-						var trackTTC = IdeApp.StartTimeToCodeLoadTimer ();
+						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
 						IdeApp.OpenFiles (e.Urls.Select (url => {
@@ -680,7 +680,7 @@ namespace MonoDevelop.MacIntegration
 							}
 							var firstFile = e.Urls.First ();
 
-							IdeApp.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+							IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
 						});
 						return false;
 					});

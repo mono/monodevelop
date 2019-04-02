@@ -51,7 +51,7 @@
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
 	url = https://github.com/xamarin/Xamarin.PropertyEditing
-	branch = monodevelop
+	branch = master
 [submodule "main/external/vs-editor-core"]
 	path = main/external/vs-editor-core
 	url = ../../xamarin/vs-editor-core.git

@@ -47,7 +47,7 @@ namespace MonoDevelop.StressTest
 			if (heapshot == null)
 				return;
 
-			// TODO: Make this async.
+			// TODO: Make this async. Each heapshot will add time to the current test run.
 
 			var previousData = result.Iterations.LastOrDefault ();
 			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);

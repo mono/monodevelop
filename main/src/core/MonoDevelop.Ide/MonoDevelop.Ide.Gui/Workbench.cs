@@ -78,6 +78,7 @@ namespace MonoDevelop.Ide.Gui
 		DefaultWorkbench workbench;
 		PadCollection pads;
 		bool fileEventsFrozen;
+		bool hasEverBeenShown = false;
 
 		public event EventHandler<DocumentEventArgs> ActiveDocumentChanged {
 			add { documentManager.ActiveDocumentChanged += value; }
@@ -145,19 +146,21 @@ namespace MonoDevelop.Ide.Gui
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
 
-			Counters.Initialization.Trace ("Setting layout");
-			workbench.CurrentLayout = "Solution";
-
-			// now we have an layout set notify it
-			Counters.Initialization.Trace ("Setting layout");
-			if (LayoutChanged != null)
-				LayoutChanged (this, EventArgs.Empty);
-
 			Counters.Initialization.Trace ("Initializing monitors");
 		}
 
 		internal void Show ()
 		{
+			if (!hasEverBeenShown) {
+				workbench.CurrentLayout = "Solution";
+
+				// now we have an layout set notify it
+				if (LayoutChanged != null)
+					LayoutChanged (this, EventArgs.Empty);
+
+				hasEverBeenShown = true;
+			}
+
 			// Very important: see https://github.com/mono/monodevelop/pull/6064
 			// Otherwise the editor may not be focused on IDE startup and can't be
 			// focused even by clicking with the mouse.

@@ -55,21 +55,25 @@ namespace MonoDevelop.Ide
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var results = await Search ("");
-				Assert.AreEqual (0, results.Count);
+				try {
+					var results = await Search ("");
+					Assert.AreEqual (0, results.Count);
 
-				results = await Search ("M");
-				Assert.AreEqual (6, results.Count);
+					results = await Search ("M");
+					Assert.AreEqual (6, results.Count);
 
-				results = await Search ("type:M");
-				Assert.AreEqual (3, results.Count);
+					results = await Search ("type:M");
+					Assert.AreEqual (3, results.Count);
 
-				results = await Search ("My");
-				// Should be 4: https://github.com/dotnet/roslyn/issues/29031
-				Assert.AreEqual (2, results.Count);
+					results = await Search ("My");
+					// Should be 4: https://github.com/dotnet/roslyn/issues/29031
+					Assert.AreEqual (2, results.Count);
 
-				results = await Search ("MC");
-				Assert.AreEqual (5, results.Count);
+					results = await Search ("MC");
+					Assert.AreEqual (5, results.Count);
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
 			}
 		}
 

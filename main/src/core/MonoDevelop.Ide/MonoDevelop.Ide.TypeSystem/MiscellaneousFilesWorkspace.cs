@@ -27,11 +27,16 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+
 using Microsoft.VisualStudio.Composition;
 using Microsoft.VisualStudio.Text;
+
+using Mono.Addins;
+
 using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -66,6 +71,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		public MiscellaneousFilesWorkspace ()
 			: base (CompositionManager.Instance.HostServices, WorkspaceKind.MiscellaneousFiles)
 		{
+			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory> ("/MonoDevelop/Ide/TypeService/OptionProviders"))
+				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
+
 			defaultProjectId = ProjectId.CreateNewId (DefaultProjectName);
 
 			var compilationOptions = new CSharpCompilationOptions (OutputKind.ConsoleApplication);

@@ -265,6 +265,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />-->
+		<SeparatorItem id = "welcomePageSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<SeparatorItem id = "contentSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 		<SeparatorItem id = "windowDocSep" />
@@ -278,8 +280,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument8" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument9" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
-		<SeparatorItem id = "welcomePageSep" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 	</ItemSet> 
 
 	<ItemSet id = "Help" _label = "_Help">

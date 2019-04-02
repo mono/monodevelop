@@ -84,14 +84,47 @@ namespace MonoDevelop.StressTest
 
 			leakProcessor = new LeakProcessor (scenario, ProfilerOptions);
 
-			ReportMemoryUsage (setupIteration);
-			for (int i = 0; i < Iterations; ++i) {
-				scenario.Run ();
-				ReportMemoryUsage (i);
-			}
+			ReportMemoryUsage ("Setup");
+			RunTestScenario ();
 
 			UserInterfaceTests.Ide.CloseAll (exit: false);
-			ReportMemoryUsage (cleanupIteration);
+			ReportMemoryUsage ("Cleanup");
+		}
+
+		void RunTestScenario ()
+		{
+			string suffix = string.Empty;
+			if (scenario is IEditorTestScenario editorTestScenario) {
+				var configuration = editorTestScenario.EditorRunConfiguration;
+				switch (configuration) {
+				case EditorTestRun.Legacy:
+					Properties.UseNewEditor = false;
+					suffix = "_Legacy";
+					break;
+				case EditorTestRun.VSEditor:
+					Properties.UseNewEditor = true;
+					suffix = "_VSEditor";
+					break;
+				case EditorTestRun.Both:
+					// Run once with legacy
+					Properties.UseNewEditor = false;
+					RunScenarioIterations ("_Legacy");
+
+					Properties.UseNewEditor = true;
+					suffix = "_VSEditor";
+					break;
+				}
+			}
+
+			RunScenarioIterations (suffix);
+		}
+
+		void RunScenarioIterations(string suffix)
+		{
+			for (int i = 0; i < Iterations; ++i) {
+				scenario.Run ();
+				ReportMemoryUsage ($"Run_{i}_{suffix}");
+			}
 		}
 
 		bool StartWithProfiler (string profilePath, string logFile)
@@ -177,7 +210,7 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		void ReportMemoryUsage (int iteration)
+		void ReportMemoryUsage (string iterationName)
 		{
 			//Make sure IDE stops doing what it was doing
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
@@ -191,15 +224,6 @@ namespace MonoDevelop.StressTest
 
 			var memoryStats = TestService.Session.MemoryStats;
 
-			string iterationName;
-			if (iteration == cleanupIteration) {
-				iterationName = "Cleanup";
-			} else if (iteration == setupIteration) {
-				iterationName = "Setup";
-			} else {
-				iterationName = string.Format ("Run_{0}", iteration + 1);
-			}
-
 			Console.WriteLine (iterationName);
 
 			Console.WriteLine ("  NonPagedSystemMemory: " + memoryStats.NonPagedSystemMemory);
@@ -212,7 +236,7 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			leakProcessor.Process (heapshot, iteration == cleanupIteration, iterationName, memoryStats);
+			leakProcessor.Process (heapshot, iterationName == "Cleanup", iterationName, memoryStats);
 		}
 	}
 }
