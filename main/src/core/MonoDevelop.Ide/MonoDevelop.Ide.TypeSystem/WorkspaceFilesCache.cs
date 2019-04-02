@@ -124,6 +124,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
 			ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> projectReferences)
 		{
+			if (!loaded)
+				return;
+
 			var paths = new string [files.Length];
 			var actions = new string [files.Length];
 
