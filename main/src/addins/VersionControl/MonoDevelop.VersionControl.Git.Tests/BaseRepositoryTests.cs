@@ -296,7 +296,7 @@ namespace MonoDevelop.VersionControl.Tests
 		[TestCase(1)]
 		[TestCase(2)]
 		// Tests Repository.GetHistory with slices.
-		public void LogSinceWorks (int historyId)
+		public async Task LogSinceWorksAsync (int historyId)
 		{
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
@@ -304,7 +304,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 			var history = Repo.GetHistory (LocalPath, null);
 			foreach (var rev in Repo.GetHistory (LocalPath, history[historyId]))
-				Assert.AreNotEqual (history [historyId].GetPrevious (), rev, "The revision was found in slice, yet should not be in it.");
+				Assert.AreNotEqual (await history [historyId].GetPreviousAsync (), rev, "The revision was found in slice, yet should not be in it.");
 
 			Assert.True (history.Any (r => r == history[historyId]));
 		}

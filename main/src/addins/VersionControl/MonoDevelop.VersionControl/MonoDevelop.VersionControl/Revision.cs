@@ -1,27 +1,27 @@
 using System;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
 	public abstract class Revision
 	{
-		Repository repo;
 		string shortMessage;
 		
 		protected Revision (Repository repo)
 		{
-			this.repo = repo;
+			Repository = repo ?? throw new ArgumentNullException (nameof (repo));
 		}
 		
 		protected Revision (Repository repo, DateTime time, string author, string message)
 		{
-			this.repo = repo;
-			this.Time = time;
-			this.Author = author;
-			this.Message = message;
+			Repository = repo ?? throw new ArgumentNullException (nameof (repo));
+			Time = time;
+			Author = author;
+			Message = message;
 		}
 		
-		public abstract Revision GetPrevious ();
+		public abstract Task<Revision> GetPreviousAsync (CancellationToken cancellationToken = default);
 		
 		public DateTime Time {
 			get;
@@ -34,15 +34,16 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public string Email { get; set; }
-		
+
+		const int maxDefaultShortMessageLineLength = 80;
+
 		public string ShortMessage {
 			get {
 				if (shortMessage != null)
 					return shortMessage;
-				if (Message.Length > 80)
-					return Message.Substring (0, 80);
-				else
-					return Message;
+				if (Message.Length > maxDefaultShortMessageLineLength)
+					return shortMessage = Message.Substring (0, maxDefaultShortMessageLineLength);
+				return Message;
 			}
 			set {
 				shortMessage = value;
@@ -54,13 +55,12 @@ namespace MonoDevelop.VersionControl
 			protected set;
 		}
 		
-		public override int GetHashCode() { return ToString().GetHashCode(); }
-		public override bool Equals(object other) { return ToString() == other.ToString(); }
-		
-		protected Repository Repository {
-			get { return repo; }
-		}
-		
+		public override int GetHashCode() => ToString().GetHashCode();
+
+		public override bool Equals(object obj) => ToString() == obj?.ToString();
+
+		protected Repository Repository { get; }
+
 		public virtual string Name {
 			get { return ToString (); }
 		}
@@ -71,16 +71,17 @@ namespace MonoDevelop.VersionControl
 
 		public static bool operator ==(Revision a, Revision b)
 		{
-			if (System.Object.ReferenceEquals(a, b))
+			if (ReferenceEquals (a, b))
 			{
 				return true;
 			}
 
-			if (((object)a == null) || ((object)b == null))
+			if (a is null || b is null)
 			{
 				return false;
 			}
-			return a.Equals(b);
+
+			return a.Equals(b);
 		}
 
 		public static bool operator !=(Revision a, Revision b)
@@ -93,10 +94,10 @@ namespace MonoDevelop.VersionControl
 	{
 		public RevisionPath (string path, string oldPath, RevisionAction action, string actionDescription)
 		{
-			this.Path = path;
-			this.OldPath = oldPath;
-			this.Action = action;
-			this.ActionDescription = actionDescription;
+			Path = path;
+			OldPath = oldPath;
+			Action = action;
+			ActionDescription = actionDescription;
 		}
 
 		public RevisionPath (string path, RevisionAction action, string actionDescription) : this (path, path, action, actionDescription)

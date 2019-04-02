@@ -56,21 +56,21 @@ namespace MonoDevelop.VersionControl.Views
 				UpdateHistory ();
 			}
 		}
-		
+
 		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
 		DocumentToolButton revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
-		
+
 		VersionControlDocumentInfo info;
 		string preselectFile;
 		CellRendererDiff diffRenderer = new CellRendererDiff ();
 		CellRendererText messageRenderer = new CellRendererText ();
 		CellRendererText textRenderer = new CellRendererText ();
 		CellRendererImage pixRenderer = new CellRendererImage ();
-		
+
 		bool currentRevisionShortened;
 
 		Xwt.Menu popupMenu;
@@ -86,14 +86,14 @@ namespace MonoDevelop.VersionControl.Views
 				get;
 				set;
 			}
-			
+
 			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				x_offset = y_offset = 0;
 				width = 16;
 				height = cell_area.Height;
 			}
-			
+
 			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 			{
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (window)) {
@@ -122,7 +122,7 @@ namespace MonoDevelop.VersionControl.Views
 						cr.LineTo (center_x, center_y - 5);
 						cr.Stroke ();
 					}
-					
+
 					if (!LastNode) {
 						cr.MoveTo (center_x, cell_area.Y + cell_area.Height + 2);
 						cr.LineTo (center_x, center_y + 5);
@@ -131,7 +131,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 			}
 		}
-		
+
 		public LogWidget (VersionControlDocumentInfo info)
 		{
 			this.Build ();
@@ -143,7 +143,7 @@ namespace MonoDevelop.VersionControl.Views
 			separator.SetMargins (1, 0, 0, 0);
 			separator.HeightRequest = 4;
 			separator.ShowAll ();
-			
+
 			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
 			vpaned1 = vpaned1.ReplaceWithWidget (new VPanedThin () { HandleWidget = separator }, true);
 
@@ -172,11 +172,11 @@ namespace MonoDevelop.VersionControl.Views
 			var graphRenderer = new RevisionGraphCellRenderer ();
 			colRevMessage.PackStart (graphRenderer, false);
 			colRevMessage.SetCellDataFunc (graphRenderer, GraphFunc);
-			
+
 			colRevMessage.PackStart (messageRenderer, true);
 			colRevMessage.SetCellDataFunc (messageRenderer, MessageFunc);
 			colRevMessage.Sizing = TreeViewColumnSizing.Autosize;
-			
+
 			treeviewLog.AppendColumn (colRevMessage);
 			colRevMessage.MinWidth = 350;
 			colRevMessage.Resizable = true;
@@ -185,7 +185,7 @@ namespace MonoDevelop.VersionControl.Views
 			colRevDate.SetCellDataFunc (textRenderer, DateFunc);
 			colRevDate.Resizable = true;
 			treeviewLog.AppendColumn (colRevDate);
-			
+
 			TreeViewColumn colRevAuthor = new TreeViewColumn ();
 			colRevAuthor.Title = GettextCatalog.GetString ("Author");
 			colRevAuthor.PackStart (pixRenderer, false);
@@ -202,7 +202,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			treeviewLog.Model = logstore;
 			treeviewLog.Selection.Changed += TreeSelectionChanged;
-			
+
 			treeviewFiles = new FileTreeView ();
 			treeviewFiles.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
 			scrolledwindowFiles.Child = treeviewFiles;
@@ -214,7 +214,7 @@ namespace MonoDevelop.VersionControl.Views
 				typeof (string), // revision path (invisible)
 				typeof (string []) // diff
 				);
-			
+
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
 			var crp = new CellRendererImage ();
 			var crt = new CellRendererText ();
@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl.Views
 			colChangedFile.SetCellDataFunc (crp, HandleNodeCellDataFunc);
 			colChangedFile.AddAttribute (crt, "text", 3);
 			treeviewFiles.AppendColumn (colChangedFile);
-			
+
 			TreeViewColumn colOperation = new TreeViewColumn ();
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
@@ -232,7 +232,7 @@ namespace MonoDevelop.VersionControl.Views
 			colOperation.AddAttribute (crp, "image", 0);
 			colOperation.AddAttribute (crt, "text", 1);
 			treeviewFiles.AppendColumn (colOperation);
-			
+
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
 			colChangedPath.Title = GettextCatalog.GetString ("Path");
 
@@ -243,7 +243,7 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewFiles.Model = changedpathstore;
 			treeviewFiles.TestExpandRow += HandleTreeviewFilesTestExpandRow;
 			treeviewFiles.Events |= Gdk.EventMask.PointerMotionMask;
-			
+
 			textviewDetails.WrapMode = Gtk.WrapMode.Word;
 			textviewDetails.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
 			textviewDetails.ButtonPressEvent += TextviewDetails_ButtonPressEvent;
@@ -397,7 +397,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (store.GetIterFirst (out iter))
 				store.SetValue (iter, 1, filter);
 		}
-		
+
 		bool filtering;
 		void HandleSearchEntryFilterChanged (object sender, EventArgs e)
 		{
@@ -412,26 +412,26 @@ namespace MonoDevelop.VersionControl.Views
 				return false;
 			});
 		}
-		
+
 		public void ShowLoading ()
 		{
 			scrolledLoading.Show ();
 			scrolledLog.Hide ();
 		}
-		
+
 		void RevertToRevisionClicked (object src, EventArgs args)
 		{
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertToRevision (info.Repository, info.Item.Path, d, false))
-				VersionControlService.SetCommitComment (info.Item.Path, 
+				VersionControlService.SetCommitComment (info.Item.Path,
 				  GettextCatalog.GetString ("(Revert to revision {0})", d.ToString ()), true);
 		}
-		
+
 		void RevertRevisionClicked (object src, EventArgs args)
 		{
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertRevision (info.Repository, info.Item.Path, d, false))
-				VersionControlService.SetCommitComment (info.Item.Path, 
+				VersionControlService.SetCommitComment (info.Item.Path,
 				  GettextCatalog.GetString ("(Revert revision {0})", d.ToString ()), true);
 		}
 
@@ -445,13 +445,13 @@ namespace MonoDevelop.VersionControl.Views
 		async void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
 		{
 			TreePath[] paths = treeviewFiles.Selection.GetSelectedRows ();
-			
+
 			if (paths.Length != 1)
 				return;
-			
+
 			TreeIter iter;
 			changedpathstore.GetIter (out iter, paths[0]);
-			
+
 			string fileName = (string)changedpathstore.GetValue (iter, colPath);
 			int line = diffRenderer.GetSelectedLine (paths[0]);
 			if (line == -1)
@@ -459,7 +459,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var proj = IdeApp.Workspace.GetProjectsContainingFile (fileName).FirstOrDefault ();
 			var doc = await IdeApp.Workbench.OpenDocument (fileName, proj, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-			doc?.GetContent<VersionControlDocumentController> ()?.ShowDiffView (SelectedRevision.GetPrevious (), SelectedRevision, line);
+			doc?.GetContent<VersionControlDocumentController> ()?.ShowDiffView (await SelectedRevision.GetPreviousAsync (), SelectedRevision, line);
 		}
 
 		const int colFile = 3;
@@ -467,7 +467,7 @@ namespace MonoDevelop.VersionControl.Views
 		const int colOperationText = 1;
 		const int colPath = 5;
 		const int colDiff = 6;
-		
+
 		void HandleTreeviewFilesTestExpandRow (object o, TestExpandRowArgs args)
 		{
 			TreeIter iter;
@@ -480,7 +480,7 @@ namespace MonoDevelop.VersionControl.Views
 
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
-				ThreadPool.QueueUserWorkItem (delegate {
+				Task.Run (async delegate {
 					string text = "";
 					try {
 						text = info.Repository.GetTextAtRevision (path, rev);
@@ -496,7 +496,7 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					Revision prevRev = null;
 					try {
-						prevRev = rev.GetPrevious ();
+						prevRev = await rev.GetPreviousAsync ();
 					} catch (Exception e) {
 						Application.Invoke ((o2, a2) => {
 							MessageService.ShowError (GettextCatalog.GetString ("Error while getting previous revision."), e);
@@ -566,7 +566,7 @@ namespace MonoDevelop.VersionControl.Views
 			ThreadPool.QueueUserWorkItem (delegate {
 				string text = info.Repository.GetTextAtRevision (path, rev);
 				string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
-				
+
 				Application.Invoke (delegate {
 					diffWidget.ComparisonWidget.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (path);
 					diffWidget.ComparisonWidget.OriginalEditor.Text = prevRevision;
@@ -600,7 +600,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			base.OnDestroyed ();
 		}
-		
+
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			var renderer = (CellRendererText)cell;
@@ -612,14 +612,14 @@ namespace MonoDevelop.VersionControl.Views
 			renderer.Text = age.Days >= 2 ?
 				revision.Time.ToShortDateString () :
 				revision.Time.Humanize (utcDate: false, dateToCompareAgainst: now);
-		}	
-		
+		}
+
 		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			var renderer = (RevisionGraphCellRenderer)cell;
 			Gtk.TreeIter node;
 			model.GetIterFirst (out node);
-			
+
 			renderer.FirstNode = node.Equals (iter);
 			model.IterNthChild (out node, model.IterNChildren () - 1);
 			renderer.LastNode =  node.Equals (iter);
@@ -634,7 +634,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			return filter;
 		}
-		
+
 		static void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			string filter = GetCurrentFilter (model);
@@ -654,7 +654,7 @@ namespace MonoDevelop.VersionControl.Views
 					renderer.Markup = EscapeWithFilterMarker (message, filter);
 			}
 		}
-		
+
 		static void AuthorFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			string filter = GetCurrentFilter (model);
@@ -672,7 +672,7 @@ namespace MonoDevelop.VersionControl.Views
 			else
 				renderer.Markup = EscapeWithFilterMarker (author, filter);
 		}
-		
+
 		static void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererImage renderer = (CellRendererImage)cell;
@@ -690,7 +690,7 @@ namespace MonoDevelop.VersionControl.Views
 				};
 			}
 		}
-		
+
 		static void RevisionFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			string filter = GetCurrentFilter (model);
@@ -702,7 +702,7 @@ namespace MonoDevelop.VersionControl.Views
 			else
 				renderer.Markup = EscapeWithFilterMarker (rev, filter);
 		}
-		
+
 		static void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererDiff rc = (CellRendererDiff)cell;
@@ -712,7 +712,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			rc.InitCell (tree_column.TreeView, ((TreeStore)model).IterDepth (iter) != 0, lines, model.GetPath (iter));
 		}
-		
+
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			var old = Allocation;
@@ -722,7 +722,7 @@ namespace MonoDevelop.VersionControl.Views
 				vpaned1.Position = allocation.Height / 2;
 			}
 		}
-		
+
 		public Revision SelectedRevision {
 			get {
 				TreeIter iter;
@@ -835,7 +835,7 @@ namespace MonoDevelop.VersionControl.Views
 			SetLogSearchFilter (logstore, currentFilter);
 			treeviewLog.ThawChildNotify ();
 		}
-		
+
 		bool MatchesFilter (Revision rev)
 		{
 			if (string.IsNullOrEmpty (currentFilter))
@@ -852,16 +852,16 @@ namespace MonoDevelop.VersionControl.Views
 				return true;
 			return false;
 		}
-		
+
 		static string EscapeWithFilterMarker (string txt, string filter)
 		{
 			if (string.IsNullOrEmpty (filter))
 				return GLib.Markup.EscapeText (txt);
-			
+
 			int i = txt.IndexOf (filter, StringComparison.CurrentCultureIgnoreCase);
 			if (i == -1)
 				return GLib.Markup.EscapeText (txt);
-			
+
 			StringBuilder sb = new StringBuilder ();
 			int last = 0;
 			while (i != -1) {
@@ -874,7 +874,7 @@ namespace MonoDevelop.VersionControl.Views
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, txt.Length - last)));
 			return sb.ToString ();
 		}
-	
+
 		static string GetSelectedTextFromLabel (Label label)
 		{
 			label.GetSelectionBounds (out int start, out int end);
@@ -928,7 +928,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (labelRevision.HasFocus) {
 				return GetSelectedTextFromLabel (labelRevision);
 			}
-		
+
 			return null;
 		}
 	}

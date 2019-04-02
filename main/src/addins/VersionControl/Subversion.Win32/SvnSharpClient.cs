@@ -421,11 +421,11 @@ namespace SubversionAddinWindows
 				client.Revert (paths.ToStringArray (), args);
 		}
 
-		public override void RevertRevision (FilePath path, Revision revision, ProgressMonitor monitor)
+		public override async void RevertRevision (FilePath path, Revision revision, ProgressMonitor monitor)
 		{
 			var args = new SvnMergeArgs ();
 			BindMonitor (monitor);
-			Revision prev = ((SvnRevision) revision).GetPrevious ();
+			Revision prev = await ((SvnRevision) revision).GetPreviousAsync ();
 			var range = new SvnRevisionRange (GetRevision (revision), GetRevision (prev));
 			lock (client) 
 				client.Merge (path, new SvnPathTarget (path), range, args);
