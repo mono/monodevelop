@@ -111,6 +111,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		async Task<Control> LoadControl (CancellationToken cancellationToken)
 		{
+			// The document view is going to be created. Make sure the controller is loaded
+			await LoadController ();
+
 			return control = await asyncContentLoader (cancellationToken);
 		}
 

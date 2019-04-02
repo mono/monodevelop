@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui.Shell;
 
 namespace IdeUnitTests
 {
-	public class ServiceHelper
+	public static class ServiceHelper
 	{
 		public static BasicServiceProvider SetupMockShell ()
 		{
@@ -42,6 +42,13 @@ namespace IdeUnitTests
 			serviceProvider.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager>();
 
 			return serviceProvider;
+		}
+
+		public static async Task ForceShow (this Document doc)
+		{
+			var shell = (await Runtime.GetService<IShell> ()) as MockShell;
+			if (shell != null)
+				await shell.ShowDocument (doc);
 		}
 	}
 }

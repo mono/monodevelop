@@ -29,6 +29,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Shell;
 using System.Linq;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -493,7 +494,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (SourceController != null) {
 				SourceController.AccessibilityDescriptionChanged += SourceController_AccessibilityDescriptionChanged;
-				SourceController.DocumentTitleChanged += SourceController_AccessibilityDescriptionChanged;
+				SourceController.TabPageLabelChanged += SourceController_AccessibilityDescriptionChanged;
 			}
 		}
 
@@ -501,7 +502,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (SourceController != null) {
 				SourceController.AccessibilityDescriptionChanged -= SourceController_AccessibilityDescriptionChanged;
-				SourceController.DocumentTitleChanged -= SourceController_AccessibilityDescriptionChanged;
+				SourceController.TabPageLabelChanged -= SourceController_AccessibilityDescriptionChanged;
 			}
 		}
 
@@ -610,6 +611,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 					attachmentsContainer.ReplaceView (index, item.CreateShellView (window));
 				UpdateContentVisibility ();
 			}
+		}
+
+		internal async Task LoadController ()
+		{
+			if (Parent != null)
+				await Parent.LoadController ();
+			if (SourceController != null)
+				await SourceController.Load ();
 		}
 
 		public override string ToString ()

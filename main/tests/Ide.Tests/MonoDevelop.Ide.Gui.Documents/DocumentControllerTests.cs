@@ -36,7 +36,7 @@ using System.Threading;
 namespace MonoDevelop.Ide.Gui.Documents
 {
 	[TestFixture]
-	public class DocumentControllerTests: IdeTestBase
+	public class DocumentControllerTests : IdeTestBase
 	{
 		DocumentManager documentManager;
 		DocumentControllerService documentControllerService;
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			documentManager = await Runtime.GetService<DocumentManager> ();
 			documentControllerService = await Runtime.GetService<DocumentControllerService> ();
-			shell = (MockShell) await Runtime.GetService<IShell> ();
+			shell = (MockShell)await Runtime.GetService<IShell> ();
 		}
 
 		[Test]
@@ -77,6 +77,69 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.AreEqual (1, controller.Child1.Control.DisposeCount);
 			Assert.AreEqual (1, controller.Child2.Control.DisposeCount);
 		}
+
+		static object [] LoadControllers = {
+			new LoadTestController (),
+			new LoadTestControllerWithInnerView (),
+			new LoadTestControllerWithContainer ()
+		};
+
+		[Test]
+		[TestCaseSource (nameof(LoadControllers))]
+		public async Task LoadAndReload (LoadTestController controller)
+		{
+			await controller.Initialize (new ModelDescriptor ());
+			var doc = await documentManager.OpenDocument (controller);
+
+			Assert.AreEqual (0, controller.Loaded);
+			Assert.AreEqual (0, controller.Reloaded);
+
+			if (controller.InnerController != null) {
+				Assert.AreEqual (0, controller.InnerController.Loaded);
+				Assert.AreEqual (0, controller.InnerController.Reloaded);
+			}
+
+			await controller.GetDocumentView ();
+
+			Assert.AreEqual (0, controller.Loaded);
+			Assert.AreEqual (0, controller.Reloaded);
+
+			if (controller.InnerController != null) {
+				Assert.AreEqual (0, controller.InnerController.Loaded);
+				Assert.AreEqual (0, controller.InnerController.Reloaded);
+			}
+
+			await doc.ForceShow ();
+
+			Assert.AreEqual (1, controller.Loaded);
+			Assert.AreEqual (0, controller.Reloaded);
+
+			if (controller.InnerController != null) {
+				Assert.AreEqual (1, controller.InnerController.Loaded);
+				Assert.AreEqual (0, controller.InnerController.Reloaded);
+			}
+
+			await doc.Reload ();
+
+			Assert.AreEqual (1, controller.Loaded);
+			Assert.AreEqual (1, controller.Reloaded);
+
+			if (controller.InnerController != null) {
+				Assert.AreEqual (1, controller.InnerController.Loaded);
+				Assert.AreEqual (0, controller.InnerController.Reloaded);
+			}
+
+			await doc.Reload ();
+
+			Assert.AreEqual (1, controller.Loaded);
+			Assert.AreEqual (2, controller.Reloaded);
+
+			if (controller.InnerController != null) {
+				Assert.AreEqual (1, controller.InnerController.Loaded);
+				Assert.AreEqual (0, controller.InnerController.Reloaded);
+			}
+		}
+
 	}
 
 	class DummyControl : Control
@@ -142,6 +205,50 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			DisposeCount++;
 			base.OnDispose ();
+		}
+	}
+
+	public class LoadTestController : DocumentController
+	{
+		public int Loaded;
+		public int Reloaded;
+
+		public LoadTestController InnerController;
+
+		protected override Task OnLoad (bool reloading)
+		{
+			if (reloading)
+				Reloaded++;
+			else
+				Loaded++;
+			return base.OnLoad (reloading);
+		}
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			return new DummyControl ();
+		}
+	}
+
+	class LoadTestControllerWithInnerView : LoadTestController
+	{
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			InnerController = new LoadTestController ();
+			await InnerController.Initialize (null);
+			return await InnerController.GetDocumentView ();
+		}
+	}
+
+	class LoadTestControllerWithContainer : LoadTestController
+	{
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			var container = new DocumentViewContainer ();
+			InnerController = new LoadTestController ();
+			await InnerController.Initialize (null);
+			container.Views.Add (await InnerController.GetDocumentView ());
+			return container;
 		}
 	}
 }

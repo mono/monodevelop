@@ -129,5 +129,13 @@ namespace IdeUnitTests
 		{
 			PresentCalled?.Invoke (this, EventArgs.Empty);
 		}
+
+		public Task ShowDocument (Document document)
+		{
+			foreach (var w in windows)
+				if (w.Document == document)
+					return w.Show ();
+			return Task.CompletedTask;
+		}
 	}
 }

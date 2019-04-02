@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// A controller is a class that implements the logic for loading,
 	/// displaying and interacting with the contents of a document.
 	/// </summary>
-	public abstract class DocumentController : IDisposable, ICommandDelegator
+	public abstract class DocumentController : IDisposable, ICommandDelegatorRouter
 	{
 		internal const string DocumentControllerExtensionsPath = "/MonoDevelop/Ide/DocumentControllerExtensions";
 
@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentView viewItem;
 		DocumentView finalViewItem;
 		ServiceProvider serviceProvider;
+		DocumentController linkedController;
 
 		bool initialized;
 		bool hasUnsavedChanges;
@@ -313,6 +314,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 			get {
 				CheckInitialized ();
 				if (tabPageLabel == null) {
+					if (linkedController != null)
+						return linkedController.TabPageLabel;
 					switch (Role) {
 					case DocumentControllerRole.Preview: return GettextCatalog.GetString ("Preview");
 					case DocumentControllerRole.VisualDesign: return GettextCatalog.GetString ("Designer");
@@ -400,9 +403,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void Dispose ()
 		{
-			disposed = true;
-			OnDispose ();
-			extensionChain?.Dispose ();
+			if (!disposed) {
+				linkedController?.Dispose ();
+				disposed = true;
+				OnDispose ();
+				extensionChain?.Dispose ();
+			}
 		}
 
 		/// <summary>
@@ -514,14 +520,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public IEnumerable<object> GetContents (Type type)
 		{
+			// Using yield here to ensure the collection of content is lazily created
+
 			CheckInitialized ();
-			var contents = OnGetContents (type);
+			foreach (var c in OnGetContents (type))
+				yield return c;
 
 			if (extensionChain != null) {
-				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ())
-					contents = contents.Concat (ext.GetContents (type));
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					foreach (var c in ext.GetContents (type))
+						yield return c;
+				}
 			}
-			return contents;
+			if (linkedController != null) {
+				foreach (var c in linkedController.GetContents (type))
+					yield return c;
+			}
 		}
 
 		/// <summary>
@@ -754,13 +768,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 			get { return extensionContext ?? AddinManager.AddinEngine; }
 		}
 
-		internal Task EnsureLoaded ()
+		internal protected async Task Load ()
 		{
+			if (linkedController != null)
+				await linkedController.Load ();
+			CheckInitialized ();
 			if (!loaded) {
 				loaded = true;
-				return OnLoad (false);
+				await OnLoad (false);
 			}
-			return Task.CompletedTask;
 		}
 
 		void UpdateContentExtensions ()
@@ -792,6 +808,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void NotifyFocused ()
 		{
+			linkedController?.NotifyFocused ();
+
 			// When getting the focus make sure the model is up to date
 			UnscheduleModelSynchronization ();
 			Model?.Synchronize ().Ignore ();
@@ -802,17 +820,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void NotifyUnfocused ()
 		{
+			linkedController?.NotifyUnfocused ();
+
 			hasFocus = false;
 			OnUnfocused ();
 		}
 
 		internal void GrabFocusForView (DocumentView view)
 		{
-			OnGrabFocus (view);
+			if (linkedController != null)
+				linkedController?.GrabFocusForView (view);
+			else
+				OnGrabFocus (view);
 		}
 
 		internal void NotifyShown ()
 		{
+			if (linkedController != null)
+				linkedController.NotifyShown ();
+
 			shown = true;
 			try {
 				OnContentShown ();
@@ -881,6 +907,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 					LoggingService.LogError ("View container initialization failed", ex);
 					viewItem = new DocumentViewContent (() => (Control)null);
 				}
+				// If the view already has a controller bound to it, link it to the new one, so that all
+				// events from the view are propagated to the old controller besides the new one.
+				if (viewItem.SourceController != null)
+					linkedController = viewItem.SourceController;
 				viewItem.SourceController = this;
 			}
 			return viewItem;
@@ -974,7 +1004,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual Task OnLoad (bool reloading)
 		{
-			return Model.Reload () ?? Task.CompletedTask;
+			if (Model != null) {
+				if (reloading)
+					return Model.Reload ();
+				else
+					return Model.Load ();
+			}
+			return Task.CompletedTask;
 		}
 
 		internal Task DoSave ()
@@ -1109,9 +1145,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return true;
 		}
 
-		object ICommandDelegator.GetDelegatedCommandTarget ()
+		object ICommandDelegatorRouter.GetNextCommandTarget ()
 		{
 			return itemExtension;
+		}
+
+		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
+		{
+			return linkedController;
 		}
 
 		class DefaultControllerExtension : DocumentControllerExtension

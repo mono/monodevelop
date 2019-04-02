@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
@@ -90,6 +91,12 @@ namespace IdeUnitTests
 		void IWorkbenchWindow.SetRootView (IShellDocumentViewItem view)
 		{
 			RootView = (MockShellDocumentView)view;
+		}
+
+		public async Task Show ()
+		{
+			if (RootView != null)
+				await RootView.Show ();
 		}
 	}
 }
