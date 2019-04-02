@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		Dictionary<FilePath, ProjectCache> cachedItems = new Dictionary<FilePath, ProjectCache> ();
 		bool loaded;
+		object writeLock = new object ();
 
 		public void Load (Solution solution)
 		{
@@ -159,10 +160,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var cacheFile = GetProjectCacheFile (proj, projConfig.Id);
 
-			var serializer = new JsonSerializer ();
-			using (var fs = File.Open (cacheFile, FileMode.Create))
-			using (var sw = new StreamWriter (fs)) {
-				serializer.Serialize (sw, item);
+			lock (writeLock) {
+				var serializer = new JsonSerializer ();
+				using (var fs = File.Open (cacheFile, FileMode.Create))
+				using (var sw = new StreamWriter (fs)) {
+					serializer.Serialize (sw, item);
+				}
 			}
 		}
 
