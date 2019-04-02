@@ -36,6 +36,8 @@ namespace MonoDevelop.DotNetCore
 	class DotNetCoreSdkPaths
 	{
 		string msbuildSDKsPath;
+		static IEnumerable<DotNetCoreVersion> cachedInstalledSdkVersions;
+		object locker = new object ();
 
 		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
 		public string SdkRootPath { get; internal set; }
@@ -193,11 +195,25 @@ namespace MonoDevelop.DotNetCore
 		IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions (string sdkRootPath)
 		{
 			return Directory.EnumerateDirectories (sdkRootPath)
-				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Select (directory => {
+					if (!directory.Contains ("NuGetFallbackFolder"))
+						return DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory);
+
+					return null;
+				})
 				.Where (version => version != null);
 		}
 
-		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions () => GetInstalledSdkVersions (SdkRootPath);
+		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions ()
+		{
+			lock (locker) {
+				if (cachedInstalledSdkVersions == null) {
+					cachedInstalledSdkVersions = GetInstalledSdkVersions (SdkRootPath);
+				} 
+
+				return cachedInstalledSdkVersions;
+			}
+		}
 
 		string GetSdksParentDirectory (DotNetCoreVersion targetVersion)
 		{
