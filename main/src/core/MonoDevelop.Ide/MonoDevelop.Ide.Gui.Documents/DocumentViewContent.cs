@@ -40,7 +40,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		private Func<CancellationToken,Task<Control>> asyncContentLoader;
 		private Func<Control> contentLoader;
 		IShellDocumentViewContent shellContentView;
-		DocumentToolbar toolbar;
+		DocumentToolbar toolbarTop;
+		DocumentToolbar toolbarBottom;
 		IPathedDocument pathDoc;
 		Control control;
 
@@ -117,13 +118,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return control = await asyncContentLoader (cancellationToken);
 		}
 
-		public DocumentToolbar GetToolbar ()
+		public DocumentToolbar GetToolbar (DocumentToolbarKind kind = DocumentToolbarKind.Top)
 		{
 			if (shellContentView == null)
 				throw new InvalidOperationException ("Toolbar can't be requested before the view content is created");
-			if (toolbar == null)
-				toolbar = new DocumentToolbar (shellContentView.GetToolbar ());
-			return toolbar;
+
+			if (kind == DocumentToolbarKind.Top) {
+				if (toolbarTop == null)
+					toolbarTop = new DocumentToolbar (shellContentView.GetToolbar (DocumentToolbarKind.Top));
+				return toolbarTop;
+			}
+			if (kind == DocumentToolbarKind.Bottom) {
+				if (toolbarBottom == null)
+					toolbarBottom = new DocumentToolbar (shellContentView.GetToolbar (DocumentToolbarKind.Bottom));
+				return toolbarBottom;
+			}
+			throw new NotSupportedException ();
 		}
 
 		public void ShowPathBar (IPathedDocument pathDoc)

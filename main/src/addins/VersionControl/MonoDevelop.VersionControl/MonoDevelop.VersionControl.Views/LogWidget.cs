@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Fonts;
 using Humanizer;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {

@@ -55,6 +55,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Content;
 using System.IO;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.AssemblyBrowser
 {

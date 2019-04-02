@@ -27,10 +27,9 @@ using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
-using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui.Shell;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
 	public class DocumentToolbar
 	{
@@ -165,6 +164,12 @@ namespace MonoDevelop.Ide.Gui
 				return new DocumentToolButtonImage (d);
 			}
 		}
+	}
+
+	public enum DocumentToolbarKind
+	{
+		Top,
+		Bottom
 	}
 }
 

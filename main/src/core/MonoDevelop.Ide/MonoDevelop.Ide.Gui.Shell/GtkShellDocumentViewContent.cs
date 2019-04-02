@@ -31,12 +31,14 @@ using System.Threading;
 using MonoDevelop.Ide.Gui.Content;
 using Gtk;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
 	class GtkShellDocumentViewContent: GtkShellDocumentViewItem, IShellDocumentViewContent
 	{
-		GtkDocumentToolbar toolbar;
+		GtkDocumentToolbar topToolbar;
+		GtkDocumentToolbar bottomToolbar;
 		PathBar pathBar;
 		Func<CancellationToken,Task<Control>> contentLoader;
 		VBox box;
@@ -46,16 +48,25 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public event EventHandler ContentInserted;
 
-		public IShellDocumentToolbar GetToolbar ()
+		public IShellDocumentToolbar GetToolbar (DocumentToolbarKind kind)
 		{
-			if (toolbar == null) {
-				toolbar = new GtkDocumentToolbar ();
-				box.PackStart (toolbar.Container, false, false, 0);
-				box.ReorderChild (toolbar.Container, 0);
-				toolbar.Visible = true;
-				HidePathBar ();
+			if (kind == DocumentToolbarKind.Top) {
+				if (topToolbar == null) {
+					topToolbar = new GtkDocumentToolbar ();
+					box.PackStart (topToolbar.Container, false, false, 0);
+					box.ReorderChild (topToolbar.Container, 0);
+					topToolbar.Visible = true;
+					HidePathBar ();
+				}
+				return topToolbar;
+			} else {
+				if (bottomToolbar == null) {
+					bottomToolbar = new GtkDocumentToolbar ();
+					box.PackStart (bottomToolbar.Container, false, false, 0);
+					bottomToolbar.Visible = true;
+				}
+				return bottomToolbar;
 			}
-			return toolbar;
 		}
 
 		public void SetContentLoader (Func<CancellationToken,Task<Control>> contentLoader)
@@ -81,6 +92,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (control != null) {
 				viewControl = control.GetNativeWidget<Gtk.Widget> ();
 				box.PackStart (viewControl, true, true, 0);
+				if (bottomToolbar != null)
+					box.ReorderChild (bottomToolbar.Container, box.Children.Length - 1);
 			}
 			if (pathDocPending != null) {
 				ShowPathBar (pathDocPending);
@@ -114,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			pathDoc.PathChanged += HandlePathChange;
 
 			// If a toolbar is already being shown, we don't show the pathbar yet
-			if (toolbar != null && toolbar.Visible)
+			if (topToolbar != null && topToolbar.Visible)
 				return;
 
 			if (pathBar == null) {

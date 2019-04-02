@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {

@@ -50,7 +50,7 @@ namespace IdeUnitTests
 			control = await contentLoader (CancellationToken.None);
 		}
 
-		IShellDocumentToolbar IShellDocumentViewContent.GetToolbar ()
+		IShellDocumentToolbar IShellDocumentViewContent.GetToolbar (DocumentToolbarKind kind)
 		{
 			if (toolbar == null)
 				toolbar = new MockShellDocumentToolbar ();

@@ -3574,7 +3574,6 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StylesStringTagModel.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
@@ -4236,6 +4235,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\IProjectPadNodeSelector.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\IPropertyGrid.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileNameEvalutor.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentToolbar.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

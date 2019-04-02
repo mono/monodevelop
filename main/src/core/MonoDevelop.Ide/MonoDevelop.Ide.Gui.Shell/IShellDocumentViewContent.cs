@@ -29,6 +29,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 	{
 		void SetContentLoader (Func<CancellationToken, Task<Control>> contentLoader);
 		void ReloadContent ();
-		IShellDocumentToolbar GetToolbar ();
+		IShellDocumentToolbar GetToolbar (DocumentToolbarKind kind);
 
 		void ShowPathBar (IPathedDocument pathedDocument);
 		void HidePathBar ();
