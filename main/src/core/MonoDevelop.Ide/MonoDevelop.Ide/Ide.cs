@@ -103,22 +103,8 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		static TimeToCodeMetadata ttcMetadata;
-		static Stopwatch ttcStopwatch;
-		static long startupCompletedTicks;
-		static long ttcDuration = 3 * TimeSpan.TicksPerSecond; // Wait 3 seconds before ignoring TTC events
-
-		internal static void OnStartupCompleted (StartupMetadata startupMetadata, Stopwatch ttcTimer)
+		internal static void OnStartupCompleted ()
 		{
-			ttcMetadata = new TimeToCodeMetadata {
-				StartupTime = startupMetadata.CorrectedStartupTime
-			};
-			ttcMetadata.AddProperties (startupMetadata);
-
-			ttcStopwatch = ttcTimer;
-			startupCompletedTicks = ttcStopwatch.ElapsedTicks;
-			LoggingService.LogDebug ("TTC starting");
-
 			startupCompleted?.Invoke (null, EventArgs.Empty);
 		}
 
@@ -319,65 +305,6 @@ namespace MonoDevelop.Ide
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
 		{
 			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
-		}
-
-		internal static void TrackTimeToCode (TimeToCodeMetadata.DocumentType documentType)
-		{
-			LoggingService.LogDebug("Tracking TTC");
-			if (ttcStopwatch == null || timeToCodeSolutionTimer == null) {
-				LoggingService.LogDebug("Ignoring TTC");
-				return;
-			}
-
-			ttcStopwatch.Stop ();
-			timeToCodeSolutionTimer.Stop ();
-
-			if (ttcMetadata == null) {
-				timeToCodeSolutionTimer = null;
-				ttcStopwatch = null;
-				throw new Exception ("SendTimeToCode called before initialisation completed");
-			}
-
-			LoggingService.LogDebug ("Processing TTC");
-			ttcMetadata.SolutionLoadTime = timeToCodeSolutionTimer.ElapsedMilliseconds;
-
-			ttcMetadata.CorrectedDuration = ttcStopwatch.ElapsedMilliseconds;
-			ttcMetadata.Type = documentType;
-
-			Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
-
-			timeToCodeSolutionTimer = null;
-			timeToCodeWorkspaceTimer = Stopwatch.StartNew ();
-
-			MonoDevelopWorkspace.LoadingFinished += CompleteTimeToIntellisense;
-		}
-
-		static void CompleteTimeToIntellisense (object sender, EventArgs e)
-		{
-			// Reuse ttcMetadata, as it already has other information set.
-			MonoDevelopWorkspace.LoadingFinished -= CompleteTimeToIntellisense;
-
-			timeToCodeWorkspaceTimer.Stop ();
-
-			ttcMetadata.IntellisenseLoadTime = timeToCodeWorkspaceTimer.ElapsedMilliseconds;
-			ttcMetadata.CorrectedDuration += timeToCodeWorkspaceTimer.ElapsedMilliseconds;
-
-			Counters.TimeToIntellisense.Inc ("IntellisenseLoaded", ttcMetadata);
-		}
-
-
-		static Stopwatch timeToCodeSolutionTimer = new Stopwatch ();
-		static Stopwatch timeToCodeWorkspaceTimer = null;
-		internal static bool StartTimeToCodeLoadTimer ()
-		{
-			if (ttcStopwatch.ElapsedTicks - startupCompletedTicks > ttcDuration) {
-				LoggingService.LogDebug ($"Not starting TTC timer: {ttcStopwatch.ElapsedTicks - startupCompletedTicks}");
-				return false;
-			}
-			LoggingService.LogDebug ("Starting TTC timer");
-			timeToCodeSolutionTimer.Start ();
-
-			return true;
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
