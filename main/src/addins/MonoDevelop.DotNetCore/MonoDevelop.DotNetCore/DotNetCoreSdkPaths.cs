@@ -53,7 +53,7 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			if (initializeSdkLocation)
-				ResetInstalledSdkVersions ();
+				ResetInstalledSdkVersionsCache ();
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
 			SdkRootPath = Path.Combine (rootDirectory, "sdk");
@@ -217,7 +217,7 @@ namespace MonoDevelop.DotNetCore
 			}
 		}
 
-		void ResetInstalledSdkVersions ()
+		void ResetInstalledSdkVersionsCache ()
 		{
 			lock (locker) {
 				cachedInstalledSdkVersions = null;
