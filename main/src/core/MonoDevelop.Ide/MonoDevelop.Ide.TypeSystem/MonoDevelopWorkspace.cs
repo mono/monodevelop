@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		Lazy<MetadataReferenceHandler> metadataHandler;
 		ProjectionData Projections { get; }
 		OpenDocumentsData OpenDocuments { get; }
-		ProjectDataMap ProjectMap { get; }
+		internal ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
