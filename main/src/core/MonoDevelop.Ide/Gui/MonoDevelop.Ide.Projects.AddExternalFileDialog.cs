@@ -242,7 +242,6 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultHeight = 286;
 			this.radioKeep.Hide ();
 			this.checkApplyAll.Hide ();
-			this.Show ();
 		}
 	}
 }

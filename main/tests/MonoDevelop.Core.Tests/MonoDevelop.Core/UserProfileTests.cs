@@ -1,10 +1,10 @@
-﻿//
-// MonoDevelopMetadataReferenceManagerTests.cs
+//
+// UserProfileTests.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Inc.
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading.Tasks;
-using MonoDevelop.Projects;
 using NUnit.Framework;
-using UnitTests;
-
-namespace MonoDevelop.Ide.TypeSystem
+namespace MonoDevelop.Core
 {
 	[TestFixture]
-	public class MonoDevelopMetadataReferenceManagerTests : IdeTestBase
+	public class UserProfileTests
 	{
 		[Test]
-		public async Task WorkspaceHasService ()
+		public void TestCurrentVersionWillMigrate ()
 		{
-			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-
-			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				try {
-					Assert.IsNotNull (ws.MetadataReferenceManager);
-				} finally {
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
-			}
+			Assert.That (UserProfile.ProfileVersions, Contains.Item (BuildInfo.CompatVersion));
 		}
 	}
 }

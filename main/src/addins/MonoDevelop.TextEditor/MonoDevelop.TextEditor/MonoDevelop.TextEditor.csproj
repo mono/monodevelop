@@ -18,7 +18,7 @@
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationCore" />
-    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj" />
+    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj" Private="false" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />

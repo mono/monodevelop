@@ -71,17 +71,12 @@ namespace UserInterfaceTests
 
 		public static void WaitUntil (Func<bool> done, int timeout = 20000, int pollStep = 200, Func<string> timeoutMessage = null)
 		{
-			do {
-				if (done ())
-					return;
-				timeout -= pollStep;
-				Thread.Sleep (pollStep);
-			} while (timeout > 0);
-
-			if (timeoutMessage != null) {
-				throw new TimeoutException ("Timed out waiting for Function: " + done.Method.Name + " Message: " + timeoutMessage ());
-			} else {
-				throw new TimeoutException ("Timed out waiting for Function: " + done.Method.Name);
+			try {
+				PollTimer (timeout, pollStep, done);
+			} catch (TimeoutException) {
+				// Replace the exception with another one.
+				var suffix = timeoutMessage != null ? " Message: " + timeoutMessage () : string.Empty;
+				throw new TimeoutException ("Timed out waiting for Function: " + done.Method.Name + suffix);
 			}
 		}
 
@@ -122,7 +117,7 @@ namespace UserInterfaceTests
 
 		public readonly static Action EmptyAction = delegate { };
 
-		static string[] waitForNuGetMessages = {
+		static readonly string[] waitForNuGetMessages = {
 			"Package updates are available.",
 			"Packages are up to date.",
 			"No updates found but warnings were reported.",
@@ -132,21 +127,21 @@ namespace UserInterfaceTests
 			"Packages updated with warnings."};
 		
 		public readonly static Action WaitForPackageUpdate = delegate {
-			WaitForStatusMessage (waitForNuGetMessages, timeoutInSecs: 180, pollStepInSecs: 5);
+			WaitForStatusMessage (waitForNuGetMessages, timeoutInSecs: 180, pollStepInSecs: 1);
 		};
 
 		public static void WaitForPackageUpdateExtra (List<string> otherMessages)
 		{
 			otherMessages.AddRange (waitForNuGetMessages);
-			WaitForStatusMessage (otherMessages.ToArray (), timeoutInSecs: 180, pollStepInSecs: 5);
+			WaitForStatusMessage (otherMessages.ToArray (), timeoutInSecs: 180, pollStepInSecs: 1);
 		}
 
 		public readonly static Action WaitForSolutionCheckedOut = delegate {
-			WaitForStatusMessage (new [] {"Solution checked out", "Solution Loaded."}, timeoutInSecs: 360, pollStepInSecs: 5);
+			WaitForStatusMessage (new [] {"Solution checked out", "Solution Loaded."}, timeoutInSecs: 360, pollStepInSecs: 1);
 		};
 
 		public readonly static Action WaitForSolutionLoaded = delegate {
-			WaitForStatusMessage (new [] {"Project saved.", "Solution loaded."}, timeoutInSecs: 120, pollStepInSecs: 5);
+			WaitForStatusMessage (new [] {"Project saved.", "Solution loaded."}, timeoutInSecs: 120, pollStepInSecs: 1);
 		};
 
 		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
@@ -177,7 +172,7 @@ namespace UserInterfaceTests
 			timeoutMessage: () => "GetStatusMessage=" + Workbench.GetStatusMessage ());
 		}
 
-		static readonly List<string> ignoreStatusMessgaes = new List<string> {
+		static readonly List<string> globalIgnoreStatusMessages = new List<string> {
 			"Saving...",
 			"Restoring packages for solution...",
 			"Restoring packages before update...",
@@ -186,46 +181,58 @@ namespace UserInterfaceTests
 			"Updating packages in project..."
 		};
 
-		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 10, string[] ignoreMessages = null)
+		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 1, string[] ignoreMessages = null)
 		{
-			uint retriesLeft = (uint)Math.Ceiling ((double)totalTimeoutInSecs/(double)idlePeriodInSecs);
-			ManualResetEvent resetEvent = new ManualResetEvent (false);
+			var ignoreStatusMessages = globalIgnoreStatusMessages.ToList ();
 			if (ignoreMessages != null)
-				ignoreStatusMessgaes.AddRange (ignoreMessages);
-
-			var timer = new System.Timers.Timer {
-				Interval = idlePeriodInSecs * 1000,
-				AutoReset = true
-			};
-			bool didTimeout = false;
+				ignoreStatusMessages.AddRange (ignoreMessages);
 
 			var initialStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
-			timer.Elapsed += (sender, e) => {
-				if (retriesLeft == 0) {
-					didTimeout = true;
-					resetEvent.Set ();
-				}
-
+			PollTimer ((int)totalTimeoutInSecs * 1000, (int)idlePeriodInSecs * 1000, () => {
 				var finalStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
-				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage) && !ignoreStatusMessgaes.Contains (finalStatusMessage);
+				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage) && !ignoreStatusMessages.Contains (finalStatusMessage);
 
-				if (!isIdle) {
-					retriesLeft--;
+				if (!isIdle)
 					initialStatusMessage = finalStatusMessage;
-				}
-				if (isIdle) {
-					resetEvent.Set ();
-				}
+				return isIdle;
+			});
+		}
+
+		static void PollTimer (int timeout, int interval, Func<bool> checkIsDone)
+		{
+			uint retriesLeft = (uint)Math.Ceiling ((double)timeout / interval);
+			var resetEvent = new ManualResetEvent (false);
+
+			var timer = new System.Timers.Timer {
+				Interval = interval,
+				AutoReset = true
 			};
 
-			timer.Start ();
-			resetEvent.WaitOne ();
-			timer.Stop ();
-			timer.AutoReset = false;
-			timer.Dispose ();
+			using (timer)
+			using (resetEvent) {
+				bool didTimeout = false;
 
-			if (didTimeout)
-				throw new TimeoutException ("Timeout waiting for IDE to be ready and idle");
+				timer.Elapsed += (sender, e) => {
+					if (retriesLeft == 0) {
+						didTimeout = true;
+						resetEvent.Set ();
+						return;
+					}
+
+					bool done = checkIsDone ();
+					if (!done) {
+						retriesLeft--;
+					} else
+						resetEvent.Set ();
+				};
+
+				timer.Start ();
+				resetEvent.WaitOne ();
+				timer.Stop ();
+
+				if (didTimeout)
+					throw new TimeoutException ("Timeout waiting for IDE to be ready and idle");
+			}
 		}
 	}
 

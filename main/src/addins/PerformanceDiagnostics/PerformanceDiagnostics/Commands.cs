@@ -25,6 +25,12 @@ namespace PerformanceDiagnosticsAddIn
 
 	public class ProfileFor5SecondsHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.DisableOnShellLock = false;
+			base.Update (info);
+		}
+
 		protected override void Run ()
 		{
 			UIThreadMonitor.Instance.Profile (5);
@@ -46,6 +52,7 @@ namespace PerformanceDiagnosticsAddIn
 		protected override void Update(CommandInfo info)
 		{
 			info.Checked = UIThreadMonitor.Instance.ToggleProfilingChecked;
+			info.DisableOnShellLock = false;
 			base.Update(info);
 		}
 

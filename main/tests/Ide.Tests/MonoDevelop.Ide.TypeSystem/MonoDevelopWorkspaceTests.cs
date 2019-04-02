@@ -46,9 +46,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			FilePath projFile = Util.GetSampleProject ("workspace-metadata-references", "workspace-metadata-references.sln");
 
-			using (var sol = (MonoDevelop.Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), projFile)) {
-				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-
+			using (var sol = (MonoDevelop.Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), projFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
 					DotNetProject mainProject = null, libraryProject = null, libraryProject461 = null;
 					foreach (var project in sol.GetAllProjects ()) {
 						if (project.Name == "workspace-metadata-references")
@@ -65,6 +65,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					// Also, add test for net461 to net47.
 					await AddAssemblyReference (ws, libraryProject, mainProject, "System.Messaging");
 					await AddAssemblyReference (ws, libraryProject461, mainProject, "System.ServiceModel");
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
 			}
 		}

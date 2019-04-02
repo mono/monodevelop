@@ -4201,6 +4201,7 @@
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLabel.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLine.cs" />
+    <Compile Include="MonoDevelop.Ide\IdeStartupTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
