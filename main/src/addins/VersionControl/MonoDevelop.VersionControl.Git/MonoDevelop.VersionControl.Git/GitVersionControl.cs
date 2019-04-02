@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
-using System.Collections.Generic;
+using MonoDevelop.Ide;
 using System.IO;
 
 namespace MonoDevelop.VersionControl.Git
@@ -33,6 +33,7 @@ namespace MonoDevelop.VersionControl.Git
 	abstract class GitVersionControl : VersionControlSystem
 	{
 		string version = null;
+		bool initialized;
 
 		const string GitExtension = ".git";
 
@@ -82,7 +83,17 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
 		{
-			string repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			string repo = string.Empty;
+			try {
+				repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			} catch (System.DllNotFoundException ex) {
+				if (!initialized) {
+					initialized = true;
+					LoggingService.LogInternalError ("Error when loading the libgit libraries", ex);
+					MessageService.ShowError (GettextCatalog.GetString ("Error initializing Version Control"), ex);
+				}
+				return null;
+			}
 			if (!string.IsNullOrEmpty (repo)) {
 				repo = repo.TrimEnd ('\\', '/');
 				if (repo.EndsWith (GitExtension, System.StringComparison.OrdinalIgnoreCase))
