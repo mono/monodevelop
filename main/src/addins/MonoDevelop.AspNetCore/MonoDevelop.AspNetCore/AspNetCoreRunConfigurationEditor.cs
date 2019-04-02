@@ -142,10 +142,8 @@ namespace MonoDevelop.AspNetCore
 			if (url.Contains (";")) {
 				var urls = url.Split (';');
 				for (var i = 0;i < urls.Length; i++) {
-					if (Uri.TryCreate (urls [i], UriKind.Absolute, out _))
-						continue;
-
-					return false;
+					if (!Uri.TryCreate (urls [i], UriKind.Absolute, out _))
+						return false;
 				}
 				return true;
 			}

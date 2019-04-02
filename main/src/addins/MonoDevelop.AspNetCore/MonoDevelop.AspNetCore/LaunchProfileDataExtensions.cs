@@ -41,10 +41,7 @@ namespace MonoDevelop.AspNetCore
 
 		public static string TryGetApplicationUrl (this LaunchProfileData launchProfile)
 		{
-			if (launchProfile.OtherSettings != null && launchProfile.OtherSettings.TryGetValue ("applicationUrl", out var value))
-				return value.ToString ();
-
-			return string.Empty;
+			return TryGetOtherSettings <string> (launchProfile, "applicationUrl") ?? string.Empty;
 		}
 
 		public static IDictionary<string, Dictionary<string, object>> ToSerializableForm (this IDictionary<string, LaunchProfileData> profiles)
