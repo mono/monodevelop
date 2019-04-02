@@ -57,16 +57,17 @@ namespace MonoDevelop.Ide
 
 		static LocaleSet [] defaultLocaleSet = {
 			new LocaleSet ("", GettextCatalog.GetString ("(Default)")),
-			new LocaleSet ("ca", "Catalan"),
+			new LocaleSet ("ca", "Catalan"),		
 			new LocaleSet ("zh_CN", "中文 - 中国"),
-			new LocaleSet ("zh_TW", "中文 - 台灣"),
+			new LocaleSet ("zh_TW", "中文 - 台灣"),	
 			new LocaleSet ("cs", "Czech"),
-			new LocaleSet ("da", "Danish"),
+			new LocaleSet ("da", "Danish"),		
+			new LocaleSet ("de", "Deutsch"),
 			new LocaleSet ("nl", "Dutch"),
 			new LocaleSet ("fr", "Français"),
 			new LocaleSet ("gl", "Galician"),
-			new LocaleSet ("de", "Deutsch"),
 			new LocaleSet ("en", "English"),
+			new LocaleSet ("es", "Español"),
 			new LocaleSet ("hu", "Hungarian"),
 			new LocaleSet ("id", "Indonesian"),
 			new LocaleSet ("it", "Italiano"),
@@ -77,7 +78,6 @@ namespace MonoDevelop.Ide
 			new LocaleSet ("pt_BR", "Português – Brasil"),
 			new LocaleSet ("ru", "Русский"),
 			new LocaleSet ("sl", "Slovenian"),
-			new LocaleSet ("es", "Español"),
 			new LocaleSet ("sv", "Swedish"),
 			new LocaleSet ("tr", "Türkçe")
 		};
