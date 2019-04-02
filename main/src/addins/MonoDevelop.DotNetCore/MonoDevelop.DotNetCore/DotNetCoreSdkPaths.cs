@@ -37,13 +37,13 @@ namespace MonoDevelop.DotNetCore
 	{
 		string msbuildSDKsPath;
 		static IEnumerable<DotNetCoreVersion> cachedInstalledSdkVersions;
-		object locker = new object ();
+		readonly object locker = new object ();
 
 		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
 		public string SdkRootPath { get; internal set; }
 		public string GlobalJsonPath { get; set; }
 
-		public DotNetCoreSdkPaths (string dotNetCorePath = "")
+		public DotNetCoreSdkPaths (string dotNetCorePath = "", bool initializeSdkLocaltion = false)
 		{
 			if (string.IsNullOrEmpty (dotNetCorePath)) {
 				if (DotNetCoreRuntime.IsInstalled)
@@ -51,6 +51,9 @@ namespace MonoDevelop.DotNetCore
 				else
 					return;
 			}
+
+			if (initializeSdkLocaltion)
+				cachedInstalledSdkVersions = null;
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
 			SdkRootPath = Path.Combine (rootDirectory, "sdk");
