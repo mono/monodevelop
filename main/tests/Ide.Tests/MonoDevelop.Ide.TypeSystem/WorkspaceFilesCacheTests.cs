@@ -289,8 +289,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			// Project file changed so cache is now invalid.
 			var updatedProjectFile = projectFileName + ".reference-added";
-			File.Delete (projectFileName);
-			File.Copy (updatedProjectFile, projectFileName);
+			File.Copy (updatedProjectFile, projectFileName, overwrite: true);
 
 			// Reload project and check cache is updated.
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
