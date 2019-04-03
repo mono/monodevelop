@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-13 19:50:52+0100\n"
+"POT-Creation-Date: 2019-03-28 13:54:02+0100\n"
 "PO-Revision-Date: 2016-02-18 18:02+0800\n"
 "Last-Translator: MysticBoy <mysticboy@live.com>\n"
 "Language-Team: Chinese (Simplified) <mysticboy@live.com>\n"
@@ -46,6 +46,10 @@ msgstr "(加载失败)"
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestNodeBuilder.cs:91
 msgid " (Loading)"
 msgstr "(正在加载)"
+
+#: ../external/vs-editor-core/src/RoslynIntegration/EventHookup/EventHookupSessionManager.cs:59
+msgid " (Press TAB to insert)"
+msgstr ""
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:142
 msgid " (in user directory)"
@@ -521,7 +525,7 @@ msgstr "未安装 .NET Core 运行时"
 msgid ".NET Core SDK"
 msgstr ".NET Core SDK"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:51
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:50
 msgid ""
 ".NET Core SDK is not installed. This is required to build and run .NET Core "
 "projects."
@@ -535,7 +539,7 @@ msgstr "未安装 .NET Core"
 msgid ".NET Core is required to run this application."
 msgstr "需要 .NET Core 才能运行此应用程序。"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:58
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:57
 msgid ""
 ".NET Core {0} SDK is not installed. This is required to build and run .NET "
 "Core {0} projects."
@@ -711,6 +715,7 @@ msgid "<b>Add a link</b> to the file"
 msgstr "向文件<b>添加链接</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:964
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:395
 msgid ""
 "<b>An autosave file has been found for this file.</b>\n"
 "This could mean that another instance of MonoDevelop is editing this file, "
@@ -881,9 +886,8 @@ msgid "<b>Navigation</b>"
 msgstr "<b>导航</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:261
-#, fuzzy
 msgid "<b>New Editor Preview</b>"
-msgstr "<b>F# 编辑器</b>"
+msgstr "<b>新编辑器预览版</b>"
 
 #: ../src/addins/ChangeLogAddIn/Gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:117
 msgid ""
@@ -981,6 +985,7 @@ msgid "<b>Task Priorities Foreground Colors</b>"
 msgstr "<b>任务优先级前景色</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:712
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:630
 msgid ""
 "<b>The file \"{0}\" has been changed outside of {1}.</b>\n"
 "Do you want to keep your changes, or reload the file from disk?"
@@ -1054,7 +1059,7 @@ msgid "<b>{0}</b>"
 msgstr "<b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1074
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:267
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:269
 msgid "<b>{0}</b> has been thrown"
 msgstr "<b>{0}</b> 被引发"
 
@@ -1112,7 +1117,7 @@ msgstr ""
 "<span size='smaller' color='grey'>与桌面应用程序类似的有状态编程模型</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2020
 msgid "<uncommitted>"
 msgstr "<未提交>"
 
@@ -1802,7 +1807,7 @@ msgid "Abort Update"
 msgstr "中止更新"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:524
+#: ../src/addins/MacPlatform/MacPlatform.cs:525
 msgid "About {0}"
 msgstr "关于 {0}"
 
@@ -2318,14 +2323,12 @@ msgid "Add the folder to the list"
 msgstr "将文件夹添加到列表"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:164
-#, fuzzy
 msgid "Add the new interface to a new file"
-msgstr "输入新文件的名称"
+msgstr "将新接口添加到新文件"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:158
-#, fuzzy
 msgid "Add the new interface to the current file"
-msgstr "显示当前文件的行号"
+msgstr "将新接口添加到当前文件"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:67
 msgid "Add the new project to the Packaging Project '{0}'"
@@ -2344,9 +2347,8 @@ msgid "Add to Ignore List"
 msgstr "添加到忽略列表"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:155
-#, fuzzy
 msgid "Add to current file"
-msgstr "编辑当前文件"
+msgstr "添加到当前文件"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:494
 msgid "Add to existing Packaging Project"
@@ -2943,7 +2945,7 @@ msgid "Application to record audio/video files"
 msgstr "用于录制音频/视频文件的应用程序"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:700
+#: ../src/addins/MacPlatform/MacPlatform.cs:725
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3003,7 +3005,7 @@ msgid "Apply to Project"
 msgstr "应用到项目"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs:154
-#: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:153
+#: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:160
 #: ../external/xwt/Xwt.Gtk/Xwt.GtkBackend/GtkAlertDialog.cs:126
 msgid "Apply to all"
 msgstr "全部应用"
@@ -3337,7 +3339,7 @@ msgstr "找不到框架 {0} 的程序集(在 {1} 中)"
 msgid "Assembly:\t{0}"
 msgstr "程序集:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:327
+#: ../src/addins/MacPlatform/MacPlatform.cs:328
 msgid "Assistive Technology Detected"
 msgstr "检测到辅助技术"
 
@@ -3502,6 +3504,12 @@ msgstr "自动插入结束标记"
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr "自动插入标点(=\"\", /> 等)"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1054
+#, fuzzy
+msgid "Automatically stash/unstash changes when merging/rebasing"
+msgstr "切换分支时自动储藏/取消储藏更改"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1832
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr "切换分支时自动储藏/取消储藏更改"
@@ -3562,9 +3570,8 @@ msgid "Back to Service Gallery"
 msgstr "返回服务库"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:198
-#, fuzzy
 msgid "Back to _Previous view"
-msgstr "转到上一行"
+msgstr "返回上一个视图(_P)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs:57
 msgid "Back up and migrate"
@@ -3600,9 +3607,9 @@ msgstr "错误的请求"
 msgid "Baltic"
 msgstr "波罗的语"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:105
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:243
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:270
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:117
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:255
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:282
 msgid "Base"
 msgstr "基准"
 
@@ -3717,7 +3724,7 @@ msgstr "分支属性"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/EditBranchDialog.cs:137
 msgid "Branch name too long"
-msgstr ""
+msgstr "分支名称太长"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:136
 msgid "Branch switch failed"
@@ -4665,9 +4672,8 @@ msgid "Check to enable automatic punctuation insertion"
 msgstr "选中以启用自动插入标点"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:103
-#, fuzzy
 msgid "Check to enable experimental new editor"
-msgstr "选中以在文本编辑器中启动动画"
+msgstr "选中以启用试验性的新版编辑器"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:97
 msgid "Check to enable line folding"
@@ -4686,14 +4692,12 @@ msgid "Check to enable some diagnostic logging"
 msgstr "选中以启用某个诊断日志记录"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:107
-#, fuzzy
 msgid "Check to enable visual word wrap glyphs in the experimental new editor"
-msgstr "选中以在文本编辑器中启动动画"
+msgstr "选中以在试验性的新版编辑器中启用自动换行视觉标志符号"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:105
-#, fuzzy
 msgid "Check to enable word wrap in the experimental new editor"
-msgstr "选中以在文本编辑器中启动动画"
+msgstr "选中以在试验性的新版编辑器中启用自动换行"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:101
 msgid "Check to fold comments by default"
@@ -4907,7 +4911,7 @@ msgstr "签出路径不为空。是否要删除其内容?"
 msgid "Chemistry software"
 msgstr "化学软件"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1147
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1172
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "正在挑拣 {0} - {1}/{2}"
 
@@ -5222,7 +5226,7 @@ msgid "Clipboard Ring"
 msgstr "剪贴板循环"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:62
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:368
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 msgid "Close"
@@ -5234,7 +5238,7 @@ msgstr "关闭"
 msgid "Close All Files"
 msgstr "关闭所有文件"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:735
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:671
 msgid "Close MonoDevelop"
 msgstr "关闭 MonoDevelop"
 
@@ -5380,7 +5384,7 @@ msgstr "代码块首选项:"
 msgid "Code completion database generation"
 msgstr "代码完成数据库生成"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:342
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:343
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:54
 msgid "Collapse All"
 msgstr "全部折叠"
@@ -5524,15 +5528,15 @@ msgstr "提交消息样式"
 msgid "Commit _message:"
 msgstr "提交消息(_M):"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:637
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:659
 msgid "Commit message (multiple selection):"
 msgstr "提交消息(多重选择):"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:635
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:657
 msgid "Commit message for file '{0}':"
 msgstr "为文件“{0}”提交消息:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:231
 msgid "Commit message:"
 msgstr "提交消息:"
 
@@ -5540,7 +5544,7 @@ msgstr "提交消息:"
 msgid "Commit operation completed."
 msgstr "已完成提交操作。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:136
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:137
 msgid "Commit..."
 msgstr "提交..."
 
@@ -5760,6 +5764,11 @@ msgstr "冲突"
 msgid "Conflict {0}"
 msgstr "冲突 {0}"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1078
+#, fuzzy
+msgid "Conflicting local changes found"
+msgstr "正在保存本地更改"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:819
 msgid "Conflicts:"
 msgstr "冲突:"
@@ -5848,7 +5857,7 @@ msgstr "内容"
 msgid "Continue"
 msgstr "继续"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:737
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:673
 msgid "Continue Anyway"
 msgstr "仍然继续"
 
@@ -6105,7 +6114,7 @@ msgstr ""
 "无法获取用户程序集“{0}”的程序集名称。调试程序现将调试所有代码，而不是仅调试用"
 "户代码。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1090
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1112
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:393
 msgid "Could not get diff information. "
 msgstr "无法获取差异信息。"
@@ -6135,7 +6144,7 @@ msgid "Could not load solution item: {0}"
 msgstr "无法加载解决方案项: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:388
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:375
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:421
 msgid "Could not load solution: {0}"
 msgstr "无法加载解决方案: {0}"
 
@@ -6151,7 +6160,7 @@ msgstr "无法加载 {0} 项目“{1}”。{2}"
 msgid "Could not mount FUSE filesystem."
 msgstr "无法装载 FUSE 文件系统。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:395
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:441
 msgid "Could not open file: {0}"
 msgstr "无法打开文件: {0}"
 
@@ -6274,7 +6283,7 @@ msgstr "创建包"
 msgid "Create Package..."
 msgstr "创建包..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:320
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:321
 msgid "Create Patch"
 msgstr "创建补丁"
 
@@ -7032,11 +7041,11 @@ msgstr "自定义项目"
 msgid "Custom project started building"
 msgstr "自定义项目已开始生成"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:865
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:802
 msgid "CustomizerAssemblyPath"
 msgstr "CustomizerAssemblyPath"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:870
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:807
 msgid "CustomizerType"
 msgstr "CustomizerType"
 
@@ -7187,13 +7196,13 @@ msgstr "仅调试项目代码；不单步执行框架代码。"
 msgid "Debug session not started."
 msgstr "调试会话未启动。"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:898
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:900
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:271
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:281
 msgid "Debugger"
 msgstr "调试程序"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:900
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:902
 msgid "Debugger information"
 msgstr "调试程序信息"
 
@@ -7783,9 +7792,9 @@ msgstr ""
 "禁用在调试程序内运行时一般都会禁用的某些 JIT 优化。如果你打算附加到调试程序中"
 "正在运行的进程，此操作非常有用。"
 
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:476
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:481
 msgid "Disable the New Editor Preview"
-msgstr ""
+msgstr "禁用新编辑器预览版"
 
 #  nb.AppendPage(aatp, new Label("Authors"));
 #  nb.AppendPage(changelog, new Label("ChangeLog"));
@@ -7831,9 +7840,8 @@ msgid "Display the document list menu"
 msgstr "显示文档列表菜单"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:198
-#, fuzzy
 msgid "Displays the different method signatures"
-msgstr "显示文档列表菜单"
+msgstr "显示其他方法签名"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:83
 msgid "Dispose console after running"
@@ -7927,7 +7935,7 @@ msgstr "是否要接受证书并连接到存储库?"
 msgid "Do you want to detach from the process being debugged?"
 msgstr "是否要从待调试的进程分离?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:939
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:961
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:307
 msgid "Do you want to open all {0} files?"
 msgstr "是否要打开所有 {0} 文件?"
@@ -8068,7 +8076,7 @@ msgstr "完成"
 msgid "Double negation is redundant"
 msgstr "双重否定是冗余的"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:78
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:77
 msgid "Download .NET Core..."
 msgstr "下载 .NET Core..."
 
@@ -8293,9 +8301,8 @@ msgid "Embedded"
 msgstr "嵌入"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:70
-#, fuzzy
 msgid "Emoji & Symbols"
-msgstr "查找基本符号"
+msgstr "表情符号与符号"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
@@ -9032,7 +9039,7 @@ msgstr "删除支持文件“{0}”时出错。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:52
 msgid "Error fetching text from repository"
-msgstr ""
+msgstr "从存储库提取文本时出错"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ErrorInFileException.cs:72
 msgid "Error in file '{0}' at line {1}, column {2}."
@@ -9101,7 +9108,7 @@ msgstr "获取以前的修订版时出错。"
 msgid "Error while getting revision text."
 msgstr "获取修订版文本时出错。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:280
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:292
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
@@ -9109,7 +9116,7 @@ msgstr ""
 "获取 {0} 的基础文本时出错:\n"
 "{1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:184
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:196
 msgid ""
 "Error while getting the text of revision {0}:\n"
 "{1}"
@@ -9370,7 +9377,7 @@ msgstr "退出"
 msgid "Exit Full Screen"
 msgstr "退出全屏"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:338
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:339
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:43
 msgid "Expand All"
 msgstr "全部展开"
@@ -9568,7 +9575,7 @@ msgstr "扩展方法必须声明为静态"
 msgid "Extension packages"
 msgstr "扩展包"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:470
+#: ../src/addins/MacPlatform/MacPlatform.cs:471
 msgid "Extensions..."
 msgstr "扩展..."
 
@@ -9761,9 +9768,8 @@ msgid "Fetching from '{0}'"
 msgstr "正在从“{0}”提取"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:403
-#, fuzzy
 msgid "Fetching remote failed"
-msgstr "正在提取远程源..."
+msgstr "远程提取失败"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:398
 msgid "Fetching remote..."
@@ -9789,7 +9795,7 @@ msgstr "字段"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:676
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:125
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:192
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:193
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:100
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:220
@@ -9808,7 +9814,7 @@ msgstr "无法复制文件“{0}”。"
 msgid "File '{0}' could not be moved."
 msgstr "无法移动文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1150
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1153
 msgid "File '{0}' could not be opened"
 msgstr "无法打开文件“{0}”"
 
@@ -9867,9 +9873,8 @@ msgid "File Path"
 msgstr "文件路径"
 
 #: ../external/xwt/Xwt/Xwt/FileSelector.cs:172
-#, fuzzy
 msgid "File Selector"
-msgstr "类型选择器"
+msgstr "文件选择器"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:293
 msgid "File Type"
@@ -9926,7 +9931,7 @@ msgstr "项目文件的文件格式。"
 msgid "File format:"
 msgstr "文件格式:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:578
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:583
 msgid "File is not a project or solution: {0}"
 msgstr "文件不是一个项目或解决方案: {0}"
 
@@ -9961,8 +9966,8 @@ msgstr "找不到文件。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:118
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:212
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1089
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:572
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1092
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:577
 msgid "File not found: {0}"
 msgstr "找不到文件: {0}"
 
@@ -10055,10 +10060,9 @@ msgstr ""
 "变量“{0}”中的文件包含一些变量，在未设置 configure.in 路径的情况下无法分析这些"
 "变量。正在忽略此类文件。"
 
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindField.cs:90
-#, fuzzy
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindField.cs:91
 msgid "Find"
-msgstr "查找(_F):"
+msgstr "查找"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:32
 msgid "Find Base Symbols"
@@ -10277,9 +10281,8 @@ msgid "Folder Name:"
 msgstr "文件夹名称:"
 
 #: ../external/xwt/Xwt/Xwt/FolderSelector.cs:143
-#, fuzzy
 msgid "Folder Selector"
-msgstr "类型选择器"
+msgstr "文件夹选择器"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFolderDialog.cs:148
 msgid "Folder name is already in use. Please choose a different name."
@@ -10591,7 +10594,7 @@ msgstr "正在收集类信息"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:136
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:142
 #: ../src/core/MonoDevelop.Ide/templates/AppManifest.xft.xml:6
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:761
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:760
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:301
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:130
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:295
@@ -10629,6 +10632,11 @@ msgstr "为库生成 .pc 文件"
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:88
 msgid "Generate Asynchronous:"
 msgstr "生成异步:"
+
+#: ../external/vs-editor-core/src/RoslynIntegration/EventHookup/EventHookupCommandHandler_SessionCancellingCommands.cs:14
+#, fuzzy
+msgid "Generate Event Subscription"
+msgstr "生成启动脚本"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:385
 msgid "Generate Makefile..."
@@ -10963,9 +10971,8 @@ msgid "Go to File..."
 msgstr "转到文件..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:61
-#, fuzzy
 msgid "Go to Implementation"
-msgstr "实现:"
+msgstr "转到实现"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
 msgid "Go to Line..."
@@ -11304,7 +11311,7 @@ msgstr "隐藏详细信息"
 msgid "Hide other applications' windows"
 msgstr "隐藏其他应用程序的窗口"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:529
+#: ../src/addins/MacPlatform/MacPlatform.cs:530
 msgid "Hide {0}"
 msgstr "隐藏 {0}"
 
@@ -11558,8 +11565,8 @@ msgstr ""
 msgid "If you chose this option the Git configuration will be overwritten."
 msgstr "如果选择了此选项，将覆盖 GIT 配置。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:421
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:941
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:944
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "如果不保存，将永久丢失所有更改。"
 
@@ -11948,7 +11955,7 @@ msgstr "印度尼西亚语"
 msgid "Info"
 msgstr "信息"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:620
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:668
 msgid "Information about the Instrumentation Service"
 msgstr "有关检测服务的信息"
 
@@ -11972,7 +11979,7 @@ msgstr "通过参数初始化字段"
 msgid "Initialize readonly auto-property from parameter"
 msgstr "通过参数初始化只读自动属性"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:88
 msgid "Initializing Main Window"
 msgstr "正在初始化主窗口"
 
@@ -12025,7 +12032,7 @@ msgstr "插入断点"
 msgid "Insert ChangeLog Entry"
 msgstr "插入 ChangeLog 条目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:691
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:693
 msgid "Insert Code"
 msgstr "插入代码"
 
@@ -12033,7 +12040,7 @@ msgstr "插入代码"
 msgid "Insert Documentation Comments"
 msgstr "插入文档注释"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:682
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:684
 msgid "Insert Field"
 msgstr "插入字段"
 
@@ -12041,11 +12048,11 @@ msgstr "插入字段"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "插入 GUID (全局唯一标识符)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:685
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:687
 msgid "Insert Method"
 msgstr "插入方法"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:688
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:690
 msgid "Insert Property"
 msgstr "插入属性"
 
@@ -12247,7 +12254,7 @@ msgstr "正在安装扩展包"
 msgid "Installing…"
 msgstr "正在安装..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:618
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:666
 msgid "Instrumentation"
 msgstr "检测"
 
@@ -12255,7 +12262,7 @@ msgstr "检测"
 msgid "Instrumentation Monitor"
 msgstr "设备监视"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:619
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:667
 msgid "Instrumentation service enabled"
 msgstr "启用检测服务"
 
@@ -12396,7 +12403,7 @@ msgstr "无效表达式"
 msgid "Invalid file move accross filesystem boundaries."
 msgstr "跨文件系统边界移动文件无效。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1061
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1064
 msgid "Invalid file name"
 msgstr "无效文件名"
 
@@ -12725,9 +12732,8 @@ msgid "Latest"
 msgstr "最新"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:49
-#, fuzzy
 msgid "Latest Major"
-msgstr "最新"
+msgstr "最新主要"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:63
 msgid "Launch script for {0}"
@@ -12755,9 +12761,9 @@ msgid "Leak Tracker"
 msgstr "泄漏跟踪器"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:60
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:489
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:494
 msgid "Learn more about the New Editor Preview"
-msgstr ""
+msgstr "详细了解新的编辑器预览版"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
 msgid "Leave block on single line"
@@ -12890,7 +12896,7 @@ msgstr "加载/保存"
 msgid "Loaded Assemblies"
 msgstr "已加载的程序集"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:237
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:240
 msgid "Loading Workbench"
 msgstr "正在加载 Workbench"
 
@@ -12898,7 +12904,7 @@ msgstr "正在加载 Workbench"
 msgid "Loading build log…"
 msgstr "正在加载生成日志..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1081
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1103
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:363
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:495
 msgid "Loading data..."
@@ -12917,7 +12923,7 @@ msgstr "正在加载解决方案文件 {0}"
 msgid "Loading solution: {0}"
 msgstr "正在加载解决方案: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1261
 msgid "Loading workspace documents"
 msgstr "正在加载工作区文档"
 
@@ -12941,14 +12947,15 @@ msgstr "正在加载 {0} 外接程序"
 msgid "Loading..."
 msgstr "正在加载..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:81
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:99
 msgid "Loading…"
 msgstr "正在加载..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:104
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:241
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:263
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:116
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:253
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:275
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:104
 msgid "Local"
 msgstr "本地"
 
@@ -13533,7 +13540,7 @@ msgstr "合并分支..."
 msgid "Merge Conflict Resolution"
 msgstr "合并冲突解决方法"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1173
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1203
 msgid "Merging"
 msgstr "正在合并"
 
@@ -13575,14 +13582,12 @@ msgid "Method"
 msgstr "方法"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:197
-#, fuzzy
 msgid "Method Signatures"
-msgstr "更改签名"
+msgstr "方法签名"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:79
-#, fuzzy
 msgid "Method signature"
-msgstr "插入签名"
+msgstr "方法签名"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MethodOverloadWithOptionalParameterAnalyzer.cs:15
 msgid "Method with optional parameter is hidden by overload"
@@ -13831,7 +13836,7 @@ msgstr "MonoDevelop/MSBuild 解决方案"
 msgid "More"
 msgstr "更多"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:736
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:672
 msgid "More Information"
 msgstr "详细信息"
 
@@ -13901,7 +13906,7 @@ msgstr "移到代码导航历史记录中的上一点"
 msgid "Move to the next page"
 msgstr "移至下一页"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1918
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1983
 msgid "Moving files"
 msgstr "正在移动文件"
 
@@ -14170,6 +14175,7 @@ msgid "Native"
 msgstr "原始"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:285
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:201
 msgid "Navigate"
 msgstr "导航"
 
@@ -14278,10 +14284,9 @@ msgid "New Dialog..."
 msgstr "新建对话框..."
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewDisplayBinding.cs:37
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:446
-#, fuzzy
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:451
 msgid "New Editor Preview"
-msgstr "重构预览"
+msgstr "新编辑器预览版"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:127
 msgid "New Exception Catchpoint"
@@ -14315,7 +14320,7 @@ msgstr "新建组"
 msgid "New Group..."
 msgstr "新建组..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:308
+#: ../src/addins/MacPlatform/MacPlatform.cs:309
 msgid "New Instance"
 msgstr "新实例"
 
@@ -14462,13 +14467,12 @@ msgid "Next document"
 msgstr "下一个文档"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:179
-#, fuzzy
 msgid "Next signature"
-msgstr "插入签名"
+msgstr "下一个签名"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:330
+#: ../src/addins/MacPlatform/MacPlatform.cs:331
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14482,10 +14486,9 @@ msgstr "找不到语言“{0}”的 CodeDomProvider。"
 msgid "No LanguageBinding was found for the language '{0}'."
 msgstr "找不到语言“{0}”的 LanguageBinding。"
 
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:248
-#, fuzzy
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:251
 msgid "No Results"
-msgstr "结果"
+msgstr "无结果"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/SdkLocationPanel.cs:177
 msgid "No SDK found at default location."
@@ -14523,8 +14526,8 @@ msgstr "无可用的代码修补程序"
 msgid "No completions found"
 msgstr "未找到完成项"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1078
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1093
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1100
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1115
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:382
 msgid "No differences found"
 msgstr "找不到任何差异"
@@ -14545,11 +14548,11 @@ msgstr "找不到扩展包"
 msgid "No failed tests found."
 msgstr "找不到失败的测试。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:510
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:532
 msgid "No files have local modifications."
 msgstr "所有文件都没有本地修改。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:512
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:534
 msgid "No files have local or remote modifications."
 msgstr "所有文件都没有本地或远程修改。"
 
@@ -14570,9 +14573,8 @@ msgid "No matching packages found."
 msgstr "找不到匹配的包。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/MergeView.cs:51
-#, fuzzy
 msgid "No merge conflicts detected."
-msgstr "在文件 <b>{0}</b> 中检测到合并冲突"
+msgstr "未检测到合并冲突。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:113
 msgid "No more errors or warnings"
@@ -14800,7 +14802,7 @@ msgstr "NuGet"
 msgid "NuGet Package"
 msgstr "NuGet 包"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:437
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:438
 msgid ""
 "NuGet packages need to be restored before building. NuGet MSBuild targets "
 "are missing and are needed for building. The NuGet MSBuild targets are "
@@ -14929,15 +14931,15 @@ msgstr "仅限此解决方案"
 msgid "Opacity"
 msgstr "暗度"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:330
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:84
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:331
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:85
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:431
 msgid "Open"
 msgstr "打开"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:65
 msgid "Open C# files in the New Editor"
-msgstr ""
+msgstr "在新版编辑器中打开 C# 文件"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:448
 msgid "Open Glade File"
@@ -15021,7 +15023,7 @@ msgstr "打开 {0}"
 msgid "Open..."
 msgstr "打开..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:651
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:654
 msgid "Opening {0}"
 msgstr "正在打开 {0}"
 
@@ -15049,10 +15051,9 @@ msgstr "打开已关闭的上一个选项卡"
 msgid "Operation"
 msgstr "操作"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCredentials.cs:60
-#, fuzzy
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCredentials.cs:62
 msgid "Operation cancelled"
-msgstr "操作已取消。"
+msgstr "操作已取消"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:420
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:295
@@ -15120,7 +15121,7 @@ msgstr "Option Strict:"
 msgid "OptionName"
 msgstr "OptionName"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:792
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:795
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:132
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:143
 msgid "Options"
@@ -15836,14 +15837,12 @@ msgid "Please select a valid policy file"
 msgstr "请选择一个有效的策略文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:364
-#, fuzzy
 msgid "Please select a valid private key file"
-msgstr "请选择一个有效的策略文件"
+msgstr "请选择有效的私钥文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:371
-#, fuzzy
 msgid "Please select a valid public key (.pub) file"
-msgstr "请选择一个有效的策略文件"
+msgstr "请选择有效的公钥(.pub)文件"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:181
 msgid "Please select the application to debug"
@@ -15873,7 +15872,7 @@ msgstr "要导出的策略:"
 msgid "Policies to set or replace:"
 msgstr "要设置或替换的策略:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:467
+#: ../src/addins/MacPlatform/MacPlatform.cs:468
 msgid "Policies..."
 msgstr "策略..."
 
@@ -16000,7 +15999,6 @@ msgid "Prefer 'var'"
 msgstr "首选 \"var\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1286
-#, fuzzy
 msgid "Prefer Braces"
 msgstr "首选大括号"
 
@@ -16084,11 +16082,11 @@ msgstr "首选简单的 \"default\" 表达式"
 msgid "Prefer throw-expression"
 msgstr "首选 throw 表达式"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:793
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:796
 msgid "Preferences"
 msgstr "首选项"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:466
+#: ../src/addins/MacPlatform/MacPlatform.cs:467
 msgid "Preferences..."
 msgstr "首选项..."
 
@@ -16141,7 +16139,7 @@ msgstr "按任一键..."
 msgid "Press the key combination you want to assign to the accelerator..."
 msgstr "按下要分配给快捷键的组合键..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:636
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:638
 msgid "Press ‘{0}’ to search"
 msgstr "按“{0}”进行搜索"
 
@@ -16192,9 +16190,8 @@ msgid "Previous document"
 msgstr "上一个文档"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:155
-#, fuzzy
 msgid "Previous signature"
-msgstr "上一个更改"
+msgstr "上一个签名"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:465
 msgid "Print Previe_w"
@@ -16225,19 +16222,16 @@ msgid "Privacy Statement"
 msgstr "隐私声明"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:300
-#, fuzzy
 msgid "Private Key Files"
-msgstr "更新文件"
+msgstr "私钥文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:360
-#, fuzzy
 msgid "Private Key is not encrypted"
-msgstr "XSP 私钥密码"
+msgstr "私钥未加密"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:225
-#, fuzzy
 msgid "Private Key:"
-msgstr "仅限专用源"
+msgstr "私钥:"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:105
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:122
@@ -16517,6 +16511,8 @@ msgid ""
 "file extension. Please check the project type GUID in the solution file is "
 "correct."
 msgstr ""
+"正在将项目 {0} 加载为“共享资产”项目，但它具有不同的文件扩展。请在解决方案文件"
+"中检查项目类型 GUID 是否正确。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:521
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:168
@@ -16607,12 +16603,11 @@ msgstr "公开"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:323
 msgid "Public Key Files (.pub)"
-msgstr ""
+msgstr "公钥文件(.pub)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:248
-#, fuzzy
 msgid "Public Key:"
-msgstr "公开"
+msgstr "公钥:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:227
@@ -16671,7 +16666,7 @@ msgstr "推送 URL:"
 msgid "Push changes to remote repository after commit"
 msgstr "提交后将更改推送到远程存储库"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1608
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1639
 msgid "Push operation successfully completed."
 msgstr "推送操作已成功完成。"
 
@@ -16684,14 +16679,12 @@ msgid "Push to:"
 msgstr "推送到:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:367
-#, fuzzy
 msgid "Pushing Tag"
-msgstr "正在推送更改..."
+msgstr "正在推送标记"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:368
-#, fuzzy
 msgid "Pushing Tag '{0}' to '{1}'"
-msgstr "修复“{1}”中的所有“{0}”"
+msgstr "正在将标记“{0}”推送到“{1}”"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:65
 msgid "Pushing changes..."
@@ -16702,9 +16695,8 @@ msgid "Pushing is only available for repositories with configured remotes."
 msgstr "推送功能仅适用于配置了远程存储库的存储库。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:373
-#, fuzzy
 msgid "Pushing tag failed"
-msgstr "添加失败"
+msgstr "标记推送失败"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1041
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1059
@@ -16936,7 +16928,7 @@ msgstr "变基"
 msgid "Rebase to Branch..."
 msgstr "变基到分支..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1128
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1153
 msgid "Rebasing"
 msgstr "正在变基"
 
@@ -17172,7 +17164,7 @@ msgid "References a strongly-typed model"
 msgstr "引用强类型模型"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:590
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:303
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:304
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:157
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:155
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:262
@@ -17280,7 +17272,7 @@ msgstr "远程源/分支"
 msgid "Remote Sources"
 msgstr "远程源"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:205
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:206
 msgid "Remote Status"
 msgstr "远程状态"
 
@@ -17587,7 +17579,7 @@ msgstr "重新排序开放的声明"
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:160
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:457
 #: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:84
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:387
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:390
 msgid "Replace"
 msgstr "替换"
 
@@ -17603,10 +17595,9 @@ msgstr "将“{0}++”替换为“{0} += 1”"
 msgid "Replace '{0}--' with '{0} -= 1'"
 msgstr "将“{0}--”替换为“{0} -= 1”"
 
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:388
-#, fuzzy
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:391
 msgid "Replace All"
-msgstr "替换"
+msgstr "全部替换"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1014
 msgid "Replace Like Selection"
@@ -17738,10 +17729,9 @@ msgstr "重播会话..."
 msgid "Report Problem..."
 msgstr "报告问题..."
 
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:500
-#, fuzzy
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:505
 msgid "Report a Problem"
-msgstr "报告问题..."
+msgstr "报告问题"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LogAgentOptionsPanel.cs:61
 msgid "Report errors and usage information to help {0} improve my experience."
@@ -17875,7 +17865,7 @@ msgstr "重启调试"
 msgid "Restart Without Debugging"
 msgstr "重启而不调试"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:329
+#: ../src/addins/MacPlatform/MacPlatform.cs:330
 msgid "Restart and enable"
 msgstr "重启和启用"
 
@@ -17923,7 +17913,7 @@ msgstr "还原缺失的包"
 msgid "Restored '{0}'"
 msgstr "已还原“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1106
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1126
 msgid "Restoring local changes"
 msgstr "正在还原本地更改"
 
@@ -17938,6 +17928,11 @@ msgstr "正在还原项目的包..."
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:157
 msgid "Restoring packages for solution..."
 msgstr "正在还原解决方案的包..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1802
+#, fuzzy
+msgid "Restoring stash for branch {0} failed"
+msgstr "正在切换到分支 {0}"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:324
 msgid "Result"
@@ -17992,11 +17987,10 @@ msgid "Retrieving history"
 msgstr "正在检索历史记录"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:774
-#, fuzzy
 msgid "Retrieving history…"
-msgstr "正在检索历史记录"
+msgstr "正在检索历史记录…"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:206
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:218
 msgid "Retrieving revision {0}..."
 msgstr "正在检索修订版 {0}..."
 
@@ -18035,7 +18029,7 @@ msgstr "在查找器中展现文件"
 msgid "Reverse 'for' loop'"
 msgstr "使 \"for\" 循环反向"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:142
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:143
 msgid "Revert"
 msgstr "还原"
 
@@ -18077,7 +18071,7 @@ msgstr "已还原“{0}”"
 msgid "Reverting ..."
 msgstr "正在还原..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1419
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1450
 msgid "Reverting files"
 msgstr "正在还原文件"
 
@@ -18100,7 +18094,7 @@ msgstr "修订版"
 msgid "Revision {0}"
 msgstr "修订版 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:195
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:207
 #, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "修订版 {0}\"t{1}\"t{2}"
@@ -18494,7 +18488,7 @@ msgstr "强名称文件(_T):"
 msgid "S_witch Maximized/Normal View"
 msgstr "切换最大化/普通视图(_W)"
 
-#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Commands.cs:38
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Commands.cs:44
 msgid "Sample file output"
 msgstr "示例文件输出"
 
@@ -18657,11 +18651,11 @@ msgstr "保存项目 {0}"
 msgid "Save the active document"
 msgstr "保存活动文档"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:937
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:940
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "是否在关闭之前保存对文档“{0}”的更改?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:417
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:420
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "是否在创建新解决方案之前保存对文档“{0}”的更改?"
 
@@ -18694,7 +18688,7 @@ msgstr "正在保存工作区..."
 msgid "Saving item: {0}"
 msgstr "正在保存项: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1063
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1062
 msgid "Saving local changes"
 msgstr "正在保存本地更改"
 
@@ -18714,11 +18708,11 @@ msgstr "正在保存..."
 msgid "Scan for translations"
 msgstr "扫描翻译"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:439
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:440
 msgid "Scanning for changes..."
 msgstr "正在扫描更改..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:441
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:442
 msgid "Scanning for local and remote changes..."
 msgstr "正在扫描本地和远程更改..."
 
@@ -18933,7 +18927,7 @@ msgstr "搜索模式无效"
 msgid "Search pattern not found"
 msgstr "找不到搜索模式"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:637
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:639
 msgid "Search solution"
 msgstr "搜索解决方案"
 
@@ -19005,7 +18999,7 @@ msgid "Select"
 msgstr "选择"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:706
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:348
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:349
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:199
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.PickMembersService/PickMembersDialog.cs:118
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:352
@@ -19069,7 +19063,7 @@ msgstr "选择图像"
 msgid "Select Image..."
 msgstr "选择图像..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:352
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:353
 msgid "Select None"
 msgstr "全部不选"
 
@@ -19153,9 +19147,8 @@ msgstr "选择此断点的命中次数条件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:243
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:266
-#, fuzzy
 msgid "Select a key file"
-msgstr "选择布局文件..."
+msgstr "选择密钥文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:134
 msgid "Select a platform"
@@ -19183,9 +19176,8 @@ msgid "Select a project or solution:"
 msgstr "选择项目或解决方案:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:317
-#, fuzzy
 msgid "Select a public SSH key to use."
-msgstr "选择要使用的 SSH 私钥。"
+msgstr "选择要使用的 SSH 公钥。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:57
 msgid "Select a revision"
@@ -19225,9 +19217,8 @@ msgid "Select contents"
 msgstr "选择内容"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:172
-#, fuzzy
 msgid "Select destination"
-msgstr "选择树中的测试"
+msgstr "选择目标"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:610
 msgid "Select directory"
@@ -19857,7 +19848,7 @@ msgstr "显示当前执行行"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:88
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1022
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:201
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:203
 msgid "Show Details"
 msgstr "显示详细信息"
 
@@ -19967,7 +19958,7 @@ msgstr "显示上一个(差异)"
 msgid "Show Previous ({0})"
 msgstr "显示上一个({0})"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:147
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:148
 msgid "Show Remote Status"
 msgstr "显示远程状态"
 
@@ -20188,7 +20179,7 @@ msgstr "显示有效的翻译"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:76
 msgid "Show visible glyphs for word wrap"
-msgstr ""
+msgstr "显示自动换行的可见标志符号"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:45
 msgid "Show welcome page on startup"
@@ -20416,7 +20407,7 @@ msgstr "已签出解决方案"
 msgid "Solution could not be deployed: "
 msgstr "无法部署解决方案:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:648
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:670
 msgid "Solution loaded."
 msgstr "已加载解决方案。"
 
@@ -20470,7 +20461,7 @@ msgstr "解决方案"
 msgid "Some additional changes on another file of the project."
 msgstr "该项目的另一个文件发生了其他一些更改。"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:222
+#: ../src/addins/MacPlatform/MacPlatform.cs:223
 msgid "Some dependencies need to be updated"
 msgstr "某些依赖关系需要更新"
 
@@ -20482,13 +20473,13 @@ msgstr "某些文档当前已打开"
 msgid "Some files could not be saved. Commit operation aborted"
 msgstr "无法保存某些文件。提交操作已中止"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:944
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:966
 msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
 msgstr "可能需要重载某些文件，并且这些文件的编辑状态(例如撤消队列)将丢失。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:769
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:791
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr "此提交中的某些文件没有 ChangeLog 消息。"
 
@@ -20545,7 +20536,7 @@ msgstr "对所选行排序"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:75
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:133
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:183
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:206
 msgid "Source"
 msgstr "源"
 
@@ -20981,7 +20972,6 @@ msgstr "启动类"
 msgid "Startup project"
 msgstr "启动项目"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1056
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.NewStashDialog.cs:18
 msgid "Stash"
 msgstr "储藏"
@@ -20989,6 +20979,21 @@ msgstr "储藏"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs:23
 msgid "Stash Manager"
 msgstr "储藏管理器"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1204
+#, fuzzy
+msgid "Stash and Merge"
+msgstr "储藏管理器"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1154
+#, fuzzy
+msgid "Stash and Rebase"
+msgstr "储藏管理器"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1831
+#, fuzzy
+msgid "Stash and Switch"
+msgstr "保存并退出(_S)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:172
 msgid "Stash applied with conflicts"
@@ -21039,7 +21044,7 @@ msgstr "语句是冗余的"
 msgid "Static field in generic type"
 msgstr "通用类型中的静态字段"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:183
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:184
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:69
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:91
 msgid "Status"
@@ -21095,7 +21100,7 @@ msgstr "停止"
 msgid "Stop Debugger"
 msgstr "停止调试程序"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:120
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:122
 msgid "Stop Debugging"
 msgstr "停止调试"
 
@@ -21396,8 +21401,16 @@ msgstr "切换到 {0} 选项卡"
 msgid "Switch to {0}"
 msgstr "切换到 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1762
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1823
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1842
 msgid "Switching to branch {0}"
+msgstr "正在切换到分支 {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1835
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1859
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1863
+#, fuzzy
+msgid "Switching to branch {0} failed"
 msgstr "正在切换到分支 {0}"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:172
@@ -21881,9 +21894,8 @@ msgid "Text Templating"
 msgstr "文本模板化"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MimeTypeCatalog.cs:39
-#, fuzzy
 msgid "Text document"
-msgstr "下一个文档"
+msgstr "文本文档"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:118
 msgid "Text file"
@@ -21941,12 +21953,6 @@ msgstr "“{0}”指令恰好需要两个参数"
 #: ../src/addins/AspNet/Razor/Generator/PreprocessedCSharpRazorCodeParser.cs:67
 msgid "The '{0}' directive requires one or two arguments"
 msgstr "“{0}”指令需要一个或两个参数"
-
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:52
-msgid ""
-"The .NET Core SDK installed is not supported. Please install a more recent "
-"version."
-msgstr "不支持安装的 .NET Core SDK。请安装最新版本。"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Gui/DotNetCoreSdkLocationWidget.UI.cs:154
 msgid "The .NET Core SDK was found"
@@ -22047,12 +22053,14 @@ msgid ""
 "The New Editor Preview has been disabled, but already opened files will need "
 "to be closed and re-opened for the change to take effect."
 msgstr ""
+"已禁用新的编辑器预览版，但需要先关闭再重新打开已打开的文件，才能使更改生效。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/DefaultSourceEditorOptions.cs:414
 msgid ""
 "The New Editor Preview has been enabled, but already opened files will need "
 "to be closed and re-opened for the change to take effect."
 msgstr ""
+"已启用新的编辑器预览版，但需要先关闭再重新打开已打开的文件，才能使更改生效。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:969
 msgid ""
@@ -22080,7 +22088,7 @@ msgstr "无法启动应用程序"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1940
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:288
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:289
 msgid "The application exited with code: {0}"
 msgstr "应用程序退出，退出代码为 {0}"
 
@@ -22113,9 +22121,8 @@ msgid "The branch <b>{1}</b> will be rebased to the tag <b>{0}</b>."
 msgstr "分支 <b>{1}</b> 将变基到标记 <b>{0}</b>。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:178
-#, fuzzy
 msgid "The branch could not be created"
-msgstr "无法重命名该分支"
+msgstr "无法创建该分支"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:224
 msgid "The branch could not be deleted"
@@ -22161,13 +22168,13 @@ msgstr "项目的当前运行时环境设置为版本 1.0。"
 msgid "The current scheme has conflicting key bindings"
 msgstr "当前方案的键绑定发生冲突"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:118
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:120
 msgid ""
 "The debugger is currently running and will have to be stopped. Do you want "
 "to stop debugging?"
 msgstr "调试程序当前正在运行，但将不得不停止。是否要停止调试?"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:899
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:901
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs:34
 msgid ""
 "The debugger runtime is not responding. You can wait for it to recover, or "
@@ -22244,19 +22251,19 @@ msgstr "无法调试文件“{0}”"
 msgid "The file '{0}' could not be loaded."
 msgstr "无法加载文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1629
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1632
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1653
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1635
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1656
 msgid "The file '{0}' could not be opened."
 msgstr "无法打开文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1625
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1649
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1628
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1652
 msgid "The file '{0}' could not opened. File too large."
 msgstr "无法打开文件“{0}”。文件太大。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1622
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1646
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1625
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1649
 msgid "The file '{0}' could not opened. {1}"
 msgstr "无法打开文件“{0}”。{1}"
 
@@ -22637,7 +22644,7 @@ msgstr "该端口值不在允许的范围内。"
 msgid "The project '{0}' has already been added."
 msgstr "已添加项目“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:948
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:970
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:169
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
@@ -22864,6 +22871,12 @@ msgid ""
 msgstr ""
 "为 GIT 存储库配置的用户名和电子邮件与 MonoDevelop 中配置的用户信息不匹配。你"
 "要使用哪个用户信息?"
+
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:55
+msgid ""
+"The version of the .NET Core SDK currently installed ({0}) is not supported "
+"and continuing to use it may result in a broken tooling experience."
+msgstr ""
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:61
 msgid "The web reference could not be added"
@@ -23356,6 +23369,19 @@ msgstr "Theirs"
 msgid "Themed Icons"
 msgstr "主题图标"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1830
+msgid ""
+"There are local changes that conflict with changes committed in the <b>{0}</"
+"b> branch. Would you like to stash the changes and continue with the "
+"checkout?"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1052
+msgid ""
+"There are local changes that conflict with changes committed in the <b>{0}</"
+"b> branch. Would you like to stash the changes and continue?"
+msgstr ""
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:51
 msgid "There are no changes to push."
 msgstr "没有要推入的更改。"
@@ -23445,7 +23471,12 @@ msgstr "重命名目录时出错。"
 msgid "There was an error renaming the file."
 msgstr "重命名文件时出错。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:794
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:116
+#, fuzzy
+msgid "There was an error retrieving the value"
+msgstr "重命名文件时出错。"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:793
 msgid "There was an error saving the changes"
 msgstr "保存更改时出错"
 
@@ -23486,6 +23517,7 @@ msgid ""
 msgstr "此文件具有不同于策略设置({1})的行尾({0})。"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:725
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:515
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
@@ -24303,11 +24335,11 @@ msgstr "无法运行测试。未找到“{0}”程序集"
 msgid "Unable to save package source changes.{0}{0}{1}"
 msgstr "无法保存包源更改。{0}{0}{1}"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:737
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:740
 msgid "Unable to set the next statement to this location."
 msgstr "无法将下一语句设置到此位置。"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:735
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:738
 msgid ""
 "Unable to set the next statement. The next statement cannot be set to "
 "another function."
@@ -25107,9 +25139,8 @@ msgid "Version 7.3"
 msgstr "版本 7.3"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:48
-#, fuzzy
 msgid "Version 8"
-msgstr "版本 3"
+msgstr "版本 8"
 
 #  nb.AppendPage(aatp, new Label("Authors"));
 #  nb.AppendPage(changelog, new Label("ChangeLog"));
@@ -25326,7 +25357,7 @@ msgstr "视觉样式"
 msgid "WARNING: "
 msgstr "警告:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:934
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:956
 msgid ""
 "WARNING: Some documents may need to be closed, and unsaved data will be "
 "lost. You will be asked to save the unsaved documents."
@@ -25334,7 +25365,7 @@ msgstr ""
 "警告: 可能需要关闭某些文档，并且未保存的数据将丢失。系统会提示你保存未保存的"
 "文档。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:936
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:958
 msgid ""
 "WARNING: Some documents may need to be reloaded or closed, and unsaved data "
 "will be lost. You will be asked to save the unsaved documents."
@@ -25342,7 +25373,7 @@ msgstr ""
 "警告: 可能需要重载或关闭某些文档，并且未保存的数据将丢失。系统会提示你保存未"
 "保存的文档。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:938
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:960
 msgid ""
 "WARNING: Some files may need to be reloaded, and unsaved data will be lost. "
 "You will be asked to save the unsaved files."
@@ -25354,11 +25385,11 @@ msgstr ""
 msgid "WARNING: The branch has not yet been merged to HEAD"
 msgstr "警告: 该分支尚未合并到 HEAD 中"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1517
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1560
 msgid "Waiting for debugger"
 msgstr "正在等待调试程序"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1489
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1532
 msgid "Waiting for debugger to connect..."
 msgstr "正在等待调试程序连接..."
 
@@ -25550,10 +25581,6 @@ msgstr "欢迎页"
 msgid "Western"
 msgstr "西文"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1054
-msgid "What do you want to do?"
-msgstr "想如何处理?"
-
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:76
 msgid "When a function is entered"
 msgstr "进入函数时"
@@ -25615,9 +25642,8 @@ msgid ""
 msgstr "对象创建使用对象或集合初始值设定项时，空参数列表是冗余的"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1279
-#, fuzzy
 msgid "When on multiple lines"
-msgstr "处于单行上时"
+msgstr "在多行上时"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1325
 msgid "When on single line"
@@ -25999,11 +26025,7 @@ msgstr ""
 msgid "You do not have permission to create to {0}"
 msgstr "你无权创建到 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1053
-msgid "You have uncommitted changes"
-msgstr "你有未提交的更改"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:770
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:792
 msgid "You may have forgotten to unselect items."
 msgstr "你可能忘记了取消选择项。"
 
@@ -26791,6 +26813,7 @@ msgid "_Icon Name:"
 msgstr "图标名称(_I):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:741
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:623
 msgid "_Ignore all"
 msgstr "全部忽略(_I)"
 
@@ -26852,6 +26875,7 @@ msgid "_Jump To {0}"
 msgstr "跳转到 {0}(_J)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:725
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:618
 msgid "_Keep changes"
 msgstr "保存更改(_K)"
 
@@ -26880,6 +26904,7 @@ msgid "_Line..."
 msgstr "行(_L)..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:986
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:408
 msgid "_Load from autosave"
 msgstr "从自动保存文件加载(_L)"
 
@@ -26972,7 +26997,7 @@ msgstr "仅显示我的代码(_O)。"
 msgid "_Open"
 msgstr "打开(_O)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:938
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:960
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:306
 msgid "_Open All"
 msgstr "全部打开(_O)"
@@ -27151,10 +27176,12 @@ msgid "_Reload"
 msgstr "重载(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:734
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:622
 msgid "_Reload all"
 msgstr "全部重载(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:717
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:617
 msgid "_Reload from disk"
 msgstr "从磁盘重载(_R)"
 
@@ -27508,6 +27535,7 @@ msgid "_Use custom author information for this solution"
 msgstr "使用此解决方案的自定义作者信息(_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:970
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:405
 msgid "_Use original file"
 msgstr "使用原始文件(_U)"
 
@@ -27927,9 +27955,9 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "类型 * ptr = {0} 类型 [ 表达式 ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2020
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:635
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:622
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:643
 msgid "working copy"
 msgstr "工作副本"
 
@@ -28205,7 +28233,7 @@ msgstr[0] "{0} 条丢失消息"
 msgid "{0} Pad"
 msgstr "{0} 板"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:278
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:279
 msgid "{0} Status"
 msgstr "{0} 状态"
 
@@ -28342,7 +28370,7 @@ msgid_plural ""
 msgstr[0] ""
 "总共处理了 {0} 个文件。{1} 个成功生成，{2} 个出现警告，{3} 个出现错误"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:328
+#: ../src/addins/MacPlatform/MacPlatform.cs:329
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -28362,11 +28390,11 @@ msgstr ""
 "{0} {1} 常数表达式;\n"
 " {0} {2};"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1071
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1074
 msgid "{0} is a directory"
 msgstr "{0} 是一个目录"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:518
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:519
 msgid "{0} is already opened"
 msgstr "{0} 已打开"
 
@@ -28437,7 +28465,7 @@ msgstr "{0} 需要凭据以访问 {1}。"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:595
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:822
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/SignatureHelpSessionView.cs:344
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:181
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:180
 msgid "{0} of {1}"
 msgstr "{0}/{1}"
 
@@ -28532,7 +28560,7 @@ msgstr "{0} 范围变量2 {1} 范围2 {2} 语句1 {3} 语句2 [ {4} 组名称 ]"
 msgid "{0} removed with warnings."
 msgstr "已删除 {0}，但出现警告。"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:223
+#: ../src/addins/MacPlatform/MacPlatform.cs:224
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -28748,11 +28776,13 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid "Console application"
-#~ msgstr "控制台应用程序"
+#~ msgid ""
+#~ "The .NET Core SDK installed is not supported. Please install a more "
+#~ "recent version."
+#~ msgstr "不支持安装的 .NET Core SDK。请安装最新版本。"
 
-#~ msgid "Invalid credentials were supplied. Aborting operation."
-#~ msgstr "提供的凭据无效。正在中止操作。"
+#~ msgid "What do you want to do?"
+#~ msgstr "想如何处理?"
 
-#~ msgid "Operation cancelled by the user"
-#~ msgstr "用户取消了操作"
+#~ msgid "You have uncommitted changes"
+#~ msgstr "你有未提交的更改"

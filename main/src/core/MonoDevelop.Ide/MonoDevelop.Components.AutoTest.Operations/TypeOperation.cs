@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class TypeOperation : Operation
+	public class TypeOperation : Operation, IFilterOperation
 	{
 		Type DesiredType;
 		string Name;
@@ -51,6 +51,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			}
 
 			return newResultSet;
+		}
+
+		public AppResult Filter (AppResult result)
+		{
+			return result.CheckType (DesiredType);
 		}
 
 		public override string ToString ()

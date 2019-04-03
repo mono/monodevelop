@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class SelectedOperation : Operation
+	public class SelectedOperation : Operation, IFilterOperation
 	{
 		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
@@ -42,6 +42,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			}
 
 			return newResultSet;
+		}
+
+		public AppResult Filter (AppResult result)
+		{
+			return result.Selected ();
 		}
 
 		public override string ToString ()

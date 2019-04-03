@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class MarkedOperation : Operation
+	public class MarkedOperation : Operation, IFilterOperation
 	{
 		public string Mark;
 
@@ -49,6 +49,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			}
 
 			return newResultSet;
+		}
+
+		public AppResult Filter (AppResult result)
+		{
+			return result.Marked (Mark);
 		}
 
 		public override string ToString ()

@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (showStatusIcon)
 					workspace.ShowStatusIcon ();
 
-				var (solution, solutionInfo) = await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
+				var (solution, solutionInfo) = await workspace.InternalLoadSolution (cancellationToken).ConfigureAwait (false);
 
 				if (workspaceRequests.TryGetValue (solution, out var request)) {
 					if (solutionInfo == null) {

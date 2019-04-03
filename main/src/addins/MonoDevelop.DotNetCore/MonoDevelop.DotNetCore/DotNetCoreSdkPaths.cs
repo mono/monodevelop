@@ -36,12 +36,14 @@ namespace MonoDevelop.DotNetCore
 	class DotNetCoreSdkPaths
 	{
 		string msbuildSDKsPath;
+		static IEnumerable<DotNetCoreVersion> cachedInstalledSdkVersions;
+		static readonly object locker = new object ();
 
 		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
 		public string SdkRootPath { get; internal set; }
 		public string GlobalJsonPath { get; set; }
 
-		public DotNetCoreSdkPaths (string dotNetCorePath = "")
+		public DotNetCoreSdkPaths (string dotNetCorePath = "", bool initializeSdkLocation = false)
 		{
 			if (string.IsNullOrEmpty (dotNetCorePath)) {
 				if (DotNetCoreRuntime.IsInstalled)
@@ -49,6 +51,9 @@ namespace MonoDevelop.DotNetCore
 				else
 					return;
 			}
+
+			if (initializeSdkLocation)
+				ResetInstalledSdkVersionsCache ();
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
 			SdkRootPath = Path.Combine (rootDirectory, "sdk");
@@ -171,8 +176,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			try {
 				string sdkVersion = Path.GetFileName (sdkDirectory);
-				DotNetCoreVersion version = null;
-				if (DotNetCoreVersion.TryParse (sdkVersion, out version)) {
+				if (DotNetCoreVersion.TryParse (sdkVersion, out var version)) {
 					if (version < DotNetCoreVersion.MinimumSupportedVersion) {
 						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0. '{1}'", sdkVersion, sdkDirectory);
 						return false;
@@ -193,11 +197,32 @@ namespace MonoDevelop.DotNetCore
 		IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions (string sdkRootPath)
 		{
 			return Directory.EnumerateDirectories (sdkRootPath)
-				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Select (directory => {
+					if (!directory.Contains ("NuGetFallbackFolder"))
+						return DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory);
+
+					return null;
+				})
 				.Where (version => version != null);
 		}
 
-		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions () => GetInstalledSdkVersions (SdkRootPath);
+		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions ()
+		{
+			lock (locker) {
+				if (cachedInstalledSdkVersions == null) {
+					cachedInstalledSdkVersions = GetInstalledSdkVersions (SdkRootPath);
+				} 
+
+				return cachedInstalledSdkVersions;
+			}
+		}
+
+		void ResetInstalledSdkVersionsCache ()
+		{
+			lock (locker) {
+				cachedInstalledSdkVersions = null;
+			}
+		}
 
 		string GetSdksParentDirectory (DotNetCoreVersion targetVersion)
 		{

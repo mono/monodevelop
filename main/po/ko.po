@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-13 19:50:52+0100\n"
+"POT-Creation-Date: 2019-03-28 13:54:02+0100\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -44,6 +44,10 @@ msgstr "(로드 실패)"
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestNodeBuilder.cs:91
 msgid " (Loading)"
 msgstr "(로드하는 중)"
+
+#: ../external/vs-editor-core/src/RoslynIntegration/EventHookup/EventHookupSessionManager.cs:59
+msgid " (Press TAB to insert)"
+msgstr ""
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:142
 msgid " (in user directory)"
@@ -523,7 +527,7 @@ msgstr ".NET Core 런타임이 설치되어 있지 않습니다."
 msgid ".NET Core SDK"
 msgstr ".NET Core SDK"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:51
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:50
 msgid ""
 ".NET Core SDK is not installed. This is required to build and run .NET Core "
 "projects."
@@ -539,7 +543,7 @@ msgstr ".NET Core가 설치되어 있지 않습니다."
 msgid ".NET Core is required to run this application."
 msgstr "이 애플리케이션을 실행하려면 .NET Core가 있어야 합니다."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:58
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:57
 msgid ""
 ".NET Core {0} SDK is not installed. This is required to build and run .NET "
 "Core {0} projects."
@@ -717,6 +721,7 @@ msgid "<b>Add a link</b> to the file"
 msgstr "파일에 <b>링크 추가</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:964
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:395
 msgid ""
 "<b>An autosave file has been found for this file.</b>\n"
 "This could mean that another instance of MonoDevelop is editing this file, "
@@ -888,9 +893,8 @@ msgid "<b>Navigation</b>"
 msgstr "<b>탐색</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:261
-#, fuzzy
 msgid "<b>New Editor Preview</b>"
-msgstr "<b>F# 편집기</b>"
+msgstr "<b>새 편집기 미리 보기</b>"
 
 #: ../src/addins/ChangeLogAddIn/Gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:117
 msgid ""
@@ -988,6 +992,7 @@ msgid "<b>Task Priorities Foreground Colors</b>"
 msgstr "<b>작업 우선 순위 전경색</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:712
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:630
 msgid ""
 "<b>The file \"{0}\" has been changed outside of {1}.</b>\n"
 "Do you want to keep your changes, or reload the file from disk?"
@@ -1064,7 +1069,7 @@ msgid "<b>{0}</b>"
 msgstr "<b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1074
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:267
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:269
 msgid "<b>{0}</b> has been thrown"
 msgstr "<b>{0}</b>이(가) throw되었습니다."
 
@@ -1125,7 +1130,7 @@ msgstr ""
 "로그래밍 모델</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2020
 msgid "<uncommitted>"
 msgstr "<커밋되지 않음>"
 
@@ -1831,7 +1836,7 @@ msgid "Abort Update"
 msgstr "업데이트 중단"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:524
+#: ../src/addins/MacPlatform/MacPlatform.cs:525
 msgid "About {0}"
 msgstr "{0} 정보"
 
@@ -2348,14 +2353,12 @@ msgid "Add the folder to the list"
 msgstr "목록에 폴더를 추가합니다."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:164
-#, fuzzy
 msgid "Add the new interface to a new file"
-msgstr "새 파일 이름 입력"
+msgstr "새 파일에 새 인터페이스 추가"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:158
-#, fuzzy
 msgid "Add the new interface to the current file"
-msgstr "현재 파일에 대한 줄 번호를 표시합니다."
+msgstr "현재 파일에 새 인터페이스 추가"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:67
 msgid "Add the new project to the Packaging Project '{0}'"
@@ -2374,9 +2377,8 @@ msgid "Add to Ignore List"
 msgstr "무시 목록에 추가"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:155
-#, fuzzy
 msgid "Add to current file"
-msgstr "현재 파일 편집"
+msgstr "현재 파일에 추가"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:494
 msgid "Add to existing Packaging Project"
@@ -2980,7 +2982,7 @@ msgid "Application to record audio/video files"
 msgstr "오디오/비디오 파일 녹음/녹화 애플리케이션"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:700
+#: ../src/addins/MacPlatform/MacPlatform.cs:725
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3040,7 +3042,7 @@ msgid "Apply to Project"
 msgstr "프로젝트에 적용"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs:154
-#: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:153
+#: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:160
 #: ../external/xwt/Xwt.Gtk/Xwt.GtkBackend/GtkAlertDialog.cs:126
 msgid "Apply to all"
 msgstr "모두에 적용"
@@ -3378,7 +3380,7 @@ msgstr "프레임워크 {0}에 대한 어셈블리를 찾을 수 없습니다(�
 msgid "Assembly:\t{0}"
 msgstr "어셈블리:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:327
+#: ../src/addins/MacPlatform/MacPlatform.cs:328
 msgid "Assistive Technology Detected"
 msgstr "보조 기술이 검색됨"
 
@@ -3543,6 +3545,12 @@ msgstr "자동으로 닫는 태그 삽입"
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr "자동으로 문장 부호(=\"\", /> 등) 삽입"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1054
+#, fuzzy
+msgid "Automatically stash/unstash changes when merging/rebasing"
+msgstr "분기를 전환할 때 자동으로 변경 내용 스태시/스태시 해제"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1832
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr "분기를 전환할 때 자동으로 변경 내용 스태시/스태시 해제"
@@ -3603,9 +3611,8 @@ msgid "Back to Service Gallery"
 msgstr "서비스 갤러리로 돌아가기"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:198
-#, fuzzy
 msgid "Back to _Previous view"
-msgstr "이전 줄로 이동"
+msgstr "이전 보기로 돌아가기(_P)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs:57
 msgid "Back up and migrate"
@@ -3641,9 +3648,9 @@ msgstr "잘못된 요청"
 msgid "Baltic"
 msgstr "발트어"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:105
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:243
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:270
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:117
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:255
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:282
 msgid "Base"
 msgstr "기본"
 
@@ -3758,7 +3765,7 @@ msgstr "분기 속성"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/EditBranchDialog.cs:137
 msgid "Branch name too long"
-msgstr ""
+msgstr "분기 이름이 너무 깁니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:136
 msgid "Branch switch failed"
@@ -4710,9 +4717,8 @@ msgid "Check to enable automatic punctuation insertion"
 msgstr "자동 문장 부호 삽입을 사용하도록 설정하려면 선택합니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:103
-#, fuzzy
 msgid "Check to enable experimental new editor"
-msgstr "텍스트 편집기에서 애니메이션을 사용하도록 설정하려면 선택합니다."
+msgstr "실험적 새 편집기를 사용하려면 선택합니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:97
 msgid "Check to enable line folding"
@@ -4731,14 +4737,13 @@ msgid "Check to enable some diagnostic logging"
 msgstr "일부 진단 로깅을 사용하도록 설정하려면 선택합니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:107
-#, fuzzy
 msgid "Check to enable visual word wrap glyphs in the experimental new editor"
-msgstr "텍스트 편집기에서 애니메이션을 사용하도록 설정하려면 선택합니다."
+msgstr ""
+"실험적 새 편집기에서 자동 줄 바꿈 시각 문자 모양을 사용하려면 선택합니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:105
-#, fuzzy
 msgid "Check to enable word wrap in the experimental new editor"
-msgstr "텍스트 편집기에서 애니메이션을 사용하도록 설정하려면 선택합니다."
+msgstr "실험적 새 편집기에서 자동 줄 바꿈을 사용하려면 선택합니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:101
 msgid "Check to fold comments by default"
@@ -4954,7 +4959,7 @@ msgstr "체크 아웃 경로가 비어 있지 않습니다. 해당 콘텐츠를 
 msgid "Chemistry software"
 msgstr "화학 소프트웨어"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1147
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1172
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "{0} Cherry-Pick 중 - {1}/{2}"
 
@@ -5269,7 +5274,7 @@ msgid "Clipboard Ring"
 msgstr "클립보드 링"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:62
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:368
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 msgid "Close"
@@ -5281,7 +5286,7 @@ msgstr "닫기"
 msgid "Close All Files"
 msgstr "모든 파일 닫기"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:735
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:671
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop 닫기"
 
@@ -5427,7 +5432,7 @@ msgstr "코드 블록 기본 설정:"
 msgid "Code completion database generation"
 msgstr "코드 완성 데이터베이스 생성"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:342
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:343
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:54
 msgid "Collapse All"
 msgstr "모두 축소"
@@ -5572,15 +5577,15 @@ msgstr "커밋 메시지 스타일"
 msgid "Commit _message:"
 msgstr "커밋 메시지(_M):"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:637
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:659
 msgid "Commit message (multiple selection):"
 msgstr "커밋 메시지(다중 선택):"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:635
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:657
 msgid "Commit message for file '{0}':"
 msgstr "'{0}' 파일의 커밋 메시지:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:231
 msgid "Commit message:"
 msgstr "커밋 메시지:"
 
@@ -5588,7 +5593,7 @@ msgstr "커밋 메시지:"
 msgid "Commit operation completed."
 msgstr "커밋 작업이 완료되었습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:136
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:137
 msgid "Commit..."
 msgstr "커밋..."
 
@@ -5809,6 +5814,11 @@ msgstr "충돌"
 msgid "Conflict {0}"
 msgstr "{0} 충돌"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1078
+#, fuzzy
+msgid "Conflicting local changes found"
+msgstr "로컬 변경 내용을 저장하는 중"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:819
 msgid "Conflicts:"
 msgstr "충돌:"
@@ -5898,7 +5908,7 @@ msgstr "콘텐츠"
 msgid "Continue"
 msgstr "계속"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:737
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:673
 msgid "Continue Anyway"
 msgstr "계속"
 
@@ -6157,7 +6167,7 @@ msgstr ""
 "사용자 어셈블리 '{0}'에 대한 어셈블리 이름을 가져올 수 없습니다. 디버거는 이"
 "제 사용자 코드뿐만 아니라 모든 코드를 디버깅합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1090
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1112
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:393
 msgid "Could not get diff information. "
 msgstr "diff 정보를 가져올 수 없습니다."
@@ -6188,7 +6198,7 @@ msgid "Could not load solution item: {0}"
 msgstr "솔루션 항목을 로드할 수 없음: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:388
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:375
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:421
 msgid "Could not load solution: {0}"
 msgstr "솔루션을 로드할 수 없음: {0}"
 
@@ -6204,7 +6214,7 @@ msgstr "{0} 프로젝트 '{1}'을(를) 로드할 수 없습니다. {2}"
 msgid "Could not mount FUSE filesystem."
 msgstr "FUSE 파일 시스템을 탑재할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:395
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:441
 msgid "Could not open file: {0}"
 msgstr "파일을 열 수 없음: {0}"
 
@@ -6327,7 +6337,7 @@ msgstr "패키지 만들기"
 msgid "Create Package..."
 msgstr "패키지 만들기..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:320
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:321
 msgid "Create Patch"
 msgstr "패치 만들기"
 
@@ -7088,11 +7098,11 @@ msgstr "사용자 지정 프로젝트"
 msgid "Custom project started building"
 msgstr "사용자 지정 프로젝트의 빌드가 시작됨"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:865
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:802
 msgid "CustomizerAssemblyPath"
 msgstr "CustomizerAssemblyPath"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:870
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:807
 msgid "CustomizerType"
 msgstr "CustomizerType"
 
@@ -7244,13 +7254,13 @@ msgstr ""
 msgid "Debug session not started."
 msgstr "디버그 세션이 시작되지 않았습니다."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:898
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:900
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:271
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:281
 msgid "Debugger"
 msgstr "디버거"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:900
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:902
 msgid "Debugger information"
 msgstr "디버거 정보"
 
@@ -7842,9 +7852,9 @@ msgstr ""
 "를 사용하지 않도록 설정합니다. 디버거를 사용하여 실행 중인 프로세스에 연결하"
 "려는 경우에 유용합니다."
 
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:476
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:481
 msgid "Disable the New Editor Preview"
-msgstr ""
+msgstr "새 편집기 미리 보기 사용 안 함"
 
 #  nb.AppendPage (aatp, new Label ("Authors"));
 #  nb.AppendPage (changelog, new Label ("ChangeLog"));
@@ -7890,9 +7900,8 @@ msgid "Display the document list menu"
 msgstr "문서 목록 메뉴 표시"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:198
-#, fuzzy
 msgid "Displays the different method signatures"
-msgstr "문서 목록 메뉴 표시"
+msgstr "다른 메서드 시그니처를 표시합니다."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:83
 msgid "Dispose console after running"
@@ -7986,7 +7995,7 @@ msgstr "인증서를 허용하고 리포지토리에 연결할까요?"
 msgid "Do you want to detach from the process being debugged?"
 msgstr "디버깅 중인 프로세스에서 분리할까요?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:939
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:961
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:307
 msgid "Do you want to open all {0} files?"
 msgstr "{0}개 파일을 모두 열까요?"
@@ -8127,7 +8136,7 @@ msgstr "완료"
 msgid "Double negation is redundant"
 msgstr "이중 부정이 중복됩니다."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:78
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:77
 msgid "Download .NET Core..."
 msgstr ".NET Core 다운로드..."
 
@@ -8353,9 +8362,8 @@ msgid "Embedded"
 msgstr "포함"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:70
-#, fuzzy
 msgid "Emoji & Symbols"
-msgstr "기본 기호 찾기"
+msgstr "이모지 및 기호"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
@@ -9098,7 +9106,7 @@ msgstr "지원 파일 '{0}'을(를) 삭제하는 동안 오류가 발생했습�
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:52
 msgid "Error fetching text from repository"
-msgstr ""
+msgstr "리포지토리에서 텍스트를 페치하는 동안 오류 발생"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ErrorInFileException.cs:72
 msgid "Error in file '{0}' at line {1}, column {2}."
@@ -9170,7 +9178,7 @@ msgstr "이전 수정 버전을 가져오는 동안 오류가 발생했습니다
 msgid "Error while getting revision text."
 msgstr "수정 버전 텍스트를 가져오는 동안 오류가 발생했습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:280
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:292
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
@@ -9178,7 +9186,7 @@ msgstr ""
 "{0}의 기본 텍스트를 가져오는 동안 오류가 발생했습니다.\n"
 "{1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:184
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:196
 msgid ""
 "Error while getting the text of revision {0}:\n"
 "{1}"
@@ -9443,7 +9451,7 @@ msgstr "끝내기"
 msgid "Exit Full Screen"
 msgstr "전체 화면 끝내기"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:338
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:339
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:43
 msgid "Expand All"
 msgstr "모두 확장"
@@ -9641,7 +9649,7 @@ msgstr "확장 메서드는 static으로 선언해야 합니다."
 msgid "Extension packages"
 msgstr "확장 패키지"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:470
+#: ../src/addins/MacPlatform/MacPlatform.cs:471
 msgid "Extensions..."
 msgstr "확장..."
 
@@ -9836,9 +9844,8 @@ msgid "Fetching from '{0}'"
 msgstr "'{0}'에서 가져오는 중"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:403
-#, fuzzy
 msgid "Fetching remote failed"
-msgstr "원격을 가져오는 중..."
+msgstr "원격 페치 실패"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:398
 msgid "Fetching remote..."
@@ -9864,7 +9871,7 @@ msgstr "필드"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:676
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:125
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:192
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:193
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:100
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:220
@@ -9883,7 +9890,7 @@ msgstr "'{0}' 파일을 복사 할 수 없습니다."
 msgid "File '{0}' could not be moved."
 msgstr "'{0}' 파일을 이동할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1150
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1153
 msgid "File '{0}' could not be opened"
 msgstr "'{0}' 파일을 열 수 없습니다."
 
@@ -9942,9 +9949,8 @@ msgid "File Path"
 msgstr "파일 경로"
 
 #: ../external/xwt/Xwt/Xwt/FileSelector.cs:172
-#, fuzzy
 msgid "File Selector"
-msgstr "형식 선택기"
+msgstr "파일 선택기"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:293
 msgid "File Type"
@@ -10001,7 +10007,7 @@ msgstr "프로젝트 파일의 파일 형식입니다."
 msgid "File format:"
 msgstr "파일 형식:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:578
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:583
 msgid "File is not a project or solution: {0}"
 msgstr "파일이 프로젝트나 솔루션이 아닙니다. {0}"
 
@@ -10036,8 +10042,8 @@ msgstr "파일을 찾을 수 없습니다."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:118
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:212
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1089
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:572
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1092
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:577
 msgid "File not found: {0}"
 msgstr "파일을 찾을 수 없음: ({0})"
 
@@ -10130,10 +10136,9 @@ msgstr ""
 "'{0}' 변수의 파일이 configure.in의 경로가 설정되지 않은 상태로 구문 분석될 "
 "수 없는 변수를 포함하고 있습니다. 해당 파일을 무시합니다."
 
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindField.cs:90
-#, fuzzy
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindField.cs:91
 msgid "Find"
-msgstr "찾기(_F):"
+msgstr "찾기"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:32
 msgid "Find Base Symbols"
@@ -10352,9 +10357,8 @@ msgid "Folder Name:"
 msgstr "폴더 이름:"
 
 #: ../external/xwt/Xwt/Xwt/FolderSelector.cs:143
-#, fuzzy
 msgid "Folder Selector"
-msgstr "형식 선택기"
+msgstr "폴더 선택기"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFolderDialog.cs:148
 msgid "Folder name is already in use. Please choose a different name."
@@ -10671,7 +10675,7 @@ msgstr "클래스 정보를 수집하는 중"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:136
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:142
 #: ../src/core/MonoDevelop.Ide/templates/AppManifest.xft.xml:6
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:761
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:760
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:301
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:130
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:295
@@ -10709,6 +10713,11 @@ msgstr "라이브러리에 대한 .pc 파일 생성"
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:88
 msgid "Generate Asynchronous:"
 msgstr "비동기 생성:"
+
+#: ../external/vs-editor-core/src/RoslynIntegration/EventHookup/EventHookupCommandHandler_SessionCancellingCommands.cs:14
+#, fuzzy
+msgid "Generate Event Subscription"
+msgstr "시작 스크립트 생성"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:385
 msgid "Generate Makefile..."
@@ -11045,9 +11054,8 @@ msgid "Go to File..."
 msgstr "파일로 이동..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:61
-#, fuzzy
 msgid "Go to Implementation"
-msgstr "구현:"
+msgstr "구현으로 이동"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
 msgid "Go to Line..."
@@ -11387,7 +11395,7 @@ msgstr "세부 정보 숨기기"
 msgid "Hide other applications' windows"
 msgstr "다른 애플리케이션의 창 숨기기"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:529
+#: ../src/addins/MacPlatform/MacPlatform.cs:530
 msgid "Hide {0}"
 msgstr "{0} 숨기기"
 
@@ -11651,8 +11659,8 @@ msgstr ""
 msgid "If you chose this option the Git configuration will be overwritten."
 msgstr "이 옵션을 선택한 경우 Git 구성을 덮어씁니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:421
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:941
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:944
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "저장하지 않는 경우 모든 변경 내용이 영구적으로 손실됩니다."
 
@@ -12043,7 +12051,7 @@ msgstr "인도네시아어"
 msgid "Info"
 msgstr "정보"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:620
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:668
 msgid "Information about the Instrumentation Service"
 msgstr "계측 서비스에 대한 정보"
 
@@ -12067,7 +12075,7 @@ msgstr "매개 변수에서 필드 초기화"
 msgid "Initialize readonly auto-property from parameter"
 msgstr "매개 변수에서 읽기 전용 auto 속성 초기화"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:88
 msgid "Initializing Main Window"
 msgstr "주 창을 초기화하는 중"
 
@@ -12120,7 +12128,7 @@ msgstr "중단점 삽입"
 msgid "Insert ChangeLog Entry"
 msgstr "변경 로그 항목 삽입"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:691
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:693
 msgid "Insert Code"
 msgstr "코드 삽입"
 
@@ -12128,7 +12136,7 @@ msgstr "코드 삽입"
 msgid "Insert Documentation Comments"
 msgstr "문서 주석 삽입"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:682
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:684
 msgid "Insert Field"
 msgstr "필드 삽입"
 
@@ -12136,11 +12144,11 @@ msgstr "필드 삽입"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "GUID(Globally Unique Identifier) 삽입"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:685
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:687
 msgid "Insert Method"
 msgstr "메서드 삽입"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:688
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:690
 msgid "Insert Property"
 msgstr "속성 삽입"
 
@@ -12342,7 +12350,7 @@ msgstr "확장 패키지 설치"
 msgid "Installing…"
 msgstr "설치하는 중..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:618
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:666
 msgid "Instrumentation"
 msgstr "계측"
 
@@ -12350,7 +12358,7 @@ msgstr "계측"
 msgid "Instrumentation Monitor"
 msgstr "계측 모니터"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:619
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:667
 msgid "Instrumentation service enabled"
 msgstr "계측 서비스 사용"
 
@@ -12497,7 +12505,7 @@ msgstr "잘못된 식"
 msgid "Invalid file move accross filesystem boundaries."
 msgstr "파일 시스템 경계에 걸친 파일 이동이 잘못되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1061
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1064
 msgid "Invalid file name"
 msgstr "잘못된 파일 이름"
 
@@ -12833,9 +12841,8 @@ msgid "Latest"
 msgstr "최신"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:49
-#, fuzzy
 msgid "Latest Major"
-msgstr "최신"
+msgstr "최신 주"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:63
 msgid "Launch script for {0}"
@@ -12863,9 +12870,9 @@ msgid "Leak Tracker"
 msgstr "누출 추적기"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:60
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:489
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:494
 msgid "Learn more about the New Editor Preview"
-msgstr ""
+msgstr "새 편집기 미리 보기에 대한 자세한 정보"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
 msgid "Leave block on single line"
@@ -12998,7 +13005,7 @@ msgstr "로드/저장"
 msgid "Loaded Assemblies"
 msgstr "로드된 어셈블리"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:237
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:240
 msgid "Loading Workbench"
 msgstr "Workbench를 로드하는 중"
 
@@ -13006,7 +13013,7 @@ msgstr "Workbench를 로드하는 중"
 msgid "Loading build log…"
 msgstr "빌드 로그를 로드하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1081
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1103
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:363
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:495
 msgid "Loading data..."
@@ -13025,7 +13032,7 @@ msgstr "솔루션 파일 {0}을(를) 로드하는 중"
 msgid "Loading solution: {0}"
 msgstr "솔루션을 로드하는 중: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1261
 msgid "Loading workspace documents"
 msgstr "작업 영역 문서를 로드하는 중"
 
@@ -13049,14 +13056,15 @@ msgstr "{0} 추가 기능을 로드하는 중"
 msgid "Loading..."
 msgstr "로드하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:81
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:99
 msgid "Loading…"
 msgstr "로드하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:104
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:241
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:263
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:116
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:253
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:275
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:104
 msgid "Local"
 msgstr "로컬"
 
@@ -13654,7 +13662,7 @@ msgstr "분기 병합..."
 msgid "Merge Conflict Resolution"
 msgstr "병합 충돌 해결"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1173
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1203
 msgid "Merging"
 msgstr "병합하는 중"
 
@@ -13696,14 +13704,12 @@ msgid "Method"
 msgstr "메서드"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:197
-#, fuzzy
 msgid "Method Signatures"
-msgstr "시그니처 변경"
+msgstr "메서드 시그니처"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:79
-#, fuzzy
 msgid "Method signature"
-msgstr "시그니처 삽입"
+msgstr "메서드 시그니처"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MethodOverloadWithOptionalParameterAnalyzer.cs:15
 msgid "Method with optional parameter is hidden by overload"
@@ -13953,7 +13959,7 @@ msgstr "MonoDevelop/MSBuild 솔루션"
 msgid "More"
 msgstr "자세히"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:736
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:672
 msgid "More Information"
 msgstr "추가 정보"
 
@@ -14024,7 +14030,7 @@ msgstr "코드 탐색 기록에서 이전 지점으로 이동"
 msgid "Move to the next page"
 msgstr "다음 페이지 이동"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1918
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1983
 msgid "Moving files"
 msgstr "파일을 이동하는 중"
 
@@ -14293,6 +14299,7 @@ msgid "Native"
 msgstr "네이티브"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:285
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:201
 msgid "Navigate"
 msgstr "탐색"
 
@@ -14401,10 +14408,9 @@ msgid "New Dialog..."
 msgstr "새 대화 상자..."
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewDisplayBinding.cs:37
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:446
-#, fuzzy
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:451
 msgid "New Editor Preview"
-msgstr "리팩터링 미리 보기"
+msgstr "새 편집기 미리 보기"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:127
 msgid "New Exception Catchpoint"
@@ -14438,7 +14444,7 @@ msgstr "새 그룹"
 msgid "New Group..."
 msgstr "새 그룹..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:308
+#: ../src/addins/MacPlatform/MacPlatform.cs:309
 msgid "New Instance"
 msgstr "새 인스턴스"
 
@@ -14585,13 +14591,12 @@ msgid "Next document"
 msgstr "다음 문서"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:179
-#, fuzzy
 msgid "Next signature"
-msgstr "시그니처 삽입"
+msgstr "다음 시그니처"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:330
+#: ../src/addins/MacPlatform/MacPlatform.cs:331
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14605,10 +14610,9 @@ msgstr "'{0}' 언어에 대한 CodeDomProvider를 찾을 수 없습니다."
 msgid "No LanguageBinding was found for the language '{0}'."
 msgstr "'{0}' 언어에 대한 LanguageBinding을 찾을 수 없습니다."
 
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:248
-#, fuzzy
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:251
 msgid "No Results"
-msgstr "결과"
+msgstr "결과 없음"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/SdkLocationPanel.cs:177
 msgid "No SDK found at default location."
@@ -14646,8 +14650,8 @@ msgstr "사용할 수 있는 코드 수정 없음"
 msgid "No completions found"
 msgstr "완료된 항목을 찾을 수 없습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1078
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1093
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1100
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1115
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:382
 msgid "No differences found"
 msgstr "차이점을 찾을 수 없습니다."
@@ -14668,11 +14672,11 @@ msgstr "확장 패키지를 찾을 수 없음"
 msgid "No failed tests found."
 msgstr "실패한 테스트를 찾을 수 없습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:510
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:532
 msgid "No files have local modifications."
 msgstr "로컬 수정 내용이 있는 파일이 없습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:512
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:534
 msgid "No files have local or remote modifications."
 msgstr "로컬 또는 원격 수정 내용이 있는 파일이 없습니다."
 
@@ -14695,9 +14699,8 @@ msgid "No matching packages found."
 msgstr "일치하는 패키지를 찾을 수 없습니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/MergeView.cs:51
-#, fuzzy
 msgid "No merge conflicts detected."
-msgstr "병합 충돌이 <b>{0}</b> 파일에서 검색되었습니다."
+msgstr "병합 충돌이 검색되지 않았습니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:113
 msgid "No more errors or warnings"
@@ -14928,7 +14931,7 @@ msgstr "NuGet"
 msgid "NuGet Package"
 msgstr "NuGet 패키지"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:437
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:438
 msgid ""
 "NuGet packages need to be restored before building. NuGet MSBuild targets "
 "are missing and are needed for building. The NuGet MSBuild targets are "
@@ -15059,15 +15062,15 @@ msgstr "이 솔루션만"
 msgid "Opacity"
 msgstr "불투명도"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:330
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:84
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:331
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:85
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:431
 msgid "Open"
 msgstr "열기"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:65
 msgid "Open C# files in the New Editor"
-msgstr ""
+msgstr "새 편집기에서 C# 파일 열기"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:448
 msgid "Open Glade File"
@@ -15151,7 +15154,7 @@ msgstr "{0} 열기"
 msgid "Open..."
 msgstr "열기..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:651
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:654
 msgid "Opening {0}"
 msgstr "{0}을(를) 여는 중"
 
@@ -15179,8 +15182,7 @@ msgstr "마지막으로 닫힌 탭을 엽니다."
 msgid "Operation"
 msgstr "작업"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCredentials.cs:60
-#, fuzzy
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCredentials.cs:62
 msgid "Operation cancelled"
 msgstr "작업이 취소되었습니다."
 
@@ -15251,7 +15253,7 @@ msgstr "Option Strict:"
 msgid "OptionName"
 msgstr "OptionName"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:792
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:795
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:132
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:143
 msgid "Options"
@@ -15813,7 +15815,7 @@ msgstr "프로그램 일시 중지"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:38
 msgid "Performance Diagnostics"
-msgstr "성능 진단"
+msgstr "Performance Diagnostics"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1895
 msgid "Performing main compilation…"
@@ -15979,14 +15981,12 @@ msgid "Please select a valid policy file"
 msgstr "유효한 정책 파일을 선택하세요."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:364
-#, fuzzy
 msgid "Please select a valid private key file"
-msgstr "유효한 정책 파일을 선택하세요."
+msgstr "유효한 개인 키 파일을 선택하세요."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:371
-#, fuzzy
 msgid "Please select a valid public key (.pub) file"
-msgstr "유효한 정책 파일을 선택하세요."
+msgstr "유효한 공개 키(.pub) 파일을 선택하세요."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:181
 msgid "Please select the application to debug"
@@ -16016,7 +16016,7 @@ msgstr "내보낼 정책:"
 msgid "Policies to set or replace:"
 msgstr "설정하거나 바꿀 정책:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:467
+#: ../src/addins/MacPlatform/MacPlatform.cs:468
 msgid "Policies..."
 msgstr "정책..."
 
@@ -16145,7 +16145,6 @@ msgid "Prefer 'var'"
 msgstr "'var' 기본 사용"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1286
-#, fuzzy
 msgid "Prefer Braces"
 msgstr "중괄호 기본 사용"
 
@@ -16229,11 +16228,11 @@ msgstr "간단한 'default' 식을 기본으로 사용"
 msgid "Prefer throw-expression"
 msgstr "throw 식 기본 사용"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:793
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:796
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:466
+#: ../src/addins/MacPlatform/MacPlatform.cs:467
 msgid "Preferences..."
 msgstr "기본 설정..."
 
@@ -16286,7 +16285,7 @@ msgstr "키를 누르세요..."
 msgid "Press the key combination you want to assign to the accelerator..."
 msgstr "액셀러레이터 키에 할당할 키 조합을 누르세요..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:636
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:638
 msgid "Press ‘{0}’ to search"
 msgstr "검색하려면 '{0}'을(를) 누르세요."
 
@@ -16337,9 +16336,8 @@ msgid "Previous document"
 msgstr "이전 문서"
 
 #: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/IntellisenseImpl/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:155
-#, fuzzy
 msgid "Previous signature"
-msgstr "이전 변경 내용"
+msgstr "이전 시그니처"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:465
 msgid "Print Previe_w"
@@ -16370,19 +16368,16 @@ msgid "Privacy Statement"
 msgstr "개인정보처리방침"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:300
-#, fuzzy
 msgid "Private Key Files"
-msgstr "더티 파일"
+msgstr "개인 키 파일"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:360
-#, fuzzy
 msgid "Private Key is not encrypted"
-msgstr "XSP 개인 키 암호"
+msgstr "개인 키가 암호화되어 있지 않음"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:225
-#, fuzzy
 msgid "Private Key:"
-msgstr "개인 소스만"
+msgstr "개인 키:"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:105
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:122
@@ -16666,6 +16661,8 @@ msgid ""
 "file extension. Please check the project type GUID in the solution file is "
 "correct."
 msgstr ""
+"{0} 프로젝트가 공유 자산 프로젝트로 로드되고 있지만 파일 확장명이 다릅니다. "
+"솔루션 파일에서 프로젝트 형식 GUID가 올바른지 확인하세요."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:521
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:168
@@ -16759,12 +16756,11 @@ msgstr "공용"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:323
 msgid "Public Key Files (.pub)"
-msgstr ""
+msgstr "공개 키 파일(.pub)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:248
-#, fuzzy
 msgid "Public Key:"
-msgstr "공용"
+msgstr "공개 키:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:227
@@ -16823,7 +16819,7 @@ msgstr "URL 푸시:"
 msgid "Push changes to remote repository after commit"
 msgstr "커밋 후 원격 리포지토리에 변경 내용 푸시"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1608
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1639
 msgid "Push operation successfully completed."
 msgstr "푸시 작업이 완료되었습니다."
 
@@ -16836,14 +16832,12 @@ msgid "Push to:"
 msgstr "푸시 대상:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:367
-#, fuzzy
 msgid "Pushing Tag"
-msgstr "변경 내용을 푸시하는 중..."
+msgstr "태그를 푸시하는 중"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:368
-#, fuzzy
 msgid "Pushing Tag '{0}' to '{1}'"
-msgstr "'{1}'의 모든 '{0}' 수정"
+msgstr "'{0}' 태그를 '{1}'(으)로 푸시하는 중"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:65
 msgid "Pushing changes..."
@@ -16854,9 +16848,8 @@ msgid "Pushing is only available for repositories with configured remotes."
 msgstr "원격이 구성된 리포지토리에만 푸시를 사용할 수 있습니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:373
-#, fuzzy
 msgid "Pushing tag failed"
-msgstr "추가 실패"
+msgstr "태그를 푸시하지 못했습니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1041
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1059
@@ -17090,7 +17083,7 @@ msgstr "기준 주소 다시 지정"
 msgid "Rebase to Branch..."
 msgstr "분기로 기준 주소 다시 지정..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1128
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1153
 msgid "Rebasing"
 msgstr "기준 주소를 다시 지정하는 중"
 
@@ -17326,7 +17319,7 @@ msgid "References a strongly-typed model"
 msgstr "강력한 형식의 모델을 참조합니다."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:590
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:303
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:304
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:157
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:155
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:262
@@ -17434,7 +17427,7 @@ msgstr "원격 소스 / 분기"
 msgid "Remote Sources"
 msgstr "원격 소스"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:205
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:206
 msgid "Remote Status"
 msgstr "원격 상태"
 
@@ -17742,7 +17735,7 @@ msgstr "열려 있는 선언 다시 정렬"
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:160
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:457
 #: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:84
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:387
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:390
 msgid "Replace"
 msgstr "바꾸기"
 
@@ -17758,10 +17751,9 @@ msgstr "'{0}++'를 '{0} += 1'로 바꾸기"
 msgid "Replace '{0}--' with '{0} -= 1'"
 msgstr "'{0}--'를 '{0} -= 1'로 바꾸기"
 
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:388
-#, fuzzy
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:391
 msgid "Replace All"
-msgstr "바꾸기"
+msgstr "모두 바꾸기"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1014
 msgid "Replace Like Selection"
@@ -17892,10 +17884,9 @@ msgstr "세션 재생..."
 msgid "Report Problem..."
 msgstr "문제 보고..."
 
-#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:500
-#, fuzzy
+#: ../external/vs-editor-core/src/Editor/Text/Impl/CocoaView/WpfViewImpl/CocoaEditorGridView.cs:505
 msgid "Report a Problem"
-msgstr "문제 보고..."
+msgstr "문제 보고"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LogAgentOptionsPanel.cs:61
 msgid "Report errors and usage information to help {0} improve my experience."
@@ -18031,7 +18022,7 @@ msgstr "디버그하고 다시 시작"
 msgid "Restart Without Debugging"
 msgstr "디버깅하지 않고 다시 시작"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:329
+#: ../src/addins/MacPlatform/MacPlatform.cs:330
 msgid "Restart and enable"
 msgstr "다시 시작 및 사용"
 
@@ -18079,7 +18070,7 @@ msgstr "누락된 패키지 복원"
 msgid "Restored '{0}'"
 msgstr "'{0}'을(를) 복원함"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1106
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1126
 msgid "Restoring local changes"
 msgstr "로컬 변경 내용을 복원하는 중"
 
@@ -18094,6 +18085,11 @@ msgstr "프로젝트의 패키지를 복원하는 중..."
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:157
 msgid "Restoring packages for solution..."
 msgstr "솔루션의 패키지를 복원하는 중..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1802
+#, fuzzy
+msgid "Restoring stash for branch {0} failed"
+msgstr "{0} 분기로 전환하는 중"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:324
 msgid "Result"
@@ -18148,11 +18144,10 @@ msgid "Retrieving history"
 msgstr "기록을 검색하는 중"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:774
-#, fuzzy
 msgid "Retrieving history…"
-msgstr "기록을 검색하는 중"
+msgstr "기록을 검색하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:206
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:218
 msgid "Retrieving revision {0}..."
 msgstr "수정 버전 {0}을(를) 검색하는 중..."
 
@@ -18191,7 +18186,7 @@ msgstr "Finder에 파일을 표시합니다."
 msgid "Reverse 'for' loop'"
 msgstr "역 'for' 루프"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:142
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:143
 msgid "Revert"
 msgstr "되돌리기"
 
@@ -18233,7 +18228,7 @@ msgstr "'{0}'을(를) 되돌림"
 msgid "Reverting ..."
 msgstr "되돌리는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1419
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1450
 msgid "Reverting files"
 msgstr "파일을 되돌리는 중"
 
@@ -18256,7 +18251,7 @@ msgstr "수정 버전"
 msgid "Revision {0}"
 msgstr "수정 버전 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:195
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:207
 #, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "수정 버전 {0}\"t{1}\"t{2}"
@@ -18655,7 +18650,7 @@ msgstr "강력한 이름 파일(_T):"
 msgid "S_witch Maximized/Normal View"
 msgstr "최대화된/일반 뷰 전환(_W)"
 
-#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Commands.cs:38
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Commands.cs:44
 msgid "Sample file output"
 msgstr "샘플 파일 출력"
 
@@ -18818,11 +18813,11 @@ msgstr "{0} 프로젝트 저장"
 msgid "Save the active document"
 msgstr "활성 문서 저장"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:937
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:940
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "닫기 전에 '{0}' 문서에 변경 내용을 저장할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:417
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:420
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "새 솔루션을 만들기 전에 '{0}' 문서에 변경 내용을 저장할까요?"
 
@@ -18854,7 +18849,7 @@ msgstr "작업 영역을 저장하는 중..."
 msgid "Saving item: {0}"
 msgstr "항목을 저장하는 중: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1063
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1062
 msgid "Saving local changes"
 msgstr "로컬 변경 내용을 저장하는 중"
 
@@ -18874,11 +18869,11 @@ msgstr "저장하는 중..."
 msgid "Scan for translations"
 msgstr "번역 검색"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:439
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:440
 msgid "Scanning for changes..."
 msgstr "변경 내용을 검색하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:441
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:442
 msgid "Scanning for local and remote changes..."
 msgstr "로컬 및 원격 변경 내용을 검색하는 중..."
 
@@ -19093,7 +19088,7 @@ msgstr "검색 패턴이 잘못되었습니다."
 msgid "Search pattern not found"
 msgstr "검색 패턴을 찾을 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:637
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:639
 msgid "Search solution"
 msgstr "솔루션 검색"
 
@@ -19165,7 +19160,7 @@ msgid "Select"
 msgstr "선택"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:706
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:348
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:349
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:199
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.PickMembersService/PickMembersDialog.cs:118
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:352
@@ -19230,7 +19225,7 @@ msgstr "이미지 선택"
 msgid "Select Image..."
 msgstr "이미지 선택..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:352
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:353
 msgid "Select None"
 msgstr "선택 안 함"
 
@@ -19314,9 +19309,8 @@ msgstr "이 중단점에 대한 적중 횟수 조건을 선택합니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:243
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:266
-#, fuzzy
 msgid "Select a key file"
-msgstr "레이아웃 파일 선택..."
+msgstr "키 파일 선택"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:134
 msgid "Select a platform"
@@ -19344,9 +19338,8 @@ msgid "Select a project or solution:"
 msgstr "프로젝트 또는 솔루션 선택:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:317
-#, fuzzy
 msgid "Select a public SSH key to use."
-msgstr "사용할 개인 SSH 키를 선택하세요."
+msgstr "사용할 공개 SSH 키를 선택하세요."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:57
 msgid "Select a revision"
@@ -19386,9 +19379,8 @@ msgid "Select contents"
 msgstr "내용 선택"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractInterface/ExtractInterfaceDialog.cs:172
-#, fuzzy
 msgid "Select destination"
-msgstr "트리에서 테스트 선택"
+msgstr "대상 선택"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:610
 msgid "Select directory"
@@ -20022,7 +20014,7 @@ msgstr "현재 실행 줄 표시"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:88
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1022
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:201
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:203
 msgid "Show Details"
 msgstr "세부 정보 표시"
 
@@ -20132,7 +20124,7 @@ msgstr "이전 표시(차이점)"
 msgid "Show Previous ({0})"
 msgstr "이전 표시({0})"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:147
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:148
 msgid "Show Remote Status"
 msgstr "원격 상태 표시"
 
@@ -20353,7 +20345,7 @@ msgstr "유효한 번역 표시"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:76
 msgid "Show visible glyphs for word wrap"
-msgstr ""
+msgstr "자동 줄 바꿈 시각 문자 모양 표시"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:45
 msgid "Show welcome page on startup"
@@ -20581,7 +20573,7 @@ msgstr "솔루션이 체크 아웃되었습니다."
 msgid "Solution could not be deployed: "
 msgstr "솔루션을 배포할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:648
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:670
 msgid "Solution loaded."
 msgstr "솔루션이 로드되었습니다."
 
@@ -20636,7 +20628,7 @@ msgstr "솔루션"
 msgid "Some additional changes on another file of the project."
 msgstr "프로젝트의 다른 파일에 추가 변경 내용이 있습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:222
+#: ../src/addins/MacPlatform/MacPlatform.cs:223
 msgid "Some dependencies need to be updated"
 msgstr "일부 종속성을 업데이트해야 합니다."
 
@@ -20648,7 +20640,7 @@ msgstr "일부 문서가 현재 열려 있습니다."
 msgid "Some files could not be saved. Commit operation aborted"
 msgstr "일부 파일을 저장할 수 없습니다. 커밋 작업이 중단되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:944
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:966
 msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
@@ -20656,7 +20648,7 @@ msgstr ""
 "일부 파일을 다시 로드해야 할 수 있으며 해당 파일의 편집 상태(예: 실행 취소 "
 "큐)가 손실됩니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:769
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:791
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr "이 커밋의 일부 파일에 변경 로그 메시지가 없습니다."
 
@@ -20715,7 +20707,7 @@ msgstr "선택한 줄 정렬"
 #  FIXME: make this a resource in the resource file
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:75
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:133
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:183
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:206
 msgid "Source"
 msgstr "소스"
 
@@ -21152,7 +21144,6 @@ msgstr "시작 클래스"
 msgid "Startup project"
 msgstr "시작 프로젝트"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1056
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.NewStashDialog.cs:18
 msgid "Stash"
 msgstr "스태시"
@@ -21160,6 +21151,21 @@ msgstr "스태시"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs:23
 msgid "Stash Manager"
 msgstr "스태시 관리자"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1204
+#, fuzzy
+msgid "Stash and Merge"
+msgstr "스태시 관리자"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1154
+#, fuzzy
+msgid "Stash and Rebase"
+msgstr "스태시 관리자"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1831
+#, fuzzy
+msgid "Stash and Switch"
+msgstr "저장 후 끝내기(_S)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:172
 msgid "Stash applied with conflicts"
@@ -21210,7 +21216,7 @@ msgstr "문이 중복됩니다."
 msgid "Static field in generic type"
 msgstr "제네릭 형식의 정적 필드"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:183
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:184
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:69
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:91
 msgid "Status"
@@ -21266,7 +21272,7 @@ msgstr "중지"
 msgid "Stop Debugger"
 msgstr "디버거 중지"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:120
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:122
 msgid "Stop Debugging"
 msgstr "디버깅 중지"
 
@@ -21567,8 +21573,16 @@ msgstr "{0} 탭으로 전환"
 msgid "Switch to {0}"
 msgstr "{0}(으)로 전환"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1762
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1823
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1842
 msgid "Switching to branch {0}"
+msgstr "{0} 분기로 전환하는 중"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1835
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1859
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1863
+#, fuzzy
+msgid "Switching to branch {0} failed"
 msgstr "{0} 분기로 전환하는 중"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:172
@@ -22053,9 +22067,8 @@ msgid "Text Templating"
 msgstr "텍스트 템플릿"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MimeTypeCatalog.cs:39
-#, fuzzy
 msgid "Text document"
-msgstr "다음 문서"
+msgstr "텍스트 문서"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:118
 msgid "Text file"
@@ -22115,12 +22128,6 @@ msgstr "'{0}' 지시문에는 인수가 정확히 2개 필요합니다."
 #: ../src/addins/AspNet/Razor/Generator/PreprocessedCSharpRazorCodeParser.cs:67
 msgid "The '{0}' directive requires one or two arguments"
 msgstr "'{0}' 지시문에는 인수가 1개나 2개 필요합니다."
-
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:52
-msgid ""
-"The .NET Core SDK installed is not supported. Please install a more recent "
-"version."
-msgstr "설치된 .NET Core SDK가 지원되지 않습니다. 최신 버전을 설치하세요."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Gui/DotNetCoreSdkLocationWidget.UI.cs:154
 msgid "The .NET Core SDK was found"
@@ -22226,12 +22233,16 @@ msgid ""
 "The New Editor Preview has been disabled, but already opened files will need "
 "to be closed and re-opened for the change to take effect."
 msgstr ""
+"새 편집기 미리 보기를 사용할 수 없지만, 변경 내용을 적용하려면 이미 열려 있"
+"는 파일을 닫고 다시 열어야 합니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/DefaultSourceEditorOptions.cs:414
 msgid ""
 "The New Editor Preview has been enabled, but already opened files will need "
 "to be closed and re-opened for the change to take effect."
 msgstr ""
+"새 편집기 미리 보기를 사용할 수 있지만, 변경 내용을 적용하려면 이미 열려 있"
+"는 파일을 닫고 다시 열어야 합니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:969
 msgid ""
@@ -22261,7 +22272,7 @@ msgstr "애플리케이션을 시작할 수 없습니다."
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1940
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:288
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:289
 msgid "The application exited with code: {0}"
 msgstr "애플리케이션이 종료되었습니다(코드: {0})."
 
@@ -22295,9 +22306,8 @@ msgid "The branch <b>{1}</b> will be rebased to the tag <b>{0}</b>."
 msgstr "<b>{1}</b> 분기는 <b>{0}</b> 태그로 기준 주소가 다시 지정됩니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:178
-#, fuzzy
 msgid "The branch could not be created"
-msgstr "분기 이름을 바꿀 수 없습니다."
+msgstr "분기를 만들 수 없습니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:224
 msgid "The branch could not be deleted"
@@ -22346,14 +22356,14 @@ msgstr "프로젝트의 현재 런타임 환경이 버전 1.0으로 설정되어
 msgid "The current scheme has conflicting key bindings"
 msgstr "현재 스키마의 키 바인딩이 충돌합니다."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:118
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:120
 msgid ""
 "The debugger is currently running and will have to be stopped. Do you want "
 "to stop debugging?"
 msgstr ""
 "디버거가 현재 실행 중이며 중지되어야 합니다. 디버깅을 중지하시겠습니까?"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:899
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:901
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs:34
 msgid ""
 "The debugger runtime is not responding. You can wait for it to recover, or "
@@ -22433,19 +22443,19 @@ msgstr "'{0}' 파일을 디버깅할 수 없습니다."
 msgid "The file '{0}' could not be loaded."
 msgstr "'{0}' 파일을 로드할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1629
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1632
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1653
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1635
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1656
 msgid "The file '{0}' could not be opened."
 msgstr "'{0}' 파일을 열 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1625
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1649
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1628
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1652
 msgid "The file '{0}' could not opened. File too large."
 msgstr "'{0}' 파일을 열 수 없습니다. 파일이 너무 큽니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1622
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1646
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1625
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1649
 msgid "The file '{0}' could not opened. {1}"
 msgstr "'{0}' 파일을 열 수 없습니다. {1}"
 
@@ -22832,7 +22842,7 @@ msgstr "포트 값이 허용되는 범위 외부에 있습니다."
 msgid "The project '{0}' has already been added."
 msgstr "'{0}' 프로젝트가 이미 추가되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:948
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:970
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:169
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
@@ -23076,6 +23086,12 @@ msgid ""
 msgstr ""
 "Git 리포지토리에 대해 구성된 사용자 이름과 전자 메일이 MonoDevelop에서 구성"
 "된 사용자 정보와 일치하지 않습니다. 사용할 사용자 정보를 선택하세요."
+
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:55
+msgid ""
+"The version of the .NET Core SDK currently installed ({0}) is not supported "
+"and continuing to use it may result in a broken tooling experience."
+msgstr ""
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:61
 msgid "The web reference could not be added"
@@ -23635,6 +23651,19 @@ msgstr "다른 사용자의 변경 내용"
 msgid "Themed Icons"
 msgstr "테마 아이콘"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1830
+msgid ""
+"There are local changes that conflict with changes committed in the <b>{0}</"
+"b> branch. Would you like to stash the changes and continue with the "
+"checkout?"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1052
+msgid ""
+"There are local changes that conflict with changes committed in the <b>{0}</"
+"b> branch. Would you like to stash the changes and continue?"
+msgstr ""
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:51
 msgid "There are no changes to push."
 msgstr "푸시할 변경 내용이 없습니다."
@@ -23725,7 +23754,12 @@ msgstr "디렉터리 이름을 바꾸는 동안 오류가 발생했습니다."
 msgid "There was an error renaming the file."
 msgstr "파일 이름을 바꾸는 동안 오류가 발생했습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:794
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:116
+#, fuzzy
+msgid "There was an error retrieving the value"
+msgstr "파일 이름을 바꾸는 동안 오류가 발생했습니다."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:793
 msgid "There was an error saving the changes"
 msgstr "변경 내용을 저장하는 동안 오류가 발생했습니다."
 
@@ -23766,6 +23800,7 @@ msgid ""
 msgstr "이 파일에 정책 설정({1})과 다른 줄 끝({0})이 있습니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:725
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:515
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
@@ -24599,11 +24634,11 @@ msgstr "테스트를 실행할 수 없습니다. 어셈블리를 찾을 수 없�
 msgid "Unable to save package source changes.{0}{0}{1}"
 msgstr "패키지 소스 변경 내용을 저장할 수 없습니다.{0}{0}{1}"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:737
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:740
 msgid "Unable to set the next statement to this location."
 msgstr "이 위치에 대한 다음 문을 설정할 수 없습니다."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:735
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:738
 msgid ""
 "Unable to set the next statement. The next statement cannot be set to "
 "another function."
@@ -25412,9 +25447,8 @@ msgid "Version 7.3"
 msgstr "버전 7.3"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:48
-#, fuzzy
 msgid "Version 8"
-msgstr "버전 3"
+msgstr "버전 8"
 
 #  nb.AppendPage (aatp, new Label ("Authors"));
 #  nb.AppendPage (changelog, new Label ("ChangeLog"));
@@ -25625,7 +25659,7 @@ msgstr "시각적 스타일"
 msgid "WARNING: "
 msgstr "경고:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:934
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:956
 msgid ""
 "WARNING: Some documents may need to be closed, and unsaved data will be "
 "lost. You will be asked to save the unsaved documents."
@@ -25633,7 +25667,7 @@ msgstr ""
 "경고: 일부 문서를 닫아야 할 수 있으며 저장하지 않은 데이터는 손실됩니다. 저장"
 "하지 않은 문서를 저장하라는 메시지가 표시됩니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:936
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:958
 msgid ""
 "WARNING: Some documents may need to be reloaded or closed, and unsaved data "
 "will be lost. You will be asked to save the unsaved documents."
@@ -25641,7 +25675,7 @@ msgstr ""
 "경고: 일부 문서를 다시 로드하거나 닫아야 할 수 있으며 저장하지 않은 데이터는 "
 "손실됩니다. 저장하지 않은 문서를 저장하라는 메시지가 표시됩니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:938
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:960
 msgid ""
 "WARNING: Some files may need to be reloaded, and unsaved data will be lost. "
 "You will be asked to save the unsaved files."
@@ -25653,11 +25687,11 @@ msgstr ""
 msgid "WARNING: The branch has not yet been merged to HEAD"
 msgstr "경고: 분기가 HEAD에 병합되지 않았습니다."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1517
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1560
 msgid "Waiting for debugger"
 msgstr "디버거를 기다리는 중"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1489
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1532
 msgid "Waiting for debugger to connect..."
 msgstr "디버거가 연결될 때까지 기다리는 중..."
 
@@ -25857,10 +25891,6 @@ msgstr "시작 페이지"
 msgid "Western"
 msgstr "영문자"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1054
-msgid "What do you want to do?"
-msgstr "원하는 작업을 선택하세요."
-
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:76
 msgid "When a function is entered"
 msgstr "함수가 진입할 경우"
@@ -25927,9 +25957,8 @@ msgstr ""
 "중복됩니다."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1279
-#, fuzzy
 msgid "When on multiple lines"
-msgstr "한 줄에 있는 경우"
+msgstr "여러 줄에 있는 경우"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1325
 msgid "When on single line"
@@ -26325,11 +26354,7 @@ msgstr ""
 msgid "You do not have permission to create to {0}"
 msgstr "{0}에 만들 수 있는 권한이 없습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1053
-msgid "You have uncommitted changes"
-msgstr "커밋되지 않은 변경 내용이 있습니다."
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:770
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:792
 msgid "You may have forgotten to unselect items."
 msgstr "항목의 선택을 취소하는 것을 잊었을 수 있습니다."
 
@@ -27122,6 +27147,7 @@ msgid "_Icon Name:"
 msgstr "아이콘 이름(_I):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:741
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:623
 msgid "_Ignore all"
 msgstr "모두 무시(_I)"
 
@@ -27183,6 +27209,7 @@ msgid "_Jump To {0}"
 msgstr "{0}(으)로 이동(_J)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:725
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:618
 msgid "_Keep changes"
 msgstr "변경 내용 유지(_K)"
 
@@ -27211,6 +27238,7 @@ msgid "_Line..."
 msgstr "줄(_L)..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:986
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:408
 msgid "_Load from autosave"
 msgstr "자동 저장에서 로드(_L)"
 
@@ -27303,7 +27331,7 @@ msgstr "내 코드만 표시합니다(_O)."
 msgid "_Open"
 msgstr "열기(_O)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:938
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:960
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:306
 msgid "_Open All"
 msgstr "모두 열기(_O)"
@@ -27482,10 +27510,12 @@ msgid "_Reload"
 msgstr "다시 로드(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:734
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:622
 msgid "_Reload all"
 msgstr "모두 다시 로드(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:717
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:617
 msgid "_Reload from disk"
 msgstr "디스크에서 다시 로드(_R)"
 
@@ -27839,6 +27869,7 @@ msgid "_Use custom author information for this solution"
 msgstr "이 솔루션에 사용자 지정 작성자 정보 사용(_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:970
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:405
 msgid "_Use original file"
 msgstr "원본 파일 사용(_U)"
 
@@ -28259,9 +28290,9 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "형식 * ptr = {0} 형식 [ expr ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2020
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:635
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:622
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:643
 msgid "working copy"
 msgstr "작업 복사본"
 
@@ -28550,7 +28581,7 @@ msgstr[1] "{0}개의 누락 메시지"
 msgid "{0} Pad"
 msgstr "{0} 패드"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:278
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:279
 msgid "{0} Status"
 msgstr "{0} 상태"
 
@@ -28697,7 +28728,7 @@ msgstr[1] ""
 "총 {0}개 파일이 처리되었습니다. {1}개가 성공적으로 생성되었으며 {2}개는 경고"
 "가, {3}개는 오류가 발생했습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:328
+#: ../src/addins/MacPlatform/MacPlatform.cs:329
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -28719,11 +28750,11 @@ msgstr ""
 "{0} {1} 상수-식;\n"
 " {0} {2};"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1071
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:1074
 msgid "{0} is a directory"
 msgstr "{0}이(가) 디렉터리입니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:518
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:519
 msgid "{0} is already opened"
 msgstr "{0}이(가) 이미 열려 있습니다."
 
@@ -28801,7 +28832,7 @@ msgstr "{1}에 액세스하기 위한 자격 증명이 {0}에 필요합니다."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:595
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:822
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/SignatureHelpSessionView.cs:344
-#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:181
+#: ../external/vs-editor-core/src/CocoaControls/FindAndReplace/VSFindReplaceView.cs:180
 msgid "{0} of {1}"
 msgstr "{0}/{1}"
 
@@ -28896,7 +28927,7 @@ msgstr "{0} 범위-변수2 {1} 범위2 {2} 문1 {3} 문2 [ {4} 그룹-이름 ]"
 msgid "{0} removed with warnings."
 msgstr "{0}이(가) 제거되었지만 경고가 발생했습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:223
+#: ../src/addins/MacPlatform/MacPlatform.cs:224
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -29120,11 +29151,13 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid "Console application"
-#~ msgstr "콘솔 애플리케이션"
+#~ msgid ""
+#~ "The .NET Core SDK installed is not supported. Please install a more "
+#~ "recent version."
+#~ msgstr "설치된 .NET Core SDK가 지원되지 않습니다. 최신 버전을 설치하세요."
 
-#~ msgid "Invalid credentials were supplied. Aborting operation."
-#~ msgstr "잘못된 자격 증명이 제공되었습니다. 작업을 중단하는 중입니다."
+#~ msgid "What do you want to do?"
+#~ msgstr "원하는 작업을 선택하세요."
 
-#~ msgid "Operation cancelled by the user"
-#~ msgstr "사용자가 작업을 취소했습니다."
+#~ msgid "You have uncommitted changes"
+#~ msgstr "커밋되지 않은 변경 내용이 있습니다."

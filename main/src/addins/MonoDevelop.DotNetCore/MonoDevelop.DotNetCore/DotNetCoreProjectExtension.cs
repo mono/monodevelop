@@ -379,7 +379,7 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
 		{
-			if (e.IsReload) {
+			if (e.IsReload || e.Project.Name != this.Project.Name) {
 				// Ignore. A restore will occur on reload elsewhere.
 				return;
 			}
