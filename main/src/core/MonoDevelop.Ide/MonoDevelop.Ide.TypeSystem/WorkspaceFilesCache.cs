@@ -41,8 +41,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		FilePath cacheDir;
 
 		Dictionary<FilePath, ProjectCache> cachedItems = new Dictionary<FilePath, ProjectCache> ();
+		Dictionary<string, FileLock> writeLockMap = new Dictionary<string, FileLock> ();
 		bool loaded;
-		object writeLock = new object ();
 
 		public void Load (Solution solution)
 		{
@@ -162,12 +162,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var cacheFile = GetProjectCacheFile (proj, projConfig.Id);
 
-			lock (writeLock) {
-				var serializer = new JsonSerializer ();
-				using (var fs = File.Open (cacheFile, FileMode.Create))
-				using (var sw = new StreamWriter (fs)) {
-					serializer.Serialize (sw, item);
+			FileLock fileLock = AcquireWriteLock (cacheFile);
+			try {
+				lock (fileLock) {
+					var serializer = new JsonSerializer ();
+					using (var fs = File.Open (cacheFile, FileMode.Create))
+					using (var sw = new StreamWriter (fs)) {
+						serializer.Serialize (sw, item);
+					}
 				}
+			} finally {
+				ReleaseWriteLock (cacheFile, fileLock);
 			}
 		}
 
@@ -246,6 +251,32 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		void ReleaseWriteLock (string cacheFile, FileLock fileLock)
+		{
+			lock (writeLockMap) {
+				fileLock.ReferenceCount--;
+				if (fileLock.ReferenceCount == 0)
+					writeLockMap.Remove (cacheFile);
+			}
+		}
+
+		FileLock AcquireWriteLock (string cacheFile)
+		{
+			lock (writeLockMap) {
+				FileLock fileLock = null;
+				if (writeLockMap.TryGetValue (cacheFile, out fileLock)) {
+					fileLock.ReferenceCount++;
+					return fileLock;
+				}
+
+				fileLock = new FileLock {
+					ReferenceCount = 1
+				};
+				writeLockMap [cacheFile] = fileLock;
+				return fileLock;
+			}
+		}
+
 		[Serializable]
 		class ProjectCache
 		{
@@ -263,6 +294,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			public string FilePath;
 			public string [] Aliases = Array.Empty<string> ();
+		}
+
+		class FileLock
+		{
+			public int ReferenceCount;
 		}
 	}
 
