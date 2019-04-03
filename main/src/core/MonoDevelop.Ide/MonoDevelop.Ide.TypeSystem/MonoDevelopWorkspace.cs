@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		Lazy<MetadataReferenceHandler> metadataHandler;
 		ProjectionData Projections { get; }
 		OpenDocumentsData OpenDocuments { get; }
-		ProjectDataMap ProjectMap { get; }
+		internal ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
@@ -349,9 +349,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			try {
-				var (solution, si) = await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, token).ConfigureAwait (false);
-				if (si != null)
-					OnSolutionReloaded (si);
+				await Task.Run (async () => {
+					ProjectHandler.ReloadProjectCache ();
+					var (solution, si) = await InternalLoadSolution (token).ConfigureAwait (false);
+					if (si != null)
+						OnSolutionReloaded (si);
+				});
 			} catch (OperationCanceledException) {
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (x => x is OperationCanceledException);
@@ -370,6 +373,86 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+		}
+
+		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
+		{
+			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+		}
+
+		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoadSolution (CancellationToken cancellationToken)
+		{
+			// Try the cache first.
+			var (solution, solutionInfo) = await TryLoadSolutionFromCache (cancellationToken).ConfigureAwait (false);
+			if (solutionInfo != null) {
+				// Start full load of projects in the background.
+				ReloadProjects (cancellationToken).Ignore ();
+				return (solution, solutionInfo);
+			}
+
+			// No cache.
+			return await TryLoadSolution (cancellationToken).ConfigureAwait (false);
+		}
+
+		async Task ReloadProjects (CancellationToken cancellationToken)
+		{
+			try {
+				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
+
+				foreach (var project in GetProjectsOrderedByMostRecentlyUsed ()) {
+					if (cts.IsCancellationRequested)
+						return;
+					if (!ProjectHandler.CanLoadProject (project))
+						continue;
+
+					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, cts.Token).ConfigureAwait (false);
+					if (projectInfo == null)
+						continue;
+
+					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
+						// Cache did not contain project so add it to the solution.
+						OnProjectAdded (projectInfo);
+					}
+
+					lock (projectModifyLock) {
+						// TODO: Need to do anything with docs?
+						// correct openDocument ids - they may change due to project reload.
+						//OpenDocuments.CorrectDocumentIds (project, t.Result);
+						OnProjectReloaded (projectInfo);
+						ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+		}
+
+		/// <summary>
+		/// Returns an ordered list of projects with the most recently used projects first.
+		/// </summary>
+		IEnumerable<MonoDevelop.Projects.Project> GetProjectsOrderedByMostRecentlyUsed ()
+		{
+			var projects = MonoDevelopSolution.GetAllProjects ();
+
+			var userPrefs = MonoDevelopSolution.UserProperties.GetValue<Gui.WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
+			if (userPrefs == null || userPrefs.Files.Count == 0)
+				return projects;
+
+			var set = new HashSet<MonoDevelop.Projects.Project> (projects);
+			var orderedProjects = new List<MonoDevelop.Projects.Project> (set.Count);
+
+			foreach (var documentUserPrefs in userPrefs.Files) {
+				var fileName = MonoDevelopSolution.BaseDirectory.Combine (documentUserPrefs.FileName);
+				foreach (var project in MonoDevelopSolution.GetProjectsContainingFile (fileName)) {
+					if (set.Remove (project)) {
+						orderedProjects.Add (project);
+					}
+				}
+			}
+
+			orderedProjects.AddRange (set);
+
+			return orderedProjects;
 		}
 
 		internal void UnloadSolution ()
@@ -1193,7 +1276,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					cts = new CancellationTokenSource ();
 					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null).ContinueWith (t => {
+						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null).ContinueWith (t => {
 							if (t.IsCanceled)
 								return;
 							if (t.IsFaulted) {
