@@ -33,7 +33,7 @@ namespace MonoDevelop.VersionControl.Git
 	abstract class GitVersionControl : VersionControlSystem
 	{
 		string version = null;
-		bool initialized;
+		bool failedToInitialize;
 
 		const string GitExtension = ".git";
 
@@ -87,12 +87,11 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
 			} catch (System.DllNotFoundException ex) {
-				if (!initialized) {
-					initialized = true;
-					LoggingService.LogInternalError ("Error when loading the libgit libraries", ex);
-					MessageService.ShowError (GettextCatalog.GetString ("Error initializing Version Control"), ex);
-				}
-				return null;
+				if(failedToInitialize)
+					return null;
+				failedToInitialize = true;
+				LoggingService.LogInternalError ("Error when loading the libgit libraries", ex);
+				MessageService.ShowError (GettextCatalog.GetString ("Error initializing Version Control"), ex);
 			}
 			if (!string.IsNullOrEmpty (repo)) {
 				repo = repo.TrimEnd ('\\', '/');
