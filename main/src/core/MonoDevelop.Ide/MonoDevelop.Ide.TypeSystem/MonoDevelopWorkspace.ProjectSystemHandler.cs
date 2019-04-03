@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectionData projections;
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
-			readonly HackyWorkspaceFilesCache hackyCache;
+			WorkspaceFilesCache workspaceCache;
 			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
 			IDisposable persistentStorageLocationServiceRegistration;
 
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.workspace = workspace;
 				this.projectMap = projectMap;
 				this.projections = projections;
-				this.hackyCache = new HackyWorkspaceFilesCache (workspace.MonoDevelopSolution);
+				this.workspaceCache = new WorkspaceFilesCache ();
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, workspace.compositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
@@ -97,11 +97,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> ();
 			}
 
-			internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
+			internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject, ProjectCacheInfo cacheInfo)
 			{
 				var projectId = projectMap.GetOrCreateId (p, oldProject);
 
-				var config = IdeApp.IsInitialized ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+				var config = GetDotNetProjectConfiguration (p);
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
 				FilePath fileName = IdeApp.IsInitialized ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 
@@ -109,19 +109,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					fileName = new FilePath (p.Name + ".dll");
 				}
 
-				if (!hackyCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var sourceFiles, out var analyzerFiles, out var references, out var projectReferences)) {
-					(references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token).ConfigureAwait (false);
-					if (token.IsCancellationRequested)
-						return null;
-
-					sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
-					if (token.IsCancellationRequested)
-						return null;
-
-					analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
-
+				if (cacheInfo == null) {
+					cacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
 					if (config != null)
-						hackyCache.Update (config, p, projectMap, sourceFiles, analyzerFiles, references, projectReferences);
+						workspaceCache.Update (config, p, projectMap, cacheInfo);
 				}
 
 				if (token.IsCancellationRequested)
@@ -135,9 +126,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					await workspace.LoadLock.WaitAsync ().ConfigureAwait (false);
 					//when reloading e.g. after a save, preserve document IDs
 					oldProjectData = projectMap.RemoveData (projectId);
-					projectData = projectMap.CreateData (projectId, references);
+					projectData = projectMap.CreateData (projectId, cacheInfo.References);
 
-					var documents = await CreateDocuments (projectData, p, token, sourceFiles, oldProjectData).ConfigureAwait (false);
+					var documents = await CreateDocuments (projectData, p, token, cacheInfo.SourceFiles, oldProjectData).ConfigureAwait (false);
 					if (documents == null)
 						return null;
 
@@ -159,9 +150,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					cp?.CreateCompilationOptions (),
 					cp?.CreateParseOptions (config),
 					mainDocuments,
-					projectReferences,
-					references.Select (x => x.CurrentSnapshot),
-					analyzerReferences: analyzerFiles.SelectAsArray (x => {
+					cacheInfo.ProjectReferences,
+					cacheInfo.References.Select (x => x.CurrentSnapshot),
+					analyzerReferences: cacheInfo.AnalyzerFiles.SelectAsArray (x => {
 						var analyzer = new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp);
 						analyzersToDispose.Add (analyzer);
 						return analyzer.GetReference ();
@@ -181,6 +172,31 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			static DotNetProjectConfiguration GetDotNetProjectConfiguration (MonoDevelop.Projects.Project p)
+			{
+				return IdeApp.IsInitialized ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+			}
+
+			async Task<ProjectCacheInfo> LoadProjectCacheInfo (MonoDevelop.Projects.Project p, DotNetProjectConfiguration config, CancellationToken token)
+			{
+				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token).ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
+
+				var sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
+
+				var analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+
+				return new ProjectCacheInfo {
+					AnalyzerFiles = analyzerFiles,
+					SourceFiles = sourceFiles,
+					ProjectReferences = projectReferences,
+					References = references
+				};
+			}
+
 			async Task<ConcurrentBag<ProjectInfo>> CreateProjectInfos (IEnumerable<MonoDevelop.Projects.Project> mdProjects, CancellationToken token)
 			{
 				var projects = new ConcurrentBag<ProjectInfo> ();
@@ -189,11 +205,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var proj in mdProjects) {
 					if (token.IsCancellationRequested)
 						return null;
-					if (!(proj is DotNetProject netProj))
+					if (!CanLoadProject (proj))
 						continue;
-					if (!netProj.SupportsRoslyn)
-						continue;
-					var tp = LoadProject (proj, token, null).ContinueWith (t => {
+					var tp = LoadProject (proj, token, null, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
 					});
@@ -205,6 +219,45 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 
 				return projects;
+			}
+
+			/// <summary>
+			/// TODO: Logic is very similar to CreateProjectInfos - can we reduce the duplication?
+			/// </summary>
+			async Task<ConcurrentBag<ProjectInfo>> CreateProjectInfosFromCache (IEnumerable<MonoDevelop.Projects.Project> mdProjects, CancellationToken token)
+			{
+				var projects = new ConcurrentBag<ProjectInfo> ();
+				var allTasks = new List<Task> ();
+
+				foreach (var proj in mdProjects) {
+					if (token.IsCancellationRequested)
+						return null;
+					if (!CanLoadProject (proj))
+						continue;
+					if (!workspaceCache.TryGetCachedItems (proj, workspace.MetadataReferenceManager, projectMap, out var cacheInfo))
+						continue;
+
+					var tp = LoadProject (proj, token, null, cacheInfo).ContinueWith (t => {
+						if (!t.IsCanceled)
+							projects.Add (t.Result);
+					});
+					allTasks.Add (tp);
+				}
+
+				if (allTasks.Count == 0) {
+					return null;
+				}
+
+				await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
+
+				return projects;
+			}
+
+			internal bool CanLoadProject (MonoDevelop.Projects.Project project)
+			{
+				return (project is DotNetProject dotNetProject) && dotNetProject.SupportsRoslyn;
 			}
 
 			bool IsModifiedWhileLoading (MonoDevelop.Projects.Solution solution)
@@ -222,6 +275,30 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				return false;
+			}
+
+			internal async Task<ProjectInfo> LoadProjectIfCacheOutOfDate (MonoDevelop.Projects.Project p, CancellationToken token)
+			{
+				if (!workspaceCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var cacheInfo)) {
+					// No cached info need to load the project
+					return await LoadProject (p, token, null, null).ConfigureAwait (false);
+				}
+
+				var config = GetDotNetProjectConfiguration (p);
+				var updatedCacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
+				if (updatedCacheInfo == null)
+					return null;
+
+				workspaceCache.OnCacheInfoUsed (p);
+
+				if (updatedCacheInfo.Equals (cacheInfo))
+					return null;
+
+				// Update cache.
+				if (config != null)
+					workspaceCache.Update (config, p, projectMap, updatedCacheInfo);
+
+				return await LoadProject (p, token, null, updatedCacheInfo).ConfigureAwait (false);
 			}
 
 			/// <summary>
@@ -300,6 +377,45 @@ namespace MonoDevelop.Ide.TypeSystem
 						ReloadModifiedProjects ();
 						return (solution, solutionInfo);
 					}
+				}
+			}
+
+			internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> CreateSolutionInfoFromCache (MonoDevelop.Projects.Solution sol, CancellationToken ct)
+			{
+				return Task.Run (delegate {
+					return CreateSolutionInfoFromCacheInternal (sol, ct);
+				});
+
+				async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> CreateSolutionInfoFromCacheInternal (MonoDevelop.Projects.Solution solution, CancellationToken token)
+				{
+					projections.ClearOldProjectionList ();
+					solutionData = new SolutionData ();
+
+					workspaceCache.Load (solution);
+
+					var projectInfos = await CreateProjectInfosFromCache (solution.GetAllProjects (), token).ConfigureAwait (false);
+					if (projectInfos == null)
+						return (solution, null);
+
+					if (token.IsCancellationRequested)
+						return (solution, null);
+
+					var solutionId = GetSolutionId (solution);
+					var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projectInfos);
+
+					lock (addLock) {
+						if (!added) {
+							added = true;
+							OnSolutionOpened (workspace, solutionInfo);
+						}
+					}
+
+					// Clear modified projects during load. The projects will be loaded later.
+					lock (workspace.projectModifyLock) {
+						workspace.modifiedProjects.RemoveAll (p => p.ParentSolution == solution);
+					}
+
+					return (solution, solutionInfo);
 				}
 			}
 
@@ -416,6 +532,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			static IEnumerable<string> GetFolders (string projectName, MonoDevelop.Projects.ProjectFile f)
 			{
 				return new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+			}
+
+			internal void ReloadProjectCache ()
+			{
+				workspaceCache = new WorkspaceFilesCache ();
+				workspaceCache.Load (workspace.MonoDevelopSolution);
 			}
 
 			public void Dispose ()

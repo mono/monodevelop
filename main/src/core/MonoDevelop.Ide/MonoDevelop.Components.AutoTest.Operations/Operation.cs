@@ -32,5 +32,18 @@ namespace MonoDevelop.Components.AutoTest.Operations
 	{
 		public abstract List<AppResult> Execute (List<AppResult> resultSet);
 	}
+
+	/// <summary>
+	/// Marker interface to denote an operation does filtering
+	/// </summary>
+	interface IFilterOperation
+	{
+		/// <summary>
+		/// Filter the specified result.
+		/// </summary>
+		/// <returns>Null if the item should be ignored, result if it's not filtered.</returns>
+		/// <param name="result">The result to filter.</param>
+		AppResult Filter (AppResult result);
+	}
 }
 

@@ -27,9 +27,9 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class PropertyOperation : Operation
+	public class PropertyOperation : Operation, IFilterOperation
 	{
-		string PropertyName;
+		internal string PropertyName;
 		object DesiredValue;
 
 		public PropertyOperation (string propertyName, object desiredValue)
@@ -50,6 +50,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			}
 
 			return newResultSet;
+		}
+
+		public AppResult Filter (AppResult result)
+		{
+			return result.Property (PropertyName, DesiredValue);
 		}
 
 		public override string ToString ()
