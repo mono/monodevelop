@@ -103,7 +103,7 @@ namespace MonoDevelop.DesignerSupport
 #if MAC
 		void Widget_Focused (object o, Gtk.FocusedArgs args)
 		{
-			nativeGrid.BecomeFirstResponder ();
+			nativeGrid.Window.MakeFirstResponder (nativeGrid);
 		}
 #endif
 		protected override void Initialize (IPadWindow container)
