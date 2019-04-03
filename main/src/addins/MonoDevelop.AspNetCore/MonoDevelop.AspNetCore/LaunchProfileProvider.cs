@@ -106,10 +106,10 @@ namespace MonoDevelop.AspNetCore
 					File.WriteAllText (launchSettingsJsonPath, jsonDocString);
 				}
 			} catch (IOException ioe) {
-				string message = string.Format ("Failed to write {0}", launchSettingsJsonPath);
+				string message = GettextCatalog.GetString ("Failed to write {0}", launchSettingsJsonPath);
 				ReportError (message, ioe);
 			} catch (UnauthorizedAccessException uae) {
-				string message = string.Format ("Failed to write {0}. Unable to access file or access is denied", launchSettingsJsonPath);
+				string message = GettextCatalog.GetString ("Failed to write {0}. Unable to access file or access is denied", launchSettingsJsonPath);
 				ReportError (message, uae);
 			}
 		}
@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNetCore
 		void ReportError (string message, Exception ex)
 		{
 			LoggingService.LogError (message, ex);
-			MessageService.ShowError (GettextCatalog.GetString (message));
+			MessageService.ShowError (message);
 		}
 
 		public LaunchProfileData CreateDefaultProfile ()
