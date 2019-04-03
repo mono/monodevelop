@@ -561,7 +561,7 @@ namespace MonoDevelop.Projects.MSBuild
 				ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtimeElement, "AppContextSwitchOverrides", "value", "Switch.System.IO.UseLegacyPathHandling=false");
 			}
 
-			foreach (var toolset in doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")) {
+			foreach (var toolset in doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset") ?? Enumerable.Empty<XElement> ()) {
 
 				// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
 				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, append: false, insertBefore: true);
@@ -595,7 +595,7 @@ namespace MonoDevelop.Projects.MSBuild
 						SetMSBuildConfigProperty (toolset, path.Property, path.Path);
 				}
 
-				var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
+				var projectImportSearchPaths = toolset.Element ("projectImportSearchPaths");
 				if (projectImportSearchPaths != null) {
 					var os = Platform.IsMac ? "osx" : Platform.IsWindows ? "windows" : "unix";
 					XElement searchPaths = projectImportSearchPaths.Elements ("searchPaths").FirstOrDefault (sp => sp.Attribute ("os")?.Value == os);
@@ -607,8 +607,9 @@ namespace MonoDevelop.Projects.MSBuild
 					foreach (var path in MSBuildProjectService.GetProjectImportSearchPaths (runtime, false))
 						SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, append: true, insertBefore: false);
 				}
-				doc.Save (destinationConfigFile);
 			}
+
+			doc.Save (destinationConfigFile);
 
 			// Update the sdk list for the MD resolver
 			SdkInfo.SaveConfig (mdResolverConfig, MSBuildProjectService.FindRegisteredSdks ());
