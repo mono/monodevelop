@@ -95,7 +95,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var compactImage = ImageService.GetIcon (Stock.CompactDisplay, Gtk.IconSize.Menu);
 			var addImage = ImageService.GetIcon (Stock.Add, Gtk.IconSize.Menu);
 
-			horizontalStackView = NSStackViewExtensions.CreateHorizontalStackView (IconsSpacing);
+			horizontalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
 			AddArrangedSubview (horizontalStackView);
 
 			horizontalStackView.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 0).Active = true;
