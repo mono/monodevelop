@@ -175,9 +175,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}));
 			}
 
-			var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
-			cacheService?.FlushCaches ();
-
 			if (!ShouldTurnOffFullSolutionAnalysis ())
 				return;
 
