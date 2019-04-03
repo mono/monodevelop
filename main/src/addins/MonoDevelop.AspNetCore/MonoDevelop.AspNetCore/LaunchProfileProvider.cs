@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -95,14 +97,27 @@ namespace MonoDevelop.AspNetCore
 
 			doc.Add ("profiles", ProfilesObject);
 
-			string jsonDocString = doc.ToString (Formatting.Indented);
-			string propertiesDirectory = Path.GetDirectoryName (launchSettingsJsonPath);
-			Directory.CreateDirectory (propertiesDirectory);
+			try {
+				string jsonDocString = doc.ToString (Formatting.Indented);
+				string propertiesDirectory = Path.GetDirectoryName (launchSettingsJsonPath);
+				Directory.CreateDirectory (propertiesDirectory);
 
-			lock (fileLocker) {
-				File.WriteAllText (launchSettingsJsonPath, jsonDocString);
-			};
+				lock (fileLocker) {
+					File.WriteAllText (launchSettingsJsonPath, jsonDocString);
+				}
+			} catch (IOException ioe) {
+				string message = string.Format ("Failed to write {0}", launchSettingsJsonPath);
+				ReportError (message, ioe);
+			} catch (UnauthorizedAccessException uae) {
+				string message = string.Format ("Failed to write {0}. Unable to access file or access is denied", launchSettingsJsonPath);
+				ReportError (message, uae);
+			}
+		}
 
+		void ReportError (string message, Exception ex)
+		{
+			LoggingService.LogError (message, ex);
+			MessageService.ShowError (GettextCatalog.GetString (message));
 		}
 
 		public LaunchProfileData CreateDefaultProfile ()
