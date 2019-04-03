@@ -561,8 +561,7 @@ namespace MonoDevelop.Projects.MSBuild
 				ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtimeElement, "AppContextSwitchOverrides", "value", "Switch.System.IO.UseLegacyPathHandling=false");
 			}
 
-			var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
-			if (toolset != null) {
+			foreach (var toolset in doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")) {
 
 				// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
 				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, append: false, insertBefore: true);
