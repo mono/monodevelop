@@ -769,35 +769,67 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		object workspaceLoadLock = new object ();
+		TaskCompletionSource<bool> workspaceLoadTaskSource;
 		StatusBarIcon statusIcon = null;
 		int workspacesLoading = 0;
 
-		internal void ShowTypeInformationGatheringIcon ()
+		public Task ProcessPendingLoadOperations ()
 		{
-			Gtk.Application.Invoke ((o, args) => {
-				workspacesLoading++;
-				if (statusIcon != null)
-					return;
-
-				if (IdeApp.IsInitialized)
-					statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
-				if (statusIcon != null)
-					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
-			});
+			lock (workspaceLoadLock) {
+				return workspaceLoadTaskSource?.Task ?? Task.CompletedTask;
+			}
 		}
 
-		internal void HideTypeInformationGatheringIcon (Action callback = null)
+		internal void BeginWorkspaceLoad ()
 		{
-			Gtk.Application.Invoke ((o, args) => {
-				workspacesLoading--;
-				if (workspacesLoading == 0) {
-					if (statusIcon != null) {
-						statusIcon.Dispose ();
-						statusIcon = null;
-					}
-					callback?.Invoke ();
+			lock (workspaceLoadLock) {
+				if (++workspacesLoading == 1) {
+					workspaceLoadTaskSource = new TaskCompletionSource<bool> ();
+					UpdateTypeInformationGatheringIcon ();
 				}
-			});
+			}
+		}
+
+		internal void EndWorkspaceLoad (Action callback = null)
+		{
+			TaskCompletionSource<bool> completedTask = null;
+
+			lock (workspaceLoadLock) {
+				if (--workspacesLoading == 0) {
+					completedTask = workspaceLoadTaskSource;
+					workspaceLoadTaskSource = null;
+					UpdateTypeInformationGatheringIcon ();
+				}
+			}
+			if (completedTask != null) {
+				completedTask.SetResult (true);
+				Runtime.RunInMainThread (() => {
+					callback?.Invoke ();
+				});
+			}
+		}
+
+		void UpdateTypeInformationGatheringIcon ()
+		{
+			if (!IdeApp.IsInitialized)
+				return;
+			Runtime.RunInMainThread (() => {
+				lock (workspaceLoadLock) {
+					if (workspacesLoading > 0) {
+						if (statusIcon == null) {
+							statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
+							if (statusIcon != null)
+								statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
+						}
+					} else {
+						if (statusIcon != null) {
+							statusIcon.Dispose ();
+							statusIcon = null;
+						}
+					}
+				}
+			}).Ignore ();
 		}
 	}
 }

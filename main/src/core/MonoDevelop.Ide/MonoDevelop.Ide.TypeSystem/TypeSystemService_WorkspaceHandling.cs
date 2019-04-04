@@ -123,13 +123,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
+		internal async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
 				await CreateWorkspaces (item, wsList);
 				//If we want BeginTiming to work correctly we need to `await`
-				await InternalLoad (wsList, progressMonitor, cancellationToken, showStatusIcon).ConfigureAwait (false);
+				await InternalLoad (wsList, progressMonitor, cancellationToken).ConfigureAwait (false);
 				return wsList;
 			}
 		}
@@ -152,13 +152,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		async Task InternalLoad (List<MonoDevelopWorkspace> mdWorkspaces, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
+		async Task InternalLoad (List<MonoDevelopWorkspace> mdWorkspaces, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			foreach (var workspace in mdWorkspaces) {
-				if (showStatusIcon)
-					workspace.ShowStatusIcon ();
-
-				var (solution, solutionInfo) = await workspace.InternalLoadSolution (cancellationToken).ConfigureAwait (false);
+				var (solution, solutionInfo) = await workspace.LoadSolution (cancellationToken).ConfigureAwait (false);
 
 				if (workspaceRequests.TryGetValue (solution, out var request)) {
 					if (solutionInfo == null) {
@@ -169,10 +166,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						request.TrySetResult (workspace);
 					}
 				}
-
-				if (showStatusIcon)
-					workspace.HideStatusIcon ();
-
 			}
 		}
 

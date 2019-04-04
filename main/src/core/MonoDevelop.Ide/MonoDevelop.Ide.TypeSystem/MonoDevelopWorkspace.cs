@@ -358,30 +358,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			src = new CancellationTokenSource ();
 		}
 
+		public event EventHandler WorkspaceLoaded;
 		internal static event EventHandler LoadingFinished;
 
-		internal void HideStatusIcon ()
+		void BeginLoad ()
 		{
-			typeSystemService.HideTypeInformationGatheringIcon (() => {
+			typeSystemService.BeginWorkspaceLoad ();
+		}
+
+		void EndLoad ()
+		{
+			typeSystemService.EndWorkspaceLoad (() => {
 				LoadingFinished?.Invoke (this, EventArgs.Empty);
 				WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
 			});
 		}
 
-		public event EventHandler WorkspaceLoaded;
-
-		internal void ShowStatusIcon ()
-		{
-			typeSystemService.ShowTypeInformationGatheringIcon ();
-		}
-
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			ShowStatusIcon ();
 			CancelLoad ();
 			var token = src.Token;
 
 			try {
+				BeginLoad ();
 				await Task.Run (async () => {
 					ProjectHandler.ReloadProjectCache ();
 					var (solution, si) = await InternalLoadSolution (token).ConfigureAwait (false);
@@ -394,7 +393,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while reloading solution.", ex);
 			} finally {
-				HideStatusIcon ();
+				EndLoad ();
 			}
     }
 
@@ -403,7 +402,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.ReloadModifiedProject (project);
 		}
 
-		internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
+		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
@@ -413,7 +412,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
-		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoadSolution (CancellationToken cancellationToken)
+		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> LoadSolution (CancellationToken cancellationToken)
+		{
+			try {
+				BeginLoad ();
+				return await InternalLoadSolution (cancellationToken);
+			} finally {
+				EndLoad ();
+			}
+		}
+
+		async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoadSolution (CancellationToken cancellationToken)
 		{
 			// Try the cache first.
 			var (solution, solutionInfo) = await TryLoadSolutionFromCache (cancellationToken).ConfigureAwait (false);
@@ -448,12 +457,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 					lock (projectModifyLock) {
-						// TODO: Need to do anything with docs?
-						// correct openDocument ids - they may change due to project reload.
-						//OpenDocuments.CorrectDocumentIds (project, t.Result);
 						OnProjectReloaded (projectInfo);
-						ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
 					}
+					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);

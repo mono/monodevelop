@@ -174,7 +174,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static DotNetProjectConfiguration GetDotNetProjectConfiguration (MonoDevelop.Projects.Project p)
 			{
-				return IdeApp.IsInitialized ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+				var workspace = Runtime.PeekService<RootWorkspace> ();
+				return workspace != null ? p.GetConfiguration (workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : p.DefaultConfiguration as MonoDevelop.Projects.DotNetProjectConfiguration;
 			}
 
 			async Task<ProjectCacheInfo> LoadProjectCacheInfo (MonoDevelop.Projects.Project p, DotNetProjectConfiguration config, CancellationToken token)

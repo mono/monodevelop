@@ -49,10 +49,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (loaded)
 				return;
 
-			if (!IdeApp.IsInitialized || solution == null)
+			if (solution == null || Runtime.PeekService<RootWorkspace> () == null)
 				return;
 
-			if (solution.FileName.IsNullOrEmpty)
+			if (solution == null || solution.FileName.IsNullOrEmpty)
 				return;
 
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("project-cache");
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void LoadCache (Solution sol)
 		{
-			var solConfig = sol.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			var solConfig = sol.GetConfiguration (IdeServices.Workspace.ActiveConfiguration);
 
 			var serializer = new JsonSerializer ();
 			foreach (var project in sol.GetAllProjects ()) {
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			metadataReferences = mrBuilder.MoveToImmutable ();
 
 			var sol = p.ParentSolution;
-			var solConfig = sol.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			var solConfig = sol.GetConfiguration (IdeServices.Workspace.ActiveConfiguration);
 			var allProjects = sol.GetAllProjects ().ToDictionary (x => x.FileName, x => x);
 
 			var prBuilder = ImmutableArray.CreateBuilder<Microsoft.CodeAnalysis.ProjectReference> (cachedData.ProjectReferences.Length);
