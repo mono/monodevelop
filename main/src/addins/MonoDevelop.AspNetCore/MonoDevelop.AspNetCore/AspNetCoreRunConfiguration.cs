@@ -37,7 +37,7 @@ namespace MonoDevelop.AspNetCore
 	{
 		readonly IDictionary<string, JToken> globalSettings = new Dictionary<string, JToken> ();
 		internal LaunchProfileProvider launchProfileProvider;
-		readonly string projectName; 
+		readonly string projectName = string.Empty;
 
 		[ItemProperty (DefaultValue = null)]
 		public PipeTransportSettings PipeTransport { get; set; }
@@ -63,14 +63,26 @@ namespace MonoDevelop.AspNetCore
 		public AspNetCoreRunConfiguration (string name, DotNetProject project)
 			: base (name)
 		{
-			Profiles = new Dictionary<string, LaunchProfileData> ();
-			ActiveProfile = string.Empty;
+			Initialize ();
+
 			projectName = project.DefaultNamespace;
 
 			launchProfileProvider = new LaunchProfileProvider (project);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			InitializeLaunchSettings ();
+		}
+
+		public AspNetCoreRunConfiguration (string name)
+			: base (name)
+		{
+			Initialize ();
+		}
+
+		void Initialize ()
+		{
+			Profiles = new Dictionary<string, LaunchProfileData> ();
+			ActiveProfile = string.Empty;
 		}
 
 		bool SetActiveProfile ()
@@ -100,6 +112,9 @@ namespace MonoDevelop.AspNetCore
 
 		internal void InitializeLaunchSettings ()
 		{
+			if (launchProfileProvider == null)
+				return;
+
 			Profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
 
 			ActiveProfile = string.Empty;
@@ -162,7 +177,7 @@ namespace MonoDevelop.AspNetCore
 					CurrentProfile.EnvironmentVariables [pair.Key] = pair.Value;
 			}
 
-			launchProfileProvider.SaveLaunchSettings (Profiles.ToSerializableForm ());
+			launchProfileProvider?.SaveLaunchSettings (Profiles.ToSerializableForm ());
 		}
 
 		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
