@@ -74,7 +74,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 		}
 
 		public override void PreprocessMouseRightButtonDown (MouseEvent e)
-			=> MoveCaretToPosition (textView, e.Event);
+			=> textView.MoveCaretToPosition (e.Event);
 
 		public override void PreprocessMouseRightButtonUp (MouseEvent e)
 		{
@@ -82,10 +82,10 @@ namespace MonoDevelop.TextEditor.Cocoa
 			var extensionContext = controller.ExtensionContext;
 			var commandEntrySet = IdeApp.CommandService.CreateCommandEntrySet (extensionContext, menuPath);
 
-			var menuPosition = GetViewRelativeMousePosition (textView, e.Event);
+			var menuPosition = textView.GetViewRelativeMousePosition (e.Event);
 
 			IdeApp.CommandService.ShowContextMenu (
-				textView.VisualElement,
+				view.Control,
 				(int)menuPosition.X,
 				(int)menuPosition.Y,
 				commandEntrySet,

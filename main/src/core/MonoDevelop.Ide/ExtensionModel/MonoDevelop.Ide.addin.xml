@@ -11,6 +11,30 @@
 		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
 		<Import assembly="Microsoft.VisualStudio.Threading.dll" />
 		<Import assembly="Microsoft.VisualStudio.Validation.dll" />
+		<Import assembly="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Language.dll" />
+		<Import assembly="Microsoft.VisualStudio.Language.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Language.Utilities.dll" />
+		<Import assembly="Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Logic.Text.Find.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Import assembly="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
+		<Import assembly="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
 	</Runtime>
 
 	<!-- Extension ponts -->
@@ -424,9 +448,34 @@
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
 		<Assembly file="Microsoft.VisualStudio.CodingConventions.dll" />
+		<Assembly file="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Language.dll" />
+		<Assembly file="Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Language.Utilities.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.Find.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.Extras.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Assembly file="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
 		<Assembly file="MonoDevelop.Ide.dll"/>
 	</Extension>
 

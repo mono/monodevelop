@@ -262,7 +262,8 @@ namespace MonoDevelop.Debugger
 
 			// if the view does not have any focus, grab it
 			if (!textViewHost.TextView.HasAggregateFocus) {
-				textViewHost.TextView.VisualElement.BecomeFirstResponder ();
+				var viewToFocus = textViewHost.TextView.VisualElement;
+				viewToFocus.Window.MakeFirstResponder (viewToFocus);
 			}
 
 			// Position the drag/drop caret and ensure it's visible.

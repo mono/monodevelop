@@ -12,6 +12,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
@@ -42,21 +43,22 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.InfoBar.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Extras.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
   </ItemGroup>
 
-  <Import Project="$(RootDirectory)external\vs-editor-core\build\Environment.props" />
-  <Import Project="$(RootDirectory)external\vs-editor-core\src\Editor\Consolidated\Consolidated.projitems" />
+  <Import Project="$(RootDirectory)external\vs-editor-api\build\Environment.props" />
+  <Import Project="$(RootDirectory)external\vs-editor-api\ProjectReferences.projitems" />
 
   <!-- MSBuild doesn't copy the FPF references as they match BCL assembly names -->
   <Target Name="CopyFPFAssemblies" AfterTargets="_CopyFilesMarkedCopyLocal" Condition="'$(ReferencesVSEditorCopyToOutput)'=='true'">
     <PropertyGroup>
       <FPFConfiguration>Release</FPFConfiguration>
       <FPFConfiguration Condition="$(Configuration.Contains('Debug'))">Debug</FPFConfiguration>
-      <FPFOutputPath>$(RootDirectory)external\vs-editor-core\bin\FPF\$(FPFConfiguration)\net472\</FPFOutputPath>
+      <FPFOutputPath>$(RootDirectory)external\vs-editor-api\bin\FPF\$(FPFConfiguration)\net472\</FPFOutputPath>
     </PropertyGroup>
     <ItemGroup>
       <FPFOutputFiles Include="$(FPFOutputPath)PresentationCore.*" />

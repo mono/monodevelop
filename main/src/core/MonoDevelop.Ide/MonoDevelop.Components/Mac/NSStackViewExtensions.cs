@@ -35,14 +35,6 @@ namespace MonoDevelop.Components.Mac
 		const int RenderingPriority = (int)NSLayoutPriority.Required;
 		const int LowPriority = (int)NSLayoutPriority.DefaultLow - 1;
 
-		public static NSStackView CreateHorizontalStackView (int spacing = 10) => new NSStackView () {
-			Orientation = NSUserInterfaceLayoutOrientation.Horizontal,
-			Alignment = NSLayoutAttribute.CenterY,
-			Spacing = spacing,
-			Distribution = NSStackViewDistribution.Fill,
-			TranslatesAutoresizingMaskIntoConstraints = false
-		};
-
 		public static void AddArrangedSubview (this NSStackView stackView, NSView view, bool expandHorizontally, bool expandVertically)
 		{
 			stackView.AddArrangedSubview (view);
