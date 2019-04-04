@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public sealed class Workbench
 	{
-		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.GetExportedValue<IEditorOperationsFactoryService> ();
+		readonly Lazy<IEditorOperationsFactoryService> editorOperationsFactoryService = new Lazy<IEditorOperationsFactoryService> (() => CompositionManager.GetExportedValue<IEditorOperationsFactoryService> ());
 
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
@@ -635,7 +635,7 @@ namespace MonoDevelop.Ide.Gui
 								doc.SetProject (info.Project);
 							}
 
-							ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService);
+							ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService.Value);
 
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
@@ -667,7 +667,7 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
 					
-					ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService);
+					ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService.Value);
 					
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						doc.RunWhenLoaded (() => {
