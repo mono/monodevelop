@@ -19,6 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if MAC
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -30,7 +31,7 @@ using ObjCRuntime;
 
 namespace Gtk
 {
-	sealed class GtkNSViewHost : Widget
+	public sealed class GtkNSViewHost : Widget
 	{
 		const string LIBGTKQUARTZ = "libgtk-quartz-2.0.dylib";
 
@@ -378,3 +379,4 @@ namespace Gtk
 		#endregion
 	}
 }
+#endif

@@ -136,7 +136,7 @@
 				_label = "Remove Breakpoint" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpointProperties"
 				defaultHandler = "MonoDevelop.Debugger.ShowBreakpointPropertiesHandler"
-				_label = "Edit Breakpoint…" 
+				_label = "Edit Breakpoint…"
 				_displayName = "Edit Breakpoint Properties" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint"
 				_label = "Toggle Breakpoint"
@@ -231,15 +231,15 @@
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		</Condition>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+
+	<!-- <Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
 		<SeparatorItem id = "DebuggerSectionStart" insertafter="Separator1" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement"  />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
 		<SeparatorItem id = "DebuggerSectionEnd" />
-	</Extension>
+	</Extension> -->
 
 	<Extension path = "/MonoDevelop/Core/ExecutionModes/Debug">
 		<ModeSetType id="MonoDevelop.Debugger" class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
@@ -284,7 +284,7 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class="MonoDevelop.Debugger.ExceptionCaughtTextEditorExtension" />
 	</Extension>
-	
+
 	<ConditionType id="SolutionHasDebugSourceFiles" type="MonoDevelop.Debugger.SolutionHasDebugSourceFilesCondition" />
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">

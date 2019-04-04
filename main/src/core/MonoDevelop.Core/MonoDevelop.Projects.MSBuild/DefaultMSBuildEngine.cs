@@ -1413,17 +1413,16 @@ namespace MonoDevelop.Projects.MSBuild
 			var pi = (ProjectInfo)projectInstance;
 			string filePath = MSBuildProjectService.FromMSBuildPath (pi.Project.BaseDirectory, include);
 			foreach (var g in pi.GlobIncludes.Where (g => g.Condition)) {
-				if (IsIncludedInGlob (g.Include, pi.Project.BaseDirectory, filePath)) {
-					if (g.ExcludeRegex != null) {
-						if (g.ExcludeRegex.IsMatch (include))
-							continue;
-					}
-					if (g.RemoveRegex != null) {
-						if (g.RemoveRegex.IsMatch (include))
-							continue;
-					}
-					yield return g.Item;
+				if (g.ExcludeRegex != null) {
+					if (g.ExcludeRegex.IsMatch (include))
+						continue;
 				}
+				if (g.RemoveRegex != null) {
+					if (g.RemoveRegex.IsMatch (include))
+						continue;
+				}
+				if (IsIncludedInGlob (g.Include, pi.Project.BaseDirectory, filePath))
+					yield return g.Item;
 			}
 		}
 
