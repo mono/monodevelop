@@ -83,12 +83,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
 		{
+			if (failedToInitialize)
+				return null;
 			string repo = string.Empty;
 			try {
 				repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
 			} catch (System.DllNotFoundException ex) {
-				if(failedToInitialize)
-					return null;
 				failedToInitialize = true;
 				LoggingService.LogInternalError ("Error when loading the libgit libraries", ex);
 				MessageService.ShowError (GettextCatalog.GetString ("Error initializing Version Control"), ex);
