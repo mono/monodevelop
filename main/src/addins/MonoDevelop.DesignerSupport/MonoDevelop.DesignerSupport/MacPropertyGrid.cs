@@ -86,7 +86,7 @@ namespace MonoDevelop.DesignerSupport
 
 		void Widget_Focused (object o, Gtk.FocusedArgs args)
 		{
-			propertyEditorPanel.BecomeFirstResponder ();
+			propertyEditorPanel.Window.MakeFirstResponder (propertyEditorPanel);
 		}
 
 		void PropertyEditorPanel_Focused (object sender, EventArgs e) => Focused?.Invoke (this, EventArgs.Empty);
