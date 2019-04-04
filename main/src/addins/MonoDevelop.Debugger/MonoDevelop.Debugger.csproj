@@ -25,7 +25,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="Xamarin.Mac" Condition="$(HaveXamarinMac)">
+    <Reference Include="Xamarin.Mac" Condition="$(HaveXamarinMac) == 'true'">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -169,10 +169,10 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\IDebugInfoProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManagerService.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
-    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
-    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphFactoryProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\CurrentStatementGlyphFactoryProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ImageSourceGlyphFactory.cs" />
