@@ -1,13 +1,31 @@
-#if !WINDOWS
+//
+// Copyright (c) Microsoft Corp. (https://www.microsoft.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.UI;
-using Microsoft.VisualStudio.UI.Controls;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Mac;
@@ -20,19 +38,24 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 {
 	public class ExceptionCaughtAdornmentManager : IDisposable
 	{
+		readonly ICocoaViewFactory cocoaViewFactory;
 		readonly ICocoaTextView textView;
 		private readonly string filePath;
 		readonly IXPlatAdornmentLayer _exceptionCaughtLayer;
 		FileLineExtension extension;
 
-		public ExceptionCaughtAdornmentManager (ICocoaTextView textView)
+		public ExceptionCaughtAdornmentManager (ICocoaViewFactory cocoaViewFactory, ICocoaTextView textView)
 		{
 			filePath = textView.TextBuffer.GetFilePathOrNull ();
 			if (filePath == null)
 				return;
+
 			TextEditorService.FileExtensionAdded += FileExtensionAdded;
 			TextEditorService.FileExtensionRemoved += FileExtensionRemoved;
 			_exceptionCaughtLayer = textView.GetXPlatAdornmentLayer ("ExceptionCaught");
+
+			this.cocoaViewFactory = cocoaViewFactory;
+
 			this.textView = textView;
 			this.textView.LayoutChanged += TextView_LayoutChanged;
 
@@ -59,9 +82,9 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 		{
 			NSView view;
 			if (fileLineExtension is ExceptionCaughtButton button)
-				view = CreateButton (button);
+				view = CreateButton (cocoaViewFactory, button);
 			else if (fileLineExtension is ExceptionCaughtMiniButton miniButton)
-				view = CreateMiniButton (miniButton);
+				view = CreateMiniButton (cocoaViewFactory, miniButton);
 			else
 				return;
 			if (extension != fileLineExtension) {
@@ -93,7 +116,7 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			if (image != null) {
 				image.Template = true;
 				if (tint)
-					image = image.WithTint (NSColor.SystemOrangeColor);
+					image = WithTint (image, NSColor.SystemOrangeColor);
 			}
 			return image;
 		}
@@ -132,9 +155,9 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			}
 		}
 
-		class ExceptionCaughtPopoverView : VSPopoverView
+		class ExceptionCaughtPopoverViewContentView : NSView
 		{
-			public ExceptionCaughtPopoverView()
+			public ExceptionCaughtPopoverViewContentView (NSView contentView)
 			{
 				AcceptsTouchEvents = true;
 
@@ -147,6 +170,13 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 					NSTrackingAreaOptions.CursorUpdate,
 					this,
 					null));
+
+				AddSubview (contentView);
+				contentView.TranslatesAutoresizingMaskIntoConstraints = false;
+				LeadingAnchor.ConstraintEqualToAnchor (contentView.LeadingAnchor).Active = true;
+				TrailingAnchor.ConstraintEqualToAnchor (contentView.TrailingAnchor).Active = true;
+				TopAnchor.ConstraintEqualToAnchor (contentView.TopAnchor).Active = true;
+				BottomAnchor.ConstraintEqualToAnchor (contentView.BottomAnchor).Active = true;
 			}
 
 			public override void CursorUpdate (NSEvent theEvent)
@@ -160,7 +190,7 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			public override void MouseMoved (NSEvent theEvent) { }
 		}
 
-		static NSView CreateMiniButton (ExceptionCaughtMiniButton miniButton)
+		static NSView CreateMiniButton (ICocoaViewFactory cocoaViewFactory, ExceptionCaughtMiniButton miniButton)
 		{
 			var image = GetIcon ("md-exception-caught-template", tint: true);
 
@@ -178,14 +208,14 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 				miniButton.dlg.ShowButton ();
 			};
 
-			return new ExceptionCaughtPopoverView {
-				ContentView = nsButton,
-				CornerRadius = 3,
-				Material = NSVisualEffectMaterial.WindowBackground
-			};
+			var materialView = cocoaViewFactory.CreateMaterialView ();
+			materialView.ContentView = new ExceptionCaughtPopoverViewContentView (nsButton);
+			materialView.CornerRadius = 3;
+			materialView.Material =  NSVisualEffectMaterial.WindowBackground;
+			return (NSView)materialView;
 		}
 
-		static NSView CreateButton (ExceptionCaughtButton button)
+		static NSView CreateButton (ICocoaViewFactory cocoaViewFactory, ExceptionCaughtButton button)
 		{
 			var box = new NSGridView {
 				ColumnSpacing = 8,
@@ -231,11 +261,11 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 					1, 0)
 			};
 
-			return new ExceptionCaughtPopoverView {
-				CornerRadius = 6,
-				Padding = new Padding (12),
-				ContentView = box
-			};
+			var materialView = cocoaViewFactory.CreateMaterialView ();
+			materialView.ContentView = new ExceptionCaughtPopoverViewContentView (box);
+			materialView.CornerRadius = 6;
+			materialView.EdgeInsets = new NSEdgeInsets (6, 6, 6, 6);
+			return (NSView)materialView;
 		}
 
 		static NSTextField CreateTextField ()
@@ -281,7 +311,23 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			TextEditorService.FileExtensionAdded -= FileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= FileExtensionRemoved;
 		}
+
+		// FIXME: move to an extensions class in MD.IDE or something
+		static NSImage WithTint (NSImage sourceImage, NSColor tintColor)
+		{
+			if (tintColor == null)
+				throw new ArgumentNullException (nameof (tintColor));
+
+			if (sourceImage == null)
+				return null;
+
+			return NSImage.ImageWithSize (sourceImage.Size, false, rect =>
+			{
+				sourceImage.DrawInRect (rect, CGRect.Empty, NSCompositingOperation.SourceOver, 1f);
+				tintColor.Set ();
+				NSGraphics.RectFill (rect, NSCompositingOperation.SourceAtop);
+				return true;
+			});
+		}
 	}
 }
-
-#endif

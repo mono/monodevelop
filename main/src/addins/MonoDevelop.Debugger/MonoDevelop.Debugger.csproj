@@ -25,7 +25,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
+    <Reference Include="Xamarin.Mac" Condition="$(HaveXamarinMac)">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -64,10 +64,6 @@
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="../../../external/vs-editor-core/src/CocoaControls/CocoaControls.csproj" Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
-      <Name>CocoaControls</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -132,6 +128,8 @@
     <Compile Include="Gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebugValueWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTaggerProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTagger.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTag.cs" />
@@ -169,8 +167,6 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSourceProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSource.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\IDebugInfoProvider.cs" />
-    <Compile Include="MonoDevelop.Debugger\DebugValueWindow.cs" />
-    <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManagerService.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />

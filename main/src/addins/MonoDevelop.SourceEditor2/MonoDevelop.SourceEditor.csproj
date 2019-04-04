@@ -84,8 +84,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
-    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
+    <Compile Include="..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
+    <Compile Include="..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
+    <Compile Include="..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" Link="Util\UIExtensionSelector.cs" />
     <None Include="MonoDevelop.SourceEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -274,7 +275,6 @@
     <Compile Include="Mono.TextEditor\Gui\CodePreviewWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarginMarker.cs" />
     <Compile Include="Mono.TextEditor\Gui\QuickFixMargin.cs" />
-    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml" />
