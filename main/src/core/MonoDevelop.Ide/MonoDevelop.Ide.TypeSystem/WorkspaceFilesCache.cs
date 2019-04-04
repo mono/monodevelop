@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (solution == null || Runtime.PeekService<RootWorkspace> () == null)
 				return;
 
-			if (solution == null || solution.FileName.IsNullOrEmpty)
+			if (solution.FileName.IsNullOrEmpty)
 				return;
 
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("project-cache");
@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		void LoadCache (Solution sol)
 		{
 			var solConfig = sol.GetConfiguration (IdeServices.Workspace.ActiveConfiguration);
+			if (solConfig == null)
+				return;
 
 			var serializer = new JsonSerializer ();
 			foreach (var project in sol.GetAllProjects ()) {
