@@ -85,7 +85,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 			var menuPosition = textView.GetViewRelativeMousePosition (e.Event);
 
 			IdeApp.CommandService.ShowContextMenu (
-				view.Control,
+				textView.VisualElement,
 				(int)menuPosition.X,
 				(int)menuPosition.Y,
 				commandEntrySet,
