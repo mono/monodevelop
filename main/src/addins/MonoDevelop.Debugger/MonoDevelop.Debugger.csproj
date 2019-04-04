@@ -130,9 +130,7 @@
     <Compile Include="MonoDevelop.Debugger\IDebuggerCompletionProvider.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
-
-
-    <!--<Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTaggerProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTagger.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTag.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\IInteractiveGlyph.cs" />
@@ -145,7 +143,7 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphTagger.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphTag.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphMouseProcessorProvider.cs" />
-    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphMouseProcessor.cs" />-->
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphMouseProcessor.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\AbstractCurrentStatementTagger.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementTaggerProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementTagger.cs" />
@@ -166,22 +164,20 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointForegroundTaggerProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointForegroundTagger.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\AbstractBreakpointTagger.cs" />
-    <!-- <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSourceProvider.cs" />
-    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSource.cs" /> -->
+    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSourceProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSource.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\IDebugInfoProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManagerService.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
-    <!--
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
-    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />-->
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />
   </ItemGroup>
-  <!--
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphFactoryProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\CurrentStatementGlyphFactoryProvider.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ImageSourceGlyphFactory.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphFactoryProvider.cs" />
-  </ItemGroup>-->
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml" />
     <EmbeddedResource Include="icons\breakpoint-16.png" />

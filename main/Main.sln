@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -348,7 +348,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vs-editor-api", "vs-editor-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoDevelop.TextEditor", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj", "{3F5B5BDA-69D5-441A-8142-AA25C998A997}"
 EndProject
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Editor", "Editor", "{5A92B792-BF17-4748-B29E-34C99B2E8722}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FPF", "FPF", "{378D061D-D16E-408F-8E01-68B04D77258A}"
@@ -464,6 +463,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extras", "external\vs-editor-api\src\Editor\Text\Def\Extras\Extras.csproj", "{FC412405-B907-473F-864A-657D8E98BB53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardClassification", "external\vs-editor-api\src\Editor\Language\Def\StandardClassification\StandardClassification.csproj", "{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextUICocoa", "external\vs-editor-api\src\Editor\Text\Def\TextUICocoa\TextUICocoa.csproj", "{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -2694,6 +2695,16 @@ Global
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}.Debug|x86.Build.0 = Debug|Any CPU
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}.Release|x86.ActiveCfg = Release|Any CPU
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}.Release|x86.Build.0 = Release|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2860,6 +2871,7 @@ Global
 		{C0943335-A94F-4DF4-91D0-2129D45C666C} = {AA56E3AE-8E61-4101-B01A-2646DC1B0D7B}
 		{E20390B6-25C8-4DDC-B3E3-9E0560FC4336} = {AA56E3AE-8E61-4101-B01A-2646DC1B0D7B}
 		{D53A102A-8B6B-4838-BC65-FE36527E7018} = {AA56E3AE-8E61-4101-B01A-2646DC1B0D7B}
+    {B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9} = {AA56E3AE-8E61-4101-B01A-2646DC1B0D7B}
 		{33DAC448-FBCB-4030-9939-01FA4B3EAE76} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{FB46DD61-12E4-42D0-A99C-0A79C412FDD5} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{E5AF4EB5-9E7F-40B6-8762-98FA45FACA06} = {32539734-6484-4451-9EF3-61610CA25BBF}

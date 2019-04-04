@@ -45,6 +45,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Extras.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
   </ItemGroup>
