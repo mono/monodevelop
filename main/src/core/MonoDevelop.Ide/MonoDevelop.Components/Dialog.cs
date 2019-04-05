@@ -33,13 +33,8 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		Dialog (object widget)
+		Dialog (object widget) : base (widget)
 		{
-			if (widget == null)
-				throw new ArgumentNullException (nameof (widget));
-
-			this.nativeWidget = widget;
-			cache.Add (widget, new WeakReference<Control> (this));
 		}
 
 		public static implicit operator Gtk.Dialog (Dialog d)
