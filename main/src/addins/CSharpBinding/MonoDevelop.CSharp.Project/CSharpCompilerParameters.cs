@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Project
 			);
 
 			var options = new CSharpCompilationOptions (
-				this.ParentProject.IsLibraryBasedProjectType ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
+				ParentProject.IsLibraryBasedProjectType ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
 				mainTypeName: project.MainClass,
 				scriptClassName: "Script",
 				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
