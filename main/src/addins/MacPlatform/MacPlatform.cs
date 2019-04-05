@@ -424,7 +424,10 @@ namespace MonoDevelop.MacIntegration
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
+					var item = new MDSubMenuItem (commandManager, (CommandEntrySet)ce);
+					rootMenu.AddItem (item);
+					if (ce.CommandId as string == "Help" && item.HasSubmenu && NSApplication.SharedApplication.HelpMenu == null)
+						NSApplication.SharedApplication.HelpMenu = item.Submenu;
 				}
 			} catch (Exception ex) {
 				try {
@@ -433,6 +436,11 @@ namespace MonoDevelop.MacIntegration
 						m.Dispose ();
 					}
 					NSApplication.SharedApplication.MainMenu = null;
+					m = NSApplication.SharedApplication.HelpMenu;
+					if (m != null) {
+						m.Dispose ();
+					}
+					NSApplication.SharedApplication.HelpMenu = null;
 				} catch {}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
