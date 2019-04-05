@@ -50,7 +50,7 @@ namespace MonoDevelop.Refactoring.SignatureChange
 
 				return new ChangeSignatureOptionsResult {
 					IsCancelled = false,
-					UpdatedSignature = new Microsoft.CodeAnalysis.ChangeSignature.SignatureChange (parameters, ParameterConfiguration.Create (dialog.ParameterList, parameters.ThisParameter != null, 0))
+					UpdatedSignature = new Microsoft.CodeAnalysis.ChangeSignature.SignatureChange (parameters, ParameterConfiguration.Create (dialog.ParameterList, parameters.ThisParameter != null, -1))
 				};
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while signature changing.", ex);

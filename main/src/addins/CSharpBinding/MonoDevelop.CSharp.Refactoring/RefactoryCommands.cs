@@ -77,8 +77,7 @@ namespace MonoDevelop.CSharp.Refactoring
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = TryGetDocument (out var doc, out var uiDoc) && IsSortAndRemoveImportsSupported (doc,
-				uiDoc.GetContent<Microsoft.VisualStudio.Text.ITextBuffer> ());	
+			info.Enabled = TryGetDocument (out var doc, out var uiDoc) && IsSortAndRemoveImportsSupported (doc, uiDoc.GetContent<Microsoft.VisualStudio.Text.ITextBuffer> ());	
 		}
 
 		protected override void Run ()
@@ -90,7 +89,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		internal static bool IsSortAndRemoveImportsSupported (Document document, Microsoft.VisualStudio.Text.ITextBuffer textBuffer)
 		{
 			var workspace = document.Project.Solution.Workspace;
-			
+
 			if (!workspace.CanApplyChange (ApplyChangesKind.ChangeDocument)) {
 				return false;
 			}
@@ -149,8 +148,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}));
 			}
 
-			bool isSortAndRemoveUsingsSupported = RemoveAndSortUsingsHandler.IsSortAndRemoveImportsSupported (analysisDocument,
-				doc.GetContent<Microsoft.VisualStudio.Text.ITextBuffer>());
+			bool isSortAndRemoveUsingsSupported = RemoveAndSortUsingsHandler.IsSortAndRemoveImportsSupported (analysisDocument, doc.GetContent<Microsoft.VisualStudio.Text.ITextBuffer>());
 
 			if (isSortAndRemoveUsingsSupported) {
 				var sortAndRemoveImportsInfo = IdeApp.CommandService.GetCommandInfo (Commands.SortAndRemoveImports);
