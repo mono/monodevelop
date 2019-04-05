@@ -73,6 +73,10 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			base.info = info;
 			// SetLocal calls create diff & sets UpdateDiff handler -> should be connected after diff is created
+			var mimeType = DesktopService.GetMimeTypeForUri (info.Item.Path);
+			foreach (var editor in editors) {
+				editor.Document.MimeType = mimeType;
+			}
 			SetLocal (MainEditor.GetTextEditorData ());
 			Show ();
 		}
@@ -167,6 +171,11 @@ namespace MonoDevelop.VersionControl.Views
 				this.DividerSegment = dividerSegment;
 				this.EndSegment = endSegment;
 			}
+
+			public override string ToString ()
+			{
+				return $"[Conflict: MySegment={MySegment}, TheirSegment={TheirSegment}, StartSegment={StartSegment}, DividerSegment={DividerSegment}, EndSegment={EndSegment}]";
+			}
 		}
 
 		List<Conflict> currentConflicts = new List<Conflict> ();
@@ -207,6 +216,7 @@ namespace MonoDevelop.VersionControl.Views
 			currentConflicts = new List<Conflict> (Conflicts (MainEditor.Document));
 			leftConflicts.Clear ();
 			rightConflicts.Clear ();
+			editors[0].Document.IsReadOnly = editors[2].Document.IsReadOnly = false;
 			editors[0].Document.Text = "";
 			editors[2].Document.Text = "";
 
@@ -237,6 +247,7 @@ namespace MonoDevelop.VersionControl.Views
 			string lastPart = MainEditor.Document.GetTextBetween (endOffset, MainEditor.Document.Length);
 			editors[0].Insert (editors[0].Document.Length, lastPart);
 			editors[2].Insert (editors[2].Document.Length, lastPart);
+			editors[0].Document.IsReadOnly = editors[2].Document.IsReadOnly = true;
 
 			UpdateDiff ();
 		}
