@@ -3531,6 +3531,8 @@ namespace Mono.TextEditor
 			DocumentLine line = Document.GetLine (loc.Line);
 			if (line == null)
 				return new Cairo.Point (-1, -1);
+			if (loc.Line == 0 && loc.Column == 0) // fast Path for upper left position.
+				return new Cairo.Point (0, 0);
 			int x = (int)(ColumnToX (line, loc.Column) + this.XOffset + this.TextStartPosition);
 			int y = (int)LineToY (loc.Line);
 			return useAbsoluteCoordinates ? new Cairo.Point (x, y) : new Cairo.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);
