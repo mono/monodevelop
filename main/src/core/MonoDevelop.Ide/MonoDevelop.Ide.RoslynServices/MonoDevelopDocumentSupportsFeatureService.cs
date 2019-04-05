@@ -47,15 +47,5 @@ namespace MonoDevelop.Ide.RoslynServices
 			if (textBuffer == null) return false;
 			return textBuffer.Properties.ContainsProperty (typeof (IMonoDevelopHostDocument));
 		}
-
-		//public bool SupportsCodeFixes (Document document) => !IsContainedDocument (document);
-		//public bool SupportsNavigationToAnyPosition (Document document) => !IsContainedDocument (document);
-		//public bool SupportsRefactorings (Document document) => !IsContainedDocument (document);
-		//public bool SupportsRename (Document document) => !IsContainedDocument (document);
-
-		//static bool IsContainedDocument (Document document)
-		//{
-		//	return (MonoDevelopHostDocumentRegistration.FromDocument (document) != null);
-		//}
 	}
 }

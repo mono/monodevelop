@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			return operation;
 		}
 
-		public virtual AdjustNewLinesOperation GetAdjustNewLinesOperation (SyntaxToken previousToken, SyntaxToken currentToken, OptionSet optionSet, in NextGetAdjustNewLinesOperation nextOperation)
+		public override AdjustNewLinesOperation GetAdjustNewLinesOperation (SyntaxToken previousToken, SyntaxToken currentToken, OptionSet optionSet, in NextGetAdjustNewLinesOperation nextOperation)
 		{
 			var operation = base.GetAdjustNewLinesOperation (previousToken, currentToken, optionSet, nextOperation);
 			if (operation != null) {
