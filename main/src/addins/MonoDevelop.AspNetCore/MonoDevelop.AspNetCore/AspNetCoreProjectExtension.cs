@@ -74,6 +74,8 @@ namespace MonoDevelop.AspNetCore
 			else
 				outputFileName = GetOutputFileName (configuration);
 
+			var applicationUrl = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl ();
+
 			return new AspNetCoreExecutionCommand (
 				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
@@ -84,7 +86,8 @@ namespace MonoDevelop.AspNetCore
 				ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
 				LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
 				LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
-				ApplicationURL = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl (),
+				ApplicationURL = applicationUrl.GetFirstApplicationUrl (),
+				ApplicationURLs = applicationUrl,
 				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
 			};
 		}

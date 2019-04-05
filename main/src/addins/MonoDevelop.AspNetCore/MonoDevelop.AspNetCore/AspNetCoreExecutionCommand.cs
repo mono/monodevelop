@@ -23,8 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Linq;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
 
@@ -49,15 +47,14 @@ namespace MonoDevelop.AspNetCore
 		public bool ExternalConsole { get; set; }
 		public bool LaunchBrowser { get; set; }
 		public string LaunchURL { get; set; }
+		// Since we are now supporting more than one url, we added this property
+		// so that it contains the raw value of AppUrl
+		// which might provide more than one url i.e. https://localhost:5000;http://localhost:5001
+		public string ApplicationURLs { get; set; }
+		// This is only kept for compatibility with debugger and should contain just
+		// the url that is going to be launched i.e. https://localhost:5000
 		public string ApplicationURL { get; set; }
+
 		public PipeTransportSettings PipeTransport { get; set; }
-
-		public static string GetFirstApplicationURL (string urls)
-		{
-			if (string.IsNullOrEmpty (urls) || !urls.Contains (';'))
-				return urls;
-
-			return urls.Split (';').FirstOrDefault ();
-		}
 	}
 }

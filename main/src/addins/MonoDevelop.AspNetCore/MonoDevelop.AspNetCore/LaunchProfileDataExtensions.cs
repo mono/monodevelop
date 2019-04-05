@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.AspNetCore
 {
@@ -42,6 +43,14 @@ namespace MonoDevelop.AspNetCore
 		public static string TryGetApplicationUrl (this LaunchProfileData launchProfile)
 		{
 			return TryGetOtherSettings <string> (launchProfile, "applicationUrl") ?? string.Empty;
+		}
+
+		public static string GetFirstApplicationUrl (this string urls)
+		{
+			if (string.IsNullOrEmpty (urls) || !urls.Contains (';'))
+				return urls;
+
+			return urls.Split (';').FirstOrDefault ();
 		}
 
 		public static IDictionary<string, Dictionary<string, object>> ToSerializableForm (this IDictionary<string, LaunchProfileData> profiles)
