@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl
 
 		static async Task<bool> VerifyUnsavedChangesAsync (ChangeSet changeSet)
 		{
-			// In case we have local unsaved files with changes, throw a dialog for the user.
+			// In case we have local unsaved files with changes, ask the user to save them.
 			List<Document> docList = new List<Document> ();
 			foreach (var item in IdeApp.Workbench.Documents) {
 				if (item.IsDirty && !changeSet.Items.Any (csi => csi.LocalPath == item.FileName))
