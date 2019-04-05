@@ -60,12 +60,12 @@ namespace MonoDevelop.AspNetCore
 				console,
 				envVariables);
 			if (dotNetCoreCommand.LaunchBrowser) {
-				LaunchBrowserAsync (url, dotNetCoreCommand.LaunchURL, process.Task).Ignore ();
+				LaunchBrowser (url, dotNetCoreCommand.LaunchURL, process.Task).Ignore ();
 			}
 			return process;
 		}
 
-		public static async Task LaunchBrowserAsync (string appUrl, string launchUrl, Task processTask)
+		public static async Task LaunchBrowser (string appUrl, string launchUrl, Task processTask)
 		{
 			launchUrl = launchUrl ?? "";
 			Uri launchUri;
