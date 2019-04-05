@@ -1132,7 +1132,21 @@ namespace MonoDevelop.Debugger
 			SetValues (parent, iter, name, val);
 			RegisterValue (val, iter);
 		}
-		
+
+		string GetDisplayValue (ObjectValue val)
+		{
+			if (val.DisplayValue == null)
+				return "(null)";
+
+			if (val.DisplayValue.Length > 1000)
+				// Truncate the string to stop the UI from hanging
+				// when calculating the size for very large amounts
+				// of text.
+				return val.DisplayValue.Substring (0, 1000) + "…";
+
+			return val.DisplayValue;
+		}
+
 		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValue val, bool updateJustValue = false)
 		{
 			string strval;
@@ -1206,10 +1220,10 @@ namespace MonoDevelop.Debugger
 					try {
 						strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
 					} catch (Exception) {
-						strval = val.DisplayValue ?? "(null)";
+						strval = GetDisplayValue (val);
 					}
 				} else {
-					strval = val.DisplayValue ?? "(null)";
+					strval = GetDisplayValue (val);
 				}
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
