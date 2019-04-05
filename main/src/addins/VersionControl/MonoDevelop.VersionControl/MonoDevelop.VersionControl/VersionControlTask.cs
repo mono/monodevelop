@@ -14,7 +14,7 @@ namespace MonoDevelop.VersionControl
 		protected abstract string GetDescription();
 		
 		// This occurs in the background.
-		protected abstract void Run();
+		protected abstract Task RunAsync ();
 		
 		// This occurs on the main thread when the background
 		// task is complete.
@@ -35,18 +35,21 @@ namespace MonoDevelop.VersionControl
 		{
 			return VersionControlService.GetProgressMonitor (GetDescription (), OperationType);
 		}
-		
-		public void Start() {
+
+		internal Task StartAsync (CancellationToken cancellationToken)
+		{
+			if (tracker != null)
+				tracker = tracker.WithCancellationToken (cancellationToken);
+			return StartAsync ();
+		}
+
+		public Task StartAsync ()
+		{
 			tracker = CreateProgressMonitor ();
 			tracker.BeginTask(GetDescription(), 1);
 
 			// Sync invoke background worker which will end up doing async invoke on the internal run.
-			BackgroundWorker ();
-		}
-		
-		void BackgroundWorker ()
-		{
-			Task.Run (() => Run ()).ContinueWith (t => {
+			return Task.Run (async () => await RunAsync ().ConfigureAwait (false)).ContinueWith (t => {
 				if (t.IsFaulted) {
 					var exception = t.Exception.FlattenAggregate ().InnerException;
 					if (exception is DllNotFoundException) {

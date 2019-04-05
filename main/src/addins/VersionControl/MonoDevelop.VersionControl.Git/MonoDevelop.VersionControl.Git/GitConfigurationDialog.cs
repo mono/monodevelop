@@ -142,21 +142,25 @@ namespace MonoDevelop.VersionControl.Git
 			state.Load ();
 		}
 
-		void FillRemotes ()
+		async void FillRemotes ()
 		{
-			var state = new TreeViewState (treeRemotes, 4);
-			state.Save ();
-			storeRemotes.Clear ();
-			string currentRemote = repo.GetCurrentRemote ();
-			foreach (Remote remote in repo.GetRemotes ()) {
-				// Take into account fetch/push ref specs.
-				string text = remote.Name == currentRemote ? "<b>" + remote.Name + "</b>" : remote.Name;
-				string url = remote.Url;
-				TreeIter it = storeRemotes.AppendValues (remote, text, url, null, remote.Name);
-				foreach (string branch in repo.GetRemoteBranches (remote.Name))
-					storeRemotes.AppendValues (it, null, branch, null, branch, remote.Name + "/" + branch);
+			try {
+				var state = new TreeViewState (treeRemotes, 4);
+				state.Save ();
+				storeRemotes.Clear ();
+				string currentRemote = await repo.GetCurrentRemoteAsync ();
+				foreach (Remote remote in await repo.GetRemotesAsync ()) {
+					// Take into account fetch/push ref specs.
+					string text = remote.Name == currentRemote ? "<b>" + remote.Name + "</b>" : remote.Name;
+					string url = remote.Url;
+					TreeIter it = storeRemotes.AppendValues (remote, text, url, null, remote.Name);
+					foreach (string branch in repo.GetRemoteBranches (remote.Name))
+						storeRemotes.AppendValues (it, null, branch, null, branch, remote.Name + "/" + branch);
+				}
+				state.Load ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 			}
-			state.Load ();
 		}
 
 		void FillTags ()

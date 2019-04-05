@@ -7,6 +7,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -42,12 +43,15 @@ namespace MonoDevelop.VersionControl
 		
 		public override void CopyFile (FilePath source, FilePath dest, bool overwrite)
 		{
-			Repository repo = GetRepository (dest);
-			if (!repo.RequestFileWritePermission (dest))
-				throw new System.IO.IOException ("Write permission denied.");
-
 			base.CopyFile (source, dest, overwrite);
-			repo.NotifyFileChanged (dest);
+			Task.Run (async () => {
+				Repository repo = GetRepository (dest);
+				if (await repo.RequestFileWritePermissionAsync (dest)) {
+					LoggingService.LogError ("Write permission denied.");
+					return;
+				}
+				repo.NotifyFileChanged (dest);
+			});
 		}
 		
 		public override void MoveFile (FilePath source, FilePath dest)
@@ -58,10 +62,10 @@ namespace MonoDevelop.VersionControl
 			Repository dstRepo = GetRepository (dest);
 			
 			if (dstRepo != null && dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
-				srcRepo.MoveFile (source, dest, true, monitor);
+				srcRepo.MoveFileAsync (source, dest, true, monitor);
 			else {
 				CopyFile (source, dest, true);
-				srcRepo.DeleteFile (source, true, monitor, false);
+				srcRepo.DeleteFileAsync (source, true, monitor, false);
 			}
 		}
 		
@@ -78,7 +82,7 @@ namespace MonoDevelop.VersionControl
 		public override void DeleteFile (FilePath file)
 		{
 			Repository repo = GetRepository (file);
-			repo.DeleteFile (file, true, new ProgressMonitor (), false);
+			repo.DeleteFileAsync (file, true, new ProgressMonitor (), false);
 		}
 		
 		public override void CreateDirectory (FilePath path)
@@ -97,7 +101,7 @@ namespace MonoDevelop.VersionControl
 			Repository dstRepo = GetRepository (destPath);
 			
 			if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath))
-				srcRepo.MoveDirectory (sourcePath, destPath, true, monitor);
+				srcRepo.MoveDirectoryAsync (sourcePath, destPath, true, monitor);
 			else {
 				CopyDirectory (sourcePath, destPath);
 				srcRepo.DeleteDirectory (sourcePath, true, monitor, false);
@@ -113,7 +117,7 @@ namespace MonoDevelop.VersionControl
 		public override void RequestFileEdit (FilePath file)
 		{
 			Repository repo = GetRepository (file.FullPath);
-			repo.RequestFileWritePermission (file);
+			Task.Run (async () => await repo.RequestFileWritePermissionAsync (file));
 		}
 		
 		public override void NotifyFilesChanged (IEnumerable<FilePath> files)

@@ -10,12 +10,12 @@ namespace MonoDevelop.VersionControl
 		
 		protected Revision (Repository repo)
 		{
-			Repository = repo ?? throw new ArgumentNullException (nameof (repo));
+			Repository = repo;
 		}
 		
 		protected Revision (Repository repo, DateTime time, string author, string message)
 		{
-			Repository = repo ?? throw new ArgumentNullException (nameof (repo));
+			Repository = repo;
 			Time = time;
 			Author = author;
 			Message = message;

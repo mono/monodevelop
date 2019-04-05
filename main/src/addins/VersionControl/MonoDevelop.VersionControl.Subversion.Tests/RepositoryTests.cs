@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System;
 using MonoDevelop.VersionControl;
+using System.Threading.Tasks;
 
 namespace VersionControl.Subversion.Unix.Tests
 {
@@ -73,7 +74,7 @@ namespace VersionControl.Subversion.Unix.Tests
 +text
 \ No newline at end of file
 ";
-			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
+			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache).Result).Content);
 		}
 
 		// Tests that fail due to Subversion giving wrong data.
@@ -115,9 +116,9 @@ namespace VersionControl.Subversion.Unix.Tests
 
 		[Test]
 		[Ignore ("Subversion does not support case renaming on non-Windows")]
-		public override void MoveAndMoveBackCaseOnly ()
+		public override Task MoveAndMoveBackCaseOnly ()
 		{
-			base.MoveAndMoveBackCaseOnly ();
+			return base.MoveAndMoveBackCaseOnly ();
 		}
 
 		protected override void PostUnlock ()
@@ -131,7 +132,7 @@ namespace VersionControl.Subversion.Unix.Tests
 		[Test]
 		public void DoesntDieInReposWithNoRevisions ()
 		{
-			Repo.GetHistory (LocalPath, null);
+			Repo.GetHistoryAsync (LocalPath, null);
 		}
 
 		protected override void TestValidUrl ()

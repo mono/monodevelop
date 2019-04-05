@@ -32,6 +32,7 @@ using MonoDevelop.Components;
 using LibGit2Sharp;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -72,11 +73,12 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (Branch b in repo.GetBranches ()) {
 				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
-
-			foreach (Remote r in repo.GetRemotes ()) {
-				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
-			}
+			Task.Run (async () => await repo.GetRemotesAsync ()).ContinueWith (t => {
+				foreach (Remote r in t.Result) {
+					foreach (string b in repo.GetRemoteBranches (r.Name))
+						AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
+				}
+			}, Runtime.MainTaskScheduler);
 
 			entryName.Text = name;
 			checkTrack.Active = !string.IsNullOrEmpty (tracking);

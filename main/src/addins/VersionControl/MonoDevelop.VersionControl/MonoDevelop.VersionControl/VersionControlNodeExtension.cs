@@ -93,12 +93,13 @@ namespace MonoDevelop.VersionControl
 			Repository repo = VersionControlService.GetRepository (prj);
 			if (repo == null)
 				return;
-			
-			VersionInfo vi = repo.GetVersionInfo (file);
 
-			var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
-			if (overlay != null)
-				nodeInfo.OverlayBottomRight = overlay;
+			Task.Run (async () => await repo.GetVersionInfoAsync (file)).ContinueWith (t => {
+				VersionInfo vi = t.Result;
+				var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
+				if (overlay != null)
+					nodeInfo.OverlayBottomRight = overlay;
+			}, Runtime.MainTaskScheduler);
 		}
 
 /*		public override void PrepareChildNodes (object dataObject)
@@ -121,18 +122,21 @@ namespace MonoDevelop.VersionControl
 */		
 		static void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
 		{
-			Xwt.Drawing.Image overlay = null;
-			VersionInfo vinfo = rep.GetVersionInfo (folder);
-			if (vinfo == null || !vinfo.IsVersioned) {
-				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
-			} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
-				if (!skipVersionedOverlay)
-					overlay = VersionControlService.overlay_controled;
-			} else {
-				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
-			}
-			if (overlay != null)
-				nodeInfo.OverlayBottomRight = overlay;
+			Task.Run (async () => await rep.GetVersionInfoAsync (folder)).ContinueWith (t => {
+				var vinfo = t.Result;
+				Xwt.Drawing.Image overlay = null;
+				if (vinfo == null || !vinfo.IsVersioned) {
+					overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
+				} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
+					if (!skipVersionedOverlay)
+						overlay = VersionControlService.overlay_controled;
+				} else {
+					overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
+				}
+				if (overlay != null)
+					nodeInfo.OverlayBottomRight = overlay;
+
+			}, Runtime.MainTaskScheduler).Ignore ();
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
@@ -234,7 +238,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Update)]
 		protected async Task OnUpdate() {
-			await RunCommand(Commands.Update, false);
+			await RunCommandAsync(Commands.Update, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Update)]
@@ -245,7 +249,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Diff)]
 		protected async Task OnDiff() {
-			await RunCommand(Commands.Diff, false);
+			await RunCommandAsync(Commands.Diff, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Diff)]
@@ -256,7 +260,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Log)]
 		protected async Task OnLog() {
-			await RunCommand(Commands.Log, false);
+			await RunCommandAsync(Commands.Log, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Log)]
@@ -267,7 +271,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Status)]
 		protected async Task OnStatus() {
-			await RunCommand(Commands.Status, false);
+			await RunCommandAsync(Commands.Status, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Status)]
@@ -278,7 +282,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Add)]
 		protected async Task OnAdd() {
-			await RunCommand(Commands.Add, false);
+			await RunCommandAsync(Commands.Add, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Add)]
@@ -289,7 +293,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Remove)]
 		protected async Task OnRemove() {
-			await RunCommand(Commands.Remove, false);
+			await RunCommandAsync(Commands.Remove, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Remove)]
@@ -300,7 +304,7 @@ namespace MonoDevelop.VersionControl
 		[CommandHandler (Commands.Publish)]
 		protected async Task OnPublish() 
 		{
-			await RunCommand(Commands.Publish, false);
+			await RunCommandAsync(Commands.Publish, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Publish)]
@@ -311,7 +315,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Revert)]
 		protected async Task OnRevert() {
-			await RunCommand(Commands.Revert, false, false);
+			await RunCommandAsync(Commands.Revert, false, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Revert)]
@@ -322,7 +326,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Lock)]
 		protected async Task OnLock() {
-			await RunCommand(Commands.Lock, false);
+			await RunCommandAsync(Commands.Lock, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Lock)]
@@ -333,7 +337,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unlock)]
 		protected async Task OnUnlock() {
-			await RunCommand(Commands.Unlock, false);
+			await RunCommandAsync(Commands.Unlock, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Unlock)]
@@ -344,7 +348,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Annotate)]
 		protected async Task OnAnnotate() {
-			await RunCommand(Commands.Annotate, false);
+			await RunCommandAsync(Commands.Annotate, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Annotate)]
@@ -355,7 +359,7 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.CreatePatch)]
 		protected async Task OnCreatePatch() {
-			await RunCommand(Commands.CreatePatch, false);
+			await RunCommandAsync(Commands.CreatePatch, false);
 		}
 		
 		[CommandUpdateHandler (Commands.CreatePatch)]
@@ -367,7 +371,7 @@ namespace MonoDevelop.VersionControl
 		[CommandHandler (Commands.Ignore)]
 		protected async Task OnIgnore ()
 		{
-			await RunCommand(Commands.Ignore, false);
+			await RunCommandAsync(Commands.Ignore, false);
 		}
 
 		[CommandUpdateHandler (Commands.Ignore)]
@@ -380,7 +384,7 @@ namespace MonoDevelop.VersionControl
 		[CommandHandler (Commands.Unignore)]
 		protected async Task OnUnignore ()
 		{
-			await RunCommand(Commands.Unignore, false);
+			await RunCommandAsync(Commands.Unignore, false);
 		}
 
 		[CommandUpdateHandler (Commands.Unignore)]
@@ -392,7 +396,7 @@ namespace MonoDevelop.VersionControl
 		[CommandHandler (Commands.ResolveConflicts)]
 		protected async Task OnResolveConflicts ()
 		{
-			await RunCommand (Commands.ResolveConflicts, false, false);
+			await RunCommandAsync (Commands.ResolveConflicts, false, false);
 		}
 
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
@@ -403,7 +407,7 @@ namespace MonoDevelop.VersionControl
 
 		private async Task<TestResult> TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
-			TestResult res = await RunCommand(cmd, true, projRecurse);
+			TestResult res = await RunCommandAsync(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
 				// Use the update command to show the "not available" message
 				item.Icon = null;
@@ -418,7 +422,7 @@ namespace MonoDevelop.VersionControl
 			return res;
 		}
 		
-		private async Task<TestResult> RunCommand (Commands cmd, bool test, bool projRecurse = true)
+		private async Task<TestResult> RunCommandAsync (Commands cmd, bool test, bool projRecurse = true, CancellationToken cancellationToken = default)
 		{
 			VersionControlItemList items = GetItems (projRecurse);
 
@@ -436,7 +440,7 @@ namespace MonoDevelop.VersionControl
 			try {
 				switch (cmd) {
 				case Commands.Update:
-					res = UpdateCommand.Update (items, test);
+					res = await UpdateCommand.UpdateAsync (items, test, cancellationToken);
 					break;
 				case Commands.Diff:
 					res = await DiffCommand.Show (items, test);
@@ -445,22 +449,22 @@ namespace MonoDevelop.VersionControl
 					res = await LogCommand.Show (items, test);
 					break;
 				case Commands.Status:
-					res = StatusView.Show (items, test, false);
+					res = await StatusView.ShowAsync (items, test, false);
 					break;
 				case Commands.Add:
-					res = AddCommand.Add (items, test);
+					res = await AddCommand.AddAsync (items, test, cancellationToken);
 					break;
 				case Commands.Remove:
-					res = RemoveCommand.Remove (items, test);
+					res = await RemoveCommand.RemoveAsync (items, test, cancellationToken);
 					break;
 				case Commands.Revert:
-					res = RevertCommand.Revert (items, test);
+					res = await RevertCommand.RevertAsync (items, test, cancellationToken);
 					break;
 				case Commands.Lock:
-					res = LockCommand.Lock (items, test);
+					res = await LockCommand.LockAsync (items, test, cancellationToken);
 					break;
 				case Commands.Unlock:
-					res = UnlockCommand.Unlock (items, test);
+					res = await UnlockCommand.UnlockAsync (items, test, cancellationToken);
 					break;
 				case Commands.Publish:
 					VersionControlItem it = items [0];
@@ -471,13 +475,13 @@ namespace MonoDevelop.VersionControl
 					res = await BlameCommand.Show (items, test);
 					break;
 				case Commands.CreatePatch:
-					res = CreatePatchCommand.CreatePatch (items, test);
+					res = await CreatePatchCommand.CreatePatch (items, test);
 					break;
 				case Commands.Ignore:
-					res = IgnoreCommand.Ignore (items, test);
+					res = await IgnoreCommand.IgnoreAsync (items, test, cancellationToken);
 					break;
 				case Commands.Unignore:
-					res = UnignoreCommand.Unignore (items, test);
+					res = await UnignoreCommand.UnignoreAsync (items, test, cancellationToken);
 					break;
 				case Commands.ResolveConflicts:
 					res = await ResolveConflictsCommand.ResolveConflicts (items, test);

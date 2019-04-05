@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -35,11 +36,14 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 
-			bool hasRemote = repo.GetCurrentRemote () != null;
-			if (!hasRemote) {
-				checkPush.Sensitive = false;
-				checkPush.TooltipText = GettextCatalog.GetString ("Pushing is only available for repositories with configured remotes.");
-			}
+			Task.Run (async () => await repo.GetCurrentRemoteAsync ()).ContinueWith (t => {
+				bool hasRemote = t.Result != null;
+				if (!hasRemote) {
+					checkPush.Sensitive = false;
+					checkPush.TooltipText = GettextCatalog.GetString ("Pushing is only available for repositories with configured remotes.");
+				}
+
+			}, Runtime.MainTaskScheduler);
 		}
 
 		public bool PushAfterCommit {

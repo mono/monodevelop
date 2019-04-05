@@ -419,20 +419,24 @@ namespace MonoDevelop.VersionControl.Views
 			scrolledLog.Hide ();
 		}
 
-		void RevertToRevisionClicked (object src, EventArgs args)
+		async void RevertToRevisionClicked (object src, EventArgs args)
 		{
 			Revision d = SelectedRevision;
-			if (RevertRevisionsCommands.RevertToRevision (info.Repository, info.Item.Path, d, false))
+			if (await RevertRevisionsCommands.RevertRevisionAsync (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path,
 				  GettextCatalog.GetString ("(Revert to revision {0})", d.ToString ()), true);
 		}
 
-		void RevertRevisionClicked (object src, EventArgs args)
+		async void RevertRevisionClicked (object src, EventArgs args)
 		{
-			Revision d = SelectedRevision;
-			if (RevertRevisionsCommands.RevertRevision (info.Repository, info.Item.Path, d, false))
-				VersionControlService.SetCommitComment (info.Item.Path,
-				  GettextCatalog.GetString ("(Revert revision {0})", d.ToString ()), true);
+			try {
+				Revision d = SelectedRevision;
+				if (await RevertRevisionsCommands.RevertRevisionAsync (info.Repository, info.Item.Path, d, false))
+					VersionControlService.SetCommitComment (info.Item.Path,
+					  GettextCatalog.GetString ("(Revert revision {0})", d.ToString ()), true);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+			}
 		}
 
 		void RefreshClicked (object src, EventArgs args)
@@ -483,7 +487,7 @@ namespace MonoDevelop.VersionControl.Views
 				Task.Run (async delegate {
 					string text = "";
 					try {
-						text = info.Repository.GetTextAtRevision (path, rev);
+						text = await info.Repository.GetTextAtRevisionAsync (path, rev);
 					} catch (Exception e) {
 						Application.Invoke ((o2, a2) => {
 							LoggingService.LogError ("Error while getting revision text", e);
@@ -517,7 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 						} else {
 							string prevRevisionText = "";
 							try {
-								prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
+								prevRevisionText = await info.Repository.GetTextAtRevisionAsync (path, prevRev);
 							} catch (Exception e) {
 								Application.Invoke ((o2, a2) => {
 									LoggingService.LogError ("Error while getting revision text", e);
@@ -762,7 +766,7 @@ namespace MonoDevelop.VersionControl.Views
 			selectionCancellationTokenSource.Cancel ();
 			selectionCancellationTokenSource = new CancellationTokenSource ();
 			var token = selectionCancellationTokenSource.Token;
-			Task.Run (() => info.Repository.GetRevisionChangesAsync (d, token)).ContinueWith (result => {
+			Task.Run (async () => await info.Repository.GetRevisionChangesAsync (d, token)).ContinueWith (result => {
 				changedpathstore.Clear ();
 				revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
 				Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;

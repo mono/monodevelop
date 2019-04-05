@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -6,14 +8,16 @@ namespace MonoDevelop.VersionControl
 {
 	internal class AddCommand
 	{
-		public static bool Add (VersionControlItemList items, bool test)
+		public static async Task<bool> AddAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken)
 		{
-			if (!items.All (i => i.VersionInfo.CanAdd))
-				return false;
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync (cancellationToken);
+				if (!info.CanAdd)
+					return false;
+			}
 			if (test)
 				return true;
-			
-			new AddWorker (items).Start();
+			await new AddWorker (items).StartAsync (cancellationToken).ConfigureAwait (false);
 			return true;
 		}
 		
@@ -30,12 +34,12 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Adding...");
 			}
 			
-			protected override void Run ()
+			protected override async Task RunAsync ()
 			{
 				ProgressMonitor monitor = Monitor;
 
 				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Add (list.Paths, true, monitor);
+					await list[0].Repository.AddAsync (list.Paths, true, monitor);
 				
 				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
@@ -95,17 +99,20 @@ namespace MonoDevelop.VersionControl
 	
 	internal class RemoveCommand
 	{
-		public static bool Remove (VersionControlItemList items, bool test)
+		public static async Task<bool> RemoveAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken)
 		{
-			if (!items.All (i => i.VersionInfo.CanRemove))
-				return false;
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync (cancellationToken);
+				if (!info.CanRemove)
+					return false;
+			}
 			if (test)
 				return true;
 			
 			string msg = GettextCatalog.GetString ("Are you sure you want to remove the selected items from the version control system?");
 			string msg2 = GettextCatalog.GetString ("The files will be kept on disk.");
 			if (MessageService.Confirm (msg, msg2, AlertButton.Remove))
-				new RemoveWorker (items).Start();
+				await new RemoveWorker (items).StartAsync(cancellationToken);
 			return true;
 		}
 		
@@ -120,15 +127,15 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Removing...");
 			}
 			
-			protected override void Run()
+			protected override async Task RunAsync ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					VersionControlItemList files = list.GetFiles ();
 					if (files.Count > 0)
-						files[0].Repository.DeleteFiles (files.Paths, true, Monitor, true);
+						await files[0].Repository.DeleteFilesAsync (files.Paths, true, Monitor, true).ConfigureAwait (false);
 					VersionControlItemList dirs = list.GetDirectories ();
 					if (dirs.Count > 0)
-						dirs[0].Repository.DeleteDirectories (dirs.Paths, true, Monitor, true);
+						await dirs[0].Repository.DeleteDirectoriesAsync (dirs.Paths, true, Monitor, true).ConfigureAwait (false);
 				}
 				
 				Gtk.Application.Invoke ((o, args) => {

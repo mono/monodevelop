@@ -30,15 +30,27 @@ using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
 	public class ResolveConflictsCommand
 	{
-		public static async Task<bool> ResolveConflicts (VersionControlItemList list, bool test)
+		public static async Task<bool> ResolveConflicts (VersionControlItemList list, bool test, CancellationToken cancellationToken = default)
 		{
-			if (test)
-				return list.All (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted);
+			if (test) {
+				foreach (var item in list) {
+					var info = await item.GetVersionInfoAsync (cancellationToken);
+					if ((info.Status & VersionStatus.Conflicted) != VersionStatus.Conflicted)
+						return false;
+				}
+				return true;
+			}
+
+			foreach (var item in list) {
+				var info = await item.GetVersionInfoAsync (cancellationToken);
+				if ((info.Status & VersionStatus.Conflicted) != VersionStatus.Conflicted)
+					continue;
 
 			foreach (var item in list.Where (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted)) {
 				var doc = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
@@ -48,4 +60,3 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 }
-

@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -155,9 +156,11 @@ namespace MonoDevelop.ChangeLogAddIn
 						File.WriteAllText (ce.File, ce.Message);
 					}
 					if (!cset.ContainsFile (ce.File)) {
-						if (!cset.Repository.GetVersionInfo (ce.File).IsVersioned)
-							cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitor ());
-						cset.AddFile (ce.File);
+						Task.Run (async () => {
+							if (!(await cset.Repository.GetVersionInfoAsync (ce.File)).IsVersioned)
+								cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitor ());
+							await cset.AddFileAsync (ce.File);
+						}).Ignore ();
 					}
 				}
 				return true;

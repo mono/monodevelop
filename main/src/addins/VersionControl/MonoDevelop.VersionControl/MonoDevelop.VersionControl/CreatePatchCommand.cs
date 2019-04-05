@@ -33,6 +33,8 @@ using Mono.Addins;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -53,9 +55,9 @@ namespace MonoDevelop.VersionControl
 		/// <returns>
 		/// A <see cref="System.Boolean"/>: Whether the patch creation succeeded.
 		/// </returns>
-		public static bool CreatePatch (VersionControlItemList items, bool test)
+		public static async Task<bool> CreatePatch (VersionControlItemList items, bool test)
 		{
-			bool can = CanCreatePatch (items);
+			bool can = await CanCreatePatchAsync (items);
 			if (test || !can){ return can; }
 			
 			FilePath basePath = items.FindMostSpecificParent ();
@@ -64,7 +66,7 @@ namespace MonoDevelop.VersionControl
 			
 			ChangeSet cset = new ChangeSet (items[0].Repository, basePath);
 			foreach (VersionControlItem item in items) {
-				cset.AddFile (item.Path);
+				await cset.AddFileAsync (item.Path);
 			}
 			return CreatePatch (cset, test);
 		}
@@ -112,7 +114,7 @@ namespace MonoDevelop.VersionControl
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			
-			var vinfos = items.Repository.GetVersionInfo (items.Items.Select (i => i.LocalPath));
+			var vinfos = items.Repository.GetVersionInfoAsync (items.Items.Select (i => i.LocalPath)).Result;
 			return vinfos.All (i => i.CanRevert);
 		}
 		
@@ -120,10 +122,17 @@ namespace MonoDevelop.VersionControl
 		/// Determines whether a patch can be created 
 		/// from a VersionControlItemList.
 		/// </summary>
-		static bool CanCreatePatch (VersionControlItemList items)
+		static async Task<bool> CanCreatePatchAsync (VersionControlItemList items, CancellationToken cancellationToken = default)
 		{
 			if (null == items || 0 == items.Count){ return false; }
-			return items.All (i => i.VersionInfo.CanRevert);
+
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync (cancellationToken);
+				if (!info.CanRevert)
+					return false;
+			}
+
+			return true;
 		}
 	}
 }

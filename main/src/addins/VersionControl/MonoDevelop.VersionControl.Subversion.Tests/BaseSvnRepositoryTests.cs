@@ -109,7 +109,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 		protected override void CheckLog (Repository repo)
 		{
-			var revs = repo.GetHistory (LocalPath.Combine ("."), null);
+			var revs = repo.GetHistoryAsync (LocalPath.Combine ("."), null).Result;
 			for (int i = 0; i < revs.Length - 1; ++i) {
 				var svnRev = (SvnRevision)revs [i];
 				Assert.AreEqual (revs.Length - 1 - i, svnRev.Rev);

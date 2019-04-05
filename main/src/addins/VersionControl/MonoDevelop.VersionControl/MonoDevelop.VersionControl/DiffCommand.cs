@@ -1,21 +1,21 @@
-// 
+//
 // LogCommand.cs
-//  
+//
 // Author:
 //       Alan McGovern <alan@xamarin.com>
-// 
+//
 // Copyright 2011, Xamarin Inc.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,20 +37,25 @@ namespace MonoDevelop.VersionControl
 	public class DiffCommand
 	{
 		internal static readonly string DiffViewHandlers = "/MonoDevelop/VersionControl/DiffViewHandler";
-		
-		static bool CanShow (VersionControlItem item)
+
+		static async Task<bool> CanShowAsync (VersionControlItem item)
 		{
 			var controller = IdeApp.Workbench.GetDocument (item.Path)?.DocumentController;
-			return !item.IsDirectory 
-				&& item.VersionInfo.IsVersioned
+			return !item.IsDirectory
+				&& (await item.GetVersionInfoAsync()).IsVersioned
 				&& AddinManager.GetExtensionObjects<IVersionControlViewHandler> (DiffViewHandlers).Any (h => h.CanHandle (item, controller));
 		}
-		
+
 		public static async Task<bool> Show (VersionControlItemList items, bool test)
 		{
-			if (test)
-				return items.All (CanShow);
-			
+			if (test) {
+				foreach (var item in items) {
+					if (!await CanShowAsync (item))
+						return false;
+				}
+				return true;
+			}
+
 			foreach (var item in items) {
 				var document = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				if (document == null)
@@ -64,4 +69,3 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 }
-

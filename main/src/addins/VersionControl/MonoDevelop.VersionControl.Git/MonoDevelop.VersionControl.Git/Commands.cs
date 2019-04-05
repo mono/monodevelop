@@ -33,6 +33,7 @@ using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
 using LibGit2Sharp;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -76,11 +77,11 @@ namespace MonoDevelop.VersionControl.Git
 
 	class PushCommandHandler: GitCommandHandler
 	{
-		protected override void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
 			var repo = UpdateVisibility (info);
 			if (repo != null)
-				info.Enabled = repo.GetCurrentRemote () != null;
+				info.Enabled = await repo.GetCurrentRemoteAsync (cancelToken) != null;
 		}
 
 		protected override void Run ()

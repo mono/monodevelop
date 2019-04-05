@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -44,11 +45,12 @@ namespace MonoDevelop.VersionControl.Git
 			this.UseNativeContextMenus ();
 
 			changeList.DiffLoader = DiffLoader;
-
-			var list = new List<string> (repo.GetRemotes ().Select (r => r.Name));
-			foreach (string s in list)
-				remoteCombo.AppendText (s);
-			remoteCombo.Active = list.IndexOf (repo.GetCurrentRemote ());
+			Task.Run (async () => (await repo.GetRemotesAsync (), await repo.GetCurrentRemoteAsync ())).ContinueWith (t => {
+				var list = new List<string> (t.Result.Item1.Select (r => r.Name));
+				foreach (string s in list)
+					remoteCombo.AppendText (s);
+				remoteCombo.Active = list.IndexOf (t.Result.Item2);
+			}, Runtime.MainTaskScheduler);
 
 			UpdateChangeSet ();
 		}

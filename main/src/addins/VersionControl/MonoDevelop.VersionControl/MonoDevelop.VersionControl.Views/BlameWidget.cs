@@ -568,9 +568,9 @@ namespace MonoDevelop.VersionControl.Views
 				ctx.AutoPulse = true;
 				ctx.ShowMessage ("md-version-control", GettextCatalog.GetString ("Retrieving history"));
 
-				ThreadPool.QueueUserWorkItem (delegate {
+				Task.Run (async delegate {
 				try {
-						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName, widget.revision));
+						annotations = new List<Annotation> (await widget.VersionControlItem.Repository.GetAnnotationsAsync (widget.Document.FileName, widget.revision));
 
 						//						for (int i = 0; i < annotations.Count; i++) {
 						//							Annotation varname = annotations[i];
@@ -581,12 +581,12 @@ namespace MonoDevelop.VersionControl.Views
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
-
+					var widgetText = widget.revision == null ? null : await widget.VersionControlItem.Repository.GetTextAtRevisionAsync (widget.Document.FileName, widget.revision);
 					Runtime.RunInMainThread (delegate {
 						if (widget.revision != null) {
 							var location = widget.Editor.Caret.Location;
 							var adj = widget.editor.VAdjustment.Value;
-							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
+							document.Text = widgetText;
 							widget.editor.Caret.Location = location;
 							widget.editor.VAdjustment.Value = adj;
 						} else {

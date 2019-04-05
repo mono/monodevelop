@@ -112,22 +112,26 @@ namespace MonoDevelop.VersionControl.Git
 			UpdateStatus ();
 		}
 
-		void Fill ()
+		async void Fill ()
 		{
-			store.Clear ();
+			try {
+				store.Clear ();
 
-			foreach (Branch b in repo.GetBranches ())
-				store.AppendValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), b.FriendlyName, "branch");
+				foreach (Branch b in repo.GetBranches ())
+					store.AppendValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), b.FriendlyName, "branch");
 
-			foreach (string t in repo.GetTags ())
-				store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
+				foreach (string t in repo.GetTags ())
+					store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
 
-			foreach (Remote r in repo.GetRemotes ()) {
-				TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
-				foreach (string b in repo.GetRemoteBranches (r.Name))
-					store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
+				foreach (Remote r in await repo.GetRemotesAsync ()) {
+					TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
+					foreach (string b in repo.GetRemoteBranches (r.Name))
+						store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
+				}
+				UpdateStatus ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 			}
-			UpdateStatus ();
 		}
 
 		void UpdateStatus ()

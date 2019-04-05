@@ -506,32 +506,32 @@ namespace MonoDevelop.VersionControl
 		//		NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
 		//}
 
-		static void OnFileAdded (object s, ProjectFileEventArgs e)
+		static async void OnFileAdded (object s, ProjectFileEventArgs e)
 		{
-			FileUpdateEventArgs vargs = new FileUpdateEventArgs ();
+			var vargs = new FileUpdateEventArgs ();
 			ProgressMonitor monitor = null;
 			try {
 				foreach (var repoFiles in e.GroupBy (i => i.Project)) {
-					Repository repo = GetRepository (repoFiles.Key);
+					var repo = GetRepository (repoFiles.Key);
 					if (repo == null)
 						continue;
 					var filePaths = repoFiles.Where (ShouldAddFile).Select (f => f.ProjectFile.FilePath);
-					var versionInfos = repo.GetVersionInfo (filePaths, VersionInfoQueryFlags.IgnoreCache);
-					FilePath[] paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
+					var versionInfos = await repo.GetVersionInfoAsync (filePaths, VersionInfoQueryFlags.IgnoreCache).ConfigureAwait (false);
+					var paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
 					if (paths.Length > 0) {
 						if (monitor == null)
 							monitor = GetStatusMonitor ();
-						repo.Add (paths, false, monitor);
+						repo.AddAsync (paths, false, monitor);
 					}
 					vargs.AddRange (repoFiles.Select (i => new FileUpdateEventInfo (repo, i.ProjectFile.FilePath, i.ProjectFile.Subtype == Subtype.Directory)));
 				}
+				if (vargs.Count > 0)
+					NotifyFileStatusChanged (vargs);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			} finally {
+				monitor?.Dispose ();
 			}
-			finally {
-				if (monitor != null)
-					monitor.Dispose ();
-			}
-			if (vargs.Count > 0)
-				NotifyFileStatusChanged (vargs);
 		}
 		
 /*		static void OnFileRemoved (object s, ProjectFileEventArgs args)

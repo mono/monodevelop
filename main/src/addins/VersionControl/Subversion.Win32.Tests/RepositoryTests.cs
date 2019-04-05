@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 +text
 \ No newline at end of file
 ";
-			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache).Result).Content.Replace ("\n", "\r\n"));
 		}
 
 		// Tests that fail due to SvnSharp giving wrong data.
