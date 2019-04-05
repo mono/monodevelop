@@ -61,9 +61,6 @@ namespace MonoDevelop.StressTest
 		readonly ITestScenarioProvider provider;
 		ProfilerProcessor profilerProcessor;
 
-		const int setupIteration = -1;
-		const int cleanupIteration = int.MinValue;
-
 		public void Start ()
 		{
 			ValidateMonoDevelopBinPath ();
