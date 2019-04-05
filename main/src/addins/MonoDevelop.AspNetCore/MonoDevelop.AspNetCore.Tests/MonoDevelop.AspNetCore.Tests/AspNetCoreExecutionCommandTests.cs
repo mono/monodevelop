@@ -35,7 +35,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		[TestCase ("https://localhost:5001", "https://localhost:5001")]
 		public void GetFirstApplicationURL_returns_first_url (string appUrl, string expectedUrl)
 		{
-			Assert.That (AspNetCoreExecutionCommand.GetFirstApplicationURL (appUrl), Is.EqualTo (expectedUrl));
+			Assert.That (appUrl.GetFirstApplicationUrl (), Is.EqualTo (expectedUrl));
 		}
 	}
 }
