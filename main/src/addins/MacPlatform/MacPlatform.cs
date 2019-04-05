@@ -998,9 +998,34 @@ namespace MonoDevelop.MacIntegration
 			return NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
 		}
 
+		bool HasAnyDockWindowFocused ()
+		{
+			foreach (var window in Gtk.Window.ListToplevels ()) {
+				if (!window.HasToplevelFocus) {
+					continue;
+				}
+				if (window is Components.Docking.DockFloatingWindow floatingWindow) {
+					return true;
+				}
+				if (window is IdeWindow ideWindow && ideWindow.Child is Components.Docking.AutoHideBox) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public override Window GetFocusedTopLevelWindow ()
 		{
-			return NSApplication.SharedApplication.KeyWindow;
+			if (NSApplication.SharedApplication.KeyWindow != null) {
+				if (IdeApp.Workbench.RootWindow.Visible) {
+					//if is a docking window then return the current root window
+					if (HasAnyDockWindowFocused ()) {
+						return MessageService.RootWindow;
+					}
+				}
+				return NSApplication.SharedApplication.KeyWindow;
+			}
+			return null;
 		}
 
 		public override void FocusWindow (Window window)
