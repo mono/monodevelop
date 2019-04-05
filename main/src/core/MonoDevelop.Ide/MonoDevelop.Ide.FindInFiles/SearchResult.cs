@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		const int maximumMarkupLength = 78;
+		const int maximumMarkupLength = 475;
 
 		async void CreateMarkup (SearchResultWidget widget, TextEditor doc, Editor.IDocumentLine line)
 		{
