@@ -2078,21 +2078,6 @@ namespace MonoDevelop.VersionControl.Git
 				LibGit2Sharp.Commands.Stage (RootRepository, ".gitignore");
 			});
 		}
-
-		public override bool GetFileIsText (FilePath path)
-		{
-			return RunOperation (path, repo => {
-				Commit c = GetHeadCommit (repo);
-				if (c == null)
-					return base.GetFileIsText (path);
-
-				var blob = GetBlob (c, path, repo);
-				if (blob == null)
-					return base.GetFileIsText (path);
-
-				return !blob.IsBinary;
-			});
-		}
 	}
 
 	public class GitRevision: Revision
