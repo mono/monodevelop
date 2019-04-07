@@ -3,6 +3,8 @@ setlocal enableextensions enabledelayedexpansion
 
 if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
 	FOR /F "delims=" %%E in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\installer\vswhere.exe" -latest -property installationPath') DO (
+		set "MSBUILD_EXE=%%E\MSBuild\Current\Bin\MSBuild.exe"
+		if exist "!MSBUILD_EXE!" goto :build
 		set "MSBUILD_EXE=%%E\MSBuild\15.0\Bin\MSBuild.exe"
 		if exist "!MSBUILD_EXE!" goto :build
 	)
@@ -24,7 +26,7 @@ FOR /F "delims=" %%E IN ('dir /b /ad "%ProgramFiles(x86)%\Microsoft Visual Studi
 	)
 )
 
-echo Could not find MSBuild 15
+echo Could not find MSBuild
 exit /b 1
 
 :build
