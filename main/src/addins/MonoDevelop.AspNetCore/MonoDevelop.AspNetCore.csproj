@@ -17,6 +17,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="MonoDevelop.AspNetCore.Templating\AspNetCoreFileTemplateCondition.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Templating\AspNetCoreSdkInstalledCondition.cs" />
@@ -36,6 +40,11 @@
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderProfilesCommandHandler.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderBaseCommandHandler.cs" />
     <Compile Include="MonoDevelop.AspNetCore\Counters.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\LaunchProfileData.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\LaunchProfile.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\ILaunchProfile.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\LaunchProfileDataExtensions.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\LaunchProfileProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />

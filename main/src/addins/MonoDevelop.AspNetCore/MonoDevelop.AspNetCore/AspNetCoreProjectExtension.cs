@@ -37,11 +37,15 @@ namespace MonoDevelop.AspNetCore
 	[ExportProjectModelExtension]
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
+		AspNetCoreRunConfiguration aspNetCoreRunConf;
 		public const string TypeScriptCompile = "TypeScriptCompile";
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
-			return new AspNetCoreRunConfiguration (name);
+			if (aspNetCoreRunConf == null) {
+				aspNetCoreRunConf = new AspNetCoreRunConfiguration (name, this.Project);
+			}
+			return aspNetCoreRunConf;
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
@@ -70,6 +74,8 @@ namespace MonoDevelop.AspNetCore
 			else
 				outputFileName = GetOutputFileName (configuration);
 
+			var applicationUrl = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl ();
+
 			return new AspNetCoreExecutionCommand (
 				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
@@ -78,9 +84,10 @@ namespace MonoDevelop.AspNetCore
 				EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
 				PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
 				ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
-				LaunchBrowser = aspnetCoreRunConfiguration.LaunchBrowser,
-				LaunchURL = aspnetCoreRunConfiguration.LaunchUrl,
-				ApplicationURL = aspnetCoreRunConfiguration.ApplicationURL,
+				LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
+				LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
+				ApplicationURL = applicationUrl.GetFirstApplicationUrl (),
+				ApplicationURLs = applicationUrl,
 				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
 			};
 		}
@@ -107,6 +114,28 @@ namespace MonoDevelop.AspNetCore
 				return TypeScriptCompile;
 
 			return base.OnGetDefaultBuildAction (fileName);
+		}
+
+		protected override void OnItemReady ()
+		{
+			base.OnItemReady ();
+			FileService.FileChanged += FileService_FileChanged;
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			FileService.FileChanged -= FileService_FileChanged;
+		}
+
+		void FileService_FileChanged (object sender, FileEventArgs e)
+		{
+			var launchSettingsPath = aspNetCoreRunConf?.launchProfileProvider?.launchSettingsJsonPath;
+			var launchSettings = e.FirstOrDefault (x => x.FileName == launchSettingsPath && !x.FileName.IsDirectory);
+			if (launchSettings == null)
+				return;
+
+			aspNetCoreRunConf.RefreshLaunchSettings ();
 		}
 	}
 }
