@@ -528,7 +528,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				return DocumentInfo.Create (
 					id.DocumentData.GetOrCreate (filePath),
-					filePath,
+					Path.GetFileName (filePath),
 					folders,
 					f.SourceCodeKind,
 					CreateTextLoader (filePath),
