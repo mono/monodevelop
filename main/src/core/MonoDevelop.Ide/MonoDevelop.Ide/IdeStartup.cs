@@ -371,7 +371,7 @@ namespace MonoDevelop.Ide
 		}
 
 		/// <summary>
-		/// Resolves MSBuild 15.0 assemblies that are used by MonoDevelop.Ide and are included with Mono.
+		/// Resolves MSBuild assemblies that are used by MonoDevelop.Ide and are included with Mono.
 		/// </summary>
 		void ResolveMSBuildAssemblies ()
 		{
@@ -380,7 +380,14 @@ namespace MonoDevelop.Ide
 
 			var currentRuntime = MonoRuntimeInfo.FromCurrentRuntime ();
 			if (currentRuntime != null) {
-				msbuildBinDir = Path.Combine (currentRuntime.Prefix, "lib", "mono", "msbuild", "15.0", "bin");
+				var rootMSBuildBinDir = Path.Combine (currentRuntime.Prefix, "lib", "mono", "msbuild");
+				msbuildBinDir = Path.Combine (rootMSBuildBinDir, "Current", "bin");
+				if (Directory.Exists (msbuildBinDir)) {
+					AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolve;
+					return;
+				}
+				// Fallback to MSBuild 15.0
+				msbuildBinDir = Path.Combine (rootMSBuildBinDir, "15.0", "bin");
 				if (Directory.Exists (msbuildBinDir)) {
 					AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolve;
 				}
