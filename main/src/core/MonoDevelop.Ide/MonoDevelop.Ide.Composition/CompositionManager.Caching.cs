@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Composition
 				MefCacheFile = getCacheFilePath ("mef-cache");
 				MefCacheControlFile = getCacheFilePath ("mef-cache-control");
 				this.cachingFaultInjector = cachingFaultInjector;
-				this.exceptionHandler = exceptionHandler;
+				this.exceptionHandler = exceptionHandler ?? new RuntimeCompositionExceptionHandler ();
 			}
 
 			void IdeApp_Exiting (object sender, ExitEventArgs args)
