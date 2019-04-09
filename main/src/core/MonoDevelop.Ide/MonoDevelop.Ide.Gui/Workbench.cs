@@ -125,13 +125,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal void Realize (string workbenchMemento)
+		internal void Realize ()
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
 
 			Counters.Initialization.Trace ("Loading memento");
-			var memento = PropertyService.Get (workbenchMemento, new Properties ());
+			var memento = IdeApp.Preferences.WorkbenchMemento.Value;
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
 
@@ -155,6 +155,10 @@ namespace MonoDevelop.Ide.Gui
 					LayoutChanged (this, EventArgs.Empty);
 
 				hasEverBeenShown = true;
+			} else if (!RootWindow.Visible) {
+				// restore memento if the root window has been hidden before
+				var memento = IdeApp.Preferences.WorkbenchMemento.Value;
+				workbench.Memento = memento;
 			}
 		}
 
@@ -162,6 +166,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (!RootWindow.Visible)
 				Show ();
+		}
+
+		internal void Hide ()
+		{
+			if (RootWindow.Visible) {
+				IdeApp.Preferences.WorkbenchMemento.Value = (Properties)workbench.Memento;
+				// FIXME: On mac the window can not be hidden while in fullscreen, we should unllscreen first and then hide
+				if (Platform.IsMac && DesktopService.GetIsFullscreen (RootWindow)) {
+					return;
+				}
+				RootWindow.Hide ();
+			}
 		}
 		
 		internal async Task<bool> Close ()
