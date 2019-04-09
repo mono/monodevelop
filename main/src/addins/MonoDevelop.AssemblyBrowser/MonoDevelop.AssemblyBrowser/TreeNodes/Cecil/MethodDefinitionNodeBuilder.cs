@@ -118,6 +118,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = TypeDefinitionNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
+
 			return settings;
 		}
 
@@ -126,23 +127,20 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
 			var csharpDecompiler = assemblyLoader.CSharpDecompiler;
-			try
-			{
-				var syntaxTree = decompile(csharpDecompiler);
+			try {
+				var syntaxTree = decompile (csharpDecompiler);
 				if (!flags.MethodBodies) {
 					MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
 				}
 
-				var output = new ColoredCSharpFormatter(data);
-				TokenWriter tokenWriter = new TextTokenWriter(output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
+				var output = new ColoredCSharpFormatter (data);
+				TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
 				var formattingPolicy = settings.CSharpFormattingOptions;
-				syntaxTree.AcceptVisitor(new CSharpOutputVisitor(tokenWriter, formattingPolicy));
-				output.SetDocumentData();
+				syntaxTree.AcceptVisitor (new CSharpOutputVisitor (tokenWriter, formattingPolicy));
+				output.SetDocumentData ();
 				return output.ReferencedSegments;
-			}
-			catch (Exception e)
-			{
-				data.InsertText(data.Length, "/* decompilation failed: \n" + e + " */");
+			} catch (Exception e) {
+				data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
 			}
 			return null;
 		}

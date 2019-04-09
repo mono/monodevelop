@@ -88,6 +88,16 @@ namespace MonoDevelop.AssemblyBrowser
 		public static string GetDisplayString (this ITypeDefinition type)
 		{
 			var sb = StringBuilderCache.Allocate ();
+			AppendTypeDisplayString(sb, type);
+			return StringBuilderCache.ReturnAndFree (sb);
+		}
+
+		static void AppendTypeDisplayString(StringBuilder sb, ITypeDefinition type)
+		{
+			if (type.DeclaringTypeDefinition != null) {
+				AppendTypeDisplayString(sb, type.DeclaringTypeDefinition);
+				sb.Append ('.');
+			}
 			sb.Append (type.FullTypeName.Name);
 			if (type.TypeParameterCount > 0) {
 				sb.Append ('<');
@@ -98,7 +108,6 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				sb.Append ('>');
 			}
-			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		public static string GetDisplayString (this IField field)

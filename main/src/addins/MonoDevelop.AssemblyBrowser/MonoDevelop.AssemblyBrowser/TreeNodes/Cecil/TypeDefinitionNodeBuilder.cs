@@ -41,6 +41,9 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
+using System.Security;
+using ICSharpCode.Decompiler.CSharp.Syntax;
+using ICSharpCode.Decompiler.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -61,17 +64,13 @@ namespace MonoDevelop.AssemblyBrowser
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var type = (ITypeDefinition)dataObject;
-			return type.Name;
+			return type.GetDisplayString ();
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var type = (ITypeDefinition)dataObject;
-			try {
-				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (type.GetDisplayString ());
-			} catch (Exception) {
-				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (type.FullTypeName.Name);
-			}
+			nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (treeBuilder.NodeName);
 			if (!type.IsPublic ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(type));
@@ -102,12 +101,6 @@ namespace MonoDevelop.AssemblyBrowser
 			if (type.DirectBaseTypes.Any ())
 				list.Add (new BaseTypeFolder (type));
 			bool publicOnly = Widget.PublicApiOnly;
-
-			foreach (var nestedType in type.NestedTypes.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && !nestedType.IsPublic ())
-					continue;
-				builder.AddChild (nestedType);
-			}
 
 			foreach (var field in type.Fields.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
 				if (publicOnly && !field.IsPublic ())
@@ -212,8 +205,9 @@ namespace MonoDevelop.AssemblyBrowser
 			return MethodDefinitionNodeBuilder.Decompile (
 				data, 
 				MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), 
-				builder => builder.DecompileType (type.FullTypeName), flags: flags);
+				builder => builder.Decompile (type.MetadataToken), flags: flags);
 		}
+
 		#endregion
 	}
 }
