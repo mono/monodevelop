@@ -3,6 +3,7 @@
 		<Import assembly="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
 		<Import assembly="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Extras.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
 	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />
