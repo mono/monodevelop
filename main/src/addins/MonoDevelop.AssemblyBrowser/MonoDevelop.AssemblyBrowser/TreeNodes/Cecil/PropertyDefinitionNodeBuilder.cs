@@ -98,18 +98,6 @@ namespace MonoDevelop.AssemblyBrowser
 			var property = (IProperty)navigator.DataItem;
 			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property.ParentModule.PEFile, (System.Reflection.Metadata.PropertyDefinitionHandle)property.MetadataToken));
 		}
-		
-		static string GetBody (string text)
-		{
-			int idx = text.IndexOf ('{') + 1;
-			int idx2 = text.LastIndexOf ('}');
-			if (idx2 - idx <= 0)
-				return text;
-			string result = text.Substring (idx, idx2 - idx);
-			if (result.StartsWith ("\n"))
-				result = result.Substring (1);
-			return result;
-		}
 
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{

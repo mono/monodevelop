@@ -75,11 +75,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IMethod)dataObject;
 
 			var ambience = new CSharpAmbience ();
-			try {
-				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.GetDisplayString ());
-			} catch (Exception) {
-				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.Name);
-			}
+			nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.GetDisplayString ());
 
 			if (method.IsPrivate ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
