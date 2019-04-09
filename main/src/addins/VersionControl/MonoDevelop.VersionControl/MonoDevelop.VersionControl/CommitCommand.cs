@@ -4,7 +4,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.VersionControl.Dialogs;
 
@@ -42,7 +41,7 @@ namespace MonoDevelop.VersionControl
 			// In case we have local unsaved files with changes, ask the user to save them.
 			List<Document> docList = new List<Document> ();
 			foreach (var item in IdeApp.Workbench.Documents) {
-				if (item.IsDirty && !changeSet.Items.Any (csi => csi.LocalPath == item.FileName))
+				if (item.IsDirty && !changeSet.ContainsFile(item.FileName))
 					docList.Add (item);
 			}
 
@@ -73,6 +72,7 @@ namespace MonoDevelop.VersionControl
 						if (item.IsDirty) {
 							MessageService.ShowMessage (GettextCatalog.GetString (
 								"Some files could not be saved."));
+							break;
 						}
 					return false;
 				}

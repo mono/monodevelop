@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 	partial class CommitDialog : Gtk.Dialog
 	{
 		ListStore store;
-		List<FilePath> selected = new List<FilePath> ();
+		HashSet<FilePath> selected = new HashSet<FilePath> ();
 		List<CommitDialogExtension> extensions = new List<CommitDialogExtension> ();
 		ChangeSet changeSet;
 		string oldMessage;
@@ -160,7 +160,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		bool AddFile (VersionInfo vinfo)
 		{
-			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges) && !selected.Contains (vinfo.LocalPath);
+			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges);
 		}
 
 		TreeIter AppendFileInfo (VersionInfo info)
