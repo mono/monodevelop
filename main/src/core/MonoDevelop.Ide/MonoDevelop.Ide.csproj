@@ -4288,13 +4288,9 @@
     <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
     <InternalsVisibleTo Include="WebToolingAddin" />
     <InternalsVisibleTo Include="WindowsPlatform" />
-    <InternalsVisibleTo Include="Xamarin.AndroidDesigner.MonoDevelop" />
-    <InternalsVisibleTo Include="Xamarin.Designer.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
-    <InternalsVisibleTo Include="Xamarin.FormsPreviewer.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.Ide" />
-    <InternalsVisibleTo Include="Xamarin.iOSDesigner.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.OSXEditor" />
     <InternalsVisibleTo Include="Xamarin.Sketches" />
   </ItemGroup>
