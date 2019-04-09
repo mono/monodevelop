@@ -26,6 +26,7 @@
 
 using System;
 using Mono.Addins;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Codons
 {
@@ -79,6 +80,8 @@ namespace MonoDevelop.Ide.Codons
 		[NodeAttribute ("formatExclude", "Project files that should not be formatted. For example: readme.txt|*.xml")]
 		public string FileFormatExclude { get; private set; }
 
+		[NodeAttribute ("visibility", "Determines when the template is visible in the New Project dialog")]
+		public SolutionTemplateVisibility Visibility { get; private set; }
 
 		public string ScanPath {
 			get {

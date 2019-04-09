@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide
 		static Window defaultRootWindow;
 		public static Window RootWindow {
 			get {
-				if (WelcomePageService.WelcomeWindowVisible)
+				if (WelcomePageService.WelcomeWindowVisible && !IdeApp.Workbench.RootWindow.Visible)
 					return WelcomePageService.WelcomeWindow;
 				return defaultRootWindow;
 			}
@@ -606,7 +606,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? IdeServices.DesktopService.GetParentForModalWindow ()
+					TransientFor = parent ?? IdeServices.DesktopService.GetFocusedTopLevelWindow ()
 				};
 				return dialog.Run ();
 			}

@@ -402,18 +402,22 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> enableNewEditor = ConfigurationProperty.Create ("EnableNewEditor", false);
+		ConfigurationProperty<bool> preferLegacyEditor = ConfigurationProperty.Create ("PreferLegacyEditor", false);
 		public bool EnableNewEditor {
+			// NOTE: as we're making this editor the default, we've switched to a new configuration property,
+			// and we'll simply flip the value that we're getting from that. The code below might be a bit convoluted,
+			// but it means we don't have additional changes
 			get {
-				return enableNewEditor;
+				return !preferLegacyEditor;
 			}
 			set {
-				if (!enableNewEditor.Set (value))
+				value = !value; //see notes above
+				if (!preferLegacyEditor.Set (value))
 					return;
 
 				string messageText;
 
-				if (value) {
+				if (!value) {
 					messageText = GettextCatalog.GetString (
 						"The New Editor Preview has been enabled, but already opened files " +
 						"will need to be closed and re-opened for the change to take effect.");

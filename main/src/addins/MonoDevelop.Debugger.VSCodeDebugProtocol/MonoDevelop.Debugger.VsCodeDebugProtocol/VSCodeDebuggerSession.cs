@@ -366,6 +366,22 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		List<string> pathsWithBreakpoints = new List<string> ();
 
+		static readonly Dictionary<HitCountMode, string> conditions = new Dictionary<HitCountMode, string> {
+			{ HitCountMode.EqualTo, "=" },
+			{ HitCountMode.GreaterThan, ">" },
+			{ HitCountMode.GreaterThanOrEqualTo, ">=" },
+			{ HitCountMode.LessThan, "<" },
+			{ HitCountMode.LessThanOrEqualTo, "<=" },
+			{ HitCountMode.MultipleOf, "%" }};
+
+		string GetHitCondition (Mono.Debugging.Client.Breakpoint breakpoint)
+		{
+			if (breakpoint.HitCountMode == HitCountMode.None)
+				return null;
+
+			return conditions [breakpoint.HitCountMode] + breakpoint.HitCount;
+		}
+
 		void UpdateBreakpoints ()
 		{
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled && !string.IsNullOrEmpty (b.FileName)).GroupBy (b => b.FileName).ToArray ();
@@ -396,8 +412,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						Breakpoints = sourceFile.Select (b => new SourceBreakpoint {
 							Line = b.OriginalLine,
 							Column = b.OriginalColumn,
-							Condition = b.ConditionExpression
-							//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
+							Condition = b.ConditionExpression,
+							HitCondition = GetHitCondition(b)
 						}).ToList ()
 					}, (obj) => {
 						Task.Run (() => {

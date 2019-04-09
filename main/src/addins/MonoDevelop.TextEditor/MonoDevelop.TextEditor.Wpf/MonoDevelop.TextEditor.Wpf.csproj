@@ -43,5 +43,7 @@
     <Compile Update="Find\FindUI.xaml.cs">
       <DependentUpon>FindUI.xaml</DependentUpon>
     </Compile>
+    <Compile Remove="Find\WpfFindPresenter.cs" />
+    <Compile Remove="Find\WpfFindPresenterFactory.cs" />
   </ItemGroup>
 </Project>

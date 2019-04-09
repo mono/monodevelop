@@ -177,11 +177,6 @@ namespace MonoDevelop.DotNetCore
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
-#pragma warning disable CS0618 // Type or member is obsolete
-				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
-				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
-				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
-#pragma warning restore CS0618 // Type or member is obsolete
 				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}

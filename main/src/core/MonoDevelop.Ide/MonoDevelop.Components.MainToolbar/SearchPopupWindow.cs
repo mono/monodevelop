@@ -228,8 +228,8 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 
 			if (SelectedItem.DataSource[SelectedItem.Item].CanActivate) {
-				SelectedItem.DataSource[SelectedItem.Item].Activate ();
 				ParentWindow.Dispose ();
+				SelectedItem.DataSource [SelectedItem.Item].Activate ();
 			}
 			else {
 				var region = SelectedItemRegion;

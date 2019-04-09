@@ -1,10 +1,10 @@
-﻿//
-// Dialog.cs
+//
+// AspNetCoreExecutionCommandTests.cs
 //
 // Author:
-//       therzok <marius.ungureanu@xamarin.com>
+//       josemiguel <jostor@microsoft.com>
 //
-// Copyright (c) 2015 therzok
+// Copyright (c) 2019 ${CopyrightHolder}
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using NUnit.Framework;
 
-namespace MonoDevelop.Components
+namespace MonoDevelop.AspNetCore.Tests
 {
-	public class Dialog : Window
+	[TestFixture]
+	public class AspNetCoreExecutionCommandTests
 	{
-		protected Dialog ()
+		[TestCase ("http://localhost:5000;https://localhost:5001", "http://localhost:5000")]
+		[TestCase ("https://localhost:5001", "https://localhost:5001")]
+		public void GetFirstApplicationURL_returns_first_url (string appUrl, string expectedUrl)
 		{
-		}
-
-		Dialog (object widget) : base (widget)
-		{
-		}
-
-		public static implicit operator Gtk.Dialog (Dialog d)
-		{
-			return d?.GetNativeWidget<Gtk.Dialog> ();
-		}
-
-		public static implicit operator Dialog (Gtk.Dialog d)
-		{
-			if (d == null)
-				return null;
-
-			var dialog = GetImplicit<Dialog, Gtk.Dialog>(d);
-			if (dialog == null) {
-				dialog = new Dialog (d);
-				d.Destroyed += delegate {
-					GC.SuppressFinalize (dialog);
-					dialog.Dispose (true);
-				};
-			}
-			return dialog;
+			Assert.That (appUrl.GetFirstApplicationUrl (), Is.EqualTo (expectedUrl));
 		}
 	}
 }
-

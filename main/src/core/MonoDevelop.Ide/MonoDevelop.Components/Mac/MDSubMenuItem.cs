@@ -34,6 +34,7 @@ namespace MonoDevelop.Components.Mac
 	class MDSubMenuItem : NSMenuItem, IUpdatableMenuItem
 	{
 		CommandEntrySet ces;
+		bool initiallyUpdated;
 
 		public MDSubMenuItem (CommandManager manager, CommandEntrySet ces, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
 		{
@@ -43,13 +44,28 @@ namespace MonoDevelop.Components.Mac
 			this.Title = this.Submenu.Title;
 		}
 
+		public override string Title {
+			get {
+				if (!initiallyUpdated)
+					Update ();
+				return base.Title;
+			}
+			set => base.Title = value;
+		}
+
 		public void Update (MDMenu parent, ref int index)
+		{
+			Update ();
+		}
+
+		public void Update ()
 		{
 			((MDMenu)Submenu).UpdateCommands ();
 			if (ces.AutoHide)
 				Hidden = Submenu.ItemArray ().All (item => item.Hidden);
 			else
 				Enabled = Submenu.ItemArray ().Any (item => !item.Hidden);
+			initiallyUpdated = true;
 		}
 	}
 }
