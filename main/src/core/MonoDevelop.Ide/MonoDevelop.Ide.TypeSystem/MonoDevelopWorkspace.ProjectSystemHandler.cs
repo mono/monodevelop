@@ -111,6 +111,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				if (cacheInfo == null) {
 					cacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
+					if (token.IsCancellationRequested)
+						return null;
+
 					if (config != null)
 						workspaceCache.Update (config, p, projectMap, cacheInfo);
 				}

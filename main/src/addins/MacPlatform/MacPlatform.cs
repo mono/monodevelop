@@ -424,7 +424,10 @@ namespace MonoDevelop.MacIntegration
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
+					var item = new MDSubMenuItem (commandManager, (CommandEntrySet)ce);
+					rootMenu.AddItem (item);
+					if (ce.CommandId as string == "Help" && item.HasSubmenu && NSApplication.SharedApplication.HelpMenu == null)
+						NSApplication.SharedApplication.HelpMenu = item.Submenu;
 				}
 			} catch (Exception ex) {
 				try {
@@ -433,6 +436,11 @@ namespace MonoDevelop.MacIntegration
 						m.Dispose ();
 					}
 					NSApplication.SharedApplication.MainMenu = null;
+					m = NSApplication.SharedApplication.HelpMenu;
+					if (m != null) {
+						m.Dispose ();
+					}
+					NSApplication.SharedApplication.HelpMenu = null;
 				} catch {}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
@@ -998,9 +1006,34 @@ namespace MonoDevelop.MacIntegration
 			return NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
 		}
 
+		bool HasAnyDockWindowFocused ()
+		{
+			foreach (var window in Gtk.Window.ListToplevels ()) {
+				if (!window.HasToplevelFocus) {
+					continue;
+				}
+				if (window is Components.Docking.DockFloatingWindow floatingWindow) {
+					return true;
+				}
+				if (window is IdeWindow ideWindow && ideWindow.Child is Components.Docking.AutoHideBox) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public override Window GetFocusedTopLevelWindow ()
 		{
-			return NSApplication.SharedApplication.KeyWindow;
+			if (NSApplication.SharedApplication.KeyWindow != null) {
+				if (IdeApp.Workbench.RootWindow.Visible) {
+					//if is a docking window then return the current root window
+					if (HasAnyDockWindowFocused ()) {
+						return MessageService.RootWindow;
+					}
+				}
+				return NSApplication.SharedApplication.KeyWindow;
+			}
+			return null;
 		}
 
 		public override void FocusWindow (Window window)

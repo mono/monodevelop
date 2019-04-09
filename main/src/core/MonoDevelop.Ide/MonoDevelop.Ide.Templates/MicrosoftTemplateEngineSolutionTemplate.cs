@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Templates
 			ImageId = template.ImageId;
 			FileFormattingExclude = template.FileFormatExclude;
 			//ImageFile = template.ImageFile;
-			//Visibility = GetVisibility (template.Visibility);
+			Visibility = template.Visibility;
 
 			//HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}

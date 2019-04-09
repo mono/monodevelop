@@ -110,6 +110,7 @@ namespace MonoDevelop.StressTest
 
 			// Close all documents.
 			WorkbenchExtensions.CloseAllOpenFiles ();
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
 		}
 
 		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;

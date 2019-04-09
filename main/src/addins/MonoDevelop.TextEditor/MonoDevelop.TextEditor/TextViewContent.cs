@@ -49,6 +49,7 @@ using MonoDevelop.Projects.Policies;
 using AutoSave = MonoDevelop.Ide.Editor.AutoSave;
 using EditorConfigService = MonoDevelop.Ide.Editor.EditorConfigService;
 using DefaultSourceEditorOptions = MonoDevelop.Ide.Editor.DefaultSourceEditorOptions;
+using TextEditorFactory = MonoDevelop.Ide.Editor.TextEditorFactory;
 
 #if WINDOWS
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
@@ -78,6 +79,9 @@ namespace MonoDevelop.TextEditor
 		readonly List<IEditorContentProvider> contentProviders;
 		readonly DefaultSourceEditorOptions sourceEditorOptions;
 		readonly IInfoBarPresenter infoBarPresenter;
+
+		static IEditorOptions globalOptions;
+		static bool settingZoomLevel;
 
 		PolicyBag policyContainer;
 		ICodingConventionContext editorConfigContext;
@@ -143,6 +147,43 @@ namespace MonoDevelop.TextEditor
 			InstallAdditionalEditorOperationsCommands ();
 
 			SubscribeToEvents ();
+
+			// Set up this static event handling just once
+			if (globalOptions == null) {
+				globalOptions = imports.EditorOptionsFactoryService.GlobalOptions;
+
+				// From Mono.TextEditor.TextEditorOptions
+				const double ZOOM_FACTOR = 1.1f;
+				const int ZOOM_MIN_POW = -4;
+				const int ZOOM_MAX_POW = 8;
+				var ZOOM_MIN = Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
+				var ZOOM_MAX = Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
+
+				globalOptions.SetMinZoomLevel (ZOOM_MIN * 100);
+				globalOptions.SetMaxZoomLevel (ZOOM_MAX * 100);
+
+				OnConfigurationZoomLevelChanged (null, EventArgs.Empty);
+
+				globalOptions.OptionChanged += OnGlobalOptionsChanged;
+				// Check for option changing in old editor
+				TextEditorFactory.ZoomLevel.Changed += OnConfigurationZoomLevelChanged;
+			}
+		}
+
+		static void OnConfigurationZoomLevelChanged (object sender, EventArgs e)
+		{
+			if (settingZoomLevel)
+				return;
+			globalOptions.SetZoomLevel (TextEditorFactory.ZoomLevel * 100);
+		}
+
+		static void OnGlobalOptionsChanged (object sender, EditorOptionChangedEventArgs e)
+		{
+			if (e.OptionId == DefaultTextViewOptions.ZoomLevelId.Name) {
+				settingZoomLevel = true;
+				TextEditorFactory.ZoomLevel.Set (globalOptions.ZoomLevel () / 100);
+				settingZoomLevel = false;
+			}
 		}
 
 		public override bool IsReadOnly => TextView.Options.DoesViewProhibitUserInput ();

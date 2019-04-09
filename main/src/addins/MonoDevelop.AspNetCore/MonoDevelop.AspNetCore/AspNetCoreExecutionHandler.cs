@@ -48,7 +48,8 @@ namespace MonoDevelop.AspNetCore
 
 			// ApplicationURL is passed to ASP.NET Core server via ASPNETCORE_URLS enviorment variable
 			var envVariables = dotNetCoreCommand.EnvironmentVariables.ToDictionary ((arg) => arg.Key, (arg) => arg.Value);
-			envVariables ["ASPNETCORE_URLS"] = dotNetCoreCommand.ApplicationURL;
+			if (!envVariables.ContainsKey ("ASPNETCORE_URLS"))
+				envVariables ["ASPNETCORE_URLS"] = dotNetCoreCommand.ApplicationURLs;
 
 			var process = Runtime.ProcessService.StartConsoleProcess (
 				dotNetCoreCommand.Command,
