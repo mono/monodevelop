@@ -572,17 +572,19 @@ namespace MonoDevelop.Ide.TypeSystem
 //			}
 //		}
 
-		internal void InformDocumentClose (DocumentId analysisDocument, string filePath)
+		internal void InformDocumentClose (DocumentId analysisDocument, SourceTextContainer container)
 		{
 			try {
 				if (!OpenDocuments.Remove (analysisDocument)) {
 					//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
-					//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
+					//it's job of whatever opened to also call CloseAndemoveDocumentInternal
 					return;
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
 					return;
-				var loader = new MonoDevelopTextLoader (filePath);
+
+				// Using a source text container
+				var loader = new SourceTextLoader (container, null);
 				var document = this.GetDocument (analysisDocument);
 
 				if (document == null) {
@@ -597,6 +599,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while closing document.", e);
+			}
+		}
+
+		sealed class SourceTextLoader : TextLoader
+		{
+			readonly SourceTextContainer _textContainer;
+			readonly string _filePath;
+
+			public SourceTextLoader(SourceTextContainer textContainer, string filePath)
+			{
+				_textContainer = textContainer;
+				_filePath = filePath;
+			}
+
+			public override Task<TextAndVersion> LoadTextAndVersionAsync(Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+			{
+				return Task.FromResult(TextAndVersion.Create(_textContainer.CurrentText, VersionStamp.Create(), _filePath));
 			}
 		}
 

@@ -386,10 +386,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var solution = (reference.Owner as SolutionItem)?.ParentSolution;
 			if (solution != null)
-				TryCloseDocumentInWorkspace (reference.FilePath, solution);
+				TryCloseDocumentInWorkspace (reference.FilePath, reference.TextBuffer.AsTextContainer (), solution);
 		}
 
-		private void TryCloseDocumentInWorkspace (FilePath filePath, MonoDevelop.Projects.Solution solution)
+		private void TryCloseDocumentInWorkspace (FilePath filePath, SourceTextContainer container, MonoDevelop.Projects.Solution solution)
 		{
 			var workspace = GetWorkspace (solution);
 			if (workspace == emptyWorkspace) {
@@ -398,7 +398,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
 			foreach (var documentId in documentIds) {
-				workspace.InformDocumentClose (documentId, filePath);
+				workspace.InformDocumentClose (documentId, container);
 			}
 		}
 
