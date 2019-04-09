@@ -1191,6 +1191,21 @@ namespace MonoDevelop.AssemblyBrowser
 					Application.Invoke ((o, args) => {
 						if (definitions.Count == 0)
 							return;
+						var fullName = result.Assembly.FullName;
+
+						// filter duplicate assemblies, can happen on opening the same assembly at different locations.
+						lock (assemblyLoadingLock) {
+							foreach (var d in definitions) {
+								if (!d.AssemblyTask.IsCompleted || d == result)
+									continue;
+								if (d.Assembly.FullName == fullName) {
+									definitions = definitions.Remove (result);
+									LoggingService.LogInfo ("AssemblyBrowser: Loaded duplicate assembly : " + fullName); // Write a log info in case that happens, shouldn't happen often.
+									return;
+								}
+							}
+						}
+
 						try {
 							ITreeBuilder builder;
 							if (definitions.Count + projects.Count == 1) {
