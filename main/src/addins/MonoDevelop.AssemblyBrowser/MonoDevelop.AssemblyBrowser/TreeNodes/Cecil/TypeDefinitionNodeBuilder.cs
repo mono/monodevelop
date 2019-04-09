@@ -67,9 +67,11 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var type = (ITypeDefinition)dataObject;
-			// TODO: fix this
-			//nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (CSharpLanguage.Instance.FormatTypeName (type));
-			nodeInfo.Label = type.FullTypeName.Name;
+			try {
+				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (type.GetDisplayString ());
+			} catch (Exception) {
+				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (type.FullTypeName.Name);
+			}
 			if (!type.IsPublic ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(type));

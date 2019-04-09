@@ -62,7 +62,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var property = (IProperty)dataObject;
-			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (GetText (property, property.IsIndexer));
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (property.GetDisplayString ());
 
 			var accessor = property.Getter ?? property.Setter;
 
@@ -79,38 +79,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return "md-" + accessor.Accessibility.GetStockIcon () + global + "property";
 		}
 
-		static string GetText (IProperty property, bool? isIndexer = null)
-		{
-			// TODO: fix this
-			string name = property.Name;// CSharpLanguage.Instance.FormatPropertyName (property, isIndexer);
-
-			var b = new System.Text.StringBuilder ();
-			var parameters = property.Parameters;
-			if (parameters.Count != 0) {
-				b.Append ('(');
-				for (int i = 0; i < parameters.Count; i++) {
-					if (i > 0)
-						b.Append (", ");
-					//b.Append (CSharpLanguage.Instance.TypeToString (property.Parameters [i].ParameterType, false, property.Parameters [i]));
-					b.Append (parameters [i].Type.Name);
-				}
-				//var method = property.GetMethod ?? property.SetMethod;
-				//if (method.CallingConvention == MethodCallingConvention.VarArg) {
-				//	if (property.HasParameters)
-				//		b.Append (", ");
-				//	b.Append ("...");
-				//}
-				b.Append (") : ");
-			} else {
-				b.Append (" : ");
-			}
-			//b.Append (CSharpLanguage.Instance.TypeToString (property.PropertyType, false, property));
-			b.Append (property.ReturnType.Name);
-
-			return name + b;
-		}
-
-		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 		}

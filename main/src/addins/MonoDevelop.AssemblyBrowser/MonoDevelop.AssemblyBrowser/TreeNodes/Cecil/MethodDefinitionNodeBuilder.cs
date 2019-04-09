@@ -76,9 +76,9 @@ namespace MonoDevelop.AssemblyBrowser
 
 			var ambience = new CSharpAmbience ();
 			try {
-				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (GetText (method));
+				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.GetDisplayString ());
 			} catch (Exception) {
-				nodeInfo.Label = method.Name;
+				nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.Name);
 			}
 
 			if (method.IsPrivate ())
@@ -93,37 +93,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return "md-" + method.Accessibility.GetStockIcon () + global + "method";
 		}
 
-		public static string GetText (IMethod method)
-		{
-			var b = StringBuilderCache.Allocate ();
-			try {
-				b.Append ('(');
-				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (i > 0)
-						b.Append (", ");
-					// TODO: Fix this.
-					//b.Append (CSharpLanguage.Instance.TypeToString (method.Parameters [i].ParameterType, false, method.Parameters [i]));
-					b.Append (method.Parameters [i].Type.Name);
-				}
-				//if (method.CallingConvention == MethodCallingConvention.VarArg) {
-				//	if (method.HasParameters)
-				//		b.Append (", ");
-				//	b.Append ("...");
-				//}
-				if (method.IsConstructor) {
-					b.Append (')');
-				} else {
-					b.Append (") : ");
-					//b.Append (CSharpLanguage.Instance.TypeToString (method.ReturnType, false, method.MethodReturnType));
-					b.Append (method.ReturnType.Name);
-				}
 
-				//return CSharpLanguage.Instance.FormatMethodName (method) + b;
-				return method.Name + b;
-			} finally {
-				StringBuilderCache.Free (b);
-			}
-		}
 
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
