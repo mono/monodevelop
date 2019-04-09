@@ -13,6 +13,13 @@
     <TestVisualStudioVersion>$(VisualStudioVersion)</TestVisualStudioVersion>
     <TestMSBuildToolsVersion>$(MSBuildToolsVersion)</TestMSBuildToolsVersion>
     <TestMSBuildBinPath>$(MSBuildBinPath)</TestMSBuildBinPath>
+    <TestMSBuildToolsVersionIsCurrent Condition="'$(MSBuildToolsVersion)' == 'Current'">true</TestMSBuildToolsVersionIsCurrent>
+    <TestMSBuildToolsVersionIsLessThan16 Condition="'$(MSBuildToolsVersion)' &lt; '16.0'">true</TestMSBuildToolsVersionIsLessThan16>
+    <TestMSBuildToolsVersionIsGreaterThan15 Condition="'$(MSBuildToolsVersion)' &gt; '15.0'">true</TestMSBuildToolsVersionIsGreaterThan15>
+    <TestMSBuildToolsVersionIsGreaterThan15Switch Condition="'15.0' &lt; '$(MSBuildToolsVersion)'">true</TestMSBuildToolsVersionIsGreaterThan15Switch>
+    <TestMSBuildToolsVersionIsLessThan16Switch Condition="'16.0' &gt; '$(MSBuildToolsVersion)'">true</TestMSBuildToolsVersionIsLessThan16Switch>
+    <TestMSBuildToolsVersionIsLessOrEqual15 Condition="'$(MSBuildToolsVersion)' &lt;= '15.0'">true</TestMSBuildToolsVersionIsLessOrEqual15>
+    <TestMSBuildToolsVersionIsGreaterOrEqualTo16 Condition="'$(MSBuildToolsVersion)' &gt;= '16.0'">true</TestMSBuildToolsVersionIsGreaterOrEqualTo16>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

@@ -1694,6 +1694,24 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (visualStudioVersion, pg.GetValue ("TestVisualStudioVersion"));
 				Assert.AreEqual (msbuildToolsVersion, pg.GetValue ("TestMSBuildToolsVersion"));
 				Assert.AreEqual (msbuildBinPath, pg.GetPathValue ("TestMSBuildBinPath").ToString ());
+
+				if (msbuildToolsVersion == "Current") {
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsCurrent"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15Switch"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16Switch"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessOrEqual15"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterOrEqualTo16"));
+				} else {
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsCurrent"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15Switch"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16Switch"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessOrEqual15"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterOrEqualTo16"));
+				}
 			}
 		}
 	}
