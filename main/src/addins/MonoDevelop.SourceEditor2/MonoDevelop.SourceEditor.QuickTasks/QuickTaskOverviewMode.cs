@@ -173,7 +173,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void BreakpointsChanged (object sender, Mono.Debugging.Client.BreakEventArgs e)
 		{
-			DrawIndicatorSurface (0, true);
+			DrawIndicatorSurface (forceUpdate: true);
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -991,14 +991,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void DrawIndicatorSurface (uint timeout = 250, bool forceUpdate = false)
 		{
 			RemoveIndicatorIdleHandler ();
-			if (timeout == 0) {
+			indicatorIdleTimout = GLib.Timeout.Add (timeout, delegate {
 				IndicatorSurfaceTimeoutHandler (forceUpdate);
-			} else {
-				indicatorIdleTimout = GLib.Timeout.Add (timeout, delegate {
-					IndicatorSurfaceTimeoutHandler (forceUpdate);
-					return false;
-				});
-			}
+				return false;
+			});
 		}
 
 		void IndicatorSurfaceTimeoutHandler (bool forceUpdate)
