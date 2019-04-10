@@ -510,6 +510,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		async Task<Document> ShowView (DocumentOpenInformation documentOpenInfo)
 		{
+			if (IdeApp.Workbench != null)
+				IdeApp.Workbench.EnsureShown ();
+
 			await InitDesktopService ();
 
 			var commandHandler = new ViewCommandHandlers ();
