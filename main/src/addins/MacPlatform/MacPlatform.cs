@@ -630,16 +630,14 @@ namespace MonoDevelop.MacIntegration
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (Ide.WelcomePage.WelcomePageService.HasWindowImplementation && !(IdeApp.Workbench.RootWindow?.Visible ?? false)) {
 						if (IdeApp.Workbench.RootWindow != null) {
-							IdeApp.Workbench.RootWindow.Visible = false;
+							IdeApp.Workbench.Hide ();
 						}
 						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
 
 						e.Handled = true;
 					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Visible = true;
-
-						IdeApp.Workbench.RootWindow.Present ();
+						IdeApp.Workbench.Present ();
 						e.Handled = true;
 					}
 				};
@@ -773,7 +771,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			args.RetVal = true;
 			if (await IdeApp.Workspace.Close ()) {
-				IdeApp.Workbench.RootWindow.Visible = false;
+				IdeApp.Workbench.Hide ();
 			}
 		}
 
