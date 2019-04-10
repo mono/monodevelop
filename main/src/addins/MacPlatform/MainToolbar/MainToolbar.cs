@@ -360,9 +360,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					entryWidget.Dispose ();
 					entryWidget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
 
-					var nsWindows = NSApplication.SharedApplication.Windows;
-					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
-						nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
+					var fullscreenToolbarNsWindow = searchEntry.Window;
+					if (fullscreenToolbarNsWindow == null) { // fallback to old query code and log an internal error
+						LoggingService.LogInternalError ("Getting the main fullscreen IDE window failed, this should never happen", new InvalidOperationException ());
+						var nsWindows = NSApplication.SharedApplication.Windows;
+						fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
+							nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
+					}
 
 					CGPoint gdkOrigin = ScreenMonitor.GdkPointForNSScreen (searchEntry.Window.Screen);
 
