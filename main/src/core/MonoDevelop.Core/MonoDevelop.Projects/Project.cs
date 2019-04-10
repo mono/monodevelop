@@ -1387,8 +1387,6 @@ namespace MonoDevelop.Projects
 				var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (metadata);
 				var t2 = buildTimer?.BeginTiming (metadata);
 
-				IRemoteProjectBuilder builder = await GetProjectBuilder (monitor.CancellationToken, context, setBusy: operationRequiresExclusiveLock).ConfigureAwait (false);
-
 				string [] targets;
 				if (target.IndexOf (';') != -1)
 					targets = target.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -1396,6 +1394,12 @@ namespace MonoDevelop.Projects
 					targets = new string [] { target };
 
 				var logger = context.Loggers.Count != 1 ? new ProxyLogger (this, context.Loggers) : context.Loggers.First ();
+
+				IRemoteProjectBuilder builder = await GetProjectBuilder (monitor.CancellationToken, context, setBusy: operationRequiresExclusiveLock).ConfigureAwait (false);
+				if (builder == null) {
+					MSBuildTargetResult err = new MSBuildTargetResult (FileName, false, "", "", FileName, 1, 1, 1, 1, "Unknown MSBuild failure", "");
+					result = new MSBuildResult (new [] { err });
+				}
 
 				try {
 					result = await builder.Run (configs, monitor.Log, logger, context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
@@ -1634,6 +1638,8 @@ namespace MonoDevelop.Projects
 				context.SessionData.TryGetValue (MSBuildSolutionExtension.MSBuildProjectOperationId, out buildSessionId);
 
 			var builder = await RemoteBuildEngineManager.GetRemoteProjectBuilder (FileName, slnFile, runtime, ToolsVersion, buildSessionId, setBusy, allowBusy);
+			if (builder == null)
+				return null;
 
 			if (modifiedInMemory) {
 				modifiedInMemory = false;

@@ -109,48 +109,98 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Gets or creates a project builder for the provided project
 		/// </summary>
-		/// <returns>The remote project builder.</returns>
+		/// <returns>The remote project builder, or null if for some reason the builder could not be created</returns>
 		/// <param name="projectFile">Project to build.</param>
-		public Task<RemoteProjectBuilder> GetRemoteProjectBuilder (string projectFile, bool addReference)
+		public Task<RemoteProjectBuilder> GetOrCreateRemoteProjectBuilder (string projectFile)
 		{
-			lock (remoteProjectBuilders) {
-				if (remoteProjectBuilders.TryGetValue (projectFile, out var builder)) {
-					if (addReference && builder.IsCompleted) {
-						if (builder.Result.AddReference ())
-							return builder;
-						else // Project builder is shutting down
-							remoteProjectBuilders.Remove (projectFile);
-					} else if (addReference) {
-						builder.ContinueWith (t => AddProjectBuilderReference (t.Result), TaskContinuationOptions.NotOnFaulted);
-						return builder;
-					} else
-						return builder;
-				}
-
-				builder = CreateRemoteProjectBuilder (projectFile);
-				remoteProjectBuilders.Add (projectFile, builder);
-				if (addReference)
-					builder.ContinueWith (t => AddProjectBuilderReference (t.Result), TaskContinuationOptions.NotOnFaulted);
-				return builder;
-			}
+			return InternalGetRemoteProjectBuilder (projectFile, true);
 		}
 
-		void AddProjectBuilderReference (RemoteProjectBuilder remoteBuilder)
+		/// <summary>
+		/// Gets a project builder for the provided project
+		/// </summary>
+		/// <returns>The remote project builder, or null if the builder has been shut down</returns>
+		/// <param name="projectFile">Project to build.</param>
+		public Task<RemoteProjectBuilder> GetRemoteProjectBuilder (string projectFile)
 		{
-			if (!remoteBuilder.AddReference ())
-				RemoveBuilder (remoteBuilder);
+			return InternalGetRemoteProjectBuilder (projectFile, false);
+		}
+
+		/// <summary>
+		/// Gets or creates a project builder for the provided project
+		/// </summary>
+		/// <returns>The remote project builder.</returns>
+		/// <param name="projectFile">Project to build.</param>
+		async Task<RemoteProjectBuilder> InternalGetRemoteProjectBuilder (string projectFile, bool create)
+		{
+			if (IsShuttingDown)
+				return null;
+
+			Task<RemoteProjectBuilder> currentBuilderTask;
+			bool createdNew = false;
+
+			lock (remoteProjectBuilders) {
+				if (remoteProjectBuilders.TryGetValue (projectFile, out currentBuilderTask)) {
+					if (currentBuilderTask.IsCompleted) {
+						var reusableBuilder = currentBuilderTask.Result;
+						if (reusableBuilder != null && reusableBuilder.AddReference ())
+							return reusableBuilder;
+						else {
+							// Project builder is shutting down. Remove it from the reusable list and start a new one if requested
+							remoteProjectBuilders.Remove (projectFile);
+							currentBuilderTask = null;
+						}
+					}
+				}
+				if (currentBuilderTask == null) {
+					if (!create)
+						return null;
+					createdNew = true;
+					currentBuilderTask = CreateRemoteProjectBuilder (projectFile);
+					remoteProjectBuilders.Add (projectFile, currentBuilderTask);
+				}
+			}
+
+			var builder = await currentBuilderTask;
+			if (builder == null) {
+				// The builder was shutdown just after creation. Try again.
+				return await InternalGetRemoteProjectBuilder (projectFile, create);
+			}
+
+			if (createdNew) {
+				// The new builder already has a reference, nothing else to do
+				return builder;
+			}
+
+			if (builder.AddReference ()) {
+				return builder;
+			}
+
+			// The builder was shutdown. Try again.
+			return await InternalGetRemoteProjectBuilder (projectFile, create);
+
 		}
 
 		async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
 		{
-			var pid = await LoadProject (projectFile).ConfigureAwait (false);
-			var pb = new RemoteProjectBuilder (projectFile, pid, this, connection);
+			try {
+				var pid = await LoadProject (projectFile).ConfigureAwait (false);
+				var pb = new RemoteProjectBuilder (projectFile, pid, this, connection);
 
-			// Unlikely, but it may happen
-			if (IsShuttingDown)
-				pb.Shutdown ();
-			
-			return pb;
+				// Unlikely, but it may happen
+				if (IsShuttingDown) {
+					pb.Shutdown ();
+					return null;
+				}
+
+				if (!pb.AddReference ())
+					return null;
+
+				return pb;
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+				return null;
+			}
 		}
 
 		async Task<int> LoadProject (string projectFile)
@@ -199,7 +249,7 @@ namespace MonoDevelop.Projects.MSBuild
 					return;
 				IsShuttingDown = true;
 				foreach (var pb in remoteProjectBuilders.Values)
-					pb.ContinueWith (t => t.Result.Shutdown (), TaskContinuationOptions.NotOnFaulted);
+					pb.ContinueWith (t => t.Result?.Shutdown (), TaskContinuationOptions.NotOnFaulted);
 			}
 		}
 
