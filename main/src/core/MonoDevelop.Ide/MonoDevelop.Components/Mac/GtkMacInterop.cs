@@ -80,6 +80,17 @@ namespace MonoDevelop.Components.Mac
 		//	}
 		//}
 
+		public static NSWindow GetNSWindow (Window window)
+		{
+			if (window.nativeWidget is NSWindow nSWindow) {
+				return nSWindow;
+			}
+			if (window.nativeWidget is Gtk.Window gtkWindow) {
+				return GetNSWindow ((Gtk.Window)gtkWindow);
+			}
+			return null;
+		}
+
 		public static NSWindow GetNSWindow (Gtk.Window window)
 		{
 			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);

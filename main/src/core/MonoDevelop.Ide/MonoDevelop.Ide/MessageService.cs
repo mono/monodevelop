@@ -384,20 +384,36 @@ namespace MonoDevelop.Ide
 		}
 
 		#if MAC
+
 		static void ShowCustomModalDialog (Gtk.Window dialog, Window parent)
 		{
 			CenterWindow (dialog, parent);
 
 			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
 			// Make the GTK window modal WRT the current modal NSWindow
-			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
 
-			EventHandler unrealizer = null;
-			unrealizer = delegate {
-				NSApplication.SharedApplication.EndModalSession (s);
-				dialog.Unrealized -= unrealizer;
-			};
-			dialog.Unrealized += unrealizer;
+			var nativeParent = GtkMacInterop.GetNSWindow (parent);
+			if (nativeParent != null) {
+				nativeParent.AddChildWindow (nsdialog, NSWindowOrderingMode.Above);
+
+				EventHandler unrealizer = null;
+				unrealizer = delegate {
+					if (nativeParent != null) {
+						nativeParent.RemoveChildWindow (nsdialog);
+					}
+					dialog.Unrealized -= unrealizer;
+				};
+				dialog.Unrealized += unrealizer;
+			} else {
+				var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
+				EventHandler unrealizer = null;
+				unrealizer = delegate {
+					NSApplication.SharedApplication.EndModalSession (s);
+					dialog.Unrealized -= unrealizer;
+				};
+				dialog.Unrealized += unrealizer;
+			}
+
 		}
 		#endif
 		
