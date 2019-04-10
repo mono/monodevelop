@@ -141,6 +141,12 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void Show ()
 		{
+			EnsureLayout ();
+			Present ();
+		}
+
+		void EnsureLayout ()
+		{
 			if (!hasEverBeenShown) {
 				workbench.CurrentLayout = "Solution";
 
@@ -150,12 +156,12 @@ namespace MonoDevelop.Ide.Gui
 
 				hasEverBeenShown = true;
 			}
+		}
 
-			// Very important: see https://github.com/mono/monodevelop/pull/6064
-			// Otherwise the editor may not be focused on IDE startup and can't be
-			// focused even by clicking with the mouse.
-			RootWindow.Visible = true;
-			Present ();
+		void EnsureShown ()
+		{
+			if (!RootWindow.Visible)
+				Show ();
 		}
 		
 		internal async Task<bool> Close ()
@@ -265,6 +271,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Present ()
 		{
+			EnsureLayout ();
+			// Very important: see https://github.com/mono/monodevelop/pull/6064
+			// Otherwise the editor may not be focused on IDE startup and can't be
+			// focused even by clicking with the mouse.
+			RootWindow.Visible = true;
+
 			//HACK: window resets its size on Win32 on Present if it was maximized by snapping to top edge of screen
 			//partially work around this by avoiding the present call if it's already toplevel
 			if (Platform.IsWindows && RootWindow.HasToplevelFocus)
@@ -612,6 +624,8 @@ namespace MonoDevelop.Ide.Gui
 			if (string.IsNullOrEmpty (info.FileName))
 				return null;
 
+			EnsureShown ();
+
 			var metadata = CreateOpenDocumentTimerMetadata ();
 
 			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName, metadata)) {
@@ -726,6 +740,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document OpenDocument (ViewContent content, bool bringToFront)
 		{
+			EnsureShown ();
 			workbench.ShowView (content, bringToFront);
 			if (bringToFront)
 				Present ();
