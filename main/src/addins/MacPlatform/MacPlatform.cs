@@ -1,4 +1,4 @@
-﻿//
+//
 // MacPlatformService.cs
 //
 // Author:
@@ -763,7 +763,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			args.RetVal = true;
 			if (await IdeApp.Workspace.Close ()) {
-				IdeApp.Workbench.RootWindow.Visible = false;
+				IdeApp.Workbench.Hide ();
 			}
 		}
 

@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui
 		bool closeAll;
 		bool? fullScreenState = null;
 
-		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
+		Rectangle requestedBounds = Rectangle.Empty;
 		
 		Gtk.Container rootWidget;
 		CommandFrame toolbarFrame;
@@ -213,8 +213,8 @@ namespace MonoDevelop.Ide.Gui
 			Title = BrandingService.ApplicationLongName;
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
 
-			WidthRequest = normalBounds.Width;
-			HeightRequest = normalBounds.Height;
+			WidthRequest = MinimumWidth;
+			HeightRequest = MinimumHeight;
 
 			DeleteEvent += new Gtk.DeleteEventHandler (OnClosing);
 			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
@@ -604,7 +604,7 @@ namespace MonoDevelop.Ide.Gui
 				if (GdkWindow.State == 0 || Platform.IsMac) {
 					memento.Bounds = new Rectangle (x, y, width, height);
 				} else {
-					memento.Bounds = normalBounds;
+					memento.Bounds = requestedBounds;
 				}
 				memento.WindowState = GdkWindow.State;
 				memento.FullScreen  = FullScreen;
@@ -614,8 +614,12 @@ namespace MonoDevelop.Ide.Gui
 				if (value != null) {
 					WorkbenchMemento memento = new WorkbenchMemento ((Properties)value);
 					
-					normalBounds = memento.Bounds;
-					IdeServices.DesktopService.PlaceWindow (this, normalBounds.X, normalBounds.Y, normalBounds.Width, normalBounds.Height);
+					requestedBounds = memento.Bounds;
+					if (requestedBounds.Width < MinimumWidth)
+						requestedBounds.Width = MinimumWidth;
+					if (requestedBounds.Height < MinimumHeight)
+						requestedBounds.Height = MinimumHeight;
+					IdeServices.DesktopService.PlaceWindow (this, requestedBounds.X, requestedBounds.Y, requestedBounds.Width, requestedBounds.Height);
 					
 					// HACK: don't restore Gdk.WindowState.Maximized on OS X, because there's a bug in 
 					// GdkWindow.State that means it doesn't reflect the real state, it only reflects values set
@@ -636,9 +640,23 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnShown ()
 		{
 			base.OnShown ();
-			if (fullScreenState != null && fullScreenState != IdeServices.DesktopService.GetIsFullscreen (this)) {
-				IdeServices.DesktopService.SetIsFullscreen (this, (bool)fullScreenState);
+			bool isFullscreen = IdeServices.DesktopService.GetIsFullscreen (this);
+			if (fullScreenState != null && fullScreenState != isFullscreen) {
+				isFullscreen = (bool)fullScreenState;
+				IdeServices.DesktopService.SetIsFullscreen (this, isFullscreen);
 				fullScreenState = null;
+			}
+			if (Platform.IsMac && !isFullscreen) {
+				// HACK: GTK bug, macOS will limit the NSWindow size to the target screen size
+				//       even if a bigger size has been requested. However although Gtk and Cocoa
+				//       will report the limited size correctly, Gtk will still continue using
+				//       the requested (invalid) size internally, resulting a pointer event offset
+				//       by the difference of current and requested sizes. Resizing the Gtk window
+				//       to the current new size, solves this problem.
+				// NOTE: this bug does not occur in fillscreen mode
+				GetSize (out int width, out int height);
+				if (requestedBounds.Width > width || requestedBounds.Height > height)
+					Resize (width, height);
 			}
 		}
 
