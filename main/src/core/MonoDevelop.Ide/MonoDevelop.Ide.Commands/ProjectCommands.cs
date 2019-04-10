@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Commands
 				if (!sol.MultiStartupRunConfigurations.Any ()) {
 					Xwt.Toolkit.NativeEngine.Invoke (() => {
 						using (var dlg = new NewSolutionRunConfigurationDialog ()) {
-							if (dlg.Run (DesktopService.GetFocusedTopLevelWindow ()).Id == "create") {
+							if (dlg.Run (IdeServices.DesktopService.GetFocusedTopLevelWindow ()).Id == "create") {
 								config = new MultiItemSolutionRunConfiguration (dlg.RunConfigurationName, dlg.RunConfigurationName);
 								sol.MultiStartupRunConfigurations.Add (config);
 								sol.StartupConfiguration = config;
