@@ -157,6 +157,7 @@ namespace MonoDevelop.MacIntegration
 
 						using (var alertDelegate = new PasswordAlertWindowDelegate (usernameInput, passwordInput, cancelButton, okButton)) {
 							alert.AccessoryView = view;
+							MonoDevelop.Components.IdeTheme.ApplyTheme (alert.Window);
 							alert.Window.WeakDelegate = alertDelegate;
 							alert.Window.InitialFirstResponder = usernameInput;
 							alert.Window.ReleasedWhenClosed = true;
