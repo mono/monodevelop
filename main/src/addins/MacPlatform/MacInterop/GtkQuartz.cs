@@ -56,20 +56,19 @@ namespace MonoDevelop.MacInterop
 			return toplevels.FirstOrDefault (w => w.IsRealized && (gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle));
 		}
 
-		public static IEnumerable<KeyValuePair<NSWindow,Gtk.Window>> GetToplevels ()
-		{
-			#pragma warning disable 618
-			var nsWindows = NSApplication.SharedApplication.Windows;
-			#pragma warning restore 618
-			var gtkWindows = Gtk.Window.ListToplevels ();
-			foreach (var n in nsWindows) {
-				var g = gtkWindows.FirstOrDefault (w => {
-					return w.GdkWindow != null && gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == n.Handle;
-				});
-				yield return new KeyValuePair<NSWindow, Gtk.Window> (n, g);
-			}
-		}
-		
+		//public static IEnumerable<KeyValuePair<NSWindow,Gtk.Window>> GetToplevels ()
+		//{
+		//  // HACK: THIS IS VERY DANGEROUS
+		//	var nsWindows = NSApplication.SharedApplication.Windows;
+		//	var gtkWindows = Gtk.Window.ListToplevels ();
+		//	foreach (var n in nsWindows) {
+		//		var g = gtkWindows.FirstOrDefault (w => {
+		//			return w.GdkWindow != null && gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == n.Handle;
+		//		});
+		//		yield return new KeyValuePair<NSWindow, Gtk.Window> (n, g);
+		//	}
+		//}
+
 		public static NSWindow GetWindow (Gtk.Window window)
 		{
 			if (window.GdkWindow == null)
