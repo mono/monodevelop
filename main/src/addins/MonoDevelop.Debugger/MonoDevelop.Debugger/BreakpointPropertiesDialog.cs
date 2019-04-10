@@ -632,6 +632,9 @@ namespace MonoDevelop.Debugger
 				}
 
 				if (compilation == null) {
+					// TypeSystemService.Workspace always returns a workspace,
+					// even if it might be empty.
+					workspace = workspace ?? (MonoDevelopWorkspace)TypeSystemService.Workspace;
 					var service = workspace.MetadataReferenceManager;
 					var corlib = service.GetOrCreateMetadataReferenceSnapshot (System.Reflection.Assembly.GetAssembly (typeof (object)).Location, MetadataReferenceProperties.Assembly);
 					var system = service.GetOrCreateMetadataReferenceSnapshot (System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location, MetadataReferenceProperties.Assembly);
