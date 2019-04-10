@@ -757,6 +757,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		public static Func<Task> FreezeLoad = () => Task.CompletedTask;
+
 		static StatusBarIcon statusIcon = null;
 		static int workspacesLoading = 0;
 
