@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Realizing Workbench Window");
-			workbench.Realize ("SharpDevelop.Workbench.WorkbenchMemento");
+			workbench.Realize ();
 			monitor.Step (1);
 
 			MessageService.RootWindow = workbench.RootWindow;
