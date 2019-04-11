@@ -167,8 +167,10 @@ namespace MonoDevelop.TextEditor
 				var ZOOM_MIN = Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
 				var ZOOM_MAX = Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
 
+#if !WINDOWS
 				globalOptions.SetMinZoomLevel (ZOOM_MIN * 100);
 				globalOptions.SetMaxZoomLevel (ZOOM_MAX * 100);
+#endif
 
 				OnConfigurationZoomLevelChanged (null, EventArgs.Empty);
 
@@ -195,16 +197,21 @@ namespace MonoDevelop.TextEditor
 		{
 			if (settingZoomLevel)
 				return;
+
+#if !WINDOWS
 			globalOptions.SetZoomLevel (TextEditorFactory.ZoomLevel * 100);
+#endif
 		}
 
 		static void OnGlobalOptionsChanged (object sender, EditorOptionChangedEventArgs e)
 		{
+#if !WINDOWS
 			if (e.OptionId == DefaultTextViewOptions.ZoomLevelId.Name) {
 				settingZoomLevel = true;
 				TextEditorFactory.ZoomLevel.Set (globalOptions.ZoomLevel () / 100);
 				settingZoomLevel = false;
 			}
+#endif
 		}
 
 		void UpdateTextBufferRegistration ()
