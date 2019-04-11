@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			} catch (Exception e) {
 				LoggingService.LogError("Error while loading coding conventions.", e);
 			}
-			return new DocumentOptions (project.Policies, conventions?.CurrentConventions);
+			return new DocumentOptions (project?.Policies, conventions?.CurrentConventions);
 		}
 
 		static string GetPath(Document document)
