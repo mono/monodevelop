@@ -172,8 +172,16 @@ namespace MonoDevelop.Refactoring
 			var model = await doc.DocumentContext.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
 
 			Application.Invoke ((o, args) => {
+
+				var editor = doc.Editor;
+				if (editor == null) {
+					// bypass the insertion point selection UI for the new editor
+					document.Project.Solution.Workspace.TryApplyChanges (document.Project.Solution);
+					return;
+				}
+
 				var insertionPoints = InsertionPointService.GetInsertionPoints (
-					doc.Editor,
+					editor,
 					model,
 					type,
 					part.SourceSpan.Start
@@ -185,11 +193,11 @@ namespace MonoDevelop.Refactoring
 						if (!point.Success)
 							return;
 						var text = node.ToString ();
-						point.InsertionPoint.Insert (doc.Editor, doc.DocumentContext, text);
+						point.InsertionPoint.Insert (editor, doc.DocumentContext, text);
 					}
 				);
 
-				doc.Editor.StartInsertionMode (options);
+				editor.StartInsertionMode (options);
 			});
 		}
 
