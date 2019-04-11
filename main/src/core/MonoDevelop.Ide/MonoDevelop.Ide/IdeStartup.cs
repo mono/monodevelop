@@ -645,8 +645,12 @@ namespace MonoDevelop.Ide
 			Xwt.Application.UnhandledException += (sender, e) => {
 				HandleException (e.ErrorException, false);
 			};
+			System.Windows.Threading.Dispatcher.CurrentDispatcher.UnhandledException += (sender, e) => {
+				HandleException (e.Exception, false);
+				e.Handled = true;
+			};
 		}
-		
+
 		static void HandleException (Exception ex, bool willShutdown)
 		{
 			var msg = String.Format ("An unhandled exception has occurred. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
