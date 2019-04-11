@@ -774,6 +774,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		StatusBarIcon statusIcon = null;
 		int workspacesLoading = 0;
 
+		public static Func<Task> FreezeLoad = () => Task.CompletedTask;
+
 		public Task ProcessPendingLoadOperations ()
 		{
 			lock (workspaceLoadLock) {

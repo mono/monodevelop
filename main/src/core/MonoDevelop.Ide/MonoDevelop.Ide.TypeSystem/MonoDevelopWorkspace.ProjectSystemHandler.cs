@@ -183,14 +183,20 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			async Task<ProjectCacheInfo> LoadProjectCacheInfo (MonoDevelop.Projects.Project p, DotNetProjectConfiguration config, CancellationToken token)
 			{
+				await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
+
 				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
 
+				await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
 				var sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
 
+				await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
 				var analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
 
 				return new ProjectCacheInfo {
