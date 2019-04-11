@@ -247,24 +247,23 @@ namespace MonoDevelop.PackageManagement
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
 		{
-			PackageSpec existingPackageSpec = context.GetExistingProjectPackageSpec (MSBuildProjectPath);
-			if (existingPackageSpec != null) {
-				return new [] { existingPackageSpec };
+			IReadOnlyList<PackageSpec> existingPackageSpecs = context.GetExistingProjectPackageSpecs (MSBuildProjectPath);
+			if (existingPackageSpecs != null) {
+				return existingPackageSpecs;
 			}
 
-			PackageSpec packageSpec = await CreateProjectPackageSpec (context);
-			return new [] { packageSpec };
+			return await CreateProjectPackageSpecs (context);
 		}
 
-		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
+		async Task<IReadOnlyList<PackageSpec>> CreateProjectPackageSpecs (DependencyGraphCacheContext context)
 		{
 			DependencyGraphSpec dependencySpec = await MSBuildPackageSpecCreator.GetDependencyGraphSpec (project, configuration, context?.Logger);
 
 			context.AddToCache (dependencySpec);
 
-			PackageSpec spec = dependencySpec.GetProjectSpec (project.FileName);
-			if (spec != null)
-				return spec;
+			IReadOnlyList<PackageSpec> specs = dependencySpec.GetProjectSpecs (project.FileName);
+			if (specs != null)
+				return specs;
 
 			throw new InvalidOperationException (GettextCatalog.GetString ("Unable to create package spec for project. '{0}'", project.FileName));
 		}

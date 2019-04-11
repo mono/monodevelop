@@ -335,6 +335,31 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public async Task GetPackageSpecsAsync_DotNetCliTool_PackageSpecsIncludeDotNetCliToolReference ()
+		{
+			string projectFile = Util.GetSampleProject ("dotnet-cli-tool", "dotnet-cli-tool-netcore.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
+
+				dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+				var nugetProject = new DotNetCoreNuGetProject (project);
+				var specs = await nugetProject.GetPackageSpecsAsync (dependencyGraphCacheContext);
+				var projectSpec = specs.FirstOrDefault (s => s.RestoreMetadata.ProjectStyle == ProjectStyle.PackageReference);
+				var dotNetCliToolSpec = specs.FirstOrDefault (s => s.RestoreMetadata.ProjectStyle == ProjectStyle.DotnetCliTool);
+
+				Assert.AreEqual (2, specs.Count);
+				Assert.AreEqual (projectFile, projectSpec.FilePath);
+				Assert.AreEqual ("dotnet-cli-tool-netcore", projectSpec.Name);
+				Assert.AreEqual ("dotnet-cli-tool-netcore", projectSpec.RestoreMetadata.ProjectName);
+				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectPath);
+				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectUniqueName);
+				Assert.AreSame (projectSpec, dependencyGraphCacheContext.PackageSpecCache [projectFile]);
+				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.1-[2.9.406, )", dotNetCliToolSpec.Name);
+				Assert.AreEqual (projectFile, dotNetCliToolSpec.RestoreMetadata.ProjectPath);
+				Assert.AreSame (dotNetCliToolSpec, dependencyGraphCacheContext.PackageSpecCache [dotNetCliToolSpec.Name]);
+			}
+		}
+
+		[Test]
 		public async Task GetInstalledPackagesAsync_FloatingVersion_ReturnsOnePackageReference ()
 		{
 			CreateNuGetProject ();

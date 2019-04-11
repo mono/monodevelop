@@ -339,6 +339,8 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopDependencyGraphRestoreUtility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DependencyGraphContextExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ExceptionExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DependencyGraphSpecExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSpecExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
