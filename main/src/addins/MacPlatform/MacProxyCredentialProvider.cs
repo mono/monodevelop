@@ -166,6 +166,7 @@ namespace MonoDevelop.MacIntegration
 								var password = passwordInput.StringValue;
 								result = new NetworkCredential (username, password);
 							}
+							alert.Window.Close ();
 						}
 					}
 				}
