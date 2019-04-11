@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (formattingService == null || !formattingService.SupportsFormatSelection)
 					return;
 
-				var formattingRules = new List<AbstractFormattingRule> ();
+				var formattingRules = new List<IFormattingRule> ();
 				formattingRules.Add (ContainedDocumentPreserveFormattingRule.Instance);
 				formattingRules.AddRange (Formatter.GetDefaultFormattingRules (document));
 
