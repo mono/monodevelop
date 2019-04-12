@@ -37,7 +37,7 @@ namespace MonoDevelop.DotNetCore.Templating
 	[Extension]
 	class DotNetCoreProjectTemplateStringTagProvider : IStringTagProvider
 	{
-		string [] SupportedSDK = { "2.1", "2.2", "3.0" };
+		readonly string [] SupportedSDK = { "2.1", "2.2", "3.0" };
 
 		public IEnumerable<StringTagDescription> GetTags (Type type)
 		{
@@ -55,6 +55,11 @@ namespace MonoDevelop.DotNetCore.Templating
 				yield return new StringTagDescription (
 					$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.Web.ProjectTemplates.nupkg",
 					GettextCatalog.GetString (string.Format (".NET Core SDK {0} Web Project Templates NuGet package path", SupportedSDK[i]))
+				);
+
+				yield return new StringTagDescription (
+					$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.Web.Spa.ProjectTemplates.nupkg",
+					GettextCatalog.GetString (string.Format (".NET Core SDK {0} Spa Web Project Templates NuGet package path", SupportedSDK [i]))
 				);
 
 				yield return new StringTagDescription (
@@ -127,6 +132,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			foreach (var sdk in SupportedSDK) {
 				if (tag.StartsWith ($"DotNetCoreSdk.{sdk}", StringComparison.OrdinalIgnoreCase)) {
 					dotNetCoreSdk = GetDotNetCoreSdkVersion (DotNetCoreVersion.Parse (sdk));
+					break;
 				}
 			}
 
