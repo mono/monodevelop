@@ -280,10 +280,12 @@ namespace MonoDevelop.Ide.Gui
 			UpdateTextBufferRegistration ();
 			SubscribeControllerEvents ();
 
-			Editor.InitializeExtensionChain (this);
+			if (Editor != null) {
+				Editor.InitializeExtensionChain (this);
 
-			if (project != null)
-				ListenToProjectLoad();
+				if (project != null)
+					ListenToProjectLoad ();
+			}
 		}
 
 		void SubscribeControllerEvents ()
