@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoFunctionBreakpoint = Mono.Debugging.Client.FunctionBreakpoint;
 using VsCodeFunctionBreakpoint = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.FunctionBreakpoint;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
@@ -314,6 +315,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return sb.ToString();
 		}
 
+		private static readonly Regex VsdbgExceptionNameRegex = new Regex ("Exception thrown: '(.*)' in .*");
+
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
 		{
 			Task.Run (() => {
@@ -351,6 +354,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetStopped);
 						break;
 					case StoppedEvent.ReasonValue.Exception:
+						var match = VsdbgExceptionNameRegex.Match (body.Text);
+						if (match.Success && match.Groups.Count == 2 && !breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e => e.Enabled && match.Groups[1].Value == e.ExceptionName))
+						{
+							OnContinue ();
+							return;
+						}
 						args = new TargetEventArgs (TargetEventType.ExceptionThrown);
 						break;
 					default:
