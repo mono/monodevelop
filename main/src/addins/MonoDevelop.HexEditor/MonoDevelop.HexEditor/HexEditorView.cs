@@ -42,7 +42,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.HexEditor
 {
-	[ExportFileDocumentController (MimeType = "*", CanUseAsDefault = false, Name = "Hex Editor", Role = DocumentControllerRole.Tool)]
+	[ExportFileDocumentController (MimeType = "*", CanUseAsDefault = false, Name = "Hex Editor", Role = DocumentControllerRole.Tool, InsertAfter = "AssemblyBrowser")]
 	class HexEditorView : FileDocumentController, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
 		Mono.MHex.HexEditor hexEditor;

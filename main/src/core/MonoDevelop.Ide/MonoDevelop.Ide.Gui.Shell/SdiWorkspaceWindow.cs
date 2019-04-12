@@ -323,7 +323,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 			tab.Notify = showNotification;
 			tab.Dirty = controller.HasUnsavedChanges;
 			if (!string.IsNullOrEmpty (controller.DocumentTitle)) {
-				tab.Tooltip = controller.DocumentTitle;
+				if (controller is FileDocumentController fileDocumentController)
+					tab.Tooltip = fileDocumentController.FilePath;
+				else
+					tab.Tooltip = controller.DocumentTitle;
 			}
 			tab.Icon = controller.DocumentIcon?.WithSize (IconSize.Menu);
 		}
