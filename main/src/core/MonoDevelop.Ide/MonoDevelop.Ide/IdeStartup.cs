@@ -667,9 +667,8 @@ namespace MonoDevelop.Ide
 				var metadata = new UnhandledExceptionMetadata {
 					Exception = ex
 				};
-				Counters.UnhandledExceptions.Inc (metadata);
-
 				LoggingService.LogFatalError (msg, ex);
+				Counters.UnhandledExceptions.Inc (metadata);
 			} else {
 				LoggingService.LogInternalError (msg, ex);
 			}

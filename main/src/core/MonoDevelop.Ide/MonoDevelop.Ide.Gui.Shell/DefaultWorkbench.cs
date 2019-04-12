@@ -280,12 +280,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public void InitializeWorkspace()
 		{
-			// FIXME: GTKize
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
-//			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
-//			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
-			
 			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
 				CreateMenuBar ();
 			}
@@ -379,12 +375,10 @@ namespace MonoDevelop.Ide.Gui
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
-			SubscribeControllerEvents (controller);
-
 			// The insertion of the tab may have changed the active view (or maybe not, this is checked in OnActiveWindowChanged)
 			OnActiveWindowChanged (null, null);
 
-			return Task.FromResult< IWorkbenchWindow> (sdiWorkspaceWindow);
+			return Task.FromResult<IWorkbenchWindow> (sdiWorkspaceWindow);
 		}
 
 		public void CloseView (IWorkbenchWindow view, bool animate)
@@ -392,40 +386,9 @@ namespace MonoDevelop.Ide.Gui
 			var window = (SdiWorkspaceWindow)view;
 			viewContentCollection.Remove (window);
 			RemoveTab (window.TabControl, window.DockNotebookTab.Index, animate);
+			if (window.DocumentController == subscribedController)
+				UnsubscribeControllerEvents ();
 			window.Close ();
-		}
-
-		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
-		{
-			SetWorkbenchTitle ();
-		}
-
-		void OwnerChanged (object sender, EventArgs e)
-		{
-			var controller = (DocumentController)sender;
-			SubscribeControllerEvents (controller);
-			SetWorkbenchTitle ();
-		}
-
-		Project subscribedProject;
-
-		void SubscribeControllerEvents (DocumentController controller)
-		{
-			UnsubscribeControllerEvents (controller);
-			controller.OwnerChanged += OwnerChanged;
-			subscribedProject = controller.Owner as Project;
-			if (subscribedProject != null)
-				subscribedProject.NameChanged += HandleProjectNameChanged;
-
-		}
-
-		void UnsubscribeControllerEvents (DocumentController controller)
-		{
-			controller.OwnerChanged -= OwnerChanged;
-			if (subscribedProject != null) {
-				subscribedProject.NameChanged -= HandleProjectNameChanged;
-				subscribedProject = null;
-			}
 		}
 
 		void ShowPadNode (ExtensionNode node)
@@ -716,6 +679,8 @@ namespace MonoDevelop.Ide.Gui
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
 
+			UnsubscribeControllerEvents ();
+
 			WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 
 			if (lastActive != null)
@@ -730,6 +695,48 @@ namespace MonoDevelop.Ide.Gui
 			if (!closeAll && ActiveWorkbenchWindowChanged != null) {
 				ActiveWorkbenchWindowChanged(this, e);
 			}
+
+			var controller = ((SdiWorkspaceWindow)ActiveWorkbenchWindow)?.DocumentController;
+			if (controller != null)
+				SubscribeControllerEvents (controller);
+		}
+
+		DocumentController subscribedController;
+		Project subscribedProject;
+
+		void SubscribeControllerEvents (DocumentController controller)
+		{
+			UnsubscribeControllerEvents ();
+			subscribedController = controller;
+			controller.OwnerChanged += OwnerChanged;
+			subscribedProject = controller.Owner as Project;
+			if (subscribedProject != null)
+				subscribedProject.NameChanged += HandleProjectNameChanged;
+		}
+
+		void UnsubscribeControllerEvents ()
+		{
+			if (subscribedController != null) {
+				subscribedController.OwnerChanged -= OwnerChanged;
+				subscribedController = null;
+				if (subscribedProject != null) {
+					subscribedProject.NameChanged -= HandleProjectNameChanged;
+					subscribedProject = null;
+				}
+			}
+		}
+
+		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
+		{
+			SetWorkbenchTitle ();
+		}
+
+		void OwnerChanged (object sender, EventArgs e)
+		{
+			var controller = (DocumentController)sender;
+			UnsubscribeControllerEvents ();
+			SubscribeControllerEvents (controller);
+			SetWorkbenchTitle ();
 		}
 
 		public PadCodon GetPad(Type type)
