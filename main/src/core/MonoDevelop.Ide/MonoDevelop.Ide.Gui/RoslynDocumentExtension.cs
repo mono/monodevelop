@@ -269,10 +269,10 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void SetProject (Project newProject)
 		{
-			UnsubscribeControllerEvents ();
-
 			if (newProject == project)
 				return;
+
+			UnsubscribeControllerEvents ();
 
 			project = newProject;
 
@@ -428,6 +428,7 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
+			UnsubscribeControllerEvents ();
 
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
