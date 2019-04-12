@@ -165,8 +165,17 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get {
-				if (analysisDocument == null)
+				if (analysisDocument == null) {
+					var textBuffer = TextBuffer;
+					if (textBuffer != null && textBuffer.AsTextContainer() is SourceTextContainer container) {
+						var document = container.GetOpenDocumentInCurrentContext ();
+						if (document != null) {
+							return document;
+						}
+					}
+
 					return null;
+				}
 
 				return RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
 			}
