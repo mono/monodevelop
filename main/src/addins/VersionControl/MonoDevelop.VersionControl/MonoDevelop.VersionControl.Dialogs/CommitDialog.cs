@@ -149,18 +149,16 @@ namespace MonoDevelop.VersionControl.Dialogs
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 			}
-
-			if (AddFile (newInfo)) {
-				changeSet.AddFile (newInfo.LocalPath);
-				selected.Add (newInfo.LocalPath);
-				AppendFileInfo (newInfo);
-				
-			}
+			AddFile (newInfo);
 		}
 
-		bool AddFile (VersionInfo vinfo)
+		void AddFile (VersionInfo vinfo)
 		{
-			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges);
+			if (vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges)) {
+				changeSet.AddFile (vinfo.LocalPath);
+				selected.Add (vinfo.LocalPath);
+				AppendFileInfo (vinfo);
+			}
 		}
 
 		TreeIter AppendFileInfo (VersionInfo info)
