@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		protected override async Task OnInitialize (ServiceProvider serviceProvider)
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
 			object [] platforms = AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
 			if (platforms.Length > 0)
@@ -70,17 +70,17 @@ namespace MonoDevelop.Ide
 			FileService.FileRemoved += NotifyFileRemoved;
 			FileService.FileRenamed += NotifyFileRenamed;
 
-			await Runtime.RunInMainThread (() => {
-				// Ensure we initialize the native toolkit on the UI thread immediately
-				// so that we can safely access this property later in other threads
-				GC.KeepAlive (NativeToolkit);
-			});
+			// Ensure we initialize the native toolkit on the UI thread immediately
+			// so that we can safely access this property later in other threads
+			GC.KeepAlive (NativeToolkit);
 
 			MemoryMonitor = platformService.CreateMemoryMonitor ();
 			MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
 
 			ThermalMonitor = platformService.CreateThermalMonitor ();
 			ThermalMonitor.StatusChanged += OnThermalStatusChanged;
+
+			return Task.CompletedTask;
 		}
 
 		protected override Task OnDispose ()

@@ -228,6 +228,14 @@ namespace MonoDevelop.Ide.Editor
 			((DefaultSourceEditorOptions)textEditor.Options).UpdateStylePolicy (currentPolicy);
 		}
 
+		void CancelDocumentParsedUpdate ()
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+		}
+
+		CancellationTokenSource src = new CancellationTokenSource ();
+
 		async Task RunFirstTimeFoldUpdate (string text)
 		{
 			if (string.IsNullOrEmpty (text)) 
@@ -357,15 +365,16 @@ namespace MonoDevelop.Ide.Editor
 					AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 
 				EditorConfigService.RemoveEditConfigContext (textEditor.FileName).Ignore ();
+				CancelDocumentParsedUpdate ();
 				textEditorImpl.DirtyChanged -= HandleDirtyChanged;
 				textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
 				textEditor.TextChanged -= HandleTextChanged;
 				textEditorImpl.DirtyChanged -= ViewContent_DirtyChanged; ;
 
 				DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
+				RemovePolicyChangeHandler ();
 				textEditor.Dispose ();
 			}
-			RemovePolicyChangeHandler ();
 
 			editorOptionsUpdateCancellationSource?.Cancel ();
 
