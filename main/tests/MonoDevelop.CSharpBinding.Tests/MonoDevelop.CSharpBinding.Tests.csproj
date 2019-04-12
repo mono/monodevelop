@@ -43,6 +43,7 @@
     <Compile Include="Features\Completion\EnumMemberCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\DelegateCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\EventSenderCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\RegexCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\FormatItemCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\AbstractCSharpCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\ProtocolMemberCompletionTests.cs" />

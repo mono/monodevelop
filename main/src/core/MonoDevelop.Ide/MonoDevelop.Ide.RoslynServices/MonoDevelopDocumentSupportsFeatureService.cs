@@ -28,24 +28,23 @@ using System.Composition;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor.Shared;
 using Microsoft.CodeAnalysis.Host.Mef;
-using Microsoft.VisualStudio.Text;
+
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
-	[ExportWorkspaceService (typeof (ITextBufferSupportsFeatureService), ServiceLayer.Host), Shared]
-	internal sealed class MonoDevelopDocumentSupportsFeatureService : ITextBufferSupportsFeatureService
+	[ExportWorkspaceService (typeof(IDocumentSupportsFeatureService), ServiceLayer.Host), Shared]
+	internal sealed class MonoDevelopDocumentSupportsFeatureService : IDocumentSupportsFeatureService
 	{
-		public bool SupportsCodeFixes (ITextBuffer textBuffer) => !IsContainedBuffer (textBuffer);
-		public bool SupportsNavigationToAnyPosition (ITextBuffer textBuffer) => !IsContainedBuffer (textBuffer);
-		public bool SupportsRefactorings (ITextBuffer textBuffer) => !IsContainedBuffer (textBuffer);
-		public bool SupportsRename (ITextBuffer textBuffer) => !IsContainedBuffer (textBuffer);
+		public bool SupportsCodeFixes (Document document) => !IsContainedDocument (document);
+		public bool SupportsNavigationToAnyPosition (Document document) => !IsContainedDocument (document);
+		public bool SupportsRefactorings (Document document) => !IsContainedDocument (document);
+		public bool SupportsRename (Document document) => !IsContainedDocument (document);
 
-		static bool IsContainedBuffer (ITextBuffer textBuffer)
+		static bool IsContainedDocument (Document document)
 		{
-			if (textBuffer == null) return false;
-			return textBuffer.Properties.ContainsProperty (typeof (IMonoDevelopHostDocument));
+			return (MonoDevelopHostDocumentRegistration.FromDocument (document) != null);
 		}
 	}
 }
