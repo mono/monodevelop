@@ -38,7 +38,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	[ExportDocumentControllerFactory]
+	[ExportDocumentControllerFactory (Id = "AssemblyBrowser", FileExtension = "*")]
 	class AssemblyBrowserDisplayBinding : DocumentControllerFactory
 	{
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
