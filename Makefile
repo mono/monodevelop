@@ -22,7 +22,9 @@ MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_COMM
 MSBUILD_LIBRARIES=Microsoft.Build.dll Microsoft.Build.Framework.dll Microsoft.Build.Utilities.Core.dll
 MSBUILD_DLLS=$(patsubst %, $(MSBUILD_PATH)/%, $(MSBUILD_LIBRARIES))
 
-all: update_submodules all-recursive
+# Set $PATH to point to provisioned .NET Core and avoid the ones provisioned by VSTS itself
+all: export PATH:="/usr/local/share/dotnet:$(PATH)"
+all: print_config update_submodules all-recursive
 
 GIT_FOUND = $$(echo $$(which git))
 SYNC_SUBMODULES = \
@@ -34,6 +36,11 @@ SYNC_SUBMODULES = \
 		git submodule sync; \
 		git submodule update --init --recursive || exit 1; \
 	fi
+
+print_config:
+	@echo "PATH is $(PATH)"
+	@echo ".NET Core `dotnet --version` installed in `which dotnet`"
+	@dotnet --list-sdks
 
 update_submodules:
 	@$(SYNC_SUBMODULES)
