@@ -94,47 +94,12 @@ namespace MonoDevelop.AssemblyBrowser
 			isNotPublic = null;
 			if (referencedSegment == null)
 				return null;
+			if (referencedSegment?.Reference is IEntity entity) {
+				isNotPublic = !entity.IsPublic ();
+				return entity.GetIdString ();
+			}
 
 			return null;
-
-			// TODO fixme
-			/*
-			var td = referencedSegment.Reference as TypeDefinition;
-			if (td != null) {
-				isNotPublic = !td.IsPublic;
-				return new XmlDocIdGenerator ().GetXmlDocPath ((TypeDefinition)referencedSegment.Reference);
-			}
-			var md = referencedSegment.Reference as MethodDefinition;
-			if (md != null) {
-				isNotPublic = !md.IsPublic;
-				return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
-			}
-
-			var pd = referencedSegment.Reference as PropertyDefinition;
-			if (pd != null) {
-				isNotPublic = (pd.GetMethod == null || !pd.GetMethod.IsPublic) &&  
-					(pd.SetMethod == null || !pd.SetMethod.IsPublic);
-				return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
-			}
-
-			var fd = referencedSegment.Reference as FieldDefinition;
-			if (fd != null) {
-				isNotPublic = !fd.IsPublic;
-				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
-			}
-
-			var ed = referencedSegment.Reference as EventDefinition;
-			if (ed != null) {
-				return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
-			}
-
-			var tref = referencedSegment.Reference as MemberReference;
-			if (tref != null) {
-				return new XmlDocIdGenerator ().GetXmlDocPath (tref);
-			}
-
-			return referencedSegment.Reference.ToString ();
-			*/		
 		}
 
 
