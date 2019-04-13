@@ -51,11 +51,11 @@ namespace MonoDevelop.Ide.PerfTests
 
 			OpenExampleSolutionAndWait (out var waitForPackages);
 
-			if (waitForPackages) {
-				// The package system emits signals on the Solution object, but we don't have access to that,
-				// so we watch the statusbar for notification that packages are updated.
-				UserInterfaceTesting.Ide.WaitForStatusMessage (new [] {"Packages successfully restored."});
-			}
+			//if (waitForPackages) {
+			//	// The package system emits signals on the Solution object, but we don't have access to that,
+			//	// so we watch the statusbar for notification that packages are updated.
+			//	UserInterfaceTesting.Ide.WaitForStatusMessage (new [] {"Packages successfully restored."});
+			//}
 			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (Commands.ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt", 60000);
 
 			var t = Session.GetTimerDuration ("Ide.Shell.ProjectBuilt");
