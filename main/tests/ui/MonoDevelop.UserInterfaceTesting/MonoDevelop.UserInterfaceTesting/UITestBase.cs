@@ -157,6 +157,7 @@ namespace MonoDevelop.UserInterfaceTesting
 			// Tell the app to track time to code
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer", null);
 			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)sln), "Ide.Shell.SolutionOpened", 60000);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeStartupTracker.StartupTracker.TrackTimeToCode", MonoDevelop.Ide.TimeToCodeMetadata.DocumentType.Solution);
 
 			// Currently we only have one solution which needs packages waited for.
 			// When we have more projects, we'll need a more clever system for detecting
