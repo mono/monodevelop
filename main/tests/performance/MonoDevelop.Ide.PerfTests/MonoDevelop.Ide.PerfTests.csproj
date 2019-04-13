@@ -46,9 +46,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestStartup.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="TestStartup.cs"/>
     <Compile Include="TestSolutionLoad.cs" />
     <Compile Include="TestSolutionBuild.cs" />
   </ItemGroup>
