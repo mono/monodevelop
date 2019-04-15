@@ -1513,9 +1513,9 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException (nameof (text));
 
 			if (textIndex < 0)
-				throw new ArgumentOutOfRangeException (nameof (textIndex));
+				throw new ArgumentOutOfRangeException (nameof (textIndex), "should be >=0 it was " + textIndex);
 			if (textIndex > text.Length)
-				throw new ArgumentOutOfRangeException (nameof (textIndex));
+				throw new ArgumentOutOfRangeException (nameof (textIndex), $"should be <{text.Length} it was {textIndex}");
 
 			if (textIndex < curIndex) {
 				unsafe {
