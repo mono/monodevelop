@@ -476,20 +476,40 @@ namespace MonoDevelop.MacIntegration
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
-					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
+					var win = GtkQuartz.GetWindow ((Gtk.Window)sender);
 					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 					if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
 						win.TabbingMode = NSWindowTabbingMode.Disallowed;
 				};
 			}
 
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Mojave && string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceThemeName))
+				IdeTheme.UpdateGtkTheme (); // reload Gtk theme to take system theme into account
+
 			PatchGtkTheme ();
-			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
-				delegate {
-					Styles.LoadStyle();
-					PatchGtkTheme();
+
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Mojave) {
+				NSNotificationCenter.DefaultCenter.AddObserver (new NSString ("HIMenuBarAppearanceDidChangeNotification"), notif => Core.Runtime.RunInMainThread (
+					delegate {
+						// reload theme only if UserInterfaceThemeName is not set
+						if (string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceThemeName)) {
+							// HACK: AppleInterfaceStyle is only set in dark OS theme mode, otherwise it's null
+							var macOsTheme = NSUserDefaults.StandardUserDefaults.StringForKey (new NSString ("AppleInterfaceStyle")) == "Dark" ? Theme.Dark : Theme.Light;
+							if (IdeTheme.UserInterfaceTheme != macOsTheme) {
+								IdeTheme.UpdateGtkTheme ();
+								PatchGtkTheme ();
+							}
+						}
 				}));
 
+				NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
+					delegate {
+						IdeTheme.UpdateGtkTheme ();
+						PatchGtkTheme ();
+					}));
+
+				IdeApp.Preferences.UserInterfaceThemeName.Changed += (s, a) => PatchGtkTheme ();
+			}
 
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Mojave) { // the shared color panel has full automatic theme support on Mojave
 				Styles.Changed += (s, a) => {
@@ -505,9 +525,6 @@ namespace MonoDevelop.MacIntegration
 					UpdateColorPanelSubviewsAppearance (colorPanel.ContentView.Superview, appearance);
 				};
 			}
-
-			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed
-			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
 		}
 
 		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)

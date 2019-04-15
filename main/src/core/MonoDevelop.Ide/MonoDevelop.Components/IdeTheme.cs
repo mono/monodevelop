@@ -51,10 +51,12 @@ namespace MonoDevelop.Components
 		{
 			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
 			DefaultGtk2RcFiles = Environment.GetEnvironmentVariable ("GTK2_RC_FILES");
-			// FIXME: Immediate theme switching disabled, until:
-			//        MAC: NSAppearance issues are fixed
-			//        WIN: spradic Gtk crashes on theme realoding are fixed
-			//IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
+			// FIXME: Immediate theme switching disabled:
+			//        MAC: NSAppearance issues in High Sierra and older macOS versions
+			//        WIN: spradic Gtk crashes on theme realoding
+			//        Linux: TODO
+			if (Platform.IsMac && MacSystemInformation.OsVersion >= MacSystemInformation.Mojave)
+				IdeApp.Preferences.UserInterfaceThemeName.Changed += (sender, e) => UpdateGtkTheme ();
 		}
 
 		internal static bool AccessibilityEnabled { get; private set; }
@@ -154,6 +156,23 @@ namespace MonoDevelop.Components
 
 			if (!Platform.IsLinux) {
 				UserInterfaceTheme = IdeApp.Preferences.UserInterfaceThemeName == "Dark" ? Theme.Dark : Theme.Light;
+				#if MAC
+				if (Platform.IsMac && MacSystemInformation.OsVersion >= MacSystemInformation.Mojave) {
+					// HACK: on Mojave the Gtk theme needs to be loaded twice to take the system theme setting into account.
+					//       During the first run we load the default light theme in order to initialize Gtk correctly and
+					//       after NSApplication initialization we need to reload the Gtk theme.
+
+					// NSApplication.Initialized will be set by Xwt during NSApplication initialization
+					var xamMacInitialized = System.Threading.Thread.GetData (System.Threading.Thread.GetNamedDataSlot ("NSApplication.Initialized")) as bool? == true;
+					var userDefaults = !xamMacInitialized ? null : NSUserDefaults.StandardUserDefaults;
+
+					if (userDefaults != null && string.IsNullOrEmpty(IdeApp.Preferences.UserInterfaceThemeName)) {
+						// use os theme setting, if UserInterfaceThemeName is not set
+						var macOsTheme = NSUserDefaults.StandardUserDefaults.StringForKey (new NSString ("AppleInterfaceStyle"));
+						UserInterfaceTheme = macOsTheme == "Dark" ? Theme.Dark : Theme.Light;
+					}
+				}
+				#endif
 				if (current_theme != UserInterfaceTheme.ToString ()) // Only theme names allowed on Win/Mac
 					current_theme = UserInterfaceTheme.ToString ();
 			}
@@ -357,6 +376,7 @@ namespace MonoDevelop.Components
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				window.StyleMask &= ~NSWindowStyle.TexturedBackground;
 				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
+				window.TitlebarAppearsTransparent = false;
 				return;
 			}
 

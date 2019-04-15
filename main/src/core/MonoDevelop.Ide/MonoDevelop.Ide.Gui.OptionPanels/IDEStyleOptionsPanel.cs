@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	
 	partial class IDEStyleOptionsPanelWidget : Gtk.Bin
 	{
-		string currentTheme;
+		string selectedTheme, currentTheme;
 
 		static Lazy<Dictionary<string, string>> themes = new Lazy<Dictionary<string, string>> (() => {
 			var searchDirs = new List<string> ();
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void Load ()
 		{
-			currentTheme = IdeApp.Preferences.UserInterfaceThemeName;
+			selectedTheme = currentTheme = IdeApp.Preferences.UserInterfaceThemeName;
 
 			foreach (var localeSet in LocalizationService.CurrentLocaleSet)
 				comboLanguage.AppendText (localeSet.DisplayName);
@@ -143,7 +143,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			bool restartRequired = false;
 
-			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value ||
+			bool themeNeedsRestartOnMac = Platform.IsMac && MacSystemInformation.OsVersion < MacSystemInformation.Mojave;
+
+			if (themeNeedsRestartOnMac && selectedTheme != IdeApp.Preferences.UserInterfaceThemeName.Value ||
 			    ((Platform.IsLinux && Gtk.Settings.Default.ThemeName != IdeApp.Preferences.UserInterfaceThemeName.Value) ||
 			     IdeTheme.UserInterfaceTheme != (IdeApp.Preferences.UserInterfaceThemeName == "Dark" ? Theme.Dark : Theme.Light)))
 				restartRequired = true;
@@ -176,9 +178,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void SetTheme (string theme)
 		{
 			if (theme.Length == 0 && Platform.IsLinux) {
-				currentTheme = "";
+				selectedTheme = "";
 			} else {
-				currentTheme = theme;
+				selectedTheme = theme;
+				if (Platform.IsMac && MacSystemInformation.OsVersion >= MacSystemInformation.Mojave)
+					if (selectedTheme != IdeApp.Preferences.UserInterfaceThemeName.Value)
+						IdeApp.Preferences.UserInterfaceThemeName.Value = selectedTheme;
 			}
 		}
 
@@ -221,8 +226,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (lc != IdeApp.Preferences.UserInterfaceLanguage)
 				IdeApp.Preferences.UserInterfaceLanguage.Value = lc;
 
+			if (selectedTheme != currentTheme)
+				IdeApp.Preferences.UserInterfaceThemeName.Value = currentTheme = selectedTheme;
+		}
+
+		public override void Destroy ()
+		{
 			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value)
-				IdeApp.Preferences.UserInterfaceThemeName.Value = currentTheme;
+				IdeApp.Preferences.UserInterfaceThemeName.Value = selectedTheme = currentTheme;
+			base.Destroy ();
 		}
 	}
 }
