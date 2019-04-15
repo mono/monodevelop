@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Desktop
 				if (entry != null)
 					result.Add (entry);
 				else
-					result.Add (new RecentFile (this, f, Path.GetFileNameWithoutExtension (f), DateTime.Now));
+					result.Add (new RecentFile (this, f, Path.GetFileNameWithoutExtension (f), DateTime.UtcNow));
 			}
 			foreach (var e in projects)
 				if (!result.Contains (e))
