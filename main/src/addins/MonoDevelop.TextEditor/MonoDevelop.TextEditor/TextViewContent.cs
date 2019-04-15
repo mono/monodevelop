@@ -292,6 +292,13 @@ namespace MonoDevelop.TextEditor
 			textBufferRegistration?.Dispose ();
 			textBufferRegistration = null;
 
+			// Parity behavior with the old editor
+			if (autoSaveTask != null)
+				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+			RemoveAutoSaveTimer ();
+			if (!string.IsNullOrEmpty (FilePath))
+				AutoSave.RemoveAutoSaveFile (FilePath);
+
 			UnsubscribeFromEvents ();
 			TextDocument?.Dispose ();
 
