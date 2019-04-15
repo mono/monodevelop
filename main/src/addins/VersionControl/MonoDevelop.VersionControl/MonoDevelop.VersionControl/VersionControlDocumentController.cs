@@ -71,11 +71,8 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return false;
 
-			var versionInfo = repo.GetVersionInfo (fileController.FilePath, VersionInfoQueryFlags.IgnoreCache);
-			if (!versionInfo.IsVersioned)
-				return false;
-
-			return true;
+			var versionInfo = repo.GetVersionInfo (fileController.FilePath);
+			return versionInfo.IsVersioned;
 		}
 
 		protected override async Task<DocumentView> OnInitializeView ()

@@ -705,13 +705,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-
-		internal void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
+		internal void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer container)
 		{
 			foreach (var w in workspaces) {
-				if (w.GetOpenDocumentIds (analysisDocument.ProjectId).Contains (analysisDocument) )
-					w.InformDocumentClose (analysisDocument, fileName); 
-
+				if (w.GetOpenDocumentIds (analysisDocument.ProjectId).Contains (analysisDocument))
+					w.InformDocumentClose (analysisDocument, container); 
 			}
 		}
 
