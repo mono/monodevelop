@@ -518,9 +518,10 @@ namespace MonoDevelop.Ide.Gui
 						Select ();
 						return false;
 					}
-				} else {
-					if (result == AlertButton.CloseWithoutSave)
-						return true;
+				} else if (result == AlertButton.CloseWithoutSave) {
+					return true;
+				} else if (result == AlertButton.Cancel) {
+					return false;
 				}
 			}
 			return true;
