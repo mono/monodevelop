@@ -32,6 +32,21 @@ namespace MonoDevelop.Ide.Desktop
 		Rotational
 	};
 
+	public struct ScreenDetails
+	{
+		public float PointWidth { get; set; }
+		public float PointHeight { get; set; }
+		public float PixelWidth { get; set; }
+		public float PixelHeight { get; set; }
+		public float BackingScaleFactor { get; set; }
+	}
+
+	public struct GraphicsDetails
+	{
+		public string Model { get; set; }
+		public string Memory { get; set; }
+	}
+
 	public interface IPlatformTelemetryDetails
 	{
 		TimeSpan TimeSinceMachineStart { get; }
@@ -39,6 +54,9 @@ namespace MonoDevelop.Ide.Desktop
 		TimeSpan KernelAndUserTime { get; }
 		TimeSpan KernelTime { get; }
 		TimeSpan UserTime { get; }
+
+		ScreenDetails[] Screens { get; }
+		GraphicsDetails[] GPU { get; }
 
 		string CpuArchitecture { get; }
 		int PhysicalCpuCount { get; }

@@ -25,10 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using AppKit;
 using CoreFoundation;
+using CoreGraphics;
 using Foundation;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -48,6 +52,9 @@ namespace MacPlatform
 		PlatformHardDriveMediaType osType;
 		TimeSpan sinceLogin;
 
+		ScreenDetails[] screens;
+		GraphicsDetails[] graphicsDetails;
+
 		internal MacTelemetryDetails ()
 		{
 		}
@@ -66,6 +73,23 @@ namespace MacPlatform
 			result.freeSize = attrs.FreeSize;
 
 			result.osType = GetMediaType ("/");
+
+			var screenList = new List<ScreenDetails>();
+			foreach (var s in NSScreen.Screens)
+			{
+				var details = new ScreenDetails {
+					PointWidth = (float)s.Frame.Width,
+					PointHeight = (float)s.Frame.Height,
+					BackingScaleFactor = (float)s.BackingScaleFactor,
+					PixelWidth = (float)(s.Frame.Width * s.BackingScaleFactor),
+					PixelHeight = (float)(s.Frame.Height * s.BackingScaleFactor)
+				};
+
+				screenList.Add (details);
+			}
+			result.screens = screenList.ToArray ();
+
+			result.graphicsDetails = GetGraphicsDetails ();
 
 			try {
 				var login = GetLoginTime ();
@@ -111,6 +135,52 @@ namespace MacPlatform
 		public ulong RamTotal => NSProcessInfo.ProcessInfo.PhysicalMemory;
 
 		public PlatformHardDriveMediaType HardDriveOsMediaType => osType;
+
+		public ScreenDetails [] Screens => screens;
+
+		public GraphicsDetails[] GPU => graphicsDetails;
+
+		static GraphicsDetails[] GetGraphicsDetails ()
+		{
+			List<GraphicsDetails> gpus = new List<GraphicsDetails> ();
+
+			var matchingDict = IOServiceMatching ("IOPCIDevice");
+			var success = IOServiceGetMatchingServices (0, matchingDict, out var iter);
+			if (success == 0) {
+				uint regEntry;
+
+				while ((regEntry = IOIteratorNext (iter)) != 0) {
+					if (IORegistryEntryCreateCFProperties (regEntry, out var serviceDictionary, IntPtr.Zero, 0) != 0) {
+						IOObjectRelease (regEntry);
+						continue;
+					}
+
+					var serviceProperties = ObjCRuntime.Runtime.GetNSObject<NSDictionary> (serviceDictionary, true);
+					var model = serviceProperties.ObjectForKey (new NSString ("model"));
+					if (model == null) {
+						IOObjectRelease (regEntry);
+						continue;
+					}
+
+					var memory = serviceProperties.ObjectForKey (new NSString ("VRAM,totalMB"));
+					if (memory == null) {
+						IOObjectRelease (regEntry);
+						continue;
+					}
+
+					var details = new GraphicsDetails () {
+						Model = model.ToString (),
+						Memory = memory.ToString ()
+					};
+					gpus.Add (details);
+
+					IOObjectRelease (regEntry);
+				}
+
+				IOObjectRelease (iter);
+			}
+			return gpus.ToArray ();
+		}
 
 		static PlatformHardDriveMediaType GetMediaType (string path)
 		{
@@ -182,6 +252,18 @@ namespace MacPlatform
 
 			return dt;
 		}
+
+		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
+		extern static IntPtr IOServiceMatching (string serviceName);
+
+		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
+		extern static uint IOServiceGetMatchingServices (uint masterPort, IntPtr matchingDict, out uint existing);
+
+		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
+		extern static uint IOIteratorNext (uint iterator);
+
+		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
+		extern static uint IORegistryEntryCreateCFProperties (uint entry, out IntPtr properties, IntPtr allocator, uint options);
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
 		extern static IntPtr IORegistryEntrySearchCFProperty(uint service, string plane, IntPtr key, IntPtr allocator, int options);
