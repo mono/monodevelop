@@ -160,6 +160,24 @@ namespace MonoDevelop.Ide
 			get => GetProperty<OnStartupBehaviour> ();
 			set => SetProperty (value);
 		}
+
+		public int ScreenCount {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public List<Dictionary<string, string>> Screen {
+			get => GetProperty<List<Dictionary<string, string>>> ();
+			set {
+				ScreenCount = value.Count;
+				SetProperty (value);
+			}
+		}
+
+		public List<Dictionary<string, string>> GPU {
+			get => GetProperty<List<Dictionary<string, string>>> ();
+			set => SetProperty (value);
+		}
 	}
 
 	class TimeToCodeMetadata : CounterMetadata
