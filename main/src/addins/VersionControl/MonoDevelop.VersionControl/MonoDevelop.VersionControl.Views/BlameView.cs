@@ -30,6 +30,8 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Documents;
 using System;
 using System.Linq;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -53,40 +55,57 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.info = info;
 		}
-		
+
 		#region IAttachableViewContent implementation
 		protected override void OnFocused ()
 		{
 			info.Start ();
 			widget.Reset ();
 
-			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
-			if (buffer != null) {
-				if (!(buffer.TextView is MonoTextEditor)) {
-					//compatibility for other not MonoTextEditor editors
-					var loc = buffer.CaretLocation;
-					int line = loc.Line < 1 ? 1 : loc.Line;
-					int column = loc.Column < 1 ? 1 : loc.Column;
-					widget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
-				}
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				var (line, column) = textView.Caret.Position.BufferPosition.GetLineAndColumn1Based ();
+				widget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
+			}
+
+			if (widget.Allocation.Height == 1 && widget.Allocation.Width == 1) {
+				widget.SizeAllocated += HandleComparisonWidgetSizeAllocated;
+			} else {
+				HandleComparisonWidgetSizeAllocated (null, new Gtk.SizeAllocatedArgs ());
+			}
+		}
+
+		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			widget.Editor.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				int firstLineNumber = textView.TextViewLines.FirstVisibleLine.Start.GetContainingLine ().LineNumber;
+				widget.Editor.VAdjustment.Value = widget.Editor.LineToY (firstLineNumber + 1);
+				widget.Editor.GrabFocus ();
 			}
 		}
 
 		protected override void OnUnfocused ()
 		{
-			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> () ;
-			if (buffer != null) {
-				if (buffer.TextView is MonoTextEditor exEditor) {
-					if (widget.Revision == null)
-						exEditor.Document.UpdateFoldSegments (widget.Editor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
-					exEditor.SetCaretTo (widget.Editor.Caret.Line, widget.Editor.Caret.Column);
-					exEditor.VAdjustment.Value = widget.Editor.VAdjustment.Value;
-				} else {
-					//compatibility for other not MonoTextEditor editors
-					buffer.ScrollTo (new Ide.Editor.DocumentLocation (widget.Editor.YToLine (widget.Editor.VAdjustment.Value), 1));
-					buffer.SetCaretLocation (widget.Editor.Caret.Line, widget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
-				}
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				var pos = widget.Editor.Caret.Offset;
+				var snapshot = textView.TextSnapshot;
+				var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
+				textView.Caret.MoveTo (point);
+
+				int line = GetLineInCenter (widget.Editor);
+				line = Math.Min (line, snapshot.LineCount);
+				var middleLine = snapshot.GetLineFromLineNumber (line);
+				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
 			}
+		}
+
+		int GetLineInCenter (MonoTextEditor editor)
+		{
+			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
+			return editor.YToLine (midY);
 		}
 
 		#endregion

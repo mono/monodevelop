@@ -31,6 +31,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -96,11 +98,9 @@ namespace MonoDevelop.VersionControl.Views
 			info.Start ();
 			if (ComparisonWidget.originalComboBox.Text == GettextCatalog.GetString ("Local"))
 				ComparisonWidget.UpdateLocalText ();
-			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
-			if (buffer != null) {
-				var loc = buffer.CaretLocation;
-				int line = loc.Line < 1 ? 1 : loc.Line;
-				int column = loc.Column < 1 ? 1 : loc.Column;
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				var (line,column) = textView.Caret.Position.BufferPosition.GetLineAndColumn1Based();
 				ComparisonWidget.OriginalEditor.SetCaretTo (line, column);
 			}
 			
@@ -116,23 +116,27 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
 			ComparisonWidget.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
-			var sourceEditorView = info.Controller.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (sourceEditorView != null) {
-				int line = GetLineInCenter (sourceEditorView.TextEditor);
-				ComparisonWidget.OriginalEditor.CenterTo (line, 1);
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				int firstLineNumber = textView.TextViewLines.FirstVisibleLine.Start.GetContainingLine ().LineNumber;
+				ComparisonWidget.OriginalEditor.VAdjustment.Value = ComparisonWidget.OriginalEditor.LineToY (firstLineNumber + 1);
 				ComparisonWidget.OriginalEditor.GrabFocus ();
 			}
 		}
 		
 		protected override void OnUnfocused ()
 		{
-			var sourceEditor = info.Controller.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (sourceEditor != null) {
-				sourceEditor.TextEditor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
-				
+			var textView = info.Controller.GetContent <ITextView> ();
+			if (textView != null) {
+				var pos = ComparisonWidget.OriginalEditor.Caret.Offset;
+				var snapshot = textView.TextSnapshot;
+				var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
+				textView.Caret.MoveTo (point);
+
 				int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
-				if (Math.Abs (GetLineInCenter (sourceEditor.TextEditor) - line) > 2)
-					sourceEditor.TextEditor.CenterTo (line, 1);
+				line = Math.Min (line, snapshot.LineCount);
+				var middleLine = snapshot.GetLineFromLineNumber (line);
+				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
 			}
 		}
 
