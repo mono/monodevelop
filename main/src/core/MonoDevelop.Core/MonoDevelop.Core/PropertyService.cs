@@ -129,6 +129,7 @@ namespace MonoDevelop.Core
 					version = v;
 					return true;
 				}
+				UserProfile.CleanProfile (p);
 			}
 			
 			//try the old unversioned MD <= 2.4 profile
