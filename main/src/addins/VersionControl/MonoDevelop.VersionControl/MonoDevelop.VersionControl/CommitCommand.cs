@@ -6,6 +6,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.VersionControl.Dialogs;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl
 {
@@ -38,21 +39,23 @@ namespace MonoDevelop.VersionControl
 
 		static async Task<bool> VerifyUnsavedChangesAsync (ChangeSet changeSet)
 		{
+			bool allowCommit = true;
 			// In case we have local unsaved files with changes, ask the user to save them.
 			List<Document> docList = new List<Document> ();
 			foreach (var item in IdeApp.Workbench.Documents) {
-				if (item.IsDirty && !changeSet.ContainsFile(item.FileName))
+				if (item.IsDirty)
 					docList.Add (item);
 			}
 
 			if (docList.Count != 0) {
+				AlertButton dontSaveButton = new AlertButton (GettextCatalog.GetString ("Don't Save"));
 				AlertButton response = MessageService.GenericAlert (
 					Stock.Question,
 					GettextCatalog.GetString ("You are trying to commit files which have unsaved changes."),
 					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
 					new AlertButton [] {
 						AlertButton.Cancel,
-						new AlertButton (GettextCatalog.GetString ("Don't Save")),
+						dontSaveButton,
 						AlertButton.Save
 					}
 				);
@@ -61,10 +64,16 @@ namespace MonoDevelop.VersionControl
 					return false;
 				}
 
+				if (response == dontSaveButton) {
+					allowCommit = true;
+				}
+
 				if (response == AlertButton.Save) {
 					// Go through all the items and save them.
 					foreach (var item in docList) {
 						await item.Save ();
+						if (!changeSet.ContainsFile (item.FileName) && allowCommit)
+							allowCommit = false;
 					}
 
 					// Check if save failed on any item.
@@ -72,15 +81,14 @@ namespace MonoDevelop.VersionControl
 						if (item.IsDirty) {
 							MessageService.ShowMessage (GettextCatalog.GetString (
 								"Some files could not be saved."));
-							break;
+							return false;
 						}
-					return false;
 				}
 
 				docList.Clear ();
 			}
 
-			return true;
+			return allowCommit;
 		}
 
 		private class CommitWorker : VersionControlTask
