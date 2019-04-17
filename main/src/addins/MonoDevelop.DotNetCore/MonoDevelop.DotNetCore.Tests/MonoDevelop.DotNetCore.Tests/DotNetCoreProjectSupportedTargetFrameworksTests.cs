@@ -118,7 +118,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		public void CheckNetCoreAppTargetFrameworks_NetCoreUnsupportedRuntimeInstalled_ReturnsNoFramework ()
 		{
-			DotNetCoreRuntimesInstalled (DotNetCoreVersion.UnSupportedRuntimeVersion.ToString());
+			DotNetCoreRuntimesInstalled ("2.0");
 
 			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
 
