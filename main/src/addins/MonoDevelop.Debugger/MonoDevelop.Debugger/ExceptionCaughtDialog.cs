@@ -792,7 +792,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			get { return frame; }
 			set {
 				frame = value;
-				Text = value.DisplayText;
+				Text = value?.DisplayText;
 			}
 		}
 
@@ -805,6 +805,10 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		{
 			if (Markup != null)
 				return $"<span foreground='{Styles.ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false)}'>{Markup}</span>";
+
+            if (Frame == null)
+                return "";
+
 			var methodText = Frame.DisplayText;
 			var endOfMethodName = methodText.IndexOf ('(');
 			var methodName = methodText.Remove (endOfMethodName).Trim ();
