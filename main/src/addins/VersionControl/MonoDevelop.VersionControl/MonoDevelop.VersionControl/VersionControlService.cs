@@ -264,12 +264,16 @@ namespace MonoDevelop.VersionControl
 			bestMatch = bestMatch.CanonicalPath;
 
 			lock (repositoryCacheLock) {
-				if (repositoryCache.TryGetValue (bestMatch, out var repository))
-					return repository;
+				if (repositoryCache.TryGetValue (bestMatch, out var repository)) {
+					if (!repository.IsDisposed)
+						return repository;
+					repositoryCache.Remove (bestMatch);
+				}
 
 				try {
 					var repo = detectedVCS?.GetRepositoryReference (bestMatch, id);
 					if (repo != null) {
+						repo.RepositoryPath = bestMatch.CanonicalPath;
 						repositoryCache.Add (bestMatch, repo);
 						Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
 					}
