@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Core
 {
@@ -263,7 +264,18 @@ namespace MonoDevelop.Core
 				LogDir = cache.Combine ("Logs"),
 			};
 		}
-		
+
+		internal static void CleanProfile(UserProfile profile)
+		{
+			EnsureDeleteDirectory (profile.CacheDir);
+			EnsureDeleteDirectory (profile.ConfigDir);
+			EnsureDeleteDirectory (profile.LocalConfigDir);
+			EnsureDeleteDirectory (profile.localInstallPath);
+			EnsureDeleteDirectory (profile.LogDir);
+			EnsureDeleteDirectory (profile.TempDir);
+			EnsureDeleteDirectory (profile.userDataRoot);
+		}
+
 		internal static UserProfile ForMD24 ()
 		{
 			FilePath appdata = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
@@ -302,7 +314,21 @@ namespace MonoDevelop.Core
 		{
 			Directory.CreateDirectory (dir);
 		}
-    }
+
+		static void EnsureDeleteDirectory (string dir)
+		{
+			if (Directory.Exists (dir)) {
+				var files = Directory.GetFiles (dir, "*.*", SearchOption.AllDirectories);
+				if (!files.Any ()) {
+					try {
+						Directory.Delete (dir, true);
+					}catch(Exception ex) {
+						Console.Error.WriteLine (ex);
+					}
+				}
+			}
+		}
+	}
 	
 	enum UserDataKind
 	{
