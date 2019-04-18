@@ -3775,7 +3775,15 @@ namespace MonoDevelop.Projects
 						// Globbing magic can only be done if there is no metadata (for now)
 						if (globItem.Metadata.GetProperties ().Count () == 0 && !updateGlobItems.Any ()) {
 							var it = new MSBuildItem (item.ItemName);
-							item.Write (this, it);
+							var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (it.Name);
+							if (itemDefinitionProps != null) {
+								var propertiesAlreadySet = new HashSet<string> ();
+								item.Write (this, it);
+								AddEmptyItemDefinitionProperties (it, itemDefinitionProps);
+								PurgeItemDefinitionProperties (it, itemDefinitionProps, propertiesAlreadySet);
+							} else {
+								item.Write (this, it);
+							}
 							if (it.Metadata.GetProperties ().Count () == 0)
 								buildItem = globItem;
 
@@ -3849,8 +3857,13 @@ namespace MonoDevelop.Projects
 
 			if (!buildItem.IsWildcardItem) {
 				if (buildItem.IsUpdate) {
+					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
 					var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
 					item.Write (this, buildItem);
+					if (itemDefinitionProps != null) {
+						AddEmptyItemDefinitionProperties (buildItem, itemDefinitionProps);
+						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
+					}
 					PurgeUpdatePropertiesSetInSourceItems (buildItem, item.BackingEvalItem.SourceItems, propertiesAlreadySet);
 				} else {
 					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
