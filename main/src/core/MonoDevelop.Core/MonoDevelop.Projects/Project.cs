@@ -3857,6 +3857,7 @@ namespace MonoDevelop.Projects
 					if (itemDefinitionProps != null) {
 						var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
 						item.Write (this, buildItem);
+						AddEmptyItemDefinitionProperties (buildItem, itemDefinitionProps);
 						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
 					} else {
 						item.Write (this, buildItem);
@@ -3913,6 +3914,19 @@ namespace MonoDevelop.Projects
 			if (propsToRemove != null) {
 				foreach (var name in propsToRemove)
 					buildItem.Metadata.RemoveProperty (name);
+			}
+		}
+
+		/// <summary>
+		/// If the MSBuildItem does not define the property defined by its ItemDefinition then we need to set an empty
+		/// string for the metadata property value. Otherwise the property information for a new file will be incorrect
+		/// in the IDE.
+		/// </summary>
+		void AddEmptyItemDefinitionProperties (MSBuildItem buildItem, IMSBuildPropertyGroupEvaluated itemDefinitionProps)
+		{
+			foreach (var p in itemDefinitionProps.GetProperties ()) {
+				if (!buildItem.Metadata.HasProperty (p.Name))
+					buildItem.Metadata.SetValue (p.Name, string.Empty);
 			}
 		}
 

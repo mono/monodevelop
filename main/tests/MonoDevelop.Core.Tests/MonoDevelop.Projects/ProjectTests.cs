@@ -911,6 +911,50 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ItemDefinitionGroup_AddFilesWithSameMetadataAsItemDefinition_MetadataNotSaved ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				var newItemFileName = projectItem.FilePath.ChangeName ("NewItem");
+				var newProjectItem = new ProjectFile (newItemFileName, projectItem.BuildAction);
+				newProjectItem.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+				newProjectItem.Metadata.SetValue ("BoolProperty", true);
+				newProjectItem.Metadata.SetValue ("OverriddenProperty", "OriginalValue");
+
+				p.Files.Add (newProjectItem);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".add-file-match-metadata");
+				var savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_AddFilesWithoutMetadata_MetadataUsesEmptyElements ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				var newItemFileName = projectItem.FilePath.ChangeName ("NewItem");
+				var newProjectItem = new ProjectFile (newItemFileName, projectItem.BuildAction);
+				newProjectItem.CopyToOutputDirectory = FileCopyMode.Always;
+
+				p.Files.Add (newProjectItem);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".add-file-no-metadata");
+				var savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+			}
+		}
+
+		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
 			if (!Platform.IsMac) {
