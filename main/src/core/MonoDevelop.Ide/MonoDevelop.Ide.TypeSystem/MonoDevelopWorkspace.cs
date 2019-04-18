@@ -1328,7 +1328,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							try {
 								lock (projectModifyLock) {
 									OnProjectReloaded (t.Result);
-									IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ();
+									Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
 								}
 							} catch (Exception e) {
 								LoggingService.LogError ("Error while reloading project " + project.Name, e);
