@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					// Use the engine's default tools version to load the project. We want to build with the latest
 					// tools version.
-					p = new Project (projectRootElement, engine.GlobalProperties, MSBuildConsts.Version, engine);
+					p = new Project (projectRootElement, engine.GlobalProperties, null, engine);
 				}
 			}
 
