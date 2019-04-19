@@ -1671,7 +1671,7 @@ namespace MonoDevelop.Debugger
 					return false;
 				if (obj.IsPrimitive) {
 					//obj.DisplayValue.Contains ("|") is special case to detect enum with [Flags]
-					return obj.TypeName == "string" || obj.DisplayValue.Contains ("|");
+					return obj.TypeName == "string" || (obj.DisplayValue != null && obj.DisplayValue.Contains ("|"));
 				}
 				if (string.IsNullOrEmpty (obj.TypeName))
 					return false;
