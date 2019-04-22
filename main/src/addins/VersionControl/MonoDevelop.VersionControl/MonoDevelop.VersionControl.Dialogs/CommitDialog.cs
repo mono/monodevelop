@@ -157,7 +157,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges)) {
 				changeSet.AddFile (vinfo.LocalPath);
 				bool added = selected.Add (vinfo.LocalPath);
-				if(added)
+				if (added)
 					AppendFileInfo (vinfo);
 			}
 		}
