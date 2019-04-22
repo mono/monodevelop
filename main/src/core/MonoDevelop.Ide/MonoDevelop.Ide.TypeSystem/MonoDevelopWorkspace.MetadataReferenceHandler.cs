@@ -109,8 +109,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, false).ConfigureAwait (false);
 					foreach (var file in referencedAssemblies) {
-						if (file.IsProjectReference)
-							continue;
+						if (file.IsProjectReference) {
+							var referencedItem = file.GetReferencedItem (data.Project.ParentSolution);
+							if (!(referencedItem is MonoDevelop.Projects.DotNetProject referencedProject))
+								continue;
+
+							if (!IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
+								continue;
+						}
 
 						if (data.Token.IsCancellationRequested)
 							return false;

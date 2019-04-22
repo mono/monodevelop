@@ -26,6 +26,7 @@
 
 using System;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnitTests;
 using Mono.Addins;
@@ -98,8 +99,17 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var csharpApp = sol.Items.FirstOrDefault (pr => pr.Name == "csappfslib") as DotNetProject;
 				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
 				Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+
+				using (var workspace = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					var projectId = workspace.GetProjectId (csharpApp);
+
+					var analysisProject = workspace.CurrentSolution.GetProject (projectId);
+					var refs = analysisProject.MetadataReferences.Select (r => new FilePath(r.Display).FileName);
+					Assert.That (refs, Contains.Item ("fslib.dll"));
+				}
 			}
 		}
 
