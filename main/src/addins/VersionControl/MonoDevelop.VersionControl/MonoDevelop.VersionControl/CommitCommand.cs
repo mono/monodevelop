@@ -84,8 +84,6 @@ namespace MonoDevelop.VersionControl
 							return false;
 						}
 				}
-
-				docList.Clear ();
 			}
 
 			return allowCommit;
