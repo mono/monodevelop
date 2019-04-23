@@ -215,7 +215,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		void LoadChangeset (IEnumerable<ChangeSetItem> items)
 		{
+			fileList.Model = null;
 			store.Clear ();
+
 			foreach (ChangeSetItem info in items) {
 				Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus (info.Status);
 				string lstatus = VersionControlService.GetStatusLabel (info.Status);
@@ -234,6 +236,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 				store.AppendValues (statusicon, lstatus, localpath, true, info);
 				selected.Add (info.LocalPath);
 			}
+
+			fileList.Model = store;
 		}
 
 		bool ButtonCommitClicked ()
