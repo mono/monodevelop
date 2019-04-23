@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (IsRoot && AttachedViews.Count > 0) {
 				attachmentsContainer = window.CreateViewContainer ();
 				attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
-				attachmentsContainer.SetCurrentMode (DocumentViewContainerMode.Tabs);
+				attachmentsContainer.CurrentMode = DocumentViewContainerMode.Tabs;
 				attachmentsContainer.InsertView (0, mainShellView);
 				int pos = 1;
 				foreach (var attachedView in AttachedViews)
