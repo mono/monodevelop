@@ -138,7 +138,7 @@ namespace MonoDevelop.CSharp.Project
 			bool isLibrary = ParentProject.IsLibraryBasedProjectType;
 			string mainTypeName = project.MainClass;
 			if (isLibrary || mainTypeName == string.Empty) {
-                // empty string is not accepted by Roslyn
+				// empty string is not accepted by Roslyn
 				mainTypeName = null;
 			}
 
