@@ -97,6 +97,11 @@ namespace MonoDevelop.DotNetCore.Tests
 			return GetTagValue ($"DotNetCoreSdk.{version}.Templates.Web.ProjectTemplates.nupkg");
 		}
 
+		string GetDotNetCoreSdkSpaWebProjectTemplatesTagValue (string version)
+		{
+			return GetTagValue ($"DotNetCoreSdk.{version}.Templates.Web.Spa.ProjectTemplates.nupkg");
+		}
+
 		void AddProjectTemplateFile (string sdkVersion, params string[] fileNames)
 		{
 			foreach (string fileName in fileNames) {
@@ -272,6 +277,26 @@ namespace MonoDevelop.DotNetCore.Tests
 				"microsoft.dotnet.web.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
 
 			string result = GetDotNetCoreSdkWebProjectTemplatesTagValue ("2.1");
+
+			Assert.AreEqual (expectedResult, result);
+		}
+
+		[Test]
+		public void NetCore21Installed_SpaWebProjectTemplates ()
+		{
+			DotNetCoreSdksInstalled ("2.1.300-preview1-008174");
+			AddProjectTemplateFile (
+				"2.1.300-preview1-008174",
+				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
+				"microsoft.dotnet.test.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
+				"microsoft.dotnet.web.spa.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
+			string expectedResult = Path.Combine (
+				sdkRootPath,
+				"2.1.300-preview1-008174",
+				"Templates",
+				"microsoft.dotnet.web.spa.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
+
+			string result = GetDotNetCoreSdkSpaWebProjectTemplatesTagValue ("2.1");
 
 			Assert.AreEqual (expectedResult, result);
 		}

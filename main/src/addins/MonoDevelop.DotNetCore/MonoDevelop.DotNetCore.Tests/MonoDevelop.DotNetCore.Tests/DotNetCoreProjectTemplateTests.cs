@@ -272,10 +272,16 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore21=true")]
+		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore21=true")]
 		public async Task AspNetCore21 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk21Installed ()) {
 				Assert.Ignore (".NET Core 2.1 SDK is not installed - required by project template.");
+			}
+
+			if (templateId == "Microsoft.Web.Spa.Angular.CSharp" &&
+				!TemplateDependencyChecker.Check(TemplateDependency.Node)) {
+				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
@@ -289,10 +295,16 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore22=true")]
 		public async Task AspNetCore22 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk22Installed ()) {
 				Assert.Ignore (".NET Core 2.2 SDK is not installed - required by project template.");
+			}
+
+			if (templateId == "Microsoft.Web.Spa.Angular.CSharp" &&
+				!TemplateDependencyChecker.Check(TemplateDependency.Node)) {
+				Assert.Ignore("Node is not installed - required by project template");
 			}
 
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
@@ -307,10 +319,16 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore30=true")]
 		public async Task AspNetCore30 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {
 				Assert.Ignore (".NET Core 3.0 SDK is not installed - required by project template.");
+			}
+
+			if (templateId == "Microsoft.Web.Spa.Angular.CSharp" &&
+				!TemplateDependencyChecker.Check(TemplateDependency.Node)) {
+				Assert.Ignore("Node is not installed - required by project template");
 			}
 
 			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters);
