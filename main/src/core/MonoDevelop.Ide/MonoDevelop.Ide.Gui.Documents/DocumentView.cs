@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				shellView = mainShellView;
 
 			UpdateTitle ();
-			mainShellView.SetDelegatedCommandTarget (this);
+			shellView.SetDelegatedCommandTarget (this);
 			return shellView;
 		}
 

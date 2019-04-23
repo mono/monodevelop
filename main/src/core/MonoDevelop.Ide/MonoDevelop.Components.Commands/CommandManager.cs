@@ -2106,7 +2106,11 @@ namespace MonoDevelop.Components.Commands
 				if (cmdTarget != null)
 					delegatorStack.Push (oldCmdTarget);
 				else
-					cmdTarget = GetNextCommandTarget (targetRoute, oldCmdTarget, true);
+					// The delegate is null. Return the next command target ignoring the delegate.
+					// In a previous version cmdTarget was assigned the result of GetNextCommandTarget, and the execution continued
+					// below. This is not correct since the GetNextCommandTarget call already does all processing (including
+					// the visitedTargets check), so it doesn't have to be done again.
+					return GetNextCommandTarget (targetRoute, oldCmdTarget, true);
 			}
 			else if (cmdTarget is ICommandDelegatorRouter) {
 				object oldCmdTarget = cmdTarget;

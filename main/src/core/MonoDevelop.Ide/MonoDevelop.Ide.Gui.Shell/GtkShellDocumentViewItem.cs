@@ -111,9 +111,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public object GetDelegatedCommandTarget ()
 		{
-			// TODO: Why is delegatedCommandTarget ever null? Should this fix be here, in CommandManager, or elsewhere?
-			//       https://devdiv.visualstudio.com/DevDiv/_workitems/edit/847835
-			return delegatedCommandTarget ?? Parent;
+			return delegatedCommandTarget;
 		}
 
 		void IShellDocumentViewItem.Dispose ()
