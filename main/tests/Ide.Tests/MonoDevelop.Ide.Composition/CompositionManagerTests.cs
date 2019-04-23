@@ -38,9 +38,6 @@ namespace MonoDevelop.Ide.Composition
 		[Test]
 		public async Task ValidateRuntimeCompositionIsValid ()
 		{
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new Core.ProgressMonitor ());
-
 			var mefAssemblies = CompositionManager.ReadAssembliesFromAddins ();
 			var caching = new CompositionManager.Caching (mefAssemblies, file => {
 				var tmpDir = Path.Combine (Util.TmpDir, "mef", nameof(ValidateRuntimeCompositionIsValid));
