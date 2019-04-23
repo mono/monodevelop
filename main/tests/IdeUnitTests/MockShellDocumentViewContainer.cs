@@ -51,6 +51,7 @@ namespace IdeUnitTests
 		}
 
 		public event EventHandler ActiveViewChanged;
+		public event EventHandler CurrentModeChanged;
 
 		void IShellDocumentViewContainer.InsertView (int position, IShellDocumentViewItem view)
 		{
@@ -84,9 +85,7 @@ namespace IdeUnitTests
 				((IShellDocumentViewContainer)this).ActiveView = view;
 		}
 
-		void IShellDocumentViewContainer.SetCurrentMode (DocumentViewContainerMode currentMode)
-		{
-		}
+		DocumentViewContainerMode IShellDocumentViewContainer.CurrentMode { get; set; }
 
 		void IShellDocumentViewContainer.SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
