@@ -411,6 +411,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		internal void Close ()
+		{
+			linkedController?.Close ();
+			OnClosed ();
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					try {
+						ext.OnClosed ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
+				}
+			}
+		}
+
+
 		/// <summary>
 		/// Tries to reuse this controler to display the content identified by the provide descriptor.
 		/// </summary>
@@ -1086,6 +1102,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			if (Model != null)
 				Model.Dispose ();
+		}
+
+		/// <summary>
+		/// Invoked when the document that contains this controller has been closed, and before the controller hierarchy is disposed
+		/// </summary>
+		protected virtual void OnClosed ()
+		{
 		}
 
 		public IEnumerable<FilePath> GetDocumentFiles ()
