@@ -114,15 +114,5 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETCoreApp,Version=v2.1", frameworks [0].Id.ToString ());
 			Assert.AreEqual (1, frameworks.Count);
 		}
-
-		[Test]
-		public void CheckNetCoreAppTargetFrameworks_NetCoreUnsupportedRuntimeInstalled_ReturnsNoFramework ()
-		{
-			DotNetCoreRuntimesInstalled ("2.0");
-
-			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
-
-			Assert.AreEqual (0, frameworks.Count);
-		}
 	}
 }
