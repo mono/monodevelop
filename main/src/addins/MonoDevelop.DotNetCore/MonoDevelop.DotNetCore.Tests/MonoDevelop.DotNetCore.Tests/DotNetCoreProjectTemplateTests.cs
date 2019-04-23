@@ -274,6 +274,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore21=true")]
+		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore21=true")]
 		public async Task AspNetCore21 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk21Installed ()) {
@@ -298,6 +299,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore22=true")]
 		public async Task AspNetCore22 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk22Installed ()) {
@@ -323,6 +325,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore30=true")]
 		public async Task AspNetCore30 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {
