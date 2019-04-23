@@ -282,6 +282,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 			base.OnDispose ();
 		}
 
+		internal override void OnClosed ()
+		{
+			foreach (var c in Views.ToList ())
+				c.Close ();
+			base.OnClosed ();
+		}
+
 		internal override void UpdateContentVisibility (bool parentIsVisible)
 		{
 			base.UpdateContentVisibility (parentIsVisible);
