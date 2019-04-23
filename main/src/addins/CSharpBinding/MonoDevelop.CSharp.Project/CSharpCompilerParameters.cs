@@ -135,9 +135,10 @@ namespace MonoDevelop.CSharp.Project
 					ParentConfiguration.OutputDirectory
 			);
 
+			bool isLibrary = ParentProject.IsLibraryBasedProjectType;
 			var options = new CSharpCompilationOptions (
-				ParentProject.IsLibraryBasedProjectType ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
-				mainTypeName: project.MainClass,
+				isLibrary ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
+				mainTypeName: isLibrary ? null : project.MainClass,
 				scriptClassName: "Script",
 				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
 				checkOverflow: GenerateOverflowChecks,
