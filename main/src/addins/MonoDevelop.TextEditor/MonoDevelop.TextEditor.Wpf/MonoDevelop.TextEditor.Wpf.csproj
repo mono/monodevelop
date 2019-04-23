@@ -19,9 +19,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Language" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-api\src\Editor\Text\Def\Extras\Extras.csproj" />
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj" Private="False" />
-    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Find\Find.csproj" />
-    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Def\InfoBar\InfoBar.csproj" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
@@ -30,8 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="DiagnosticMargin.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.InfoBar.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Extras.dll" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="**\*.xaml">

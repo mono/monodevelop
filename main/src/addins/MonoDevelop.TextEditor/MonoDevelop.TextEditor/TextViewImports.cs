@@ -69,7 +69,7 @@ namespace MonoDevelop.TextEditor
 		[Import]
 		internal IEditorFormatMapService EditorFormatMapService { get; set; }
 
-		[Import]
+		[Import(AllowDefault = true)]
 		internal IFindPresenterFactory FindPresenterFactory { get; set; }
 
 		[Import(AllowDefault = true)]
