@@ -318,12 +318,12 @@ namespace MonoDevelop.Core
 		static void EnsureDeleteDirectory (string dir)
 		{
 			if (Directory.Exists (dir)) {
-				var files = Directory.GetFiles (dir, "*.*", SearchOption.AllDirectories);
-				if (!files.Any ()) {
+				var dirItems = Directory.EnumerateFileSystemEntries (dir);
+				if (!dirItems.Any ()) {
 					try {
 						Directory.Delete (dir, true);
-					}catch(Exception ex) {
-						Console.Error.WriteLine (ex);
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Cannot delete profile folder.", ex);
 					}
 				}
 			}
