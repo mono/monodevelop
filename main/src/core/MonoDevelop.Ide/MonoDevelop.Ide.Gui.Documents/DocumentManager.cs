@@ -294,16 +294,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 				if (result.Content != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
-					Document doc = result.Content.DocumentController.Document;
+					Document doc = result.Content;
 
 					ScrollToRequestedCaretLocation (doc, info);
 
-					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
-						doc.RunWhenLoaded (() => {
-							if (doc.Window != null)
-								doc.Select ();
-						});
-					}
+					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront))
+						doc.Select ();
 					return doc;
 				}
 				return null;
