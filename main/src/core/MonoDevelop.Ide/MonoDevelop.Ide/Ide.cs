@@ -315,22 +315,9 @@ namespace MonoDevelop.Ide
 
 		public static void BringToFront ()
 		{
-			if (isInitialized) {
-				InternalBringToFront ();
-			} else {
-				//in case of no initialization we wait
-				EventHandler eventHandler = null;
-				eventHandler = (s, e) => {
-					Initialized -= eventHandler;
-					InternalBringToFront ();
-				};
-
-				Initialized += eventHandler;
+			if (!isInitialized) {
+				return;
 			}
-		}
-
-		static void InternalBringToFront ()
-		{
 			if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
 				WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
 			} else {
