@@ -348,6 +348,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				int pos = 1;
 				foreach (var attachedView in AttachedViews)
 					attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
+				if (activeAttachedView == this)
+					attachmentsContainer.ActiveView = mainShellView;
+				else
+					attachmentsContainer.ActiveView = activeAttachedView?.ShellView;
 				attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
 				shellView = attachmentsContainer;
 			} else
