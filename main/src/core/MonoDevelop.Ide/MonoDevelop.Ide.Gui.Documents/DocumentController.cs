@@ -295,6 +295,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public Xwt.Drawing.Image DocumentIcon {
 			get {
 				CheckInitialized ();
+				if (documentIcon == null) {
+					documentIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.GenericFile);
+					documentIconId = null;
+					usingIconId = false;
+				}
 				return documentIcon;
 			}
 			set {
