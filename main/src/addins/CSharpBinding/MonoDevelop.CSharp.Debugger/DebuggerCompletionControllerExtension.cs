@@ -111,10 +111,10 @@ namespace MonoDevelop.CSharp.Debugger
 			public async Task<CompletionData> GetExpressionCompletionData (string exp, StackFrame frame, CancellationToken token)
 			{
 				var location = frame.SourceLocation;
-				var document = documentContext.AnalysisDocument;
+				var document = documentContext?.AnalysisDocument;
 				if (document == null)
 					return null;
-				var solution = documentContext.AnalysisDocument.Project.Solution;
+				var solution = document.Project.Solution;
 							
 				var textSnapshot = textBuffer.CurrentSnapshot;	
 				var text = textSnapshot.GetText (new Span (0, textSnapshot.Length));
