@@ -50,5 +50,11 @@ namespace IdeUnitTests
 			if (shell != null)
 				await shell.ShowDocument (doc);
 		}
+
+		public static MockShellWindow GetWindow (this Document doc)
+		{
+			var shell = Runtime.PeekService<IShell> () as MockShell;
+			return shell?.GetWindow (doc);
+		}
 	}
 }

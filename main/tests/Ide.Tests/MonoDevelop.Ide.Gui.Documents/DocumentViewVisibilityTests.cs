@@ -271,6 +271,62 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		[Test]
+		public async Task SwitchModeInternally ()
+		{
+			// Same as SwitchMode, but the switch is done in the UI, not through the API
+
+			var controller = new ContentVisibleEventWithContainerTestController ();
+			controller.Mode = DocumentViewContainerMode.Tabs;
+
+			await controller.Initialize (new ModelDescriptor ());
+
+			var doc = await documentManager.OpenDocument (controller);
+			var window = doc.GetWindow ();
+			var containter = (MockShellDocumentViewContainer) window.RootView;
+
+			Assert.IsFalse (controller.View1.ContentVisible);
+			Assert.IsTrue (controller.View2.ContentVisible);
+			Assert.IsFalse (controller.View3.ContentVisible);
+
+			Assert.AreEqual (0, controller.View1_VisibleChangeEvents);
+			Assert.AreEqual (1, controller.View2_VisibleChangeEvents);
+			Assert.AreEqual (0, controller.View3_VisibleChangeEvents);
+
+			containter.CurrentMode = DocumentViewContainerMode.HorizontalSplit;
+
+			Assert.IsTrue (controller.View1.ContentVisible);
+			Assert.IsTrue (controller.View2.ContentVisible);
+			Assert.IsTrue (controller.View3.ContentVisible);
+
+			Assert.AreEqual (1, controller.View1_VisibleChangeEvents);
+			Assert.AreEqual (1, controller.View2_VisibleChangeEvents);
+			Assert.AreEqual (1, controller.View3_VisibleChangeEvents);
+
+			containter.CurrentMode = DocumentViewContainerMode.VerticalSplit;
+
+			Assert.IsTrue (controller.View1.ContentVisible);
+			Assert.IsTrue (controller.View2.ContentVisible);
+			Assert.IsTrue (controller.View3.ContentVisible);
+
+			Assert.AreEqual (1, controller.View1_VisibleChangeEvents);
+			Assert.AreEqual (1, controller.View2_VisibleChangeEvents);
+			Assert.AreEqual (1, controller.View3_VisibleChangeEvents);
+
+			containter.CurrentMode = DocumentViewContainerMode.Tabs;
+
+			Assert.IsFalse (controller.View1.ContentVisible);
+			Assert.IsTrue (controller.View2.ContentVisible);
+			Assert.IsFalse (controller.View3.ContentVisible);
+
+			Assert.AreEqual (2, controller.View1_VisibleChangeEvents);
+			Assert.AreEqual (1, controller.View2_VisibleChangeEvents);
+			Assert.AreEqual (2, controller.View3_VisibleChangeEvents);
+
+			await doc.Close (true);
+		}
+
+
+		[Test]
 		public async Task TabContainerCollectionOperations ()
 		{
 			var controller = new ContentVisibleEventWithContainerTestController ();

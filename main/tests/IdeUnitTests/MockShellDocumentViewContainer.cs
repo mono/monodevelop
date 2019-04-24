@@ -1,4 +1,4 @@
-//
+﻿//
 // MockShellDocumentViewContainer.cs
 //
 // Author:
@@ -35,6 +35,7 @@ namespace IdeUnitTests
 	public class MockShellDocumentViewContainer : MockShellDocumentView, IShellDocumentViewContainer
 	{
 		IShellDocumentViewItem activeView;
+		DocumentViewContainerMode currentMode;
 
 		public override string Tag => "Container";
 
@@ -85,7 +86,15 @@ namespace IdeUnitTests
 				((IShellDocumentViewContainer)this).ActiveView = view;
 		}
 
-		DocumentViewContainerMode IShellDocumentViewContainer.CurrentMode { get; set; }
+		public DocumentViewContainerMode CurrentMode {
+			get { return currentMode; }
+			set {
+				if (currentMode != value) {
+					currentMode = value;
+					CurrentModeChanged?.Invoke (this, EventArgs.Empty);
+				}
+			}
+		}
 
 		void IShellDocumentViewContainer.SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
