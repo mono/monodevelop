@@ -315,10 +315,27 @@ namespace MonoDevelop.Ide
 
 		public static void BringToFront ()
 		{
-			Initialized += (sender, e) => {
-				if (!Ide.WelcomePage.WelcomePageService.HasWindowImplementation)
-					Workbench.Present ();
-			};
+			if (isInitialized) {
+				InternalBringToFront ();
+			} else {
+				//in case of no initialization we wait
+				EventHandler eventHandler = null;
+				eventHandler = (s, e) => {
+					Initialized -= eventHandler;
+					InternalBringToFront ();
+				};
+
+				Initialized += eventHandler;
+			}
+		}
+
+		static void InternalBringToFront ()
+		{
+			if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
+				WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
+			} else {
+				Workbench.Present ();
+			}
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
