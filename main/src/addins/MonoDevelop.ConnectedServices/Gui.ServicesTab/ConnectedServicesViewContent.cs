@@ -20,7 +20,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ConnectedServicesViewContent (DotNetProject project)
 		{
-			Owner = project;
 			DocumentTitle = string.Format ("{0} \u2013 {1}", ConnectedServices.SolutionTreeNodeName, project.Name);
 
 			widget = new ConnectedServicesWidget ();

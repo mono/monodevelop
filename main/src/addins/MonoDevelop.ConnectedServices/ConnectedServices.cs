@@ -64,7 +64,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Displays the service details tab for the given service in the given project
 		/// </summary>
-		internal static void OpenServicesTab(DotNetProject project, string serviceId)
+		internal static async Task OpenServicesTab(DotNetProject project, string serviceId)
 		{
 			if (project == null)
 				project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
@@ -81,8 +81,10 @@ namespace MonoDevelop.ConnectedServices
 			}
 
 			servicesView = new ConnectedServicesViewContent (project);
+			await servicesView.Initialize (null);
+			servicesView.Owner = project;
 			servicesView.UpdateContent (serviceId);
-			IdeApp.Workbench.OpenDocument (servicesView, true);
+			await IdeApp.Workbench.OpenDocument (servicesView, true);
 		}
 
 		/// <summary>
