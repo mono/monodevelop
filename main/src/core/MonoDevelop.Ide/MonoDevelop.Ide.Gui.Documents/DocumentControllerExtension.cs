@@ -215,4 +215,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return next;
 		}
 	}
+
+	[ExportDocumentControllerExtension(Id = "Default")]
+	class DefaultDocumentControllerExtension : DocumentControllerExtension
+	{
+		public override Task<bool> SupportsController (DocumentController controller)
+		{
+			return Task.FromResult (false);
+		}
+	}
 }
