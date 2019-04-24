@@ -268,9 +268,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal override IEnumerable<DocumentController> GetActiveControllerHierarchy ()
 		{
 			var result = base.GetActiveControllerHierarchy ();
-			var activeItem = shellViewContainer.ActiveView?.Item;
-			if (activeItem != null)
-				result = activeItem.GetActiveControllerHierarchy ().Concat (result);
+			if (activeView != null)
+				result = activeView.GetActiveControllerHierarchy ().Concat (result);
 			return result;
 		}
 
