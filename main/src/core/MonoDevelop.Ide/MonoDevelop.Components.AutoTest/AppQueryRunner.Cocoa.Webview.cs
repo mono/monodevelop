@@ -44,6 +44,9 @@ namespace MonoDevelop.Components.AutoTest
 			var frame = webview.MainFrame;
 			var document = frame.DomDocument;
 
+			//// To prevent crashes later on.
+			//var defaultView = document.DefaultView;
+
 			ProcessDomElement (parent, ref lastChild, document.DocumentElement);
 		}
 

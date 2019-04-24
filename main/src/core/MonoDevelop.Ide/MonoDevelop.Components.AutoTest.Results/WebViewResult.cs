@@ -62,9 +62,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool EnterText (string text)
 		{
-			foreach (var ch in text)
-				if (!TypeKey (ch))
-					return false;
+			if (node is DomHtmlInputElement input) {
+				input.Value += text;
+				return true;
+			}
 
 			return true;
 		}
@@ -177,7 +178,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override bool TypeKey (char key, string state = "")
 		{
 			ParseModifier (state, out bool ctrl, out bool alt, out bool shift, out bool meta);
-			var ev = new DomKeyboardEvent ("keypress", true, true, new FakeDomAbstractView (), key.ToString(), DomKeyLocation.Standard, ctrl, alt, shift, meta);
+
+			var view = node.OwnerDocument.DefaultView; //new FakeDomAbstractView ();//node.OwnerDocument.DefaultView;
+			var ev = new DomKeyboardEvent ("keypress", true, true, view, "U+" + ((int)key).ToString("X4"), DomKeyLocation.Standard, ctrl, alt, shift, meta);
 			return node.DispatchEvent (ev);
 		}
 
