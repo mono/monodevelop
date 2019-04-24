@@ -32,7 +32,9 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Commands;
+using NuGet.Common;
 using NuGet.Frameworks;
+using NuGet.LibraryModel;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
@@ -79,6 +81,7 @@ namespace MonoDevelop.PackageManagement
 			this.project = project;
 			this.configuration = configuration;
 			this.packageManagementEvents = packageManagementEvents;
+			ProjectStyle = ProjectStyle.PackageReference;
 
 			var targetFramework = NuGetFramework.UnsupportedFramework;
 
@@ -159,7 +162,7 @@ namespace MonoDevelop.PackageManagement
 			var packageIdentity = new PackageIdentity (packageId, range.MinVersion);
 
 			bool added = await Runtime.RunInMainThread (() => {
-				return AddPackageReference (packageIdentity, nuGetProjectContext);
+				return AddPackageReference (packageIdentity, nuGetProjectContext, installationContext);
 			});
 
 			if (added) {
@@ -169,7 +172,7 @@ namespace MonoDevelop.PackageManagement
 			return added;
 		}
 
-		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context)
+		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context, BuildIntegratedInstallationContext installationContext)
 		{
 			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity, matchVersion: false);
 			if (packageReference?.Equals (packageIdentity, matchVersion: true) == true) {
@@ -182,6 +185,12 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				packageReference = ProjectPackageReference.Create (packageIdentity);
 				project.Items.Add (packageReference);
+			}
+
+			if (installationContext.IncludeType != LibraryIncludeFlags.All &&
+				installationContext.SuppressParent != LibraryIncludeFlagUtils.DefaultSuppressParent) {
+				packageReference.SetMetadataValue (ProjectItemProperties.IncludeAssets, installationContext.IncludeType);
+				packageReference.SetMetadataValue (ProjectItemProperties.PrivateAssets, installationContext.SuppressParent);
 			}
 
 			return true;
