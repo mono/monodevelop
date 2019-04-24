@@ -32,7 +32,9 @@ namespace MonoDevelop.Core
 	public class UserProfile
 	{
 		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
-		
+
+		internal static bool createFolder = false;
+
 		//These are the known profile versions that can be migrated.
 		//MUST BE SORTED, low to high.
 		//The last is the current profile version.
@@ -151,8 +153,10 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		internal static UserProfile GetProfile (string profileVersion)
+		internal static UserProfile GetProfile (string profileVersion, bool ensureCreated = true)
 		{
+			createFolder = ensureCreated;
+
 			var brandedEnvVar = BrandingService.BrandEnvironmentVariable (PROFILE_ENV_VAR);
 
 			FilePath testProfileRoot = Environment.GetEnvironmentVariable (brandedEnvVar);
@@ -265,17 +269,6 @@ namespace MonoDevelop.Core
 			};
 		}
 
-		internal static void CleanProfile(UserProfile profile)
-		{
-			EnsureDeleteDirectory (profile.CacheDir);
-			EnsureDeleteDirectory (profile.ConfigDir);
-			EnsureDeleteDirectory (profile.LocalConfigDir);
-			EnsureDeleteDirectory (profile.localInstallPath);
-			EnsureDeleteDirectory (profile.LogDir);
-			EnsureDeleteDirectory (profile.TempDir);
-			EnsureDeleteDirectory (profile.userDataRoot);
-		}
-
 		internal static UserProfile ForMD24 ()
 		{
 			FilePath appdata = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
@@ -312,21 +305,8 @@ namespace MonoDevelop.Core
 
 		static void EnsureDirectoryExists (string dir)
 		{
-			Directory.CreateDirectory (dir);
-		}
-
-		static void EnsureDeleteDirectory (string dir)
-		{
-			if (Directory.Exists (dir)) {
-				var dirItems = Directory.EnumerateFileSystemEntries (dir);
-				if (!dirItems.Any ()) {
-					try {
-						Directory.Delete (dir, true);
-					} catch (Exception ex) {
-						LoggingService.LogInternalError ("Cannot delete profile folder.", ex);
-					}
-				}
-			}
+			if(createFolder)
+				Directory.CreateDirectory (dir);
 		}
 	}
 	

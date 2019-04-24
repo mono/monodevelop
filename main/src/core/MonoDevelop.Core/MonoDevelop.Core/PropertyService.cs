@@ -123,13 +123,12 @@ namespace MonoDevelop.Core
 			int userProfileMostRecent = UserProfile.ProfileVersions.Length - 2;
 			for (int i = userProfileMostRecent; i >= 1; i--) {
 				string v = UserProfile.ProfileVersions[i];
-				var p = UserProfile.GetProfile (v);
+				var p = UserProfile.GetProfile (v, false);
 				if (File.Exists (p.ConfigDir.Combine (FileName))) {
 					profile = p;
 					version = v;
 					return true;
 				}
-				UserProfile.CleanProfile (p);
 			}
 			
 			//try the old unversioned MD <= 2.4 profile
