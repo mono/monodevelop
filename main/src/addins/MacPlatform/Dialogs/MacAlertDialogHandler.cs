@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacAlertFileDialogHandler.cs
 //  
 // Author:
@@ -182,7 +182,9 @@ namespace MonoDevelop.MacIntegration
 
 				int response = -1000;
 
-				var parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
+				var parent = data.TransientFor;
+				if (parent == null && IdeApp.Workbench?.RootWindow?.Visible == true)
+					parent = IdeApp.Workbench?.RootWindow;
 				NSWindow nativeParent;
 				try {
 					nativeParent = parent;
