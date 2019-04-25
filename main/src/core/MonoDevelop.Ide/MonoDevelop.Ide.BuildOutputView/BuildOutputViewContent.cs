@@ -63,14 +63,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Counters.OpenedFromIDE++;
 		}
 
-		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
+			await base.OnInitialize (modelDescriptor, status);
+
 			if (modelDescriptor is FileDescriptor file) {
 				FilePath = file.FilePath;
 				loadedFromFile = true;
 				Counters.OpenedFromFile++;
 			}
-			return Task.CompletedTask;
 		}
 
 		protected override bool ControllerIsViewOnly => !loadedFromFile;
