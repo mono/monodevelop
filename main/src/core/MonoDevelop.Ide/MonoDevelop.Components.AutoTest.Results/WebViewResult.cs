@@ -177,10 +177,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool TypeKey (char key, string state = "")
 		{
+			throw new NotImplementedException ("WebView just crashes");
+		}
+
+		bool CrashingTypeKey(char key, string state)
+		{
 			ParseModifier (state, out bool ctrl, out bool alt, out bool shift, out bool meta);
 
 			var view = node.OwnerDocument.DefaultView; //new FakeDomAbstractView ();//node.OwnerDocument.DefaultView;
-			var ev = new DomKeyboardEvent ("keypress", true, true, view, "U+" + ((int)key).ToString("X4"), DomKeyLocation.Standard, ctrl, alt, shift, meta);
+			var ev = new DomKeyboardEvent ("keypress", true, true, view, "U+" + ((int)key).ToString ("X4"), DomKeyLocation.Standard, ctrl, alt, shift, meta);
 			return node.DispatchEvent (ev);
 		}
 
@@ -273,7 +278,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override string ToString ()
 		{
-			return string.Format ("WebViewObject: Type: {0} {1}", node.NodeType.ToString());
+			return string.Format ("WebViewObject: Type: {0} Id: '{1}' Name: '{2}'", node.NodeType.ToString(), node.GetAttribute("id") ?? "", node.GetAttribute("name") ?? "");
 		}
 	}
 }
