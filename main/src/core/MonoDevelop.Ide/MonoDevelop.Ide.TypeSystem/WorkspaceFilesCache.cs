@@ -101,8 +101,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		static readonly bool pipeNeedsSanitized = Array.IndexOf (Path.GetInvalidPathChars (), '|') >= 0;
+
 		string GetProjectCacheFile (Project proj, string configuration)
 		{
+			if (pipeNeedsSanitized && configuration.IndexOf ('|') >= 0) {
+				configuration = configuration.Replace ('|', '_');
+			}
+
 			return cacheDir.Combine (proj.FileName.FileNameWithoutExtension + "-" + configuration + ".json");
 		}
 
