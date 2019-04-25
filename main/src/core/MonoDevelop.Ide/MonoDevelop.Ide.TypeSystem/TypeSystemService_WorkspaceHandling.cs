@@ -325,7 +325,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		bool TryOpenDocumentInWorkspace (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer)
 		{
 			var project = owner as MonoDevelop.Projects.Project;
-			if (project == null || !project.IsCompileable (filePath)) {
+			if (project == null || !project.IsCompileable (filePath) || project.ParentSolution == null) {
 				return false;
 			}
 
@@ -519,6 +519,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						ws.OnProjectAdded (projectInfo);
 					}
 					ws.ReloadModifiedProject (project);
+					Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("OnSolutionItemAdded failed", ex);
