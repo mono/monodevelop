@@ -395,12 +395,14 @@ namespace MonoDevelop.Ide
 			try {
 				var nativeParent = (NSWindow)parent;
 				nativeParent.AddChildWindow (nsdialog, NSWindowOrderingMode.Above);
+				var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
 
 				EventHandler unrealizer = null;
 				unrealizer = delegate {
 					if (nativeParent != null) {
 						nativeParent.RemoveChildWindow (nsdialog);
 					}
+					NSApplication.SharedApplication.EndModalSession (s);
 					dialog.Unrealized -= unrealizer;
 				};
 				dialog.Unrealized += unrealizer;
