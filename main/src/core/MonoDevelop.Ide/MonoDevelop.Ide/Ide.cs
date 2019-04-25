@@ -315,14 +315,13 @@ namespace MonoDevelop.Ide
 
 		public static void BringToFront ()
 		{
-			if (!isInitialized) {
-				return;
-			}
-			if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
-				WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
-			} else {
-				Workbench.Present ();
-			}
+			Initialized += (sender, e) => {
+				if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
+					WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
+				} else {
+					Workbench.Present ();
+				}
+			};
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
