@@ -41,6 +41,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
@@ -100,16 +101,22 @@ namespace MonoDevelop.TextEditor
 
 		protected override Type FileModelType => typeof (TextBufferFileModel);
 
+		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
+
 		protected TextViewContent (TImports imports)
 		{
 			this.Imports = imports;
 			this.sourceEditorOptions = DefaultSourceEditorOptions.Instance;
+			this.ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
 		}
 
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
 			await base.OnInitialize (modelDescriptor, status);
 			await Model.Load ();
+
+			// let's update the file type condition
+			fileTypeCondition.SetFileName (this.FilePath);
 		}
 
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
@@ -251,6 +258,9 @@ namespace MonoDevelop.TextEditor
 
 			if (FilePath != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
 				TextDocument.Rename (FilePath);
+
+			// update the file type condition with the new path
+			fileTypeCondition.SetFileName (FilePath);
 
 			// TODO: Actually implement file rename support. Below is from old editor.
 			//       Need to remove or update mimeType field, too.
