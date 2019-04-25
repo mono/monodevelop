@@ -150,7 +150,9 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool FullScreen {
 			get {
-				return DesktopService.GetIsFullscreen (this);
+				if (Visible)
+					return DesktopService.GetIsFullscreen (this);
+				return fullScreenState ?? false;
 			}
 			set {
 				// If this window is not visible, don't set full screen mode
