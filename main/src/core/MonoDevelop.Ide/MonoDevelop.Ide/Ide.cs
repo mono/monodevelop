@@ -316,8 +316,11 @@ namespace MonoDevelop.Ide
 		public static void BringToFront ()
 		{
 			Initialized += (sender, e) => {
-				if (!Ide.WelcomePage.WelcomePageService.HasWindowImplementation)
+				if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
+					WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
+				} else {
 					Workbench.Present ();
+				}
 			};
 		}
 
