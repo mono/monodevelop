@@ -107,7 +107,7 @@ namespace MonoDevelop.Debugger
 			return fileName;
 		}
 
-		private void OpenFindSourceFileDialog (object sender, EventArgs e)
+		private async void OpenFindSourceFileDialog (object sender, EventArgs e)
 		{
 			var sf = DebuggingService.CurrentFrame;
 			if (sf == null) {
@@ -132,8 +132,10 @@ namespace MonoDevelop.Debugger
 						MessageService.AskQuestion (GettextCatalog.GetString ("File checksum doesn't match."), 1, ignoreButton, new AlertButton (GettextCatalog.GetString ("Cancel"))) == ignoreButton) {
 						SourceCodeLookup.AddLoadedFile (newFilePath, sf.SourceLocation.FileName);
 						sf.UpdateSourceFile (newFilePath);
-						if (IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger) != null) {
-							this.WorkbenchWindow.Document.Close (false).Ignore ();
+
+						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
+						if (doc != null) {
+							await this.WorkbenchWindow.Document.Close (false);
 						}
 					}
 				} else {
