@@ -1822,6 +1822,7 @@ namespace MonoDevelop.VersionControl.Git
 				// try to switch without stashing
 				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 2);
 				SwitchBranchInternal (monitor, branch);
+				return true;
 			} catch (CheckoutConflictException ex) {
 				// retry with stashing
 				monitor.EndTask ();
