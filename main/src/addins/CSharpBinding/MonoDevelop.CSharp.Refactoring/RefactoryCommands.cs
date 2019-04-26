@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected bool TryGetDocument (out Document analysisDocument, out Ide.Gui.Document doc)
 		{
 			doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == null) {
+			if (doc == null || doc.FileName == null || doc.Editor == null) {
 				analysisDocument = null;
 				return false;
 			}
@@ -137,7 +137,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancelToken);
 			if (semanticModel == null)
 				return;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor, cancelToken);
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 

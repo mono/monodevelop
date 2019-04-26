@@ -113,9 +113,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 
-		protected override async void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
-			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
+			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument, cancelToken);
 			info.Enabled = sym != null;
 			info.Bypass = !info.Enabled;
 		}
