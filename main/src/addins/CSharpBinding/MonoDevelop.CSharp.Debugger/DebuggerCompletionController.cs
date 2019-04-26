@@ -49,12 +49,18 @@ namespace MonoDevelop.CSharp.Debugger
 	[ExportDocumentControllerExtension (MimeType = "*")]
 	class DebuggerCompletionController : DocumentControllerExtension
 	{
+		public override Task<bool> SupportsController (DocumentController controller)
+		{
+			return Task.FromResult (controller.GetContent<ITextBuffer> () != null);
+		}
+
 		protected override object OnGetContent (Type type)
 		{
 			if (typeof (IDebuggerCompletionProvider).IsAssignableFrom (type)) {
-				var textView = Controller.GetContent<ITextView> ();
-				var analysisDocument = textView.TextBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
 				var textBuffer = Controller.GetContent<ITextBuffer> ();
+				var analysisDocument = textBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
+				if (analysisDocument == null)
+					return null;
 				return new DebuggerCompletionProvider (analysisDocument, textBuffer);
 			}
 			return base.OnGetContent (type);
