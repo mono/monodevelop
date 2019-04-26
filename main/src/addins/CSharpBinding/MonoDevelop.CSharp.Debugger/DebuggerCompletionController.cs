@@ -41,8 +41,8 @@ using Microsoft.VisualStudio.Text;
 using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui.Documents;
-using MonoDevelop.Ide.Gui;
 using Document = Microsoft.CodeAnalysis.Document;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.CSharp.Debugger
 {
@@ -52,10 +52,10 @@ namespace MonoDevelop.CSharp.Debugger
 		protected override object OnGetContent (Type type)
 		{
 			if (typeof (IDebuggerCompletionProvider).IsAssignableFrom (type)) {
-				var context = Controller.GetContent<RoslynDocumentExtension> ()?.DocumentContext;
-				var document = context?.AnalysisDocument;
+				var textView = Controller.GetContent<ITextView> ();
+				var analysisDocument = textView.TextBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
 				var textBuffer = Controller.GetContent<ITextBuffer> ();
-				return new DebuggerCompletionProvider (document, textBuffer);
+				return new DebuggerCompletionProvider (analysisDocument, textBuffer);
 			}
 			return base.OnGetContent (type);
 		}
