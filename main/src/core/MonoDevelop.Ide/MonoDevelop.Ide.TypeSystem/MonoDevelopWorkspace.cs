@@ -522,7 +522,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var doc = GetDocument (documentId);
 			if (doc != null) {
 				var mdProject = GetMonoProject (doc.Project);
-				if (doc != null) {
+				if (mdProject != null) {
 					documentManager.OpenDocument (new FileOpenInformation (doc.FilePath, mdProject, activate)).Ignore ();
 				}
 			}
