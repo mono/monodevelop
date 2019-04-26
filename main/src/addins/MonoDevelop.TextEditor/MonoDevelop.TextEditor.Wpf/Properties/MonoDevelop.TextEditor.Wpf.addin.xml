@@ -3,14 +3,13 @@
 		<Import assembly="MonoDevelop.TextEditor.Wpf.dll"/>
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Extras.dll" />
 	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="../../../bin/Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll"/>
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Wpf.dll"/>
 		<Assembly file="MonoDevelop.TextEditor.Wpf.dll"/>
-		<Assembly file="Microsoft.VisualStudio.Text.Find.Implementation.dll"/>
-		<Assembly file="Microsoft.VisualStudio.Text.InfoBar.dll"/>
 		<Assembly file="DiagnosticMargin.dll"/>
 	</Extension>
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
