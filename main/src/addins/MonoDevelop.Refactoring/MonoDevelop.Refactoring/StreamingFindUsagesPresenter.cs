@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Editor.Host;
@@ -13,7 +13,7 @@ using Roslyn.Utilities;
 
 namespace MonoDevelop.Refactoring
 {
-	[Export (typeof (IStreamingFindUsagesPresenter))]
+	[Export (typeof (IStreamingFindUsagesPresenter)), Shared]
 	class StreamingFindUsagesPresenter : IStreamingFindUsagesPresenter
 	{
 		public void ClearAll ()
