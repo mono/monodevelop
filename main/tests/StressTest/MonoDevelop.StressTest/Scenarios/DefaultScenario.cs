@@ -41,22 +41,19 @@ namespace MonoDevelop.StressTest
 		readonly FilePath[] filesToOpen = Array.Empty<FilePath> ();
 
 		public DefaultScenario (FilePath solutionFileName)
-			: this (solutionFileName, Enumerable.Empty<string> ())
 		{
 			SolutionFileName = solutionFileName;
 		}
 
-		public DefaultScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen)
+		public DefaultScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen) : this (solutionFileName)
 		{
-			SolutionFileName = solutionFileName;
-
 			this.filesToOpen = filesToOpen
 				.Select (fileToOpen => solutionFileName.ParentDirectory.Combine (fileToOpen))
 				.ToArray ();
 		}
 
+		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
 		public FilePath SolutionFileName { get; set; }
-
 		public IEnumerable<string> TextToEnter { get; set; } = Enumerable.Empty<string> ();
 
 		bool firstRun = true;
@@ -128,7 +125,5 @@ namespace MonoDevelop.StressTest
 			WorkbenchExtensions.SaveFile ();
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
 		}
-
-		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
 	}
 }
