@@ -31,6 +31,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Frameworks;
+using NuGet.LibraryModel;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
@@ -75,7 +77,43 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
 			var versionRange = new VersionRange (packageIdentity.Version);
-			return project.InstallPackageAsync (packageId, versionRange, context, null, CancellationToken.None);
+			var installationContext = CreateInstallationContext ();
+			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
+		}
+
+		BuildIntegratedInstallationContext CreateInstallationContext (
+			LibraryIncludeFlags? includeType = null,
+			LibraryIncludeFlags? suppressParent = null)
+		{
+			var framework = NuGetFramework.Parse (project.Project.TargetFrameworkMoniker.ToString ());
+			var frameworks = new NuGetFramework [] {
+				framework
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+			originalFrameworks [framework] = framework.GetShortFolderName ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				frameworks,
+				Enumerable.Empty<NuGetFramework> (),
+				originalFrameworks);
+
+			if (includeType.HasValue)
+				installationContext.IncludeType = includeType.Value;
+
+			if (suppressParent.HasValue)
+				installationContext.SuppressParent = suppressParent.Value;
+
+			return installationContext;
+		}
+
+		Task<bool> InstallPackageAsync (string packageId, string version, LibraryIncludeFlags includeType, LibraryIncludeFlags suppressParent)
+		{
+			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
+			var versionRange = new VersionRange (packageIdentity.Version);
+
+			var installationContext = CreateInstallationContext (includeType, suppressParent);
+			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
 		}
 
 		Task<PackageSpec> GetPackageSpecsAsync ()
@@ -209,6 +247,36 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (packageReference.HasAllowedVersions);
 			Assert.IsNull (packageReference.AllowedVersions);
 			Assert.AreEqual ("All", projectPackageReference.Metadata.GetValue ("PrivateAssets"));
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_DevelopmentDependency_AssetInfoAddedToPackageReference ()
+		{
+			CreateNuGetProject ();
+
+			var includeType = LibraryIncludeFlags.Runtime |
+				LibraryIncludeFlags.Build |
+				LibraryIncludeFlags.Native |
+				LibraryIncludeFlags.ContentFiles |
+				LibraryIncludeFlags.Analyzers;
+
+			var suppressParent = LibraryIncludeFlags.All;
+
+			bool result = await InstallPackageAsync ("GitInfo", "2.0.20", includeType, suppressParent);
+
+			var projectPackageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ();
+
+			var packageReference = projectPackageReference.CreatePackageReference ();
+
+			Assert.AreEqual ("GitInfo", packageReference.PackageIdentity.Id);
+			Assert.AreEqual ("2.0.20", packageReference.PackageIdentity.Version.ToNormalizedString ());
+
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+			Assert.AreEqual ("runtime; build; native; contentfiles; analyzers", projectPackageReference.Metadata.GetValue ("IncludeAssets"));
+			Assert.AreEqual ("all", projectPackageReference.Metadata.GetValue ("PrivateAssets"));
+			Assert.AreEqual (ProjectStyle.PackageReference, project.ProjectStyle);
 		}
 
 		[Test]
