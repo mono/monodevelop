@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Expansion;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeTemplates;
 
@@ -15,7 +16,11 @@ namespace MonoDevelop.TextEditor.Cocoa
 	class ExpansionManager : IExpansionManager
 	{
 		List<ExpansionTemplate> expansionTemplates;
-
+		static string UserSnippetsPath {
+			get {
+				return UserProfile.Current.UserDataRoot.Combine ("Snippets");
+			}
+		}
 		public IEnumerable<ExpansionTemplate> EnumerateExpansions (IContentType contentType, bool shortcutOnly, string[] snippetTypes, bool includeNullType, bool includeDuplicates)
 		{
 			if (expansionTemplates != null)
@@ -23,6 +28,8 @@ namespace MonoDevelop.TextEditor.Cocoa
 			expansionTemplates = new List<ExpansionTemplate> ();
 			foreach (var codeTemplate in CodeTemplateService.GetCodeTemplates (IdeServices.DesktopService.GetMimeTypeForContentType (contentType)))
 				expansionTemplates.Add (Convert (codeTemplate));
+			foreach (var snippetFile in Directory.GetFiles (UserSnippetsPath, "*.snippet"))
+				expansionTemplates.Add (new ExpansionTemplate (snippetFile));
 			return expansionTemplates;
 		}
 
