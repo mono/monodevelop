@@ -101,6 +101,7 @@
     <Compile Include="MonoDevelop.StressTest\Profiler\GraphExtensions.cs" />
     <Compile Include="MonoDevelop.StressTest\IEditorTestScenario.cs" />
     <Compile Include="UserInterfaceTests\Properties.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\TaskQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.StressTest.Attributes\" />

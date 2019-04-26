@@ -21,6 +21,8 @@ namespace MonoDevelop.StressTest
 		readonly ITestScenario scenario;
 		readonly ResultDataModel result = new ResultDataModel ();
 
+		readonly TaskQueue taskQueue = new TaskQueue ();
+
 		public ProfilerOptions ProfilerOptions { get; }
 
 		public LeakProcessor (ITestScenario scenario, ProfilerOptions options)
@@ -31,6 +33,8 @@ namespace MonoDevelop.StressTest
 
 		public void ReportResult ()
 		{
+			taskQueue.Complete ();
+
 			string scenarioName = scenario.GetType ().FullName;
 			var serializer = new JsonSerializer {
 				NullValueHandling = NullValueHandling.Ignore,
@@ -47,13 +51,13 @@ namespace MonoDevelop.StressTest
 			if (heapshot == null)
 				return;
 
-			// TODO: Make this async. Each heapshot will add time to the current test run.
+			taskQueue.Enqueue (() => {
+				var previousData = result.Iterations.LastOrDefault ();
+				var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
+				var leakResult = new ResultIterationData (iterationName, leakedObjects, memoryStats);
 
-			var previousData = result.Iterations.LastOrDefault ();
-			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
-			var leakResult = new ResultIterationData (iterationName, leakedObjects, memoryStats);
-
-			result.Iterations.Add (leakResult);
+				result.Iterations.Add (leakResult);
+			});
 		}
 
 		Dictionary<string, LeakItem> DetectLeakedObjects (Heapshot heapshot, bool isCleanup, ResultIterationData previousData, string iterationName)
