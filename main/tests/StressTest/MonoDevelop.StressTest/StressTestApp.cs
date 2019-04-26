@@ -86,6 +86,14 @@ namespace MonoDevelop.StressTest
 
 			UserInterfaceTests.Ide.CloseAll (exit: false);
 			ReportMemoryUsage ("Cleanup");
+
+			if (profilerProcessor != null) {
+				var task = profilerProcessor.RemainingHeapshotsTask;
+				if (!task.IsCompleted)
+					Console.WriteLine ("Still processing heapshots...");
+
+				task.Wait ();
+			}
 		}
 
 		void RunTestScenario ()
@@ -215,10 +223,8 @@ namespace MonoDevelop.StressTest
 
 			// This is to prevent leaking of AppQuery instances.
 			TestService.Session.DisconnectQueries ();
-			Heapshot heapshot = null;
-			if (profilerProcessor != null) {
-				heapshot = profilerProcessor.TakeHeapshotAndMakeReport ().Result;
-			}
+
+			var heapshotTask = profilerProcessor?.TakeHeapshot ();
 
 			var memoryStats = TestService.Session.MemoryStats;
 
@@ -234,7 +240,8 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			leakProcessor.Process (heapshot, iterationName == "Cleanup", iterationName, memoryStats);
+			if (heapshotTask != null)
+				leakProcessor.Process (heapshotTask, iterationName == "Cleanup", iterationName, memoryStats);
 		}
 	}
 }

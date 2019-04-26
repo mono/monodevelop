@@ -13,9 +13,14 @@ namespace MonoDevelop.StressTest
 		public void Complete ()
 		{
 			pair.Complete ();
-			pair.Completion.Wait ();
+
+			var task = pair.Completion;
+			if (!task.IsCompleted)
+				Console.WriteLine ("Still processing task queue...");
+
+			task.Wait ();
 		}
 
-		public void Enqueue (Action act) => backgroundQueue.StartNew (act).Ignore ();
+		public void Enqueue (Func<Task> creator) => backgroundQueue.StartNew (creator);
 	}
 }
