@@ -569,7 +569,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			updateInnerExceptions ();
 		}
 
-		void StackFrameActivated (object o, RowActivatedArgs args)
+		async void StackFrameActivated (object o, RowActivatedArgs args)
 		{
 			var model = StackTraceTreeView.Model;
 			TreeIter iter;
@@ -581,7 +581,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 			if (frame != null && !string.IsNullOrEmpty (frame.File) && File.Exists (frame.File)) {
 				try {
-					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column, MonoDevelop.Ide.Gui.OpenDocumentOptions.Debugger);
+					await IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column, MonoDevelop.Ide.Gui.OpenDocumentOptions.Debugger);
 				} catch (FileNotFoundException) {
 				}
 			}

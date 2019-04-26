@@ -72,14 +72,16 @@ namespace MonoDevelop.Debugger
 			int line = frame.SourceLocation.Line;
 			if (line != -1) {
 				if (!file.IsNullOrEmpty && System.IO.File.Exists (file)) {
-					if (IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger) != null)
+					var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
+					if (doc != null)
 						return;
 				}
 				if (frame.SourceLocation.FileHash != null) {
 					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
 					if (newFilePath != null) {
 						frame.UpdateSourceFile (newFilePath);
-						if (IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger) != null)
+						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
+						if (doc != null)
 							return;
 					}
 				}
