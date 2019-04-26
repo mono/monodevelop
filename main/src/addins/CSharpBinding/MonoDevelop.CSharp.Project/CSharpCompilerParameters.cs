@@ -135,9 +135,16 @@ namespace MonoDevelop.CSharp.Project
 					ParentConfiguration.OutputDirectory
 			);
 
+			bool isLibrary = ParentProject.IsLibraryBasedProjectType;
+			string mainTypeName = project.MainClass;
+			if (isLibrary || mainTypeName == string.Empty) {
+				// empty string is not accepted by Roslyn
+				mainTypeName = null;
+			}
+
 			var options = new CSharpCompilationOptions (
-				ParentProject.IsLibraryBasedProjectType ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
-				mainTypeName: project.MainClass,
+				isLibrary ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
+				mainTypeName: mainTypeName,
 				scriptClassName: "Script",
 				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
 				checkOverflow: GenerateOverflowChecks,
