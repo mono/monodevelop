@@ -159,6 +159,7 @@ class MonoDevelopProcessHost
 			} catch {
 				// Ignore shutdown exceptions
 			}
+			LoggingService.Shutdown ();
 		}
 	}
 
