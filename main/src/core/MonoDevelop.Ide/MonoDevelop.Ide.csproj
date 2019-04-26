@@ -4240,6 +4240,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Gtk.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Cocoa.cs" />
     <Compile Include="MonoDevelop.Ide\IdeStartupTracker.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\ContentCallbackRegistry.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

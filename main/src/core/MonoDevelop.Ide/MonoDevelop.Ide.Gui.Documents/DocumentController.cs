@@ -559,6 +559,48 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		ContentCallbackRegistry contentCallbackRegistry;
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is added to the controller
+		/// </summary>
+		/// <typeparam name="T">Type of the content to track</typeparam>
+		/// <param name="contentCallback">Callback to invoke when the content is added</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentAdded<T> (Action<T> contentCallback)
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContent);
+			return contentCallbackRegistry.RunWhenContentAdded (contentCallback);
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is removed from the controller
+		/// </summary>
+		/// <typeparam name="T">Type of the content to track</typeparam>
+		/// <param name="contentCallback">Callback to invoke when the content is removed</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentRemoved<T> (Action<T> contentCallback)
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContent);
+			return contentCallbackRegistry.RunWhenContentRemoved (contentCallback);
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is added or removed from the controller
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="addedCallback">Callback to invoke when the content is added</param>
+		/// <param name="removedCallback">Callback to invoke when the content is removed</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentAddedOrRemoved<T> (Action<T> addedCallback, Action<T> removedCallback)
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContent);
+			return contentCallbackRegistry.RunWhenContentAddedOrRemoved (addedCallback, removedCallback);
+		}
+
 		/// <summary>
 		/// Gets the view that will show the content of the document.
 		/// </summary>
@@ -824,7 +866,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			UpdateContentExtensions ();
 			ContentChanged?.Invoke (this, EventArgs.Empty);
 			RefreshExtensions ().Ignore ();
-
+			contentCallbackRegistry?.InvokeContentChangeCallbacks ();
 		}
 
 		internal void NotifyFocused ()
