@@ -66,14 +66,6 @@ namespace MonoDevelop.CSharpBinding.Debugging
 		}
 
 		[Test]
-		public async Task DebuggerCompletionControllerProvidesCompletions ()
-		{
-			var doc = await GetDocument ("");
-			var compExt = doc.GetContent<IDebuggerCompletionProvider> ();
-			Assert.That (compExt, Is.InstanceOf<DebuggerCompletionProvider> ());
-		}
-
-		[Test]
 		public async Task ProvidesCompletions()
 		{
 			var contentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType ("text/x-csharp");
