@@ -92,6 +92,10 @@
 
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
+		
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertSnippetCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SurroundWithCommandArgs" />
+
 	</Extension>
 
 	<!--
@@ -188,6 +192,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" _label = "Surround With..." />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" _label = "Insert Template..."  />
+		<SeparatorItem id = "Separator4" />
 	</Extension>
 <!--
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">
