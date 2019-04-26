@@ -47,10 +47,10 @@ namespace MonoDevelop.StressTest
 			// OnlyOnLast
 		}
 
-		public ProfilerType Type { get; set; } = ProfilerType.Disabled;
+		public ProfilerType Type { get; set; } = ProfilerType.All;
 		public PrintReport PrintReportTypes { get; set; }
-		public int MaxFrames { get; set; }
-		public string MlpdOutputPath { get; set; }
+		public int MaxFrames { get; set; } = 0;
+		public string MlpdOutputPath { get; set; } = "stress_test.mlpd";
 		public string CustomProfilerArguments { get; set; }
 		public HashSet<string> PrintReportObjectNames { get; } = new HashSet<string>(StringComparer.Ordinal);
 	}
