@@ -1,4 +1,4 @@
-// ObjectValuePad.cs
+﻿// ObjectValuePad.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,6 +26,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
@@ -33,45 +35,49 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
-	public class ObjectValuePad: PadContent
+	public class ObjectValuePad : PadContent
 	{
 		protected ObjectValueTreeView tree;
 		readonly ScrolledWindow scrolled;
-		bool needsUpdate;
+		bool needsUpdateValues;
+		bool needsUpdateFrame;
 		bool initialResume;
 		StackFrame lastFrame;
 		PadFontChanger fontChanger;
-		
+
 		public override Control Control {
 			get {
 				return scrolled;
 			}
 		}
-		
+
 		public ObjectValuePad ()
 		{
 			scrolled = new ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;
-			
+
 			tree = new ObjectValueTreeView ();
-			
+
 			fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
-			
+
 			tree.AllowEditing = true;
 			tree.AllowAdding = false;
 			tree.HeadersVisible = true;
 			tree.RulesHint = true;
 			scrolled.Add (tree);
 			scrolled.ShowAll ();
-			
+
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			DebuggingService.PausedEvent += OnDebuggerPaused;
 			DebuggingService.ResumedEvent += OnDebuggerResumed;
 			DebuggingService.StoppedEvent += OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged += OnEvaluationOptionsChanged;
+			DebuggingService.VariableChanged += OnVariableChanged;
 
-			needsUpdate = true;
+			needsUpdateValues = false;
+			needsUpdateFrame = true;
+
 			//If pad is created/opened while debugging...
 			initialResume = !DebuggingService.IsDebugging;
 		}
@@ -80,7 +86,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (fontChanger == null)
 				return;
-			
+
 			fontChanger.Dispose ();
 			fontChanger = null;
 			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
@@ -88,37 +94,58 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ResumedEvent -= OnDebuggerResumed;
 			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged -= OnEvaluationOptionsChanged;
+			DebuggingService.VariableChanged -= OnVariableChanged;
 			base.Dispose ();
 		}
 
 		protected override void Initialize (IPadWindow container)
 		{
 			container.PadContentShown += delegate {
-				if (needsUpdate)
-					OnUpdateList ();
+				if (needsUpdateFrame)
+					OnUpdateFrame ();
+				else if (needsUpdateValues)
+					OnUpdateValues ();
 			};
 		}
 
-		public virtual void OnUpdateList ()
+		public virtual void OnUpdateFrame ()
 		{
-			needsUpdate = false;
+			needsUpdateValues = false;
+			needsUpdateFrame = false;
+
 			if (DebuggingService.CurrentFrame != lastFrame)
 				tree.Frame = DebuggingService.CurrentFrame;
 			lastFrame = DebuggingService.CurrentFrame;
 		}
-		
+
+		public virtual void OnUpdateValues ()
+		{
+			needsUpdateValues = false;
+		}
+
 		protected virtual void OnFrameChanged (object s, EventArgs a)
 		{
-			if (Window != null && Window.ContentVisible)
-				OnUpdateList ();
-			else
-				needsUpdate = true;
+			if (Window != null && Window.ContentVisible) {
+				OnUpdateFrame ();
+			} else {
+				needsUpdateFrame = true;
+				needsUpdateValues = false;
+			}
 		}
-		
+
+		protected virtual void OnVariableChanged (object s, EventArgs e)
+		{
+			if (Window != null && Window.ContentVisible) {
+				OnUpdateValues ();
+			} else {
+				needsUpdateValues = true;
+			}
+		}
+
 		protected virtual void OnDebuggerPaused (object s, EventArgs a)
 		{
 		}
-		
+
 		protected virtual void OnDebuggerResumed (object s, EventArgs a)
 		{
 			if (!initialResume)
@@ -127,7 +154,7 @@ namespace MonoDevelop.Debugger
 			tree.ClearValues ();
 			initialResume = false;
 		}
-		
+
 		protected virtual void OnDebuggerStopped (object s, EventArgs a)
 		{
 			if (DebuggingService.IsDebugging)
@@ -137,15 +164,15 @@ namespace MonoDevelop.Debugger
 			lastFrame = null;
 			initialResume = true;
 		}
-		
+
 		protected virtual void OnEvaluationOptionsChanged (object s, EventArgs a)
 		{
 			if (!DebuggingService.IsRunning) {
 				lastFrame = null;
 				if (Window != null && Window.ContentVisible)
-					OnUpdateList ();
+					OnUpdateFrame ();
 				else
-					needsUpdate = true;
+					needsUpdateFrame = true;
 			}
 		}
 	}

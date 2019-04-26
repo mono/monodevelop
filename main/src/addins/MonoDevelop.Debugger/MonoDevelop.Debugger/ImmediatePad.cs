@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ImmediatePad.cs
 //  
 // Authors: Lluis Sanchez Gual <lluis@novell.com>
@@ -78,9 +78,11 @@ namespace MonoDevelop.Debugger
 				var val = frame.GetExpressionValue (expression, ops);
 				if (val.IsEvaluating) {
 					WaitForCompleted (val, frame.DebuggerSession);
+					DebuggingService.NotifyVariableChanged ();
 					return;
 				}
 
+				DebuggingService.NotifyVariableChanged ();
 				PrintValue (val);
 			}
 		}	
