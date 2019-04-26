@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.DocumentContext.ParsedDocument == null) {
+			if (doc == null || doc.FileName == FilePath.Null || doc.Editor == null || doc.DocumentContext.ParsedDocument == null) {
 				info.Enabled = false;
 				return;
 			}

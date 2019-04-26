@@ -26,6 +26,7 @@
 
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
@@ -84,14 +85,14 @@ namespace MonoDevelop.CSharp.Navigation
 			}
 		}
 
-		protected override async void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null) {
+			if (doc == null || doc.Editor == null) {
 				info.Enabled = false;
 				return;
 			}
-			var symInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
+			var symInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor, cancelToken);
 			var sym = symInfo.Symbol ?? symInfo.DeclaredSymbol;
 			info.Enabled = sym != null && (sym.IsKind (SymbolKind.Method) || sym.IsKind (SymbolKind.Property) && ((IPropertySymbol)sym).IsIndexer);
 			info.Bypass = !info.Enabled;

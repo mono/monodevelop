@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.Editor == null)
 				return;
 			Run (doc);
 		}
