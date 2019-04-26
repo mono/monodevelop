@@ -160,7 +160,9 @@ namespace MonoDevelop.StressTest
 				var imagePath = Path.ChangeExtension (outputFileName, "svg");
 				var args = $"{outputFileName} -Tsvg -o\"{imagePath}\"";
 
-				System.Diagnostics.Process.Start ("dot", args).WaitForExit();
+				using (var process = System.Diagnostics.Process.Start ("dot", args)) {
+					process.WaitForExit ();
+				}
 
 				return imagePath;
 			}

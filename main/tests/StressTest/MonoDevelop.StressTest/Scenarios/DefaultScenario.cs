@@ -71,10 +71,6 @@ namespace MonoDevelop.StressTest
 				firstRun = false;
 			}
 
-			// Open files.
-			WorkbenchExtensions.OpenFiles (filesToOpen);
-			UserInterfaceTests.Ide.WaitForIdeIdle ();
-
 			RunTypingTest ();
 
 			// Rebuild.
@@ -102,9 +98,14 @@ namespace MonoDevelop.StressTest
 				return;
 			}
 
+			// Open files.
+			WorkbenchExtensions.OpenFiles (filesToOpen);
+
 			// Wait for the text area to be available.
 			var area = TestService.Session.WaitForElement (IdeQuery.TextAreaForFile (openFile), 10000);
 			Assert.That (area, Has.Length (1));
+
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
 
 			// Go to the start of the document.
 			TextEditor.MoveCaretToDocumentStart ();
