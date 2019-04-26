@@ -144,13 +144,14 @@ namespace MonoDevelop.StressTest
 			return true;
 		}
 
-		public void Stop ()
+		public void Stop (bool success = true)
 		{
 			UserInterfaceTests.Ide.CloseAll ();
 			TestService.EndSession ();
 			OnCleanUp ();
 
-			leakProcessor.ReportResult ();
+			if (success)
+				leakProcessor.ReportResult ();
 		}
 
 		void ValidateMonoDevelopBinPath ()
