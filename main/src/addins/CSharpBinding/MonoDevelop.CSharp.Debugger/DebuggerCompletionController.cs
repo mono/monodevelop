@@ -93,7 +93,7 @@ namespace MonoDevelop.CSharp.Debugger
 
 		static async Task<int> GetAdjustedContextPoint (int contextPoint, Document document, CancellationToken cancellationToken)
 		{
-			var tree = await document.GetSyntaxTreeAsync (cancellationToken);
+			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait(false);
 
 			// Determine the position in the buffer at which to end the tracking span representing
 			// the part of the imaginary buffer before the text in the view. 
@@ -124,7 +124,7 @@ namespace MonoDevelop.CSharp.Debugger
 			var solution = document.Project.Solution;
 			var textSnapshot = textBuffer.CurrentSnapshot;
 			var text = textSnapshot.GetText (new Span (0, textSnapshot.Length));
-			var insertOffset = await GetAdjustedContextPoint (textSnapshot.GetLineFromLineNumber (location.EndLine - 1).Start.Position + location.EndColumn - 1, document, token);
+			var insertOffset = await GetAdjustedContextPoint (textSnapshot.GetLineFromLineNumber (location.EndLine - 1).Start.Position + location.EndColumn - 1, document, token).ConfigureAwait(false);
 			text = text.Insert (insertOffset, ";" + exp + ";");
 			insertOffset++;//advance for 1 which represents `;` before expression
 			var newTextBuffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, textBuffer.ContentType);
