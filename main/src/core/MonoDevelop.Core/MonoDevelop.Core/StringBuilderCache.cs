@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Text;
+using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Core
 {
@@ -33,26 +34,14 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public static class StringBuilderCache
 	{
-		const int Threshold = 4096;
+		static readonly ObjectPool<StringBuilder> pool = new DefaultObjectPoolProvider ().Create (new StringBuilderClearingPooledObjectPolicy ());
 
-		public static StringBuilder Allocate () 
-		{
-			var result = SharedPools.Default<StringBuilder> ().Allocate ();
-			result.Clear ();
-			return result;
-		}
+		public static StringBuilder Allocate () => pool.Get ();
+		public static void Free (StringBuilder sb) => pool.Return (sb);
 
 		public static StringBuilder Allocate (string text)
 		{
 			return Allocate ().Append (text);
-		}
-
-		public static void Free (StringBuilder sb)
-		{
-			sb.Clear ();
-			if (sb.Capacity > Threshold)
-				sb.Capacity = Threshold;
-			SharedPools.Default<StringBuilder> ().Free (sb);
 		}
 
 		public static string ReturnAndFree (StringBuilder sb)
@@ -60,6 +49,28 @@ namespace MonoDevelop.Core
 			var result = sb.ToString ();
 			Free (sb);
 			return result;
+		}
+
+		class StringBuilderClearingPooledObjectPolicy : PooledObjectPolicy<StringBuilder>
+		{
+			const int InitialCapacity = 20;
+			const int MaximumRetainedCapacity = 4 * 1024;
+
+			public override StringBuilder Create ()
+			{
+				return new StringBuilder (InitialCapacity);
+			}
+
+			public override bool Return (StringBuilder obj)
+			{
+				obj.Clear ();
+				if (obj.Capacity > MaximumRetainedCapacity) {
+					// Trim the capacity so we don't retain too much memory.
+					obj.Capacity = MaximumRetainedCapacity;
+				}
+
+				return true;
+			}
 		}
 	}
 }

@@ -686,8 +686,6 @@
     <Compile Include="MonoDevelop.Projects\ProgressEvent.cs" />
     <Compile Include="MonoDevelop.Core.Setup\UpdateChannel.cs" />
     <Compile Include="MonoDevelop.Core\StringBuilderCache.cs" />
-    <Compile Include="MonoDevelop.Core\ObjectPool.cs" />
-    <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.cs" />
