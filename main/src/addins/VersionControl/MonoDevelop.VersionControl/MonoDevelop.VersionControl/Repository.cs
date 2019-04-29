@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.IO;
 using System.Text;
@@ -1084,7 +1084,7 @@ namespace MonoDevelop.VersionControl
 
 		public virtual bool GetFileIsText (FilePath path)
 		{
-			return DesktopService.GetFileIsText (path);
+			return IdeServices.DesktopService.GetFileIsText (path);
 		}
 	}
 	

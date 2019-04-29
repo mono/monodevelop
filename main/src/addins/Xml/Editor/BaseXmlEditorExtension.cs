@@ -54,6 +54,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -126,7 +127,7 @@ namespace MonoDevelop.Xml.Editor
 			if (DocumentContext == null) {
 				return;//This can happen if this object is disposed
 			}
-			var view = DocumentContext.GetContent<BaseViewContent> ();
+			var view = DocumentContext.GetContent<DocumentController> (); // TOTEST
 			if (view != null && view.ProjectReloadCapability == ProjectReloadCapability.None)
 				return;
 			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.IsFileInProject (DocumentContext.Name)));

@@ -1,4 +1,4 @@
-//
+﻿//
 // ImportSymbolCompletionData.cs
 //
 // Author:
@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 using System.Linq;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -217,7 +218,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				markup.AppendTaggedText (theme, taggedParts.Take (i));
 				markup.Append ("<span font='");
-				markup.Append (FontService.SansFontName);
+				markup.Append (IdeServices.FontService.SansFontName);
 				markup.Append ("' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();
@@ -227,7 +228,7 @@ namespace MonoDevelop.CSharp.Completion
 			markup.AppendLine ();
 			markup.AppendLine ();
 			markup.Append ("<span font='");
-			markup.Append (FontService.SansFontName);
+			markup.Append (IdeServices.FontService.SansFontName);
 			markup.Append ("' size='small'>");
 			markup.AppendLine (GettextCatalog.GetString ("Note: creates an using for namespace:"));
 			markup.Append ("<b>");

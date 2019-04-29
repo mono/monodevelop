@@ -1,4 +1,4 @@
-// 
+﻿// 
 // NavigateToDialog.cs
 //  
 // Author:
@@ -163,7 +163,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Xwt.Drawing.Image Icon {
 			get {
-				return DesktopService.GetIconForFile (file.FilePath, IconSize.Menu);
+				return IdeServices.DesktopService.GetIconForFile (file.FilePath, IconSize.Menu);
 			}
 		}
 

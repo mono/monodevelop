@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectFileNodeBuilder.cs
 //
 // Author:
@@ -39,6 +39,8 @@ using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -82,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Label = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + nodeInfo.Label + "</span>";
 			}
 			
-			nodeInfo.Icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
+			nodeInfo.Icon = IdeServices.DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
 			
 			if (file.IsLink && nodeInfo.Icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay").WithSize (Xwt.IconSize.Small);
@@ -392,15 +394,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
-		public void OnOpenWithUpdate (CommandArrayInfo info)
+		public async Task OnOpenWithUpdate (CommandArrayInfo info, CancellationToken cancellationToken)
 		{
 			var pf = (ProjectFile) CurrentNode.DataItem;
-			PopulateOpenWithViewers (info, pf.Project, pf.FilePath);
+			await PopulateOpenWithViewers (info, pf.Project, pf.FilePath);
 		}
 		
-		internal static void PopulateOpenWithViewers (CommandArrayInfo info, Project project, string filePath)
+		internal static async Task PopulateOpenWithViewers (CommandArrayInfo info, Project project, string filePath)
 		{
-			var viewers = DisplayBindingService.GetFileViewers (filePath, project).ToList ();
+			var viewers = (await IdeServices.DisplayBindingService.GetFileViewers (filePath, project)).ToList ();
 			
 			//show the default viewer first
 			var def = viewers.FirstOrDefault (v => v.CanUseAsDefault) ?? viewers.FirstOrDefault (v => v.IsExternal);

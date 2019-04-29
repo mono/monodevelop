@@ -1,5 +1,6 @@
 #if MAC
 using AppKit;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Ide;
 using Xamarin.PropertyEditing.Mac;
 

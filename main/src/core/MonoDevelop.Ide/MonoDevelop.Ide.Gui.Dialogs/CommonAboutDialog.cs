@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (Platform.IsMac) {
 				if (instance == null) {
-					var parent = DesktopService.GetFocusedTopLevelWindow ();
+					var parent = IdeServices.DesktopService.GetFocusedTopLevelWindow ();
 					instance = new CommonAboutDialog ();
 					instance.ShowAll ();
 					MessageService.PlaceDialog (instance, parent);

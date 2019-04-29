@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacPlatformTest.cs
 //  
 // Author:
@@ -71,27 +71,27 @@ namespace MacPlatform.Tests
 		public void GetMimeType_text ()
 		{
 			// Verify no exception is thrown
-			DesktopService.GetMimeTypeForUri ("test.txt");
+			IdeServices.DesktopService.GetMimeTypeForUri ("test.txt");
 		}
 
 		[Test]
 		public void GetMimeType_NoExtension ()
 		{
 			// Verify no exception is thrown
-			DesktopService.GetMimeTypeForUri ("test");
+			IdeServices.DesktopService.GetMimeTypeForUri ("test");
 		}
 
 		[Test]
 		public void GetMimeType_Null ()
 		{
 			// Verify no exception is thrown
-			DesktopService.GetMimeTypeForUri (null);
+			IdeServices.DesktopService.GetMimeTypeForUri (null);
 		}
 
 		[Test]
 		public void MacHasProperMonitor ()
 		{
-			Assert.That (DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
+			Assert.That (IdeServices.DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
 		}
 
 		[Test, Timeout(20000)]

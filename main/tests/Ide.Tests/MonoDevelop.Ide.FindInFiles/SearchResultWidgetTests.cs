@@ -29,20 +29,16 @@ using MonoDevelop.Components;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 	[TestFixture]
+	[RequireService (typeof(TextEditorService))]
 	class SearchResultWidgetTests : IdeTestBase
 	{
-		[SetUp]
-		public void SetUp ()
-		{
-			//Initialize IdeApp so IdeApp.Workspace is not null, comment tasks listen to root workspace events.
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		[Test]
 		public void TestSimple ()
 		{

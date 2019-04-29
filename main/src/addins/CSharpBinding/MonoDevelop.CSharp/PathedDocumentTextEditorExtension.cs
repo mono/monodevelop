@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PathedDocumentTextEditorExtension.cs
 //  
 // Author:
@@ -54,9 +54,9 @@ namespace MonoDevelop.CSharp
 		{
 			MonoDevelopWorkspace.GetInsertionPoints = async delegate (Ide.Editor.TextEditor editor, int offset) {
 				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc == null || doc.AnalysisDocument == null)
+				if (doc == null || doc.DocumentContext.AnalysisDocument == null)
 					return new List<InsertionPoint> ();
-				var semanticModel = await doc.AnalysisDocument.GetSemanticModelAsync ();
+				var semanticModel = await doc.DocumentContext.AnalysisDocument.GetSemanticModelAsync ();
 				var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (offset, default(CancellationToken));
 				if (declaringType == null)
 					return new List<InsertionPoint> ();
@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharp
 
 			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
 			if (ownerProjects?.Count > 1) {
-				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (TypeSystemService.GetCodeAnalysisProject).ToList ();
+				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (IdeApp.TypeSystemService.GetCodeAnalysisProject).ToList ();
 				CancelDocumentParsedUpdate ();
 				var token = documentParsedCancellationTokenSource.Token;
 				Task.Run (async delegate {
@@ -255,7 +255,7 @@ namespace MonoDevelop.CSharp
 
 		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
 		{
-			Editor.RunWhenRealized (() => {
+			Editor?.RunWhenRealized (() => {
 				if (DocumentContext == null) {
 					return;//This can happen if this object is disposed
 				}
@@ -744,7 +744,7 @@ namespace MonoDevelop.CSharp
 			CancelUpdatePath ();
 
 			var cancellationToken = src.Token;
-			amb = new AstAmbience(TypeSystemService.Workspace.Options);
+			amb = new AstAmbience(IdeApp.TypeSystemService.Workspace.Options);
 
 			var unit = model.SyntaxTree;
 			SyntaxNode root;

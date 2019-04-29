@@ -25,17 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
-using System.Collections.Generic;
-using System.IO;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -73,7 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Project project = (Project)dataObject;
 			bool publicOnly = Widget.PublicApiOnly;
-			var dom = TypeSystemService.GetCompilationAsync (project).Result;
+			var dom = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
 			if (dom == null)
 				return;
 			bool nestedNamespaces = builder.Options ["NestedNamespaces"];

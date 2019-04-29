@@ -35,7 +35,7 @@ namespace MonoDevelop.VBNet
 	{
 		protected override void Initialize ()
 		{
-			Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
+			Editor.SyntaxHighlighting = CompositionManager.Instance.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
 		}
 	}
 }

@@ -17,18 +17,29 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeTestBase.cs" />
     <Compile Include="TextEditorExtensionTestBase.cs" />
     <Compile Include="TypeSystemServiceTestExtensions.cs" />
-    <Compile Include="TestDocument.cs" />
     <Compile Include="TestViewContent.cs" />
-    <Compile Include="TestWorkbenchWindow.cs" />
     <Compile Include="RoslynTestBase.cs" />
     <Compile Include="CompositionManagerTestHelpers.cs" />
     <Compile Include="ProjectTemplateTest.cs" />
+    <Compile Include="ServiceHelper.cs" />
+    <Compile Include="MockShell.cs" />
+    <Compile Include="MockShellWindow.cs" />
+    <Compile Include="MockProgressMonitorManager.cs" />
+    <Compile Include="MockOutputProgressMonitor.cs" />
+    <Compile Include="MockOperationConsole.cs" />
+    <Compile Include="MockShellNotebook.cs" />
+    <Compile Include="MockShellDocumentViewContent.cs" />
+    <Compile Include="MockShellDocumentViewContainer.cs" />
+    <Compile Include="MockShellDocumentView.cs" />
+    <Compile Include="MockShellDocumentToolbar.cs" />
+    <Compile Include="MockViewBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -68,4 +79,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+     <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="..\..\build\bin\testing" SkipUnchangedFiles="true" />
+     <Copy SourceFiles="$(OutputPath)\GuiUnit.exe" DestinationFolder="..\..\build\bin\testing" SkipUnchangedFiles="true" />
+   </Target>
 </Project>

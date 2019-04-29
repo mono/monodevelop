@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectTemplateTests.cs
 //
 // Author:
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide
 
 		async Task FormatFile (Project p, FilePath file)
 		{
-			string mime = DesktopService.GetMimeTypeForUri (file);
+			string mime = IdeServices.DesktopService.GetMimeTypeForUri (file);
 			if (mime == null)
 				return;
 

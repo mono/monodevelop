@@ -36,15 +36,10 @@ namespace MonoDevelop.Projects
 	
 		public static ProjectService ProjectService {
 			get {
-				if (projectService == null) {
+				if (projectService == null)
 					projectService = new ProjectService ();
-					if (ProjectServiceLoaded != null)
-						ProjectServiceLoaded (projectService, EventArgs.Empty);
-				}
 				return projectService;
 			}
 		}
-		
-		public static event EventHandler ProjectServiceLoaded;
 	}
 }

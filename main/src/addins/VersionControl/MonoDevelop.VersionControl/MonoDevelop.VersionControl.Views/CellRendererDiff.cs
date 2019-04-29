@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections.Generic;
 using Gtk;
@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl.Views
 			Pango.Layout layout = new Pango.Layout (container.PangoContext);
 			layout.SingleParagraphMode = false;
 			if (diffMode) {
-				layout.FontDescription = FontService.MonospaceFont;
+				layout.FontDescription = IdeServices.FontService.MonospaceFont;
 				layout.SetText (text);
 			} else {
 				layout.SetMarkup (text);

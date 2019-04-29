@@ -35,10 +35,7 @@ namespace Mono.MHex.Data
 		long Length {
 			get;
 		}
-		byte[] Bytes {
-			get;
-		}
-		
+
 		byte[] GetBytes (long offset, int count);
 	}
 	

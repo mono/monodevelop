@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ConfirmProjectDeleteDialog.cs
 //  
 // Author:
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Projects
 				// from the item directory are shown in the list
 				foreach (FilePath f in item.GetItemFiles (false)) {
 					if (!f.IsChildPathOf (item.BaseDirectory)) {
-						var pix = DesktopService.GetIconForFile (f, IconSize.Menu);
+						var pix = IdeServices.DesktopService.GetIconForFile (f, IconSize.Menu);
 						paths [f] = store.AppendValues (true, pix, f.FileName, f.ToString ());
 					}
 				}
@@ -179,17 +179,17 @@ namespace MonoDevelop.Ide.Projects
 			
 			TreeIter dit;
 			if (!iter.Equals (TreeIter.Zero)) {
-				dit = store.AppendValues (iter, false, DesktopService.GetIconForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
+				dit = store.AppendValues (iter, false, IdeServices.DesktopService.GetIconForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
 				fileList.ExpandRow (store.GetPath (iter), false);
 			}
 			else
-				dit = store.AppendValues (false, DesktopService.GetIconForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
+				dit = store.AppendValues (false, IdeServices.DesktopService.GetIconForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
 			
 			paths [dir] = dit;
 			
 			foreach (string file in Directory.GetFiles (dir)) {
 				string path = System.IO.Path.GetFileName (file);
-				var pix = DesktopService.GetIconForFile (file, IconSize.Menu);
+				var pix = IdeServices.DesktopService.GetIconForFile (file, IconSize.Menu);
 				bool active = itemFiles.Contains (file);
 				string color = null;
 				if (!active) {
@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.Projects
 			if ((cinfo & ChildInfo.AllSelected) != 0 && hasChildren)
 				store.SetValue (dit, 0, true);
 			if ((cinfo & ChildInfo.HasProjectFiles) == 0) {
-				var pix = DesktopService.GetIconForFile (dir, IconSize.Menu).WithAlpha (0.5);
+				var pix = IdeServices.DesktopService.GetIconForFile (dir, IconSize.Menu).WithAlpha (0.5);
 				store.SetValue (dit, 1, pix);
 				store.SetValue (dit, 4, "dimgrey");
 			}

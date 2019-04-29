@@ -154,9 +154,7 @@
     <Compile Include="Razor\Parser\RazorState.cs" />
     <Compile Include="Razor\Parser\RazorStatementState.cs" />
     <Compile Include="Razor\Parser\StateEngineService.cs" />
-    <Compile Include="Razor\IRazorCompletionBuilder.cs" />
     <Compile Include="Razor\RazorCompletion.cs" />
-    <Compile Include="Razor\RazorCSharpEditorExtension.cs" />
     <Compile Include="Projects\WebSubtype.cs" />
     <Compile Include="Execution\AspNetExecutionCommand.cs" />
     <Compile Include="Execution\AspNetExecutionHandler.cs" />

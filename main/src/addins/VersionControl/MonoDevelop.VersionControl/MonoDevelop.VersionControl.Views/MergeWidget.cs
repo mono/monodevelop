@@ -1,4 +1,4 @@
-//
+﻿//
 // MergeWidget.cs
 //
 // Author:
@@ -73,7 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			base.info = info;
 			// SetLocal calls create diff & sets UpdateDiff handler -> should be connected after diff is created
-			var mimeType = DesktopService.GetMimeTypeForUri (info.Item.Path);
+			var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (info.Item.Path);
 			foreach (var editor in editors) {
 				editor.Document.MimeType = mimeType;
 			}
@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public void Load (string fileName)
 		{
-			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
+			MainEditor.Document.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 			MainEditor.Document.Text = StringTextSource.ReadFrom (fileName).Text;
 
 			this.CreateDiff ();

@@ -58,7 +58,7 @@ namespace MonoDevelop.AspNet.Commands
 				foreach (var ext in viewExtensions) {
 					var possibleFile = folder.Combine (actionName + ext);
 					if (File.Exists (possibleFile)) {
-						IdeApp.Workbench.OpenDocument (possibleFile, doc.Project);
+						IdeApp.Workbench.OpenDocument (possibleFile, doc.Owner);
 						return;
 					}
 				}

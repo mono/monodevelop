@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BrowserLauncher.cs
 // 
 // Author:
@@ -38,7 +38,7 @@ namespace MonoDevelop.AspNet.Execution
 		public static ProcessAsyncOperation LaunchDefaultBrowser (string url)
 		{
 			try {
-				DesktopService.ShowUrl (url);
+				IdeServices.DesktopService.ShowUrl (url);
 				return NullProcessAsyncOperation.Success;
 			} catch (Exception ex) {
 				MessageService.ShowError (GettextCatalog.GetString ("Error launching web browser"), ex.ToString ());

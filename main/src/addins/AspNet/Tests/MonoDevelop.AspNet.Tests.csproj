@@ -28,11 +28,9 @@
     <Compile Include="Razor\Dom\RazorImplicitExpressionsParsingTests.cs" />
     <Compile Include="Razor\Dom\RazorParsingTests.cs" />
     <Compile Include="Razor\Dom\RazorStatementsParsingTests.cs" />
-    <Compile Include="Razor\RazorCompletionTesting.cs" />
     <Compile Include="WebForms\WebFormsTesting.cs" />
     <Compile Include="WebForms\WebFormsParsingTests.cs" />
     <Compile Include="WebForms\WebFormsCompletionTests.cs" />
-    <Compile Include="Razor\RazorCompletionTests.cs" />
     <Compile Include="Html\HtmlParsingTests.cs" />
     <Compile Include="Html\HtmlImplicitClosingTests.cs" />
     <Compile Include="Razor\Dom\RazorDocumentTrackerTests.cs" />

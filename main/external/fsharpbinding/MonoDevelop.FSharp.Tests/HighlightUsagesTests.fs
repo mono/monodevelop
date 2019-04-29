@@ -3,9 +3,16 @@ open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp.Shared
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 type HighlightUsagesTests() =
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
+
     let assertUsages (source:string, expectedCount) =
         let offset = source.IndexOf "|"
         let source = source.Replace("|", "")

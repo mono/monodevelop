@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute ("contentType", "The content type name used by the Visual Studio editor to identify this language", Required = false)]
 		public string ContentType { get; private set; }
 
-		IFileNameEvaluator regex;
+		FileNameEvalutor regex;
 		
 		public IconId Icon {
 			get => icon;
@@ -95,95 +95,17 @@ namespace MonoDevelop.Ide.Extensions
 			ContentType = contentType;
 		}
 
-		interface IFileNameEvaluator
-		{
-			bool SupportsFile (string fileName);
-		}
-		
-		class RegexFileNameEvaluator : IFileNameEvaluator
-		{
-			Regex regex;
-			
-			public RegexFileNameEvaluator (MimeTypeNode node)
-			{
-				regex = CreateRegex (node);
-			}
-			
-			Regex CreateRegex (MimeTypeNode node)
-			{
-				var globalPattern = StringBuilderCache.Allocate ();
-				
-				foreach (MimeTypeFileNode file in node.ChildNodes) {
-					string pattern = Regex.Escape (file.Pattern);
-					pattern = pattern.Replace ("\\*",".*");
-					pattern = pattern.Replace ("\\?",".");
-					pattern = pattern.Replace ("\\|","$|^");
-					pattern = "^" + pattern + "$";
-					if (globalPattern.Length > 0)
-						globalPattern.Append ('|');
-					globalPattern.Append (pattern);
-				}
-				return new Regex (StringBuilderCache.ReturnAndFree (globalPattern), RegexOptions.IgnoreCase);
-			}
-			public bool SupportsFile (string fileName)
-			{
-				return regex.IsMatch (fileName);
-			}
-		}
-		
-		class EndsWithFileNameEvaluator : IFileNameEvaluator
-		{
-			string[] endings;
-			
-			public EndsWithFileNameEvaluator (MimeTypeNode node)
-			{
-				endings = ExtractEndings (node);
-			}
-			
-			string[] ExtractEndings (MimeTypeNode node)
-			{
-				var result = new List<string> ();
-				foreach (MimeTypeFileNode file in node.ChildNodes) {
-					foreach (string pattern in file.Pattern.Split ('|')) {
-						result.Add (pattern.StartsWith ("*.", StringComparison.Ordinal) ? pattern.Substring (1) : pattern);
-					}
-				}
-				return result.ToArray ();
-			}
-			
-			public bool SupportsFile (string fileName)
-			{
-				foreach (var ending in endings)
-					if (fileName.EndsWith (ending, StringComparison.OrdinalIgnoreCase))
-						return true;
-				return false;
-			}
-			
-			internal static bool IsCompatible (MimeTypeNode node)
-			{
-				foreach (MimeTypeFileNode file in node.ChildNodes) {
-					foreach (string pattern in file.Pattern.Split ('|')) {
-						var pat = pattern.StartsWith ("*.", StringComparison.Ordinal) ? pattern.Substring (1) : pattern;
-						if (pat.Any (p => p == '*' || p == '?'))
-							return false;
-					}
-				}
-				return true;
-			}
-		}
-		
-		IFileNameEvaluator CreateFileNameEvaluator ()
-		{
-			if (EndsWithFileNameEvaluator.IsCompatible (this))
-				return new EndsWithFileNameEvaluator (this);
-			return new RegexFileNameEvaluator (this);
-		}
-
 		public bool SupportsFile (string fileName)
 		{
 			if (regex == null)
-				regex = CreateFileNameEvaluator ();
+				regex = FileNameEvalutor.CreateFileNameEvaluator (GetPatterns ());
 			return regex.SupportsFile (fileName);
+		}
+
+		IEnumerable<string> GetPatterns ()
+		{
+			foreach (MimeTypeFileNode node in ChildNodes)
+				yield return node.Pattern;
 		}
 		
 		protected override void OnChildNodeAdded (ExtensionNode node)

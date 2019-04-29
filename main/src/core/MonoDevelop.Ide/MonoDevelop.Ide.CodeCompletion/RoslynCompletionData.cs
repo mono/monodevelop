@@ -256,7 +256,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				base.InsertCompletionText (window, ref ka, descriptor);
 				return;
 			}
-			InsertCompletionText (editor, document, ref ka, descriptor);
+			InsertCompletionText (editor, document.DocumentContext, ref ka, descriptor);
 		}
 
 		internal void InsertCompletionText (TextEditor editor, DocumentContext context, ref KeyActions ka, KeyDescriptor descriptor)
@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				markup.AppendTaggedText (theme, taggedParts.Take (i));
 				markup.Append ("<span font='");
-				markup.Append (FontService.SansFontName);
+				markup.Append (IdeServices.FontService.SansFontName);
 				markup.Append ("' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();

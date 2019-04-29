@@ -50,7 +50,7 @@ module Symbols =
         MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
 
     let getEditorDataForFileName (fileName:string) =
-        match IdeApp.Workbench.GetDocument (fileName) with
+        match IdeApp.Workbench.GetDocument (FilePath fileName) with
         | null ->
             let doc = Editor.TextEditorFactory.LoadDocument (fileName)
             let editor = new TextEditorData()

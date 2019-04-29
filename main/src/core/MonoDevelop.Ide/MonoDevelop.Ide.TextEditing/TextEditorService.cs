@@ -29,51 +29,17 @@ using System.Linq;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TextEditing
 {
 	/// <summary>
 	/// Offers several methods for tracking changes being done in edited files
 	/// </summary>
-	public static class TextEditorService
+	[DefaultServiceImplementation]
+	public class TextEditorService: Service
 	{
-		static Dictionary<FilePath,List<FileExtension>> fileExtensions = new Dictionary<FilePath,List<FileExtension>> ();
-
-		static TextEditorService ()
-		{
-			LineCountChanged += delegate(object sender, LineCountEventArgs e) {
-				foreach (var ext in GetFileLineExtensions (e.TextFile.Name).Where (ex => ex.TrackLinePosition).ToList ()) {
-					if (ext.Line > e.LineNumber) {
-						if (ext.Line + e.LineCount < e.LineNumber)
-							ext.NotifyDeleted ();
-						if (ext.OriginalLine == -1)
-							ext.OriginalLine = ext.Line;
-						ext.Line += e.LineCount;
-						ext.Refresh ();
-					}
-					else if (ext.Line == e.LineNumber && e.LineCount < 0) {
-						ext.NotifyDeleted ();
-						if (ext.OriginalLine == -1)
-							ext.OriginalLine = ext.Line;
-						ext.Line += e.LineCount;
-						ext.Refresh ();
-					}
-				}
-			};
-			LineCountChangesCommitted += delegate(object sender, TextFileEventArgs e) {
-				foreach (var ext in GetFileLineExtensions (e.TextFile.Name).Where (ex => ex.TrackLinePosition))
-					ext.OriginalLine = -1;
-			};
-			LineCountChangesReset += delegate(object sender, TextFileEventArgs e) {
-				foreach (var ext in GetFileLineExtensions (e.TextFile.Name).Where (ex => ex.TrackLinePosition)) {
-					if (ext.OriginalLine != -1) {
-						ext.Line = ext.OriginalLine;
-						ext.OriginalLine = -1;
-						ext.Refresh ();
-					}
-				}
-			};
-		}
+		Dictionary<FilePath,List<FileExtension>> fileExtensions = new Dictionary<FilePath,List<FileExtension>> ();
 
 		/// <summary>
 		/// Notifies to the text editor service that there has been a line count change in a file being edited
@@ -90,8 +56,25 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <param name='column'>
 		/// Column.
 		/// </param>
-		public static void NotifyLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)
+		public void NotifyLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)
 		{
+			foreach (var ext in GetFileLineExtensions (textFile.Name).Where (ex => ex.TrackLinePosition).ToList ()) {
+				if (ext.Line > lineNumber) {
+					if (ext.Line + lineCount < lineNumber)
+						ext.NotifyDeleted ();
+					if (ext.OriginalLine == -1)
+						ext.OriginalLine = ext.Line;
+					ext.Line += lineCount;
+					ext.Refresh ();
+				} else if (ext.Line == lineNumber && lineCount < 0) {
+					ext.NotifyDeleted ();
+					if (ext.OriginalLine == -1)
+						ext.OriginalLine = ext.Line;
+					ext.Line += lineCount;
+					ext.Refresh ();
+				}
+			}
+
 			if (LineCountChanged != null)
 				LineCountChanged (textFile, new LineCountEventArgs (textFile, lineNumber, lineCount, column));
 		}
@@ -102,8 +85,15 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <param name='textFile'>
 		/// Text file.
 		/// </param>
-		public static void NotifyLineCountChangesReset (ITextFile textFile)
+		public void NotifyLineCountChangesReset (ITextFile textFile)
 		{
+			foreach (var ext in GetFileLineExtensions (textFile.Name).Where (ex => ex.TrackLinePosition)) {
+				if (ext.OriginalLine != -1) {
+					ext.Line = ext.OriginalLine;
+					ext.OriginalLine = -1;
+					ext.Refresh ();
+				}
+			}
 			if (LineCountChangesReset != null)
 				LineCountChangesReset (textFile, new TextFileEventArgs (textFile));
 		}
@@ -114,13 +104,16 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <param name='textFile'>
 		/// Text file.
 		/// </param>
-		public static void NotifyLineCountChangesCommitted (ITextFile textFile)
+		public void NotifyLineCountChangesCommitted (ITextFile textFile)
 		{
+			foreach (var ext in GetFileLineExtensions (textFile.Name).Where (ex => ex.TrackLinePosition))
+				ext.OriginalLine = -1;
+
 			if (LineCountChangesCommitted != null)
 				LineCountChangesCommitted (textFile, new TextFileEventArgs (textFile));
 		}
 		
-		static IEnumerable<FileLineExtension> GetFileLineExtensions (FilePath file)
+		IEnumerable<FileLineExtension> GetFileLineExtensions (FilePath file)
 		{
 			file = file.CanonicalPath;
 			return fileExtensions.Values.SelectMany (e => e).OfType<FileLineExtension> ().Where (e => e.File.CanonicalPath == file);
@@ -132,8 +125,9 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <param name='extension'>
 		/// The extension.
 		/// </param>
-		public static void RegisterExtension (FileExtension extension)
+		public void RegisterExtension (FileExtension extension)
 		{
+			extension.TextEditorService = this;
 			List<FileExtension> list;
 			if (!fileExtensions.TryGetValue (extension.File, out list))
 				list = fileExtensions [extension.File] = new List<FileExtension> ();
@@ -147,7 +141,7 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <param name='extension'>
 		/// Extension.
 		/// </param>
-		public static void UnregisterExtension (FileExtension extension)
+		public void UnregisterExtension (FileExtension extension)
 		{
 			List<FileExtension> list;
 			if (!fileExtensions.TryGetValue (extension.File, out list))
@@ -156,13 +150,13 @@ namespace MonoDevelop.Ide.TextEditing
 				NotifyExtensionRemoved (extension);
 		}
 
-		static void NotifyExtensionAdded (FileExtension extension)
+		void NotifyExtensionAdded (FileExtension extension)
 		{
 			if (FileExtensionAdded != null)
 				FileExtensionAdded (null, new FileExtensionEventArgs () { Extension = extension });
 		}
 
-		static void NotifyExtensionRemoved (FileExtension extension)
+		void NotifyExtensionRemoved (FileExtension extension)
 		{
 			if (FileExtensionRemoved != null)
 				FileExtensionRemoved (null, new FileExtensionEventArgs () { Extension = extension });
@@ -177,7 +171,7 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <param name='file'>
 		/// File.
 		/// </param>
-		public static FileExtension[] GetFileExtensions (FilePath file)
+		public FileExtension[] GetFileExtensions (FilePath file)
 		{
 			List<FileExtension> list;
  			if (!fileExtensions.TryGetValue (file, out list))
@@ -186,7 +180,7 @@ namespace MonoDevelop.Ide.TextEditing
 				return list.ToArray ();
 		}
 
-		internal static void Refresh (FileExtension ext)
+		internal void Refresh (FileExtension ext)
 		{
 			NotifyExtensionRemoved (ext);
 			NotifyExtensionAdded (ext);
@@ -195,36 +189,27 @@ namespace MonoDevelop.Ide.TextEditing
 		/// <summary>
 		/// Occurs when there has been a line count change in a file being edited
 		/// </summary>
-		public static event EventHandler<LineCountEventArgs> LineCountChanged;
+		public event EventHandler<LineCountEventArgs> LineCountChanged;
 
 		/// <summary>
 		/// Occurs when all previous line change notifications for a file have to be discarded
 		/// </summary>
-		public static event EventHandler<TextFileEventArgs> LineCountChangesReset;
+		public event EventHandler<TextFileEventArgs> LineCountChangesReset;
 
 		/// <summary>
 		/// Occurs when all previous line change notifications for a file have to be committed
 		/// </summary>
-		public static event EventHandler<TextFileEventArgs> LineCountChangesCommitted;
+		public event EventHandler<TextFileEventArgs> LineCountChangesCommitted;
 
 		/// <summary>
 		/// Occurs when a text editor extension has been added
 		/// </summary>
-		public static event EventHandler<FileExtensionEventArgs> FileExtensionAdded;
+		public event EventHandler<FileExtensionEventArgs> FileExtensionAdded;
 
 		/// <summary>
 		/// Occurs when a text editor extension has been removed
 		/// </summary>
-		public static event EventHandler<FileExtensionEventArgs> FileExtensionRemoved;
+		public event EventHandler<FileExtensionEventArgs> FileExtensionRemoved;
 	}
-
-
-
-
-
-
-
-
-	
 }
 

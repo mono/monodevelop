@@ -35,6 +35,7 @@ using System.Composition.Hosting;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.Options
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.Refactoring.Options
 
 		public AbstractOptionPageControl (IServiceProvider serviceProvider)
 		{
-			this.OptionService = TypeSystemService.Workspace.Services.GetService<IOptionService> ();
+			this.OptionService = IdeApp.TypeSystemService.Workspace.Services.GetService<IOptionService> ();
 		}
 	}
 
@@ -65,7 +66,7 @@ namespace MonoDevelop.Refactoring.Options
 
 		public GridOptionPreviewControl (IServiceProvider serviceProvider, Func<OptionSet, IServiceProvider, AbstractOptionPreviewViewModel> createViewModel) : base (serviceProvider)
 		{
-			viewModel = createViewModel (TypeSystemService.Workspace.Options, serviceProvider);
+			viewModel = createViewModel (IdeApp.TypeSystemService.Workspace.Options, serviceProvider);
 			CreateView ();
 			var firstItem = this.viewModel.CodeStyleItems.OfType<AbstractCodeStyleOptionViewModel> ().First ();
 			this.viewModel.SetOptionAndUpdatePreview ((firstItem.SelectedPreference ?? firstItem.Preferences[0]).IsChecked, firstItem.Option, firstItem.GetPreview ());

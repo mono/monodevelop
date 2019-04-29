@@ -51,10 +51,9 @@ namespace MonoDevelop.VersionControl
 			
 			foreach (var item in items) {
 				var document = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IDiffView> ());
+				document?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
 			}
-			
+
 			return true;
 		}
 	}

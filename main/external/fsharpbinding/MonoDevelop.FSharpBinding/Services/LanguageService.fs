@@ -230,11 +230,11 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     let showStatusIcon projectFileName =
         if loadingProjects.Add projectFileName then
-            TypeSystemService.ShowTypeInformationGatheringIcon()
+            IdeApp.TypeSystemService.BeginWorkspaceLoad()
 
     let hideStatusIcon projectFileName =
         if loadingProjects.Remove projectFileName then
-            TypeSystemService.HideTypeInformationGatheringIcon()
+            IdeApp.TypeSystemService.EndWorkspaceLoad()
 
     // Create an instance of interactive checker. The callback is called by the F# compiler service
     // when its view of the prior-typechecking-state of the start of a file has changed, for example

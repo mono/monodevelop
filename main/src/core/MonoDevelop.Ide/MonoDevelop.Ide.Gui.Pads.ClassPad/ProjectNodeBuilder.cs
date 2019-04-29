@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectNodeBuilder.cs
 //
 // Author:
@@ -46,12 +46,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		protected override void Initialize ()
 		{
-			//			TypeSystemService.TypesUpdated += OnClassInformationChanged;
+			//			IdeApp.TypeSystemService.TypesUpdated += OnClassInformationChanged;
 		}
 
 		public override void Dispose ()
 		{
-			//			TypeSystemService.TypesUpdated -= OnClassInformationChanged;
+			//			IdeApp.TypeSystemService.TypesUpdated -= OnClassInformationChanged;
 		}
 
 		public override Type NodeDataType {
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			var dom = TypeSystemService.GetCompilationAsync (project).Result;
+			var dom = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
 			if (dom == null)
 				return;
 			bool nestedNamespaces = builder.Options ["NestedNamespaces"];

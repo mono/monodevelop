@@ -1,4 +1,4 @@
-//
+﻿//
 // SearchEntry.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
@@ -789,7 +790,7 @@ namespace MonoDevelop.Components
 
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+					layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 
 				int width, height;

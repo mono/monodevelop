@@ -101,7 +101,6 @@ namespace MonoDevelop.DotNetCore
 		static IEnumerable<Version> GetMajorRuntimeVersions ()
 		{
 			return DotNetCoreRuntime.Versions
-				.Where (version => version < DotNetCoreVersion.UnSupportedRuntimeVersion)
 				.Select (version => new Version (version.Major, version.Minor))
 				.Distinct ();
 		}

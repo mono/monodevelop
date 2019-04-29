@@ -67,6 +67,8 @@ namespace MonoDevelop.Core
 
 		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
 
+		static TraceListener assertLogger;
+
 		static LoggingService ()
 		{
 			var consoleLogger = new ConsoleLogger ();
@@ -112,7 +114,8 @@ namespace MonoDevelop.Core
 			Debug.Listeners.Clear ();
 
 			//add a new listener that just logs failed asserts
-			Debug.Listeners.Add (new AssertLoggingTraceListener ());
+			assertLogger = new AssertLoggingTraceListener ();
+			Debug.Listeners.Add (assertLogger);
 		}
 
 		public static bool? ReportCrashes {
@@ -185,6 +188,7 @@ namespace MonoDevelop.Core
 		
 		public static void Shutdown ()
 		{
+			Debug.Listeners.Remove (assertLogger);
 			RestoreOutputRedirection ();
 		}
 

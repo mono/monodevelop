@@ -38,22 +38,15 @@ using UnitTests;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	public class WorkspaceFilesCacheTests : IdeTestBase
 	{
-		protected override void InternalSetup (string rootDir)
-		{
-			base.InternalSetup (rootDir);
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		static FilePath GetProjectCacheFile (FilePath cacheDir, Project project, string configuration)
 		{
 			return cacheDir.Combine (project.FileName.FileNameWithoutExtension + "-" + configuration + ".json");
 		}
 
 		async Task<ProjectCacheInfo> WaitForProjectInfoCacheToChange (
-			MonoDevelopWorkspace ws,
 			Solution sol,
 			Project p,
 			ProjectCacheInfo oldCacheInfo)
@@ -63,7 +56,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			const int interval = 200; // ms
 
 			while (true) {
-				var cacheInfo = GetProjectCacheInfo (ws, sol, p);
+				var cacheInfo = GetProjectCacheInfo (sol, p);
 				if (cacheInfo != null) {
 					if (!oldCacheInfo.Equals (cacheInfo)) {
 						return cacheInfo;
@@ -79,10 +72,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static ProjectCacheInfo GetProjectCacheInfo (
-			MonoDevelopWorkspace ws,
-			Solution sol, Project p)
+		static ProjectCacheInfo GetProjectCacheInfo (Solution sol, Project p)
 		{
+			var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
 			var cache = new WorkspaceFilesCache ();
 			cache.Load (sol);
 
@@ -96,33 +88,32 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
-				try {
-					// Check cache created for active configuration.
-					var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
-					var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
-					Assert.IsTrue (File.Exists (projectCacheFile));
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
 
-					var cacheInfo = GetProjectCacheInfo (ws, sol, p);
-					Assert.IsNotNull (cacheInfo);
+			var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
 
-					// Check cached source files.
-					foreach (var projectFile in p.Files) {
-						var matchedProjectFile = cacheInfo.SourceFiles.FirstOrDefault (f => projectFile.FilePath == f.FilePath);
-						Assert.IsNotNull (matchedProjectFile, "File not found: " + projectFile.FilePath);
-					}
-					Assert.AreEqual (p.Files.Count, cacheInfo.SourceFiles.Length);
+			// Check cache created for active configuration.
+			var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
+			var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
+			Assert.IsTrue (File.Exists (projectCacheFile));
 
-					// Check cached references.
-					foreach (var reference in p.References) {
-						var matchedReference = cacheInfo.References.FirstOrDefault (r => r.FilePath.FileNameWithoutExtension == reference.Include);
-						Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
-					}
-				} finally {
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
+			var cacheInfo = GetProjectCacheInfo (sol, p);
+			Assert.IsNotNull (cacheInfo);
+
+			// Check cached source files.
+			foreach (var projectFile in p.Files) {
+				var matchedProjectFile = cacheInfo.SourceFiles.FirstOrDefault (f => projectFile.FilePath == f.FilePath);
+				Assert.IsNotNull (matchedProjectFile, "File not found: " + projectFile.FilePath);
+			}
+			Assert.AreEqual (p.Files.Count, cacheInfo.SourceFiles.Length);
+
+			// Check cached references.
+			foreach (var reference in p.References) {
+				var matchedReference = cacheInfo.References.FirstOrDefault (r => r.FilePath.FileNameWithoutExtension == reference.Include);
+				Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
 			}
 		}
 
@@ -131,33 +122,31 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
-				try {
-					var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
-					var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
-					Assert.IsTrue (File.Exists (projectCacheFile));
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
 
-					var cacheInfo = GetProjectCacheInfo (ws, sol, p);
-					Assert.IsNotNull (cacheInfo);
+			var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
+			var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
+			var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
+			Assert.IsTrue (File.Exists (projectCacheFile));
 
-					Assert.IsFalse (p.References.Any (r => StringComparer.OrdinalIgnoreCase.Equals (r.Include, "System.Net.Http")));
+			var cacheInfo = GetProjectCacheInfo (sol, p);
+			Assert.IsNotNull (cacheInfo);
 
-					var systemNetHttpReference = ProjectReference.CreateCustomReference (ReferenceType.Package, "System.Net.Http");
-					p.References.Add (systemNetHttpReference);
-					await p.SaveAsync (Util.GetMonitor ());
+			Assert.IsFalse (p.References.Any (r => StringComparer.OrdinalIgnoreCase.Equals (r.Include, "System.Net.Http")));
 
-					// Check for updated cache file.
-					var updatedCacheInfo = await WaitForProjectInfoCacheToChange (ws, sol, p, cacheInfo);
+			var systemNetHttpReference = ProjectReference.CreateCustomReference (ReferenceType.Package, "System.Net.Http");
+			p.References.Add (systemNetHttpReference);
+			await p.SaveAsync (Util.GetMonitor ());
 
-					// Check cached references.
-					var matchedReference = updatedCacheInfo.References.FirstOrDefault (r => r.FilePath.FileNameWithoutExtension == systemNetHttpReference.Include);
-					Assert.IsNotNull (matchedReference, "System.Net.Http reference not found");
-				} finally {
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
-			}
+			// Check for updated cache file.
+			var updatedCacheInfo = await WaitForProjectInfoCacheToChange (sol, p, cacheInfo);
+
+			// Check cached references.
+			var matchedReference = updatedCacheInfo.References.FirstOrDefault (r => r.FilePath.FileNameWithoutExtension == systemNetHttpReference.Include);
+			Assert.IsNotNull (matchedReference, "System.Net.Http reference not found");
 		}
 
 		[Test]
@@ -165,40 +154,43 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			string solFile = Util.GetSampleProject ("netstandard-sdk", "netstandard-sdk.sln");
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("netstandard-sdk") as DotNetProject;
-				try {
-					// Check cache created for active configuration.
-					var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
-					var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
-					Assert.IsTrue (File.Exists (projectCacheFile));
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
 
-					var cacheInfo = GetProjectCacheInfo (ws, sol, p);
-					Assert.IsNotNull (cacheInfo);
+			var p = sol.FindProjectByName ("netstandard-sdk") as DotNetProject;
 
-					Assert.IsFalse (p.Files.Any (f => f.FilePath.FileName == "NewCSharpFile.cs"));
+			try {
+				// Check cache created for active configuration.
+				var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
+				var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
+				Assert.IsTrue (File.Exists (projectCacheFile));
 
-					await FileWatcherService.Add (sol);
+				var cacheInfo = GetProjectCacheInfo (sol, p);
+				Assert.IsNotNull (cacheInfo);
 
-					var newCSharpFileName = p.BaseDirectory.Combine ("NewCSharpFile.cs");
-					File.WriteAllText (newCSharpFileName, "class NewCSharpFile {}");
+				Assert.IsFalse (p.Files.Any (f => f.FilePath.FileName == "NewCSharpFile.cs"));
 
-					var updatedCacheInfo = await WaitForProjectInfoCacheToChange (ws, sol, p, cacheInfo);
+				await FileWatcherService.Add (sol);
 
-					// Check cached source files.
-					var matchedProjectFile = updatedCacheInfo.SourceFiles.FirstOrDefault (f => f.FilePath == newCSharpFileName);
-					Assert.IsNotNull (matchedProjectFile, "File not found: " + newCSharpFileName);
+				var newCSharpFileName = p.BaseDirectory.Combine ("NewCSharpFile.cs");
+				File.WriteAllText (newCSharpFileName, "class NewCSharpFile {}");
 
-					// Check type system has new C# file.
-					var projectId = ws.GetProjectId (p);
-					var docId = ws.GetDocumentId (projectId, newCSharpFileName);
-					var doc = ws.GetDocument (docId);
-					Assert.AreEqual (newCSharpFileName.ToString (), doc.FilePath);
-				} finally {
-					await FileWatcherService.Remove (sol);
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
+				var updatedCacheInfo = await WaitForProjectInfoCacheToChange (sol, p, cacheInfo);
+
+				// Check cached source files.
+				var matchedProjectFile = updatedCacheInfo.SourceFiles.FirstOrDefault (f => f.FilePath == newCSharpFileName);
+				Assert.IsNotNull (matchedProjectFile, "File not found: " + newCSharpFileName);
+
+				// Check type system has new C# file.
+				var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
+				var projectId = ws.GetProjectId (p);
+				var docId = ws.GetDocumentId (projectId, newCSharpFileName);
+				var doc = ws.GetDocument (docId);
+				Assert.AreEqual (newCSharpFileName.ToString (), doc.FilePath);
+			} finally {
+				await FileWatcherService.Remove (sol);
 			}
 		}
 
@@ -211,53 +203,57 @@ namespace MonoDevelop.Ide.TypeSystem
 			// First we create the cache by loading the solution.
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
-				try {
-					// Check cache created for active configuration.
-					var cacheInfo = GetProjectCacheInfo (ws, sol, p);
-					Assert.IsNotNull (cacheInfo);
-				} finally {
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
-			}
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
+			// Check cache created for active configuration.
+			var cacheInfo = GetProjectCacheInfo (sol, p);
+			Assert.IsNotNull (cacheInfo);
+
+			await IdeServices.Workspace.Close (false);
 
 			// Load the solution again.
 			var fn = new CustomItemNode<DelayGetReferencesProjectExtension> ();
 			WorkspaceObject.RegisterCustomExtension (fn);
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
-				try {
-					// Check cache created for active configuration.
-					var cacheInfo = GetProjectCacheInfo (ws, sol, p);
-					Assert.IsNotNull (cacheInfo);
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
 
-					var projectId = ws.GetProjectId (p);
-					foreach (var file in p.Files) {
-						var docId = ws.GetDocumentId (projectId, file.FilePath);
-						var doc = ws.GetDocument (docId);
-						Assert.IsNotNull (doc);
-					}
+			p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
+			try {
+				// Check cache created for active configuration.
+				cacheInfo = GetProjectCacheInfo (sol, p);
+				Assert.IsNotNull (cacheInfo);
 
-					foreach (var reference in p.References) {
-						var analysisProject = ws.CurrentSolution.GetProject (projectId);
-						var matchedReference = analysisProject
-								.MetadataReferences
-								.OfType<MonoDevelopMetadataReference.Snapshot> ()
-								.FirstOrDefault (r => ((FilePath)r.FilePath).FileNameWithoutExtension == reference.Include);
-						Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
-					}
+				var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
 
-					var ext = p.GetFlavor<DelayGetReferencesProjectExtension> ();
-					ext.TaskCompletionSource.TrySetResult (true);
-					Assert.IsTrue (ext.IsCalled);
-				} finally {
-					WorkspaceObject.UnregisterCustomExtension (fn);
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				var projectId = ws.GetProjectId (p);
+				foreach (var file in p.Files) {
+					var docId = ws.GetDocumentId (projectId, file.FilePath);
+					var doc = ws.GetDocument (docId);
+					Assert.IsNotNull (doc);
 				}
+
+				foreach (var reference in p.References) {
+					var analysisProject = ws.CurrentSolution.GetProject (projectId);
+					var matchedReference = analysisProject
+							.MetadataReferences
+							.OfType<MonoDevelopMetadataReference.Snapshot> ()
+							.FirstOrDefault (r => ((FilePath)r.FilePath).FileNameWithoutExtension == reference.Include);
+					Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
+				}
+
+				var ext = p.GetFlavor<DelayGetReferencesProjectExtension> ();
+				ext.TaskCompletionSource.TrySetResult (true);
+				Assert.IsTrue (ext.IsCalled);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+				TypeSystemServiceTestExtensions.UnloadSolution (sol);
 			}
 		}
 
@@ -274,47 +270,45 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath projectFileName = null;
 			ProjectCacheInfo cacheInfo = null;
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
-				projectFileName = p.FileName;
-				try {
-					cacheInfo = GetProjectCacheInfo (ws, sol, p);
-					Assert.IsNotNull (cacheInfo);
-					Assert.IsFalse (cacheInfo.References.Any (r => StringComparer.OrdinalIgnoreCase.Equals (r.FilePath.FileNameWithoutExtension, "System.Net")));
-				} finally {
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
-			}
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
+			projectFileName = p.FileName;
+			cacheInfo = GetProjectCacheInfo (sol, p);
+			Assert.IsNotNull (cacheInfo);
+			Assert.IsFalse (cacheInfo.References.Any (r => StringComparer.OrdinalIgnoreCase.Equals (r.FilePath.FileNameWithoutExtension, "System.Net")));
+
+			await IdeServices.Workspace.Close ();
 
 			// Project file changed so cache is now invalid.
 			var updatedProjectFile = projectFileName + ".reference-added";
 			File.Copy (updatedProjectFile, projectFileName, overwrite: true);
 
 			// Reload project and check cache is updated.
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
-			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
-				try {
-					var updatedCacheInfo = await WaitForProjectInfoCacheToChange (ws, sol, p, cacheInfo);
-					Assert.IsTrue (updatedCacheInfo.References.Any (r => r.FilePath.FileNameWithoutExtension == "System.Net"));
-					Assert.IsTrue (updatedCacheInfo.References.Any (r => r.FilePath.FileNameWithoutExtension == "System.Xml.Linq"));
-					Assert.IsTrue (p.References.Any (r => r.Include == "System.Net"));
-					Assert.IsTrue (p.References.Any (r => r.Include == "System.Xml.Linq"));
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
 
-					var projectId = ws.GetProjectId (p);
-					foreach (var reference in p.References) {
-						var analysisProject = ws.CurrentSolution.GetProject (projectId);
-						var matchedReference = analysisProject
-								.MetadataReferences
-								.OfType<MonoDevelopMetadataReference.Snapshot> ()
-								.FirstOrDefault (r => ((FilePath)r.FilePath).FileNameWithoutExtension == reference.Include);
-						Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
-					}
+			p = sol.FindProjectByName ("ConsoleProject") as DotNetProject;
+			var updatedCacheInfo = await WaitForProjectInfoCacheToChange (sol, p, cacheInfo);
+			Assert.IsTrue (updatedCacheInfo.References.Any (r => r.FilePath.FileNameWithoutExtension == "System.Net"));
+			Assert.IsTrue (updatedCacheInfo.References.Any (r => r.FilePath.FileNameWithoutExtension == "System.Xml.Linq"));
+			Assert.IsTrue (p.References.Any (r => r.Include == "System.Net"));
+			Assert.IsTrue (p.References.Any (r => r.Include == "System.Xml.Linq"));
 
-				} finally {
-					TypeSystemServiceTestExtensions.UnloadSolution (sol);
-				}
+			var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
+			var projectId = ws.GetProjectId (p);
+			foreach (var reference in p.References) {
+				var analysisProject = ws.CurrentSolution.GetProject (projectId);
+				var matchedReference = analysisProject
+						.MetadataReferences
+						.OfType<MonoDevelopMetadataReference.Snapshot> ()
+						.FirstOrDefault (r => ((FilePath)r.FilePath).FileNameWithoutExtension == reference.Include);
+				Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
 			}
 		}
 

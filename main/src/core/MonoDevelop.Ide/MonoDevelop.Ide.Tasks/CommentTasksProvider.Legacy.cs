@@ -1,4 +1,4 @@
-﻿//
+//
 // CommentTasksProvider.Legacy.cs
 //
 // Author:
@@ -29,22 +29,31 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	static partial class CommentTasksProvider
+	partial class CommentTasksProvider
 	{
 		internal static class Legacy
 		{
+			static Dictionary<Project, ProjectCommentTags> projectTags = new Dictionary<Project, ProjectCommentTags> ();
+			static CancellationTokenSource src = new CancellationTokenSource ();
+
 			internal static void Initialize ()
 			{
-				IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
-				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
-				IdeApp.Workbench.DocumentOpened += WorkbenchDocumentOpened;
-				IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;
+				Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+					s.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
+					s.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				});
 			}
+
+			public static Dictionary<Project, ProjectCommentTags> ProjectTags => projectTags;
+
+			public static CancellationToken CancellationToken => src.Token;
 
 			static void LastWorkspaceItemClosed (object sender, EventArgs e)
 			{
@@ -59,8 +68,6 @@ namespace MonoDevelop.Ide.Tasks
 				}
 			}
 
-			static Dictionary<Project, ProjectCommentTags> projectTags = new Dictionary<Project, ProjectCommentTags> ();
-			static CancellationTokenSource src = new CancellationTokenSource ();
 			static void UpdateCommentTagsForProject (Project project, CancellationToken token)
 			{
 				if (token.IsCancellationRequested)
@@ -72,7 +79,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 
 				var files = project.Files.Where (x => {
-					var mt = DesktopService.GetMimeTypeForUri (x.FilePath);
+					var mt = IdeServices.DesktopService.GetMimeTypeForUri (x.FilePath);
 					// FIXME: Handle all language services.
 
 					// Discard files with known IToDoCommentService implementations
@@ -118,41 +125,60 @@ namespace MonoDevelop.Ide.Tasks
 					}
 				});
 			}
-
-			static void WorkbenchDocumentClosed (object sender, DocumentEventArgs e)
-			{
-				e.Document.DocumentParsed -= HandleDocumentParsed;
-			}
-
-			static void WorkbenchDocumentOpened (object sender, DocumentEventArgs e)
-			{
-				e.Document.DocumentParsed += HandleDocumentParsed;
-			}
-
-			static void HandleDocumentParsed (object sender, EventArgs e)
-			{
-				var doc = (Document)sender;
-
-				// C# uses the roslyn-provided todo comments system.
-				if (doc.Editor == null || doc.Editor.MimeType == "text/x-csharp")
-					return;
-
-				var pd = doc.ParsedDocument;
-				var project = doc.Project;
-				if (pd == null || project == null)
-					return;
-				ProjectCommentTags tags;
-				if (!projectTags.TryGetValue (project, out tags))
-					return;
-				var token = src.Token;
-				var file = doc.FileName;
-				Task.Run (async () => {
-					try {
-						tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
-					} catch (OperationCanceledException) {
-					}
-				});
-			}
 		}
+	}
+
+	[ExportDocumentControllerExtension (MimeType = "*")]
+	class LegacyDocumentExtension: DocumentControllerExtension
+	{
+		DocumentContext context;
+
+		public override async Task<bool> SupportsController (DocumentController controller)
+		{
+			if (!await base.SupportsController (controller) || !(controller is FileDocumentController))
+				return false;
+
+			if (controller is FileDocumentController file) {
+				// C# uses the roslyn-provided todo comments system.
+				if (file.MimeType == "text/x-csharp")
+					return false;
+			}
+			var s = controller.GetContent<DocumentContext> () != null;
+			return s;
+		}
+
+		public override Task Initialize (Properties status)
+		{
+			context = Controller.GetContent<DocumentContext> ();
+			context.DocumentParsed += Context_DocumentParsed;
+			return base.Initialize (status);
+		}
+
+		public override void Dispose ()
+		{
+			if (context != null)
+				context.DocumentParsed -= Context_DocumentParsed;
+			base.Dispose ();
+		}
+
+		void Context_DocumentParsed (object sender, EventArgs e)
+		{
+			var pd = context.ParsedDocument;
+			var project = Controller.Owner as Project;
+			if (project == null || !(Controller is FileDocumentController fileController))
+				return;
+			ProjectCommentTags tags;
+			if (!CommentTasksProvider.Legacy.ProjectTags.TryGetValue (project, out tags))
+				return;
+			var token = CommentTasksProvider.Legacy.CancellationToken;
+			var file = fileController.FilePath;
+			Task.Run (async () => {
+				try {
+					tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
+				} catch (OperationCanceledException) {
+				}
+			});
+		}
+
 	}
 }

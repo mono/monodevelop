@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.Ide.Editor
 
 		ITextEditorImpl CreateNewEditor ();
 		ITextEditorImpl CreateNewEditor (string fileName, string mimeType);
+		ITextEditorImpl CreateNewEditor (TextBufferFileModel textBufferFileModel);
 		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
 
 		ITextEditorImpl CreateNewEditor (TextEditorType textEditorType);

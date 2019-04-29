@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="MonoDevelop.DotNetCore\MonoRuntimeInfoExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyInfo.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCliWatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

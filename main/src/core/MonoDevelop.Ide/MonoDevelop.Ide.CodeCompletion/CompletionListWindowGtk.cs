@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 
 			// Note: we add back the TextOffset here in case X and X+TextOffset are on different monitors.
-			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (X + TextOffset, Y));
+			Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (X + TextOffset, Y));
 
 			previousHeight = h;
 			previousWidth = w;
@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void ICompletionView.Show ()
 		{
 			ShowAll ();
-			DesktopService.RemoveWindowShadow (this);
+			IdeServices.DesktopService.RemoveWindowShadow (this);
 		}
 
 		public void ShowPreviewCompletionEntry ()

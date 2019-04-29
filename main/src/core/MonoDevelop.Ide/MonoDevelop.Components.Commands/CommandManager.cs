@@ -1,4 +1,4 @@
-//
+﻿//
 // CommandManager.cs
 //
 // Author:
@@ -46,7 +46,8 @@ using System.Threading;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandManager: IDisposable
+	[DefaultServiceImplementation]
+	public class CommandManager: Service, IDisposable
 	{
 		// Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h
 		enum JIS_VKS {
@@ -342,7 +343,7 @@ namespace MonoDevelop.Components.Commands
 
 			// If a modal dialog is running then the menus are disabled, even if the commands are not
 			// See MDMenuItem::IsGloballyDisabled
-			if (DesktopService.IsModalDialogRunning ()) {
+			if (IdeServices.DesktopService.IsModalDialogRunning ()) {
 				return ev;
 			}
 
@@ -1827,7 +1828,36 @@ namespace MonoDevelop.Components.Commands
 			}
 			return null;
 		}
-		
+
+		/// <summary>
+		/// Visits the active command route
+		/// </summary>
+		/// <returns>
+		/// Visitor result
+		/// </returns>
+		/// <param name='visitor'>
+		/// Visitor.
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial target (provide null to use the default initial target)
+		/// </param>
+		public object VisitCommandTargets (Func<object,bool> visitor, object initialTarget)
+		{
+			CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
+			object cmdTarget = GetFirstCommandTarget (targetRoute);
+
+			try {
+				while (cmdTarget != null) {
+					if (visitor (cmdTarget))
+						return cmdTarget;
+
+					cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while visiting command targets", ex);
+			}
+			return null;
+		}
 		internal bool DispatchCommandFromAccel (object commandId, object dataItem, object initialTarget)
 		{
 			// Dispatches a command that has been fired by an accelerator.
@@ -2076,7 +2106,11 @@ namespace MonoDevelop.Components.Commands
 				if (cmdTarget != null)
 					delegatorStack.Push (oldCmdTarget);
 				else
-					cmdTarget = GetNextCommandTarget (targetRoute, oldCmdTarget, true);
+					// The delegate is null. Return the next command target ignoring the delegate.
+					// In a previous version cmdTarget was assigned the result of GetNextCommandTarget, and the execution continued
+					// below. This is not correct since the GetNextCommandTarget call already does all processing (including
+					// the visitedTargets check), so it doesn't have to be done again.
+					return GetNextCommandTarget (targetRoute, oldCmdTarget, true);
 			}
 			else if (cmdTarget is ICommandDelegatorRouter) {
 				object oldCmdTarget = cmdTarget;

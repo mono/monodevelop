@@ -1,4 +1,4 @@
-//
+﻿//
 // ConfigurationComboBox.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -83,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 					fd = null;
 				}
 				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					fd = FontService.SansFont.CopyModified (Styles.FontScale11);
+					fd = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 				combo.ModifyLabelFont (fd);
 			}
@@ -107,22 +108,26 @@ namespace MonoDevelop.Ide.Gui
 				if (conf == IdeApp.Workspace.ActiveConfigurationId)
 					configs.CurrentItem = item.Item;
 			}
-			
-			foreach (TargetRuntime tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
-				DropDownBox.ComboItem item = new DropDownBox.ComboItem (tr.DisplayName, tr);
-				runtimes.Add (item);
-				if (tr == IdeApp.Workspace.ActiveRuntime)
-					runtimes.CurrentItem = tr;
-			}
-			
-			// If there is only one runtime, there is no need to show it
-			if (runtimes.Count == 1)
-				runtimes.Clear ();
-			else {
-				DropDownBox.ComboItem item = new DropDownBox.ComboItem (GettextCatalog.GetString ("Default Runtime"), defaultRuntime);
-				runtimes.Insert (0, item);
-				if (IdeApp.Workspace.UseDefaultRuntime)
-					runtimes.CurrentItem = defaultRuntime;
+
+			var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
+
+			if (enabled.GetValueOrDefault ()) {
+				foreach (TargetRuntime tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
+					DropDownBox.ComboItem item = new DropDownBox.ComboItem (tr.DisplayName, tr);
+					runtimes.Add (item);
+					if (tr == IdeApp.Workspace.ActiveRuntime)
+						runtimes.CurrentItem = tr;
+				}
+
+				// If there is only one runtime, there is no need to show it
+				if (runtimes.Count == 1)
+					runtimes.Clear ();
+				else {
+					DropDownBox.ComboItem item = new DropDownBox.ComboItem (GettextCatalog.GetString ("Default Runtime"), defaultRuntime);
+					runtimes.Insert (0, item);
+					if (IdeApp.Workspace.UseDefaultRuntime)
+						runtimes.CurrentItem = defaultRuntime;
+				}
 			}
 			
 			UpdateLabel ();

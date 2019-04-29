@@ -29,6 +29,7 @@ using MonoDevelop.SourceEditor.Wrappers;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -75,6 +76,11 @@ namespace MonoDevelop.SourceEditor
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document)
 		{
 			return new SourceEditorView (document);
+		}
+
+		ITextEditorImpl ITextEditorFactory.CreateNewEditor (TextBufferFileModel textBufferFileModel)
+		{
+			return new SourceEditorView (textBufferFileModel);
 		}
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor (TextEditorType textEditorType)

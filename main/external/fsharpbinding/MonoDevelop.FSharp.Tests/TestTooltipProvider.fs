@@ -4,6 +4,9 @@ open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
+
 [<TestFixture>]
 type TestTooltipProvider() =
     let stripHtml html =
@@ -45,6 +48,10 @@ type TestTooltipProvider() =
         match getTooltip source with
         | Some(_,summary,_) -> SymbolTooltips.formatSummary summary
         | _ ->  ""
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     [<Test>]
     member this.``Namespace has correct segment``() =

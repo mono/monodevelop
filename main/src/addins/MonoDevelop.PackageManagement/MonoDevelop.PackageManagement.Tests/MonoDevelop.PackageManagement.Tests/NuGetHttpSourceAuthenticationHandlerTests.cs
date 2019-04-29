@@ -25,7 +25,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Constructor_WithSourceCredentials_InitializesClientHandler ()
 		{
 			var packageSource = new PackageSource ("http://package.source.net", "source") {
-				Credentials = new PackageSourceCredential ("source", "user", "password", isPasswordClearText: true)
+				Credentials = new PackageSourceCredential ("source", "user", "password", isPasswordClearText: true, validAuthenticationTypesText: null)
 			};
 			var clientHandler = new TestHttpClientHandler ();
 			var credentialService = Mock.Of<ICredentialService> ();

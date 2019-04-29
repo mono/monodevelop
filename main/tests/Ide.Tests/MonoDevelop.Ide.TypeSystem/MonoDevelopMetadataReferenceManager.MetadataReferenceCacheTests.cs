@@ -10,6 +10,7 @@ using UnitTests;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	public class MonoDevelopMetadataReferenceManagerMetadataReferenceCacheTests : IdeTestBase
 	{
 		[Test]

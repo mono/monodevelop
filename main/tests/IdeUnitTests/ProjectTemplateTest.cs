@@ -58,10 +58,6 @@ namespace IdeUnitTests
 				templatingService = new TemplatingService ();
 			}
 
-			if (!IdeApp.IsInitialized) {
-				IdeApp.Initialize (Util.GetMonitor ());
-			}
-
 			this.templateId = templateId;
 
 			SolutionDirectory = Util.CreateTmpDir (basename);

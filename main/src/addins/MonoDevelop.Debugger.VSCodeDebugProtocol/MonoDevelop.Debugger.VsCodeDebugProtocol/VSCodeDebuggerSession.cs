@@ -104,20 +104,26 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent breakEvent)
 		{
-			if (breakEvent is Mono.Debugging.Client.Breakpoint) {
-				var breakEventInfo = new BreakEventInfo ();
-				breakpoints.Add ((Mono.Debugging.Client.Breakpoint)breakEvent, breakEventInfo);
-				UpdateBreakpoints ();
+			BreakEventInfo breakEventInfo;
+
+			if (breakpoints.TryGetValue (breakEvent, out breakEventInfo))
 				return breakEventInfo;
+
+			breakEventInfo = new BreakEventInfo ();
+
+			if (breakEvent is Mono.Debugging.Client.Breakpoint) {
+				breakpoints.Add (breakEvent, breakEventInfo);
+				UpdateBreakpoints ();
 			} else if (breakEvent is Catchpoint) {
-				var catchpoint = (Catchpoint)breakEvent;
-				var breakEventInfo = new BreakEventInfo ();
 				breakpoints.Add (breakEvent, breakEventInfo);
 				UpdateExceptions ();
-				return breakEventInfo;
+			} else {
+				throw new NotImplementedException (breakEvent.GetType ().FullName);
 			}
-			throw new NotImplementedException (breakEvent.GetType ().FullName);
+
+			return breakEventInfo;
 		}
+
 		bool currentExceptionState = false;
 		void UpdateExceptions ()
 		{

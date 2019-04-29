@@ -15,7 +15,10 @@ open MonoDevelop.FSharp
 
 [<TestFixture>]
 module ``Project Cracking`` =
-    let toTask computation : Task = Async.StartAsTask computation :> _
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     let monitor = new ConsoleProgressMonitor()
 
@@ -29,6 +32,3 @@ module ``Project Cracking`` =
         let opts = languageService.GetProjectOptionsFromProjectFile fsproj config refs
         return opts.Value.OtherOptions
     }
-
-    do
-        FixtureSetup.initialiseMonoDevelop()

@@ -64,7 +64,7 @@ namespace MonoDevelop.CodeActions
 				return menu;
 			}
 
-			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
+			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
 			int mnemonic = 1;
 
 			var suppressLabel = GettextCatalog.GetString ("_Suppress");
@@ -285,8 +285,8 @@ namespace MonoDevelop.CodeActions
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
 					var document = await IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
-					var parsedDocument = await document.UpdateParseDocument ();
-					var model = await document.AnalysisDocument.GetSemanticModelAsync (token);
+					var parsedDocument = await document.DocumentContext.UpdateParseDocument ();
+					var model = await document.DocumentContext.AnalysisDocument.GetSemanticModelAsync (token);
 					if (parsedDocument != null) {
 						var insertionPoints = InsertionPointService.GetInsertionPoints (
 							document.Editor,
@@ -301,8 +301,8 @@ namespace MonoDevelop.CodeActions
 							point => {
 								if (!point.Success)
 									return;
-								var node = Formatter.Format (insertion.Node, document.RoslynWorkspace, document.GetOptionSet (), token);
-								point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
+								var node = Formatter.Format (insertion.Node, document.DocumentContext.RoslynWorkspace, document.DocumentContext.GetOptionSet (), token);
+								point.InsertionPoint.Insert (document.Editor, document.DocumentContext, node.ToString ());
 								// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
 							}
 						);

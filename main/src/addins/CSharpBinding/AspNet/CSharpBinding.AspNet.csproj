@@ -24,7 +24,6 @@
     <Compile Include="AspLanguageBuilder.cs" />
     <Compile Include="ASPNetReferenceFinder.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="RazorCSharpCompletionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

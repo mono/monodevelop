@@ -110,7 +110,8 @@ namespace MonoDevelop.AspNetCore
 
 		protected override string OnGetDefaultBuildAction (string fileName)
 		{
-			if (DesktopService.GetMimeTypeInheritanceChainForFile (fileName).Contains ("text/x-typescript"))
+			var mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (fileName);
+			if (mimeTypeChain.Contains ("text/x-typescript") || mimeTypeChain.Contains ("application/typescript"))
 				return TypeScriptCompile;
 
 			return base.OnGetDefaultBuildAction (fileName);

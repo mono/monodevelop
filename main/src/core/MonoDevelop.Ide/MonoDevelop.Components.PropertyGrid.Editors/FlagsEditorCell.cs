@@ -1,4 +1,4 @@
-//
+﻿//
 // FlagsEditorCell.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors {
 
@@ -96,7 +97,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors {
 				var container = (Widget)Container;
 				using (var layout = new Pango.Layout (container.PangoContext)) {
 					layout.Width = -1;
-					layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+					layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
 					ulong value = Convert.ToUInt64 (Value);
 					int dy = 2;

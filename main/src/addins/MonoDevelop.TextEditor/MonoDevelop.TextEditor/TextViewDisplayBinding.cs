@@ -21,40 +21,43 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	abstract class TextViewDisplayBinding<TImports> : IViewDisplayBinding, IDisposable
+	abstract class TextViewDisplayBinding<TImports> : FileDocumentControllerFactory, IDisposable
 		where TImports : TextViewImports
 	{
 		ThemeToClassification themeToClassification;
 
-		public string Name => GettextCatalog.GetString ("New Editor Preview");
+		public override string Id => "MonoDevelop.TextEditor.TextViewControllerFactory";
 
-		public bool CanUseAsDefault => true;
-
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
 			if (!DefaultSourceEditorOptions.Instance.EnableNewEditor) {
-				return false;
+				yield break;
 			}
 
-			if (fileName == null || !(IsSupportedFileExtension (fileName) || IsSupportedAndroidFileName (fileName, ownerProject))) {
-				return false;
+			if (modelDescriptor.FilePath == null || !(IsSupportedFileExtension (modelDescriptor.FilePath) || IsSupportedAndroidFileName (modelDescriptor.FilePath, modelDescriptor.Owner))) {
+				yield break;
 			}
 
-			if (fileName != null)
-				return DesktopService.GetFileIsText (fileName, mimeType);
+			bool supported = false;
 
-			if (!string.IsNullOrEmpty (mimeType))
-				return DesktopService.GetMimeTypeIsText (mimeType);
+			if (modelDescriptor.FilePath != null)
+				supported = IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType);
 
-			return false;
+			if (!supported && !string.IsNullOrEmpty (modelDescriptor.MimeType))
+				supported = IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType);
+
+			if (supported)
+				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Editor Preview"), true, DocumentControllerRole.Source);
 		}
 
 		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
@@ -74,7 +77,7 @@ namespace MonoDevelop.TextEditor
 			return supportedFileExtensions.Contains (fileName.Extension);
 		}
 
-		bool IsSupportedAndroidFileName (FilePath fileName, Project ownerProject)
+		bool IsSupportedAndroidFileName (FilePath fileName, WorkspaceObject ownerProject)
 		{
 			// disable Android XML for now
 			return false;
@@ -84,20 +87,20 @@ namespace MonoDevelop.TextEditor
 				return false;
 
 			const string AndroidResourceBuildAction = "AndroidResource";
-			var buildAction = ownerProject.GetProjectFile (fileName)?.BuildAction;
+			var buildAction = (ownerProject as Project)?.GetProjectFile (fileName)?.BuildAction;
 			return string.Equals (buildAction, AndroidResourceBuildAction, StringComparison.Ordinal);
 		}
 
-		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public override Task<DocumentController> CreateController (FileDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
 		{
-			var imports = Ide.Composition.CompositionManager.GetExportedValue<TImports> ();
+			var imports = Ide.Composition.CompositionManager.Instance.GetExportedValue<TImports> ();
 			if (themeToClassification == null)
 				themeToClassification = CreateThemeToClassification (imports.EditorFormatMapService);
 
-			return CreateContent (imports, fileName, mimeType, ownerProject);
+			return Task.FromResult (CreateContent (imports));
 		}
 
-		protected abstract ViewContent CreateContent (TImports imports, FilePath fileName, string mimeType, Project ownerProject);
+		protected abstract DocumentController CreateContent (TImports imports);
 
 		protected abstract ThemeToClassification CreateThemeToClassification  (Microsoft.VisualStudio.Text.Classification.IEditorFormatMapService editorFormatMapService);
 

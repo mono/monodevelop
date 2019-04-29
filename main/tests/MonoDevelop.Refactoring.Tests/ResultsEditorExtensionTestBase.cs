@@ -85,7 +85,7 @@ namespace MonoDevelop.Refactoring.Tests
 			cts.Token.Register (() => tcs.TrySetCanceled ());
 			cts.CancelAfter (60 * 1000);
 
-			await doc.UpdateParseDocument ();
+			await doc.DocumentContext.UpdateParseDocument ();
 
 			var result = await Task.Run (() => tcs.Task).ConfigureAwait (false);
 			resultsExt.TasksUpdated -= handler;

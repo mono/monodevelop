@@ -94,7 +94,7 @@ namespace MonoDevelop.VersionControl.Git
 				var response = false;
 				engine.Invoke (() => {
 					using (var xwtDialog = new XwtCredentialsDialog (url, types, cred)) {
-						response = xwtDialog.Run (parentWindow ?? DesktopService.GetFocusedTopLevelWindow ()) == Command.Ok;
+						response = xwtDialog.Run (parentWindow ?? IdeServices.DesktopService.GetFocusedTopLevelWindow ()) == Command.Ok;
 					}
 				});
 				return response;

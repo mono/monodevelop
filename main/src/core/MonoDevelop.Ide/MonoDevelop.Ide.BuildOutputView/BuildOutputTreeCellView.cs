@@ -405,7 +405,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			                   .WithSize (FontSize);
 			defaultBoldFont = fontName.WithWeight (FontWeight.Bold);
 			defaultFont = fontName.WithWeight (FontWeight.Normal);
-			monospaceFont = FontService.MonospaceFont.ToXwtFont ().WithSize (FontSize);
+			monospaceFont = IdeServices.FontService.MonospaceFont.ToXwtFont ().WithSize (FontSize);
 		}
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)

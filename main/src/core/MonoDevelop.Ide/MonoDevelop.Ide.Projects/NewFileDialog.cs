@@ -1,4 +1,4 @@
-// NewFileDialog.cs
+﻿// NewFileDialog.cs
 //
 // Author:
 //   Todd Berman  <tberman@off.net>
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Projects
 
 			if (catView.Selection.GetSelected (out treeModel, out treeIter)) {
 				FillCategoryTemplates (treeIter);
-				if (!DesktopService.AccessibilityInUse) {
+				if (!IdeServices.DesktopService.AccessibilityInUse) {
 					// When accessibility is being used, don't expand rows automatically
 					// as it can be confusing when using a screen reader
 					catView.ExpandRow (treeModel.GetPath (treeIter), false);

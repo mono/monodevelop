@@ -30,10 +30,12 @@ using Microsoft.VisualStudio.Text.Classification;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
+	[ExportDocumentControllerFactory (FileExtension = "*", InsertBefore = "TextEditor")]
 	class CocoaTextViewDisplayBinding : TextViewDisplayBinding<CocoaTextViewImports>
 	{
 		static CocoaTextViewDisplayBinding ()
@@ -52,9 +54,9 @@ namespace MonoDevelop.TextEditor
 			return FilterReturn.Remove;
 		}
 
-		protected override ViewContent CreateContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
+		protected override DocumentController CreateContent (CocoaTextViewImports imports)
 		{
-			return new CocoaTextViewContent (imports, fileName, mimeType, ownerProject);
+			return new CocoaTextViewContent (imports);
 		}
 
 		protected override ThemeToClassification CreateThemeToClassification (IEditorFormatMapService editorFormatMapService)

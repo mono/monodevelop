@@ -28,6 +28,7 @@ using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.TextEditor.Wpf
 {
@@ -64,11 +65,11 @@ namespace MonoDevelop.TextEditor.Wpf
 
 		public override void PreprocessMouseRightButtonUp (MouseButtonEventArgs e)
 		{
-			var view = (WpfTextViewContent)textView.Properties[typeof (ViewContent)];
-			var ctx = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
+			var controller = (WpfTextViewContent)textView.Properties[typeof (DocumentController)];
+			var ctx = controller.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
 			var cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
-			var pt = e.GetPosition (view.HostControl);
-			IdeApp.CommandService.ShowContextMenu (view.Control, (int)pt.X, (int)pt.Y, cset, view);
+			var pt = e.GetPosition (controller.HostControl);
+			IdeApp.CommandService.ShowContextMenu (controller.XwtControl, (int)pt.X, (int)pt.Y, cset, controller);
 		}
 	}
 }

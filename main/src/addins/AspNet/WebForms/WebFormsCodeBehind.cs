@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CodeBehind.cs:
 //
 // Authors:
@@ -41,6 +41,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Projects;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -75,8 +76,7 @@ namespace MonoDevelop.AspNet.WebForms
 			var result = new BuildResult ();
 
 			//parse the ASP.NET file
-			var parsedDocument = TypeSystemService.ParseFile (project, file.FilePath).Result as WebFormsParsedDocument;
-			if (parsedDocument == null) {
+			if (!(IdeApp.TypeSystemService.ParseFile (project, file.FilePath).Result is WebFormsParsedDocument parsedDocument)) {
 				result.AddError (GettextCatalog.GetString ("Failed to parse file '{0}'", file.Name));
 				return result;
 			}
@@ -155,7 +155,7 @@ namespace MonoDevelop.AspNet.WebForms
 					ProjectFile resolvedMaster = ext.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					WebFormsParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
-						masterParsedDocument = TypeSystemService.ParseFile (project, resolvedMaster.FilePath).Result as WebFormsParsedDocument;
+						masterParsedDocument = IdeApp.TypeSystemService.ParseFile (project, resolvedMaster.FilePath).Result as WebFormsParsedDocument;
 					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass))
 						masterTypeName = masterParsedDocument.Info.InheritedClass;
 				} catch (Exception ex) {

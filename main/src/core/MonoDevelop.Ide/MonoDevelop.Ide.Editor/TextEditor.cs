@@ -1,4 +1,4 @@
-//
+﻿//
 // ITextEditor.cs
 //
 // Author:
@@ -1057,7 +1057,7 @@ namespace MonoDevelop.Ide.Editor
 
 			TextEditor_MimeTypeChanged (null, null);
 
-			this.TextView = CompositionManager.GetExportedValue<ITextEditorInitializationService> ().CreateTextView (this);
+			this.TextView = CompositionManager.Instance.GetExportedValue<ITextEditorInitializationService> ().CreateTextView (this);
 		}
 
 		void TextEditor_ZoomLevelChanged (object sender, EventArgs e)
@@ -1096,16 +1096,6 @@ namespace MonoDevelop.Ide.Editor
 					textEditorImpl.AddTooltipProvider (provider);
 				}
 			}
-		}
-
-		TextEditorViewContent viewContent;
-		internal ViewContent GetViewContent ()
-		{
-			if (viewContent == null) {
-				viewContent = new TextEditorViewContent (this, textEditorImpl);
-			}
-
-			return viewContent;
 		}
 
 		internal IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false)
@@ -1180,7 +1170,7 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+			var mimetypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			var newExtensions = new List<TextEditorExtension> ();
 
 			foreach (TextEditorExtensionNode extNode in extensions) {

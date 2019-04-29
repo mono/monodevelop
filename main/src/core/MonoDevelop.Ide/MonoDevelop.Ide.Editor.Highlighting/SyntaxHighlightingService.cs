@@ -1,4 +1,4 @@
-// SyntaxModeService.cs
+﻿// SyntaxModeService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -50,15 +50,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null) { BuiltInBundle = true };
 		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null) { BuiltInBundle = true };
 		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
+		static bool stylesInitialized;
+
+		public static FilePath SyntaxModePath {
+			get {
+				return UserProfile.Current.UserDataRoot.Combine ("ColorThemes");
+			}
+		}
 
 		internal static IEnumerable<LanguageBundle> AllBundles {
 			get {
+				InitializeStylesAndModes ();
 				return languageBundles;
 			}
 		}
 
 		public static string[] Styles {
 			get {
+				InitializeStylesAndModes ();
 				var result = new List<string> ();
 				foreach (var bundle in languageBundles) {
 					for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
@@ -73,6 +82,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static bool ContainsStyle (string styleName)
 		{
+			InitializeStylesAndModes ();
 			foreach (var bundle in languageBundles) {
 				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
 					var style = bundle.EditorThemes[i];
@@ -145,6 +155,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static IEnumerable<TmSetting> GetSettings (ScopeStack scope)
 		{
+			InitializeStylesAndModes ();
 			foreach (var bundle in languageBundles) {
 				foreach (var setting in bundle.Settings) {
 					if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
@@ -155,6 +166,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 		internal static IEnumerable<TmSnippet> GetSnippets (ScopeStack scope)
 		{
+			InitializeStylesAndModes ();
 			foreach (var bundle in languageBundles) {
 				foreach (var setting in bundle.Snippets) {
 					if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
@@ -166,6 +178,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static EditorTheme GetEditorTheme (string name)
 		{
+			InitializeStylesAndModes ();
 			foreach (var bundle in languageBundles) {
 				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
 					var style = bundle.EditorThemes[i];
@@ -186,11 +199,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static void Remove (EditorTheme style)
 		{
+			InitializeStylesAndModes ();
 			userThemeBundle.Remove (style);
 		}
 
 		internal static void Remove (LanguageBundle style)
 		{
+			InitializeStylesAndModes ();
 			languageBundles.Remove (style);
 		}
 
@@ -198,6 +213,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			List<ValidationEventArgs> result = new List<ValidationEventArgs> ();
 			return result;
+		}
+
+		static void InitializeStylesAndModes ()
+		{
+			if (!stylesInitialized) {
+				stylesInitialized = true;
+				LoadCustomStylesAndModes ();
+			}
+		}
+
+		public static void LoadCustomStylesAndModes ()
+		{
+			bool success = true;
+			if (!Directory.Exists (SyntaxModePath)) {
+				try {
+					Directory.CreateDirectory (SyntaxModePath);
+				} catch (Exception e) {
+					success = false;
+					LoggingService.LogError ("Can't create syntax mode directory", e);
+				}
+			}
+			if (success)
+				SyntaxHighlightingService.LoadStylesAndModesInPath (SyntaxModePath);
 		}
 
 		internal static void LoadStylesAndModesInPath (string path)
@@ -752,7 +790,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[Obsolete ("Old editor")]
 		static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinitionByMimeType (string mimeType)
 		{
-			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+			foreach (string mt in IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (mimeType == "application/octet-stream" || mimeType == "text/plain")
 					return null;
 
@@ -760,7 +798,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					foreach (var h in bundle.Highlightings) {
 						foreach (var fe in h.FileTypes) {
 							var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : "a." + fe;
-							var mime = DesktopService.GetMimeTypeForUri (uri);
+							var mime = IdeServices.DesktopService.GetMimeTypeForUri (uri);
 							if (mimeType == mime) {
 								return h.GetSyntaxHighlightingDefinition ();
 							}
@@ -781,7 +819,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 
 				if (mimeType == null) {
-					mimeType = DesktopService.GetMimeTypeForUri (fileName);
+					mimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 				}
 			}
 

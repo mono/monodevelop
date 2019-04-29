@@ -1,4 +1,4 @@
-﻿//
+//
 // OnTheFlyFormattingPanel.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis.Editor.Shared.Options;
 using Microsoft.CodeAnalysis;
 using System;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -68,9 +69,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			public OnTheFlyFormattingPanelWidget ()
 			{
-				preferences = Ide.IdeApp.Preferences.Roslyn.CSharp;
+				preferences = IdeApp.Preferences.Roslyn.CSharp;
 
-				OptionService = TypeSystemService.Workspace.Services.GetService<IOptionService> ();
+				OptionService = IdeApp.TypeSystemService.Workspace.Services.GetService<IOptionService> ();
 				formatOnTypeCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format when typing"));
 				formatOnTypeCheckBox.Active = preferences.AutoFormattingOnTyping;
 				formatOnTypeCheckBox.Toggled += FormatOnTypeCheckBox_Toggled;

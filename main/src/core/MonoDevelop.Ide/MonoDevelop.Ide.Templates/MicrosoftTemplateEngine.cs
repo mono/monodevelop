@@ -1,4 +1,4 @@
-//
+﻿//
 // MicrosoftTemplateEngine.cs
 //
 // Author:
@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public static async Task FormatFile (PolicyContainer policies, FilePath file)
 		{
-			string mime = DesktopService.GetMimeTypeForUri (file);
+			string mime = IdeServices.DesktopService.GetMimeTypeForUri (file);
 			if (mime == null)
 				return;
 

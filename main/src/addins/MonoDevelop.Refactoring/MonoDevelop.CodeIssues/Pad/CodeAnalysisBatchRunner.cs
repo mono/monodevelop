@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeIssueBatchRunner.cs
 //
 // Author:
@@ -115,11 +115,11 @@ namespace MonoDevelop.CodeIssues
 //				// Swallow exception and ignore this file
 //				return;
 //			}
-//			var document = TypeSystemService.ParseFile (file.Project, editor);
+//			var document = IdeApp.TypeSystemService.ParseFile (file.Project, editor);
 //			if (document == null)
 //				return;
 //
-//			var content = TypeSystemService.GetProjectContext (file.Project);
+//			var content = IdeApp.TypeSystemService.GetProjectContext (file.Project);
 //			var compilation = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
 //
 //			CSharpAstResolver resolver;

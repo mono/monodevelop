@@ -1,4 +1,4 @@
-//
+﻿//
 // TranslationProject.cs
 //
 // Author:
@@ -255,7 +255,7 @@ namespace MonoDevelop.Gettext
 					if (!File.Exists (file.FilePath))
 						continue;
 					if (file.Subtype == Subtype.Code) {
-						string mimeType = DesktopService.GetMimeTypeForUri (file.FilePath);
+						string mimeType = IdeServices.DesktopService.GetMimeTypeForUri (file.FilePath);
 						foreach (IFileScanner fs in scanners) {
 							if (fs.CanScan (this, catalog, file.FilePath, mimeType))
 								fs.UpdateCatalog (this, catalog, monitor, file.FilePath);

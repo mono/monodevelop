@@ -59,7 +59,7 @@ namespace MonoDevelop.Packaging.Gui
 			learnMoreLabel.Xalign = 0F;
 			learnMoreLabel.LabelProp = GettextCatalog.GetString ("<a href=\"https://docs.nuget.org\">Learn more</a>");
 			learnMoreLabel.UseMarkup = true;
-			learnMoreLabel.SetLinkHandler (DesktopService.ShowUrl);
+			learnMoreLabel.SetLinkHandler (IdeServices.DesktopService.ShowUrl);
 			referenceAssembliesLabelHBox.PackStart (learnMoreLabel, false, false, 0);
 
 			vbox.PackStart (referenceAssembliesLabelHBox, false, false, 5);

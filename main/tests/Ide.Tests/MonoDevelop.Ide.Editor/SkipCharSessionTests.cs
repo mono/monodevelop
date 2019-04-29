@@ -24,25 +24,24 @@ using Mono.TextEditor;
 using Gdk;
 using System.Reflection;
 using MonoDevelop.SourceEditor;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
 	public class SkipCharSessionTests : IdeTestBase
 	{
-		[TestCase]
-		public void TestBug58764 ()
+		[Test]
+		public async Task TestBug58764 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
-			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			tww.ViewContent = content;
+			await content.Initialize (new FileDescriptor ("foo.xml", null, null));
 
-			var document = new Document (tww);
-
-			using (var testCase = new TextEditorExtensionTestCase (document, content, tww, null, false)) {
-
-				var editor = TextEditorFactory.CreateNewEditor (document);
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var document = testCase.Document;
+				var editor = content.Editor;
 				editor.MimeType = "text/xml";
 				const string originalText = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -67,19 +66,17 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Bug 615849: Automatic matching brace completion deletes `{` when `}` is deleted
 		/// </summary>
-		[TestCase]
-		public void TestVSTS615849 ()
+		[Test]
+		public async Task TestVSTS615849 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 
-			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			tww.ViewContent = content;
+			await content.Initialize (new FileDescriptor ("foo.xml", null, null));
 
-			var document = new Document (tww);
-
-			using (var testCase = new TextEditorExtensionTestCase (document, content, tww, null, false)) {
-				var editor = TextEditorFactory.CreateNewEditor (document);
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var document = testCase.Document;
+				var editor = content.Editor;
 				editor.MimeType = "text/xml";
 				const string originalText = @"";
 				editor.Text = originalText;

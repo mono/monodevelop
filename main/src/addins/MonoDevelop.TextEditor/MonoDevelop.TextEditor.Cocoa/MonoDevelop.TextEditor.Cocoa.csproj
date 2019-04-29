@@ -100,6 +100,10 @@
     <None Remove="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
     <None Remove="icons\vs-find-replace-search-16.png" />
     <None Remove="icons\vs-find-replace-search-16%402x.png" />
+    <None Remove="icons\go-up-16.png" />
+    <None Remove="icons\go-up-16%402x.png" />
+    <None Remove="icons\go-down-16.png" />
+    <None Remove="icons\go-down-16%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
@@ -118,5 +122,9 @@
     <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
     <EmbeddedResource Include="icons\vs-find-replace-search-16.png" />
     <EmbeddedResource Include="icons\vs-find-replace-search-16%402x.png" />
+    <EmbeddedResource Include="icons\go-up-16.png" />
+    <EmbeddedResource Include="icons\go-up-16%402x.png" />
+    <EmbeddedResource Include="icons\go-down-16.png" />
+    <EmbeddedResource Include="icons\go-down-16%402x.png" />
   </ItemGroup>
 </Project>

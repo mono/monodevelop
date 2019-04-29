@@ -36,14 +36,12 @@ using UnitTests;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	public class MonoDevelopWorkspaceTests : IdeTestBase
 	{
 		[Test]
 		public async Task MetadataReferencesToFrameworkAssembliesAreProperlyFound ()
 		{
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-
 			FilePath projFile = Util.GetSampleProject ("workspace-metadata-references", "workspace-metadata-references.sln");
 
 			using (var sol = (MonoDevelop.Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), projFile))

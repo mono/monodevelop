@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LogView.cs
 //  
 // Author:
@@ -513,7 +513,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void UpdateCustomFont ()
 		{
-			textEditorControl.ModifyFont (IdeApp.Preferences.CustomOutputPadFont ?? FontService.MonospaceFont);
+			textEditorControl.ModifyFont (IdeApp.Preferences.CustomOutputPadFont ?? IdeServices.FontService.MonospaceFont);
 		}
 		
 		//mechanism to to batch copy text when large amounts are being dumped

@@ -39,6 +39,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Stetic.ActionGroupInfo groupInfo;
 		string groupName;
 		
-		public ActionGroupView (ViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
+		public ActionGroupView (Stetic.ActionGroupInfo group, GuiBuilderProject project)
 		{
 			groupName = group.Name;
 			this.project = project;
@@ -118,11 +119,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				LoadDesigner ();
 		}
 		
-		public Stetic.ActionGroupComponent ActionGroup {
-			get { return group; }
-			set { Load (value.Name); }
-		}
-		
 		protected override void OnPageShown (int npage)
 		{
 			if (designer != null && group != null) {
@@ -141,15 +137,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.TargetObject = designer.RootComponent;
 		}
 		
-		public override async Task Save (FileSaveInformation fileSaveInformation)
+		protected override async Task OnSave ()
 		{
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			
-			await base.Save (fileSaveInformation);
+			await base.OnSave ();
+
 			if (designer == null)
 				return;
 
-			codeBinder.UpdateBindings (fileSaveInformation.FileName);
+			codeBinder.UpdateBindings (FilePath);
 			
 			designer.Save ();
 			
@@ -160,11 +157,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			project.SaveProject (true);
 		}
 		
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			CloseDesigner ();
 			project.Reloaded -= OnReloadProject;
-			base.Dispose ();
+			base.OnDispose ();
 		}
 		
 		public void ShowDesignerView ()
@@ -184,15 +181,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var met = cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
 			if (met != null) { 
 				ShowPage (1);
-				RefactoringService.RoslynJumpToDeclaration(met);
+				RefactoringService.RoslynJumpToDeclaration(met).Ignore ();
 			}
 		}
 		
 		void OnGroupModified (object s, EventArgs a)
 		{
-			IsDirty = designer.Modified;
+			OnCombinedDirtyChanged ();
 		}
-		
+
+		protected override bool IsDirtyCombined {
+			get { return base.IsDirtyCombined || designer.Modified; }
+			set {
+				base.IsDirtyCombined = value;
+				designer.Modified = value;
+			}
+		}
+
 		void OnSignalAdded (object s, Stetic.ComponentSignalEventArgs a)
 		{
 			codeBinder.BindSignal (a.Signal);

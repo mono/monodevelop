@@ -43,17 +43,9 @@ using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public abstract class RestoreTestBase : TestBase
+	public abstract class RestoreTestBase : IdeTestBase
 	{
 		protected Solution solution;
-
-		protected override void InternalSetup (string rootDir)
-		{
-			base.InternalSetup (rootDir);
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init ();
-			DesktopService.Initialize ();
-		}
 
 		[TearDown]
 		public void TearDownTest ()
@@ -118,11 +110,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			};
 
 			var logger = new LoggerAdapter (context);
-			//context.PackageExtractionContext = new PackageExtractionContext (
-				//PackageSaveMode.Defaultv2,
-				//PackageExtractionBehavior.XmlDocFileSaveMode,
-				//ClientPolicyContext.GetClientPolicy (settings, logger),
-				//logger);
+			context.PackageExtractionContext = new PackageExtractionContext (
+				PackageSaveMode.Defaultv2,
+				PackageExtractionBehavior.XmlDocFileSaveMode,
+				ClientPolicyContext.GetClientPolicy (settings, logger),
+				logger);
 
 			return context;
 		}

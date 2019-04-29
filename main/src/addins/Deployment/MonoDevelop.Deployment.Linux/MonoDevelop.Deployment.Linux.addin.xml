@@ -18,13 +18,6 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons" extension-nodes="StockIcon" description="Stock icons|Available from MonoDevelop.Core.Gui.Services.Resources.">
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<Condition id="Platform" value="linux">
-			<DisplayBinding id    = "Desktop Entry" insertbefore="DefaultDisplayBinding"
-		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
-		</Condition>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Deployment">
 		<ComplexCondition>
 			<And>

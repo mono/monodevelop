@@ -1,4 +1,4 @@
-//
+﻿//
 // AssemblyBrowserWidget.cs
 //
 // Author:
@@ -55,6 +55,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Content;
 using System.IO;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -884,7 +885,7 @@ namespace MonoDevelop.AssemblyBrowser
 							assemblyBrowserView.Load (cu.FileName);
 						}
 						IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-						((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (link);
+						Open (link);
 					} else {
 						this.Open (link, loader);
 					}
@@ -1245,7 +1246,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!suspendNavigation) {
 				var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IEntity;
 				if (selectedEntity != null)
-					NavigationHistoryService.LogActiveDocument ();
+					IdeServices.NavigationHistoryService.LogActiveDocument ();
 			}
 			notebook1.Page = 0;
 			GenerateOutput ();

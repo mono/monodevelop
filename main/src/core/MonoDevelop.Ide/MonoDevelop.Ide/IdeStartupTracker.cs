@@ -30,6 +30,7 @@ using System.Diagnostics;
 using MonoDevelop.Core;
 
 using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 
@@ -75,7 +76,7 @@ namespace MonoDevelop.Ide
 
 			this.startupInfo = startupInfo;
 
-			var result = DesktopService.PlatformTelemetry;
+			var result = IdeServices.DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}

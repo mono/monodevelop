@@ -154,7 +154,7 @@ type FSharpFormatter()  =
             | null -> PolicyService.DefaultPolicies
             | policyBag -> policyBag  :> PolicyContainer
 
-        let mimeType = DesktopService.GetMimeTypeForUri (editor.FileName.ToString())
+        let mimeType = IdeServices.DesktopService.GetMimeTypeForUri (editor.FileName.ToString())
         let input = editor.Text
         if fromOffset = 0 && toOffset = String.length input then
             formatText (Some editor) policyParent mimeType input Document

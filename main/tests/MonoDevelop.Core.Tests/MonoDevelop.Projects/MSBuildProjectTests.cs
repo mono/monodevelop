@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.MSBuild;
 using System.IO;
@@ -1667,6 +1668,50 @@ namespace MonoDevelop.Projects
 				p.Evaluate ();
 			} catch (Exception ex) {
 				Assert.That (ex.Message, Contains.Substring (importFileName));
+			}
+		}
+
+		[Test]
+		public void EvaluatedMSBuildCurrentProperties ()
+		{
+			if (!Platform.IsMac)
+				Assert.Ignore ();
+
+			string msbuildToolsVersion = "Current";
+			string visualStudioVersion = "16.0";
+			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+			var msbuildBinPath = runtime.GetMSBuildBinPath ("Current");
+			if (msbuildBinPath == null) {
+				msbuildBinPath = runtime.GetMSBuildBinPath ("15.0");
+				msbuildToolsVersion = "15.0";
+				visualStudioVersion = "15.0";
+			}
+
+			using (var p = LoadAndEvaluate ("msbuild-current", "msbuild-current.csproj")) {
+				p.Evaluate ();
+
+				var pg = p.EvaluatedProperties;
+				Assert.AreEqual (visualStudioVersion, pg.GetValue ("TestVisualStudioVersion"));
+				Assert.AreEqual (msbuildToolsVersion, pg.GetValue ("TestMSBuildToolsVersion"));
+				Assert.AreEqual (msbuildBinPath, pg.GetPathValue ("TestMSBuildBinPath").ToString ());
+
+				if (msbuildToolsVersion == "Current") {
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsCurrent"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15Switch"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16Switch"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessOrEqual15"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterOrEqualTo16"));
+				} else {
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsCurrent"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterThan15Switch"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessThan16Switch"));
+					Assert.IsTrue (pg.GetValue<bool> ("TestMSBuildToolsVersionIsLessOrEqual15"));
+					Assert.IsFalse (pg.GetValue<bool> ("TestMSBuildToolsVersionIsGreaterOrEqualTo16"));
+				}
 			}
 		}
 	}

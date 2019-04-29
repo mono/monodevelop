@@ -6,6 +6,9 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -17,9 +20,12 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		LogWidget widget;
 		VersionInfo vinfo;
-		
+		VersionControlDocumentInfo info;
+
 		public LogWidget LogWidget {
 			get {
+				if (widget == null)
+					CreateControlFromInfo ();
 				return widget;
 			}
 		}
@@ -29,7 +35,6 @@ namespace MonoDevelop.VersionControl.Views
 			return items.All (i => i.VersionInfo.CanLog);
 		}
 		
-		VersionControlDocumentInfo info;
 		public LogView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"))
 		{
 			this.info = info;
@@ -43,9 +48,7 @@ namespace MonoDevelop.VersionControl.Views
 			info.Updated += OnInfoUpdated;
 			lw.History = this.info.History;
 			vinfo   = this.info.Item.VersionInfo;
-		
-			if (WorkbenchWindow != null)
-				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
+			Init ();
 		}
 
 		void OnInfoUpdated (object sender, EventArgs e)
@@ -54,44 +57,13 @@ namespace MonoDevelop.VersionControl.Views
 			vinfo   = this.info.Item.VersionInfo;
 		}
 
-		[Obsolete]
-		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
-			: base (Path.GetFileName (filepath) + " Log")
+		protected override Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
-			try {
-				this.vinfo = vc.GetVersionInfo (filepath, VersionInfoQueryFlags.IgnoreCache);
-			}
-			catch (Exception ex) {
-				MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
-			}
-			
-			// Widget setup
-			VersionControlDocumentInfo info  =new VersionControlDocumentInfo (null, null, vc);
-			info.History = history;
-			info.Item.VersionInfo = vinfo;
-			var lw = new LogWidget (info);
-			
-			widget = lw;
-			lw.History = history;
+			LogWidget.SetToolbar (view.GetToolbar ());
+			return Task.FromResult<Control> (LogWidget);
 		}
 
-		
-		public override Control Control { 
-			get {
-				if (widget == null)
-					CreateControlFromInfo ();
-				return widget; 
-			}
-		}
-
-		protected override void OnWorkbenchWindowChanged ()
-		{
-			base.OnWorkbenchWindowChanged ();
-			if (WorkbenchWindow != null && widget != null)
-				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
-		}
-		
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (widget != null) {
 				widget.Destroy ();
@@ -101,7 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 				info.Updated -= OnInfoUpdated;
 				info = null;
 			}
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
 		public void Init ()
@@ -110,11 +82,6 @@ namespace MonoDevelop.VersionControl.Views
 				widget.ShowLoading ();
 				info.Start ();
 			}
-		}
-
-		protected override void OnSelected ()
-		{
-			Init ();
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]

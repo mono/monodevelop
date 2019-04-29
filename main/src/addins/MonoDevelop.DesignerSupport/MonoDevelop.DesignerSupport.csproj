@@ -78,7 +78,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxItemToolboxLoader.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\UnknownToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TypeToolboxNode.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\WrapperDesignView.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ToolboxService.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\BindingService.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MemberExistsException.cs" />

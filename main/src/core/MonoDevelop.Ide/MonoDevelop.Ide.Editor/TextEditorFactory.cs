@@ -28,6 +28,7 @@ using MonoDevelop.Core.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using System;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -87,6 +88,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var result = new TextEditor(currentFactory.CreateNewEditor(fileName, mimeType), textEditorType);
 			InitializeTextEditor(result);
+			return result;
+		}
+
+		public static TextEditor CreateNewEditor (TextBufferFileModel textBufferFileModel, TextEditorType textEditorType = TextEditorType.Default)
+		{
+			var result = new TextEditor (currentFactory.CreateNewEditor (textBufferFileModel), textEditorType);
+			InitializeTextEditor (result);
 			return result;
 		}
 

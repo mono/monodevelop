@@ -239,14 +239,7 @@ namespace MonoDevelop.Ide.Desktop
 				// We keep both multiple-instance concurrency via AcquireFileExclusive lock
 				// And we batch as many modifications as possible in a 1 second window.
 				if (recentSaveTask == null) {
-					recentSaveTask = Task.Run (async () => {
-						await Task.Delay (1000).ConfigureAwait (false);
-						try {
-							await SaveRecentFiles ().ConfigureAwait (false);
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error while saving recent file store.", ex);
-						}
-					});
+					recentSaveTask = SaveRecentFiles ();
 				}
 			}
 			lock (cacheLock) {
@@ -256,32 +249,38 @@ namespace MonoDevelop.Ide.Desktop
 
 		async Task SaveRecentFiles ()
 		{
-			List<Func<List<RecentItem>, bool>> localModifyList;
+			await Task.Delay (1000).ConfigureAwait (false);
 
-			lock (modifyListLock) {
-				localModifyList = modifyList;
-				modifyList = new List<Func<List<RecentItem>, bool>> ();
-				recentSaveTask = null;
-			}
+			try {
+				List<Func<List<RecentItem>, bool>> localModifyList;
 
-			using (var fs = await AcquireFileExclusive (filePath).ConfigureAwait (false)) {
-				var list = ReadStore (fs);
-				bool modified = false;
+				using (var fs = await AcquireFileExclusive (filePath).ConfigureAwait (false)) {
+					var list = ReadStore (fs);
+					bool modified = false;
 
-				foreach (var modify in localModifyList) {
-					if (!modify (list)) {
-						continue;
+					lock (modifyListLock) {
+						localModifyList = modifyList;
+						modifyList = new List<Func<List<RecentItem>, bool>> ();
+						recentSaveTask = null;
 					}
 
-					modified = true;
-				}
+					foreach (var modify in localModifyList) {
+						if (!modify (list)) {
+							continue;
+						}
 
-				if (modified) {
-					fs.Position = 0;
-					fs.SetLength (0);
-					WriteStore (fs, list);
-					OnRecentFilesChanged (list);
+						modified = true;
+					}
+
+					if (modified) {
+						fs.Position = 0;
+						fs.SetLength (0);
+						WriteStore (fs, list);
+						OnRecentFilesChanged (list);
+					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while saving recent file store.", e);
 			}
 		}
 		

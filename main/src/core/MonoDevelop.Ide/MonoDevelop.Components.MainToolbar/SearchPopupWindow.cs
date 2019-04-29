@@ -227,9 +227,10 @@ namespace MonoDevelop.Components.MainToolbar
 			if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
 				return;
 
-			if (SelectedItem.DataSource[SelectedItem.Item].CanActivate) {
+			var item = SelectedItem.DataSource [SelectedItem.Item];
+			if (item.CanActivate) {
 				ParentWindow.Dispose ();
-				SelectedItem.DataSource [SelectedItem.Item].Activate ();
+				item.Activate ();
 			}
 			else {
 				var region = SelectedItemRegion;

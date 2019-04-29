@@ -386,7 +386,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				{
 					if (editor.EditMode != EditMode.Edit)
 						return;
-					var parsedDocument = document.ParsedDocument;
+					var parsedDocument = document.DocumentContext.ParsedDocument;
 					var declaringType = semanticModel.GetEnclosingSymbolMD<INamedTypeSymbol> (item.Span.Start, default (CancellationToken));
 					var insertionPoints = InsertionPointService.GetInsertionPoints (
 						document.Editor,
@@ -400,7 +400,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						point => {
 							if (!point.Success)
 								return;
-							point.InsertionPoint.Insert (document.Editor, document, newMethod);
+							point.InsertionPoint.Insert (document.Editor, document.DocumentContext, newMethod);
 						}
 					);
 					editor.StartInsertionMode (options);

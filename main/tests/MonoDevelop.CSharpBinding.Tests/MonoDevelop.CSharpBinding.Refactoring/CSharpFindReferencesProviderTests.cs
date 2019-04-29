@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			using (var testCase = await SetupTestCase (input)) {
 				var doc = testCase.Document;
 
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 				return (await findRefsCallback (testCase.Project)).ToList ();
 			}
 		}

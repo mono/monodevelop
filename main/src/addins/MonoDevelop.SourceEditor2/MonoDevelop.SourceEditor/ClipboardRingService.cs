@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			static readonly ToolboxItemFilterAttribute filterAtt = new ToolboxItemFilterAttribute ("text/plain", ToolboxItemFilterType.Allow);
 			static readonly string category = GettextCatalog.GetString ("Clipboard Ring");
-			static readonly Xwt.Drawing.Image icon = DesktopService.GetIconForFile ("a.txt", IconSize.Menu);
+			static readonly Xwt.Drawing.Image icon = IdeServices.DesktopService.GetIconForFile ("a.txt", IconSize.Menu);
 
 			public ClipboardToolboxNode (string text)
 			{

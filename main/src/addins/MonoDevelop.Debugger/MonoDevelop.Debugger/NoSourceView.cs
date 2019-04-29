@@ -30,10 +30,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using Xwt;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
-	public class NoSourceView : ViewContent
+	public class NoSourceView : DocumentController
 	{
 		XwtControl xwtControl;
 		ScrollView scrollView = new ScrollView ();
@@ -54,7 +57,7 @@ namespace MonoDevelop.Debugger
 			box.Margin = 30;
 			box.Spacing = 10;
 			if (!string.IsNullOrEmpty (fileName)) {
-				ContentName = GettextCatalog.GetString ("Source Not Found");
+				DocumentTitle = GettextCatalog.GetString ("Source Not Found");
 				var headerLabel = new Label ();
 				headerLabel.Markup = GettextCatalog.GetString ("{0} file not found", $"<b>{fileName}</b>");
 				box.PackStart (headerLabel);
@@ -75,7 +78,7 @@ namespace MonoDevelop.Debugger
 				}
 				headerLabel.Font = headerLabel.Font.WithScaledSize (2);
 			} else {
-				ContentName = GettextCatalog.GetString ("Source Not Available");
+				DocumentTitle = GettextCatalog.GetString ("Source Not Available");
 				var headerLabel = new Label (GettextCatalog.GetString ("Source Not Available"));
 				box.PackStart (headerLabel);
 				var label = new Label (GettextCatalog.GetString ("Source information is missing from the debug information for this module"));
@@ -87,7 +90,7 @@ namespace MonoDevelop.Debugger
 				labelDisassembly.Markup = GettextCatalog.GetString ("View disassembly in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Disassembly Tab") + "</a>");
 				labelDisassembly.LinkClicked += (sender, e) => {
 					DebuggingService.ShowDisassembly ();
-					this.WorkbenchWindow.CloseWindow (false);
+					this.WorkbenchWindow.Document.Close (false).Ignore ();
 				};
 				box.PackStart (labelDisassembly);
 			}
@@ -104,7 +107,7 @@ namespace MonoDevelop.Debugger
 			return fileName;
 		}
 
-		private void OpenFindSourceFileDialog (object sender, EventArgs e)
+		private async void OpenFindSourceFileDialog (object sender, EventArgs e)
 		{
 			var sf = DebuggingService.CurrentFrame;
 			if (sf == null) {
@@ -129,8 +132,10 @@ namespace MonoDevelop.Debugger
 						MessageService.AskQuestion (GettextCatalog.GetString ("File checksum doesn't match."), 1, ignoreButton, new AlertButton (GettextCatalog.GetString ("Cancel"))) == ignoreButton) {
 						SourceCodeLookup.AddLoadedFile (newFilePath, sf.SourceLocation.FileName);
 						sf.UpdateSourceFile (newFilePath);
-						if (IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger) != null) {
-							this.WorkbenchWindow.CloseWindow (false);
+
+						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
+						if (doc != null) {
+							await this.WorkbenchWindow.Document.Close (false);
 						}
 					}
 				} else {
@@ -141,6 +146,9 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public override Control Control => xwtControl;
+		protected override Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
+		{
+			return Task.FromResult<Control> (xwtControl);
+		}
 	}
 }

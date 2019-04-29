@@ -51,15 +51,15 @@ namespace MonoDevelop.HexEditor
 	class HexEditorCommandHandler: NodeCommandHandler 
 	{
 		[CommandHandler (Commands.ShowHexEditor)]
-		protected void OnShowHexEditor () 
+		protected async void OnShowHexEditor () 
 		{
 			HexEditorView view = new HexEditorView ();
 			
 			ProjectFile file   = CurrentNode.DataItem as ProjectFile;
 			if (file != null)
-				view.Load (file.FilePath);
+				await view.Load (file.FilePath);
 			
-			IdeApp.Workbench.OpenDocument (view, true);
+			await IdeApp.Workbench.OpenDocument (view, true);
 		}
 	}
 

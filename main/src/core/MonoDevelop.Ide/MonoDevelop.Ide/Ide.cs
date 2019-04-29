@@ -38,19 +38,21 @@ using Mono.Addins.Setup;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.CustomTools;
 using System.Linq;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Templates;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.RoslynServices.Options;
 using MonoDevelop.Ide.RoslynServices;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Composition;
 using System.Diagnostics;
 
 namespace MonoDevelop.Ide
@@ -59,14 +61,9 @@ namespace MonoDevelop.Ide
 	{
 		static bool isInitialized;
 		static Workbench workbench;
-		static ProjectOperations projectOperations;
-		static HelpOperations helpOperations;
 		static CommandManager commandService;
-		static IdeServices ideServices;
-		static RootWorkspace workspace;
-		readonly static IdePreferences preferences;
+		static TypeSystemService typeSystemService;
 
-		static bool isMainRunning;
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
 		static Version upgradedFromVersion;
@@ -133,36 +130,27 @@ namespace MonoDevelop.Ide
 			get { return CommandService.ApplicationHasFocus; }
 		}
 
-		static IdeApp ()
-		{
-			preferences = new IdePreferences ();
-		}
-		
 		public static Workbench Workbench {
 			get { return workbench; }
 		}
-		
-		public static ProjectOperations ProjectOperations {
-			get { return projectOperations; }
-		}
-		
-		public static RootWorkspace Workspace {
-			get { return workspace; }
-		}
-		
-		public static HelpOperations HelpOperations {
-			get { return helpOperations; }
-		}
-		
+
+		public static ProjectOperations ProjectOperations => IdeServices.ProjectOperations;
+
+		public static RootWorkspace Workspace => Runtime.PeekService<RootWorkspace> ();
+
 		public static CommandManager CommandService {
 			get { return commandService; }
 		}
-		
-		public static IdeServices Services {
-			get { return ideServices; }
+
+		public static TypeSystemService TypeSystemService {
+			get {
+				if (typeSystemService == null)
+					typeSystemService = Runtime.GetService<TypeSystemService> ().Result;
+				return typeSystemService;
+			}
 		}
 
-		public static IdePreferences Preferences => preferences;
+		public static IdePreferences Preferences { get; } = new IdePreferences ();
 
 		public static bool IsInitialized {
 			get {
@@ -191,23 +179,55 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static void Initialize (ProgressMonitor monitor) => Initialize (monitor, false);
-
-		internal static void Initialize (ProgressMonitor monitor, bool hideWelcomePage)
+		public static async Task Initialize (ProgressMonitor monitor)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
+
+			Counters.Initialization.Trace ("Creating Services");
+
+			var serviceInitialization = Task.WhenAll (
+				Runtime.GetService<DesktopService> (),
+				Runtime.GetService<FontService> (),
+				Runtime.GetService<TaskService> (),
+				Runtime.GetService<ProjectOperations> (),
+				Runtime.GetService<TextEditorService> (),
+				Runtime.GetService<NavigationHistoryService> (),
+				Runtime.GetService<DisplayBindingService> (),
+				Runtime.GetService<RootWorkspace> (),
+				Runtime.GetService<HelpOperations> (),
+				Runtime.GetService<HelpService> ()
+			);
+
+			await serviceInitialization;
+
+			// Set initial run flags
+			Counters.Initialization.Trace ("Upgrading Settings");
+
+			if (PropertyService.Get ("MonoDevelop.Core.FirstRun", true)) {
+				isInitialRun = true;
+				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
+				PropertyService.SaveProperties ();
+			}
+
+			string lastVersionString = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.0");
+			Version.TryParse (lastVersionString, out var lastVersion);
+
+			if (Runtime.Version > lastVersion && !isInitialRun) {
+				isInitialRunAfterUpgrade = true;
+				upgradedFromVersion = lastVersion;
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
+				PropertyService.SaveProperties ();
+			}
+
+			commandService = await Runtime.GetService<CommandManager> ();
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 
 			Counters.Initialization.Trace ("Creating Root Workspace");
-			workspace = new RootWorkspace ();
-			Counters.Initialization.Trace ("Creating Services");
-			projectOperations = new ProjectOperations ();
-			helpOperations = new HelpOperations ();
-			commandService = new CommandManager ();
-			ideServices = new IdeServices ();
+
 			CustomToolService.Init ();
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
@@ -235,7 +255,7 @@ namespace MonoDevelop.Ide
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Initializing Workbench");
-			workbench.Initialize (monitor);
+			await workbench.Initialize (monitor);
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Initializing WelcomePage service");
@@ -252,46 +272,10 @@ namespace MonoDevelop.Ide
 			commandService.EnableIdleUpdate = true;
 
 			if (Customizer != null)
-				Customizer.OnIdeInitialized (hideWelcomePage);
-			
-			// Startup commands
-			Counters.Initialization.Trace ("Running Startup Commands");
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
-			monitor.Step (1);
+				Customizer.OnIdeInitialized ();
+
 			monitor.EndTask ();
 
-			// Set initial run flags
-			Counters.Initialization.Trace ("Upgrading Settings");
-
-			if (PropertyService.Get("MonoDevelop.Core.FirstRun", true)) {
-				isInitialRun = true;
-				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
-				PropertyService.SaveProperties ();
-			}
-
-			string lastVersionString = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.0");
-			Version.TryParse (lastVersionString, out var lastVersion);
-
-			if (Runtime.Version > lastVersion && !isInitialRun) {
-				isInitialRunAfterUpgrade = true;
-				upgradedFromVersion = lastVersion;
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
-				PropertyService.SaveProperties ();
-			}
-			
-			// The ide is now initialized
-
-			isInitialized = true;
-			
-			if (initializedEvent != null) {
-				initializedEvent (null, EventArgs.Empty);
-				initializedEvent = null;
-			}
-			
-			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
-			MonoDevelop.Projects.HelpService.AsyncInitialize ();
-			
 			UpdateInstrumentationIcon ();
 			IdeApp.Preferences.EnableInstrumentation.Changed += delegate {
 				UpdateInstrumentationIcon ();
@@ -300,11 +284,44 @@ namespace MonoDevelop.Ide
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
 
 			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
+
+			// Start initializing the type system service in the background
+			Runtime.GetService<TypeSystemService> ().Ignore ();
+
+			// The ide is now initialized
+			OnInitialized ();
+		}
+
+		static void OnInitialized ()
+		{
+			// The ide is now initialized
+
+			isInitialized = true;
+
+			if (initializedEvent != null) {
+				initializedEvent (null, EventArgs.Empty);
+				initializedEvent = null;
+			}
+
+			// Startup commands
+			Counters.Initialization.Trace ("Running Startup Commands");
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 		}
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
 		{
 			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
+		}
+
+		public static void BringToFront ()
+		{
+			Initialized += (sender, e) => {
+				if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
+					WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
+				} else {
+					Workbench.Present ();
+				}
+			};
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
@@ -402,16 +419,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public static void Run ()
-		{
-			// finally run the workbench window ...
-			isMainRunning = true;
-			Gtk.Application.Run ();
-		}
-
-		public static bool IsRunning {
-			get { return isMainRunning; }
-		}
+		public static bool IsRunning { get; internal set; }
 
 		public static bool IsExiting { get; private set; }
 
@@ -423,7 +431,6 @@ namespace MonoDevelop.Ide
 			IsExiting = true;
 			if (await workbench.Close ()) {
 				Gtk.Application.Quit ();
-				isMainRunning = false;
 				return true;
 			}
 			IsExiting = false;
@@ -446,11 +453,11 @@ namespace MonoDevelop.Ide
 				PropertyService.Set ("MonoDevelop.Core.RestartRequested", true);
 
 				try {
-					DesktopService.RestartIde (reopenWorkspace);
+					IdeServices.DesktopService.RestartIde (reopenWorkspace);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Restarting IDE failed", ex);
 				}
-				// return true here even if DesktopService.RestartIde has failed,
+				// return true here even if IdeServices.DesktopService.RestartIde has failed,
 				// because the Ide has already been closed.
 				return true;
 			}
@@ -517,7 +524,7 @@ namespace MonoDevelop.Ide
 				return;
 
 			// If a modal dialog is open, try again later
-			if (DesktopService.IsModalDialogRunning ()) {
+			if (IdeServices.DesktopService.IsModalDialogRunning ()) {
 				DispatchIdleActions (1000);
 				return;
 			}
@@ -601,20 +608,5 @@ namespace MonoDevelop.Ide
 				instrumentationStatusIcon.Dispose ();
 			}
 		}
-	}
-	
-	public class IdeServices
-	{
-		readonly Lazy<TemplatingService> templatingService = new Lazy<TemplatingService> (() => new TemplatingService ());
-
-		public ProjectService ProjectService {
-			get { return MonoDevelop.Projects.Services.ProjectService; }
-		}
-
-		public TemplatingService TemplatingService {
-			get { return templatingService.Value; }
-		}
-
-		internal RoslynService RoslynService { get; } = new RoslynService ();
 	}
 }

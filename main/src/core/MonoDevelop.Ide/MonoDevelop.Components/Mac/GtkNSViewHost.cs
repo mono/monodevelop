@@ -347,18 +347,18 @@ namespace Gtk
 		int traceDepth;
 		int traceGeneration;
 
-		[Conditional ("DEBUG")]
+		[Conditional ("DEBUG_GTKNSVIEW")]
 		void LogIndent ()
 			=> Debug.Write ($"{traceGeneration:0000}|{new string (' ', traceDepth * 2)}");
 
-		[Conditional ("DEBUG")]
+		[Conditional ("DEBUG_GTKNSVIEW")]
 		void Log (string message, [CallerMemberName] string memberName = null)
 		{
 			LogIndent ();
 			Debug.WriteLine ($"{memberName}: {message}");
 		}
 
-		[Conditional ("DEBUG")]
+		[Conditional ("DEBUG_GTKNSVIEW")]
 		void LogEnter ([CallerMemberName] string memberName = null)
 		{
 			if (traceDepth == 0)
@@ -368,7 +368,7 @@ namespace Gtk
 			traceDepth++;
 		}
 
-		[Conditional ("DEBUG")]
+		[Conditional ("DEBUG_GTKNSVIEW")]
 		void LogExit ([CallerMemberName] string memberName = null)
 		{
 			traceDepth--;

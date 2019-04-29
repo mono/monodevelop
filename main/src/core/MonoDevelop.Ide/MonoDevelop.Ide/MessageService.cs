@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide
 			// if dialog is modal, make sure it's parented on any existing modal dialog
 			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
-				parent = DesktopService.GetParentForModalWindow ();
+				parent = IdeServices.DesktopService.GetParentForModalWindow ();
 			}
 
 			//ensure the dialog has a parent
@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide
 				if (dialog.TransientFor != null)
 					parent = dialog.TransientFor;
 				else
-					parent = DesktopService.GetFocusedTopLevelWindow ();
+					parent = IdeServices.DesktopService.GetFocusedTopLevelWindow ();
 			}
 
 			//TODO: use native parenting API for native windows
@@ -373,7 +373,7 @@ namespace MonoDevelop.Ide
 				int result = GtkWorkarounds.RunDialogWithNotification (dialog);
 				// Focus parent window once the dialog is ran, as focus gets lost
 				if (parent != null) {
-					DesktopService.FocusWindow (parent);
+					IdeServices.DesktopService.FocusWindow (parent);
 				}
 
 				return result;
@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide
 			if (parent == null) {
 				if (childControl.nativeWidget is Gtk.Window gtkChild) {
 					if (gtkChild.Modal)
-						parent = DesktopService.GetParentForModalWindow ();
+						parent = IdeServices.DesktopService.GetParentForModalWindow ();
 				}
 			}
 
@@ -606,7 +606,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? DesktopService.GetFocusedTopLevelWindow ()
+					TransientFor = parent ?? IdeServices.DesktopService.GetFocusedTopLevelWindow ()
 				};
 				return dialog.Run ();
 			}

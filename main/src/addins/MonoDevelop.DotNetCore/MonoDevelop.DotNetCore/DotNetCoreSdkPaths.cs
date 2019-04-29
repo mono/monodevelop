@@ -170,19 +170,15 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		/// <summary>
-		/// .NET Core SDK version needs to be at least 1.0.0
+		/// .NET Core SDK version needs to be the mininum required SDK
 		/// </summary>
 		bool CheckIsSupportedSdkVersion (string sdkDirectory)
 		{
 			try {
 				string sdkVersion = Path.GetFileName (sdkDirectory);
 				if (DotNetCoreVersion.TryParse (sdkVersion, out var version)) {
-					if (version < DotNetCoreVersion.MinimumSupportedVersion) {
-						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0. '{1}'", sdkVersion, sdkDirectory);
-						return false;
-					}
-					if (version >= DotNetCoreVersion.UnSupportedVersion) {
-						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'.", sdkVersion);
+					if (!DotNetCoreVersion.IsSdkSupported (version)) {
+						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. '{2}'", sdkVersion, sdkDirectory);
 						return false;
 					}
 				} else {

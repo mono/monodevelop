@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var textBuffer = doc.GetContent<ITextBuffer> ();
 			if (textBuffer != null)
-				yield return new OpenFileProvider (textBuffer, doc.Project, doc.FileName);
+				yield return new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName);
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var textView = doc.GetContent<ITextView> ();
 			if (textView != null) {
 				var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
-				yield return new OpenFileProvider (textView.TextBuffer, doc.Project, doc.FileName, selection.Start, selection.End);
+				yield return new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End);
 			}
 		}
 
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							  () => new List<FileProvider> (),
 							  (folder, loop, providers) => {
 								  foreach (var file in folder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
-									  if (!DesktopService.GetFileIsText (file.FullPath))
+									  if (!IdeServices.DesktopService.GetFileIsText (file.FullPath))
 										  continue;
 									  lock (alreadyVisited) {
 										  if (alreadyVisited.Contains (file.FullPath))
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 									  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 										  continue;
-									  if (!DesktopService.GetFileIsText (file.FilePath))
+									  if (!IdeServices.DesktopService.GetFileIsText (file.FilePath))
 										  continue;
 
 									  lock (alreadyVisited) {
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 						continue;
-					if (!DesktopService.GetFileIsText (file.Name))
+					if (!IdeServices.DesktopService.GetFileIsText (file.Name))
 						continue;
 					if (alreadyVisited.Contains (file.FilePath.FullPath))
 						continue;
@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
 				var textBuffer = document.GetContent<ITextBuffer> ();
 				if (textBuffer != null && filterOptions.NameMatches (document.FileName))
-					yield return new OpenFileProvider (textBuffer, document.Project, document.FileName);
+					yield return new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName);
 			}
 		}
 
@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					if (!filterOptions.NameMatches (fileName))
 						continue;
-					if (!DesktopService.GetFileIsText (fileName))
+					if (!IdeServices.DesktopService.GetFileIsText (fileName))
 						continue;
 					yield return fileName;
 				}

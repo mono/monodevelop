@@ -34,6 +34,9 @@ using Xwt;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -48,9 +51,27 @@ namespace MonoDevelop.Ide.Editor
 	[Obsolete]
 	interface ITextEditorImpl : IDisposable
 	{
+		DocumentController DocumentController { get; set; }
+
+		IEnumerable<object> GetContents (Type type);
+
+		ProjectReloadCapability ProjectReloadCapability { get; }
+
+		Project Project { get; set; }
+
 		Microsoft.VisualStudio.Text.Editor.ITextView TextView { get; set; }
 
-		ViewContent ViewContent { get; }
+		void DiscardChanges ();
+
+		Task Load (string fileName, Encoding loadEncoding, bool reload = false);
+
+		Task Save (FileSaveInformation fileSaveInformation);
+
+		bool IsDirty { get; }
+
+		event EventHandler ContentNameChanged;
+
+		event EventHandler DirtyChanged;
 
 		string ContentName { get; set; }
 

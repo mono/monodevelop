@@ -72,7 +72,6 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorTests.cs" />
     <Compile Include="MonoDevelop.Ide\UserPreferencesTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ResourcesTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
@@ -113,10 +112,23 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopFrameworkAssemblyPathResolverFactoryTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\DocumentModelRegistryTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\DocumentModelTestsBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\TextFileModelTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\FileModelTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\TextBufferFileModelTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\FileDocumentControllerTests.cs" />
+    <Compile Include="TestHelper.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentViewVisibilityTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerExtensionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorPreferencesTests.cs" />
     <Compile Include="MonoDevelop.Ide\BaseCredentialsProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide\FileNameEvaluatorTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceFilesCacheTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\PatternMatcherTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\CompositionManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -179,6 +191,10 @@
       <Name>IdeUnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Ide.Gui.DocumentModels\" />
+    <Folder Include="MonoDevelop.Ide.Gui.Documents\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

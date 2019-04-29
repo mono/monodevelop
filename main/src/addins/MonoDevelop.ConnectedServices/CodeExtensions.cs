@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -28,7 +29,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (this MonoDevelop.Projects.Project monoDevelopProject)
 		{
-			return TypeSystemService.GetCodeAnalysisProject (monoDevelopProject);
+			return IdeApp.TypeSystemService.GetCodeAnalysisProject (monoDevelopProject);
 		}
 
 		/// <summary>

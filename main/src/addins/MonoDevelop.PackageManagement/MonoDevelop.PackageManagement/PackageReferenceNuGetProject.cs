@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Commands;
 using NuGet.Frameworks;
+using NuGet.LibraryModel;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
@@ -69,6 +70,7 @@ namespace MonoDevelop.PackageManagement
 			this.project = project;
 			this.configuration = configuration;
 			this.packageManagementEvents = packageManagementEvents;
+			ProjectStyle = ProjectStyle.PackageReference;
 
 			var targetFramework = NuGetFramework.Parse (project.TargetFramework.Id.ToString ());
 
@@ -141,7 +143,7 @@ namespace MonoDevelop.PackageManagement
 			var packageIdentity = new PackageIdentity (packageId, range.MinVersion);
 
 			bool added = await Runtime.RunInMainThread (() => {
-				return AddPackageReference (packageIdentity, nuGetProjectContext);
+				return AddPackageReference (packageIdentity, nuGetProjectContext, installationContext);
 			});
 
 			if (added) {
@@ -151,7 +153,7 @@ namespace MonoDevelop.PackageManagement
 			return added;
 		}
 
-		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context)
+		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context, BuildIntegratedInstallationContext installationContext)
 		{
 			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity, matchVersion: false);
 			if (packageReference?.Equals (packageIdentity, matchVersion: true) == true) {
@@ -164,6 +166,12 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				packageReference = ProjectPackageReference.Create (packageIdentity);
 				project.Items.Add (packageReference);
+			}
+
+			if (installationContext.IncludeType != LibraryIncludeFlags.All &&
+				installationContext.SuppressParent != LibraryIncludeFlagUtils.DefaultSuppressParent) {
+				packageReference.SetMetadataValue (ProjectItemProperties.IncludeAssets, installationContext.IncludeType);
+				packageReference.SetMetadataValue (ProjectItemProperties.PrivateAssets, installationContext.SuppressParent);
 			}
 
 			return true;
@@ -220,24 +228,23 @@ namespace MonoDevelop.PackageManagement
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
 		{
-			PackageSpec existingPackageSpec = context.GetExistingProjectPackageSpec (MSBuildProjectPath);
-			if (existingPackageSpec != null) {
-				return new [] { existingPackageSpec };
+			IReadOnlyList<PackageSpec> existingPackageSpecs = context.GetExistingProjectPackageSpecs (MSBuildProjectPath);
+			if (existingPackageSpecs != null) {
+				return existingPackageSpecs;
 			}
 
-			PackageSpec packageSpec = await CreateProjectPackageSpec (context);
-			return new [] { packageSpec };
+			return await CreateProjectPackageSpecs (context);
 		}
 
-		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
+		async Task<IReadOnlyList<PackageSpec>> CreateProjectPackageSpecs (DependencyGraphCacheContext context)
 		{
 			DependencyGraphSpec dependencySpec = await MSBuildPackageSpecCreator.GetDependencyGraphSpec (project, configuration, context?.Logger);
 
 			context.AddToCache (dependencySpec);
 
-			PackageSpec spec = dependencySpec.GetProjectSpec (project.FileName);
-			if (spec != null)
-				return spec;
+			IReadOnlyList<PackageSpec> specs = dependencySpec.GetProjectSpecs (project.FileName);
+			if (specs != null)
+				return specs;
 
 			throw new InvalidOperationException (GettextCatalog.GetString ("Unable to create package spec for project. '{0}'", project.FileName));
 		}
@@ -294,7 +301,7 @@ namespace MonoDevelop.PackageManagement
 			return true;
 		}
 
-		public Task AddFileToProjectAsync (string filePath)
+		public override Task AddFileToProjectAsync (string filePath)
 		{
 			if (project.IsFileInProject (filePath))
 				return Task.CompletedTask;

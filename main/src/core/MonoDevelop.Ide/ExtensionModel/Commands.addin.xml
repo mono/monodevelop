@@ -531,6 +531,10 @@
 	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
 			_label = "C_lose Others"
 			_description = "Closes all opened files except for the active file"/>
+	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllToTheRight"
+	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllToTheRightHandler"
+			_label = "Close to the _Right"
+			_description = "Closes all opened files to the right of the active file"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
 			_description = "Copy the file path to the clipboard"

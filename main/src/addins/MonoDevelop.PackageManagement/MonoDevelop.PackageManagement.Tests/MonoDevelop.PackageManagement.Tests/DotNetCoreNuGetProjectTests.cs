@@ -24,17 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using NUnit.Framework;
+using NuGet.Frameworks;
+using NuGet.LibraryModel;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
+using NUnit.Framework;
 using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -83,13 +86,44 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
 			var versionRange = new VersionRange (packageIdentity.Version);
-			return project.InstallPackageAsync (packageId, versionRange, context, null, CancellationToken.None);
+
+			var installationContext = CreateInstallationContext ();
+			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
 		}
 
-		Task<PackageSpec> GetPackageSpecsAsync ()
+		BuildIntegratedInstallationContext CreateInstallationContext (
+			LibraryIncludeFlags? includeType = null,
+			LibraryIncludeFlags? suppressParent = null)
 		{
-			dependencyGraphCacheContext = new DependencyGraphCacheContext ();
-			return GetPackageSpecsAsync (dependencyGraphCacheContext);
+			var framework = NuGetFramework.Parse (project.Project.TargetFrameworkMoniker.ToString ());
+			var frameworks = new NuGetFramework [] {
+				framework
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+			originalFrameworks [framework] = framework.GetShortFolderName ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				frameworks,
+				Enumerable.Empty<NuGetFramework> (),
+				originalFrameworks);
+
+			if (includeType.HasValue)
+				installationContext.IncludeType = includeType.Value;
+
+			if (suppressParent.HasValue)
+				installationContext.SuppressParent = suppressParent.Value;
+
+			return installationContext;
+		}
+
+		Task<bool> InstallPackageAsync (string packageId, string version, LibraryIncludeFlags includeType, LibraryIncludeFlags suppressParent)
+		{
+			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
+			var versionRange = new VersionRange (packageIdentity.Version);
+
+			var installationContext = CreateInstallationContext (includeType, suppressParent);
+			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
 		}
 
 		async Task<PackageSpec> GetPackageSpecsAsync (DependencyGraphCacheContext cacheContext)
@@ -164,14 +198,17 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			bool result = await InstallPackageAsync ("NUnit", "2.6.1");
 
-			var packageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
-				.Single ()
-				.CreatePackageReference ();
+			var projectPackageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ();
+
+			var packageReference = projectPackageReference.CreatePackageReference ();
 
 			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
 			Assert.AreEqual ("2.6.1", packageReference.PackageIdentity.Version.ToNormalizedString ());
 			Assert.IsTrue (result);
 			Assert.IsTrue (project.IsSaved);
+			Assert.IsFalse (projectPackageReference.Metadata.HasProperty ("IncludeAssets"));
+			Assert.IsFalse (projectPackageReference.Metadata.HasProperty ("PrivateAssets"));
 		}
 
 		[Test]
@@ -221,6 +258,36 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public async Task InstallPackageAsync_DevelopmentDependency_AssetInfoAddedToPackageReference ()
+		{
+			CreateNuGetProject ();
+
+			var includeType = LibraryIncludeFlags.Runtime |
+				LibraryIncludeFlags.Build |
+				LibraryIncludeFlags.Native |
+				LibraryIncludeFlags.ContentFiles |
+				LibraryIncludeFlags.Analyzers;
+
+			var suppressParent = LibraryIncludeFlags.All;
+
+			bool result = await InstallPackageAsync ("GitInfo", "2.0.20", includeType, suppressParent);
+
+			var projectPackageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ();
+
+			var packageReference = projectPackageReference.CreatePackageReference ();
+
+			Assert.AreEqual ("GitInfo", packageReference.PackageIdentity.Id);
+			Assert.AreEqual ("2.0.20", packageReference.PackageIdentity.Version.ToNormalizedString ());
+
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+			Assert.AreEqual ("runtime; build; native; contentfiles; analyzers", projectPackageReference.Metadata.GetValue ("IncludeAssets"));
+			Assert.AreEqual ("all", projectPackageReference.Metadata.GetValue ("PrivateAssets"));
+			Assert.AreEqual (ProjectStyle.PackageReference, project.ProjectStyle);
+		}
+
+		[Test]
 		public async Task GetAssetsFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
 			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
@@ -265,6 +332,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageSpec spec = await GetPackageSpecsAsync (dependencyGraphCacheContext);
 
 			Assert.AreSame (cachedSpec, spec);
+		}
+
+		[Test]
+		public async Task GetPackageSpecsAsync_DotNetCliTool_PackageSpecsIncludeDotNetCliToolReference ()
+		{
+			string projectFile = Util.GetSampleProject ("dotnet-cli-tool", "dotnet-cli-tool-netcore.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
+
+				dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+				var nugetProject = new DotNetCoreNuGetProject (project);
+				var specs = await nugetProject.GetPackageSpecsAsync (dependencyGraphCacheContext);
+				var projectSpec = specs.FirstOrDefault (s => s.RestoreMetadata.ProjectStyle == ProjectStyle.PackageReference);
+				var dotNetCliToolSpec = specs.FirstOrDefault (s => s.RestoreMetadata.ProjectStyle == ProjectStyle.DotnetCliTool);
+
+				Assert.AreEqual (2, specs.Count);
+				Assert.AreEqual (projectFile, projectSpec.FilePath);
+				Assert.AreEqual ("dotnet-cli-tool-netcore", projectSpec.Name);
+				Assert.AreEqual ("dotnet-cli-tool-netcore", projectSpec.RestoreMetadata.ProjectName);
+				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectPath);
+				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectUniqueName);
+				Assert.AreSame (projectSpec, dependencyGraphCacheContext.PackageSpecCache [projectFile]);
+				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.1-[2.9.406, )", dotNetCliToolSpec.Name);
+				Assert.AreEqual (projectFile, dotNetCliToolSpec.RestoreMetadata.ProjectPath);
+				Assert.AreSame (dotNetCliToolSpec, dependencyGraphCacheContext.PackageSpecCache [dotNetCliToolSpec.Name]);
+			}
 		}
 
 		[Test]

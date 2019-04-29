@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 				// If the output is redirected, open the log file, otherwise do not do anything.
 				if (logFile != null)
-					DesktopService.OpenFile (logFile);
+					IdeServices.DesktopService.OpenFile (logFile);
 			}
 		}
 	}

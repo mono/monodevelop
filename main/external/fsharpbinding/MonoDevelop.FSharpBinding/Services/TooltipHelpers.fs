@@ -173,7 +173,7 @@ module TooltipXmlDoc =
     ///check helpxml exist
     let tryGetDoc key =
         try
-            let helpTree = MonoDevelop.Projects.HelpService.HelpTree
+            let helpTree = CoreServices.HelpService.HelpTree
             if helpTree = null then None else
             let helpxml = helpTree.GetHelpXml(key)
             if helpxml = null then None else Some(helpxml)

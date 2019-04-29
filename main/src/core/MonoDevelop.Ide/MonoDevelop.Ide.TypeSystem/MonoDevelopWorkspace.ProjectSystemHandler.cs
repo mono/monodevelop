@@ -1,4 +1,4 @@
-﻿//
+//
 // MonoDevelopWorkspace.ProjectSystemHandler.cs
 //
 // Author:
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.workspaceCache = new WorkspaceFilesCache ();
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
-				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
+				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, workspace.compositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
 
 				var persistentStorageLocationService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
 				if (workspace.MonoDevelopSolution != null)
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var config = GetDotNetProjectConfiguration (p);
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
-				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
+				FilePath fileName = IdeApp.IsInitialized ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 
 				if (fileName.IsNullOrEmpty) {
 					fileName = new FilePath (p.Name + ".dll");
@@ -177,7 +177,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static DotNetProjectConfiguration GetDotNetProjectConfiguration (MonoDevelop.Projects.Project p)
 			{
-				return IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+				var workspace = Runtime.PeekService<RootWorkspace> ();
+				return workspace != null ? p.GetConfiguration (workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : p.DefaultConfiguration as MonoDevelop.Projects.DotNetProjectConfiguration;
 			}
 
 			async Task<ProjectCacheInfo> LoadProjectCacheInfo (MonoDevelop.Projects.Project p, DotNetProjectConfiguration config, CancellationToken token)
@@ -435,44 +436,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
 				service.SetupSolution (workspace);
 
-				AssignOpenDocumentsToWorkspace (workspace);
-				OpenGeneratedFiles (workspace);
-			}
-
-			internal static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace, bool newEditorOnly = false)
-			{
-				if (!IdeApp.IsInitialized)
-					return;
-
-				foreach (var openDocument in IdeApp.Workbench.Documents) {
-					if (newEditorOnly && openDocument.Editor != null) {
-						continue;
-					}
-					var filePath = openDocument.FileName;
-					var solution = workspace.CurrentSolution;
-					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
-					foreach (var documentId in documentIds) {
-						if (!workspace.IsDocumentOpen (documentId)) {
-							workspace.InformDocumentOpen (documentId, openDocument.TextBuffer.AsTextContainer (), openDocument);
-						}
-					}
-				}
-			}
-
-			static void OpenGeneratedFiles (MonoDevelopWorkspace workspace)
-			{
-				lock (workspace.generatedFiles) {
-					foreach (var generatedFile in workspace.generatedFiles) {
-						if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
-							workspace.OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
-					}
-				}
+				Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
 			}
 
 			static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
 			{
-				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
-				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+				var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (f.FilePath);
+				var node = IdeApp.TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node?.Parser == null)
 					return false;
 				return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
@@ -508,19 +478,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				var projectId = projectMap.GetId (p);
-				lock (workspace.generatedFiles) {
-					foreach (var generatedFile in workspace.generatedFiles) {
-						if (generatedFile.Key.Id.ProjectId == projectId)
-							documents.Add (generatedFile.Key);
-					}
-				}
 				return Tuple.Create (documents, additionalDocuments);
 			}
 
 			async Task<List<DocumentInfo>> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, CancellationToken token, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
 			{
-				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
-				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+				var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (f.FilePath);
+				var node = IdeApp.TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					return new List<DocumentInfo> ();
 
@@ -564,7 +528,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				return DocumentInfo.Create (
 					id.DocumentData.GetOrCreate (filePath),
-					filePath,
+					Path.GetFileName (filePath),
 					folders,
 					f.SourceCodeKind,
 					CreateTextLoader (filePath),

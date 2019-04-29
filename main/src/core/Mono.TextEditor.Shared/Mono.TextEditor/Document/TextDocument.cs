@@ -45,14 +45,19 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace Mono.TextEditor
 {
 	class TextDocument : ITextDocument, IDisposable
 	{
-		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; }
-		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
+		bool vsTextDocumentOwned;
 		Microsoft.VisualStudio.Text.ITextSnapshot currentSnapshot;
+		TextBufferFileModel textBufferFileModel;
+
+		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; private set; }
+
+		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
 
 		//HACK ImmutableText buffer;
 		//HACK readonly ILineSplitter splitter;
@@ -189,13 +194,15 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public bool HasLineEndingMismatchOnTextSet { get; set; }
-
-		protected void Initialize()
+		void AttachTextBuffer (Microsoft.VisualStudio.Text.ITextDocument textDocument, bool owned)
 		{
+			DetachTextBuffer ();
+			vsTextDocumentOwned = owned;
+			this.VsTextDocument = textDocument;
+
 			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
 
-			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
+			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
 			this.TextBuffer.Changed += this.OnTextBufferChanged;
 
 			// BaseBuffer is internal so have to use Reflection
@@ -203,28 +210,42 @@ namespace Mono.TextEditor
 			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 			changedImmediateEventInfo.AddMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
-
 			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
+		}
 
+		void DetachTextBuffer ()
+		{
+			if (VsTextDocument != null) {
+				// BaseBuffer is internal so have to use Reflection
+				//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
+				var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+				changedImmediateEventInfo.RemoveMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
+
+				this.TextBuffer.Changed -= this.OnTextBufferChanged;
+				this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
+				this.TextBuffer.Properties.RemoveProperty (typeof (ITextDocument));
+				this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
+				if (vsTextDocumentOwned) {
+					vsTextDocumentOwned = false;
+					this.VsTextDocument.Dispose ();
+				}
+			}
+		}
+
+		public bool HasLineEndingMismatchOnTextSet { get; set; }
+
+		protected void Initialize()
+		{
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
 		}
 
 		public void Dispose()
 		{
-			// BaseBuffer is internal so have to use Reflection
-			//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
-			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-			changedImmediateEventInfo.RemoveMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
-
-			this.TextBuffer.Changed -= this.OnTextBufferChanged;
-			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
-			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
-			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
 			SyntaxMode = null;
 
-			// Dispose this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
-			this.VsTextDocument.Dispose ();
+			// Dispose ITextDocument this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
+			DetachTextBuffer ();
 		}
 
 		private void OnTextBufferChangedImmediate (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
@@ -300,6 +321,17 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
+		public TextDocument (TextBufferFileModel textBufferFileModel)
+		{
+			var doc = textBufferFileModel.TextDocument;
+
+			AttachTextBuffer (doc, false);
+			this.Initialize ();
+
+			this.textBufferFileModel = textBufferFileModel;
+			textBufferFileModel.TextBufferInstanceChanged += TextBufferFileModel_TextBufferInstanceChanged;
+		}
+
 		public TextDocument (string fileName, string mimeType) : this (
 			TextFileUtility.GetText (fileName, out var enc),
 			fileName,
@@ -309,7 +341,7 @@ namespace Mono.TextEditor
 		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
 			this.mimeType = mimeType;
-			VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (
+			var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (
 				PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (
 					text ?? string.Empty,
 					GetContentTypeFromMimeType (fileName, mimeType)
@@ -317,14 +349,21 @@ namespace Mono.TextEditor
 				fileName ?? string.Empty
 			);
 
-			VsTextDocument.Encoding = TextFileUtility.DefaultEncoding;
+			doc.Encoding = TextFileUtility.DefaultEncoding;
 
+			AttachTextBuffer (doc, true);
 			Initialize();
+		}
+
+		void TextBufferFileModel_TextBufferInstanceChanged (object sender, EventArgs e)
+		{
+			var doc = textBufferFileModel.TextDocument;
+			AttachTextBuffer (doc, false);
 		}
 
 		IContentType GetContentTypeFromMimeType (string fileName, string mimeType)
 			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (fileName != null ? MonoDevelop.Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
+				?? (fileName != null ? MonoDevelop.Ide.Composition.CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
 				?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
@@ -700,13 +739,12 @@ namespace Mono.TextEditor
 		}
 
 		DocumentLine cachedLine;
-		int cachedLineNumber = -1;
 		DocumentLine cachedLineFromLineNumber;
 
 		void ClearLineCache ()
 		{
 			cachedLine = null;
-			cachedLineNumber = -1;
+			cachedLineFromLineNumber = null;
 		}
 
 		public DocumentLine GetLineByOffset (int offset)
@@ -2129,13 +2167,13 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
-			if (cachedLineNumber == number)
-				return cachedLineFromLineNumber;
+			var lineFromLineNumber = cachedLineFromLineNumber;
+			if (lineFromLineNumber != null && lineFromLineNumber.LineNumber == number)
+				return lineFromLineNumber;
 			var snapshot = this.currentSnapshot;
 			int snapshotLineNumber = number - 1;
 			if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
 				return null;
-			cachedLineNumber = number;
 			return cachedLineFromLineNumber = new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 

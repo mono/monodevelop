@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					var project = sol.GetAllProjects ().Single ();
 
 					foreach (var file in project.Files) {
-						Assert.IsNotNull (TypeSystemService.GetDocumentId (project, file.FilePath.ResolveLinks ()));
+						Assert.IsNotNull (IdeApp.TypeSystemService.GetDocumentId (project, file.FilePath.ResolveLinks ()));
 						if (file.FilePath.FileName.EndsWith ("SymlinkedFile.cs", StringComparison.Ordinal))
-							Assert.IsNull (TypeSystemService.GetDocumentId (project, file.FilePath));
+							Assert.IsNull (IdeServices.TypeSystemService.GetDocumentId (project, file.FilePath));
 					}
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);

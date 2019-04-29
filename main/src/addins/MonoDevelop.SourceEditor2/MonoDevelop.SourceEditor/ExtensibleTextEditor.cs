@@ -392,7 +392,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) 
-					return doc.Project;
+					return doc.Owner as MonoDevelop.Projects.Project;
 				return null;
 			}
 		}
@@ -402,7 +402,7 @@ namespace MonoDevelop.SourceEditor
 			region = MonoDevelop.Ide.Editor.DocumentRegion.Empty;
 
 			if (textEditorResolverProvider != null) {
-				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, out region);
+				return textEditorResolverProvider.GetLanguageItem (view.DocumentController.Document, offset, out region);
 			} 
 			return null;
 		}
@@ -427,7 +427,7 @@ namespace MonoDevelop.SourceEditor
 		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, string expression)
 		{
 			if (textEditorResolverProvider != null) {
-				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
+				return textEditorResolverProvider.GetLanguageItem (view.DocumentController.Document, offset, expression);
 			}
 	
 			return null;
@@ -486,7 +486,7 @@ namespace MonoDevelop.SourceEditor
 			HideTooltip ();
 			if (string.IsNullOrEmpty (menuPath))
 				return;
-			var ctx = view.WorkbenchWindow?.ExtensionContext ?? AddinManager.AddinEngine;
+			var ctx = view.GetExtensionContext ();
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
 			if (Platform.IsMac) {
@@ -545,13 +545,13 @@ namespace MonoDevelop.SourceEditor
 
 		public bool DoInsertTemplate ()
 		{
-			var doc = view.WorkbenchWindow?.Document ?? IdeApp.Workbench.ActiveDocument;
+			var doc = view.DocumentController?.Document ?? IdeApp.Workbench.ActiveDocument;
 			if (doc == null) {
 				LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
 				return false;
 			}
 
-			return DoInsertTemplate (EditorExtension.Editor, doc);
+			return DoInsertTemplate (EditorExtension.Editor, doc.DocumentContext);
 		}
 
 		public bool DoInsertTemplate (TextEditor editor, DocumentContext ctx)
@@ -585,7 +585,8 @@ namespace MonoDevelop.SourceEditor
 					tle.StartMode ();
 					CurrentMode = tle;
 					GLib.Timeout.Add (10, delegate {
-						tle.UpdateTextLinks ();
+						if (!IsDestroyed)
+							tle.UpdateTextLinks ();
 						return false;
 					}); 
 				}

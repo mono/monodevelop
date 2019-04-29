@@ -38,14 +38,14 @@ namespace MonoDevelop.Ide
 		public static async Task<MonoDevelopWorkspace> LoadSolution (Solution solution)
 		{
 			using (var monitor = new ProgressMonitor ()) {
-				var res = await TypeSystemService.Load (solution, monitor);
+				var res = await IdeApp.TypeSystemService.Load (solution, monitor);
 				return res.Single ();
 			}
 		}
 
 		public static void UnloadSolution (Solution solution)
 		{
-			TypeSystemService.Unload (solution);
+			IdeApp.TypeSystemService.Unload (solution);
 		}
 	}
 }

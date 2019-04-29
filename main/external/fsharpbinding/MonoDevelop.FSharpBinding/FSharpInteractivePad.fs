@@ -79,7 +79,7 @@ type FsiDocumentContext() =
     override x.ParsedDocument = pd
     override x.AttachToProject(_) = ()
     override x.ReparseDocument() = ()
-    override x.GetOptionSet() = TypeSystemService.Workspace.Options
+    override x.GetOptionSet() = IdeApp.TypeSystemService.Workspace.Options
     override x.Project = project :> Project
     override x.Name = name
     override x.AnalysisDocument with get() = null
@@ -599,7 +599,7 @@ type FSharpFsiEditorCompletion() =
       inherit CommandHandler()
       override x.Run() =
           async {
-              let project = IdeApp.Workbench.ActiveDocument.Project :?> FSharpProject
+              let project = IdeApp.Workbench.ActiveDocument.Owner :?> FSharpProject
               FSharpInteractivePad.Fsi
               |> Option.iter (fun fsi -> fsi.LoadReferences(project)
                                          FSharpInteractivePad.BringToFront(false))

@@ -29,11 +29,12 @@ using System.Linq;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.UnitTesting.Tests
 {
 	[TestFixture]
-	public class UnitTestGroupTests
+	public class UnitTestGroupTests : TestBase
 	{
 		[Test]
 		public void TestStatusUpdateCount ()

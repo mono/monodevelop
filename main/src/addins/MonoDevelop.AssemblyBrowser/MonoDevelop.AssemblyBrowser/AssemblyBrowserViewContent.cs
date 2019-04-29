@@ -1,4 +1,4 @@
-//
+﻿//
 // AssemblyBrowserView.cs
 //
 // Author:
@@ -39,29 +39,21 @@ using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserViewContent : ViewContent, IOpenNamedElementHandler, INavigable
+	class AssemblyBrowserViewContent : DocumentController, IOpenNamedElementHandler, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;
 		
-		protected override void OnWorkbenchWindowChanged ()
+		protected override Control OnGetViewControl (DocumentViewContent view)
 		{
-			base.OnWorkbenchWindowChanged ();
-			if (WorkbenchWindow != null) {
-				var toolbar = WorkbenchWindow.GetToolbar (this);
-				widget.SetToolbar (toolbar);
-			}
+			widget.SetToolbar (view.GetToolbar ());
+			return widget;
 		}
 
-		public override Control Control {
-			get {
-				return widget;
-			}
-		}
-		
 		internal AssemblyBrowserWidget Widget {
 			get {
 				return widget;
@@ -70,21 +62,41 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public AssemblyBrowserViewContent()
 		{
-			ContentName = GettextCatalog.GetString ("Assembly Browser");
+			DocumentTitle = GettextCatalog.GetString ("Assembly Browser");
 			widget = new AssemblyBrowserWidget ();
 			IsDisposed = false;
+			FillWidget ();
 		}
-		
-		public override Task Load (FileOpenInformation fileOpenInformation)
+
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
-			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			var loader = widget.AddReferenceByFileName (fileOpenInformation.FileName);
-			if (loader == null)
-				return Task.FromResult (true);
-			loader.LoadingTask.ContinueWith (delegate {
-				widget.SelectAssembly (loader);
-			});
-			return Task.FromResult (true);
+			if (modelDescriptor is FileDescriptor fileDescriptor) {
+				Load (fileDescriptor.FilePath);
+			}
+		}
+
+		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
+		{
+			// This descriptor is provided when using the Tools menu command to open the assembly browser
+			if (modelDescriptor is AssemblyBrowserDescriptor)
+				return true;
+
+			// Opening an assembly, the assembly browser can handle it
+			if (modelDescriptor is FileDescriptor file && (file.FilePath.HasExtension (".dll") || file.FilePath.HasExtension (".exe"))) {
+				Load (file.FilePath);
+				return true;
+			}
+			return base.OnTryReuseDocument (modelDescriptor);
+		}
+
+		public void Load (FilePath filePath)
+		{
+			var loader = widget.AddReferenceByFileName (filePath);
+			if (loader != null) {
+				loader.LoadingTask.ContinueWith (delegate {
+					widget.SelectAssembly (loader);
+				});
+			}
 		}
 
 		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> definitions)
@@ -92,27 +104,21 @@ namespace MonoDevelop.AssemblyBrowser
 			widget.EnsureDefinitionsLoaded (definitions);
 		}
 
-		public override bool IsFile {
-			get {
-				return false;
-			}
-		}
-		
 		public bool IsDisposed {
 			get;
 			private set;
 		}
-		
-		public override void Dispose ()
-		{ 
+
+		protected override void OnDispose ()
+		{
 			IsDisposed = true;
-			base.Dispose ();
 			if (currentWs != null) 
 				currentWs.WorkspaceLoaded -= Handle_WorkspaceLoaded;
 
 			widget = null;
 			if (Disposed != null)
 				Disposed (this, EventArgs.Empty);
+			base.OnDispose ();
 		}
 
 		internal event EventHandler Disposed;
@@ -181,7 +187,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			} else {
 				var alreadyAdded = new HashSet<string> ();
-				currentWs = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetWorkspace (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution);
+				currentWs = IdeApp.TypeSystemService.GetWorkspace (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				if (currentWs != null)
 					currentWs.WorkspaceLoaded += Handle_WorkspaceLoaded;
 				var allTasks = new List<Task> ();

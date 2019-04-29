@@ -1,4 +1,4 @@
-//
+﻿//
 // SearchResult.cs
 //
 // Author:
@@ -275,7 +275,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (cachedEditor == null || cachedEditor.FileName != FileName || cachedEditorFileProvider != FileProvider) {
 				var content = FileProvider.ReadString ();
 				cachedEditor?.Dispose ();
-				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, DesktopService.GetMimeTypeForUri (FileName)));
+				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, IdeServices.DesktopService.GetMimeTypeForUri (FileName)));
 				cachedEditorFileProvider = FileProvider;
 			}
 			return cachedEditor;

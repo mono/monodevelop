@@ -51,7 +51,7 @@ namespace NuGet.Credentials
 
 			_nonInteractive = nonInteractive;
 			Providers = new List<ICredentialProvider> (providers);
-			HandlesDefaultCredentials = Providers.Any (provider => provider is DefaultCredentialsCredentialProvider);
+			HandlesDefaultCredentials = Providers.Any (provider => provider is DefaultNetworkCredentialsCredentialProvider);
 		}
 
 		/// <summary>
@@ -139,7 +139,7 @@ namespace NuGet.Credentials
 
 		public CredentialService CreateNonInteractive ()
 		{
-			bool handlesDefaultCredentials = Providers.Any (provider => provider is DefaultCredentialsCredentialProvider);
+			bool handlesDefaultCredentials = Providers.Any (provider => provider is DefaultNetworkCredentialsCredentialProvider);
 			var lazyProviders = AsyncLazy.New (() => Providers)
 ;			return new CredentialService (lazyProviders, nonInteractive: true, handlesDefaultCredentials: handlesDefaultCredentials);
 		}

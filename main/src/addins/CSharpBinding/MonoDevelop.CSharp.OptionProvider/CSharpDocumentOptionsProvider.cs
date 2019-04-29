@@ -38,6 +38,7 @@ using System.IO;
 using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.OptionProvider
 {
@@ -48,18 +49,6 @@ namespace MonoDevelop.CSharp.OptionProvider
 			var mdws = document.Project.Solution.Workspace as MonoDevelopWorkspace;
 			var project = mdws?.GetMonoProject (document.Project.Id);
 
-			var types = Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-
-			CSharpFormattingPolicy policy;
-			TextStylePolicy textpolicy;
-			if (project == null) {
-				textpolicy = PolicyService.InvariantPolicies.Get<TextStylePolicy> (types);
-				policy = PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (types);
-			} else {
-				var policyParent = project.Policies;
-				policy = policyParent.Get<CSharpFormattingPolicy> (types);
-				textpolicy = policyParent.Get<TextStylePolicy> (types);
-			}
 			var path = GetPath (document);
 			ICodingConventionContext conventions = null;
 			try {
@@ -68,7 +57,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			} catch (Exception e) {
 				LoggingService.LogError("Error while loading coding conventions.", e);
 			}
-			return new DocumentOptions (policy.CreateOptions (textpolicy), conventions?.CurrentConventions);
+			return new DocumentOptions (project?.Policies, conventions?.CurrentConventions);
 		}
 
 		static string GetPath(Document document)
@@ -87,12 +76,20 @@ namespace MonoDevelop.CSharp.OptionProvider
 
 		internal class DocumentOptions : IDocumentOptions
 		{
-			readonly OptionSet optionSet;
+			readonly static IEnumerable<string> types = Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			readonly PolicyBag policyBag;
+
+			CSharpFormattingPolicy policy;
+			CSharpFormattingPolicy Policy => policy ?? (policy = policyBag?.Get<CSharpFormattingPolicy> (types) ?? PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (types));
+
+			TextStylePolicy textpolicy;
+			TextStylePolicy TextPolicy => textpolicy ?? (textpolicy = policyBag?.Get<TextStylePolicy> (types) ?? PolicyService.InvariantPolicies?.Get<TextStylePolicy> (types));
+
 			readonly ICodingConventionsSnapshot codingConventionsSnapshot;
 
-			public DocumentOptions (OptionSet optionSet, ICodingConventionsSnapshot codingConventionsSnapshot)
+			public DocumentOptions (PolicyBag policyBag, ICodingConventionsSnapshot codingConventionsSnapshot)
 			{
-				this.optionSet = optionSet;
+				this.policyBag = policyBag;
 				this.codingConventionsSnapshot = codingConventionsSnapshot;
 			}
 
@@ -103,7 +100,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 					if (editorConfigPersistence != null) {
 						var allRawConventions = codingConventionsSnapshot.AllRawConventions;
 						try {
-							var underlyingOption = underlyingOptions.GetOption (option);
+							var underlyingOption = Policy.OptionSet.GetOption (option);
 							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
 								return true;
 						} catch (Exception ex) {
@@ -112,7 +109,32 @@ namespace MonoDevelop.CSharp.OptionProvider
 					}
 				}
 
-				var result = optionSet.GetOption (option);
+				if (option.Option == Microsoft.CodeAnalysis.Formatting.FormattingOptions.IndentationSize) {
+					value = TextPolicy.IndentWidth;
+					return true;
+				}
+
+				if (option.Option == Microsoft.CodeAnalysis.Formatting.FormattingOptions.NewLine) {
+					value = TextPolicy.GetEolMarker ();
+					return true;
+				}
+
+				if (option.Option == Microsoft.CodeAnalysis.Formatting.FormattingOptions.SmartIndent) {
+					value = Microsoft.CodeAnalysis.Formatting.FormattingOptions.IndentStyle.Smart;
+					return true;
+				}
+
+				if (option.Option == Microsoft.CodeAnalysis.Formatting.FormattingOptions.TabSize) {
+					value = TextPolicy.TabWidth;
+					return true;
+				}
+
+				if (option.Option == Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabs) {
+					value = !TextPolicy.TabsToSpaces;
+					return true;
+				}
+
+				var result = Policy.OptionSet.GetOption (option);
 				if (result == underlyingOptions.GetOption (option)) {
 					value = null;
 					return false;

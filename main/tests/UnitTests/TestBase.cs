@@ -30,6 +30,7 @@ using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using System.Threading.Tasks;
 
 namespace UnitTests
 {
@@ -59,34 +60,44 @@ namespace UnitTests
 		}
 
 		[TestFixtureSetUp]
-		public void Simulate ()
+		public async Task Simulate ()
 		{
 			if (firstRun) {
 				string rootDir = Path.Combine (Util.TestsRootDir, "config");
 				try {
 					firstRun = false;
-					InternalSetup (rootDir);
+					await InternalSetup (rootDir);
 				} catch (Exception) {
 					// if we encounter an error, try to re create the configuration directory
 					// (This takes much time, therfore it's only done when initialization fails)
 					try {
 						if (Directory.Exists (rootDir))
 							Directory.Delete (rootDir, true);
-						InternalSetup (rootDir);
+						await InternalSetup (rootDir);
 					} catch (Exception) {
 					}
 				}
 			}
+			await InitializeServices ();
 		}
 
-		protected virtual void InternalSetup (string rootDir)
+		async Task InitializeServices ()
+		{
+			foreach (RequireServiceAttribute attribute in Attribute.GetCustomAttributes (GetType (), typeof (RequireServiceAttribute), true)) {
+				var m = typeof (ServiceProvider).GetMethod ("GetService").MakeGenericMethod (attribute.ServiceType);
+				var task = (Task)m.Invoke (Runtime.ServiceProvider, new object [0]);
+				await task;
+			}
+		}
+
+		protected virtual async Task InternalSetup (string rootDir)
 		{
 			Util.ClearTmpDir ();
 			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
-		}
+ 		}
 
 		
 		[TestFixtureTearDown]

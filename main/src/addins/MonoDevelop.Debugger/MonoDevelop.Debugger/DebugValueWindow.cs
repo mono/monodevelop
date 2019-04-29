@@ -1,4 +1,4 @@
-// DebugValueWindow.cs
+﻿// DebugValueWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -190,7 +190,7 @@ namespace MonoDevelop.Debugger
 				this.GetPosition (out x, out y);
 				oldY = y;
 
-				Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
 				int top = (int)geometry.Top;
 				if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
 					y = top + ((int)geometry.Height - allocation.Height - edgeGap);

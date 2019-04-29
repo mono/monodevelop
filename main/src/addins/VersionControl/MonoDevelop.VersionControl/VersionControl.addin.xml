@@ -324,7 +324,6 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class = "MonoDevelop.VersionControl.Views.SubviewAttachmentHandler"/>
 		<Class class = "MonoDevelop.VersionControl.VersionControlInitializer"/>
 	</Extension>
 

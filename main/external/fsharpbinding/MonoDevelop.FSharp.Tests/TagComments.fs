@@ -4,6 +4,8 @@ open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp
 open System.Threading
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 module ``Tag comment tests`` =
@@ -16,6 +18,10 @@ module ``Tag comment tests`` =
             |> Async.AwaitTask |> Async.RunSynchronously
         printf "%A" tags
         tags
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     [<Test>]
     let ``should find tag comments``() =

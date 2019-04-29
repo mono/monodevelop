@@ -31,6 +31,7 @@ using System;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -80,7 +81,7 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			OnDocumentClosing ();
 			fileName = doc.FileName;
-			project = doc.HasProject ? doc.Project.ItemId : null;
+			project = doc.Owner is SolutionItem item ? item.ItemId : null;
 			if (fileName == FilePath.Null) {
 				// If the document is not a file, dispose the navigation point because the document can't be reopened
 				Dispose ();

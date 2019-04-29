@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RefactoringOptions.cs
 //  
 // Author:
@@ -66,7 +66,7 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
+				return IdeServices.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 
-		public RefactoringOptions (MonoDevelop.Ide.Gui.Document doc) : this(doc.Editor, doc)
+		public RefactoringOptions (MonoDevelop.Ide.Gui.Document doc) : this(doc.Editor, doc.DocumentContext)
 		{
 		}
 
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 //		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 //		{
 //			IReturnType returnType = null; 
-//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (options.Document.FileName));
+//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (IdeServices.DesktopService.GetMimeTypeForUri (options.Document.FileName));
 //			
 //			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null) {
 //				if (astProvider != null) 

@@ -115,56 +115,60 @@ namespace MonoDevelop.MacIntegration
 							uri.Host
 						);
 
-					var alert = new NSAlert {
-						MessageText = GettextCatalog.GetString ("Credentials Required"),
-						InformativeText = message
-					};
+					using (var alert = new NSAlert ()) {
+						alert.MessageText = GettextCatalog.GetString ("Credentials Required");
+						alert.InformativeText = message;
 
-					var okButton = alert.AddButton (GettextCatalog.GetString ("OK"));
-					var cancelButton = alert.AddButton (GettextCatalog.GetString ("Cancel"));
+						var okButton = alert.AddButton (GettextCatalog.GetString ("OK"));
+						var cancelButton = alert.AddButton (GettextCatalog.GetString ("Cancel"));
 
-					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
+						alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
-					var view = new NSView (new CGRect (0, 0, 313, 91));
+						var view = new NSView (new CGRect (0, 0, 313, 91));
 
-					var usernameLabel = new NSTextField (new CGRect (17, 55, 71, 17)) {
-						Identifier = "usernameLabel",
-						StringValue = "Username:",
-						Alignment = NSTextAlignment.Right,
-						Editable = false,
-						Bordered = false,
-						DrawsBackground = false,
-						Bezeled = false,
-						Selectable = false,
-					};
-					view.AddSubview (usernameLabel);
+						var usernameLabel = new NSTextField (new CGRect (17, 55, 71, 17)) {
+							Identifier = "usernameLabel",
+							StringValue = "Username:",
+							Alignment = NSTextAlignment.Right,
+							Editable = false,
+							Bordered = false,
+							DrawsBackground = false,
+							Bezeled = false,
+							Selectable = false,
+						};
+						view.AddSubview (usernameLabel);
 
-					var usernameInput = new NSTextField (new CGRect (93, 52, 200, 22));
-					view.AddSubview (usernameInput);
+						var usernameInput = new NSTextField (new CGRect (93, 52, 200, 22));
+						view.AddSubview (usernameInput);
 
-					var passwordLabel = new NSTextField (new CGRect (22, 23, 66, 17)) {
-						StringValue = "Password:",
-						Alignment = NSTextAlignment.Right,
-						Editable = false,
-						Bordered = false,
-						DrawsBackground = false,
-						Bezeled = false,
-						Selectable = false,
-					};
-					view.AddSubview (passwordLabel);
+						var passwordLabel = new NSTextField (new CGRect (22, 23, 66, 17)) {
+							StringValue = "Password:",
+							Alignment = NSTextAlignment.Right,
+							Editable = false,
+							Bordered = false,
+							DrawsBackground = false,
+							Bezeled = false,
+							Selectable = false,
+						};
+						view.AddSubview (passwordLabel);
 
-					var passwordInput = new NSSecureTextField (new CGRect (93, 20, 200, 22));
-					view.AddSubview (passwordInput);
+						var passwordInput = new NSSecureTextField (new CGRect (93, 20, 200, 22));
+						view.AddSubview (passwordInput);
 
-					alert.AccessoryView = view;
-					alert.Window.WeakDelegate = new PasswordAlertWindowDelegate (usernameInput, passwordInput, cancelButton, okButton);
-					alert.Window.InitialFirstResponder = usernameInput;
-					if (alert.RunModal () != NSAlertFirstButtonReturn)
-						return;
-
-					var username = usernameInput.StringValue;
-					var password = passwordInput.StringValue;
-					result = new NetworkCredential (username, password);
+						using (var alertDelegate = new PasswordAlertWindowDelegate (usernameInput, passwordInput, cancelButton, okButton)) {
+							alert.AccessoryView = view;
+							MonoDevelop.Components.IdeTheme.ApplyTheme (alert.Window);
+							alert.Window.WeakDelegate = alertDelegate;
+							alert.Window.InitialFirstResponder = usernameInput;
+							alert.Window.ReleasedWhenClosed = true;
+							if (alert.RunModal () == NSAlertFirstButtonReturn) {
+								var username = usernameInput.StringValue;
+								var password = passwordInput.StringValue;
+								result = new NetworkCredential (username, password);
+							}
+							alert.Window.Close ();
+						}
+					}
 				}
 			}).Wait ();
 

@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.StressTest.Attributes;
+using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
@@ -36,29 +38,22 @@ namespace MonoDevelop.StressTest
 	[NoLeak(typeof (Projects.Solution))]
 	public class DefaultScenario : IEditorTestScenario
 	{
-		List<FilePath> filesToOpen;
+		readonly FilePath[] filesToOpen = Array.Empty<FilePath> ();
 
 		public DefaultScenario (FilePath solutionFileName)
-			: this (solutionFileName, Enumerable.Empty<string> ())
 		{
 			SolutionFileName = solutionFileName;
 		}
 
-		public DefaultScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen)
+		public DefaultScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen) : this (solutionFileName)
 		{
-			SolutionFileName = solutionFileName;
-
 			this.filesToOpen = filesToOpen
 				.Select (fileToOpen => solutionFileName.ParentDirectory.Combine (fileToOpen))
-				.ToList ();
+				.ToArray ();
 		}
 
+		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
 		public FilePath SolutionFileName { get; set; }
-
-		public IEnumerable<FilePath> FilesToOpen {
-			get { return filesToOpen; }
-		}
-
 		public IEnumerable<string> TextToEnter { get; set; } = Enumerable.Empty<string> ();
 
 		bool firstRun = true;
@@ -73,27 +68,7 @@ namespace MonoDevelop.StressTest
 				firstRun = false;
 			}
 
-			// Open files.
-			WorkbenchExtensions.OpenFiles (FilesToOpen);
-			UserInterfaceTests.Ide.WaitForIdeIdle ();
-
-			// Make some changes to the active file and then remove the changes.
-			TextEditor.MoveCaretToDocumentStart ();
-			UserInterfaceTests.Ide.WaitForIdeIdle ();
-
-			if (TextToEnter.Any ()) {
-				TextEditor.EnterText (TextToEnter);
-				UserInterfaceTests.Ide.WaitForIdeIdle ();
-
-				WorkbenchExtensions.SaveFile ();
-				UserInterfaceTests.Ide.WaitForIdeIdle ();
-
-				TextEditor.DeleteToLineStart ();
-				UserInterfaceTests.Ide.WaitForIdeIdle ();
-
-				WorkbenchExtensions.SaveFile ();
-				UserInterfaceTests.Ide.WaitForIdeIdle ();
-			}
+			RunTypingTest ();
 
 			// Rebuild.
 			WorkbenchExtensions.RebuildSolution ();
@@ -113,6 +88,42 @@ namespace MonoDevelop.StressTest
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
 		}
 
-		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
+		void RunTypingTest ()
+		{
+			var openFile = filesToOpen.LastOrDefault ();
+			if (openFile == null) {
+				return;
+			}
+
+			// Open files.
+			WorkbenchExtensions.OpenFiles (filesToOpen);
+
+			// Wait for the text area to be available.
+			var area = TestService.Session.WaitForElement (IdeQuery.TextAreaForFile (openFile), 10000);
+			Assert.That (area, Has.Length (1));
+
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+
+			// Go to the start of the document.
+			TextEditor.MoveCaretToDocumentStart ();
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+
+			if (!TextToEnter.Any ()) {
+				return;
+			}
+
+			// Make some changes to the active file and then remove the changes.
+			TextEditor.EnterText (TextToEnter);
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+
+			WorkbenchExtensions.SaveFile ();
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+
+			TextEditor.DeleteToLineStart ();
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+
+			WorkbenchExtensions.SaveFile ();
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+		}
 	}
 }

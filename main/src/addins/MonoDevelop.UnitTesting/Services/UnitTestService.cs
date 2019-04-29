@@ -1,4 +1,4 @@
-//
+﻿//
 // NUnitService.cs
 //
 // Author:
@@ -423,9 +423,9 @@ namespace MonoDevelop.UnitTesting
 
 		public static string GetTestResultsDirectory (string baseDirectory)
 		{
-			var newCache = TypeSystemService.GetCacheDirectory (baseDirectory, false);
+			var newCache = IdeApp.TypeSystemService.GetCacheDirectory (baseDirectory, false);
 			if (newCache == null) {
-				newCache = TypeSystemService.GetCacheDirectory (baseDirectory, true);
+				newCache = IdeApp.TypeSystemService.GetCacheDirectory (baseDirectory, true);
 				var oldDirectory = Path.Combine (baseDirectory, "test-results");
 				var newDirectory = Path.Combine (newCache, "test-results");
 				try {

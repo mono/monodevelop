@@ -78,9 +78,9 @@ namespace MonoDevelop.Ide.CodeFormatting
 					var version = editor.Version;
 
 					if (formatter.SupportsOnTheFlyFormatting) {
-						formatter.OnTheFlyFormat (doc.Editor, doc, selection);
+						formatter.OnTheFlyFormat (doc.Editor, doc.DocumentContext, selection);
 					} else {
-						var pol = doc.Project != null ? doc.Project.Policies : null;
+						var pol = (doc.Owner as IPolicyProvider)?.Policies;
 						try {
 							var editorText = editor.Text;
 							string text = formatter.FormatText (pol, editorText, selection);
@@ -101,12 +101,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 			if (formatter.SupportsOnTheFlyFormatting) {
 				using (var undo = doc.Editor.OpenUndoGroup ()) {
-					formatter.OnTheFlyFormat (doc.Editor, doc, new TextSegment (0, doc.Editor.Length));
+					formatter.OnTheFlyFormat (doc.Editor, doc.DocumentContext, new TextSegment (0, doc.Editor.Length));
 				}
 			} else {
 				var text = editor.Text;
 				var oldOffsetWithoutWhitespaces = editor.GetTextBetween (0, editor.CaretOffset).Count (c => !char.IsWhiteSpace (c));
-				var policies = doc.Project != null ? doc.Project.Policies : PolicyService.DefaultPolicies;
+				var policies = (doc.Owner as IPolicyProvider)?.Policies ?? PolicyService.DefaultPolicies;
 				string formattedText = formatter.FormatText (policies, text);
 				if (formattedText == null || formattedText == text)
 					return;

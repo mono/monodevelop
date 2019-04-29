@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Startup

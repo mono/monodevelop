@@ -67,17 +67,17 @@ namespace MonoDevelop.CSharp.Navigation
 			});
 		}
 
-		internal static async Task<ISymbol> GetSymbolAtCaret (Ide.Gui.Document doc)
+		internal static async Task<ISymbol> GetSymbolAtCaret (Ide.Gui.Document doc, CancellationToken cancelToken = default)
 		{
-			if (doc == null)
+			if (doc == null || doc.Editor == null)
 				return null;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor, cancelToken);
 			return info.Symbol ?? info.DeclaredSymbol;
 		}
 
-		protected override async void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
-			var sym = await GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
+			var sym = await GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument, cancelToken);
 			info.Enabled = sym != null;
 			info.Bypass = !info.Enabled;
 		}

@@ -26,13 +26,13 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private RoslynCommandTarget (ITextView textView, ITextBuffer languageBuffer)
 		{
-			var commandHandlerServiceFactory = CompositionManager.GetExportedValue<ICommandHandlerServiceFactory> ();
+			var commandHandlerServiceFactory = CompositionManager.Instance.GetExportedValue<ICommandHandlerServiceFactory> ();
 			if (commandHandlerServiceFactory != null) {
 				commandHandlerServiceFactory.Initialize (languageBuffer.ContentType.TypeName);
 				CurrentRoslynHandlers = commandHandlerServiceFactory.GetService (languageBuffer);
 			}
 
-			var editorCommandHandlerServiceFactory = CompositionManager.GetExportedValue<IEditorCommandHandlerServiceFactory> ();
+			var editorCommandHandlerServiceFactory = CompositionManager.Instance.GetExportedValue<IEditorCommandHandlerServiceFactory> ();
 			if (editorCommandHandlerServiceFactory != null) {
 				CurrentEditorHandlers = editorCommandHandlerServiceFactory.GetService (textView, languageBuffer);
 			}

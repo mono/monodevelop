@@ -513,7 +513,7 @@ class Foo
 }
 ", createWithProject: true)) {
 				var indent = new CSharpTextEditorIndentation ();
-				indent.Initialize (testCase.Document.Editor, testCase.Document);
+				indent.Initialize (testCase.Document.Editor, testCase.Document.DocumentContext);
 				indent.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'>', '>', Gdk.ModifierType.None));
 
 				CheckOutput (testCase, @"
@@ -546,7 +546,7 @@ class Foo
 }
 ", createWithProject: true)) {
 				var indent = new CSharpTextEditorIndentation ();
-				indent.Initialize (testCase.Document.Editor, testCase.Document);
+				indent.Initialize (testCase.Document.Editor, testCase.Document.DocumentContext);
 				var offset = testCase.Document.Editor.CaretOffset;
 				indent.SafeUpdateIndentEngine (offset);
 				var pasteHandler = new CSharpTextPasteHandler (indent, null);
@@ -585,7 +585,7 @@ $
 					RemoveTrailingWhitespaces = false
 				};
 				var indent = new CSharpTextEditorIndentation ();
-				indent.Initialize (data.Document.Editor, data.Document);
+				indent.Initialize (data.Document.Editor, data.Document.DocumentContext);
 				indent.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 				CheckOutput (data, @"
 using System;
@@ -620,7 +620,7 @@ namespace MyLibrary
 $)
 	}
 }", createWithProject: true)) {
-				var tracker = new CSharpIndentationTracker (data.Document.Editor, data.Document);
+				var tracker = new CSharpIndentationTracker (data.Document.Editor, data.Document.DocumentContext);
 				var indent = tracker.GetIndentationString (data.Document.Editor.CaretLine);
 				Assert.AreEqual ("\t\t\t", indent);
 			}
@@ -637,7 +637,7 @@ $)
 using System;
 $
 	", createWithProject: true)) {
-				var tracker = new CSharpIndentationTracker (data.Document.Editor, data.Document);
+				var tracker = new CSharpIndentationTracker (data.Document.Editor, data.Document.DocumentContext);
 				var indent = tracker.GetIndentationString (data.Document.Editor.CaretLine);
 				Assert.AreEqual ("", indent);
 			}

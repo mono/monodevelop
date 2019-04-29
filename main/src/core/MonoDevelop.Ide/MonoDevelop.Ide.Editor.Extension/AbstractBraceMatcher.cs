@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public virtual bool CanHandle (TextEditor editor)
 		{
-			return DesktopService.GetMimeTypeIsSubtype(editor.MimeType, MimeType);
+			return IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, MimeType);
 		}
 
 		public abstract Task<BraceMatchingResult?> GetMatchingBracesAsync(IReadonlyTextDocument editor, DocumentContext context, int offset, CancellationToken cancellationToken = default(CancellationToken));

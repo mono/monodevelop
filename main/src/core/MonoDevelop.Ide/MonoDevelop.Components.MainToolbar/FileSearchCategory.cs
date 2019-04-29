@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 				// We only want to check it here if it's not part
 				// of the open combine.  Otherwise, it will get
 				// checked down below.
-				if (doc.Project == null && doc.IsFile) {
+				if (doc.Owner == null && doc.IsFile) {
 					var pf = new ProjectFile (doc.Name);
 					list.Add (new Tuple<string, string, ProjectFile> (System.IO.Path.GetFileName (pf.FilePath), FileSearchResult.GetRelProjectPath (pf), pf));
 				}

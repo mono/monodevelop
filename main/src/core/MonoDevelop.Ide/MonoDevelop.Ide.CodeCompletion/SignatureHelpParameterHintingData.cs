@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (documentation.Count > 0) {
 				markup.Append ("<span font='");
-				markup.Append (FontService.SansFontName);
+				markup.Append (IdeServices.FontService.SansFontName);
 				markup.Append ("' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 					if (documentation.Count > 0) {
 						markup.Append ("<span font='");
-						markup.Append (FontService.SansFontName);
+						markup.Append (IdeServices.FontService.SansFontName);
 						markup.Append ("' size='small'>");
 						markup.AppendLine ();
 						markup.AppendLine ();

@@ -1,4 +1,4 @@
-// NewFileCommands.cs
+﻿// NewFileCommands.cs
 //
 // Author:
 //   Carlo Kok (ck@remobjects.com)
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open) {
-				TransientFor = DesktopService.GetFocusedTopLevelWindow (),
+				TransientFor = IdeServices.DesktopService.GetFocusedTopLevelWindow (),
 				ShowEncodingSelector = true,
 				ShowViewerSelector = true,
 			};
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			using (var dlg = new NewFileDialog (null, null)) // new file seems to fail if I pass the project IdeApp.ProjectOperations.CurrentSelectedProject
-				MessageService.ShowCustomDialog (dlg, DesktopService.GetFocusedTopLevelWindow ());
+				MessageService.ShowCustomDialog (dlg, IdeServices.DesktopService.GetFocusedTopLevelWindow ());
 		}
 	}
 
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			try {
 				isRunning = true;
-				await IdeApp.Workbench.CloseAllDocumentsAsync (false);
+				await IdeApp.Workbench.CloseAllDocuments (false);
 			} finally {
 				isRunning = false;
 			}
@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var files = DesktopService.RecentFiles.GetFiles ();
+			var files = IdeServices.DesktopService.RecentFiles.GetFiles ();
 			if (files.Count == 0)
 				return;
 			
@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Commands
 				var cmd = new CommandInfo (commandText) {
 					Description = string.Format (descFormat, ri.FileName)
 				};
-/*				Gdk.Pixbuf icon = DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
+/*				Gdk.Pixbuf icon = IdeServices.DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
 				#pragma warning disable 618
 				if (icon != null)
 					cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.Commands
 					question,
 					AlertButton.No,
 					AlertButton.Yes) == AlertButton.Yes) {
-					DesktopService.RecentFiles.ClearFiles ();
+					IdeServices.DesktopService.RecentFiles.ClearFiles ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error clearing recent files list", ex);
@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DesktopService.RecentFiles.GetFiles ().Count > 0;
+			info.Enabled = IdeServices.DesktopService.RecentFiles.GetFiles ().Count > 0;
 		}
 	}
 	
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var projects = DesktopService.RecentFiles.GetProjects ();
+			var projects = IdeServices.DesktopService.RecentFiles.GetProjects ();
 			if (projects.Count == 0)
 				return;
 				
@@ -353,7 +353,7 @@ namespace MonoDevelop.Ide.Commands
 					if (!File.Exists (ri.FileName))
 						continue;
 
-					icon = IdeApp.Services.ProjectService.FileIsObjectOfType (ri.FileName, typeof(Solution)) ? "md-solution": "md-workspace";
+					icon = IdeServices.ProjectService.FileIsObjectOfType (ri.FileName, typeof(Solution)) ? "md-solution": "md-workspace";
 				}
 				catch (UnauthorizedAccessException exAccess) {
 					LoggingService.LogWarning ("Error building recent solutions list (Permissions)", exAccess);
@@ -406,7 +406,7 @@ namespace MonoDevelop.Ide.Commands
 					question,
 					AlertButton.No,
 					AlertButton.Yes) == AlertButton.Yes) {
-					DesktopService.RecentFiles.ClearProjects ();
+					IdeServices.DesktopService.RecentFiles.ClearProjects ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error clearing recent projects list", ex);
@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Commands
 	
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DesktopService.RecentFiles.GetProjects ().Count > 0;
+			info.Enabled = IdeServices.DesktopService.RecentFiles.GetProjects ().Count > 0;
 		}
 	}
 	

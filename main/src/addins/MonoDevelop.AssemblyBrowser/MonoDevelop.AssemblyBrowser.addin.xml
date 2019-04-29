@@ -18,10 +18,6 @@
 		         _label = "_Assembly Browser" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "AssemblyBrowser" class = "MonoDevelop.AssemblyBrowser.AssemblyBrowserDisplayBinding" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses" />

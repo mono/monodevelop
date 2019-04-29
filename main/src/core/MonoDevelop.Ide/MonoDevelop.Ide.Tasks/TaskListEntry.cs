@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TaskListEntry.cs
 //  
 // Author:
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ShowDocumentation ()
 		{
 			if (HasDocumentationLink ())
-				DesktopService.ShowUrl (DocumentationLink);
+				IdeServices.DesktopService.ShowUrl (DocumentationLink);
 		}
 
 		public virtual void JumpToPosition ()
@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 				ShowDocumentation ();
 			}
-			TaskService.InformJumpToTask (this);
+			IdeServices.TaskService.InformJumpToTask (this);
 		}
 
 		public void SelectInPad()

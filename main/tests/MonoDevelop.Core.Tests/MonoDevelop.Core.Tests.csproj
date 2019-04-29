@@ -110,6 +110,7 @@
     <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimingsTests.cs" />
     <Compile Include="MonoDevelop.Utilities\RaceCheckerTests.cs" />
     <Compile Include="MonoDevelop.Core\FeatureSwitchServiceTests.cs" />
+    <Compile Include="MonoDevelop.Core\ServiceProviderTests.cs" />
     <Compile Include="MonoDevelop.Core.Web\ProxyAuthenticationHandlerTests.cs" />
     <Compile Include="MonoDevelop.Core.Web\TestProxy.cs" />
     <Compile Include="MonoDevelop.Core.Web\LambdaMessageHandler.cs" />

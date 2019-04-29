@@ -57,10 +57,6 @@
 		<FileFilter id = "PoFiles" _label = "PO Files" extensions = "*.po"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "GettextEditor" insertbefore ="DefaultDisplayBinding" class = "MonoDevelop.Gettext.GettextEditorDisplayBinding"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Gettext.TranslationProject" />
 		<DataType class = "MonoDevelop.Gettext.TranslationProjectConfiguration" />

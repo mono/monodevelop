@@ -27,11 +27,12 @@
 using System;
 using System.Xml.Linq;
 using NuGet.Configuration;
+using NuGet.Common;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
+using NuGet.ProjectManagement;
 using NuGet.Packaging.PackageExtraction;
 using NuGet.Packaging.Signing;
-using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -40,6 +41,8 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		IDEExecutionContext executionContext;
 		ISettings settings;
+		PackageExtractionContext packageExtractionContext;
+		PackageManagementLogger logger;
 
 		public NuGetProjectContext (ISettings settings)
 		{
@@ -47,6 +50,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 			var commonOperations = new MonoDevelopCommonOperations ();
 			executionContext = new IDEExecutionContext (commonOperations);
+			logger = new PackageManagementLogger (packageManagementEvents);
 		}
 
 		public ExecutionContext ExecutionContext {
@@ -81,7 +85,30 @@ namespace MonoDevelop.PackageManagement
 			return packageManagementEvents.OnResolveFileConflict (message);
 		}
 
-		public PackageExtractionContext PackageExtractionContext { get; set; }
+		public void Log (ILogMessage message)
+		{
+			logger.Log (message);
+		}
+
+		public void ReportError (ILogMessage message)
+		{
+			logger.Log (message);
+		}
+
+		public PackageExtractionContext PackageExtractionContext {
+			get {
+				if (packageExtractionContext == null) {
+					var loggerAdapter = new LoggerAdapter (this);
+					packageExtractionContext = new PackageExtractionContext (
+						PackageSaveMode.Defaultv2,
+						PackageExtractionBehavior.XmlDocFileSaveMode,
+						ClientPolicyContext.GetClientPolicy (settings, loggerAdapter),
+						loggerAdapter);
+				}
+				return packageExtractionContext;
+			}
+			set { packageExtractionContext = value; }
+		}
 	}
 }
 
