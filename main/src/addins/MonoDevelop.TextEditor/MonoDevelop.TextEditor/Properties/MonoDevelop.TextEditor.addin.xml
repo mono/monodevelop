@@ -92,8 +92,6 @@
 
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
-		
-		<Map id="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FormatDocumentCommandArgs" />
 	</Extension>
 
 	<!--
