@@ -1,4 +1,4 @@
-//
+﻿//
 // MacPlatformService.cs
 //
 // Author:
@@ -482,16 +482,18 @@ namespace MonoDevelop.MacIntegration
 
 			initedApp = true;
 
-			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			IdeApp.Initialized += (s, e) => {
+				IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
-				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
-					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
-					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
-					if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
-						win.TabbingMode = NSWindowTabbingMode.Disallowed;
-				};
-			}
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
+					IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
+						var win = GtkQuartz.GetWindow ((Gtk.Window)sender);
+						win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+						if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
+							win.TabbingMode = NSWindowTabbingMode.Disallowed;
+					};
+				}
+			};
 
 			PatchGtkTheme ();
 			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
