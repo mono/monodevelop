@@ -783,22 +783,24 @@ namespace MonoDevelop.Projects.MSBuild
 			if (file == null)
 				return Task.FromResult<SolutionItem> (new GenericProject ());
 
+			// Unknown project types are already displayed in the solution view, we don't need to tell the user with a modal dialog as well
 			return Task<SolutionItem>.Factory.StartNew (delegate {
 				var t = ReadGenericProjectType (file);
 				if (t == null)
-					throw new UserException ("Unknown project type");
+					throw new UnknownSolutionItemTypeException ("Unknown project type");
 
 				var dt = Services.ProjectService.DataContext.GetConfigurationDataType (t);
 				if (dt != null) {
-					if (!typeof(Project).IsAssignableFrom (dt.ValueType))
-						throw new UserException ("Unknown project type: " + t);
+					if (!typeof (Project).IsAssignableFrom (dt.ValueType))
+						throw new UnknownSolutionItemTypeException ("Unknown project type: " + t);
+
 					return (SolutionItem)Activator.CreateInstance (dt.ValueType);
 				}
 
 				Type type;
 				lock (genericProjectTypes) {
 					if (!genericProjectTypes.TryGetValue (t, out type))
-						throw new UserException ("Unknown project type: " + t);
+						throw new UnknownSolutionItemTypeException ("Unknown project type: " + t);
 				}
 				return (SolutionItem)Activator.CreateInstance (type);
 			});
