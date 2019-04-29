@@ -60,6 +60,8 @@
     <Compile Include="Gui\MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs" />
+    <Compile Include="Project\TypeSystemParser.cs" />
+    <Compile Include="Project\VBNetParsedDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\EmptyVBFile.xft.xml" />

@@ -23,19 +23,74 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Roslyn.Utilities;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Editor.Highlighting;
+using Microsoft.CodeAnalysis.DocumentHighlighting;
 using Microsoft.VisualStudio.Platform;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.VBNet
 {
+#pragma warning disable CS0618 // Type or member is obsolete
 	class VBNetTextEditorExtension : TextEditorExtension
 	{
+		ISyntaxHighlighting fallbackHighlighting;
+
 		protected override void Initialize ()
 		{
-			Editor.SyntaxHighlighting = CompositionManager.Instance.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
+			fallbackHighlighting = Editor.SyntaxHighlighting;
+			UpdateHighlighting ();
+			DocumentContext.AnalysisDocumentChanged += HandleAnalysisDocumentChanged;
+		}
+
+		void HandleAnalysisDocumentChanged (object sender, EventArgs args)
+		{
+			Runtime.RunInMainThread (delegate {
+				UpdateHighlighting ();
+			});
+		}
+
+		void UpdateHighlighting ()
+		{
+			if (DocumentContext?.AnalysisDocument == null) {
+				Console.WriteLine ("context == null");
+				if (Editor.SyntaxHighlighting != fallbackHighlighting)
+					Editor.SyntaxHighlighting = fallbackHighlighting;
+				return;
+			}
+			var old = Editor.SyntaxHighlighting as TagBasedSyntaxHighlighting;
+			if (old == null) {
+				Editor.SyntaxHighlighting = CompositionManager.Instance.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
+			}
+		}
+
+		public override void Dispose ()
+		{
+			DocumentContext.AnalysisDocumentChanged -= HandleAnalysisDocumentChanged;
+			Editor.SyntaxHighlighting = fallbackHighlighting;
+			base.Dispose ();
 		}
 	}
+#pragma warning restore CS0618 // Type or member is obsolete
+
 }
