@@ -63,7 +63,7 @@ namespace MonoDevelop.TextEditor
 	{
 		public WpfThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) { }
 
-		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
+		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string appearanceCategory, string fontName, double fontSize)
 		{
 			resourceDictionary[ClassificationFormatDefinition.TypefaceId] = new Typeface (fontName);
 			resourceDictionary[ClassificationFormatDefinition.FontRenderingSizeId] = fontSize * 96 / 72;

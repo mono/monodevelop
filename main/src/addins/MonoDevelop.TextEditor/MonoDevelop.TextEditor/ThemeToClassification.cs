@@ -158,7 +158,13 @@ namespace MonoDevelop.TextEditor
 
 		void UpdateEditorFormatMap (object sender, EventArgs args)
 		{
-			var editorFormat = editorFormatMapService.GetEditorFormatMap ("text");
+			UpdateEditorFormatMap ("text");
+			UpdateEditorFormatMap ("tooltip");
+		}
+
+		void UpdateEditorFormatMap (string appearanceCategory)
+		{
+			var editorFormat = editorFormatMapService.GetEditorFormatMap (appearanceCategory);
 			editorFormat.BeginBatchUpdate ();
 			var theme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme.Value);
 			var settingsMap = new Dictionary<string, ThemeSetting> ();
@@ -167,7 +173,7 @@ namespace MonoDevelop.TextEditor
 				var setting = theme.Settings[i];
 				settingsMap[setting.Name] = setting;
 			}
-			CreatePlainText (editorFormat, defaultSettings);
+			CreatePlainText (editorFormat, defaultSettings, appearanceCategory);
 			CreateLineNumberAndSuggestion (editorFormat, defaultSettings);
 			CreateOutlining (editorFormat, defaultSettings);
 			CreateCaret (editorFormat, defaultSettings);
@@ -350,7 +356,7 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string appearanceCategory)
 		{
 			var resourceDictionary = editorFormat.GetProperties ("Plain Text");
 			if (defaultSettings.TryGetColor ("foreground", out var foregroundColor)) {
@@ -366,11 +372,11 @@ namespace MonoDevelop.TextEditor
 			}
 			fontName = fontName.Remove (fontName.LastIndexOf (' '));
 
-			AddFontToDictionary (resourceDictionary, fontName, fontSize);
+			AddFontToDictionary (resourceDictionary, appearanceCategory, fontName, fontSize);
 
 			editorFormat.SetProperties ("Plain Text", resourceDictionary);
 		}
 
-		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize);
+		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string appearanceCategory, string fontName, double fontSize);
 	}
 }
