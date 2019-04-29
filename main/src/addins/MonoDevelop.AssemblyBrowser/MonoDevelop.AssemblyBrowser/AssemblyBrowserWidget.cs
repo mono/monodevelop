@@ -303,11 +303,13 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IMember)resultListStore.GetValue (selectedIter, 0);
-
+				var member = resultListStore.GetValue (selectedIter, 0) as IEntity;
+				if (member == null)
+					return;
 				var nav = SearchMember (member);
 				if (nav != null) {
 					notebook1.Page = 0;
+					searchentry1.Entry.Text = "";
 				}
 			}
 		}
@@ -336,10 +338,9 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.GrabFocus ();
 		}
 		
-		ITreeNavigator SearchMember (IMember member, bool expandNode = true)
+		ITreeNavigator SearchMember (IEntity entity, bool expandNode = true)
 		{
-			//return SearchMember (Mono.Cecil.Rocks.DocCommentId.GetDocCommentId (member), expandNode);
-			return SearchMember (member.ReflectionName, expandNode);
+			return SearchMember (entity.GetIdString (), expandNode);
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl, bool expandNode = true)
