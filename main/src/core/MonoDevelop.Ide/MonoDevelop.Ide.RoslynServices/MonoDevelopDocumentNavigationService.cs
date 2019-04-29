@@ -1,6 +1,7 @@
 using System;
 using System.Composition;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
@@ -206,9 +207,9 @@ namespace MonoDevelop.Ide.RoslynServices
 					// (i.e. don't give it focus).  This way if a user is just arrowing through a set 
 					// of FindAllReferences results, they don't have their cursor placed into the document.
 					//TODO: MAC we don't support this kind of opening
-					workspace.OpenDocument (documentId);
+					OpenDocumentAndWait (workspace, documentId);
 				} else {
-					workspace.OpenDocument (documentId);
+					OpenDocumentAndWait (workspace, documentId);
 				}
 			}
 
@@ -217,6 +218,34 @@ namespace MonoDevelop.Ide.RoslynServices
 			}
 
 			return workspace.CurrentSolution.GetDocument (documentId);
+		}
+
+		static void OpenDocumentAndWait (Workspace workspace, DocumentId documentId)
+		{
+			var task = OpenDocumentWithTextViewAsync (workspace, documentId);
+			// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
+			while (!task.IsCompleted) {
+				DispatchService.RunPendingEvents (30);
+
+			}
+		}
+
+		static async Task OpenDocumentWithTextViewAsync (Workspace workspace, DocumentId documentId)
+		{
+			var openTask = new TaskCompletionSource<bool> ();
+			var mdWorkspace = workspace as MonoDevelopWorkspace;
+			var doc = mdWorkspace.GetDocument (documentId);
+			if (doc != null) {
+				var mdProject = mdWorkspace.GetMonoProject (doc.Project);
+				if (mdProject != null) {
+					var shellDoc = await IdeServices.DocumentManager.OpenDocument (new Gui.FileOpenInformation (doc.FilePath, mdProject, true));
+					shellDoc.RunWhenContentAdded<Microsoft.VisualStudio.Text.Editor.ITextView> (v => {
+						openTask.SetResult (true);
+					});
+					// Wait for the ITextView with a timeout, since the document may not show a text view at all
+					await Task.WhenAny (openTask.Task, Task.Delay (1000));
+				}
+			}
 		}
 
 		private bool NavigateTo (Document document, TextSpan span)
