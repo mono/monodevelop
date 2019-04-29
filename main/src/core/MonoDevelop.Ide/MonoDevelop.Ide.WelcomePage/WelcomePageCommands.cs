@@ -46,7 +46,17 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Text = WelcomePageService.HasWindowImplementation ? GettextCatalog.GetString ("Start Window") : GettextCatalog.GetString ("Welcome Page");
+			bool isChecked = false;
+			if (WelcomePageService.HasWindowImplementation) {
+				if (WelcomePageService.WelcomeWindowVisible && WelcomePageService.WelcomeWindow == IdeServices.DesktopService.GetFocusedTopLevelWindow ()) {
+					isChecked = true;
+				}
+				info.Text = GettextCatalog.GetString ("Start Window");
+			} else {
+				isChecked = WelcomePageService.WelcomePageVisible;
+				info.Text = GettextCatalog.GetString ("Welcome Page");
+			}
+			info.Checked = isChecked;
 			info.Enabled = WelcomePageService.HasWindowImplementation || (!WelcomePageService.HasWindowImplementation && !WelcomePageService.WelcomePageVisible);
 			base.Update (info);
 		}
