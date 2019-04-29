@@ -353,7 +353,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectPath);
 				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectUniqueName);
 				Assert.AreSame (projectSpec, dependencyGraphCacheContext.PackageSpecCache [projectFile]);
-				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.1-[2.9.406, )", dotNetCliToolSpec.Name);
+				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.2-[2.9.406, )", dotNetCliToolSpec.Name);
 				Assert.AreEqual (projectFile, dotNetCliToolSpec.RestoreMetadata.ProjectPath);
 				Assert.AreSame (dotNetCliToolSpec, dependencyGraphCacheContext.PackageSpecCache [dotNetCliToolSpec.Name]);
 			}
