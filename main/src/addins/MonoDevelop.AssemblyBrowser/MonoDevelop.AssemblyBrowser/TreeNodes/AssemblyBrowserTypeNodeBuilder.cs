@@ -59,17 +59,7 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as IMember;
-				var e2 = otherNode.DataItem as IMember;
-				
-				if (e1 == null && e2 == null)
-					return 0;
-				if (e1 == null)
-					return -1;
-				if (e2 == null)
-					return 1;
-				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (thisNode.NodeName, otherNode.NodeName, StringComparison.OrdinalIgnoreCase);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;

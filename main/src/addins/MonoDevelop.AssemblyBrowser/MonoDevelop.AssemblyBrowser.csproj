@@ -102,6 +102,7 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.AssemblyBrowserTreeView.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.SearchIdleRunner.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\MetadataExtensions.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\ICSharpCodeStringFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AssemblyBrowser.addin.xml" />
