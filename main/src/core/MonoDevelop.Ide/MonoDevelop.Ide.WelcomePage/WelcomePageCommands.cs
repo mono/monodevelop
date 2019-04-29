@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			bool isChecked = false;
 			if (WelcomePageService.HasWindowImplementation) {
-				if (WelcomePageService.WelcomeWindowVisible && WelcomePageService.WelcomeWindow == IdeServices.DesktopService.GetFocusedTopLevelWindow ()) {
+				if (WelcomePageService.WelcomeWindow == IdeServices.DesktopService.GetFocusedTopLevelWindow ()) {
 					isChecked = true;
 				}
 				info.Text = GettextCatalog.GetString ("Start Window");
