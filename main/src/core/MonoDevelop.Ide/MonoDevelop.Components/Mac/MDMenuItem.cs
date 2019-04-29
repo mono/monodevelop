@@ -243,7 +243,7 @@ namespace MonoDevelop.Components.Mac
 				if (icon == null)
 					icon = Ide.IdeServices.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
 				if (icon != null) {
-					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
+					var scale = NSApplication.SharedApplication.MainWindow?.Screen?.BackingScaleFactor ?? NSScreen.MainScreen.BackingScaleFactor;
 
 					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
 						icon = icon.WithStyles ("dark");
