@@ -178,7 +178,7 @@ namespace MonoDevelop.DotNetCore
 				string sdkVersion = Path.GetFileName (sdkDirectory);
 				if (DotNetCoreVersion.TryParse (sdkVersion, out var version)) {
 					if (!DotNetCoreVersion.IsSdkSupported (version)) {
-						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. '{2}'", sdkVersion, sdkDirectory);
+						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. '{1}'", sdkVersion, sdkDirectory);
 						return false;
 					}
 				} else {
