@@ -1,4 +1,4 @@
-//
+﻿//
 // WelcomePageService.cs
 //
 // Author:
@@ -53,26 +53,28 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		internal static void Initialize ()
 		{
-			IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
-				if (!IdeApp.IsExiting && HasWindowImplementation) {
-					ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
-				}
-			};
-			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
-				HideWelcomePageOrWindow ();
-			};
-			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
-					ShowWelcomePageOrWindow ();
-				}
-			};
-			IdeApp.Workbench.DocumentOpened += delegate {
-				HideWelcomePageOrWindow ();
-			};
-			IdeApp.Workbench.DocumentClosed += delegate {
-				if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
-					ShowWelcomePage ();
-				}
+			IdeApp.Initialized += (s, args) => {
+				IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
+					if (!IdeApp.IsExiting && HasWindowImplementation) {
+						ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
+					}
+				};
+				IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
+					HideWelcomePageOrWindow ();
+				};
+				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+					if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
+						ShowWelcomePageOrWindow ();
+					}
+				};
+				IdeApp.Workbench.DocumentOpened += delegate {
+					HideWelcomePageOrWindow ();
+				};
+				IdeApp.Workbench.DocumentClosed += delegate {
+					if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
+						ShowWelcomePage ();
+					}
+				};
 			};
 		}
 
