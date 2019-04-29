@@ -46,7 +46,7 @@ using System.Threading;
 
 namespace MonoDevelop.Components.Commands
 {
-	[DefaultServiceImplementation]
+	[DefaultServiceImplementation (typeof (IdeCommandManager))]
 	public class CommandManager: Service, IDisposable
 	{
 		// Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h
