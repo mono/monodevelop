@@ -101,15 +101,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static readonly bool pipeNeedsSanitized = Array.IndexOf (Path.GetInvalidPathChars (), '|') >= 0;
-
+		// We only care about invalid characters on Windows, as unix-systems only have `/` as invalid character.
+		static readonly char [] invalidChars = Platform.IsWindows ? Path.GetInvalidFileNameChars () : Array.Empty<char> ();
 		string GetProjectCacheFile (Project proj, string configuration)
 		{
-			if (pipeNeedsSanitized && configuration.IndexOf ('|') >= 0) {
-				configuration = configuration.Replace ('|', '_');
-			}
+			return cacheDir.Combine (proj.FileName.FileNameWithoutExtension + "-" + Sanitize (configuration) + ".json");
 
-			return cacheDir.Combine (proj.FileName.FileNameWithoutExtension + "-" + configuration + ".json");
+			string Sanitize(string value)
+			{
+				if (invalidChars.Length == 0)
+					return value;
+
+				int lastIndex = 0;
+				while ((lastIndex = value.IndexOfAny (invalidChars, lastIndex)) != -1) {
+					value = value.Replace (value [lastIndex], '_');
+				}
+
+				return value;
+			}
 		}
 
 		static void TryDeleteFile (string file)
