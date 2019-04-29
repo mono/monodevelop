@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeStartup.cs
 //
 // Author:
@@ -367,6 +367,7 @@ namespace MonoDevelop.Ide
 		void RegisterServices ()
 		{
 			Runtime.RegisterServiceType<ProgressMonitorManager, IdeProgressMonitorManager> ();
+			Runtime.RegisterServiceType<CommandManager, IdeCommandManager> ();
 			Runtime.RegisterServiceType<IShell, DefaultWorkbench> ();
 		}
 
