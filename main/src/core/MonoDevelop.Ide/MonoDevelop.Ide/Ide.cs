@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeApp.cs
 //
 // Author:
@@ -249,6 +249,15 @@ namespace MonoDevelop.Ide
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			monitor.Step (1);
 
+			Counters.Initialization.Trace ("Initializing WelcomePage service");
+			WelcomePage.WelcomePageService.Initialize ();
+			if (WelcomePage.WelcomePageService.HasWindowImplementation) {
+				await WelcomePage.WelcomePageService.ShowWelcomeWindow (new WelcomePage.WelcomeWindowShowOptions (false));
+				// load the global menu for the welcome window to avoid unresponsive menus on Mac
+				IdeServices.DesktopService.SetGlobalMenu (commandService, "/MonoDevelop/Ide/MainMenu", "/MonoDevelop/Ide/AppMenu");
+			}
+			monitor.Step (1);
+
 			// Before startup commands.
 			Counters.Initialization.Trace ("Running Pre-Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/PreStartupHandlers", OnExtensionChanged);
@@ -256,10 +265,6 @@ namespace MonoDevelop.Ide
 
 			Counters.Initialization.Trace ("Initializing Workbench");
 			await workbench.Initialize (monitor);
-			monitor.Step (1);
-
-			Counters.Initialization.Trace ("Initializing WelcomePage service");
-			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Realizing Workbench Window");
