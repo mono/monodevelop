@@ -15,7 +15,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 	[Export (typeof (IExpansionManager))]
 	class ExpansionManager : IExpansionManager
 	{
-		List<ExpansionTemplate> expansionTemplates;
+		Dictionary<IContentType, List<ExpansionTemplate>> expansionTemplates = new Dictionary<IContentType, List<ExpansionTemplate>> ();
 		static string UserSnippetsPath {
 			get {
 				return UserProfile.Current.UserDataRoot.Combine ("Snippets");
@@ -23,14 +23,18 @@ namespace MonoDevelop.TextEditor.Cocoa
 		}
 		public IEnumerable<ExpansionTemplate> EnumerateExpansions (IContentType contentType, bool shortcutOnly, string[] snippetTypes, bool includeNullType, bool includeDuplicates)
 		{
-			if (expansionTemplates != null)
-				return expansionTemplates;
-			expansionTemplates = new List<ExpansionTemplate> ();
+			List<ExpansionTemplate> templates = null;
+			lock (expansionTemplates)
+				if (expansionTemplates.TryGetValue (contentType, out templates))
+					return templates;
+			templates = new List<ExpansionTemplate> ();
 			foreach (var codeTemplate in CodeTemplateService.GetCodeTemplates (IdeServices.DesktopService.GetMimeTypeForContentType (contentType)))
-				expansionTemplates.Add (Convert (codeTemplate));
-			foreach (var snippetFile in Directory.GetFiles (UserSnippetsPath, "*.snippet"))
-				expansionTemplates.Add (new ExpansionTemplate (snippetFile));
-			return expansionTemplates;
+				templates.Add (Convert (codeTemplate));
+			foreach (var snippetFile in Directory.EnumerateFiles (UserSnippetsPath, "*.snippet"))
+				templates.Add (new ExpansionTemplate (snippetFile));
+			lock (expansionTemplates)
+				expansionTemplates[contentType] = templates;
+			return templates;
 		}
 
 		private ExpansionTemplate Convert (CodeTemplate codeTemplate)
