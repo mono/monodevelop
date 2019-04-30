@@ -148,15 +148,16 @@ namespace MonoDevelop.UserInterfaceTesting
 
 		public void OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
-			var sln = Path.Combine (MainPath, "build/tests/TestSolutions/ExampleFormsSolution/ExampleFormsSolution.sln");
+			var sln = UnitTests.Util.GetSampleProject ("performance", "ExampleFormsSolution", "ExampleFormsSolution.sln");
 
 			if (!File.Exists (sln)) {
 				throw new FileNotFoundException ("Could not find test solution", sln);
 			}
 
 			// Tell the app to track time to code
-			Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.ReportTimeToCode", true);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer", null);
 			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)sln), "Ide.Shell.SolutionOpened", 60000);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeStartupTracker.StartupTracker.TrackTimeToCode", MonoDevelop.Ide.TimeToCodeMetadata.DocumentType.Solution);
 
 			// Currently we only have one solution which needs packages waited for.
 			// When we have more projects, we'll need a more clever system for detecting

@@ -423,6 +423,13 @@ namespace MonoDevelop.Components.AutoTest
 			return session.CreateNewTimerContext (timerName).TotalTime;
 		}
 
+		public void WaitForCounterChange (string counterName, int timeout = 20000)
+		{
+			AutoTestSession.CounterContext context = session.CreateNewCounterContext (counterName);
+
+			session.WaitForCounterToChange (context, timeout);
+		}
+
 		public T GetCounterMetadataValue<T> (string counterName, string propertyName)
 		{
 			var counter = session.GetCounterByIDOrName (counterName);

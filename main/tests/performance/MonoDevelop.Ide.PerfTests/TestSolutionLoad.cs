@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.PerfTests
 
 			var t = Session.GetTimerDuration ("Ide.Shell.SolutionOpened");
 
-			Benchmark.SetTime ((double)t.TotalMilliseconds / 1000d);
+			Benchmark.SetTime (t.TotalMilliseconds);
 		}
 	}
 }
