@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Text;
-using System.Runtime.Serialization;
-using System.Linq;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -201,7 +199,7 @@ namespace MonoDevelop.Core.Instrumentation
 	
 	[Serializable]
 	[DebuggerDisplay ("{DebuggingText}")]
-	class TimerTraceList : ISerializable
+	class TimerTraceList
 	{
 		public TimerTrace FirstTrace;
 		public TimeSpan TotalTime;
@@ -225,43 +223,6 @@ namespace MonoDevelop.Core.Instrumentation
 				}
 				return stringBuilder.ToString ();
 			}
-		}
-
-		public TimerTraceList ()
-		{
-		}
-
-		// The special constructor is used to deserialize values.
-		public TimerTraceList (SerializationInfo info, StreamingContext context)
-		{
-			FirstTrace = (TimerTrace)info.GetValue (nameof (FirstTrace), typeof (TimerTrace));
-			TotalTime = (TimeSpan)info.GetValue (nameof (TotalTime), typeof (TimeSpan));
-			ValueIndex = info.GetInt32 (nameof (ValueIndex));
-
-			bool hasMetadata = info.GetBoolean (nameof (hasMetadata));
-			if (hasMetadata) {
-				var from = (Dictionary<string, string>)info.GetValue (nameof (Metadata), typeof (Dictionary<string, string>));
-				Metadata = from.ToDictionary (x => x.Key, x => (object)x.Value);
-			} else {
-				Metadata = null;
-			}
-		}
-
-		public void GetObjectData (SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue (nameof (FirstTrace), FirstTrace);
-			info.AddValue (nameof (TotalTime), TotalTime);
-			info.AddValue (nameof (ValueIndex), ValueIndex);
-
-			bool hasMetadata = Metadata != null;
-			info.AddValue (nameof (hasMetadata), hasMetadata);
-			if (hasMetadata) {
-				var dictionary = new Dictionary<string, string> (Metadata.Count);
-				foreach (var kvp in Metadata)
-					dictionary [kvp.Key] = kvp.Value.ToString ();
-				info.AddValue (nameof (Metadata), dictionary);
-			}
-
 		}
 	}
 	

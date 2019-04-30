@@ -41,7 +41,7 @@ namespace MonoDevelop.UserInterfaceTesting
 			profilePath = profilePath ?? Util.CreateTmpDir ("profile");
 			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
 				{ "MONODEVELOP_PROFILE", profilePath },
-				{ "VISUALSTUDIO_PROFILE", profilePath }
+				{ "VISUALSTUDIO_PROFILE", profilePath },
 			});
 
 			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);

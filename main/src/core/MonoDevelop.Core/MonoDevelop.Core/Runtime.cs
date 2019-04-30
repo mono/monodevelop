@@ -198,7 +198,7 @@ namespace MonoDevelop.Core
 		
 		static void SetupInstrumentation ()
 		{
-			InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
+			InstrumentationService.Enabled = IsInstrumentationServiceEnabled ();
 			if (InstrumentationService.Enabled) {
 				LoggingService.LogInfo ("Instrumentation Service started");
 				try {
@@ -208,9 +208,12 @@ namespace MonoDevelop.Core
 					LoggingService.LogError ("Instrumentation service could not be published", ex);
 				}
 			}
-			Runtime.Preferences.EnableInstrumentation.Changed += (s,e) => InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
+			Runtime.Preferences.EnableInstrumentation.Changed += (s,e) => InstrumentationService.Enabled = IsInstrumentationServiceEnabled ();
 		}
-		
+
+		static bool IsInstrumentationServiceEnabled ()
+			=> !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONO_AUTOTEST_CLIENT")) || Runtime.Preferences.EnableInstrumentation;
+
 		static void OnLoadError (object s, AddinErrorEventArgs args)
 		{
 			string msg = "Add-in error (" + args.AddinId + "): " + args.Message;

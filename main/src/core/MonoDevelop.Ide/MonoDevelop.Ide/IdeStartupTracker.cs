@@ -50,7 +50,6 @@ namespace MonoDevelop.Ide
 		Stopwatch timeToCodeWorkspaceTimer;
 
 		Dictionary<string, long> sectionTimings = new Dictionary<string, long> ();
-		StartupInfo startupInfo;
 		TimeToCodeMetadata ttcMetadata;
 
 		IdeStartupTracker ()
@@ -74,19 +73,17 @@ namespace MonoDevelop.Ide
 			startupTimer.Stop ();
 			startupSectionTimer.Stop ();
 
-			this.startupInfo = startupInfo;
-
 			var result = IdeServices.DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
 
-			StartupCompleted (result);
+			StartupCompleted (startupInfo, result);
 		}
 
-		internal void StartupCompleted (IPlatformTelemetryDetails platformTelemetryDetails)
+		internal void StartupCompleted (StartupInfo startupInfo, IPlatformTelemetryDetails platformTelemetryDetails)
 		{
-			var startupMetadata = GetStartupMetadata (platformTelemetryDetails);
+			var startupMetadata = GetStartupMetadata (startupInfo, platformTelemetryDetails);
 			Counters.Startup.Inc (startupMetadata);
 
 			// Start TTC timer
@@ -118,7 +115,7 @@ namespace MonoDevelop.Ide
 			FirstLaunchAfterUpgrade = 0x10000
 		}
 
-		StartupMetadata GetStartupMetadata (IPlatformTelemetryDetails platformDetails)
+		StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails)
 		{
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 			StartupType startupType = StartupType.Normal;

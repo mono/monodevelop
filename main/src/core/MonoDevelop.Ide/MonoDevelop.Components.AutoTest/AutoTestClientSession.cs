@@ -432,13 +432,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public T GetCounterMetadataValue<T> (string counterName, string propertyName)
 		{
-			var counter = session.GetCounterByIDOrName (counterName);
-			var metadata = counter.LastValue.Metadata;
-			if (metadata != null && metadata.TryGetValue (propertyName, out var property)) {
-				return (T)Convert.ChangeType (property, typeof (T));
-			}
-
-			return default (T);
+			return session.GetCounterMetadataValue<T> (counterName, propertyName);
 		}
 
 		public XmlDocument ResultsAsXml (AppResult[] results)

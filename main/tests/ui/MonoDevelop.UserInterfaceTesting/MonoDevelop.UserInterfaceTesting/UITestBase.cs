@@ -125,13 +125,8 @@ namespace MonoDevelop.UserInterfaceTesting
 		public virtual void SetUp ()
 		{
 			PreStart ();
-			var mdProfile = Util.CreateTmpDir ();
+			OpenApplicationAndWait ();
 
-			TestService.Session.DebugObject = new UITestDebug ();
-			StartSession (mdProfile);
-			FoldersToClean.Add (mdProfile);
-
-			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 			TakeScreenShot ("Application-Started");
 			CloseIfXamarinUpdateOpen ();
 			TakeScreenShot ("Application-Ready");
