@@ -105,6 +105,7 @@
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" ExcludeAssets="all" />
     <!-- update this to a version that doesn't crash -->
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0-preview4.19216.2" PrivateAssets="runtime" />
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="Humanizer.dll" />
@@ -128,6 +129,7 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
+    <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
     <IncludeCopyLocal Include="Microsoft.Microsoft.CodeAnalysis.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.dll" />
@@ -684,8 +686,6 @@
     <Compile Include="MonoDevelop.Projects\ProgressEvent.cs" />
     <Compile Include="MonoDevelop.Core.Setup\UpdateChannel.cs" />
     <Compile Include="MonoDevelop.Core\StringBuilderCache.cs" />
-    <Compile Include="MonoDevelop.Core\ObjectPool.cs" />
-    <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.cs" />
