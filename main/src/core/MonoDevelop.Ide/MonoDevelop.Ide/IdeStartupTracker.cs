@@ -133,27 +133,6 @@ namespace MonoDevelop.Ide
 				startupType = StartupType.DebuggerPresent;
 			}
 
-			var screens = new List<Dictionary<string, string>> ();
-			foreach (var details in platformDetails.Screens) {
-				var d = new Dictionary<string, string> ();
-				d ["PointResolution"] = $"{(int)details.PointWidth}x{(int)details.PointHeight}";
-				d ["PixelResolution"] = $"{(int)details.PixelWidth}x{(int)details.PixelHeight}";
-				d ["BackingScale"] = $"{(int)details.BackingScaleFactor}";
-
-				screens.Add (d);
-			}
-
-			var gpu = new List<Dictionary<string, string>> ();
-
-			foreach (var details in platformDetails.GPU)
-			{
-				var d = new Dictionary<string, string> {
-					{"Model", details.Model },
-					{"Memory", details.Memory },
-				};
-				gpu.Add (d);
-			}
-
 			return new StartupMetadata {
 				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
 				StartupType = Convert.ToInt32 (startupType),
@@ -164,9 +143,7 @@ namespace MonoDevelop.Ide
 				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
 				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
 				Timings = sectionTimings,
-				StartupBehaviour = IdeApp.Preferences.StartupBehaviour.Value,
-				Screen = screens,
-				GPU = gpu
+				StartupBehaviour = IdeApp.Preferences.StartupBehaviour.Value
 			};
 		}
 
