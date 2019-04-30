@@ -61,7 +61,7 @@ namespace MonoDevelop.VBNetBinding
 				}
 			} else {
 				var compilerArguments = GetCompilerArguments (project);
-				result.ParsedUnit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
+				result.ParsedUnit = VisualBasicSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
 			}
 
 			DateTime time;
