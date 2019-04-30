@@ -15,25 +15,51 @@ namespace MonoDevelop.TextEditor.Cocoa
 	[Export (typeof (IExpansionManager))]
 	class ExpansionManager : IExpansionManager
 	{
-		Dictionary<IContentType, List<ExpansionTemplate>> expansionTemplates = new Dictionary<IContentType, List<ExpansionTemplate>> ();
-		static string UserSnippetsPath {
-			get {
-				return UserProfile.Current.UserDataRoot.Combine ("Snippets");
-			}
-		}
+		static string UserSnippetsPath { get; } = UserProfile.Current.UserDataRoot.Combine ("Snippets");
+
+		readonly Dictionary<IContentType, List<ExpansionTemplate>> expansionTemplates
+			= new Dictionary<IContentType, List<ExpansionTemplate>> ();
+
 		public IEnumerable<ExpansionTemplate> EnumerateExpansions (IContentType contentType, bool shortcutOnly, string[] snippetTypes, bool includeNullType, bool includeDuplicates)
 		{
 			List<ExpansionTemplate> templates = null;
-			lock (expansionTemplates)
+			lock (expansionTemplates) {
 				if (expansionTemplates.TryGetValue (contentType, out templates))
 					return templates;
+			}
+
 			templates = new List<ExpansionTemplate> ();
-			foreach (var codeTemplate in CodeTemplateService.GetCodeTemplates (IdeServices.DesktopService.GetMimeTypeForContentType (contentType)))
-				templates.Add (Convert (codeTemplate));
-			foreach (var snippetFile in Directory.EnumerateFiles (UserSnippetsPath, "*.snippet"))
-				templates.Add (new ExpansionTemplate (snippetFile));
+
+			foreach (var codeTemplate in CodeTemplateService.GetCodeTemplates (
+				IdeServices.DesktopService.GetMimeTypeForContentType (contentType))) {
+				try {
+					templates.Add (Convert (codeTemplate));
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception converting Snippet to VS Expansion Template", e);
+				}
+			}
+
+			if (Directory.Exists (UserSnippetsPath)) {
+				try {
+					foreach (var snippetFile in Directory.EnumerateFiles (UserSnippetsPath, "*.snippet")) {
+						try {
+							templates.Add (new ExpansionTemplate (snippetFile));
+						} catch (Exception parseException) {
+							LoggingService.LogError (
+								$"Unable to parse VS Expansion template: {snippetFile}",
+								parseException);
+						}
+					}
+				} catch (Exception enumerateException) {
+					LoggingService.LogError (
+						$"Exception enumerating snippets directory: {UserSnippetsPath}",
+						enumerateException);
+				}
+			}
+
 			lock (expansionTemplates)
 				expansionTemplates[contentType] = templates;
+
 			return templates;
 		}
 
