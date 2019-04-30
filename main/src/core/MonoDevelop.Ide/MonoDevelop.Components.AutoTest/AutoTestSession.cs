@@ -495,6 +495,17 @@ namespace MonoDevelop.Components.AutoTest
 			return c ?? InstrumentationService.GetCounter (idOrName);
 		}
 
+		internal T GetCounterMetadataValue<T> (string counterName, string propertyName)
+		{
+			var counter = GetCounterByIDOrName (counterName);
+			var metadata = counter.LastValue.Metadata;
+			if (metadata != null && metadata.TryGetValue (propertyName, out var property)) {
+				return (T)Convert.ChangeType (property, typeof (T));
+			}
+
+			return default (T);
+		}
+
 		public TimerCounterContext CreateNewTimerContext (string counterName)
 		{
 			TimerCounter tc = GetCounterByIDOrName (counterName) as TimerCounter;
