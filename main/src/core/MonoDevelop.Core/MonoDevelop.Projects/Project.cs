@@ -531,15 +531,11 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			// pre-load the results with the current list of files in the project
-			var evaluatedItems = await GetEvaluatedSourceFiles (configuration);
-
 			// add in any compile items that we discover from running the CoreCompile dependencies
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
 			var evaluatedCompileItems = coreCompileResult.SourceFiles;
 
-			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
-			results.UnionWith (evaluatedCompileItems);
+			var results = new HashSet<ProjectFile> (evaluatedCompileItems, ProjectFileFilePathComparer.Instance);
 
 			return results.ToImmutableArray ();
 		}
