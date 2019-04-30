@@ -55,4 +55,4 @@
 [submodule "main/external/vs-editor-api"]
 	path = main/external/vs-editor-api
 	url = https://github.com/KirillOsenkov/vs-editor-api.git
-	branch = monodevelop/master
+	branch = monodevelop/release-8.1
