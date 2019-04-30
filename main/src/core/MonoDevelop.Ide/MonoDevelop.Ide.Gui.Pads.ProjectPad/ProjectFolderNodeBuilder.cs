@@ -347,6 +347,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override bool CanHandleDropFromChild (object [] dataObjects, DragOperation operation, DropPosition position)
 		{
+			return CanHandleDropFromChild (dataObjects, position);
+		}
+
+		internal static bool CanHandleDropFromChild (object [] dataObjects, DropPosition position)
+		{
+			foreach (var o in dataObjects) {
+				if (!(o is ProjectFolder || o is ProjectFile))
+					return false;
+			}
 			return position == DropPosition.Into;
 		}
 
