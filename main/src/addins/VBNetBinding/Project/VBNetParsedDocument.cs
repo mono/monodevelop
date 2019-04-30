@@ -31,7 +31,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
@@ -342,7 +342,8 @@ namespace MonoDevelop.VBNetBinding
 				}
 			} finally {
 				if (locked)
-					errorLock.Release ();			}
+					errorLock.Release ();
+			}
 			
 			return errors;
 		}
