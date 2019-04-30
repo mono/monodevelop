@@ -57,7 +57,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var newEditorLearnMoreLink = new Xwt.LinkLabel {
 				MarginBottom = 6,
 				MarginTop = 6,
-				Text = GettextCatalog.GetString ("Learn more about the New Editor Preview"),
+				Text = GettextCatalog.GetString ("Learn more about the New Editor"),
 				Uri = new Uri ("https://aka.ms/vs/mac/editor/learn-more")
 			};
 			newEditorOptionsBox.PackStart (newEditorLearnMoreLink);
