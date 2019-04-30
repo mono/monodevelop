@@ -49,7 +49,9 @@ namespace MonoDevelop.Core
 			"7.0",
 			"8.0"
 		};
-		
+
+		bool createFolders = false;
+
 		static UserProfile ()
 		{
 			Current = GetProfile (ProfileVersions[ProfileVersions.Length-1]);
@@ -57,15 +59,13 @@ namespace MonoDevelop.Core
 		
 		public static UserProfile Current { get; private set; }
 
-		internal bool CreateFolder { get; set; } = false;
-
 		FilePath cacheDir;
 		/// <summary>Location for cached data that can be regenerated.</summary>
 		public FilePath CacheDir {
 			get => cacheDir;
 			private set {
 				cacheDir = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace MonoDevelop.Core
 			get => configDir;
 			private set {
 				configDir = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace MonoDevelop.Core
 			get => localConfigDir;
 			private set {
 				localConfigDir = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace MonoDevelop.Core
 			get => userDataRoot;
 			private set {
 				userDataRoot = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace MonoDevelop.Core
 			get => logDir;
 			private set {
 				logDir = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace MonoDevelop.Core
 			get => localInstallPath;
 			private set {
 				localInstallPath = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace MonoDevelop.Core
 			get => tempDir;
 			private set {
 				tempDir = value;
-				EnsureDirectoryExists (value, CreateFolder);
+				EnsureDirectoryExistsIfNeeded (value);
 			}
 		}
 		
@@ -184,7 +184,7 @@ namespace MonoDevelop.Core
 		{
 			string appId = GetAppId (version);
 			return new UserProfile () {
-				CreateFolder = ensureCreated,
+				createFolders = ensureCreated,
 				CacheDir = profileLocation.Combine (appId, "Cache"),
 				UserDataRoot = profileLocation.Combine (appId, "UserData"),
 				ConfigDir = profileLocation.Combine (appId, "Config"),
@@ -206,7 +206,7 @@ namespace MonoDevelop.Core
 			roaming = roaming.Combine (appId);
 
 			return new UserProfile () {
-				CreateFolder = ensureCreated,
+				createFolders = ensureCreated,
 				UserDataRoot = roaming,
 				ConfigDir = roaming.Combine ("Config"),
 				LocalConfigDir = local.Combine ("Config"),
@@ -230,7 +230,7 @@ namespace MonoDevelop.Core
 			FilePath appSupport = library.Combine ("Application Support", appId);
 			
 			return new UserProfile () {
-				CreateFolder = ensureCreated,
+				createFolders = ensureCreated,
 				CacheDir = cache,
 				UserDataRoot = data,
 				ConfigDir = preferences,
@@ -260,7 +260,7 @@ namespace MonoDevelop.Core
 			FilePath cache = xdgCacheHome.Combine (appId);
 			
 			return new UserProfile () {
-				CreateFolder = ensureCreated,
+				createFolders = ensureCreated,
 				UserDataRoot = data,
 				LocalInstallDir = data.Combine ("LocalInstall"),
 				ConfigDir = config,
@@ -305,9 +305,9 @@ namespace MonoDevelop.Core
 			uint dwFlags, IntPtr hToken, out IntPtr pszPath);
 		*/
 
-		static void EnsureDirectoryExists (string dir, bool ensureCreated = true)
+		void EnsureDirectoryExistsIfNeeded (string dir) 
 		{
-			if(ensureCreated)
+			if(createFolders)
 				Directory.CreateDirectory (dir);
 		}
 	}
