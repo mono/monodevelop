@@ -519,13 +519,34 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public override void OpenDocument (DocumentId documentId, bool activate = true)
 		{
+			// Roslyn also expects this to be true.
+			Runtime.AssertMainThread ();
+
 			var doc = GetDocument (documentId);
-			if (doc != null) {
-				var mdProject = GetMonoProject (doc.Project);
-				if (mdProject != null) {
-					documentManager.OpenDocument (new FileOpenInformation (doc.FilePath, mdProject, activate)).Ignore ();
-				}
+			if (doc == null)
+				return;
+
+			var mdProject = GetMonoProject (doc.Project);
+			if (mdProject == null)
+				return;
+
+			var task = OpenDocumentWithTextViewAsync (doc, mdProject, activate);
+			// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
+			while (!task.IsCompleted) {
+				DispatchService.RunPendingEvents (30);
 			}
+		}
+
+		async Task OpenDocumentWithTextViewAsync (Document doc, MonoDevelop.Projects.Project mdProject, bool activate)
+		{
+			var openTask = new TaskCompletionSource<bool> ();
+
+			var shellDoc = await IdeServices.DocumentManager.OpenDocument (new FileOpenInformation (doc.FilePath, mdProject, activate));
+			shellDoc.RunWhenContentAdded<Microsoft.VisualStudio.Text.Editor.ITextView> (v => {
+				openTask.SetResult (true);
+			});
+			// Wait for the ITextView with a timeout, since the document may not show a text view at all
+			await Task.WhenAny (openTask.Task, Task.Delay (1000));
 		}
 
 		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer)
