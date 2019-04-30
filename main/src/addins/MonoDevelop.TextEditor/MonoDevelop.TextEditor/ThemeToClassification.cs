@@ -208,7 +208,8 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.IndentationGuide);
 			CreateResourceDictionary (editorFormat, defaultSettings, "NavigableSymbolFormat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "urlformat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
-			CreateRename (editorFormat, defaultSettings);
+			CreateInlineEditField (editorFormat, defaultSettings, "RoslynRenameFieldBackgroundAndBorderTag");
+			CreateInlineEditField (editorFormat, defaultSettings, "ExpansionFieldBackgroundAndBorderTag");
 			foreach (var mapping in mappings) {
 				if (settingsMap.TryGetValue (mapping.MDThemeSettingName, out var setting))
 					CreateResourceDictionary (editorFormat, mapping.EditorFormatName, setting);
@@ -216,15 +217,15 @@ namespace MonoDevelop.TextEditor
 			editorFormat.EndBatchUpdate ();
 		}
 
-		private void CreateRename (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreateInlineEditField (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string formatName)
 		{
 			if (defaultSettings.TryGetColor (EditorThemeColors.PrimaryTemplateHighlighted2, out var selectionColor)) {
-				var resourceDictionary = editorFormat.GetProperties ("RoslynRenameFieldBackgroundAndBorderTag");
+				var resourceDictionary = editorFormat.GetProperties (formatName);
 				var (r, g, b, a) = selectionColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
 				resourceDictionary [MarkerFormatDefinition.BorderId] = new Pen (new SolidColorBrush (c), 2);
-				editorFormat.SetProperties ("RoslynRenameFieldBackgroundAndBorderTag", resourceDictionary);
+				editorFormat.SetProperties (formatName, resourceDictionary);
 			}
 		}
 
