@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -448,9 +447,9 @@ namespace MonoDevelop.Core.Instrumentation
 			base.SetValue (value, message, metadata.Properties);
 		}
 	}
-
+	
 	[Serializable]
-	public struct CounterValue : ISerializable
+	public struct CounterValue
 	{
 		int value;
 		int totalCount;
@@ -483,46 +482,6 @@ namespace MonoDevelop.Core.Instrumentation
 			this.change = change;
 			this.threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 			this.metadata = metadata;
-		}
-
-		// The special constructor is used to deserialize values.
-		public CounterValue (SerializationInfo info, StreamingContext context)
-		{
-			value = info.GetInt32 (nameof (value));
-			totalCount = info.GetInt32 (nameof (totalCount));
-			change = info.GetInt32 (nameof (change));
-			timestamp = info.GetDateTime (nameof (timestamp));
-			message = info.GetString (nameof (message));
-			traces = (TimerTraceList)info.GetValue (nameof (traces), typeof (TimerTraceList));
-			threadId = info.GetInt32 (nameof (threadId));
-
-			bool hasMetadata = info.GetBoolean (nameof (hasMetadata));
-			if (hasMetadata) {
-				var from = (Dictionary<string, string>)info.GetValue (nameof (metadata), typeof (Dictionary<string, string>));
-				metadata = from.ToDictionary (x => x.Key, x => (object)x.Value);
-			} else {
-				metadata = null;
-			}
-		}
-
-		public void GetObjectData (SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue (nameof (value), value);
-			info.AddValue (nameof (totalCount), totalCount);
-			info.AddValue (nameof (change), change);
-			info.AddValue (nameof (timestamp), timestamp);
-			info.AddValue (nameof (message), message);
-			info.AddValue (nameof (traces), traces);
-			info.AddValue (nameof (threadId), threadId);
-
-			bool hasMetadata = metadata != null;
-			info.AddValue (nameof (hasMetadata), hasMetadata);
-			if (hasMetadata) {
-				var dictionary = new Dictionary<string, string> (Metadata.Count);
-				foreach (var kvp in Metadata)
-					dictionary [kvp.Key] = kvp.Value.ToString ();
-				info.AddValue (nameof (metadata), dictionary);
-			}
 		}
 
 		public DateTime TimeStamp {
