@@ -436,6 +436,21 @@ namespace MonoDevelop.Components.Commands
 		[GLib.ConnectBefore]
 		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs e)
 		{
+#if MAC
+			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
+			var window = currentEvent?.Window;
+			var firstResponder = window?.FirstResponder;
+
+			// GTK eats FlagsChanged events and this is just to inform
+			// modifier keys changed state, hence always send it to
+			// focused view
+			if (currentEvent != null &&
+				currentEvent.Type == AppKit.NSEventType.FlagsChanged &&
+				firstResponder != null &&
+				firstResponder != window.ContentView) {
+				firstResponder.FlagsChanged (currentEvent);
+			}
+#endif
 			bool complete;
 			// KeyboardShortcut[] accels = 
 			KeyBindingManager.AccelsFromKey (e.Event, out complete);
@@ -448,6 +463,21 @@ namespace MonoDevelop.Components.Commands
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
+#if MAC
+			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
+			var window = currentEvent?.Window;
+			var firstResponder = window?.FirstResponder;
+
+			// GTK eats FlagsChanged events and this is just to inform
+			// modifier keys changed state, hence always send it to
+			// focused view
+			if (currentEvent != null &&
+				currentEvent.Type == AppKit.NSEventType.FlagsChanged &&
+				firstResponder != null &&
+				firstResponder != window.ContentView) {
+				firstResponder.FlagsChanged (currentEvent);
+			}
+#endif
 			// Handle the GDK key via MD commanding
 			if (ProcessKeyEventCore (ev))
 				return true;
@@ -456,10 +486,6 @@ namespace MonoDevelop.Components.Commands
 			// Otherwise if we have a native first responder that is not the GdkQuartzView
 			// that contains the entire GTK shell, dispatch the key directly to the native
 			// NSResponder and tell GTK to get out of our way.
-
-			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
-			var window = currentEvent?.Window;
-			var firstResponder = window?.FirstResponder;
 
 			if (currentEvent != null &&
 				currentEvent.Type == AppKit.NSEventType.KeyDown &&
