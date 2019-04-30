@@ -53,12 +53,18 @@ namespace MonoDevelop.VersionControl
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Reverting ...");
 			}
-			
+
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Revert (list.Paths, true, Monitor);
-				
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					try {
+						list [0].Repository.Revert (list.Paths, true, Monitor);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Revert operation failed", ex);
+						Monitor.ReportError (ex.Message, null);
+						return;
+					}
+				}
 				Gtk.Application.Invoke ((o, args) => {
 					foreach (VersionControlItem item in items) {
 						if (!item.IsDirectory) {
