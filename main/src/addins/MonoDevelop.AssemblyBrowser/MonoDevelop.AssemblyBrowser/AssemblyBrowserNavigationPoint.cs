@@ -47,21 +47,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 		protected override async Task<Document> DoShow ()
 		{
-			Document result = null;
-			foreach (var view in Ide.IdeApp.Workbench.Documents) {
-				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
-					view.Window.SelectWindow ();
-					result = view;
-					break;
-				}
-			}
+			var result = await Ide.IdeApp.Workbench.OpenDocument (AssemblyBrowserDescriptor.Instance);
 
-			if (result == null) {
-				var binding = DisplayBindingService.GetBindings<AssemblyBrowserDisplayBinding> ().FirstOrDefault ();
-				var assemblyBrowserView = binding != null ? binding.GetViewContent () : new AssemblyBrowserViewContent ();
-				assemblyBrowserView.FillWidget ();
-				result = Ide.IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-			}
 			if (idString != null) {
 				var view = result.GetContent<AssemblyBrowserViewContent> ();
 				view.Widget.suspendNavigation = true;
@@ -71,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 				var view = result.GetContent<AssemblyBrowserViewContent> ();
 				view.Widget.suspendNavigation = true;
 				view.EnsureDefinitionsLoaded (definitions);
-				await view.Load (FileName);
+				view.Load (FileName);
 			}
 			return result;
 		}

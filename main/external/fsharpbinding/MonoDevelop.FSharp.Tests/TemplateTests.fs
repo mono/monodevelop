@@ -16,23 +16,14 @@ open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
 open MonoDevelop.FSharp.Shared
 open NUnit.Framework
+open MonoDevelop.Ide.TypeSystem
 
-[<TestFixture>]
+[<TestFixture; UnitTests.RequireService(typeof<TypeSystemService>); UnitTests.RequireService(typeof<RootWorkspace>)>]
 type ``Template tests``() =
     inherit UnitTests.TestBase()
-    let toTask computation : Task = Async.StartAsTask computation :> _
+    let toTask computation : Task = Async.StartImmediateAsTask computation :> _
 
     let monitor = UnitTests.Util.GetMonitor ()
-    do
-        FixtureSetup.initialiseMonoDevelop()
-        let getField name =
-            typeof<IdeApp>.GetField(name, BindingFlags.NonPublic ||| BindingFlags.Static)
-
-        let workspace = getField "workspace"
-        workspace.SetValue(null, new RootWorkspace())
-        let workbench = getField "workbench"
-        workbench.SetValue(null, new MonoDevelop.Ide.Gui.Workbench())
-
     let templateService = TemplatingService()
     let templateMatch (template:SolutionTemplate) = 
         template.IsMatch (SolutionTemplateVisibility.All)
@@ -77,7 +68,7 @@ type ``Template tests``() =
             Assert.Ignore ()
 
         let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
-        toTask <| async {
+        async {
             let dir = FilePath (templatesDir/buildFolder)
             dir.Delete()
             Directory.CreateDirectory (dir |> string) |> ignore
@@ -125,12 +116,11 @@ type ``Template tests``() =
             // at the top of the project file.
             do! sln.SaveAsync(monitor)
             do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects)
+            for error in getErrorsForProject sln do
+                Assert.Fail (sprintf "%A" error)
 
-            let errors = getErrorsForProject sln |> AsyncSeq.toSeq |> List.ofSeq
-            match errors with
-            | [] -> Assert.Pass()
-            | errors -> Assert.Fail (sprintf "%A" errors)
-        }
+            Assert.Pass()
+        } |> toTask
 
     let test templateId = testWithParameters templateId templateId ""
 
@@ -157,13 +147,6 @@ type ``Template tests``() =
         //"Could not install package 'FSharp.Core 4.5.4'. You are trying to install this package into a project that targets '.NETFramework,Version=v4.0',"
         MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
             <- Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
-
-    [<TestFixtureTearDown>]
-    member x.TestFixtureTearDown() =
-        IdeApp.Exit()
-        |> Async.AwaitTask
-        |> Async.Ignore
-        |> Async.RunSynchronously
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``FSharp portable project``() =
@@ -212,10 +195,11 @@ type ``Template tests``() =
 
             wwwrootFiles |> Seq.length |> should equal 41
             wwwrootFiles |> Seq.iter(fun imported -> imported |> should equal true)
-            let errors = getErrorsForProject solution |> AsyncSeq.toSeq |> List.ofSeq
-            match errors with
-            | [] -> Assert.Pass()
-            | errors -> Assert.Fail (sprintf "%A" errors)
+
+            for error in getErrorsForProject solution do
+                Assert.Fail (sprintf "%A" error)
+
+            Assert.Pass()
         } |> toTask
 
     [<Ignore("Currently not testable as SDK project is dependent on wizard being ran");AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp" "SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared"

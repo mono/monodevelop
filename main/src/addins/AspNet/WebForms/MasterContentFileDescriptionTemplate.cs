@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MasterContentFileDescriptionTemplate.cs
 //  
 // Author:
@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNet.WebForms
 			tags ["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
 			
 			try {
-				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath).Result
+				var pd = IdeApp.TypeSystemService.ParseFile (project, masterPage.FilePath).Result
 						as WebFormsParsedDocument;
 				if (pd == null)
 					return;

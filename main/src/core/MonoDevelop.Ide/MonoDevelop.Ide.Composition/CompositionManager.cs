@@ -46,9 +46,9 @@ namespace MonoDevelop.Ide.Composition
 	/// <summary>
 	/// The host of the MonoDevelop MEF composition. Uses https://github.com/Microsoft/vs-mef.
 	/// </summary>
-	public partial class CompositionManager
+	[DefaultServiceImplementation]
+	public partial class CompositionManager: Service
 	{
-		static Task<CompositionManager> creationTask;
 		static CompositionManager instance;
 
 		static readonly Resolver StandardResolver = Resolver.DefaultInstance;
@@ -59,42 +59,31 @@ namespace MonoDevelop.Ide.Composition
 		public static CompositionManager Instance {
 			get {
 				if (instance == null) {
-					var task = InitializeAsync ();
+					var task = Runtime.GetService<CompositionManager> ();
 					if (!task.IsCompleted && Runtime.IsMainThread) {
 						LoggingService.LogInfo ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
 					}
-					instance = task.Result;
+					instance = task.WaitAndGetResult ();
 				}
 
 				return instance;
 			}
 		}
 
-		/// <summary>
-		/// Starts initializing the MEF composition on a background thread. Thread-safe.
-		/// </summary>
-		public static Task<CompositionManager> InitializeAsync ()
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			if (creationTask == null) {
-				lock (typeof (CompositionManager)) {
-					if (creationTask == null) {
-						creationTask = Task.Run (() => CreateInstanceAsync ());
-					}
-				}
-			}
-
-			return creationTask;
+			return Task.Run (async () => await InitializeInstanceAsync ());
 		}
 
 		/// <summary>
 		/// Returns an instance of type T that is exported by some composition part. The instance is shared (singleton).
 		/// </summary>
-		public static T GetExportedValue<T> () => Instance.ExportProvider.GetExportedValue<T> ();
+		public T GetExportedValue<T> () => ExportProvider.GetExportedValue<T> ();
 
 		/// <summary>
 		/// Returns all instances of type T that are exported by some composition part. The instances are shared (singletons).
 		/// </summary>
-		public static IEnumerable<T> GetExportedValues<T> () => Instance.ExportProvider.GetExportedValues<T> ();
+		public IEnumerable<T> GetExportedValues<T> () => ExportProvider.GetExportedValues<T> ();
 
 		/// <summary>
 		/// Returns a lazy holding the instance of type T that is exported by some composition part. The instance is shared (singleton).
@@ -113,13 +102,6 @@ namespace MonoDevelop.Ide.Composition
 
 		internal CompositionManager ()
 		{
-		}
-
-		static async Task<CompositionManager> CreateInstanceAsync ()
-		{
-			var compositionManager = new CompositionManager ();
-			await compositionManager.InitializeInstanceAsync ();
-			return compositionManager;
 		}
 
 		async Task InitializeInstanceAsync ()

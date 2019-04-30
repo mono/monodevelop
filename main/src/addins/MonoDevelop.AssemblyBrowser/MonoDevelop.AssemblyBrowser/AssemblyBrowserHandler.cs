@@ -34,17 +34,7 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		protected override void Run ()
 		{
-			foreach (var view in IdeApp.Workbench.Documents) {
-				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
-					view.Window.SelectWindow ();
-					return;
-				}
-			}
-			var binding = DisplayBindingService.GetBindings<AssemblyBrowserDisplayBinding> ().FirstOrDefault ();
-			var assemblyBrowserView = binding != null ? binding.GetViewContent () : new AssemblyBrowserViewContent ();
-			assemblyBrowserView.FillWidget ();
-
-			IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
+			IdeApp.Workbench.OpenDocument (AssemblyBrowserDescriptor.Instance);
 		}
 	}
 }

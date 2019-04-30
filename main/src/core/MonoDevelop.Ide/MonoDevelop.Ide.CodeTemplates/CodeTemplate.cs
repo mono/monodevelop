@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeTemplate.cs
 //
 // Author:
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						continue;
 
 					// '-' because CSS property names templates include them
-					if (c == '-' && DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
+					if (c == '-' && IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
 						continue;
 
 					break;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			int start  = FindPrevWordStart (editor, offset);
 
 			// HTML snippets include the opening '<', so ensure that we remove the old one if present
-			if (start > 0 && '<' == editor.GetCharAt(start - 1) && DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
+			if (start > 0 && '<' == editor.GetCharAt(start - 1) && IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
 				start -= 1;
 
 			editor.RemoveText (start, offset - start);
@@ -444,7 +444,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 		public void Insert (MonoDevelop.Ide.Gui.Document document)
 		{
-			Insert (document.Editor, document);
+			Insert (document.Editor, document.DocumentContext);
 		}
 
 		public void Insert (TextEditor editor, DocumentContext context)
@@ -575,7 +575,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			return InsertTemplateContents (document.Editor, document);
+			return InsertTemplateContents (document.Editor, document.DocumentContext);
 		}
 #region I/O
 		public const string Node        = "CodeTemplate";

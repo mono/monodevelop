@@ -33,6 +33,12 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
+using IdeUnitTests;
+using MonoDevelop.Ide.Composition;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -82,35 +88,58 @@ namespace MonoDevelop.Ide
 
 	public class TextEditorExtensionTestCase : IDisposable
 	{
-		public Document Document { get; }
-		public Project Project => Document.Project;
-		public Solution Solution => Document.Project.ParentSolution;
-		public TestViewContent Content { get; }
-		public TestWorkbenchWindow Window { get; }
-		public EditorExtensionTestData TestData { get; }
-		bool Wrap { get; }
+		DocumentManager documentManager;
 
-		public TextEditorExtensionTestCase (Document doc, TestViewContent content, TestWorkbenchWindow window, EditorExtensionTestData data, bool wrap)
+		public Document Document { get; private set; }
+		public Project Project => Document.Owner as Project;
+		public Solution Solution => (Document.Owner as Project)?.ParentSolution;
+		public TestViewContent Content { get; private set; }
+		public EditorExtensionTestData TestData { get; private set; }
+		bool Wrap { get; set; }
+
+		TextEditorExtensionTestCase ()
 		{
-			Document = doc;
+		}
+
+		public async static Task<TextEditorExtensionTestCase> Create (TestViewContent content, EditorExtensionTestData data, bool wrap)
+		{
+			var test = new TextEditorExtensionTestCase ();
+			await test.Init (content, data, wrap);
+			test.Document = await test.DocumentManager.OpenDocument (content);
+			return test;
+		}
+
+		async Task Init (TestViewContent content, EditorExtensionTestData data, bool wrap)
+		{
+			//serviceProvider = ServiceHelper.SetupMockShell ();
+			documentManager = await Runtime.GetService<DocumentManager> ();
+
 			Content = content;
-			Window = window;
 			TestData = data;
 			Wrap = wrap;
 		}
 
+		public DocumentManager DocumentManager {
+			get {
+				return documentManager;
+			}
+		}
+
 		public void Dispose ()
 		{
-			using (var solution = Document.Project?.ParentSolution)
-				TypeSystemService.Unload (solution);
-			Window.CloseWindowSync ();
+			if (Solution != null) {
+				using (Solution)
+					IdeApp.TypeSystemService.Unload (Solution);
+			}
 			if (!Wrap)
-				Document.Dispose ();
+				Document.Close (true).Ignore ();
 		}
 
 		public T GetContent<T> () where T:class => Content.GetContent<T> ();
 	}
 
+	[RequireService (typeof (TextEditorService))]
+	[RequireService (typeof (TaskService))]
 	public abstract class TextEditorExtensionTestBase : IdeTestBase
 	{
 		protected abstract EditorExtensionTestData GetContentData ();
@@ -122,26 +151,23 @@ namespace MonoDevelop.Ide
 
 		protected async Task<TextEditorExtensionTestCase> SetupTestCase (string input, int cursorPosition = -1, bool wrap = false)
 		{
-			await Composition.CompositionManager.InitializeAsync ();
+			await Runtime.GetService<CompositionManager> ();
 
 			var data = GetContentData ();
 
-			var content = new TestViewContent {
-				ContentName = data.FileName,
-				Text = input,
-			};
-			content.Data.MimeType = data.MimeType;
+			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor (data.FileName, null, null));
+
+			content.Text = input;
+
+			content.Editor.MimeType = data.MimeType;
 			if (cursorPosition != -1)
 				content.CursorPosition = cursorPosition;
-
-			var tww = new TestWorkbenchWindow {
-				ViewContent = content,
-			};
 
 			var project = Services.ProjectService.CreateDotNetProject (data.Language);
 			project.Name = Path.GetFileNameWithoutExtension (data.ProjectFileName);
 			project.FileName = data.ProjectFileName;
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+			project.Files.Add (new ProjectFile (content.FilePath, BuildAction.Compile));
 			foreach (var reference in data.References)
 				project.References.Add (ProjectReference.CreateAssemblyReference (reference));
 
@@ -149,23 +175,20 @@ namespace MonoDevelop.Ide
 			solution.AddConfiguration ("", true);
 			solution.DefaultSolutionFolder.AddItem (project);
 
-			content.Project = project;
-
-			if (wrap && !IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-			Document doc = wrap ? IdeApp.Workbench.WrapDocument (tww) : new Document (tww);
-
-			doc.SetProject (project);
+			content.Owner = project;
 
 			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
+				await IdeApp.TypeSystemService.Load (solution, monitor);
+
+			var testCase = await TextEditorExtensionTestCase.Create (content, data, wrap);
+			var doc = testCase.Document;
 
 			foreach (var ext in GetEditorExtensions ()) {
-				ext.Initialize (doc.Editor, doc);
-				content.Contents.Add (ext);
+				ext.Initialize (doc.Editor, doc.DocumentContext);
+				content.AddContent (ext);
 			}
-			await doc.UpdateParseDocument ();
-			return new TextEditorExtensionTestCase (doc, content, tww, data, wrap);
+			await doc.DocumentContext.UpdateParseDocument ();
+			return testCase;
 		}
 	}
 }

@@ -79,7 +79,7 @@
 		For example, .NET Core 1.1 SDK does not have a Razor template so having the 1.1 templates first
 		would cause the Razor template to be last in the New Project dialog if both 1.1 and 2.x templates
 		are available. -->
-			<Condition id="AspNetCoreSdkInstalled" sdkVersion="3.0">
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="3.0">
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.3.0"
@@ -162,6 +162,58 @@
 				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Razor.Library.CSharp"
+				templateId="Microsoft.Web.Razor.Library.CSharp.3.0"
+				_overrideName="Razor Class Library"
+				_overrideDescription="A project for creating a Razor class library that targets .NET Standard"
+				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.Angular.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.Angular.CSharp.3.0"
+				_overrideName="Angular"
+				_overrideDescription="A project template for creating an ASP.NET Core application with Angular"
+				path="${DotNetCoreSdk.3.0.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.React.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.React.CSharp.3.0"
+				_overrideName="React.js"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js"
+				path="${DotNetCoreSdk.3.0.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.ReactRedux.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.ReactRedux.CSharp.3.0"
+				_overrideName="React.js and Redux"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js and Redux"
+				path="${DotNetCoreSdk.3.0.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -260,6 +312,58 @@
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Razor.Library.CSharp"
+				templateId="Microsoft.Web.Razor.Library.CSharp.2.2"
+				_overrideName="Razor Class Library"
+				_overrideDescription="A project for creating a Razor class library that targets .NET Standard"
+				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore22=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.Angular.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.Angular.CSharp.2.2"
+				_overrideName="Angular"
+				_overrideDescription="A project template for creating an ASP.NET Core application with Angular"
+				path="${DotNetCoreSdk.2.2.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore22=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.React.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.React.CSharp.2.2"
+				_overrideName="React.js"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js"
+				path="${DotNetCoreSdk.2.2.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore22=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.ReactRedux.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.ReactRedux.CSharp.2.2"
+				_overrideName="React.js and Redux"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js and Redux"
+				path="${DotNetCoreSdk.2.2.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore22=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
 		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.1">
 			<Template
@@ -344,6 +448,58 @@
 				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Razor.Library.CSharp"
+				templateId="Microsoft.Web.Razor.Library.CSharp.2.1"
+				_overrideName="Razor Class Library"
+				_overrideDescription="A project for creating a Razor class library that targets .NET Standard"
+				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.Angular.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.Angular.CSharp.2.1"
+				_overrideName="Angular"
+				_overrideDescription="A project template for creating an ASP.NET Core application with Angular"
+				path="${DotNetCoreSdk.2.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.React.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.React.CSharp.2.1"
+				_overrideName="React.js"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js"
+				path="${DotNetCoreSdk.2.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.ReactRedux.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.ReactRedux.CSharp.2.1"
+				_overrideName="React.js and Redux"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js and Redux"
+				path="${DotNetCoreSdk.2.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"

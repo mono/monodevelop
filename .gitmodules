@@ -40,7 +40,7 @@
 [submodule "main/external/RefactoringEssentials"]
 	path = main/external/RefactoringEssentials
 	url = git://github.com/mono/RefactoringEssentials.git
-	branch = monodevelop2
+	branch = roslyn-3
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
 	url = git://github.com/mono/sharpsvn-binary.git
@@ -51,8 +51,8 @@
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
 	url = https://github.com/xamarin/Xamarin.PropertyEditing
-	branch = monodevelop
-[submodule "main/external/vs-editor-core"]
-	path = main/external/vs-editor-core
-	url = ../../xamarin/vs-editor-core.git
-	branch = release-8.0
+	branch = master
+[submodule "main/external/vs-editor-api"]
+	path = main/external/vs-editor-api
+	url = https://github.com/KirillOsenkov/vs-editor-api.git
+	branch = monodevelop/master

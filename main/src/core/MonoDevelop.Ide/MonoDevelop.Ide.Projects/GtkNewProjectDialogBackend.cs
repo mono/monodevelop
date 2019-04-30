@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowDialog ()
 		{
-			MessageService.ShowCustomDialog (this, DesktopService.GetFocusedTopLevelWindow ());
+			MessageService.ShowCustomDialog (this, IdeServices.DesktopService.GetFocusedTopLevelWindow ());
 		}
 
 		public void CloseDialog ()
@@ -612,7 +612,7 @@ namespace MonoDevelop.Ide.Projects
 			controller.MoveToPreviousPage ();
 
 			Widget widget = GetWidgetToDisplay ();
-			widget.ShowAll ();
+			widget.Show ();
 
 			centreVBox.Remove (centreVBox.Children [0]);
 			centreVBox.PackStart (widget, true, true, 0);

@@ -63,7 +63,6 @@
     <Compile Include="MonoDevelop.Gettext.Editor\CatalogHeadersWidget.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="MonoDevelop.Gettext.Translator\LanguageChooserDialog.cs" />
-    <Compile Include="MonoDevelop.Gettext.Editor\GettextEditorDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Gettext\TranslationProject.cs" />
     <Compile Include="MonoDevelop.Gettext\Translation.cs" />
     <Compile Include="MonoDevelop.Gettext.NodeBuilders\TranslationProjectNodeBuilder.cs" />

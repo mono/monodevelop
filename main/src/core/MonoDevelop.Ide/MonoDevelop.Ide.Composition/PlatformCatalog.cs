@@ -3,29 +3,17 @@
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using System.Reflection;
-using System.Diagnostics;
-using System.ComponentModel;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
-
-using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Ide.Composition;
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Ide.Composition;
 
 namespace Microsoft.VisualStudio.Platform
 {
@@ -37,7 +25,7 @@ namespace Microsoft.VisualStudio.Platform
 		public static PlatformCatalog Instance {
 			get {
 				if (instance == null) {
-					instance = CompositionManager.GetExportedValue<PlatformCatalog> ();
+					instance = CompositionManager.Instance.GetExportedValue<PlatformCatalog> ();
 				}
 
 				return instance;

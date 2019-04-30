@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -41,14 +41,19 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide.Gui.Documents;
 
 using AutoSave = MonoDevelop.Ide.Editor.AutoSave;
 using EditorConfigService = MonoDevelop.Ide.Editor.EditorConfigService;
 using DefaultSourceEditorOptions = MonoDevelop.Ide.Editor.DefaultSourceEditorOptions;
+using MonoDevelop.Components;
+using System.Threading;
+using TextEditorFactory = MonoDevelop.Ide.Editor.TextEditorFactory;
 
 #if WINDOWS
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
@@ -59,7 +64,7 @@ using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditor
 namespace MonoDevelop.TextEditor
 {
 	abstract partial class TextViewContent<TView, TImports> :
-		ViewContent,
+		FileDocumentController,
 		INavigable,
 		ICustomCommandTarget,
 		ICommandHandler,
@@ -73,49 +78,62 @@ namespace MonoDevelop.TextEditor
 		where TView : ITextView
 		where TImports : TextViewImports
 	{
-		readonly string mimeType;
-		readonly IEditorCommandHandlerService commandService;
-		readonly List<IEditorContentProvider> contentProviders;
-		readonly DefaultSourceEditorOptions sourceEditorOptions;
-		readonly IInfoBarPresenter infoBarPresenter;
+		IEditorCommandHandlerService commandService;
+		List<IEditorContentProvider> contentProviders;
+		DefaultSourceEditorOptions sourceEditorOptions;
+		IInfoBarPresenter infoBarPresenter;
 
-		PolicyBag policyContainer;
+		static IEditorOptions globalOptions;
+		static bool settingZoomLevel;
+
+		PolicyContainer policyContainer;
 		ICodingConventionContext editorConfigContext;
 		bool warnOverwrite;
+		IDisposable textBufferRegistration;
 
 		public TImports Imports { get; }
-		public TView TextView { get; }
-		public ITextDocument TextDocument { get; }
-		public ITextBuffer TextBuffer { get; }
+		public TView TextView { get; private set; }
+		public ITextDocument TextDocument { get; private set; }
+		public ITextBuffer TextBuffer { get; private set; }
 
-		protected EditorOperationsInterface EditorOperations { get; }
-		protected IEditorOptions EditorOptions { get; }
+		protected EditorOperationsInterface EditorOperations { get; private set; }
+		protected IEditorOptions EditorOptions { get; private set; }
 
-		protected TextViewContent (
-			TImports imports,
-			FilePath fileName,
-			string mimeType,
-			Project ownerProject)
+		protected override Type FileModelType => typeof (TextBufferFileModel);
+
+		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
+
+		protected TextViewContent (TImports imports)
 		{
 			this.Imports = imports;
-			this.mimeType = mimeType;
 			this.sourceEditorOptions = DefaultSourceEditorOptions.Instance;
+			this.ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
+		}
 
-			Project = ownerProject;
-			ContentName = fileName;
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			await base.OnInitialize (modelDescriptor, status);
+			await Model.Load ();
 
+			// let's update the file type condition
+			fileTypeCondition.SetFileName (this.FilePath);
+		}
+
+		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
+		{
 			// FIXME: move this to the end of the .ctor after fixing margin options responsiveness
 			UpdateLineNumberMarginOption ();
 
-			//TODO: this can change when the file is renamed
-			var contentType = GetContentTypeFromMimeType (fileName, mimeType);
+			var fileModel = (TextBufferFileModel)Model;
 
-			TextDocument = Imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
+			TextDocument = fileModel.TextDocument;
 			TextBuffer = TextDocument.TextBuffer;
+
+			UpdateTextBufferRegistration ();
 
 			var roles = GetAllPredefinedRoles ();
 			//we have multiple copies of VacuousTextDataModel for back-compat reasons
-			#pragma warning disable CS0436 // Type conflicts with imported type
+#pragma warning disable CS0436 // Type conflicts with imported type
 			var dataModel = new VacuousTextDataModel (TextBuffer);
 			var viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
 				Imports.TextViewModelProviders,
@@ -125,7 +143,7 @@ namespace MonoDevelop.TextEditor
 				Imports.ContentTypeRegistryService,
 				Imports.GuardedOperations,
 				this) ?? new VacuousTextViewModel (dataModel);
-			#pragma warning restore CS0436 // Type conflicts with imported type
+#pragma warning restore CS0436 // Type conflicts with imported type
 
 			TextView = CreateTextView (viewModel, roles);
 			control = CreateControl ();
@@ -136,29 +154,98 @@ namespace MonoDevelop.TextEditor
 			UpdateTextEditorOptions (this, EventArgs.Empty);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
-			TextView.Properties [typeof (ViewContent)] = this;
+			TextView.Properties [typeof (DocumentController)] = this;
 
 			infoBarPresenter = Imports.InfoBarPresenterFactory?.TryGetInfoBarPresenter (TextView);
 
 			InstallAdditionalEditorOperationsCommands ();
 
+			UpdateBufferOptions ();
 			SubscribeToEvents ();
+
+			// Set up this static event handling just once
+			if (globalOptions == null) {
+				globalOptions = Imports.EditorOptionsFactoryService.GlobalOptions;
+
+				// From Mono.TextEditor.TextEditorOptions
+				const double ZOOM_FACTOR = 1.1f;
+				const int ZOOM_MIN_POW = -4;
+				const int ZOOM_MAX_POW = 8;
+				var ZOOM_MIN = Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
+				var ZOOM_MAX = Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
+
+#if !WINDOWS
+				globalOptions.SetMinZoomLevel (ZOOM_MIN * 100);
+				globalOptions.SetMaxZoomLevel (ZOOM_MAX * 100);
+#endif
+
+				OnConfigurationZoomLevelChanged (null, EventArgs.Empty);
+
+				globalOptions.OptionChanged += OnGlobalOptionsChanged;
+				// Check for option changing in old editor
+				TextEditorFactory.ZoomLevel.Changed += OnConfigurationZoomLevelChanged;
+			}
+
+			// Content providers can provide additional content
+			NotifyContentChanged ();
+
+			await Load (false);
+
+			return control;
 		}
 
-		public override bool IsReadOnly => TextView.Options.DoesViewProhibitUserInput ();
+		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
+		{
+			if (Model != null)
+				IsNewDocument = Model.IsNew;
+		}
 
-		public override void GrabFocus ()
+		static void OnConfigurationZoomLevelChanged (object sender, EventArgs e)
+		{
+			if (settingZoomLevel)
+				return;
+
+#if !WINDOWS
+			globalOptions.SetZoomLevel (TextEditorFactory.ZoomLevel * 100);
+#endif
+		}
+
+		static void OnGlobalOptionsChanged (object sender, EditorOptionChangedEventArgs e)
+		{
+#if !WINDOWS
+			if (e.OptionId == DefaultTextViewOptions.ZoomLevelId.Name) {
+				settingZoomLevel = true;
+				TextEditorFactory.ZoomLevel.Set (globalOptions.ZoomLevel () / 100);
+				settingZoomLevel = false;
+			}
+#endif
+		}
+
+		void UpdateTextBufferRegistration ()
+		{
+			textBufferRegistration?.Dispose ();
+			textBufferRegistration = null;
+
+			if (TextBuffer != null)
+				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
+		}
+
+		protected override void OnGrabFocus (DocumentView view)
 		{
 			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-			base.GrabFocus ();
+			base.OnGrabFocus (view);
 		}
 
-		protected override void OnContentNameChanged ()
+		protected override void OnFileNameChanged ()
 		{
-			base.OnContentNameChanged ();
+			base.OnFileNameChanged ();
 
 			if (TextDocument == null)
 				return;
+
+			UpdateTextBufferRegistration ();
+
+			warnOverwrite = false;
 
 			if (editorConfigContext != null) {
 				editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
@@ -166,11 +253,14 @@ namespace MonoDevelop.TextEditor
 				editorConfigContext = null;
 			}
 
-			if (ContentName != TextDocument.FilePath && !string.IsNullOrEmpty (TextDocument.FilePath))
+			if (FilePath != TextDocument.FilePath && !string.IsNullOrEmpty (TextDocument.FilePath))
 				AutoSave.RemoveAutoSaveFile (TextDocument.FilePath);
 
-			if (ContentName != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
-				TextDocument.Rename (ContentName);
+			if (FilePath != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
+				TextDocument.Rename (FilePath);
+
+			// update the file type condition with the new path
+			fileTypeCondition.SetFileName (FilePath);
 
 			// TODO: Actually implement file rename support. Below is from old editor.
 			//       Need to remove or update mimeType field, too.
@@ -181,14 +271,14 @@ namespace MonoDevelop.TextEditor
 			UpdateTextEditorOptions (null, null);
 		}
 
-		protected override void OnSetProject (Project project)
+		protected override void OnOwnerChanged ()
 		{
-			base.OnSetProject (project);
+			base.OnOwnerChanged ();
 
-			if (TextDocument == null)
-				return;
-
-			UpdateTextEditorOptions (null, null);
+			if (TextDocument != null) {
+				UpdateTextEditorOptions (null, null);
+				UpdateTextBufferRegistration ();
+			}
 		}
 
 		protected abstract TView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles);
@@ -200,30 +290,36 @@ namespace MonoDevelop.TextEditor
 		protected abstract Components.Control CreateControl ();
 
 		Components.Control control;
-		public override Components.Control Control => control;
-
-		public override string TabPageLabel
-			=> GettextCatalog.GetString ("Source");
 
 		bool isDisposed;
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (isDisposed)
 				return;
 
 			isDisposed = true;
 
+			textBufferRegistration?.Dispose ();
+			textBufferRegistration = null;
+
+			// Parity behavior with the old editor
+			if (autoSaveTask != null)
+				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+			RemoveAutoSaveTimer ();
+			if (!string.IsNullOrEmpty (FilePath))
+				AutoSave.RemoveAutoSaveFile (FilePath);
+
 			UnsubscribeFromEvents ();
-			TextDocument.Dispose ();
+			TextDocument?.Dispose ();
 
 			if (policyContainer != null)
 				policyContainer.PolicyChanged -= PolicyChanged;
 			if (editorConfigContext != null) {
 				editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
-				EditorConfigService.RemoveEditConfigContext (ContentName).Ignore ();
+				EditorConfigService.RemoveEditConfigContext (FilePath).Ignore ();
 			}
 
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
 		protected virtual void SubscribeToEvents ()
@@ -233,15 +329,24 @@ namespace MonoDevelop.TextEditor
 			TextBuffer.Changed += HandleTextBufferChanged;
 			TextView.Caret.PositionChanged += CaretPositionChanged;
 			TextView.TextBuffer.Changed += TextBufferChanged;
+			TextView.Options.OptionChanged += TextBufferOptionsChanged;
 		}
 
 		protected virtual void UnsubscribeFromEvents ()
 		{
 			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
-			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
-			TextBuffer.Changed -= HandleTextBufferChanged;
-			TextView.Caret.PositionChanged -= CaretPositionChanged;
-			TextView.TextBuffer.Changed -= TextBufferChanged;
+			if (TextDocument != null) {
+				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+				TextBuffer.Changed -= HandleTextBufferChanged;
+				TextView.Caret.PositionChanged -= CaretPositionChanged;
+				TextView.TextBuffer.Changed -= TextBufferChanged;
+				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
+			}
+		}
+
+		void UpdateBufferOptions ()
+		{
+			IsReadOnly = TextView.Options.DoesViewProhibitUserInput ();
 		}
 
 		void UpdateLineNumberMarginOption ()
@@ -260,7 +365,7 @@ namespace MonoDevelop.TextEditor
 		{
 			UpdateLineNumberMarginOption ();
 
-			var newPolicyContainer = Project?.Policies;
+			var newPolicyContainer = (Owner as IPolicyProvider)?.Policies;
 			if (newPolicyContainer != policyContainer) {
 				if (policyContainer != null)
 					policyContainer.PolicyChanged -= PolicyChanged;
@@ -271,7 +376,7 @@ namespace MonoDevelop.TextEditor
 
 			UpdateOptionsFromPolicy ();
 
-			var newEditorConfigContext = await EditorConfigService.GetEditorConfigContext (ContentName, default);
+			var newEditorConfigContext = await EditorConfigService.GetEditorConfigContext (FilePath, default);
 			if (newEditorConfigContext != editorConfigContext) {
 				if (editorConfigContext != null)
 					editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
@@ -295,7 +400,7 @@ namespace MonoDevelop.TextEditor
 				return;
 			}
 
-			var mimeTypes = Ide.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var mimeTypes = IdeServices.DesktopService.GetMimeTypeInheritanceChain (MimeType);
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 
 			EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
@@ -329,10 +434,12 @@ namespace MonoDevelop.TextEditor
 
 		protected override object OnGetContent (Type type)
 		{
-			foreach (var provider in contentProviders) {
-				var content = provider.GetContent (TextView, type);
-				if (content != null) {
-					return content;
+			if (contentProviders != null) {
+				foreach (var provider in contentProviders) {
+					var content = provider.GetContent (TextView, type);
+					if (content != null) {
+						return content;
+					}
 				}
 			}
 			return GetIntrinsicType (type);
@@ -340,11 +447,13 @@ namespace MonoDevelop.TextEditor
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			foreach (var provider in contentProviders) {
-				var contents = provider.GetContents (TextView, type);
-				if (contents != null) {
-					foreach (var content in contents)
-						yield return content;
+			if (contentProviders != null) {
+				foreach (var provider in contentProviders) {
+					var contents = provider.GetContents (TextView, type);
+					if (contents != null) {
+						foreach (var content in contents)
+							yield return content;
+					}
 				}
 			}
 
@@ -367,7 +476,7 @@ namespace MonoDevelop.TextEditor
 			return null;
 		}
 
-		public override Task Load (FileOpenInformation fileOpenInformation)
+		Task Load (bool reloading)
 		{
 			// We actually load initial content at construction time, so this
 			// overload only needs to cover reload and autosave scenarios
@@ -378,10 +487,10 @@ namespace MonoDevelop.TextEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 
-			if (fileOpenInformation.IsReloadOperation) {
+			if (reloading) {
 				TextDocument.Reload ();
-			} else if (AutoSave.AutoSaveExists (fileOpenInformation.FileName)) {
-				var autosaveContent = AutoSave.LoadAutoSave (fileOpenInformation.FileName);
+			} else if (AutoSave.AutoSaveExists (FilePath)) {
+				var autosaveContent = AutoSave.LoadAutoSave (FilePath);
 
 				MarkDirty ();
 				warnOverwrite = true;
@@ -419,7 +528,7 @@ namespace MonoDevelop.TextEditor
 				void LoadFromAutosave ()
 				{
 					try {
-						AutoSave.RemoveAutoSaveFile (fileOpenInformation.FileName);
+						AutoSave.RemoveAutoSaveFile (FilePath);
 						ReplaceContent (autosaveContent.Text, autosaveContent.Encoding);
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not load the autosave file", e);
@@ -431,7 +540,7 @@ namespace MonoDevelop.TextEditor
 				void UseOriginalFile ()
 				{
 					try {
-						AutoSave.RemoveAutoSaveFile (fileOpenInformation.FileName);
+						AutoSave.RemoveAutoSaveFile (FilePath);
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not remove the autosave file", e);
 					} finally {
@@ -466,16 +575,6 @@ namespace MonoDevelop.TextEditor
 		void DismissInfoBar ()
 			=> infoBarPresenter?.DismissAll ();
 
-		public override void DiscardChanges ()
-		{
-			// Parity behavior with the old editor
-			if (autoSaveTask != null)
-				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
-			RemoveAutoSaveTimer ();
-			if (!string.IsNullOrEmpty (ContentName))
-				AutoSave.RemoveAutoSaveFile (ContentName);
-		}
-
 		// TODO: Switch to native timeout, this is copied from TextEditorViewContent
 		uint autoSaveTimer;
 		Task autoSaveTask;
@@ -490,7 +589,7 @@ namespace MonoDevelop.TextEditor
 					return false;
 
 				autoSaveTask = AutoSave.InformAutoSaveThread (
-					new AutoSaveTextSourceFacade(TextBuffer, TextDocument), ContentName, IsDirty);
+					new AutoSaveTextSourceFacade(TextBuffer, TextDocument), FilePath, HasUnsavedChanges);
 				return false;
 			});
 		}
@@ -503,39 +602,27 @@ namespace MonoDevelop.TextEditor
 			autoSaveTimer = 0;
 		}
 
-		public override Task Save ()
-			=> Save (default (FileSaveInformation));
-
-		public override Task Save (FileSaveInformation fileSaveInformation)
+		protected override async Task OnSave ()
 		{
-			var fileName = fileSaveInformation?.FileName ?? ContentName;
-
 			if (warnOverwrite) {
-				if (string.Equals (fileName, ContentName, FilePath.PathComparison)) {
-					string question = GettextCatalog.GetString (
-						"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
-						fileName, BrandingService.ApplicationName
-					);
-					if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
-						return Task.CompletedTask;
-				}
+				string question = GettextCatalog.GetString (
+					"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
+					FilePath, BrandingService.ApplicationName
+				);
+				if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
+					return;
 
 				warnOverwrite = false;
 				DismissInfoBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
 
-			if (!string.IsNullOrEmpty (fileName))
-				AutoSave.RemoveAutoSaveFile (fileName);
+			if (!string.IsNullOrEmpty (FilePath))
+				AutoSave.RemoveAutoSaveFile (FilePath);
 
 			FormatOnSave ();
 
-			if (fileSaveInformation != null)
-				TextDocument.SaveAs (fileSaveInformation.FileName, overwrite: true);
-			else
-				TextDocument.Save ();
-
-			return Task.CompletedTask;
+			await base.OnSave ();
 		}
 
 		void FormatOnSave ()
@@ -548,8 +635,6 @@ namespace MonoDevelop.TextEditor
 				LoggingService.LogError ("Error while formatting on save", e);
 			}
 		}
-
-		public override bool IsDirty => TextDocument.IsDirty;
 
 		bool manuallyMarkingDirty;
 		void MarkDirty ()
@@ -564,7 +649,7 @@ namespace MonoDevelop.TextEditor
 
 		void HandleTextDocumentDirtyStateChanged (object sender, EventArgs e)
 		{
-			OnDirtyChanged ();
+			HasUnsavedChanges = TextDocument.IsDirty;
 			if (!manuallyMarkingDirty)
 				InformAutoSave ();
 		}
@@ -576,11 +661,10 @@ namespace MonoDevelop.TextEditor
 
 		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
 			=> Ide.MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (ContentName != null ? Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (ContentName) : null)
+				?? (FilePath != null ? Ide.Composition.CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (FilePath) : null)
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
-		public override ProjectReloadCapability ProjectReloadCapability
-			=> ProjectReloadCapability.Full;
+		protected internal override ProjectReloadCapability OnGetProjectReloadCapability () => ProjectReloadCapability.Full;
 
 		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
 		{
@@ -592,11 +676,15 @@ namespace MonoDevelop.TextEditor
 			TryLogNavPoint (false);
 		}
 
+		void TextBufferOptionsChanged (object sender, EventArgs a)
+		{
+			UpdateBufferOptions ();
+		}
+
 		object IPropertyPadProvider.GetActiveComponent ()
 		{
-			if (WorkbenchWindow?.Document is Document doc && doc.HasProject) {
-				return Project.Files.GetFile (doc.Name);
-			}
+			if (Document?.Owner is Project project)
+				return project.GetProjectFile (FilePath);
 			return null;
 		}
 
@@ -606,9 +694,8 @@ namespace MonoDevelop.TextEditor
 
 		void IPropertyPadProvider.OnChanged (object obj)
 		{
-			if (WorkbenchWindow?.Document is Document doc && doc.HasProject) {
-				Ide.IdeApp.ProjectOperations.SaveAsync (doc.Project);
-			}
+			if (Document?.Owner is Project project)
+				Ide.IdeApp.ProjectOperations.SaveAsync (project);
 		}
 
 		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
@@ -630,7 +717,7 @@ namespace MonoDevelop.TextEditor
 			var (primaryMessageText, secondaryMessageText) = SplitMessageString (GettextCatalog.GetString (
 				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
 				"Do you want to keep your changes, or reload the file from disk?",
-				ContentName, BrandingService.ApplicationName));
+				FilePath, BrandingService.ApplicationName));
 
 			PresentInfobar (
 				primaryMessageText,
@@ -640,10 +727,10 @@ namespace MonoDevelop.TextEditor
 			void ReloadFromDisk ()
 			{
 				try {
-					if (isDisposed || !File.Exists (ContentName))
+					if (isDisposed || !File.Exists (FilePath))
 						return;
 
-					Load (new FileOpenInformation (ContentName) { IsReloadOperation = true });
+					Load (true);
 					WorkbenchWindow.ShowNotification = false;
 				} catch (Exception ex) {
 					MessageService.ShowError ("Could not reload the file.", ex);

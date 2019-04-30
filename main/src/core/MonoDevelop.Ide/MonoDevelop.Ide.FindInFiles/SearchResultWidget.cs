@@ -1,4 +1,4 @@
-// 
+﻿// 
 // SearchResultWidget.cs
 //  
 // Author:
@@ -390,7 +390,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			fileNamePixbufRenderer.Image = DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
+			fileNamePixbufRenderer.Image = IdeServices.DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
 		}
 
 		static string MarkupText (string text, bool didRead)

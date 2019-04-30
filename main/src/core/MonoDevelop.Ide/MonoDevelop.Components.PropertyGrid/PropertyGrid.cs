@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * PropertyGrid.cs - A Gtk# widget that displays and allows 
  * editing of all of an object's public properties 
  *
@@ -45,6 +45,7 @@ using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -388,7 +389,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			descTextView.Editable = false;
 			descTextView.LeftMargin = 5;
 			descTextView.RightMargin = 5;
-			descTextView.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
+			descTextView.ModifyFont (IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 			
 			textScroll.Add (descTextView);
 			

@@ -1,5 +1,5 @@
 // 
-// TaskService.cs
+// IdeServices.TaskService.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -27,51 +27,59 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public enum TaskSeverity
+	[DefaultServiceImplementation]
+	public class TaskService: Service
 	{
-		Error,
-		Warning,
-		Information,
-		Comment
-	}
-	
-	public static class TaskService
-	{
-		static TaskStore errors = new TaskStore ();
-		static TaskStore userTasks = new TaskStore ();
+		TaskStore errors = new TaskStore ();
+		TaskStore userTasks = new TaskStore ();
 		
-		static bool errorBubblesVisible = true;
-		static bool warningBubblesVisible = true;
-		
-		static TaskService ()
+		bool errorBubblesVisible = true;
+		bool warningBubblesVisible = true;
+
+		RootWorkspace rootWorkspace;
+
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
-				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				rootWorkspace = s;
+				rootWorkspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
+				rootWorkspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 				CommentTasksProvider.Legacy.Initialize ();
-			}
+			});
 			errors.ItemName = GettextCatalog.GetString ("Warning/Error");
 			userTasks.ItemName = GettextCatalog.GetString ("User Task");
+			return Task.CompletedTask;
 		}
-		
-		public static TaskStore Errors {
+
+		protected override Task OnDispose ()
+		{
+			if (rootWorkspace != null) {
+				rootWorkspace.WorkspaceItemLoaded -= OnWorkspaceItemLoaded;
+				rootWorkspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
+			}
+			errors.Dispose ();
+			userTasks.Dispose ();
+			return base.OnDispose ();
+		}
+
+		public TaskStore Errors {
 			get { return errors; }
 		}
 		
-		public static TaskStore UserTasks {
+		public TaskStore UserTasks {
 			get { return userTasks; }
 		}
 		
-		public static bool ErrorBubblesVisible {
+		public bool ErrorBubblesVisible {
 			get { return errorBubblesVisible; }
 			set {
 				if (errorBubblesVisible != value) {
@@ -82,7 +90,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public static bool WarningBubblesVisible {
+		public bool WarningBubblesVisible {
 			get { return warningBubblesVisible; }
 			set {
 				if (warningBubblesVisible != value) {
@@ -93,9 +101,9 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public static event EventHandler BubblesVisibilityChanged;
+		public event EventHandler BubblesVisibilityChanged;
 		
-		public static void ShowErrors ()
+		public void ShowErrors ()
 		{
 			Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
 			if (errorsPad != null) {
@@ -107,7 +115,7 @@ namespace MonoDevelop.Ide.Tasks
 		/// <summary>
 		/// Shows a description of the task in the status bar
 		/// </summary>
-		public static void ShowStatus (TaskListEntry t)
+		public void ShowStatus (TaskListEntry t)
 		{
 			if (t == null)
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
@@ -119,7 +127,7 @@ namespace MonoDevelop.Ide.Tasks
 				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
 		}
 			
-		static void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
+		void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
 		{
 			string fileToLoad = GetUserTasksFilename (e.Item);
 			
@@ -143,7 +151,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		static void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
+		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
 			// Save UserTasks to xml file
 			SaveUserTasks (e.Item);
@@ -154,13 +162,13 @@ namespace MonoDevelop.Ide.Tasks
 			userTasks.RemoveItemTasks (e.Item, true);
 		}
 		
-		static FilePath GetUserTasksFilename (WorkspaceItem item)
+		FilePath GetUserTasksFilename (WorkspaceItem item)
 		{
 			FilePath combinePath = item.FileName.ParentDirectory;
 			return combinePath.Combine (item.FileName.FileNameWithoutExtension + ".usertasks");
 		}
 		
-		internal static void SaveUserTasks (WorkspaceObject item)
+		internal void SaveUserTasks (WorkspaceObject item)
 		{
 			string fileToSave = GetUserTasksFilename ((WorkspaceItem)item);
 			try {
@@ -178,16 +186,16 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		
-		public static event EventHandler<TaskEventArgs> JumpedToTask;
+		public event EventHandler<TaskEventArgs> JumpedToTask;
 
-		internal static void InformJumpToTask (TaskListEntry task)
+		internal void InformJumpToTask (TaskListEntry task)
 		{
 			EventHandler<TaskEventArgs> handler = JumpedToTask;
 			if (handler != null)
 				handler (null, new TaskEventArgs (task));
 		}
 
-		internal static void InformCommentTasks (CommentTasksChangedEventArgs args)
+		internal void InformCommentTasks (CommentTasksChangedEventArgs args)
 		{
 			if (args.Changes.Count == 0)
 				return;
@@ -197,11 +205,11 @@ namespace MonoDevelop.Ide.Tasks
 				handler (null, args);
 		}
 		
-		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
+		public event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
 
-		public static event EventHandler<TaskEventArgs> TaskToggled;
+		public event EventHandler<TaskEventArgs> TaskToggled;
 
-		public static void FireTaskToggleEvent (object sender, TaskEventArgs e)
+		public void FireTaskToggleEvent (object sender, TaskEventArgs e)
 		{
 			var handler = TaskToggled;
 			if (handler != null)

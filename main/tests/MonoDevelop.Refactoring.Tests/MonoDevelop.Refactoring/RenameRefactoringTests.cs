@@ -67,7 +67,7 @@ namespace MonoDevelop.Refactoring.Tests
 				}
 
 				using (var testCase = await SetupTestCase (sb.ToString())) {
-					var model = await testCase.Document.AnalysisDocument.GetSemanticModelAsync ();
+					var model = await testCase.Document.DocumentContext.AnalysisDocument.GetSemanticModelAsync ();
 					ISymbol symbol = null;
 					var root = await model.SyntaxTree.GetRootAsync ();
 					foreach (var l in expectedLinks) {

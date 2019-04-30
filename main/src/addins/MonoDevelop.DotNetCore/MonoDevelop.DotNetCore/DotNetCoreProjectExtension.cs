@@ -177,11 +177,6 @@ namespace MonoDevelop.DotNetCore
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
-#pragma warning disable CS0618 // Type or member is obsolete
-				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
-				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
-				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
-#pragma warning restore CS0618 // Type or member is obsolete
 				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
@@ -379,7 +374,7 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
 		{
-			if (e.IsReload) {
+			if (e.IsReload || e.Project.Name != this.Project.Name) {
 				// Ignore. A restore will occur on reload elsewhere.
 				return;
 			}
@@ -637,7 +632,7 @@ namespace MonoDevelop.DotNetCore
 			if (Project.Loading)
 				return;
 
-			if (IdeApp.ProjectOperations == null)
+			if (!IdeApp.IsInitialized)
 				return;
 
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)

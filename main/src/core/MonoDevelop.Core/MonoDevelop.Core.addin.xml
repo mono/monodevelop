@@ -1,6 +1,7 @@
 <ExtensionModel>
 
 	<Runtime>
+		<Import assembly="Microsoft.Extensions.ObjectPool.dll" />
 		<Import assembly="Newtonsoft.Json.dll" />
 		<Import assembly="StreamJsonRpc.dll" />
 		<Import assembly="System.Collections.Immutable.dll" />

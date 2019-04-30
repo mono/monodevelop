@@ -26,8 +26,12 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
-    <PackageReference Include="NuGet.PackageManagement" Version="4.8.2-rtm.5835" PrivateAssets="runtime" />
-    <PackageReference Include="NuGet.Indexing" Version="4.8.2-rtm.5835" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.PackageManagement" Version="5.0.2" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.Indexing" Version="5.0.2" PrivateAssets="runtime" />
+    <!-- Ensure .NET 4.7.2's System.Net.Http is used not the one from this NuGet package -->
+    <PackageReference Include="System.Net.Http" Version="4.3.3" ExcludeAssets="all" />
+    <!-- Ensure .NET 4.7.2's System.IO.Compression is used not the one from this NuGet package -->
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" ExcludeAssets="all" />
     <IncludeCopyLocal Include="Lucene.Net.dll" />
     <IncludeCopyLocal Include="Microsoft.Web.XmlTransform.dll" />
     <IncludeCopyLocal Include="NuGet.Commands.dll" />
@@ -335,6 +339,8 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopDependencyGraphRestoreUtility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DependencyGraphContextExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ExceptionExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DependencyGraphSpecExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSpecExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

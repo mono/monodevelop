@@ -232,5 +232,34 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Ensures GetSourceFilesAsync does not include the old filename.
+		/// </summary>
+		[Test]
+		public async Task FileRenamedInProject ()
+		{
+			var solutionFile = Util.GetSampleProject ("csharp-console", "csharp-console.sln");
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFile)) {
+				var project = solution.FindProjectByName ("csharp-console");
+				var config = ConfigurationSelector.Default;
+				var sourceFiles = await project.GetSourceFilesAsync (config);
+
+				Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "Program.cs"));
+				Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "RenamedProgram.cs"));
+
+				// Rename Program.cs
+				var projectFile = project.Files.FirstOrDefault (f => f.FilePath.FileName == "Program.cs");
+				var newFileName = projectFile.FilePath.ParentDirectory.Combine ("RenamedProgram.cs");
+				FileService.RenameFile (projectFile.FilePath, newFileName);
+				projectFile.Name = newFileName;
+				await project.SaveAsync (Util.GetMonitor ());
+
+				// Check that source files is correct.
+				sourceFiles = await project.GetSourceFilesAsync (config);
+
+				Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "RenamedProgram.cs"));
+				Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "Program.cs"));
+			}
+		}
 	}
 }

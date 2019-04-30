@@ -1,4 +1,4 @@
-// ObjectValueTree.cs
+﻿// ObjectValueTree.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -165,7 +165,7 @@ namespace MonoDevelop.Debugger
 				if (!icon.IsNull) {
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
 						using (var layout = new Pango.Layout (widget.PangoContext)) {
-							layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+							layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 							layout.FontDescription.Family = Family;
 							layout.SetText (Text);
 							int w, h;
@@ -320,7 +320,7 @@ namespace MonoDevelop.Debugger
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
 
-			Pango.FontDescription newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+			Pango.FontDescription newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
 			liveIcon = ImageService.GetIcon ("md-live", IconSize.Menu);
 			noLiveIcon = liveIcon.WithAlpha (0.5);
@@ -769,11 +769,11 @@ namespace MonoDevelop.Debugger
 				compact = value;
 				Pango.FontDescription newFont;
 				if (compact) {
-					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 					valueCol.MaxWidth = 800;
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
 				} else {
-					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
+					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 					valueCol.MaxWidth = int.MaxValue;
 				}
 				crtValue.Compact = compact;
@@ -1132,7 +1132,21 @@ namespace MonoDevelop.Debugger
 			SetValues (parent, iter, name, val);
 			RegisterValue (val, iter);
 		}
-		
+
+		string GetDisplayValue (ObjectValue val)
+		{
+			if (val.DisplayValue == null)
+				return "(null)";
+
+			if (val.DisplayValue.Length > 1000)
+				// Truncate the string to stop the UI from hanging
+				// when calculating the size for very large amounts
+				// of text.
+				return val.DisplayValue.Substring (0, 1000) + "…";
+
+			return val.DisplayValue;
+		}
+
 		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValue val, bool updateJustValue = false)
 		{
 			string strval;
@@ -1206,10 +1220,10 @@ namespace MonoDevelop.Debugger
 					try {
 						strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
 					} catch (Exception) {
-						strval = val.DisplayValue ?? "(null)";
+						strval = GetDisplayValue (val);
 					}
 				} else {
-					strval = val.DisplayValue ?? "(null)";
+					strval = GetDisplayValue (val);
 				}
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
@@ -1657,7 +1671,7 @@ namespace MonoDevelop.Debugger
 					return false;
 				if (obj.IsPrimitive) {
 					//obj.DisplayValue.Contains ("|") is special case to detect enum with [Flags]
-					return obj.TypeName == "string" || obj.DisplayValue.Contains ("|");
+					return obj.TypeName == "string" || (obj.DisplayValue != null && obj.DisplayValue.Contains ("|"));
 				}
 				if (string.IsNullOrEmpty (obj.TypeName))
 					return false;
@@ -1948,7 +1962,7 @@ namespace MonoDevelop.Debugger
 						Uri uri;
 						if (url != null && Uri.TryCreate (url, UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
 							clickProcessed = true;
-							DesktopService.ShowUrl (url);
+							IdeServices.DesktopService.ShowUrl (url);
 						}
 					}
 				} else if (cr == crtExp) {

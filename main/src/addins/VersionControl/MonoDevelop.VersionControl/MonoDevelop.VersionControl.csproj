@@ -1,6 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
+  <Import Project="$(ReferencesVSEditor)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -486,7 +487,6 @@
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DiffView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DiffWidget.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\SubviewAttachmentHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\LogWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl\IRepositoryEditor.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlOperation.cs" />
@@ -520,6 +520,7 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.DiffWidget.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlDocumentController.cs" />
     <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
   </ItemGroup>
   <ItemGroup>

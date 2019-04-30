@@ -120,7 +120,6 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
 				Ide.IdeApp.CommandService.RegisterTopWindow (window);
 				var bounds = view.TextViewLines.GetCharacterBounds (point);
-				view.LostAggregateFocus += DestroyWindow;
 				view.LayoutChanged += LayoutChanged;
 				window.LeaveNotifyEvent += LeaveNotifyEvent;
 #if MAC
@@ -152,11 +151,6 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			DestroyWindow ();
 		}
 
-		void DestroyWindow(object sender, EventArgs args)
-		{
-			DestroyWindow ();
-		}
-
 		void DestroyWindow ()
 		{
 			Runtime.AssertMainThread ();
@@ -167,7 +161,6 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			}
 			if (lastView != null) {
 				lastView.LayoutChanged -= LayoutChanged;
-				lastView.LostAggregateFocus -= DestroyWindow;
 				lastView = null;
 			}
 		}

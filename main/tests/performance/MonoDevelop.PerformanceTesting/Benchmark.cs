@@ -38,5 +38,7 @@ namespace MonoDevelop.PerformanceTesting
 			if (sb != null)
 				sb.Append (time.ToString (CultureInfo.InvariantCulture));
 		}
+
+		public static void SetTime (long timeInMillis) => SetTime ((double)timeInMillis / 1000d);
 	}
 }

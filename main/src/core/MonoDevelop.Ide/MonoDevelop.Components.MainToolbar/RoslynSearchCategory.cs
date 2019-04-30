@@ -1,4 +1,4 @@
-﻿// 
+// 
 // RoslynSearchCategory.cs
 //  
 // Author:
@@ -164,7 +164,7 @@ namespace MonoDevelop.Components.MainToolbar
 					// TODO: Fill this right.
 					var priorityDocuments = ImmutableArray.Create<Document> ();
 					// Maybe use language services instead of AbstractNavigateToSearchService
-					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
+					var aggregatedResults = await Task.WhenAll (IdeApp.TypeSystemService.AllWorkspaces
 										.Select (ws => ws.CurrentSolution)
 										.SelectMany (sol => sol.Projects)
 										.Select (async proj => {

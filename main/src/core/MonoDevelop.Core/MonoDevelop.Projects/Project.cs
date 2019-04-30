@@ -593,6 +593,9 @@ namespace MonoDevelop.Projects
 				evaluatedSourceFilesConfiguration = null;
 				evaluatedSourceFilesTask = null;
 			}
+
+			compileEvaluator.ResetCachedCompileItems ();
+
 			return base.OnClearCachedData ();
 		}
 
@@ -719,7 +722,6 @@ namespace MonoDevelop.Projects
 			{
 				lock (evaluatedCompileItemsLock) {
 					evaluatedCompileItemsConfiguration = null;
-					reevaluateCoreCompileDependsOn = false;
 				}
 			}
 

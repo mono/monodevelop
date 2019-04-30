@@ -1,4 +1,4 @@
-// 
+﻿// 
 // HexEditorView.cs
 //  
 // Author:
@@ -34,36 +34,81 @@ using Xwt;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.HexEditor
 {
-	class HexEditorView : AbstractXwtViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
+	[ExportFileDocumentController (MimeType = "*", CanUseAsDefault = false, Name = "Hex Editor", Role = DocumentControllerRole.Tool, InsertAfter = "AssemblyBrowser")]
+	class HexEditorView : FileDocumentController, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
-		Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
-		ScrollView window ;
-		
-		public override Xwt.Widget Widget {
-			get {
-				return window;
-			}
-		}
-		
-		public HexEditorView ()
+		Mono.MHex.HexEditor hexEditor;
+		ScrollView window;
+
+		protected override Type FileModelType => typeof (ByteBufferModel);
+
+		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
+			view.Title = GettextCatalog.GetString ("Binary");
+			hexEditor = new Mono.MHex.HexEditor ();
+			await Model.Load ();
+			hexEditor.HexEditorData.ByteBuffer = ((ByteBufferModel)Model).ByteBuffer;
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();
 			DefaultSourceEditorOptions.Instance.Changed += Instance_Changed;
-			hexEditor.HexEditorData.Replaced += delegate {
-				this.IsDirty = true;
+			hexEditor.HexEditorData.Changed += delegate {
+				this.HasUnsavedChanges = true;
 			};
 			window = new ScrollView (hexEditor);
+			await LoadContent ();
+
+			hexEditor.SetFocus ();
+
+			return new XwtControl (window);
 		}
 
-		public override void Dispose ()
+		public Task Load (FilePath filePath)
 		{
-			((MonoDevelopHexEditorStyle)hexEditor.HexEditorStyle).Dispose ();
-			DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
-			base.Dispose ();
+			return Initialize (new FileDescriptor (filePath, null, null));
+		}
+
+		async Task LoadContent ()
+		{
+			var model = (ByteBufferModel)Model;
+			await model.Load ();
+			hexEditor.HexEditorData.ByteBuffer = model.ByteBuffer;
+		}
+
+		protected override bool OnCanAssignModel (Type type)
+		{
+			return typeof (ByteBufferModel).IsAssignableFrom (type);
+		}
+
+		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
+		{
+			if (oldModel != null)
+				((ByteBufferModel)oldModel).ByteBufferInstanceChanged -= Handle_ByteBufferInstanceChanged;
+			if (newModel != null)
+				((ByteBufferModel)newModel).ByteBufferInstanceChanged += Handle_ByteBufferInstanceChanged;
+			base.OnModelChanged (oldModel, newModel);
+		}
+
+		void Handle_ByteBufferInstanceChanged (object sender, EventArgs e)
+		{
+			if (hexEditor != null)
+				hexEditor.HexEditorData.ByteBuffer = ((ByteBufferModel)Model).ByteBuffer;
+		}
+
+		protected override void OnDispose ()
+		{
+			if (hexEditor != null) {
+				((MonoDevelopHexEditorStyle)hexEditor.HexEditorStyle).Dispose ();
+				DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
+			}
+			base.OnDispose ();
 		}
 
 		void Instance_Changed (object sender, EventArgs e)
@@ -73,42 +118,28 @@ namespace MonoDevelop.HexEditor
 
 		void SetOptions ()
 		{
-			var name = FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+			var name = IdeServices.FontService.FilterFontName (IdeServices.FontService.GetUnderlyingFontName ("Editor"));
 			hexEditor.Options.FontName = name;
 			hexEditor.PurgeLayoutCaches ();
 			hexEditor.Repaint ();
 		}
 		
-		public override Task Save (FileSaveInformation fileSaveInformation)
+		protected override Task OnSave ()
 		{
-			File.WriteAllBytes (fileSaveInformation.FileName, hexEditor.HexEditorData.Bytes);
-			ContentName = fileSaveInformation.FileName;
-			this.IsDirty = false;
+			File.WriteAllBytes (FilePath, hexEditor.HexEditorData.Bytes);
+			this.HasUnsavedChanges = false;
 			return Task.FromResult (true);
 		}
-		
-		public override async Task Load (FileOpenInformation fileOpenInformation)
-		{
-			var fileName = fileOpenInformation.FileName;
-			using (Stream stream = File.OpenRead (fileName)) { 
-				hexEditor.HexEditorData.Buffer = await ArrayBuffer.LoadAsync (stream);
-			}
-			
-			ContentName = fileName;
-			this.IsDirty = false;
-			hexEditor.SetFocus ();
-		}
-
 		
 		#region IUndoHandler implementation
 		void IUndoHandler.Undo ()
 		{
-			hexEditor.HexEditorData.Undo ();
+			hexEditor.HexEditorData.ByteBuffer.Undo ();
 		}
 
 		void IUndoHandler.Redo ()
 		{
-			hexEditor.HexEditorData.Redo ();
+			hexEditor.HexEditorData.ByteBuffer.Redo ();
 		}
 		
 		class UndoGroup : IDisposable
@@ -120,13 +151,13 @@ namespace MonoDevelop.HexEditor
 				if (data == null)
 					throw new ArgumentNullException ("data");
 				this.data = data;
-				data.BeginAtomicUndo ();
+				data.ByteBuffer.BeginAtomicUndo ();
 			}
 			
 			public void Dispose ()
 			{
 				if (data != null) {
-					data.EndAtomicUndo ();
+					data.ByteBuffer.EndAtomicUndo ();
 					data = null;
 				}
 			}
@@ -139,14 +170,14 @@ namespace MonoDevelop.HexEditor
 		
 		bool IUndoHandler.EnableUndo {
 			get {
-				return hexEditor.HexEditorData.EnableUndo;
+				return hexEditor.HexEditorData.ByteBuffer.CanUndo;
 			}
 		}
 		
 		
 		bool IUndoHandler.EnableRedo {
 			get {
-				return hexEditor.HexEditorData.EnableRedo;
+				return hexEditor.HexEditorData.ByteBuffer.CanRedo;
 			}
 		}
 		

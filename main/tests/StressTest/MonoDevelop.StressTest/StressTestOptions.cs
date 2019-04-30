@@ -104,8 +104,6 @@ namespace MonoDevelop.StressTest
 				var nameValuePair = o.Split (new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
 				switch (nameValuePair[0]) {
 					case "type":
-						if (Profiler.Type != ProfilerOptions.ProfilerType.Disabled)
-							throw new Exception ("--profiler:type= can be defined only once.");
 						switch (nameValuePair[1]) {
 							case "heaponly":
 								Profiler.Type = ProfilerOptions.ProfilerType.HeapOnly;
@@ -153,8 +151,6 @@ namespace MonoDevelop.StressTest
 						break;
 				}
 			}
-			if (Profiler.Type == ProfilerOptions.ProfilerType.Disabled)
-				Profiler.Type = ProfilerOptions.ProfilerType.HeapOnly;//Default value
 		}
 
 		void PrintProfilerHelpAndExit (string reason = null)

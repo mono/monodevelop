@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeTemplateService.cs
 //
 // Author:
@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return new CodeTemplate [0];
 			return savedTemplates.ToArray ().Where (delegate (CodeTemplate t) {
 				try {
-					return t != null && DesktopService.GetMimeTypeIsSubtype (mimeType, t.MimeType);
+					return t != null && IdeServices.DesktopService.GetMimeTypeIsSubtype (mimeType, t.MimeType);
 				} catch (Exception) {
 					// required for some unit tests
 					return t != null && mimeType == t.MimeType;
@@ -224,12 +224,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
 		{
-			return GetCodeTemplates (DesktopService.GetMimeTypeForUri (fileName));
+			return GetCodeTemplates (IdeServices.DesktopService.GetMimeTypeForUri (fileName));
 		}
 		
 		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
 		{
-			AddCompletionDataForMime (DesktopService.GetMimeTypeForUri (fileName), list);
+			AddCompletionDataForMime (IdeServices.DesktopService.GetMimeTypeForUri (fileName), list);
 		}
 		
 		public static void AddCompletionDataForMime (string mimeType, CompletionDataList list)

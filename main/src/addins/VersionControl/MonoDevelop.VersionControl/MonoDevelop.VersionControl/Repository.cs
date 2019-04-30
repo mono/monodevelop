@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.IO;
 using System.Text;
@@ -106,7 +106,9 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 
-			VersionControlService.repositoryCache.TryRemove (RepositoryPath.CanonicalPath, out _);
+			lock (VersionControlService.repositoryCacheLock) {
+				VersionControlService.repositoryCache.Remove (RepositoryPath.CanonicalPath);
+			}
 
 			infoCache?.Dispose ();
 			infoCache = null;
@@ -1082,7 +1084,7 @@ namespace MonoDevelop.VersionControl
 
 		public virtual bool GetFileIsText (FilePath path)
 		{
-			return DesktopService.GetFileIsText (path);
+			return IdeServices.DesktopService.GetFileIsText (path);
 		}
 	}
 	

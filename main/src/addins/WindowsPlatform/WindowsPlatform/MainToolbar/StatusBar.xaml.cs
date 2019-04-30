@@ -53,7 +53,7 @@ namespace WindowsPlatform.MainToolbar
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
 
-				foreach (MonoDevelop.Ide.Tasks.TaskListEntry t in TaskService.Errors) {
+				foreach (MonoDevelop.Ide.Tasks.TaskListEntry t in IdeServices.TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
@@ -73,8 +73,8 @@ namespace WindowsPlatform.MainToolbar
 						BuildResultPanelVisibility = Visibility.Collapsed;
 				});
 			};
-			TaskService.Errors.TasksAdded += updateHandler;
-			TaskService.Errors.TasksRemoved += updateHandler;
+			IdeServices.TaskService.Errors.TasksAdded += updateHandler;
+			IdeServices.TaskService.Errors.TasksRemoved += updateHandler;
 			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			StatusText.ToolTipOpening += (o, e) => {
@@ -119,8 +119,8 @@ namespace WindowsPlatform.MainToolbar
 
 		public void Dispose ()
 		{
-			TaskService.Errors.TasksAdded -= updateHandler;
-			TaskService.Errors.TasksRemoved -= updateHandler;
+			IdeServices.TaskService.Errors.TasksAdded -= updateHandler;
+			IdeServices.TaskService.Errors.TasksRemoved -= updateHandler;
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 		}
 

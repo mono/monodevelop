@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Mono.Profiler.Log;
 using QuickGraph.Graphviz.Dot;
+using System.Threading;
 
 namespace MonoDevelop.StressTest
 {
@@ -20,6 +21,8 @@ namespace MonoDevelop.StressTest
 
 		readonly ITestScenario scenario;
 		readonly ResultDataModel result = new ResultDataModel ();
+
+		readonly TaskQueue taskQueue = new TaskQueue ();
 
 		public ProfilerOptions ProfilerOptions { get; }
 
@@ -31,6 +34,8 @@ namespace MonoDevelop.StressTest
 
 		public void ReportResult ()
 		{
+			taskQueue.Complete ();
+
 			string scenarioName = scenario.GetType ().FullName;
 			var serializer = new JsonSerializer {
 				NullValueHandling = NullValueHandling.Ignore,
@@ -42,18 +47,17 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		public void Process (Heapshot heapshot, bool isCleanup, string iterationName, Components.AutoTest.AutoTestSession.MemoryStats memoryStats)
+		public void Process (Task<Heapshot> heapshotTask, bool isCleanup, string iterationName, Components.AutoTest.AutoTestSession.MemoryStats memoryStats)
 		{
-			if (heapshot == null)
-				return;
+			taskQueue.Enqueue (async () => {
+				var heapshot = await heapshotTask;
 
-			// TODO: Make this async. Each heapshot will add time to the current test run.
+				var previousData = result.Iterations.LastOrDefault ();
+				var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
+				var leakResult = new ResultIterationData (iterationName, leakedObjects, memoryStats);
 
-			var previousData = result.Iterations.LastOrDefault ();
-			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
-			var leakResult = new ResultIterationData (iterationName, leakedObjects, memoryStats);
-
-			result.Iterations.Add (leakResult);
+				result.Iterations.Add (leakResult);
+			});
 		}
 
 		Dictionary<string, LeakItem> DetectLeakedObjects (Heapshot heapshot, bool isCleanup, ResultIterationData previousData, string iterationName)
@@ -67,7 +71,6 @@ namespace MonoDevelop.StressTest
 
 			Directory.CreateDirectory (graphsDirectory);
 
-			Console.WriteLine ("Live objects count per type:");
 			var leakedObjects = new Dictionary<string, LeakItem> (trackedLeaks.Count);
 
 			foreach (var kvp in trackedLeaks) {
@@ -87,17 +90,28 @@ namespace MonoDevelop.StressTest
 				leakedObjects.Add (name, new LeakItem (name, objectCount, resultFile));
 			}
 
-			foreach (var kvp in leakedObjects) {
-				var leak = kvp.Value;
-				int delta = 0;
-				if (previousData != null && previousData.Leaks.TryGetValue (kvp.Key, out var previousLeak)) {
-					int previousCount = previousLeak.Count;
-					delta = leak.Count - previousCount;
-				}
+			ReportLeakStatistics ();
 
-				Console.WriteLine ("{0}: {1} {2:+0;-#}", leak.ClassName, leak.Count, delta);
-			}
 			return leakedObjects;
+
+			void ReportLeakStatistics ()
+			{
+				if (leakedObjects.Count <= 0)
+					return;
+
+				Console.WriteLine ("[{0}] Live objects count per type:", iterationName);
+
+				foreach (var kvp in leakedObjects) {
+					var leak = kvp.Value;
+					int delta = 0;
+					if (previousData != null && previousData.Leaks.TryGetValue (kvp.Key, out var previousLeak)) {
+						int previousCount = previousLeak.Count;
+						delta = leak.Count - previousCount;
+					}
+
+					Console.WriteLine ("{0}: {1} {2:+0;-#}", leak.ClassName, leak.Count, delta);
+				}
+			}
 		}
 
 		bool IsActualLeakSource (LogHeapRootSource rootKind)
@@ -160,7 +174,9 @@ namespace MonoDevelop.StressTest
 				var imagePath = Path.ChangeExtension (outputFileName, "svg");
 				var args = $"{outputFileName} -Tsvg -o\"{imagePath}\"";
 
-				System.Diagnostics.Process.Start ("dot", args).WaitForExit();
+				using (var process = System.Diagnostics.Process.Start ("dot", args)) {
+					process.WaitForExit ();
+				}
 
 				return imagePath;
 			}

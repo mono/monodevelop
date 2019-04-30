@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Editor
 
 		internal EditorPreferences ()
 		{
-			factoryService = CompositionManager.GetExportedValue<IEditorOptionsFactoryService2> ();
+			factoryService = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService2> ();
 			globalOptions = factoryService.GlobalOptions;
 
 			PropertyService.PropertyChanged += PropertyService_PropertyChanged;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Editor
 			OutliningUndoStep = Wrap<bool> ("GenerateFormattingUndoStep", DefaultTextViewOptions.OutliningUndoOptionName);
 			ShowChangeTrackingMargin = Wrap ("EnableQuickDiff", DefaultTextViewHostOptions.ChangeTrackingName, false);
 			ShowGlyphMargin = Wrap<bool> ("ShowGlyphMargin", DefaultTextViewHostOptions.GlyphMarginName);
-			ShowLineNumberMargin = Wrap<bool> ("ShowLineNumberMargin", DefaultTextViewHostOptions.LineNumberMarginName);
+			ShowLineNumberMargin = Wrap ("ShowLineNumberMargin", DefaultTextViewHostOptions.LineNumberMarginName, true);
 			ShowOutliningMargin = Wrap<bool> ("ShowFoldMargin", DefaultTextViewHostOptions.OutliningMarginName);
 			TrimTrailingWhitespace = Wrap ("RemoveTrailingWhitespaces", DefaultOptions.TrimTrailingWhiteSpaceOptionName, true);
 			// UseVirtualSpace should be a combination of IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Smart && RemoveTrailingWhitespaces

@@ -1,4 +1,4 @@
-//
+﻿//
 // FileSelectorDialog.cs
 //
 // Author:
@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int selected = -1;
 			int i = 0;
 			
-			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
+			if (IdeServices.ProjectService.IsWorkspaceItemFile (Filename) || IdeServices.ProjectService.IsSolutionItemFile (Filename)) {
 				viewerSelector.AppendText (GettextCatalog.GetString ("Solution Workbench"));
 				currentViewers.Add (null);
 				
@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				i++;
 			}
 			
-			foreach (FileViewer vw in DisplayBindingService.GetFileViewers (Filename, null)) {
+			foreach (FileViewer vw in IdeServices.DisplayBindingService.GetFileViewers (Filename, null).Result) {
 				if (!vw.IsExternal) {
 					viewerSelector.AppendText (vw.Title);
 					currentViewers.Add (vw);
@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			}
 			
-			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
+			if (IdeServices.ProjectService.IsWorkspaceItemFile (Filename) || IdeServices.ProjectService.IsSolutionItemFile (Filename)) {
 				encodingLabel.Sensitive = encodingMenu.Sensitive = (SelectedViewer != null);
 				closeWorkspaceCheck.Visible = viewerLabel.Visible && IdeApp.Workspace.IsOpen;
 			}

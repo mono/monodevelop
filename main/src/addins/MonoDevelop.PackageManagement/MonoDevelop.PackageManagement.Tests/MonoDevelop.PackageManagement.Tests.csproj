@@ -25,9 +25,11 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.PackageManagement" Version="4.8.2-rtm.5835" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.PackageManagement" Version="5.0.2" PrivateAssets="runtime" />
     <PackageReference Include="Castle.Core" Version="4.2.1" PrivateAssets="runtime" />
     <PackageReference Include="Moq" Version="4.7.145" PrivateAssets="runtime" />
+    <!-- Ensure .NET 4.7.2's System.Net.Http is used not the one from this NuGet package -->
+    <PackageReference Include="System.Net.Http" Version="4.3.3" ExcludeAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -180,6 +182,10 @@
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

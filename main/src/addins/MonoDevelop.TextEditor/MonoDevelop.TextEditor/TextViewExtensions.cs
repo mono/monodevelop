@@ -31,6 +31,7 @@ namespace MonoDevelop.TextEditor
 		/// </summary>
 		public static Ide.Gui.Document TryGetParentDocument (this ITextView view)
 		{
+			// TOTEST
 			if (view.Properties.TryGetProperty<Ide.Gui.Document> (typeof (Ide.Gui.Document), out var document)) {
 				return document;
 			}

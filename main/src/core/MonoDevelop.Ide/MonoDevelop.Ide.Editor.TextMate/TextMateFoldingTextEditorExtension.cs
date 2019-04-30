@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		public override void Dispose ()
 		{
+			src.Cancel ();
 			Editor.TextChanged -= UpdateFoldings;
 			base.Dispose ();
 		}
@@ -79,7 +80,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		CancellationTokenSource src = new CancellationTokenSource ();
 		void UpdateFoldings (object sender, TextChangeEventArgs e)
 		{
-			if (TypeSystemService.GetParser (Editor.MimeType) != null || DocumentContext.ParsedDocument != null)
+			if (IdeApp.TypeSystemService.GetParser (Editor.MimeType) != null || DocumentContext.ParsedDocument != null)
 				return;
 			var scopeStack = Editor.SyntaxHighlighting.GetScopeStackAsync (0, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			if (!scopeStack.Any (s => s.Contains ("source")))

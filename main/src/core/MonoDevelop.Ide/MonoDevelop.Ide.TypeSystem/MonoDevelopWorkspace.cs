@@ -36,17 +36,10 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core.Text;
-using System.Collections.Concurrent;
 using MonoDevelop.Ide.CodeFormatting;
-using Gtk;
 using MonoDevelop.Ide.Editor.Projection;
-using System.Reflection;
-using Microsoft.CodeAnalysis.Host.Mef;
-using System.Text;
-using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
-using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Extensions;
 using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Options;
@@ -55,6 +48,9 @@ using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.RoslynServices;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui;
+using Document = Microsoft.CodeAnalysis.Document;
 using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -62,6 +58,13 @@ namespace MonoDevelop.Ide.TypeSystem
 	public partial class MonoDevelopWorkspace : Workspace
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
+
+		private readonly ServiceProvider serviceProvider;
+		TypeSystemService typeSystemService;
+		DesktopService desktopService;
+		DocumentManager documentManager;
+		RootWorkspace workspace;
+		CompositionManager compositionManager;
 
 		// Background compiler is used to trigger compilations in the background for the solution and hold onto them
 		// so in case nothing references the solution in current stacks, they're not collected.
@@ -72,7 +75,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		// Background parser is an optimized task queue for the roslyn use-case, where a parse that's already in-progress
 		// is not canceled, but used later on to help incremental parsing.
-		readonly BackgroundParser backgroundParser;
+		BackgroundParser backgroundParser;
 
 		internal readonly WorkspaceId Id;
 
@@ -84,13 +87,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		Lazy<MetadataReferenceHandler> metadataHandler;
 		ProjectionData Projections { get; }
 		OpenDocumentsData OpenDocuments { get; }
-		ProjectDataMap ProjectMap { get; }
+		internal ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
-		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
 
 		static MonoDevelopWorkspace ()
 		{
@@ -106,9 +108,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
+		internal MonoDevelopWorkspace (HostServices hostServices, MonoDevelop.Projects.Solution solution, TypeSystemService typeSystemService) : base (hostServices, WorkspaceKind.Host)
 		{
 			this.MonoDevelopSolution = solution;
+			this.serviceProvider = typeSystemService.ServiceProvider ?? Runtime.ServiceProvider;
+			this.typeSystemService = typeSystemService;
 			this.Id = WorkspaceId.Next ();
 
 			Projections = new ProjectionData ();
@@ -117,10 +121,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler = new ProjectSystemHandler (this, ProjectMap, Projections);
 			manager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
 			metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (MetadataReferenceManager, ProjectMap));
+		}
 
-			if (IdeApp.Workspace != null && solution != null) {
-				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
-			}
+		internal async Task Initialize ()
+		{
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				workspace = s;
+				if (MonoDevelopSolution != null)
+					workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			});
+			
 			backgroundCompiler = new BackgroundCompiler (this);
 			backgroundParser = new BackgroundParser (this);
 			backgroundParser.Start ();
@@ -130,7 +140,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested += OnCacheFlushRequested;
 
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
-			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled = true;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = true;
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
             // Turn on FSA on a new workspace addition
@@ -141,21 +151,26 @@ namespace MonoDevelop.Ide.TypeSystem
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
 			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
 
-			if (IdeApp.Preferences.EnableSourceAnalysis) {
+			if (TypeSystemService.EnableSourceAnalysis) {
 				var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 				solutionCrawler.Register (this);
 			}
 
-			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+			TypeSystemService.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
 
 			// TODO: Unhack C# here when monodevelop workspace supports more than C#
-			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
-			if (solution != null)
-				DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+			desktopService = await serviceProvider.GetService<DesktopService> ().ConfigureAwait (false);
+			documentManager = await serviceProvider.GetService<DocumentManager> ().ConfigureAwait (false);
+			compositionManager = await serviceProvider.GetService<CompositionManager> ().ConfigureAwait (false);
+
+			if (MonoDevelopSolution != null) {
+				Runtime.RunInMainThread (() => desktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged).Ignore ();
+			}
 		}
 
 		bool lowMemoryLogged;
@@ -175,14 +190,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				}));
 			}
 
-			var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
-			cacheService?.FlushCaches ();
-
 			if (!ShouldTurnOffFullSolutionAnalysis ())
 				return;
 
 			Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
-			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled = false;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = false;
 			if (IsUserOptionOn ()) {
 				// let user know full analysis is turned off due to memory concern.
 				// make sure we show info bar only once for the same solution.
@@ -191,7 +203,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				const string LowVMMoreInfoLink = "https://go.microsoft.com/fwlink/?linkid=2003417&clcid=0x409";
 				Services.GetService<IErrorReportingService> ().ShowGlobalErrorInfo (
 					GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance", BrandingService.ApplicationName),
-					new InfoBarUI ("Learn more", InfoBarUI.UIKind.HyperLink, () => DesktopService.ShowUrl (LowVMMoreInfoLink), closeAfterAction: false),
+					new InfoBarUI ("Learn more", InfoBarUI.UIKind.HyperLink, () => desktopService.ShowUrl (LowVMMoreInfoLink), closeAfterAction: false),
 					new InfoBarUI ("Restore", InfoBarUI.UIKind.Button, () => Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true))
 				);
 			}
@@ -223,7 +235,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// check languages currently on solution. since we only show info bar once, we don't need to track solution changes.
 			var languages = CurrentSolution.Projects.Select (p => p.Language).Distinct ();
 			foreach (var language in languages) {
-				if (IdeApp.Preferences.Roslyn.For (language).SolutionCrawlerClosedFileDiagnostic) {
+				if (TypeSystemService.Preferences.For (language).SolutionCrawlerClosedFileDiagnostic) {
 					return true;
 				}
 			}
@@ -234,12 +246,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
 		{
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			if (IdeApp.Preferences.EnableSourceAnalysis)
+			if (TypeSystemService.EnableSourceAnalysis)
 				solutionCrawler.Register (this);
 			else
 				solutionCrawler.Unregister (this);
 
-			var diagnosticAnalyzer = CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.Diagnostics.IDiagnosticAnalyzerService> ();
+			var diagnosticAnalyzer = compositionManager.GetExportedValue<Microsoft.CodeAnalysis.Diagnostics.IDiagnosticAnalyzerService> ();
 			diagnosticAnalyzer.Reanalyze (this);
 		}
 
@@ -247,7 +259,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			// we only want to turn on FSA if the option is explicitly enabled,
 			// we don't want to turn it off here.
-			if (IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled) {
+			if (TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled) {
 				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true);
 			}
 		}
@@ -265,6 +277,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			base.ClearSolutionData ();
+		}
+
+		/// <summary>
+		/// Used by WebTools to add a C# buffer from .cshtml as a "file"
+		/// to the workspace while .cshtml is open
+		/// </summary>
+		internal void AddDocument(DocumentInfo documentInfo)
+		{
+			OnDocumentAdded (documentInfo);
+		}
+
+		/// <summary>
+		/// Used by WebTools to remove a C# document from the workspace
+		/// when the .cshtml file is closed
+		/// </summary>
+		internal void RemoveDocument(DocumentId documentId)
+		{
+			OnDocumentRemoved (documentId);
 		}
 
 		// This is called by OnProjectRemoved.
@@ -295,12 +325,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
-			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
-			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
-			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
+			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
+			desktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
+			if (workspace != null) {
+				workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
@@ -328,40 +358,42 @@ namespace MonoDevelop.Ide.TypeSystem
 			src = new CancellationTokenSource ();
 		}
 
+		public event EventHandler WorkspaceLoaded;
 		internal static event EventHandler LoadingFinished;
 
-		internal void HideStatusIcon ()
+		void BeginLoad ()
 		{
-			TypeSystemService.HideTypeInformationGatheringIcon (() => {
+			typeSystemService.BeginWorkspaceLoad ();
+		}
+
+		void EndLoad ()
+		{
+			typeSystemService.EndWorkspaceLoad (() => {
 				LoadingFinished?.Invoke (this, EventArgs.Empty);
 				WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
 			});
 		}
 
-		public event EventHandler WorkspaceLoaded;
-
-		internal void ShowStatusIcon ()
-		{
-			TypeSystemService.ShowTypeInformationGatheringIcon ();
-		}
-
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			ShowStatusIcon ();
 			CancelLoad ();
 			var token = src.Token;
 
 			try {
-				var (solution, si) = await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, token).ConfigureAwait (false);
-				if (si != null)
-					OnSolutionReloaded (si);
+				BeginLoad ();
+				await Task.Run (async () => {
+					ProjectHandler.ReloadProjectCache ();
+					var (solution, si) = await InternalLoadSolution (token).ConfigureAwait (false);
+					if (si != null)
+						OnSolutionReloaded (si);
+				});
 			} catch (OperationCanceledException) {
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (x => x is OperationCanceledException);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while reloading solution.", ex);
 			} finally {
-				HideStatusIcon ();
+				EndLoad ();
 			}
     }
 
@@ -370,9 +402,104 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.ReloadModifiedProject (project);
 		}
 
-		internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
+		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+		}
+
+		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
+		{
+			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+		}
+
+		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> LoadSolution (CancellationToken cancellationToken)
+		{
+			try {
+				BeginLoad ();
+				return await InternalLoadSolution (cancellationToken);
+			} finally {
+				EndLoad ();
+			}
+		}
+
+		async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> InternalLoadSolution (CancellationToken cancellationToken)
+		{
+			// Try the cache first.
+			var (solution, solutionInfo) = await TryLoadSolutionFromCache (cancellationToken).ConfigureAwait (false);
+			if (solutionInfo != null) {
+				// Start full load of projects in the background.
+				ReloadProjects (cancellationToken).Ignore ();
+				return (solution, solutionInfo);
+			}
+
+			// No cache.
+			await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+			if (cancellationToken.IsCancellationRequested)
+				return (solution, null);
+
+			return await TryLoadSolution (cancellationToken).ConfigureAwait (false);
+		}
+
+		async Task ReloadProjects (CancellationToken cancellationToken)
+		{
+			try {
+				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
+
+				await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+				if (cancellationToken.IsCancellationRequested)
+					return;
+
+				foreach (var project in GetProjectsOrderedByMostRecentlyUsed ()) {
+					if (cts.IsCancellationRequested)
+						return;
+					if (!ProjectHandler.CanLoadProject (project))
+						continue;
+
+					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, cts.Token).ConfigureAwait (false);
+					if (projectInfo == null)
+						continue;
+
+					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
+						// Cache did not contain project so add it to the solution.
+						OnProjectAdded (projectInfo);
+					}
+
+					lock (projectModifyLock) {
+						OnProjectReloaded (projectInfo);
+					}
+					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+		}
+
+		/// <summary>
+		/// Returns an ordered list of projects with the most recently used projects first.
+		/// </summary>
+		IEnumerable<MonoDevelop.Projects.Project> GetProjectsOrderedByMostRecentlyUsed ()
+		{
+			var projects = MonoDevelopSolution.GetAllProjects ();
+
+			var userPrefs = MonoDevelopSolution.UserProperties.GetValue<Gui.WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
+			if (userPrefs == null || userPrefs.Files.Count == 0)
+				return projects;
+
+			var set = new HashSet<MonoDevelop.Projects.Project> (projects);
+			var orderedProjects = new List<MonoDevelop.Projects.Project> (set.Count);
+
+			foreach (var documentUserPrefs in userPrefs.Files) {
+				var fileName = MonoDevelopSolution.BaseDirectory.Combine (documentUserPrefs.FileName);
+				foreach (var project in MonoDevelopSolution.GetProjectsContainingFile (fileName)) {
+					if (set.Remove (project)) {
+						orderedProjects.Add (project);
+					}
+				}
+			}
+
+			orderedProjects.AddRange (set);
+
+			return orderedProjects;
 		}
 
 		internal void UnloadSolution ()
@@ -395,44 +522,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			var doc = GetDocument (documentId);
 			if (doc != null) {
 				var mdProject = GetMonoProject (doc.Project);
-				if (doc != null) {
-					IdeApp.Workbench.OpenDocument (doc.FilePath, mdProject, activate);
+				if (mdProject != null) {
+					documentManager.OpenDocument (new FileOpenInformation (doc.FilePath, mdProject, activate)).Ignore ();
 				}
 			}
 		}
 
-		readonly Dictionary<DocumentInfo, SourceTextContainer> generatedFiles = new Dictionary<DocumentInfo, SourceTextContainer> ();
-		internal void AddAndOpenDocumentInternal (DocumentInfo documentInfo, SourceTextContainer textContainer)
+		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer)
 		{
-			lock (generatedFiles) {
-				generatedFiles[documentInfo] = textContainer;
-				OnDocumentAdded (documentInfo);
-				OnDocumentOpened (documentInfo.Id, textContainer);
-			}
-		}
-
-		internal void CloseAndRemoveDocumentInternal (DocumentId documentId, TextLoader reloader)
-		{
-			lock (generatedFiles) {
-				var documentInfo = generatedFiles.FirstOrDefault (kvp => kvp.Key.Id == documentId).Key;
-				if (documentInfo != null && generatedFiles.Remove(documentInfo) && CurrentSolution.ContainsDocument(documentId)) {
-					OnDocumentClosed (documentId, reloader);
-					OnDocumentRemoved (documentId);
+			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, true);
+			if (document is Document doc) {
+				foreach (var linkedDoc in doc.GetLinkedDocumentIds ()) {
+					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, false);
 				}
 			}
 		}
 
-		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
-		{
-			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, context, true);
-			if (document as Document != null) {
-				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
-					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, context, false);
-				}
-			}
-		}
-
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context, bool isCurrentContext)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, bool isCurrentContext)
 		{
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
@@ -441,7 +547,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
-			OpenDocuments.Add (documentId, sourceTextContainer, context);
+			OpenDocuments.Add (documentId, sourceTextContainer);
 			if (document is Document) {
 				OnDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			} else {
@@ -466,17 +572,19 @@ namespace MonoDevelop.Ide.TypeSystem
 //			}
 //		}
 
-		internal void InformDocumentClose (DocumentId analysisDocument, string filePath)
+		internal void InformDocumentClose (DocumentId analysisDocument, SourceTextContainer container)
 		{
 			try {
 				if (!OpenDocuments.Remove (analysisDocument)) {
 					//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
-					//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
+					//it's job of whatever opened to also call CloseAndemoveDocumentInternal
 					return;
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
 					return;
-				var loader = new MonoDevelopTextLoader (filePath);
+
+				// Using a source text container
+				var loader = new SourceTextLoader (container, null);
 				var document = this.GetDocument (analysisDocument);
 
 				if (document == null) {
@@ -491,6 +599,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while closing document.", e);
+			}
+		}
+
+		sealed class SourceTextLoader : TextLoader
+		{
+			readonly SourceTextContainer _textContainer;
+			readonly string _filePath;
+
+			public SourceTextLoader(SourceTextContainer textContainer, string filePath)
+			{
+				_textContainer = textContainer;
+				_filePath = filePath;
+			}
+
+			public override Task<TextAndVersion> LoadTextAndVersionAsync(Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+			{
+				return Task.FromResult(TextAndVersion.Create(_textContainer.CurrentText, VersionStamp.Create(), _filePath));
 			}
 		}
 
@@ -602,9 +727,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
+				var documentContext = documentManager.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0)?.DocumentContext;
 				var root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
-				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (TypeSystemService.InsertionModeAnnotation));
+				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (typeSystemService.InsertionModeAnnotation));
 				SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
 												  .Where (s => s.IsToken)
 												  .Select (s => s.AsToken ())
@@ -635,7 +760,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								}
 							}
 							if (annotatedNode != null && GetInsertionPoints != null) {
-								IdeApp.Workbench.Documents.First (d => d.FileName == editor.FileName).Select ();
+								documentManager.Documents.First (d => d.FileName == editor.FileName).Select ();
 								var formattedVersion = editor.Version;
 
 								int startOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.Start);
@@ -744,9 +869,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		async Task UpdateProjectionsDocuments (Document document, ITextDocument data)
 		{
-			var project = TypeSystemService.GetMonoProject (document.Project);
+			var project = typeSystemService.GetMonoProject (document.Project);
 			var file = project.Files.GetFile (data.FileName);
-			var node = TypeSystemService.GetTypeSystemParserNode (data.MimeType, file.BuildAction);
+			var node = typeSystemService.GetTypeSystemParserNode (data.MimeType, file.BuildAction);
 			if (node != null && node.Parser.CanGenerateProjection (data.MimeType, file.BuildAction, project.SupportedLanguages)) {
 				var options = new ParseOptions {
 					FileName = file.FilePath,
@@ -814,20 +939,17 @@ namespace MonoDevelop.Ide.TypeSystem
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error applying changes to documents", ex);
 							}
-							if (IdeApp.Workbench != null) {
-								var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
-								foreach (var w in IdeApp.Workbench.Documents) {
-									if (w.IsFile && changedFiles.Contains (w.FileName)) {
-										w.StartReparseThread ();
-									}
+							var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
+							foreach (var w in documentManager.Documents) {
+								if (w.IsFile && changedFiles.Contains (w.FileName)) {
+									w.DocumentContext.ReparseDocument ();
 								}
 							}
 						}, CancellationToken.None, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 					}
 
-					if (tryApplyState_changedProjects.Count > 0) {
-						ProjectSaveTask = IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
-					}
+					if (tryApplyState_changedProjects.Count > 0)
+						ProjectSaveTask = IdeApp.IsInitialized ? IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects) : Task.WhenAll (tryApplyState_changedProjects.Select (p => p.SaveAsync (new ProgressMonitor ())));
 
 					return ret;
 				} finally {
@@ -884,7 +1006,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
-			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path));
+			var formatter = CodeFormatterService.GetFormatter (desktopService.GetMimeTypeForUri (path));
 			if (formatter != null && mdProject != null) {
 				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
 			} else {
@@ -924,10 +1046,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			//force-close the old doc even if it's dirty
-			var openDoc = IdeApp.Workbench.Documents.FirstOrDefault (d => d.IsFile && filePath.Equals (d.FileName));
+			var openDoc = documentManager.Documents.FirstOrDefault (d => d.IsFile && filePath.Equals (d.FileName));
 			if (openDoc != null && openDoc.IsDirty) {
-				openDoc.Save ();
-				((Gui.SdiWorkspaceWindow)openDoc.Window).CloseWindow (true, true).Wait ();
+				openDoc.Save ().Wait ();
+				openDoc.Close ().Wait ();
 			}
 
 			//this will fire a OnDocumentRemoved event via OnFileRemoved
@@ -1147,10 +1269,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (monoProject != null) {
 						var pf = monoProject.GetProjectFile (fileName);
 						if (pf != null) {
-							var mimeType = DesktopService.GetMimeTypeForUri (fileName);
-							if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName)) {
+							var mimeType = desktopService.GetMimeTypeForUri (fileName);
+							if (typeSystemService.CanParseProjections (monoProject, mimeType, fileName)) {
 								var parseOptions = new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction };
-								var task = TypeSystemService.ParseProjection (parseOptions, mimeType);
+								var task = typeSystemService.ParseProjection (parseOptions, mimeType);
 								tasks.Add (task);
 							}
 						}
@@ -1196,7 +1318,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					cts = new CancellationTokenSource ();
 					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null).ContinueWith (t => {
+						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null).ContinueWith (t => {
 							if (t.IsCanceled)
 								return;
 							if (t.IsFaulted) {
@@ -1205,10 +1327,8 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 							try {
 								lock (projectModifyLock) {
-									// correct openDocument ids - they may change due to project reload.
-									OpenDocuments.CorrectDocumentIds (project, t.Result);
 									OnProjectReloaded (t.Result);
-									ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
+									Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
 								}
 							} catch (Exception e) {
 								LoggingService.LogError ("Error while reloading project " + project.Name, e);

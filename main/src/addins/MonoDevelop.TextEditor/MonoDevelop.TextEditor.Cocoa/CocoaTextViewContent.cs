@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.TextEditor
 {
@@ -74,8 +75,8 @@ namespace MonoDevelop.TextEditor
 		NSView textViewHostControl;
 		GtkNSViewHostControl embeddedControl;
 
-		static readonly Lazy<bool> useManagedGtkNSViewHost = new Lazy<bool> (
-			() => FeatureSwitchService.IsFeatureEnabled ("ManagedGtkNSViewHost").GetValueOrDefault ());
+		static readonly Lazy<bool> useLegacyGtkNSViewHost = new Lazy<bool> (
+			() => FeatureSwitchService.IsFeatureEnabled ("LegacyGtkNSViewHost").GetValueOrDefault ());
 
 		abstract class GtkNSViewHostControl : Control
 		{
@@ -174,8 +175,8 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		public CocoaTextViewContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
-			: base (imports, fileName, mimeType, ownerProject)
+		public CocoaTextViewContent (CocoaTextViewImports imports)
+			: base (imports)
 		{
 		}
 
@@ -190,7 +191,7 @@ namespace MonoDevelop.TextEditor
 			textViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			textViewHostControl = textViewHost.HostControl;
 
-			if (useManagedGtkNSViewHost.Value) {
+			if (!useLegacyGtkNSViewHost.Value) {
 				embeddedControl = new ManagedGtkNSViewHostControl (textViewHost);
 
 				TextView.GotAggregateFocus += (sender, e)
@@ -210,16 +211,15 @@ namespace MonoDevelop.TextEditor
 			return embeddedControl;
 		}
 
-		public override void GrabFocus()
-		{ 
-			embeddedControl.GrabFocus();
-			base.GrabFocus();
+		protected override void OnGrabFocus (DocumentView view)
+		{
+			embeddedControl.GrabFocus ();
+			base.OnGrabFocus (view);
 		}
 
-
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
+			base.OnDispose ();
 
 			if (textViewHost != null) {
 				textViewHost.Close ();

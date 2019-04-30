@@ -120,7 +120,7 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 
 			public IEnumerable<Project> GetProjectsWithInstalledPackage (Solution solution, string packageName, string version)
 			{
-				return PackageServices.GetProjectsWithInstalledPackage (IdeApp.ProjectOperations.CurrentSelectedSolution, packageName, version).Select (p => TypeSystemService.GetCodeAnalysisProject (p));
+				return PackageServices.GetProjectsWithInstalledPackage (IdeApp.ProjectOperations.CurrentSelectedSolution, packageName, version).Select (p => IdeApp.TypeSystemService.GetCodeAnalysisProject (p));
 			}
 
 			public bool IsInstalled (Workspace workspace, ProjectId projectId, string packageName)

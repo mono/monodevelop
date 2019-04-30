@@ -30,6 +30,7 @@ using Foundation;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -91,7 +92,7 @@ namespace MonoDevelop.MacIntegration
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 
-			var parent = Ide.DesktopService.GetFocusedTopLevelWindow ();
+			var parent = IdeServices.DesktopService.GetFocusedTopLevelWindow ();
 			if (parent != null)
 				panel.ParentWindow = parent;
 

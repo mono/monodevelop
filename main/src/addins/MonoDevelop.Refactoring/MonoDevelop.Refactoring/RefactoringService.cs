@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RefactoringService.cs
 //  
 // Author:
@@ -125,9 +125,9 @@ namespace MonoDevelop.Refactoring
 			AcceptChanges (monitor, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
 
-		public static async Task RoslynJumpToDeclaration (ISymbol symbol, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
+		public static async Task RoslynJumpToDeclaration (ISymbol symbol, WorkspaceObject hintProject = null, CancellationToken token = default(CancellationToken))
 		{
-			var result = await TryJumpToDeclarationAsync (symbol.GetDocumentationCommentId (), hintProject, token).ConfigureAwait (false);
+			var result = await TryJumpToDeclarationAsync (symbol.GetDocumentationCommentId (), hintProject as Projects.Project, token).ConfigureAwait (false);
 			if (!result) {
 				await Runtime.RunInMainThread (delegate {
 					IdeApp.ProjectOperations.JumpToDeclaration (symbol, hintProject);
@@ -140,7 +140,7 @@ namespace MonoDevelop.Refactoring
 			var rctx = new RefactoringOptions (null, null);
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
-			var ws = TypeSystemService.Workspace as MonoDevelopWorkspace;
+			var ws = IdeApp.TypeSystemService.Workspace as MonoDevelopWorkspace;
 			string originalName;
 			int originalOffset;
 			try {
@@ -241,7 +241,7 @@ namespace MonoDevelop.Refactoring
 		public static async Task FindReferencesAsync (string documentIdString, Projects.Project hintProject = null)
 		{
 			if (hintProject == null)
-				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
+				hintProject = IdeApp.Workbench.ActiveDocument?.Owner as Projects.Project;
 			ITimeTracker timer = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
@@ -300,7 +300,7 @@ namespace MonoDevelop.Refactoring
 		public static async Task FindAllReferencesAsync (string documentIdString, Projects.Project hintProject = null)
 		{
 			if (hintProject == null)
-				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
+				hintProject = IdeApp.Workbench.ActiveDocument?.Owner as Projects.Project;
 			ITimeTracker timer = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
@@ -346,7 +346,7 @@ namespace MonoDevelop.Refactoring
 		public static async Task<bool> TryJumpToDeclarationAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
 		{
 				if (hintProject == null)
-					hintProject = IdeApp.Workbench.ActiveDocument?.Project;
+					hintProject = IdeApp.Workbench.ActiveDocument?.Owner as Projects.Project;
 			for (int i = 0; i < jumpToDeclarationHandler.Count; i++) {
 				var handler = jumpToDeclarationHandler [i];
 				try {

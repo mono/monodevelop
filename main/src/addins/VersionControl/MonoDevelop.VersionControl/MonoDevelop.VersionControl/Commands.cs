@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl
 			if (doc == null || !doc.IsFile)
 				return null;
 			
-			Project project = doc.Project ?? IdeApp.ProjectOperations.CurrentSelectedProject;
+			var project = doc.Owner ?? IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (project == null)
 				return null;
 			
@@ -250,8 +250,7 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 
-			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<T> ());
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
 			return true;
 		}
 	}

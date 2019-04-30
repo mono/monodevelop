@@ -55,13 +55,11 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var field = (IField)dataObject;
-			// FIXME?
-			//nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field));
-			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.Name + " : " + field.ReturnType.Name);
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.GetDisplayString ());
 
 			if (!field.IsPublic ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
-			nodeInfo.Icon = Context.GetIcon (GetStockIcon(field));
+			nodeInfo.Icon = Context.GetIcon (GetStockIcon (field));
 		}
 
 		public static IconId GetStockIcon (IField field)

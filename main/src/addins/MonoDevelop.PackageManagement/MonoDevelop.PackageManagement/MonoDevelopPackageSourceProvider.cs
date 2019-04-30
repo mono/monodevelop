@@ -104,6 +104,46 @@ namespace MonoDevelop.PackageManagement
 				ProtocolVersion = 3
 			};
 		}
+
+		public PackageSource GetPackageSourceByName (string name)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public PackageSource GetPackageSourceBySource (string source)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void RemovePackageSource (string name)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void EnablePackageSource (string name)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void DisablePackageSource (string name)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void UpdatePackageSource (PackageSource source, bool updateCredentials, bool updateEnabled)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void AddPackageSource (PackageSource source)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool IsPackageSourceEnabled (string name)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

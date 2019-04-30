@@ -26,8 +26,11 @@
 
 using System;
 using System.Diagnostics;
-using MonoDevelop.Core;
+
 using Mono.TextEditor.Highlighting;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
@@ -79,10 +82,9 @@ namespace Mono.TextEditor
 		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
 		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
 
-
+		bool isSettingZoom;
 		double myZoom = 1d;
 		public bool ZoomOverride { get; private set; }
-
 
 		public double Zoom {
 			get {
@@ -99,18 +101,23 @@ namespace Mono.TextEditor
 				if ((System.Math.Abs (value - 1d)) < 0.001d) {
 					value = 1d;
 				}
-				if (ZoomOverride) {
-					if (myZoom != value) {
-						myZoom = value;
-						DisposeFont ();
-						ZoomChanged?.Invoke (this, EventArgs.Empty);
-						OnChanged (EventArgs.Empty);
+				try {
+					isSettingZoom = true;
+					if (ZoomOverride) {
+						if (myZoom != value) {
+							myZoom = value;
+							DisposeFont ();
+							ZoomChanged?.Invoke (this, EventArgs.Empty);
+							OnChanged (EventArgs.Empty);
+						}
+						return;
 					}
-					return;
-				}
-				if (zoom != value) {
-					zoom = value;
-					StaticZoomChanged?.Invoke (this, EventArgs.Empty);
+					if (zoom != value) {
+						zoom = value;
+						StaticZoomChanged?.Invoke (this, EventArgs.Empty);
+					}
+				} finally {
+					isSettingZoom = false;
 				}
 			}
 		}
@@ -606,14 +613,25 @@ namespace Mono.TextEditor
 		public TextEditorOptions (bool zoomOverride = false)
 		{
 			ZoomOverride = zoomOverride;
-			if (!ZoomOverride)
+			if (!ZoomOverride) {
 				StaticZoomChanged += HandleStaticZoomChanged;
+				TextEditorFactory.ZoomLevel.Changed += HandleConfigurationZoomLevelChanged;
+			}
+		}
+
+		void HandleConfigurationZoomLevelChanged (object sender, EventArgs e)
+		{
+			// Check for zoom level changes originating from outside old editor
+			if (!isSettingZoom)
+				Zoom = TextEditorFactory.ZoomLevel;
 		}
 
 		public virtual void Dispose ()
 		{
-			if (!ZoomOverride)
+			if (!ZoomOverride) {
 				StaticZoomChanged -= HandleStaticZoomChanged;
+				TextEditorFactory.ZoomLevel.Changed -= HandleConfigurationZoomLevelChanged;
+			}
 		}
 
 		void HandleStaticZoomChanged (object sender, EventArgs e)

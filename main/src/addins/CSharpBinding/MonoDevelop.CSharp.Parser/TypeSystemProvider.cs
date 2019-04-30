@@ -33,6 +33,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -54,9 +55,9 @@ namespace MonoDevelop.CSharp.Parser
 			if (project != null) {
 				var curDoc = options.RoslynDocument;
 				if (curDoc == null) {
-					var curProject = TypeSystemService.GetCodeAnalysisProject (project);
+					var curProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (project);
 					if (curProject != null) {
-						var documentId = TypeSystemService.GetDocumentId (project, fileName);
+						var documentId = IdeApp.TypeSystemService.GetDocumentId (project, fileName);
 						result.DocumentId = documentId;
 					}
 				}

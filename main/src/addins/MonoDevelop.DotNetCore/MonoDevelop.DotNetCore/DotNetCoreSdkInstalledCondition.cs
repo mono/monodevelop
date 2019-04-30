@@ -32,6 +32,8 @@ namespace MonoDevelop.DotNetCore
 {
 	internal class DotNetCoreSdkInstalledCondition : ConditionType
 	{
+		readonly DotNetCoreVersion MinimumSupportedVersion = new DotNetCoreVersion (1, 0, 0);
+
 		public DotNetCoreSdkInstalledCondition ()
 		{
 			DotNetCoreRuntime.Changed += OnLocationChanged;
@@ -58,7 +60,7 @@ namespace MonoDevelop.DotNetCore
 				return true;
 
 			// Mono's MSBuild SDKs currently includes .NET Core SDK 1.0.
-			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, DotNetCoreVersion.MinimumSupportedVersion))
+			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, MinimumSupportedVersion))
 				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
 
 			return false;

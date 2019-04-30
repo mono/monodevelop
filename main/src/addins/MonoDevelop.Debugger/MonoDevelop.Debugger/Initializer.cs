@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		void OnFrameChanged (object s, EventArgs a)
+		async void OnFrameChanged (object s, EventArgs a)
 		{
 			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
@@ -72,14 +72,16 @@ namespace MonoDevelop.Debugger
 			int line = frame.SourceLocation.Line;
 			if (line != -1) {
 				if (!file.IsNullOrEmpty && System.IO.File.Exists (file)) {
-					if (IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger) != null)
+					var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
+					if (doc != null)
 						return;
 				}
 				if (frame.SourceLocation.FileHash != null) {
 					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
 					if (newFilePath != null) {
 						frame.UpdateSourceFile (newFilePath);
-						if (IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger) != null)
+						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
+						if (doc != null)
 							return;
 					}
 				}
@@ -104,7 +106,7 @@ namespace MonoDevelop.Debugger
 				if (noSourceDoc == null) {
 					noSourceView = new NoSourceView ();
 					noSourceView.Update (disassemblyNotSupported);
-					noSourceDoc = IdeApp.Workbench.OpenDocument (noSourceView, true);
+					noSourceDoc = await IdeApp.Workbench.OpenDocument (noSourceView, true);
 					noSourceDoc.Closed += delegate {
 						noSourceDoc = null;
 						noSourceView = null;
@@ -118,11 +120,11 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		void OnShowDisassembly (object s, EventArgs a)
+		async void OnShowDisassembly (object s, EventArgs a)
 		{
 			if (disassemblyDoc == null) {
 				disassemblyView = new DisassemblyView ();
-				disassemblyDoc = IdeApp.Workbench.OpenDocument (disassemblyView, true);
+				disassemblyDoc = await IdeApp.Workbench.OpenDocument (disassemblyView, true);
 				disassemblyDoc.Closed += delegate {
 					disassemblyDoc = null;
 					disassemblyView = null;

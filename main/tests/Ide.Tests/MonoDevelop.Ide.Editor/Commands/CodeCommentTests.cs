@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Editor
 				SetupInput (editor, input);
 
 				//Call UpdateParseDocument so AdHock Roslyn Workspace is created for file
-				await testCase.Document.UpdateParseDocument ();
+				await testCase.Document.DocumentContext.UpdateParseDocument ();
 			
 				//Finnaly call command Update so it sets values which we assert
 				var info = new Components.Commands.CommandInfo ();
@@ -231,7 +231,7 @@ $	{
 				SetupInput (editor, input);
 
 				//Call UpdateParseDocument so AdHock Roslyn Workspace is created for file
-				await testCase.Document.UpdateParseDocument ();
+				await testCase.Document.DocumentContext.UpdateParseDocument ();
 
 				//Finnaly call command Update so it sets values which we assert
 				var info = new Components.Commands.CommandInfo ();

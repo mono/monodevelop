@@ -56,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var reference = dataObject as ITypeReference;
-			nodeInfo.Label = reference.ToString ();
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (reference.ToString ());
 			nodeInfo.Icon = Context.GetIcon (Stock.Class);
 		}
 		

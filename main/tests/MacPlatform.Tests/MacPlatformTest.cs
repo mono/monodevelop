@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacPlatformTest.cs
 //  
 // Author:
@@ -30,6 +30,8 @@ using MonoDevelop.MacInterop;
 using MonoDevelop.Ide;
 using UnitTests;
 using System.Threading.Tasks;
+using System.Collections;
+using System.IO;
 
 namespace MacPlatform.Tests
 {
@@ -37,30 +39,59 @@ namespace MacPlatform.Tests
 	public class MacPlatformTest : IdeTestBase
 	{
 		[Test]
+		public void TestPartialStaticRegistrar ()
+		{
+			var runtimeType = typeof (ObjCRuntime.Runtime);
+			var optionsField = runtimeType.GetField ("options", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+			if (optionsField.GetValue (null) == null) {
+				Assert.Inconclusive ("This may have been run without the stub launcher, abort.");
+			}
+		}
+
+		[Test]
+		public void TestStaticRegistrar ()
+		{
+			var entryAssembly = System.Reflection.Assembly.GetEntryAssembly ();
+			var mdtoolDirectory = Path.GetDirectoryName (entryAssembly.Location);
+			if (!File.Exists (Path.Combine (mdtoolDirectory, "libvsmregistrar.dylib"))) {
+				// We don't have a full static registrar
+				return;
+			}
+
+			var @class = new ObjCRuntime.Class (typeof (MonoDevelop.MacIntegration.MainToolbar.StatusIcon));
+
+			var findType = typeof (ObjCRuntime.Class).GetMethod ("FindType", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+			var result = (Type)findType.Invoke (null, new object [] { @class.Handle, null });
+			Assert.IsNotNull (result);
+		}
+
+		[Test]
 		public void GetMimeType_text ()
 		{
 			// Verify no exception is thrown
-			DesktopService.GetMimeTypeForUri ("test.txt");
+			IdeServices.DesktopService.GetMimeTypeForUri ("test.txt");
 		}
 
 		[Test]
 		public void GetMimeType_NoExtension ()
 		{
 			// Verify no exception is thrown
-			DesktopService.GetMimeTypeForUri ("test");
+			IdeServices.DesktopService.GetMimeTypeForUri ("test");
 		}
 
 		[Test]
 		public void GetMimeType_Null ()
 		{
 			// Verify no exception is thrown
-			DesktopService.GetMimeTypeForUri (null);
+			IdeServices.DesktopService.GetMimeTypeForUri (null);
 		}
 
 		[Test]
 		public void MacHasProperMonitor ()
 		{
-			Assert.That (DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
+			Assert.That (IdeServices.DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
 		}
 
 		[Test, Timeout(20000)]

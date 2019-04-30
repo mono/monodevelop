@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 		public static TextStylePolicy GetTextStylePolicy (this OptionKey optionKey)
 		{
-			var mimeChain = DesktopService.GetMimeTypeInheritanceChainForRoslynLanguage (optionKey.Language);
+			var mimeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForRoslynLanguage (optionKey.Language);
 			if (mimeChain == null) {
 				throw new Exception ($"Unknown Roslyn language {optionKey.Language}");
 			}

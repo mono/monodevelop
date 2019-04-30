@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharpBinding
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			using (var sol = (Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				await TypeSystemServiceTestExtensions.LoadSolution (sol);
-				var compilation = await TypeSystemService.GetCompilationAsync (sol.GetAllProjects ().First ());
+				var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (sol.GetAllProjects ().First ());
 				var programType = compilation.GetTypeByMetadataName ("ConsoleProject.Program");
 				Assert.IsNotNull (programType);
 

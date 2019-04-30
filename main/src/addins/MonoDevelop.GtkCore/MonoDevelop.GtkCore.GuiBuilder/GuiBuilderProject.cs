@@ -1,4 +1,4 @@
-//
+﻿//
 // GuiBuilderProject.cs
 //
 // Author:
@@ -340,10 +340,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnFileAdded (object sender, ProjectFileEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
-				var docId = TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
+				var docId = IdeApp.TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
 				if (docId == null)
 					continue;
-				var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
+				var doc = IdeApp.TypeSystemService.GetCodeAnalysisDocument (docId);
 				if (doc == null)
 					continue;
 	
@@ -373,10 +373,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			foreach (ProjectFileEventInfo args in e) {
 
-				var docId = TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
+				var docId = IdeApp.TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
 				if (docId == null)
 					continue;
-				var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
+				var doc = IdeApp.TypeSystemService.GetCodeAnalysisDocument (docId);
 				if (doc == null)
 					continue;
 				var semanticModel = doc.GetSemanticModelAsync ().Result;
@@ -554,7 +554,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			System.Threading.Tasks.Task<Compilation> task;
 			do {
-				task = TypeSystemService.GetCompilationAsync (Project);
+				task = IdeApp.TypeSystemService.GetCompilationAsync (Project);
 				task.Wait (500);
 			} while (!task.IsCompleted);
 

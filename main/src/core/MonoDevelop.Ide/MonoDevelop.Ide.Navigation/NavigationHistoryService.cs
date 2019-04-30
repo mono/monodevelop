@@ -24,62 +24,104 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Content;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Navigation
 {
-	public static class NavigationHistoryService
+	[DefaultServiceImplementation]
+	public class NavigationHistoryService: IService
 	{
-		static HistoryList history = new HistoryList ();
-		static List<Tuple<NavigationPoint, int>> closedHistory = new List<Tuple<NavigationPoint, int>> ();
+		HistoryList history = new HistoryList ();
+		List<Tuple<NavigationPoint, int>> closedHistory = new List<Tuple<NavigationPoint, int>> ();
+		DocumentManager documentManager;
+		RootWorkspace workspace;
 
 		//used to prevent re-logging the current point during a switch
-		static bool switching;
-		
+		bool switching;
+
 		//whethor the current node is transient. Prevents excession automatic logging when switching rapidly between 
 		//documents
-		static bool currentIsTransient;
-		
-		//the amount of time until a "transient" current node bevomes "permanent"
-		static uint TRANSIENT_TIMEOUT = 10000; //ms
-		
-		static Document currentDoc;
-		
-		static NavigationHistoryService ()
+		bool currentIsTransient;
+
+		//the amount of time until a "transient" current node becomes "permanent"
+		uint TRANSIENT_TIMEOUT = 10000; //ms
+
+		Document currentDoc;
+
+		Task IService.Dispose ()
 		{
-			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				history.Clear ();
-				OnHistoryChanged ();
-				closedHistory.Clear ();
-				OnClosedHistoryChanged ();
-			};
+			if (workspace != null) {
+				workspace.LastWorkspaceItemClosed -= Workspace_LastWorkspaceItemClosed;
+				workspace.FileRenamedInProject -= FileRenamed;
+			}
 
-			IdeApp.Workbench.DocumentOpened += delegate (object sender, DocumentEventArgs e) {
-				closedHistory.RemoveAll(np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
-				OnClosedHistoryChanged ();
-			};
+			if (documentManager != null) {
+				documentManager.DocumentOpened -= DocumentManager_DocumentOpened;
+				documentManager.DocumentClosing -= DocumentManager_DocumentClosing;
+				documentManager.ActiveDocumentChanged -= ActiveDocChanged;
+			}
 
-			IdeApp.Workbench.DocumentClosing += delegate(object sender, DocumentEventArgs e) {
-				NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
-				if (point == null)
-					return;
-				
-				closedHistory.Add (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
-				OnClosedHistoryChanged ();
-			};
-
-			//keep nav points up to date
-			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
-			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
+			return Task.CompletedTask;
 		}
 
-		public static void LogActiveDocument (bool transient = false)
+		Task IService.Initialize (ServiceProvider serviceProvider)
+		{
+			//keep nav points up to date
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				workspace = s;
+				workspace.LastWorkspaceItemClosed += Workspace_LastWorkspaceItemClosed;
+				workspace.FileRenamedInProject += FileRenamed;
+			});
+
+			serviceProvider.WhenServiceInitialized<DocumentManager> (s => {
+				documentManager = s;
+				documentManager.DocumentOpened += DocumentManager_DocumentOpened;
+				documentManager.DocumentClosing += DocumentManager_DocumentClosing;
+				documentManager.ActiveDocumentChanged += ActiveDocChanged;
+			});
+			return Task.CompletedTask;
+		}
+
+		void Workspace_LastWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			Reset ();
+		}
+
+		void DocumentManager_DocumentOpened (object sender, DocumentEventArgs e)
+		{
+			closedHistory.RemoveAll (np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
+			OnClosedHistoryChanged ();
+		}
+
+		Task DocumentManager_DocumentClosing (object sender, DocumentCloseEventArgs e)
+		{
+			NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
+			if (point == null)
+				return Task.CompletedTask;
+
+			closedHistory.Add (new Tuple<NavigationPoint, int> (point, documentManager.Documents.IndexOf (e.Document)));
+			OnClosedHistoryChanged ();
+			return Task.CompletedTask;
+		}
+
+		public void Reset ()
+		{
+			history.Clear ();
+			OnHistoryChanged ();
+			closedHistory.Clear ();
+			OnClosedHistoryChanged ();
+		}
+
+		public void LogActiveDocument (bool transient = false)
 		{
 			if (switching)
 				return;
@@ -90,7 +132,7 @@ namespace MonoDevelop.Ide.Navigation
 			}
 		}
 
-		public static void LogNavigationPoint (NavigationPoint point, bool transient = false)
+		public void LogNavigationPoint (NavigationPoint point, bool transient = false)
 		{
 			if (point == null) {
 				throw new ArgumentNullException (nameof (point));
@@ -100,11 +142,10 @@ namespace MonoDevelop.Ide.Navigation
 			
 			//if the current node's transient but has been around for a while, consider making it permanent
 			if (Current == null ||
-			    (currentIsTransient && DateTime.Now.Subtract (Current.Created).TotalMilliseconds > TRANSIENT_TIMEOUT))
-			{
+				(currentIsTransient && DateTime.Now.Subtract (Current.Created).TotalMilliseconds > TRANSIENT_TIMEOUT)) {
 				currentIsTransient = false;
 			}
-			
+
 			//if the current point's transient, always replace it
 			if (currentIsTransient)
 			{
@@ -121,39 +162,36 @@ namespace MonoDevelop.Ide.Navigation
 				}
 			}
 			//if the new point wants to replace the old one, let it
-			else if (Current != null && !transient && point.ShouldReplace (Current.NavigationPoint))
-			{
+			else if (Current != null && !transient && point.ShouldReplace (Current.NavigationPoint)) {
 				history.ReplaceCurrent (item);
-				
+
 				//but in this case, the point should not be transient -- unless the old point was,
 				//but that's handled earlier
 				currentIsTransient = false;
 			}
 			//final choice: append the the node
 			//BUT only if the existing current node would not want to replace the new node
-			else if (Current == null || !Current.NavigationPoint.ShouldReplace (point))
-			{
+			else if (Current == null || !Current.NavigationPoint.ShouldReplace (point)) {
 				history.AddPoint (item);
 				currentIsTransient = transient;
-			}
-			else
+			} else
 				item.Dispose ();
-				
+
 			OnHistoryChanged ();
 		}
 		
-		static NavigationPoint GetNavPointForActiveDoc ()
+		NavigationPoint GetNavPointForActiveDoc ()
 		{
-			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, false);
+			return GetNavPointForDoc (documentManager?.ActiveDocument, false);
 		}
-		
-		static NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
+
+		NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
 		{
 			if (doc == null)
 				return null;
-			
+
 			NavigationPoint point = null;
-			
+
 			INavigable navigable = doc.GetContent<INavigable> ();
 			if (navigable != null) {
 				point = navigable.BuildNavigationPoint ();
@@ -176,18 +214,18 @@ namespace MonoDevelop.Ide.Navigation
 
 			return new DocumentNavigationPoint (doc);
 		}
-		
+
 		#region Navigation
-		
-		public static bool CanMoveForward {
+
+		public bool CanMoveForward {
 			get { return history.CanMoveForward; }
 		}
-		
-		public static bool CanMoveBack {
+
+		public bool CanMoveBack {
 			get { return history.CanMoveBack; }
 		}
-		
-		public static void MoveForward ()
+
+		public void MoveForward ()
 		{
 			LogActiveDocument ();
 			if (history.CanMoveForward) {
@@ -196,8 +234,8 @@ namespace MonoDevelop.Ide.Navigation
 				OnHistoryChanged ();
 			}
 		}
-		
-		public static void MoveBack ()
+
+		public void MoveBack ()
 		{
 			// Log current point before moving back, to make sure a MoveForward will return to the same position
 			LogActiveDocument ();
@@ -207,15 +245,15 @@ namespace MonoDevelop.Ide.Navigation
 				OnHistoryChanged ();
 			}
 		}
-		
-		public static void MoveTo (NavigationHistoryItem item)
+
+		public void MoveTo (NavigationHistoryItem item)
 		{
 			history.MoveTo (item);
 			SwitchToCurrent ();
 			OnHistoryChanged ();
 		}
-		
-		static void SwitchToCurrent ()
+
+		void SwitchToCurrent ()
 		{
 			currentIsTransient = false;
 			switching = true;
@@ -223,19 +261,20 @@ namespace MonoDevelop.Ide.Navigation
 				history.Current.Show ();
 			switching = false;
 		}
-		
+
 		#endregion
 
 		#region Closed Document List
 
-		public static bool HasClosedDocuments {
+		public bool HasClosedDocuments {
 			get { return closedHistory.Count != 0; }
 		}
 
-		public static async void OpenLastClosedDocument () {
+		public async void OpenLastClosedDocument ()
+		{
 			if (HasClosedDocuments) {
 				int closedHistoryIndex = closedHistory.Count - 1;
-				var tuple = closedHistory[closedHistoryIndex];
+				var tuple = closedHistory [closedHistoryIndex];
 				closedHistory.RemoveAt (closedHistoryIndex);
 				OnClosedHistoryChanged ();
 				var doc = await tuple.Item1.ShowDocument ();
@@ -245,59 +284,59 @@ namespace MonoDevelop.Ide.Navigation
 		}
 
 		#endregion
-		
-		public static IList<NavigationHistoryItem> GetNavigationList (int desiredLength)
+
+		public IList<NavigationHistoryItem> GetNavigationList (int desiredLength)
 		{
 			return history.GetList (desiredLength);
 		}
-		
-		public static IList<NavigationHistoryItem> GetNavigationList (int desiredLength, out int currentIndex)
+
+		public IList<NavigationHistoryItem> GetNavigationList (int desiredLength, out int currentIndex)
 		{
 			return history.GetList (desiredLength, out currentIndex);
 		}
-		
-		public static NavigationHistoryItem Current { get { return history.Current; } }
-		
-		public static bool IsCurrent (NavigationHistoryItem point)
+
+		public NavigationHistoryItem Current { get { return history.Current; } }
+
+		public bool IsCurrent (NavigationHistoryItem point)
 		{
 			return history.IsCurrent (point);
 		}
-		
-		public static void Clear ()
+
+		public void Clear ()
 		{
 			history.Clear ();
 			LogActiveDocument ();
 		}
-		
-		public static event EventHandler HistoryChanged;
-		public static event EventHandler ClosedHistoryChanged;
-		
-		static void OnHistoryChanged ()
+
+		public event EventHandler HistoryChanged;
+		public event EventHandler ClosedHistoryChanged;
+
+		void OnHistoryChanged ()
 		{
 			HistoryChanged?.Invoke (null, EventArgs.Empty);
 		}
 
-		static void OnClosedHistoryChanged ()
+		void OnClosedHistoryChanged ()
 		{
 			ClosedHistoryChanged?.Invoke (null, EventArgs.Empty);
 		}
-		
+
 		#region Handling active doc change events
-		
-		static void ActiveDocChanged (object sender, EventArgs args)
+
+		void ActiveDocChanged (object sender, EventArgs args)
 		{
 			LogActiveDocument (true);
-			AttachToDoc (IdeApp.Workbench.ActiveDocument);
+			AttachToDoc (documentManager.ActiveDocument);
 		}
-		
-		static void AttachToDoc (Document document)
+
+		void AttachToDoc (Document document)
 		{
 			DetachFromCurrentDoc ();
 			if (document == null)
 				return;
-			
+
 			currentDoc = document;
-			
+
 			currentDoc.Closed += HandleCurrentDocClosed;
 			
 			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
@@ -308,12 +347,12 @@ namespace MonoDevelop.Ide.Navigation
 			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
-		static void HandleCurrentDocClosed (object sender, EventArgs e)
+		void HandleCurrentDocClosed (object sender, EventArgs e)
 		{
 			DetachFromCurrentDoc ();
 		}
-		
-		static void DetachFromCurrentDoc ()
+
+		void DetachFromCurrentDoc ()
 		{
 			if (currentDoc == null)
 				return;
@@ -327,27 +366,27 @@ namespace MonoDevelop.Ide.Navigation
 			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 			currentDoc = null;
 		}
-		
-		static void BufferCaretPositionChanged (object sender, EventArgs args)
+
+		void BufferCaretPositionChanged (object sender, EventArgs args)
 		{
 			LogActiveDocument (true);
 		}
-		
-		static void BufferTextChanged (object sender, EventArgs args)
+
+		void BufferTextChanged (object sender, EventArgs args)
 		{
 			LogActiveDocument ();
 		}
-		
+
 		#endregion
-		
+
 		#region Text file line number and snippet updating
 		
-		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
+		void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
 			bool historyChanged = false, closedHistoryChanged = false;
 
-			foreach (NavigationHistoryItem point in history) {
-				foreach (ProjectFileRenamedEventInfo args in e) {
+			foreach (var point in history) {
+				foreach (var args in e) {
 					var dp = point.NavigationPoint as DocumentNavigationPoint;
 					historyChanged |= (dp?.HandleRenameEvent (args.OldName, args.NewName)).GetValueOrDefault ();
 				}
@@ -357,7 +396,7 @@ namespace MonoDevelop.Ide.Navigation
 				OnHistoryChanged ();
 
 			foreach (var point in closedHistory) {
-				foreach (ProjectFileRenamedEventInfo args in e) {
+				foreach (var args in e) {
 					var dp = point.Item1 as DocumentNavigationPoint;
 					closedHistoryChanged |= (dp?.HandleRenameEvent (args.OldName, args.NewName)).GetValueOrDefault ();
 				}
@@ -366,7 +405,7 @@ namespace MonoDevelop.Ide.Navigation
 			if (closedHistoryChanged)
 				OnClosedHistoryChanged ();
 		}
-		
+
 		#endregion
 	}
 }

@@ -11,6 +11,7 @@
 		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
 		<Import assembly="Microsoft.VisualStudio.Threading.dll" />
 		<Import assembly="Microsoft.VisualStudio.Validation.dll" />
+		<Import assembly="Microsoft.VisualStudio.Language.dll" />
 	</Runtime>
 
 	<!-- Extension ponts -->
@@ -51,7 +52,14 @@
 		<Description>Display bindings.</Description>
 		<ExtensionNode name="DisplayBinding" type="MonoDevelop.Ide.Codons.DisplayBindingCodon" />
 	</ExtensionPoint>
-
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/DocumentControllerFactories" name = "Document controller factories">
+		<Description>Document controller factories.</Description>
+		<ExtensionNode name="Factory" customAttributeType="MonoDevelop.Ide.Gui.Documents.ExportDocumentControllerFactoryAttribute" />
+		<ExtensionNode name="Controller" customAttributeType="MonoDevelop.Ide.Gui.Documents.ExportFileDocumentControllerAttribute" />
+		<ExtensionNode name="Marker" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/StartupHandlers" name = "Startup handlers">
 		<Description>Commands to be automatically executed when the IDE starts.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Components.Commands.CommandHandler" customAttributeType="MonoDevelop.Ide.Extensions.StartupHandlerExtensionAttribute">
@@ -258,10 +266,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id    = "DefaultDisplayBinding"
-						  class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
-		<DisplayBinding id = "TextEditor"
-						class = "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/DocumentControllerFactories">
+		<Marker id = "DefaultDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
@@ -338,6 +346,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllToTheRight" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab" />
 		<SeparatorItem id = "CloseSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
@@ -417,6 +426,7 @@
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
 		<Assembly file="Microsoft.VisualStudio.CodingConventions.dll" />
+		<Assembly file="Microsoft.VisualStudio.Language.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>

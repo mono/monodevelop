@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NuGet.Common;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
@@ -141,6 +142,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IEnumerable<PackageRestoreData> GetPackagesRestoreData (
 			string solutionDirectory,
 			Dictionary<PackageReference, List<string>> packageReferencesDict)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public Task<PackageRestoreResult> RestoreMissingPackagesInSolutionAsync (string solutionDirectory, INuGetProjectContext nuGetProjectContext, ILogger logger, CancellationToken token)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public Task<PackageRestoreResult> RestoreMissingPackagesAsync (string solutionDirectory, IEnumerable<PackageRestoreData> packages, INuGetProjectContext nuGetProjectContext, PackageDownloadContext downloadContext, ILogger logger, CancellationToken token)
 		{
 			throw new NotImplementedException ();
 		}

@@ -1,4 +1,4 @@
-//
+﻿//
 // MDMenuItem.cs
 //
 // Author:
@@ -97,7 +97,7 @@ namespace MonoDevelop.Components.Mac
 		// We can justify this because safari 3.2.1 does it ("do you want to close all tabs?").
 		public static bool IsGloballyDisabled {
 			get {
-				return MonoDevelop.Ide.DesktopService.IsModalDialogRunning ();
+				return MonoDevelop.Ide.IdeServices.DesktopService.IsModalDialogRunning ();
 			}
 		}
 
@@ -241,7 +241,7 @@ namespace MonoDevelop.Components.Mac
 				if (!info.Icon.IsNull)
 					icon = Ide.ImageService.GetIcon (info.Icon, Gtk.IconSize.Menu);
 				if (icon == null)
-					icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+					icon = Ide.IdeServices.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
 				if (icon != null) {
 					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
 

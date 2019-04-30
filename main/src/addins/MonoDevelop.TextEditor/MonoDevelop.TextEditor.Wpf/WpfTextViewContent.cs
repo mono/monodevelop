@@ -29,8 +29,8 @@ namespace MonoDevelop.TextEditor
 	{
 		IWpfTextViewHost wpfTextViewHost;
 
-		public WpfTextViewContent (WpfTextViewImports imports, Core.FilePath fileName, string mimeType, Projects.Project ownerProject)
-			: base (imports, fileName, mimeType, ownerProject)
+		public WpfTextViewContent (WpfTextViewImports imports)
+			: base (imports)
 		{
 		}
 
@@ -38,6 +38,8 @@ namespace MonoDevelop.TextEditor
 			=> Imports.TextEditorFactoryService.CreateTextView (viewModel, roles, Imports.EditorOptionsFactoryService.GlobalOptions);
 
 		public System.Windows.Controls.Control HostControl => wpfTextViewHost.HostControl;
+
+		public XwtControl XwtControl { get; private set; }
 
 		protected override Control CreateControl ()
 		{
@@ -54,7 +56,8 @@ namespace MonoDevelop.TextEditor
 			var xwtWidget = Xwt.Toolkit.CurrentEngine.WrapWidget (widget, Xwt.NativeWidgetSizing.External);
 			xwtWidget.Show ();
 
-			return new XwtControl (xwtWidget);
+			XwtControl = new XwtControl (xwtWidget);
+			return XwtControl;
 		}
 
 		protected override ITextViewRoleSet GetAllPredefinedRoles () => Imports.TextEditorFactoryService.AllPredefinedRoles;
@@ -74,9 +77,9 @@ namespace MonoDevelop.TextEditor
 		void HandleWpfLostKeyboardFocus (object sender, KeyboardFocusChangedEventArgs e)
 			=> Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
+			base.OnDispose ();
 			if (wpfTextViewHost != null) {
 				wpfTextViewHost.Close ();
 				wpfTextViewHost = null;

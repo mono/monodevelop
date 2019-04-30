@@ -18,7 +18,7 @@
 		<Project name="${ProjectName}" directory="." type="NuGetPackaging">
 			<Options TargetFrameworkVersion="4.5" />
 			<Packages>
-				<Package ID="NuGet.Build.Packaging" Version="0.2.0" directory="../packages" />
+				<Package ID="NuGet.Build.Packaging" Version="0.2.5-dev.8" directory="../packages" />
 			</Packages>
 			<Files>
 				<File name="readme.txt"><![CDATA[

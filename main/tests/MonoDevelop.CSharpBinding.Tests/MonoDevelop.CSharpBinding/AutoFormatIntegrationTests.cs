@@ -27,18 +27,17 @@ using System;
 using NUnit.Framework;
 
 using System.Text;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Completion;
-using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -47,17 +46,14 @@ namespace MonoDevelop.CSharpBinding
 	{
 		static async Task Simulate (string input, Action<TestViewContent, EditorFormattingServiceTextEditorExtension> act, CSharpFormattingPolicy formattingPolicy = null, EolMarker eolMarker = EolMarker.Unix)
 		{
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			content.Data.Options = new CustomEditorOptions {
+			await content.Initialize (new FileDescriptor ("/a.cs", null, null));
+
+			content.Editor.Options = new CustomEditorOptions {
 				IndentStyle = IndentStyle.Auto
 			};
 
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-
-			var doc = new Document (tww);
+			content.Editor.MimeType = "text/x-csharp";
 
 			var sb = new StringBuilder ();
 			int cursorPosition = 0, selectionStart = -1, selectionEnd = -1;
@@ -95,36 +91,37 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = sb.ToString ();
 			content.CursorPosition = cursorPosition;
 
-			var project = Services.ProjectService.CreateProject ("C#");
+			var project = IdeServices.ProjectService.CreateProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+			project.Files.Add (new ProjectFile (content.FilePath, BuildAction.Compile));
 			var textStylePolicy = Projects.Policies.PolicyService.InvariantPolicies.Get<TextStylePolicy> ().WithTabsToSpaces (false)
 										  .WithEolMarker (eolMarker);
 
-			project.Policies.Set (textStylePolicy, content.Data.MimeType);
-			project.Policies.Set (formattingPolicy ?? Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), content.Data.MimeType);
+			project.Policies.Set (textStylePolicy, content.Editor.MimeType);
+			project.Policies.Set (formattingPolicy ?? Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), content.Editor.MimeType);
 
 			var solution = new MonoDevelop.Projects.Solution ();
 			solution.AddConfiguration ("", true);
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
-			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
+				await IdeApp.TypeSystemService.Load (solution, monitor);
+			content.Owner = project;
 
-			var ext = new EditorFormattingServiceTextEditorExtension ();
-			ext.Initialize (doc.Editor, doc);
-			content.Contents.Add (ext);
+			using (var testCase = await Ide.TextEditorExtensionTestCase.Create (content, null, false)) {
+				var doc = testCase.Document;
+				var compExt = new CSharpCompletionTextEditorExtension ();
+				compExt.Initialize (doc.Editor, doc.DocumentContext);
+				content.AddContent (compExt);
 
-			await doc.UpdateParseDocument ();
-			if (selectionStart >= 0 && selectionEnd >= 0)
-				content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
+				var ext = new EditorFormattingServiceTextEditorExtension ();
+				ext.Initialize (doc.Editor, doc.DocumentContext);
+				content.AddContent (ext);
 
-			using (var testCase = new Ide.TextEditorExtensionTestCase (doc, content, tww, null, false)) {
+				await doc.DocumentContext.UpdateParseDocument ();
+				if (selectionStart >= 0 && selectionEnd >= 0)
+					content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
+
 				act (content, ext);
 			}
 		}
@@ -249,14 +246,14 @@ namespace MonoDevelop.CSharpBinding
 		public async Task TestBug14686Case2 ()
 		{
 			await Simulate ("$\"\\\"", (content, ext) => {
-				content.Data.InsertText (0, "@");
+				content.Editor.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\\"", newText);
 			});
 
 			await Simulate ("$\"\\\"a", (content, ext) => {
-				content.Data.InsertText (0, "@");
+				content.Editor.InsertText (0, "@");
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\\"a", newText);
@@ -298,7 +295,7 @@ namespace MonoDevelop.CSharpBinding
 		Console.WriteLine ()      ;$
 	}
 }", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
@@ -326,7 +323,7 @@ namespace MonoDevelop.CSharpBinding
 		#$
 	}
 }", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'#', '#', Gdk.ModifierType.None));
@@ -352,7 +349,7 @@ namespace MonoDevelop.CSharpBinding
 #region$
 	}
 }", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'n', 'n', Gdk.ModifierType.None));
@@ -375,7 +372,7 @@ namespace MonoDevelop.CSharpBinding
 #endregion$
 	}
 }", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'n', 'n', Gdk.ModifierType.None));
@@ -418,7 +415,7 @@ namespace MonoDevelop.CSharpBinding
 		}$
     }
 }", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
@@ -456,7 +453,7 @@ namespace MonoDevelop.CSharpBinding
 		public async Task TestBug46817 ()
 		{
 			await Simulate ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t\t\t}$\r\n", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual,
 					DefaultEolMarker = "\r\n"
 				};
@@ -516,7 +513,7 @@ class MyContext
 	#$
 
 }", (content, ext) => {
-				content.Data.Options = new CustomEditorOptions {
+				content.Editor.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'#', '#', Gdk.ModifierType.None));

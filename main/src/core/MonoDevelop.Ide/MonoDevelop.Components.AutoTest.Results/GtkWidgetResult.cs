@@ -92,7 +92,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult CheckType (Type desiredType)
 		{
-			if (resultWidget.GetType () == desiredType || resultWidget.GetType ().IsSubclassOf (desiredType)) {
+			if (desiredType.IsInstanceOfType (resultWidget)) {
 				return desiredType == typeof(Notebook) ? new GtkNotebookResult (resultWidget) : this;
 			}
 

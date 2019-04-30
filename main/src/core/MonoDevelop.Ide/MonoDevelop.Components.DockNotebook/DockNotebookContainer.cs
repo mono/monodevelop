@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Linq;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Components.DockNotebook
 {

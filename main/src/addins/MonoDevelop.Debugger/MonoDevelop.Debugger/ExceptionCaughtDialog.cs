@@ -168,15 +168,15 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			return eventBox;
 		}
 
-		void ExceptionHelpLinkLabel_Clicked (object sender, EventArgs e) => DesktopService.ShowUrl (exceptionHelpLink);
+		void ExceptionHelpLinkLabel_Clicked (object sender, EventArgs e) => IdeServices.DesktopService.ShowUrl (exceptionHelpLink);
 
 		void EventBoxLink_KeyPressEvent (object o, KeyPressEventArgs args)
 		{ 
 			if (args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.KP_Space)
-				DesktopService.ShowUrl (exceptionHelpLink);
+				IdeServices.DesktopService.ShowUrl (exceptionHelpLink);
 		}
 
-		void EventBoxLink_ExceptionHelpLink (object o, ButtonPressEventArgs args) => DesktopService.ShowUrl (exceptionHelpLink);
+		void EventBoxLink_ExceptionHelpLink (object o, ButtonPressEventArgs args) => IdeServices.DesktopService.ShowUrl (exceptionHelpLink);
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
@@ -469,11 +469,11 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			return hboxMain;
 		}
 
-		void InnerExceptionHelpLinkLabel_Pressed (object sender, EventArgs e) => DesktopService.ShowUrl (innerExceptionHelpLink);
+		void InnerExceptionHelpLinkLabel_Pressed (object sender, EventArgs e) => IdeServices.DesktopService.ShowUrl (innerExceptionHelpLink);
 		void InnerExceptionHelpLinkLabel_KeyPressEvent (object o, KeyPressEventArgs args)
 		{
 			if (args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.KP_Space)
-				DesktopService.ShowUrl (innerExceptionHelpLink);
+				IdeServices.DesktopService.ShowUrl (innerExceptionHelpLink);
 		}
 
 		TreeStore InnerExceptionsStore;
@@ -569,7 +569,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			updateInnerExceptions ();
 		}
 
-		void StackFrameActivated (object o, RowActivatedArgs args)
+		async void StackFrameActivated (object o, RowActivatedArgs args)
 		{
 			var model = StackTraceTreeView.Model;
 			TreeIter iter;
@@ -581,7 +581,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 			if (frame != null && !string.IsNullOrEmpty (frame.File) && File.Exists (frame.File)) {
 				try {
-					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column, MonoDevelop.Ide.Gui.OpenDocumentOptions.Debugger);
+					await IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column, MonoDevelop.Ide.Gui.OpenDocumentOptions.Debugger);
 				} catch (FileNotFoundException) {
 				}
 			}
@@ -792,7 +792,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			get { return frame; }
 			set {
 				frame = value;
-				Text = value.DisplayText;
+				Text = value?.DisplayText;
 			}
 		}
 
@@ -805,6 +805,10 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		{
 			if (Markup != null)
 				return $"<span foreground='{Styles.ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false)}'>{Markup}</span>";
+
+            if (Frame == null)
+                return "";
+
 			var methodText = Frame.DisplayText;
 			var endOfMethodName = methodText.IndexOf ('(');
 			var methodName = methodText.Remove (endOfMethodName).Trim ();
@@ -948,7 +952,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 			if (button == null) {
 				button = new ExceptionCaughtButton (ex, this, File, Line);
-				TextEditorService.RegisterExtension (button);
+				IdeServices.TextEditorService.RegisterExtension (button);
 				button.ScrollToView ();
 			}
 			if (miniButton != null) {
@@ -970,7 +974,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 			if (miniButton == null) {
 				miniButton = new ExceptionCaughtMiniButton (this, File, Line);
-				TextEditorService.RegisterExtension (miniButton);
+				IdeServices.TextEditorService.RegisterExtension (miniButton);
 				miniButton.ScrollToView ();
 			}
 		}

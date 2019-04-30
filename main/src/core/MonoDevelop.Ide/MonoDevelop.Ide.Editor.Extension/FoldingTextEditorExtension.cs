@@ -82,73 +82,77 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (parsedDocument == null || !Editor.Options.ShowFoldMargin || parsedDocument.Flags.HasFlag (ParsedDocumentFlags.SkipFoldings))
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (await parsedDocument.HasErrorsAsync (token))
+			if (await parsedDocument.HasErrorsAsync (token).ConfigureAwait (false))
 				return;
 
+			IReadOnlyList<FoldingRegion> foldings = null;
 			try {
-				var foldSegments = new List<IFoldSegment> ();
-
-				foreach (FoldingRegion region in await parsedDocument.GetFoldingsAsync (token)) {
-					if (token.IsCancellationRequested)
-						return;
-					var type = FoldingType.Unknown;
-					bool setFolded = false;
-					bool folded = false;
-					//decide whether the regions should be folded by default
-					switch (region.Type) {
-					case FoldType.Member:
-						type = FoldingType.TypeMember;
-						break;
-					case FoldType.Type:
-						type = FoldingType.TypeDefinition;
-						break;
-					case FoldType.UserRegion:
-						type = FoldingType.Region;
-						setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
-						folded = true;
-						break;
-					case FoldType.Comment:
-						type = FoldingType.Comment;
-						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-						folded = true;
-						break;
-					case FoldType.CommentInsideMember:
-						type = FoldingType.Comment;
-						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-						folded = false;
-						break;
-					case FoldType.Undefined:
-						setFolded = true;
-						folded = region.IsFoldedByDefault;
-						break;
-					}
-					var start = Editor.LocationToOffset (region.Region.Begin);
-					var end = Editor.LocationToOffset (region.Region.End);
-					var marker = Editor.CreateFoldSegment (start, end - start);
-					foldSegments.Add (marker);
-					marker.CollapsedText = region.Name;
-					marker.FoldingType = type;
-					//and, if necessary, set its fold state
-					if (marker != null && setFolded && firstTime) {
-						// only fold on document open, later added folds are NOT folded by default.
-						marker.IsCollapsed = folded;
-						continue;
-					}
-					if (marker != null && region.Region.Contains (caretLocation.Line, caretLocation.Column))
-						marker.IsCollapsed = false;
-				}
-				if (firstTime) {
-					Editor.SetFoldings (foldSegments);
-				} else {
-					Application.Invoke ((o, args) => {
-						if (!token.IsCancellationRequested)
-							Editor.SetFoldings (foldSegments);
-					});
-				}
+				foldings = await parsedDocument.GetFoldingsAsync(token).ConfigureAwait (false);
 			} catch (OperationCanceledException) {
+				return;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
+			if (token.IsCancellationRequested)
+				return;
+			await Runtime.RunInMainThread (delegate {
+				var foldSegments = new List<IFoldSegment> ();
+				try {
+					foreach (var region in foldings) {
+						if (token.IsCancellationRequested)
+							return;
+						var type = FoldingType.Unknown;
+						bool setFolded = false;
+						bool folded = false;
+						//decide whether the regions should be folded by default
+						switch (region.Type) {
+						case FoldType.Member:
+							type = FoldingType.TypeMember;
+							break;
+						case FoldType.Type:
+							type = FoldingType.TypeDefinition;
+							break;
+						case FoldType.UserRegion:
+							type = FoldingType.Region;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
+							folded = true;
+							break;
+						case FoldType.Comment:
+							type = FoldingType.Comment;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+							folded = true;
+							break;
+						case FoldType.CommentInsideMember:
+							type = FoldingType.Comment;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+							folded = false;
+							break;
+						case FoldType.Undefined:
+							setFolded = true;
+							folded = region.IsFoldedByDefault;
+							break;
+						}
+						var start = Editor.LocationToOffset (region.Region.Begin);
+						var end = Editor.LocationToOffset (region.Region.End);
+						var marker = Editor.CreateFoldSegment (start, end - start);
+						foldSegments.Add (marker);
+						marker.CollapsedText = region.Name;
+						marker.FoldingType = type;
+						//and, if necessary, set its fold state
+						if (marker != null && setFolded && firstTime) {
+							// only fold on document open, later added folds are NOT folded by default.
+							marker.IsCollapsed = folded;
+							continue;
+						}
+						if (marker != null && region.Region.Contains (caretLocation.Line, caretLocation.Column))
+							marker.IsCollapsed = false;
+					}
+					Editor.SetFoldings (foldSegments);
+				} catch (OperationCanceledException) {
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
+				}
+			});
 		}
 
 	}

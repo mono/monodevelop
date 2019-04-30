@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeBinder.cs
 //
 // Author:
@@ -273,7 +273,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 //			var matches = new List<INamedTypeSymbol> ();
 //			ParsedDocument unit = null;
 //			var ctx = gproject.GetParserContext ();
-//			var doc = TypeSystemService.ParseFile (project, classFile);
+//			var doc = IdeApp.TypeSystemService.ParseFile (project, classFile);
 //			if (doc != null) {
 //				unit = doc;
 //				foreach (var fcls in unit.TopLevelTypeDefinitions) {

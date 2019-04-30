@@ -67,10 +67,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			scroller.ShadowType = Gtk.ShadowType.None;
 			scroller.Add (tree_view);
 			
-			if (HelpService.HelpTree != null) {
-				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), HelpService.HelpTree);
+			if (IdeServices.HelpService.HelpTree != null) {
+				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), IdeServices.HelpService.HelpTree);
 				PopulateNode (root_iter);
-	
+
 				tree_view.ExpandRow (new TreePath ("0"), false);
 				TreeIter child_iter;
 			start:
@@ -122,8 +122,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 
 				Node n = (Node)store.GetValue (iter, 1);
-				
-				IdeApp.HelpOperations.ShowHelp (n.PublicUrl);
+
+				IdeServices.HelpOperations.ShowHelp (n.PublicUrl);
 			}
 		}
 

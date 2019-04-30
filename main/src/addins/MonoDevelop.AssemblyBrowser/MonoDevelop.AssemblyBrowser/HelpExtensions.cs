@@ -38,6 +38,7 @@ using System.Xml;
 using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Projects;
 using ICSharpCode.Decompiler.Documentation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -91,13 +92,13 @@ namespace MonoDevelop.AssemblyBrowser
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
 			if (member.SymbolKind == SymbolKind.TypeDefinition) {
-				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (IdStringProvider.GetIdString (member)) : null;
+				var helpXml = IdeServices.HelpService.HelpTree != null ? IdeServices.HelpService.HelpTree.GetHelpXml (IdStringProvider.GetIdString (member)) : null;
 				if (helpXml == null)
 					return null;
 				return helpXml.SelectSingleNode ("/Type/Docs");
 			}
 					
-			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetIdString ()) : null;
+			var declaringXml = IdeServices.HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? IdeServices.HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetIdString ()) : null;
 			if (declaringXml == null)
 				return null;
 					

@@ -204,6 +204,8 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
 		</ItemSet>
 		<SeparatorItem/>
 	</Extension>
@@ -322,7 +324,6 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class = "MonoDevelop.VersionControl.Views.SubviewAttachmentHandler"/>
 		<Class class = "MonoDevelop.VersionControl.VersionControlInitializer"/>
 	</Extension>
 

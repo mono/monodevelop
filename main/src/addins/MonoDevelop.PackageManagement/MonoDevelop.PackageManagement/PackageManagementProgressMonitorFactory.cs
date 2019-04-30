@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 
 			OutputProgressMonitor consoleMonitor = CreatePackageConsoleOutputMonitor ();
 
-			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
+			Pad pad = Runtime.RunInMainThread (() => IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor)).Result;
 
 			ProgressMonitor statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				title,
@@ -82,14 +82,9 @@ namespace MonoDevelop.PackageManagement
 
 		void ConfigureConsoleClearing (bool clearConsole)
 		{
-			var workbench = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
-			var codon = workbench.PadContentCollection.FirstOrDefault (pad => pad.PadId.StartsWith ("OutputPad-PackageConsole-", StringComparison.Ordinal));
-			if (codon != null) {
-				var pad = codon.PadContent as DefaultMonitorPad;
-				if (pad != null) {
-					pad.ClearOnBeginProgress = clearConsole;
-				}
-			}
+			var pad = IdeApp.Workbench.Pads.FirstOrDefault (p => p.Id.StartsWith ("OutputPad-PackageConsole-", StringComparison.Ordinal));
+			if (pad?.Content is DefaultMonitorPad monitorPad)
+				monitorPad.ClearOnBeginProgress = clearConsole;
 		}
 	}
 }

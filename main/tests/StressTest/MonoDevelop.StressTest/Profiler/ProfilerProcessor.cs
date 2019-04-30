@@ -178,7 +178,12 @@ namespace MonoDevelop.StressTest
 
 			public override void Visit (HeapEndEvent ev)
 			{
-				profilerProcessor.completionSource.SetResult (new Heapshot (currentHeapshot));
+				TaskCompletionSource<Heapshot> source;
+				lock (profilerProcessor.processingHeapshots) {
+					source = profilerProcessor.processingHeapshots.Dequeue ();
+				}
+
+				source.SetResult (new Heapshot (currentHeapshot));
 			}
 
 			void ProcessNewRoot (long objAddr, long rootAddr)
@@ -208,24 +213,39 @@ namespace MonoDevelop.StressTest
 		int TcpPort => processor.StreamHeader.Port;
 		TcpClient client;
 		StreamWriter writer;
-		TaskCompletionSource<Heapshot> completionSource;
+		readonly Queue<TaskCompletionSource<Heapshot>> processingHeapshots = new Queue<TaskCompletionSource<Heapshot>> ();
 
-		public async Task<Heapshot> TakeHeapshot ()
+		public Task RemainingHeapshotsTask => Task.WhenAll (processingHeapshots.Select (x => x.Task));
+
+		TaskCompletionSource<Heapshot> QueueHeapshot ()
 		{
-			if (completionSource != null) {
-				throw new InvalidOperationException ("Heapshot taking in progress");
+			var tcs = new TaskCompletionSource<Heapshot> ();
+
+			lock (processingHeapshots) {
+				processingHeapshots.Enqueue (tcs);
 			}
-			completionSource = new TaskCompletionSource<Heapshot> ();
-			if (client == null) {
-				client = new TcpClient ();
-				await client.ConnectAsync (IPAddress.Loopback, TcpPort);
-				writer = new StreamWriter (client.GetStream ());
+
+			TriggerHeapshot ();
+
+			return tcs;
+
+			void TriggerHeapshot ()
+			{
+				if (client == null) {
+					client = new TcpClient ();
+					client.Connect (IPAddress.Loopback, TcpPort);
+					writer = new StreamWriter (client.GetStream ());
+				}
+				writer.Write ("heapshot\n");
+				writer.Flush ();
 			}
-			await writer.WriteAsync ("heapshot\n");
-			await writer.FlushAsync ();
-			var result = await completionSource.Task;
-			completionSource = null;
-			return result;
+		}
+
+		public Task<Heapshot> TakeHeapshot ()
+		{
+			var tcs = QueueHeapshot ();
+
+			return tcs.Task;
 		}
 
 		public string GetMonoArguments ()
@@ -240,56 +260,6 @@ namespace MonoDevelop.StressTest
 				default:
 					throw new NotImplementedException (Options.Type.ToString ());
 			}
-		}
-
-		Heapshot lastHeapshot;
-		public async Task<Heapshot> TakeHeapshotAndMakeReport ()
-		{
-			var newHeapshot = await TakeHeapshot ();
-
-			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsTotal)) {
-				Console.WriteLine ($"Total objects per type({newHeapshot.Types.Count}):");
-				foreach (var heapTypeInfo in newHeapshot.Types.Values.OrderByDescending (p => p.Objects.Count)) {
-					var name = heapTypeInfo.TypeInfo.Name;
-					if (ShouldReportItem(name))
-						Console.WriteLine ($"{name}:{heapTypeInfo.Objects.Count}");
-				}
-			}
-
-			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsDiff)) {
-				Heapshot oldHeapshot = lastHeapshot;
-				lastHeapshot = newHeapshot;
-
-				if (oldHeapshot == null) {
-					Console.WriteLine ("No objects diff report on 1st Heapshot.");
-					return newHeapshot;
-				}
-
-				var diffCounter = new List<Tuple<string, int>> ();
-				foreach (var kvp in newHeapshot.Types)//ClassInfos is not Heapshot specific, all heapshot has same
-				{
-					var typeId = kvp.Key;
-					var name = kvp.Value.TypeInfo.Name;
-
-					int oldCount = oldHeapshot.GetObjectCount (typeId);
-					int newCount = newHeapshot.GetObjectCount (typeId);
-
-					if (newCount - oldCount != 0)
-						diffCounter.Add (Tuple.Create (name, newCount - oldCount));
-				}
-
-				Console.WriteLine ($"Heapshot diff has {diffCounter.Count} entries:");
-				foreach (var diff in diffCounter.OrderByDescending (d => d.Item2)) {
-					var name = diff.Item1;
-					if (ShouldReportItem (name)) {
-						Console.WriteLine ($"{name}:{diff.Item2}");
-					}
-				}
-			}
-
-			return newHeapshot;
-
-			bool ShouldReportItem (string name) => Options.PrintReportObjectNames.Count == 0 || Options.PrintReportObjectNames.Contains (name);
 		}
 	}
 }

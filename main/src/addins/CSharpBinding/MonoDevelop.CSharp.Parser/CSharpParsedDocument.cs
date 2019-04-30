@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -108,7 +109,7 @@ namespace MonoDevelop.CSharp.Parser
 			async Task<SyntaxTree> GetParsedSyntaxTreeAsync (CancellationToken token)
 			{
 				if (ParsedUnit == null && DocumentId != null) {
-					var document = TypeSystemService.GetCodeAnalysisDocument (DocumentId, token);
+					var document = IdeServices.TypeSystemService.GetCodeAnalysisDocument (DocumentId, token);
 					ParsedUnit = await document.GetSyntaxTreeAsync (token);
 				}
 				return ParsedUnit;
@@ -353,7 +354,7 @@ namespace MonoDevelop.CSharp.Parser
 				return emptyErrors;
 
 			// FIXME: remove this fallback, error squiggles should always be handled via the source analysis mechanism
-			var document = TypeSystemService.GetCodeAnalysisDocument (DocumentId, cancellationToken);
+			var document = IdeServices.TypeSystemService.GetCodeAnalysisDocument (DocumentId, cancellationToken);
 			var model = await document.GetSemanticModelAsync (cancellationToken);
 
 			bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);

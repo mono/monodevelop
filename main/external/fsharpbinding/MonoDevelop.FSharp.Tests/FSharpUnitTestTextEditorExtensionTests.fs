@@ -7,9 +7,16 @@ open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.UnitTesting
 open NUnit.Framework
 open nunitSourceCodeLocationFinder
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 module ``Source code location finder`` =
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
+
     let findTest (source: string) fixtureNamespace fixtureTypeName testName =
         let offset = source.IndexOf("$")
         let source = source.Replace("$", "")

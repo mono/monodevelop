@@ -33,64 +33,14 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using NUnit.Framework;
+using UnitTests;
+using MonoDevelop.Ide.Fonts;
 
 namespace Mono.TextEditor.Tests
 {
-	class TextEditorTestBase
+	[RequireService (typeof(FontService))]
+	class TextEditorTestBase: TestBase
 	{
-		static bool firstRun = true;
-		static string rootDir;
-
-		public static string TestsRootDir {
-			get {
-				if (rootDir == null) {
-					rootDir = Path.GetDirectoryName (typeof (TextEditorTestBase).Assembly.Location);
-					rootDir = Path.Combine (Path.Combine (rootDir, ".."), "..");
-					rootDir = Path.GetFullPath (Path.Combine (rootDir, "tests"));
-				}
-				return rootDir;
-			}
-		}
-
-		[TestFixtureSetUp]
-		public virtual void Setup ()
-		{
-			if (firstRun) {
-				string rootDir = Path.Combine (TestsRootDir, "config");
-				try {
-					firstRun = false;
-					InternalSetup (rootDir);
-				} catch (Exception) {
-					// if we encounter an error, try to re create the configuration directory
-					// (This takes much time, therfore it's only done when initialization fails)
-					try {
-						if (Directory.Exists (rootDir))
-							Directory.Delete (rootDir, true);
-						InternalSetup (rootDir);
-					} catch (Exception) {
-					}
-				}
-			}
-		}
-
-		protected virtual void InternalSetup (string rootDir)
-		{
-			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
-			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
-			Runtime.Initialize (true);
-			Gtk.Application.Init ();
-			DesktopService.Initialize ();
-			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
-				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
-		}
-
-		[TestFixtureTearDown]
-		public virtual void TearDown ()
-		{
-		}
-
-
-
 		public static TextEditorData Create (string content, ITextEditorOptions options = null, string mimeType = null)
 		{
 			var data = new TextEditorData ();

@@ -51,6 +51,11 @@
     </ProjectReference>
     <!-- FIXME we need a canonical owner for copying nunit into build\tests  -->
     <IncludeCopyLocal Include="nunit.framework.dll" />
+    <ProjectReference Include="..\..\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

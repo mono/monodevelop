@@ -357,7 +357,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Project, doc.Name, false);
+			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Owner as SolutionFolderItem, doc.Name, false);
 			doc.GetContent<ITextView> ().TextBuffer.Insert (0, header + "\n");
 		}
 		
@@ -422,7 +422,7 @@ namespace MonoDevelop.Ide.Commands
 #if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			// HACK: GdkQuartzView always responds to "selectAll:" without handling it
-			info.Enabled |= macfocus is AppKit.NSText || (macfocus.Class.Name != "GdkQuartzView" && macfocus?.RespondsToSelector (selectAllSelector) == true);
+			info.Enabled |= macfocus is AppKit.NSText || (macfocus?.Class?.Name != "GdkQuartzView" && macfocus?.RespondsToSelector (selectAllSelector) == true);
 #endif
 
 #if WIN32

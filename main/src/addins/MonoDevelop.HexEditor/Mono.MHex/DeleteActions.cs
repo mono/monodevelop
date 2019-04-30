@@ -39,7 +39,7 @@ namespace Mono.MHex
 			}
 			if (data.Caret.Offset == 0)
 				return;
-			data.Remove (data.Caret.Offset - 1, 1);
+			data.ByteBuffer.Remove (data.Caret.Offset - 1, 1);
 			data.Caret.Offset--;
 		}
 		
@@ -51,7 +51,7 @@ namespace Mono.MHex
 			}
 			if (data.Caret.Offset >= data.Length)
 				return;
-			data.Remove (data.Caret.Offset, 1);
+			data.ByteBuffer.Remove (data.Caret.Offset, 1);
 			data.UpdateLine (data.Caret.Line);
 		}
 	}

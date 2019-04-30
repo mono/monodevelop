@@ -1,4 +1,4 @@
-//
+﻿//
 // CSharpFindReferencesProvider.cs
 //
 // Author:
@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			LookupResult result = LookupResult.Failure;
 
 			if (hintProject != null) {
-				codeAnalysisHintProject = TypeSystemService.GetCodeAnalysisProject (hintProject);
+				codeAnalysisHintProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (hintProject);
 				if (codeAnalysisHintProject != null) {
 					var curResult = await TryLookupSymbolInProject (codeAnalysisHintProject, documentationCommentId, token);
 					if (curResult.Success) {
@@ -129,13 +129,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			if (result.Success && result.Symbol.IsDefinedInSource ())
 				return result;
-			foreach (var ws in TypeSystemService.AllWorkspaces) {
+			foreach (var ws in IdeApp.TypeSystemService.AllWorkspaces) {
 				foreach (var prj in ws.CurrentSolution.Projects) {
 					if (prj == codeAnalysisHintProject)
 						continue;
 					var curResult = await TryLookupSymbolInProject (prj, documentationCommentId, token);
 					if (curResult.Success) {
-						curResult.MonoDevelopProject = TypeSystemService.GetMonoProject (prj);
+						curResult.MonoDevelopProject = IdeApp.TypeSystemService.GetMonoProject (prj);
 						if (curResult.Symbol.IsDefinedInSource ())
 							return curResult;
 						result = curResult;
@@ -209,7 +209,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (lookup == null || !lookup.Success)
 					return;
 
-				var workspace = TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
+				var workspace = IdeApp.TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
 				if (workspace == null)
 					return;
 
@@ -233,7 +233,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				var lookup = await TryLookupSymbol (documentationCommentId, hintProject, monitor.CancellationToken);
 				if (!lookup.Success)
 					return;
-				var workspace = TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
+				var workspace = IdeApp.TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
 				if (workspace == null)
 					return;
 				if (lookup.Symbol.Kind == SymbolKind.Method) {

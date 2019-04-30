@@ -15,6 +15,7 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Debugger
 {
@@ -126,12 +127,12 @@ namespace MonoDevelop.Debugger
 			var textViewLine = GetTextViewLine (mouseUpLocation.Y);
 			if (!textViewLine.Extent.Contains (textViewHost.TextView.Caret.Position.BufferPosition))
 				textViewHost.TextView.Caret.MoveTo (textViewLine.Start);
-			var view = (ViewContent)textViewHost.TextView.Properties [typeof (ViewContent)];
-			var ctx = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
+			var controller = (DocumentController)textViewHost.TextView.Properties [typeof (DocumentController)];
+			var ctx = controller.ExtensionContext;
 			var cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, "/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			var pt = ((NSEvent)e.Event).LocationInWindow;
 			pt = textViewHost.TextView.VisualElement.ConvertPointFromView (pt, null);
-			IdeApp.CommandService.ShowContextMenu (textViewHost.TextView.VisualElement, (int)pt.X, (int)pt.Y, cset, view);
+			IdeApp.CommandService.ShowContextMenu (textViewHost.TextView.VisualElement, (int)pt.X, (int)pt.Y, cset, controller);
 		}
 
 		public override void PostprocessMouseLeftButtonUp (MouseEvent e)
@@ -261,7 +262,8 @@ namespace MonoDevelop.Debugger
 
 			// if the view does not have any focus, grab it
 			if (!textViewHost.TextView.HasAggregateFocus) {
-				textViewHost.TextView.VisualElement.BecomeFirstResponder ();
+				var viewToFocus = textViewHost.TextView.VisualElement;
+				viewToFocus.Window.MakeFirstResponder (viewToFocus);
 			}
 
 			// Position the drag/drop caret and ensure it's visible.

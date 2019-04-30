@@ -37,7 +37,8 @@ namespace MonoDevelop.AspNetCore
 	static class AspNetCoreCertificateManager
 	{
 		public static bool IsDevelopmentCertificateTrusted { get; private set; }
-
+		static readonly DotNetCoreVersion MinimumCoreRuntime = DotNetCoreVersion.Parse ("2.1");
+		static readonly DotNetCoreVersion MinimumCoreSDK = DotNetCoreVersion.Parse ("2.1.300");
 		/// <summary>
 		/// Only supported projects should be checked. If the development certificate
 		/// was found to be trusted then do not check again for the current IDE session.
@@ -52,8 +53,8 @@ namespace MonoDevelop.AspNetCore
 		}
 
 		/// <summary>
-		/// Only .NET Core 2.1 projects are supported.
-		/// Also need .NET Core SDK 2.1 to be installed.
+		/// Only .NET Core 2.1 projects and higher are supported.
+		/// Also need .NET Core SDK 2.1 or higher to be installed.
 		/// Also check if the project is using https.
 		/// </summary>
 		public static bool IsProjectSupported (DotNetProject project, SolutionItemRunConfiguration runConfiguration)
@@ -63,8 +64,8 @@ namespace MonoDevelop.AspNetCore
 				return false;
 			}
 
-			return project.TargetFramework.IsNetCoreApp ("2.1") &&
-				IsNetCoreSdk21Installed () &&
+			return project.TargetFramework.IsNetCoreAppOrHigher (MinimumCoreRuntime) &&
+				IsNetCoreSdk21OrHigherInstalled () &&
 				UsingHttps (runConfiguration);
 		}
 
@@ -74,21 +75,15 @@ namespace MonoDevelop.AspNetCore
 			return aspNetCoreRunConfiguration?.UsingHttps () == true;
 		}
 
-		static bool IsNetCoreSdk21Installed ()
-		{
-			return DotNetCoreSdk.Versions.Any (IsNetCoreSdk21);
-		}
+		static bool IsNetCoreSdk21OrHigherInstalled () => DotNetCoreSdk.Versions.Any (IsNetCoreSdk21OrHigher);
 
 		/// <summary>
-		/// This checks for .NET Core SDK 2.1 to be installed. Note that the
-		/// .NET Core SDK versions is confusing. Here we want the .NET Core 2.1
+		/// This checks for .NET Core SDK 2.1 or higher to be installed. Note that the
+		/// .NET Core SDK versions is confusing. Here we want at least the .NET Core 2.1
 		/// SDK that supports .NET Core App 2.1. Not the .NET Core 2.1 SDK that
 		/// supports .NET Core App 2.0 only.
 		/// </summary>
-		static bool IsNetCoreSdk21 (DotNetCoreVersion version)
-		{
-			return version.Major == 2 && version.Minor == 1 && version.Patch >= 300;
-		}
+		static bool IsNetCoreSdk21OrHigher (DotNetCoreVersion version) => version >= MinimumCoreSDK;
 
 		public static async Task TrustDevelopmentCertificate (ProgressMonitor monitor)
 		{

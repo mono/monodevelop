@@ -1,4 +1,4 @@
-﻿//
+//
 // TypeSystemServiceTests.cs
 //
 // Author:
@@ -26,6 +26,7 @@
 
 using System;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnitTests;
 using Mono.Addins;
@@ -36,14 +37,18 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.IncrementalCaches;
+using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using Microsoft.CodeAnalysis.SolutionSize;
 using System.IO;
 using System.Collections.Immutable;
+using System.Text;
 
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	class TypeSystemServiceTests : IdeTestBase
 	{
 		class TrackTestProject : DotNetProject
@@ -75,18 +80,18 @@ namespace MonoDevelop.Ide
 		[Test]
 		public void TestOuptutTracking_ProjectType ()
 		{
-			TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { ProjectType = "TestProjectType" });
+			IdeApp.TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { ProjectType = "TestProjectType" });
 
-			Assert.IsFalse (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "Bar")));
-			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "TestProjectType")));
+			Assert.IsFalse (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "Bar")));
+			Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "TestProjectType")));
 		}
 
 		[Test]
 		public void TestOuptutTracking_LanguageName ()
 		{
-			TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { LanguageName = "IL" });
+			IdeApp.TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { LanguageName = "IL" });
 
-			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("IL", "Bar")));
+			Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("IL", "Bar")));
 		}
 
 		[Test]
@@ -94,8 +99,17 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var csharpApp = sol.Items.FirstOrDefault (pr => pr.Name == "csappfslib") as DotNetProject;
 				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
-				Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+				Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+
+				using (var workspace = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					var projectId = workspace.GetProjectId (csharpApp);
+
+					var analysisProject = workspace.CurrentSolution.GetProject (projectId);
+					var refs = analysisProject.MetadataReferences.Select (r => new FilePath(r.Display).FileName);
+					Assert.That (refs, Contains.Item ("fslib.dll"));
+				}
 			}
 		}
 
@@ -106,8 +120,12 @@ namespace MonoDevelop.Ide
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
-				Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
+				try {
+					var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+					Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
 			}
 		}
 
@@ -118,58 +136,225 @@ namespace MonoDevelop.Ide
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
-				var storageLocation = System.IO.Path.Combine (
-					storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
-					"sqlite3",
-					"storage.ide");
+				try {
+					var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+					var storageLocation = System.IO.Path.Combine (
+						storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
+						"sqlite3",
+						"storage.ide");
 
-				if (System.IO.File.Exists (storageLocation))
-					System.IO.File.Delete (storageLocation);
-				
-				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+					if (System.IO.File.Exists (storageLocation))
+						System.IO.File.Delete (storageLocation);
 
-				// This will return the tracker, since it's a singleton.
-				var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+					var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.Instance.GetExportedValue<ISolutionSizeTracker> ();
 
-				// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
-				await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+					// This will return the tracker, since it's a singleton.
+					var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
 
-				foreach (var projectFile in sol.GetAllProjects ().SelectMany (x => x.Files.Where (file => file.BuildAction == BuildAction.Compile))) {
-					var projectId = ws.GetProjectId (projectFile.Project);
-					var docId = ws.GetDocumentId (projectId, projectFile.FilePath);
-					var doc = ws.GetDocument (docId);
-					if (!doc.SupportsSyntaxTree)
-						continue;
+					// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+					await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
 
-					await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
+					foreach (var projectFile in sol.GetAllProjects ().SelectMany (x => x.Files.Where (file => file.BuildAction == BuildAction.Compile))) {
+						var projectId = ws.GetProjectId (projectFile.Project);
+						var docId = ws.GetDocumentId (projectId, projectFile.FilePath);
+						var doc = ws.GetDocument (docId);
+						if (!doc.SupportsSyntaxTree)
+							continue;
+
+						await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
+					}
+
+					var fi = new System.IO.FileInfo (storageLocation);
+					Assert.That (fi.Length, Is.GreaterThan (0));
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
+			}
+		}
 
-				var fi = new System.IO.FileInfo (storageLocation);
-				Assert.That (fi.Length, Is.GreaterThan (0));
+		[Test]
+		public async Task TestWorkspacePersistentStorageImplementation ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var streamName1 = "PersistentService_Solution_WriteReadDifferentInstances1";
+			var streamName2 = "PersistentService_Solution_WriteReadDifferentInstances2";
+
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var persistentStorageService = ws.Services.GetService<IPersistentStorageService> ();
+					Assert.That (persistentStorageService, Is.TypeOf (typeof (Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService)));
+
+					if (!(persistentStorageService is Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService sqlitePersistentStorageService))
+						return;
+
+					var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.Instance.GetExportedValue<ISolutionSizeTracker> ();
+					// This will return the tracker, since it's a singleton.
+					var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+
+					// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+					await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+
+					// Due to the nature of roslyn returning a new wrapper every time we request the storage, do a reflection check.
+					const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+					var fieldInfo = sqlitePersistentStorageService.GetType ().BaseType.GetField ("_currentPersistentStorage", flags);
+
+					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
+						Assert.That (persistentStorage, Is.Not.TypeOf (typeof (NoOpPersistentStorage)));
+
+						Assert.True (await persistentStorage.WriteStreamAsync (streamName1, EncodeString ("MyString")));
+						Assert.True (await persistentStorage.WriteStreamAsync (streamName2, EncodeString ("MyString2")));
+					}
+
+					var initialFieldValue = fieldInfo.GetValue (sqlitePersistentStorageService);
+
+					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
+						Assert.That (persistentStorage, Is.Not.TypeOf (typeof (NoOpPersistentStorage)));
+					}
+
+					var secondFieldValue = fieldInfo.GetValue (sqlitePersistentStorageService);
+
+					Assert.AreSame (initialFieldValue, secondFieldValue);
+
+					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
+						Assert.AreEqual ("MyString", ReadStringToEnd (await persistentStorage.ReadStreamAsync (streamName1)));
+						Assert.AreEqual ("MyString2", ReadStringToEnd (await persistentStorage.ReadStreamAsync (streamName2)));
+					}
+
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+
+			Stream EncodeString (string text)
+			{
+				var bytes = Encoding.UTF8.GetBytes (text);
+				var stream = new MemoryStream (bytes);
+				return stream;
+			}
+
+			string ReadStringToEnd (Stream stream)
+			{
+				using (stream) {
+					var bytes = new byte [stream.Length];
+					int count = 0;
+					while (count < stream.Length) {
+						count = stream.Read (bytes, count, (int)stream.Length - count);
+					}
+
+					return Encoding.UTF8.GetString (bytes);
+				}
+			}
+		}
+
+		[Test]
+		public async Task TestStorageDataIsNotRecomputed ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			var checkSum1 = await RunTest (usedCache: false);
+			var checkSum2 = await RunTest (usedCache: true);
+
+			Assert.AreEqual (checkSum1, checkSum2);
+
+			async Task<Microsoft.CodeAnalysis.Checksum> RunTest (bool usedCache)
+			{
+				var initial = Logger.GetLogger ();
+
+				using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					try {
+						var persistentStorageService = ws.Services.GetService<IPersistentStorageService> ();
+						Assert.That (persistentStorageService, Is.TypeOf (typeof (Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService)));
+
+						if (!(persistentStorageService is Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService sqlitePersistentStorageService))
+							return null;
+
+						var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.Instance.GetExportedValue<ISolutionSizeTracker> ();
+						// This will return the tracker, since it's a singleton.
+						var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+
+						// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+						await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+
+						var storageLogger = new StorageCheckingLogger ();
+						var aggregateLogger = AggregateLogger.Create (initial, storageLogger);
+						Logger.SetLogger (aggregateLogger);
+
+						var provider = new SymbolTreeInfoIncrementalAnalyzerProvider ();
+						var cacheService = (Microsoft.CodeAnalysis.FindSymbols.SymbolTree.ISymbolTreeInfoCacheService)provider.CreateService (ws.Services);
+
+						var incrementalAnalyzer = provider.CreateIncrementalAnalyzer (ws);
+
+						var project = sol.GetAllProjects ().Single ();
+						var roslynProject = IdeServices.TypeSystemService.GetProject (project);
+
+						await incrementalAnalyzer.AnalyzeProjectAsync (roslynProject, default, default, CancellationToken.None);
+
+						Assert.That (storageLogger.QueriedCount, Is.GreaterThan (0));
+						if (usedCache) {
+							Assert.AreEqual (storageLogger.QueriedCount, storageLogger.UsedCacheCount);
+						} else
+							Assert.AreEqual (storageLogger.QueriedCount, storageLogger.CreatedCount);
+
+						Assert.IsNotNull (await cacheService.TryGetSourceSymbolTreeInfoAsync (roslynProject, CancellationToken.None));
+
+						return await Microsoft.CodeAnalysis.FindSymbols.SymbolTreeInfo.GetSourceSymbolsChecksumAsync (roslynProject, CancellationToken.None);
+					} finally {
+						Logger.SetLogger (initial);
+						TypeSystemServiceTestExtensions.UnloadSolution (sol);
+					}
+				}
+			}
+		}
+
+		class StorageCheckingLogger : ILogger
+		{
+			public int QueriedCount { get; private set; }
+			public int CreatedCount { get; private set; }
+			public int UsedCacheCount => QueriedCount - CreatedCount;
+
+			public bool IsEnabled (FunctionId functionId) => true;
+
+			public void Log (FunctionId functionId, LogMessage logMessage)
+			{
+				// nothing
+			}
+
+			public void LogBlockEnd (FunctionId functionId, LogMessage logMessage, int uniquePairId, int delta, CancellationToken cancellationToken)
+			{
+				// nothing
+			}
+
+			public void LogBlockStart (FunctionId functionId, LogMessage logMessage, int uniquePairId, CancellationToken cancellationToken)
+			{
+				if (functionId == FunctionId.SymbolTreeInfo_TryLoadOrCreate)
+					QueriedCount++;
+				else if (functionId == FunctionId.SymbolTreeInfo_Create)
+					CreatedCount++;
 			}
 		}
 
 		[Test]
 		public async Task TestWorkspaceImmediatelyAvailable ()
 		{
-			//Initialize IdeApp so IdeApp.Workspace is not null
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
+			await IdeServices.Workspace.Close (false, true, true);
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			var tcs = new TaskCompletionSource<bool> ();
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				var workspace = TypeSystemService.GetWorkspace (e.Solution);
+			IdeServices.Workspace.SolutionLoaded += (s, e) => {
+				var workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
 				Assert.IsNotNull (workspace);
-				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
+				Assert.AreNotSame (workspace, IdeApp.TypeSystemService.emptyWorkspace);
 				workspace.Dispose ();
 				tcs.SetResult (true);
 			};
 			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
-				await tcs.Task;
+				if (!await IdeServices.Workspace.OpenWorkspaceItem (solFile))
+					Assert.Fail ("Solution load failed");
+				if (await Task.WhenAny (tcs.Task, Task.Delay (10000)) != tcs.Task)
+					Assert.Fail ("Solution did not load");
 			} finally {
-				await IdeApp.Workspace.Close (false);
+				await IdeServices.Workspace.Close (false);
 			}
 		}
 
@@ -178,16 +363,15 @@ namespace MonoDevelop.Ide
 		{
 			// Fix for VSTS 603762 - LoadProject is called twice on solution load due to configuration change.
 
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-
 			MonoDevelopWorkspace workspace;
 			bool reloaded = false;
 			bool solutionLoaded = false;
 			bool workspaceLoaded = false;
 
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				workspace = TypeSystemService.GetWorkspace (e.Solution);
+			await IdeServices.Workspace.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
+
+			IdeServices.Workspace.SolutionLoaded += (s, e) => {
+				workspace = IdeServices.TypeSystemService.GetWorkspace (e.Solution);
 				workspace.WorkspaceChanged += (sender, ea) => {
 					// If SolutionReloaded event is raised while opening the solution, we are doing something wrong
 					if (ea.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.SolutionReloaded)
@@ -206,17 +390,21 @@ namespace MonoDevelop.Ide
 			File.WriteAllText (Path.Combine (prefsPath, "UserPrefs.xml"), "<Properties><MonoDevelop.Ide.Workspace ActiveConfiguration='Release' /></Properties>");
 
 			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await IdeServices.Workspace.OpenWorkspaceItem (solFile);
 
 				// Check that the user prefs file has been loaded
-				Assert.AreEqual ("Release", IdeApp.Workspace.ActiveConfiguration.ToString ());
+				Assert.AreEqual ("Release", IdeServices.Workspace.ActiveConfiguration.ToString ());
 
 				// Wait for the roslyn workspace to be loaded
-				while (!workspaceLoaded)
+				int timeout = 100;
+				while (!workspaceLoaded && --timeout > 0)
 					await Task.Delay (100);
 
+				if (timeout <= 0)
+						Assert.Fail ("Workspace did not load");
+
 			} finally {
-				await IdeApp.Workspace.Close (false);
+				await IdeServices.Workspace.Close (false);
 			}
 
 			Assert.IsTrue (solutionLoaded);
@@ -278,7 +466,7 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			var parsers = TypeSystemService.Parsers;
+			var parsers = IdeApp.TypeSystemService.Parsers;
 			try {
 				var projectionParser = new TypeSystemParserNode ();
 				projectionParser.BuildActions = new [] { "Compile" };
@@ -290,34 +478,36 @@ namespace MonoDevelop.Ide
 
 				var newParsers = new List<TypeSystemParserNode> ();
 				newParsers.Add (projectionParser);
-				TypeSystemService.Parsers = newParsers;
+				IdeApp.TypeSystemService.Parsers = newParsers;
 
-				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
-					using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-
+				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					try {
 						var source1 = new CancellationTokenSource ();
 						var source2 = new CancellationTokenSource ();
 
 						var options = new ParseOptions {
 							FileName = "first.xaml.cs"
 						};
-						var task1 = TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
+						var task1 = IdeApp.TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
 						source1.Cancel ();
 
 						options = new ParseOptions {
 							FileName = "second.xaml.cs"
 						};
-						var task2 = TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
+						var task2 = IdeApp.TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
 
 						var result1 = await task1;
 						var result2 = await task2;
 
 						Assert.IsNotNull (result2);
 						Assert.IsNull (result1);
+					} finally {
+						TypeSystemServiceTestExtensions.UnloadSolution (sol);
 					}
 				}
 			} finally {
-				TypeSystemService.Parsers = parsers;
+				IdeApp.TypeSystemService.Parsers = parsers;
 			}
 		}
 

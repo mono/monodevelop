@@ -54,7 +54,7 @@ namespace MonoDevelop.DesignerSupport
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var projectFile = doc.Project.GetProjectFile (doc.FileName);
+			var projectFile = ((Project)doc.Owner).GetProjectFile (doc.FileName);
 			var files = GetFileGroup (projectFile).ToList ();
 			for (int i = 0; i < files.Count; i++) {
 				if (projectFile.Equals (files[i]))
@@ -66,10 +66,10 @@ namespace MonoDevelop.DesignerSupport
 		{
 			info.Enabled = info.Visible = false;
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.Project == null)
+			if (doc == null || doc.Owner == null)
 				return;
 			
-			var projectFile = doc.Project.GetProjectFile (doc.FileName);
+			var projectFile = (doc.Owner as Project)?.GetProjectFile (doc.FileName);
 			info.Enabled = info.Visible = projectFile != null && GetFileGroup (projectFile).Count () > 1;
 		}
 	}

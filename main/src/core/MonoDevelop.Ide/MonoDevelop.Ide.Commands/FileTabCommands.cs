@@ -27,15 +27,17 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using Gtk;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
-using MonoDevelop.Core;
-using System.Linq;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -46,14 +48,17 @@ namespace MonoDevelop.Ide.Commands
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
+		CloseAllToTheRight
 	}
-	
+
 	class CloseAllHandler : CommandHandler
 	{
-		protected virtual ViewContent GetDocumentException ()
+		protected virtual Document GetDocumentException ()
 		{
 			return null;
 		}
+
+		protected virtual bool StartAfterException => false;
 
 		protected override void Run ()
 		{
@@ -64,35 +69,97 @@ namespace MonoDevelop.Ide.Commands
 			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
 			var except = GetDocumentException ();
 
-			var docs = IdeApp.Workbench.Documents
-				.Where (doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && (except == null || doc.Window.ViewContent != except))
-				.ToArray ();
+			var docs = new List<Document> ();
+			var dirtyDialogShown = false;
+			var startRemoving = except == null || !StartAfterException;
 
-			var dirtyDialogShown = docs.Count (doc => doc.IsDirty) > 1;
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
+					if (except != null && doc == except) {
+						startRemoving = true;
+						continue;
+					}
+
+					if (startRemoving) {
+						docs.Add (doc);
+						dirtyDialogShown |= doc.IsDirty;
+					}
+				}
+			}
+
 			if (dirtyDialogShown)
 				using (var dlg = new DirtyFilesDialog (docs, closeWorkspace: false, groupByProject: false)) {
 					dlg.Modal = true;
 					if (MessageService.ShowCustomDialog (dlg) != (int)Gtk.ResponseType.Ok)
 						return;
 				}
-			
+
 			foreach (Document doc in docs)
 				if (dirtyDialogShown)
-					doc.Window.CloseWindow (true);
+					doc.Close (true).Ignore ();
 				else
 					doc.Close ().Ignore();
 		}
 	}
-	
+
 	class CloseAllButThisHandler : CloseAllHandler
 	{
-		protected override ViewContent GetDocumentException ()
+		protected override Document GetDocumentException ()
 		{
-			var active = IdeApp.Workbench.ActiveDocument;
-			return active == null ? null : active.Window.ViewContent;
+			return IdeApp.Workbench.ActiveDocument;
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			var documents = IdeApp.Workbench.Documents;
+			var activeDoc = IdeApp.Workbench.ActiveDocument;
+
+			if (activeDoc == null) {
+				info.Enabled = false;
+				return;
+			}
+
+			var activeNotebook = ((SdiWorkspaceWindow)activeDoc.Window).TabControl;
+
+			// Disable if only document in tab strip
+			foreach (var doc in documents) { 
+				if (doc != activeDoc && ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
+					info.Enabled = true;
+					return;
+				}
+			}
+
+			info.Enabled = false;
 		}
 	}
-	
+
+	class CloseAllToTheRightHandler : CloseAllButThisHandler
+	{
+		protected override bool StartAfterException => true;
+
+		protected override void Update (CommandInfo info)
+		{
+			var documents = IdeApp.Workbench.Documents;
+			var activeDoc = IdeApp.Workbench.ActiveDocument;
+
+			if (activeDoc == null) {
+				info.Enabled = false;
+				return;
+			}
+
+			var activeNotebook = ((SdiWorkspaceWindow)activeDoc.Window).TabControl;
+
+			// Disable if right-most document in tab strip
+			for (int i = documents.Count - 1; i >= 0; i--) {
+				var doc = documents [i];
+				if (((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
+					info.Enabled = doc != activeDoc;
+					return;
+				}
+			}
+		}
+	}
+
 	class ToggleMaximizeHandler : CommandHandler
 	{
 		protected override void Run ()
@@ -100,7 +167,7 @@ namespace MonoDevelop.Ide.Commands
 			IdeApp.Workbench.ToggleMaximize ();
 		}
 	}
-	
+
 	class CopyPathNameHandler : CommandHandler
 	{
 		protected override void Run ()
@@ -122,12 +189,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.OpenLastClosedDocument ();
+			IdeServices.NavigationHistoryService.OpenLastClosedDocument ();
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.HasClosedDocuments;
+			info.Enabled = IdeServices.NavigationHistoryService.HasClosedDocuments;
 		}
 	}
 }

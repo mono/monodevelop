@@ -28,10 +28,17 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Projects.Policies;
 using NUnit.Framework;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
+	[RequireService (typeof (TextEditorService))]
+	[RequireService (typeof (TaskService))]
 	public class AbstractCodeFormatterTests : IdeTestBase
 	{
 		class TestAbstractCodeFormatter : AbstractCodeFormatter
@@ -45,6 +52,11 @@ namespace MonoDevelop.Ide.Editor
 			{
 				// nothing
 			}
+		}
+
+		protected override Task InternalSetup (string rootDir)
+		{
+			return base.InternalSetup (rootDir);
 		}
 
 		[Test]

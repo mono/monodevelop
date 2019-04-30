@@ -114,7 +114,7 @@ class FooBar
 
 			using (var testCase = await SetupTestCase (text, Math.Max (0, endPos))) {
 				var doc = testCase.Document;
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 
 				var ctx = new CodeCompletionContext ();
 

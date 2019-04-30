@@ -88,7 +88,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		Task<List<PackageDependencyInfo>> GetPackageDependenciesAsync (CancellationTokenSource tokenSource)
 		{
-			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
+			var configurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default : ConfigurationSelector.Default;
 			return Task.Run (async () => {
 				var dependencies = await Project.GetPackageDependencies (configurationSelector, tokenSource.Token)
 					.ConfigureAwait (false);

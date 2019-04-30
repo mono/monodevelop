@@ -1779,7 +1779,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public string GetCurrentBranch ()
 		{
-			return RunOperation (() => RootRepository.Head.FriendlyName);
+			return RunSafeOperation (() => RootRepository.Head.FriendlyName);
 		}
 
 		void SwitchBranchInternal (ProgressMonitor monitor, string branch)
@@ -2076,21 +2076,6 @@ namespace MonoDevelop.VersionControl.Git
 
 				File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 				LibGit2Sharp.Commands.Stage (RootRepository, ".gitignore");
-			});
-		}
-
-		public override bool GetFileIsText (FilePath path)
-		{
-			return RunOperation (path, repo => {
-				Commit c = GetHeadCommit (repo);
-				if (c == null)
-					return base.GetFileIsText (path);
-
-				var blob = GetBlob (c, path, repo);
-				if (blob == null)
-					return base.GetFileIsText (path);
-
-				return !blob.IsBinary;
 			});
 		}
 	}

@@ -140,11 +140,9 @@ namespace Mono.MHex
 				Repaint ();
 			};
 			HexEditorData.SelectionChanged += HexEditorDataSelectionChanged;
-			HexEditorData.Replaced += delegate(object sender, ReplaceEventArgs e) {
-				if (e.Count > 0) {
-					PurgeLayoutCaches ();
-					Repaint ();
-				}
+			HexEditorData.Changed += delegate {
+				PurgeLayoutCaches ();
+				Repaint ();
 			};
 			style = new HexEditorStyle ();
 			

@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {

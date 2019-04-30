@@ -1,4 +1,4 @@
-//
+﻿//
 // UserTasksView.cs
 //
 // Author:
@@ -143,9 +143,9 @@ namespace MonoDevelop.Ide.Tasks
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
 			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");
 
-			TaskService.UserTasks.TasksChanged += UserTasksChanged;
-			TaskService.UserTasks.TasksAdded += UserTasksChanged;
-			TaskService.UserTasks.TasksRemoved += UserTasksChanged;
+			IdeServices.TaskService.UserTasks.TasksChanged += UserTasksChanged;
+			IdeServices.TaskService.UserTasks.TasksAdded += UserTasksChanged;
+			IdeServices.TaskService.UserTasks.TasksRemoved += UserTasksChanged;
 			
 			if (IdeApp.Workspace.IsOpen)
 				solutionLoaded = true;
@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Tasks
 				view.ScrollToPoint (0, 0);
 
 			store.Clear ();
-			foreach (TaskListEntry task in TaskService.UserTasks) {
+			foreach (TaskListEntry task in IdeServices.TaskService.UserTasks) {
 				var text = priorities [GetEnumIndex (task.Priority)];
 				store.AppendValues (text, task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
 			}
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Tasks
 			TaskListEntry task = new TaskListEntry ();
 			task.WorkspaceObject = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			updating = true;
-			TaskService.UserTasks.Add (task);
+			IdeServices.TaskService.UserTasks.Add (task);
 			updating = false;
 			var text = priorities [GetEnumIndex (task.Priority)];
 			TreeIter iter = store.AppendValues (text, task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Tasks
 			TreePath sortedPath = sortModel.ConvertChildPathToPath (store.GetPath (iter));
 			view.ScrollToCell (sortedPath, view.Columns[(int)Columns.Description], true, 0, 0);
 			view.SetCursorOnCell (sortedPath, view.Columns[(int)Columns.Description], cellRendDesc, true);
-			TaskService.SaveUserTasks (task.WorkspaceObject);
+			IdeServices.TaskService.SaveUserTasks (task.WorkspaceObject);
 		}
 
 		void CopyUserTaskClicked (object o, EventArgs args)
@@ -263,10 +263,10 @@ namespace MonoDevelop.Ide.Tasks
 				{
 					TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.UserTask);
 					updating = true;
-					TaskService.UserTasks.Remove (task);
+					IdeServices.TaskService.UserTasks.Remove (task);
 					updating = false;
 					store.Remove (ref iter);
-					TaskService.SaveUserTasks (task.WorkspaceObject);
+					IdeServices.TaskService.SaveUserTasks (task.WorkspaceObject);
 				}
 			}
 		}
@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 				store.SetValue (iter, (int)Columns.Priority, priorities [args.Active]);
 				store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
-				TaskService.SaveUserTasks (task.WorkspaceObject);
+				IdeServices.TaskService.SaveUserTasks (task.WorkspaceObject);
 			}
 		}
 		
@@ -305,7 +305,7 @@ namespace MonoDevelop.Ide.Tasks
 				task.Completed = !val;
 				store.SetValue (iter, (int)Columns.Completed, !val);
 				store.SetValue (iter, (int)Columns.Bold, task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
-				TaskService.SaveUserTasks (task.WorkspaceObject);
+				IdeServices.TaskService.SaveUserTasks (task.WorkspaceObject);
 			}
 		}
 		
@@ -318,7 +318,7 @@ namespace MonoDevelop.Ide.Tasks
 				TaskListEntry task = (TaskListEntry) sortModel.GetValue (sortedIter, (int)Columns.UserTask);
 				task.Message = args.NewText;
 				store.SetValue (iter, (int)Columns.Description, args.NewText);
-				TaskService.SaveUserTasks (task.WorkspaceObject);
+				IdeServices.TaskService.SaveUserTasks (task.WorkspaceObject);
 			}
 		}
 		

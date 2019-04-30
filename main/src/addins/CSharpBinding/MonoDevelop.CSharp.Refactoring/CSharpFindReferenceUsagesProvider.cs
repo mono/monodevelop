@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				var currentProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (currentProject == null)
 					return;
-				var analysisProject = TypeSystemService.GetCodeAnalysisProject (currentProject);
+				var analysisProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (currentProject);
 				if (analysisProject == null)
 					return;
 

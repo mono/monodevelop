@@ -4,12 +4,6 @@
 		<Command id = "MonoDevelop.HexEditor.Commands.ShowHexEditor" _label = "Open with _hex editor" />
 	</Extension> -->
 
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding
-			id = "HexEditor"
-			insertafter ="AssemblyBrowser"
-			class = "MonoDevelop.HexEditor.HexEditorDisplayBinding" />
-	</Extension>
 	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "HexEditorNodeExtension" class = "MonoDevelop.HexEditor.HexEditorNodeExtension"/>

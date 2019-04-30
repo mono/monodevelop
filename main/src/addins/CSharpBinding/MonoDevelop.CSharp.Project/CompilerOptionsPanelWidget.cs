@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CompilerOptionsPanelWidget.cs
 // 
 // Author:
@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Project
 		void FillClasses ()
 		{
 			try {
-				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
+				var ctx = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
 				if (ctx == null)
 					// Project not found in parser database
 					return;

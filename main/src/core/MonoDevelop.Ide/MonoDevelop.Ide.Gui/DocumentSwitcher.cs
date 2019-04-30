@@ -690,15 +690,15 @@ namespace MonoDevelop.Ide
 			var documentCategory = new  DocumentList.Category (GettextCatalog.GetString ("Documents"));
 			foreach (var doc in documents) {
 				var item = new DocumentList.Item () {
-					Icon = GetIconForDocument (doc, IconSize.Menu),
-					Title = System.IO.Path.GetFileName (doc.Name),
+					Icon = doc.Icon.WithSize (IconSize.Menu),
+					Title = doc.Name,
 					ListTitle = doc.Window.Title,
-					Description = doc.Window.DocumentType,
+					Description = doc.DocumentControllerDescription?.Name ?? "",
 					Path = doc.Name,
 					Tag = doc
 				};
 				if (category == padCategory.Title) {
-					if (activeItem == null || doc.Window.ActiveViewContent.Control.HasFocus)
+					if (activeItem == null || doc == IdeApp.Workbench.ActiveDocument)
 						activeItem = item;
 				}
 				documentCategory.AddItem (item);
@@ -757,17 +757,6 @@ namespace MonoDevelop.Ide
 
 			dialogHasContent = true;
 		}
-		
-		Xwt.Drawing.Image GetIconForDocument (MonoDevelop.Ide.Gui.Document document, Gtk.IconSize iconSize)
-		{
-			if (!string.IsNullOrEmpty (document.Window.ViewContent.StockIconId))
-				return ImageService.GetIcon (document.Window.ViewContent.StockIconId, iconSize);
-			if (string.IsNullOrEmpty (document.FileName)) 
-				return ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.GenericFile, iconSize);
-			
-			return DesktopService.GetIconForFile (document.FileName, iconSize);
-		}
-		
 		
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{

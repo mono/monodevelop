@@ -1,4 +1,4 @@
-//
+﻿//
 // AssemblyBrowserWidget.cs
 //
 // Author:
@@ -55,6 +55,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Content;
 using System.IO;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -93,47 +94,12 @@ namespace MonoDevelop.AssemblyBrowser
 			isNotPublic = null;
 			if (referencedSegment == null)
 				return null;
+			if (referencedSegment?.Reference is IEntity entity) {
+				isNotPublic = !entity.IsPublic ();
+				return entity.GetIdString ();
+			}
 
 			return null;
-
-			// TODO fixme
-			/*
-			var td = referencedSegment.Reference as TypeDefinition;
-			if (td != null) {
-				isNotPublic = !td.IsPublic;
-				return new XmlDocIdGenerator ().GetXmlDocPath ((TypeDefinition)referencedSegment.Reference);
-			}
-			var md = referencedSegment.Reference as MethodDefinition;
-			if (md != null) {
-				isNotPublic = !md.IsPublic;
-				return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
-			}
-
-			var pd = referencedSegment.Reference as PropertyDefinition;
-			if (pd != null) {
-				isNotPublic = (pd.GetMethod == null || !pd.GetMethod.IsPublic) &&  
-					(pd.SetMethod == null || !pd.SetMethod.IsPublic);
-				return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
-			}
-
-			var fd = referencedSegment.Reference as FieldDefinition;
-			if (fd != null) {
-				isNotPublic = !fd.IsPublic;
-				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
-			}
-
-			var ed = referencedSegment.Reference as EventDefinition;
-			if (ed != null) {
-				return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
-			}
-
-			var tref = referencedSegment.Reference as MemberReference;
-			if (tref != null) {
-				return new XmlDocIdGenerator ().GetXmlDocPath (tref);
-			}
-
-			return referencedSegment.Reference.ToString ();
-			*/		
 		}
 
 
@@ -337,11 +303,13 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IMember)resultListStore.GetValue (selectedIter, 0);
-
+				var member = resultListStore.GetValue (selectedIter, 0) as IEntity;
+				if (member == null)
+					return;
 				var nav = SearchMember (member);
 				if (nav != null) {
 					notebook1.Page = 0;
+					searchentry1.Entry.Text = "";
 				}
 			}
 		}
@@ -370,10 +338,9 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.GrabFocus ();
 		}
 		
-		ITreeNavigator SearchMember (IMember member, bool expandNode = true)
+		ITreeNavigator SearchMember (IEntity entity, bool expandNode = true)
 		{
-			//return SearchMember (Mono.Cecil.Rocks.DocCommentId.GetDocCommentId (member), expandNode);
-			return SearchMember (member.ReflectionName, expandNode);
+			return SearchMember (entity.GetIdString (), expandNode);
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl, bool expandNode = true)
@@ -884,7 +851,7 @@ namespace MonoDevelop.AssemblyBrowser
 							assemblyBrowserView.Load (cu.FileName);
 						}
 						IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-						((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (link);
+						Open (link);
 					} else {
 						this.Open (link, loader);
 					}
@@ -1190,6 +1157,21 @@ namespace MonoDevelop.AssemblyBrowser
 					Application.Invoke ((o, args) => {
 						if (definitions.Count == 0)
 							return;
+						var fullName = result.Assembly.FullName;
+
+						// filter duplicate assemblies, can happen on opening the same assembly at different locations.
+						lock (assemblyLoadingLock) {
+							foreach (var d in definitions) {
+								if (!d.AssemblyTask.IsCompleted || d == result)
+									continue;
+								if (d.Assembly.FullName == fullName) {
+									definitions = definitions.Remove (result);
+									LoggingService.LogInfo ("AssemblyBrowser: Loaded duplicate assembly : " + fullName); // Write a log info in case that happens, shouldn't happen often.
+									return;
+								}
+							}
+						}
+
 						try {
 							ITreeBuilder builder;
 							if (definitions.Count + projects.Count == 1) {
@@ -1245,7 +1227,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!suspendNavigation) {
 				var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IEntity;
 				if (selectedEntity != null)
-					NavigationHistoryService.LogActiveDocument ();
+					IdeServices.NavigationHistoryService.LogActiveDocument ();
 			}
 			notebook1.Page = 0;
 			GenerateOutput ();

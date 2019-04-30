@@ -1,4 +1,4 @@
-
+﻿
 // 
 // ResultTooltipProvider.cs
 //  
@@ -45,6 +45,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using System.Reflection;
 using MonoDevelop.CodeActions;
 using System.Windows.Input;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -74,7 +75,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return null;
 			var sb = StringBuilderCache.Allocate ();
 			sb.Append ("<span font='");
-			sb.Append (FontService.SansFontName);
+			sb.Append (IdeServices.FontService.SansFontName);
 			sb.Append ("' size='small'>");
 			int minOffset = int.MaxValue;
 			int maxOffset = -1;
@@ -123,10 +124,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (root.Span.End < offset) {
 					LoggingService.LogError ($"Error in ResultTooltipProvider.GetItem offset {offset} not inside syntax root {root.Span.End} document length {editor.Length}.");
 				} else {
-					var codeFixService = Ide.Composition.CompositionManager.GetExportedValue<ICodeFixService> ();
+					var codeFixService = Ide.Composition.CompositionManager.Instance.GetExportedValue<ICodeFixService> ();
 					var span = new TextSpan (offset, 0);
 					var fixes = await codeFixService.GetFixesAsync (ad, span, true, token);
-					var codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.CodeRefactorings.ICodeRefactoringService> ();
+					var codeRefactoringService = Ide.Composition.CompositionManager.Instance.GetExportedValue<Microsoft.CodeAnalysis.CodeRefactorings.ICodeRefactoringService> ();
 					var refactorings = await codeRefactoringService.GetRefactoringsAsync (ad, span, token);
 					tag = new CodeActions.CodeActionContainer (fixes, refactorings) {
 						Span = new TextSpan (minOffset, Math.Max (0,  maxOffset - minOffset)),

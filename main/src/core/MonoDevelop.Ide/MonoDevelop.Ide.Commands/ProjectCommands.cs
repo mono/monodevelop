@@ -43,6 +43,7 @@ using CustomCommand = MonoDevelop.Projects.CustomCommand;
 using System.Linq;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -504,7 +505,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			if (IdeApp.Workspace.IsOpen && Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () > 1) {
+			var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
+
+			if (enabled.GetValueOrDefault () && IdeApp.Workspace.IsOpen && Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () > 1) {
 				foreach (var tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
 					var item = info.Add (tr.DisplayName, tr);
 					if (tr == IdeApp.Workspace.ActiveRuntime)

@@ -71,7 +71,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
-		IDiagnosticService diagService = Ide.Composition.CompositionManager.GetExportedValue<IDiagnosticService> ();
+		IDiagnosticService diagService = Ide.Composition.CompositionManager.Instance.GetExportedValue<IDiagnosticService> ();
 		
 		protected override void Initialize ()
 		{

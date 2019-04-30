@@ -86,7 +86,7 @@ namespace MonoDevelop.DotNetCore.Gui
 
 		static DotNetCoreSdkPaths GetSdkPaths (DotNetCorePath path)
 		{
-			var sdkPaths = new DotNetCoreSdkPaths (path.FileName);
+			var sdkPaths = new DotNetCoreSdkPaths (path.FileName, initializeSdkLocation: true);
 			sdkPaths.ResolveSDK ();
 			return sdkPaths;
 		}

@@ -65,6 +65,7 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpResultsEditorExtensionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\AutoFormatIntegrationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpDocumentOptionsProviderTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Debugging\DebuggerCompletionControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -155,6 +156,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.CSharpBinding.Debugging\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -31,12 +31,13 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Desktop;
 using System.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui
 {
 	public class FileViewer
 	{
-		IViewDisplayBinding binding;
+		DocumentControllerDescription binding;
 		DesktopApplication app;
 		
 		internal FileViewer (DesktopApplication app)
@@ -44,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 			this.app = app;
 		}
 		
-		internal FileViewer (IViewDisplayBinding binding)
+		internal FileViewer (DocumentControllerDescription binding)
 		{
 			this.binding = binding;
 		}
@@ -72,7 +73,7 @@ namespace MonoDevelop.Ide.Gui
 			if (fv == null)
 				return false;
 			if (binding != null)
-				return binding == fv.binding;
+				return binding.Equals (fv.binding);
 			else
 				return app.Equals (fv.app);
 		}

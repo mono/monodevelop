@@ -7,7 +7,7 @@
     <ProjectGuid>{443311BF-766D-4863-B5A1-AFAA7F41DBDA}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.Packaging</OutputPath>
-    <_BuildPackagingVersion>0.2.0</_BuildPackagingVersion>
+    <_BuildPackagingVersion>0.2.5-dev.8</_BuildPackagingVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

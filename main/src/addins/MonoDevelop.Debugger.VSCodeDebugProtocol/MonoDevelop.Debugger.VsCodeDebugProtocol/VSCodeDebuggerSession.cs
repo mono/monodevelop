@@ -104,20 +104,26 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent breakEvent)
 		{
-			if (breakEvent is Mono.Debugging.Client.Breakpoint) {
-				var breakEventInfo = new BreakEventInfo ();
-				breakpoints.Add ((Mono.Debugging.Client.Breakpoint)breakEvent, breakEventInfo);
-				UpdateBreakpoints ();
+			BreakEventInfo breakEventInfo;
+
+			if (breakpoints.TryGetValue (breakEvent, out breakEventInfo))
 				return breakEventInfo;
+
+			breakEventInfo = new BreakEventInfo ();
+
+			if (breakEvent is Mono.Debugging.Client.Breakpoint) {
+				breakpoints.Add (breakEvent, breakEventInfo);
+				UpdateBreakpoints ();
 			} else if (breakEvent is Catchpoint) {
-				var catchpoint = (Catchpoint)breakEvent;
-				var breakEventInfo = new BreakEventInfo ();
 				breakpoints.Add (breakEvent, breakEventInfo);
 				UpdateExceptions ();
-				return breakEventInfo;
+			} else {
+				throw new NotImplementedException (breakEvent.GetType ().FullName);
 			}
-			throw new NotImplementedException (breakEvent.GetType ().FullName);
+
+			return breakEventInfo;
 		}
+
 		bool currentExceptionState = false;
 		void UpdateExceptions ()
 		{
@@ -366,6 +372,22 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		List<string> pathsWithBreakpoints = new List<string> ();
 
+		static readonly Dictionary<HitCountMode, string> conditions = new Dictionary<HitCountMode, string> {
+			{ HitCountMode.EqualTo, "=" },
+			{ HitCountMode.GreaterThan, ">" },
+			{ HitCountMode.GreaterThanOrEqualTo, ">=" },
+			{ HitCountMode.LessThan, "<" },
+			{ HitCountMode.LessThanOrEqualTo, "<=" },
+			{ HitCountMode.MultipleOf, "%" }};
+
+		string GetHitCondition (Mono.Debugging.Client.Breakpoint breakpoint)
+		{
+			if (breakpoint.HitCountMode == HitCountMode.None)
+				return null;
+
+			return conditions [breakpoint.HitCountMode] + breakpoint.HitCount;
+		}
+
 		void UpdateBreakpoints ()
 		{
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled && !string.IsNullOrEmpty (b.FileName)).GroupBy (b => b.FileName).ToArray ();
@@ -396,8 +418,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						Breakpoints = sourceFile.Select (b => new SourceBreakpoint {
 							Line = b.OriginalLine,
 							Column = b.OriginalColumn,
-							Condition = b.ConditionExpression
-							//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
+							Condition = b.ConditionExpression,
+							HitCondition = GetHitCondition(b)
 						}).ToList ()
 					}, (obj) => {
 						Task.Run (() => {

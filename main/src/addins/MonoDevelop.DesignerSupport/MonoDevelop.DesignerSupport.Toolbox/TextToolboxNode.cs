@@ -90,9 +90,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public void InsertAtCaret (Document document)
 		{
-			if (document.ActiveView.GetContent<ITextView> () is ITextView view) {
+			if (document.GetContent<ITextView> (true) is ITextView view) {
 				view.TextBuffer.Insert (view.Caret.Position.BufferPosition.Position, text);
-			} else if (document.ActiveView.GetContent<Ide.Editor.TextEditor> () is Ide.Editor.TextEditor textEditor) {
+			} else if (document.GetContent<Ide.Editor.TextEditor> (true) is Ide.Editor.TextEditor textEditor) {
 				textEditor.InsertAtCaret (text);
 			}
 		}

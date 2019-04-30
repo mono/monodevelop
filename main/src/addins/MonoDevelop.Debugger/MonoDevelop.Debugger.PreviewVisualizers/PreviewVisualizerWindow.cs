@@ -72,7 +72,7 @@ namespace MonoDevelop.Debugger
 
 			var headerTitle = new Label ();
 			headerTitle.ModifyFg (StateType.Normal, Styles.PreviewVisualizerHeaderTextColor.ToGdkColor ());
-			var font = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
+			var font = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 			font.Weight = Pango.Weight.Bold;
 			headerTitle.ModifyFont (font);
 			headerTitle.Text = val.TypeName;

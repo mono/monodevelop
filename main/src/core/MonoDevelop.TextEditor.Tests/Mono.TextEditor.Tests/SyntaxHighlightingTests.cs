@@ -228,6 +228,7 @@ namespace Mono.TextEditor.Tests
 		/// VSTS Bug 665407: TypeScript/JavaScript TextMate syntax highlighting errors
 		/// </summary>
 		[Test]
+		[Ignore("Disable until typescript support can be enabled again (TOTEST)")]
 		public void TestVSTS665407 ()
 		{
 			TestOutput ("function foo(i: string) {}\nfunction foo() {}",

@@ -13,6 +13,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Text;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
@@ -289,14 +291,8 @@ namespace MonoDevelop.VersionControl.Views
 			Init ();
 		}
 
-		protected override void OnWorkbenchWindowChanged ()
+		void SetupToolbar (DocumentToolbar toolbar)
 		{
-			base.OnWorkbenchWindowChanged ();
-			if (WorkbenchWindow == null)
-				return;
-
-			var toolbar = WorkbenchWindow.GetToolbar (this);
-
 			buttonCommit.Clicked += new EventHandler (OnCommitClicked);
 			toolbar.Add (buttonCommit);
 
@@ -383,7 +379,7 @@ namespace MonoDevelop.VersionControl.Views
 			return ((IComparable)o1).CompareTo (o2);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			disposed = true;
 			if (colCommit != null) {
@@ -424,13 +420,13 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			localDiff.Clear ();
 			remoteDiff.Clear ();
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
-		public override Control Control {
-			get {
-				return widget;
-			}
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			SetupToolbar (view.GetToolbar ());
+			return widget;
 		}
 		object updateLock = new object ();
 
@@ -615,7 +611,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (n.IsDirectory)
 				fileIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
+				fileIcon = IdeServices.DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
 
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)

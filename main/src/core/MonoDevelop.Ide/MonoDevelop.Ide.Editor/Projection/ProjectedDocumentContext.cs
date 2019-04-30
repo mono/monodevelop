@@ -71,9 +71,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.originalContext = originalContext;
 
 			if (originalContext.Project != null) {
-				var originalProjectId = TypeSystemService.GetProjectId (originalContext.Project);
+				var originalProjectId = IdeApp.TypeSystemService.GetProjectId (originalContext.Project);
 				if (originalProjectId != null) {
-					var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
+					var originalProject = IdeApp.TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
 					if (originalProject != null) {
 						projectedDocument = originalProject.AddDocument (
 							projectedEditor.FileName,
@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 				RoslynDocument = projectedDocument,
 				OldParsedDocument = parsedDocument
 			}; 
-			var result = await TypeSystemService.ParseFile (options, projectedEditor.MimeType).ConfigureAwait (false);
+			var result = await IdeApp.TypeSystemService.ParseFile (options, projectedEditor.MimeType).ConfigureAwait (false);
 			await Runtime.RunInMainThread (delegate {
 				parsedDocument = result;
 				base.OnDocumentParsed (EventArgs.Empty);

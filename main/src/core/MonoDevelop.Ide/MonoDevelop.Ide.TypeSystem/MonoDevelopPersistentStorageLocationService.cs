@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			var sol = (MonoDevelop.Projects.Solution)args.Item;
-			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
+			var workspace = await IdeServices.TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
 			if (workspace.Id.Equals (primaryWorkspace)) {
 				DisconnectCurrentStorage ();
 			}
@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		void DisconnectCurrentStorage ()
 		{
 			lock (_gate) {
-				var workspace = TypeSystemService.GetWorkspace (primaryWorkspace);
+				var workspace = IdeServices.TypeSystemService.GetWorkspace (primaryWorkspace);
 				var solution = workspace.MonoDevelopSolution;
 				if (solution != null)
 					solution.Modified -= OnSolutionModified;

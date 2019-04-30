@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MainToolbar.cs
 //  
 // Author:
@@ -283,7 +283,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (evnt.Button == 1 && evnt.Window == GdkWindow) {
 				var window = (Gtk.Window)Toplevel;
-				if (!DesktopService.GetIsFullscreen (window)) {
+				if (!IdeServices.DesktopService.GetIsFullscreen (window)) {
 					window.BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
 					return true;
 				}

@@ -20,7 +20,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		{
 			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
 			if (service != null)
-				ConnectedServices.OpenServicesTab (this.Project, service.Id);
+				ConnectedServices.OpenServicesTab (this.Project, service.Id).Ignore ();
 		}
 
 		[CommandUpdateHandler (Commands.RemoveService)]

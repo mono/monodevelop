@@ -57,12 +57,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var project = sol.GetAllProjects ().Single ();
+				try {
+					var project = sol.GetAllProjects ().Single ();
 
-				foreach (var file in project.Files) {
-					Assert.IsNotNull (TypeSystemService.GetDocumentId (project, file.FilePath.ResolveLinks ()));
-					if (file.FilePath.FileName.EndsWith ("SymlinkedFile.cs", StringComparison.Ordinal))
-						Assert.IsNull (TypeSystemService.GetDocumentId (project, file.FilePath));
+					foreach (var file in project.Files) {
+						Assert.IsNotNull (IdeApp.TypeSystemService.GetDocumentId (project, file.FilePath.ResolveLinks ()));
+						if (file.FilePath.FileName.EndsWith ("SymlinkedFile.cs", StringComparison.Ordinal))
+							Assert.IsNull (IdeServices.TypeSystemService.GetDocumentId (project, file.FilePath));
+					}
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
 			}
 		}

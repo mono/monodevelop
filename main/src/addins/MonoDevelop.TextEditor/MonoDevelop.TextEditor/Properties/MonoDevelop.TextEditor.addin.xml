@@ -81,9 +81,9 @@
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesUpCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesDownCommandArgs" />
 
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Delete" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeSignatureHelpCommandArgs" />
@@ -92,8 +92,6 @@
 
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
-		
-		<Map id="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FormatDocumentCommandArgs" />
 	</Extension>
 
 	<!--

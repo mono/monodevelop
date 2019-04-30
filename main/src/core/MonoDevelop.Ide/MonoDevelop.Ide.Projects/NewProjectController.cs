@@ -338,7 +338,7 @@ namespace MonoDevelop.Ide.Projects
 				if (templatingService != null)
 					return templatingService;
 
-				return IdeApp.Services.TemplatingService;
+				return IdeServices.TemplatingService;
 			}
 			set { templatingService = value; }
 		}
@@ -674,6 +674,8 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
+			dialog.CloseDialog ();
+
 			if (ParentFolder != null)
 				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
 			else
@@ -712,8 +714,6 @@ namespace MonoDevelop.Ide.Projects
 				tcs.SetResult (true);
 			});
 			await tcs.Task;
-
-			dialog.CloseDialog ();
 		}
 
 		public WizardPage CurrentWizardPage {

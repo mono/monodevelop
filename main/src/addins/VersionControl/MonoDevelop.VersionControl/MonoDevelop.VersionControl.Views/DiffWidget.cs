@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {

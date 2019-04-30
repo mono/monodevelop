@@ -78,7 +78,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxItemToolboxLoader.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\UnknownToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TypeToolboxNode.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\WrapperDesignView.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ToolboxService.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\BindingService.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MemberExistsException.cs" />
@@ -144,6 +143,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DirectoryPathPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\IPropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FlagDescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

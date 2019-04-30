@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
@@ -34,10 +35,10 @@ namespace MonoDevelop.Ide.TypeSystem
 	public class MonoDevelopWorkspaceProjectDataMapTests : IdeTestBase
 	{
 		[Test]
-		public void TestSimpleCreation ()
+		public async Task TestSimpleCreation ()
 		{
 			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
 				var pid = map.GetId (project);
@@ -62,10 +63,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		[Test]
-		public void TestDataHandling ()
+		public async Task TestDataHandling ()
 		{
 			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
 				var pid = map.GetOrCreateId (project, null);
@@ -89,11 +90,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		[Test]
-		public void TestMigration ()
+		public async Task TestMigration ()
 		{
 			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
 			using (var project2 = Services.ProjectService.CreateDotNetProject ("C#"))
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
 				var pid = map.GetOrCreateId (project, null);

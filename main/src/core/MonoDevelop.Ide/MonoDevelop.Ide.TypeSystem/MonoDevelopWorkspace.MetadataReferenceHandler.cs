@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Result = new List<MonoDevelopMetadataReference> (),
 					Project = netProject,
 					Visited = new HashSet<string> (FilePath.PathComparer),
-					ConfigurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default,
+					ConfigurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default,
 					Token = token,
 				};
 
@@ -109,8 +109,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, false).ConfigureAwait (false);
 					foreach (var file in referencedAssemblies) {
-						if (file.IsProjectReference)
-							continue;
+						if (file.IsProjectReference) {
+							var referencedItem = file.GetReferencedItem (data.Project.ParentSolution);
+							if (!(referencedItem is MonoDevelop.Projects.DotNetProject referencedProject))
+								continue;
+
+							if (!IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
+								continue;
+						}
 
 						if (data.Token.IsCancellationRequested)
 							return false;
@@ -139,7 +145,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				List<MonoDevelop.Projects.AssemblyReference> references;
 				try {
-					var config = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
+					var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
 					references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting referenced projects.", e);
@@ -163,7 +169,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!addedProjects.Add (referencedProject))
 						continue;
 
-					if (TypeSystemService.IsOutputTrackedProject (referencedProject))
+					if (IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
 						continue;
 
 					var aliases = pr.EnumerateAliases ();

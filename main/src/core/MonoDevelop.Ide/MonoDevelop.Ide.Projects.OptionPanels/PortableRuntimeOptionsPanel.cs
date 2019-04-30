@@ -1,4 +1,4 @@
-//
+﻿//
 // PortableRuntimeOptionsPanel.cs
 //
 // Author: Jeffrey Stedfast <jeff@xamarin.com>
@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void HandleLink (string url)
 		{
-			DesktopService.ShowUrl (url);
+			IdeServices.DesktopService.ShowUrl (url);
 		}
 
 		void PickFramework (object sender, EventArgs e)

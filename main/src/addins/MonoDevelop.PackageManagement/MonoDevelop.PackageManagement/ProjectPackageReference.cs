@@ -28,10 +28,12 @@ using System;
 using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using NuGet.Common;
+using NuGet.Frameworks;
+using NuGet.LibraryModel;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
-using NuGet.Frameworks;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -151,6 +153,12 @@ namespace MonoDevelop.PackageManagement
 		public string Version {
 			get { return Metadata.GetValue ("Version"); }
 			set { Metadata.SetValue ("Version", value); }
+		}
+
+		internal void SetMetadataValue (string name, LibraryIncludeFlags flags)
+		{
+			string value = MSBuildStringUtility.Convert (LibraryIncludeFlagUtils.GetFlagString (flags));
+			Metadata.SetValue (name, value);
 		}
 	}
 }

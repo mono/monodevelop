@@ -28,10 +28,12 @@ using Microsoft.VisualStudio.Text.Classification;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
+	[ExportDocumentControllerFactory (FileExtension = "*", InsertBefore = "TextEditor")]
 	class WpfTextViewDisplayBinding : TextViewDisplayBinding<WpfTextViewImports>
 	{
 		static WpfTextViewDisplayBinding ()
@@ -48,9 +50,9 @@ namespace MonoDevelop.TextEditor
 			return null;
 		}
 
-		protected override ViewContent CreateContent (WpfTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
+		protected override DocumentController CreateContent (WpfTextViewImports imports)
 		{
-			return new WpfTextViewContent (imports, fileName, mimeType, ownerProject);
+			return new WpfTextViewContent (imports);
 		}
 
 		protected override ThemeToClassification CreateThemeToClassification (IEditorFormatMapService editorFormatMapService)
@@ -61,7 +63,7 @@ namespace MonoDevelop.TextEditor
 	{
 		public WpfThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) { }
 
-		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
+		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string appearanceCategory, string fontName, double fontSize)
 		{
 			resourceDictionary[ClassificationFormatDefinition.TypefaceId] = new Typeface (fontName);
 			resourceDictionary[ClassificationFormatDefinition.FontRenderingSizeId] = fontSize * 96 / 72;

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CodeGenerationOptions.cs
 //  
 // Author:
@@ -88,7 +88,7 @@ namespace MonoDevelop.CodeGeneration
 		{
 			get
 			{
-				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
+				return IdeServices.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace MonoDevelop.CodeGeneration
 		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var options = await DocumentContext.GetOptionsAsync (cancellationToken);
-			node = Formatter.Format (node, TypeSystemService.Workspace, options, cancellationToken);
+			node = Formatter.Format (node, IdeApp.TypeSystemService.Workspace, options, cancellationToken);
 
 			var text = Editor.Text;
 			string nodeText = node.ToString ();

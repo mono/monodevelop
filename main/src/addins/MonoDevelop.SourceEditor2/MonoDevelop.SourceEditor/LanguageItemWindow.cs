@@ -1,4 +1,4 @@
-// LanguageItemWindow.cs
+﻿// LanguageItemWindow.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -84,7 +85,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (label == null)
 				return;
-			label.FontDescription = FontService.GetFontDescription ("Pad");
+			label.FontDescription = IdeServices.FontService.GetFontDescription ("Pad");
 			
 		}
 	}

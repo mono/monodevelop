@@ -414,7 +414,6 @@ namespace MonoDevelop.MacIntegration
 				var rootMenu = NSApplication.SharedApplication.MainMenu;
 				if (rootMenu == null) {
 					rootMenu = new NSMenu ();
-					NSApplication.SharedApplication.MainMenu = rootMenu;
 				} else {
 					rootMenu.RemoveAllItems ();
 				}
@@ -424,8 +423,14 @@ namespace MonoDevelop.MacIntegration
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
+					var item = new MDSubMenuItem (commandManager, (CommandEntrySet)ce);
+					rootMenu.AddItem (item);
+					if (ce.CommandId as string == "Help" && item.HasSubmenu && NSApplication.SharedApplication.HelpMenu == null)
+						NSApplication.SharedApplication.HelpMenu = item.Submenu;
 				}
+				// Assign the main menu after loading the items. Otherwise a weird application menu appears.
+				if (NSApplication.SharedApplication.MainMenu == null)
+					NSApplication.SharedApplication.MainMenu = rootMenu;
 			} catch (Exception ex) {
 				try {
 					var m = NSApplication.SharedApplication.MainMenu;
@@ -433,6 +438,11 @@ namespace MonoDevelop.MacIntegration
 						m.Dispose ();
 					}
 					NSApplication.SharedApplication.MainMenu = null;
+					m = NSApplication.SharedApplication.HelpMenu;
+					if (m != null) {
+						m.Dispose ();
+					}
+					NSApplication.SharedApplication.HelpMenu = null;
 				} catch {}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
@@ -620,27 +630,15 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
-					if (Ide.WelcomePage.WelcomePageService.HasWindowImplementation && !(IdeApp.Workbench.RootWindow?.Visible ?? false)) {
-						if (IdeApp.Workbench.RootWindow != null) {
-							IdeApp.Workbench.RootWindow.Visible = false;
-						}
-						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
-
-						e.Handled = true;
-					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
-						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Visible = true;
-
-						IdeApp.Workbench.RootWindow.Present ();
-						e.Handled = true;
-					}
+					e.Handled = true;
+					IdeApp.BringToFront ();
 				};
 
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent
 					GLib.Idle.Add (delegate {
 						Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
-						var trackTTC = IdeApp.StartTimeToCodeLoadTimer ();
+						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						IdeApp.OpenFiles (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal)),
 							null
@@ -651,7 +649,7 @@ namespace MonoDevelop.MacIntegration
 
 							var firstFile = e.Documents.First ().Key;
 
-							IdeApp.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+							IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
 						});
 						return false;
 					});
@@ -660,7 +658,7 @@ namespace MonoDevelop.MacIntegration
 
 				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
 					GLib.Idle.Add (delegate {
-						var trackTTC = IdeApp.StartTimeToCodeLoadTimer ();
+						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
 						IdeApp.OpenFiles (e.Urls.Select (url => {
@@ -690,7 +688,7 @@ namespace MonoDevelop.MacIntegration
 							}
 							var firstFile = e.Urls.First ();
 
-							IdeApp.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+							IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
 						});
 						return false;
 					});
@@ -765,7 +763,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			args.RetVal = true;
 			if (await IdeApp.Workspace.Close ()) {
-				IdeApp.Workbench.RootWindow.Visible = false;
+				IdeApp.Workbench.Hide ();
 			}
 		}
 
@@ -995,12 +993,58 @@ namespace MonoDevelop.MacIntegration
 
 		public override Window GetParentForModalWindow ()
 		{
-			return NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+			try {
+				var window = NSApplication.SharedApplication.ModalWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.ModalWindow failed", e);
+			}
+			try {
+				var window = NSApplication.SharedApplication.KeyWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.KeyWindow failed", e);
+			}
+			try {
+				var window = NSApplication.SharedApplication.MainWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.MainWindow failed", e);
+			}
+			return null;
+		}
+
+		bool HasAnyDockWindowFocused ()
+		{
+			foreach (var window in Gtk.Window.ListToplevels ()) {
+				if (!window.HasToplevelFocus) {
+					continue;
+				}
+				if (window is Components.Docking.DockFloatingWindow floatingWindow) {
+					return true;
+				}
+				if (window is IdeWindow ideWindow && ideWindow.Child is Components.Docking.AutoHideBox) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public override Window GetFocusedTopLevelWindow ()
 		{
-			return NSApplication.SharedApplication.KeyWindow;
+			if (NSApplication.SharedApplication.KeyWindow != null) {
+				if (IdeApp.Workbench.RootWindow.Visible) {
+					//if is a docking window then return the current root window
+					if (HasAnyDockWindowFocused ()) {
+						return MessageService.RootWindow;
+					}
+				}
+				return NSApplication.SharedApplication.KeyWindow;
+			}
+			return null;
 		}
 
 		public override void FocusWindow (Window window)
@@ -1222,7 +1266,7 @@ namespace MonoDevelop.MacIntegration
 				Arguments = "--start-app-bundle",
 			};
 
-			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			var recentWorkspace = reopen ? IdeServices.DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
 			if (!string.IsNullOrEmpty (recentWorkspace))
 				psi.Arguments += " " + recentWorkspace;
 

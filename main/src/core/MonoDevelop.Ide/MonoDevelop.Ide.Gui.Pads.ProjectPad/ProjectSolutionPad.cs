@@ -91,16 +91,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc != null) {
+				var selector = doc.GetContent<IProjectPadNodeSelector> (true);
+				if (selector != null && SelectObject (selector.GetNodeObjext ()))
+					return;
+
 				string file = doc.FileName;
-				if (file != null && doc.Project != null) {
-					if (!SelectFile (doc.Project, file)) {
+				if (file != null && doc.Owner is Project ownerProject) {
+					if (!SelectFile (ownerProject, file)) {
 						foreach (var project in IdeApp.Workspace.GetAllProjects ()) {
 							if (project is SharedAssetsProject && SelectFile (project, file))
 								return;
 						}
 					}
-				} else
-					SelectObject (doc.GetDocumentObject ());
+				}
 			}
 		}
 

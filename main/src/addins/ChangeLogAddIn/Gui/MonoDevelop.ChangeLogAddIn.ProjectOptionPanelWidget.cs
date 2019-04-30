@@ -93,7 +93,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label6 = new global::Gtk.Label ();
 			this.label6.WidthRequest = 500;
 			this.label6.Name = "label6";
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Single project ChangeLog</b>\nAll changes done in the project files will be logged in a single ChangeLog file, located at the project root directory. The ChangeLog file will be created if it doesn't exist.");
+			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Single project ChangeLog</b>\nAll changes made in the project files will be logged in a single ChangeLog file, located at the project root directory. The ChangeLog file will be created if it doesn't exist.");
 			this.label6.UseMarkup = true;
 			this.label6.Wrap = true;
 			this.oneChangeLogInProjectRootDirectoryRadioButton.Add (this.label6);
