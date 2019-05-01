@@ -157,8 +157,7 @@ namespace MonoDevelop.PackageManagement
 
 		internal void SetMetadataValue (string name, LibraryIncludeFlags flags)
 		{
-			string value = MSBuildStringUtility.Convert (LibraryIncludeFlagUtils.GetFlagString (flags));
-			Metadata.SetValue (name, value);
+			Metadata.SetMetadataValue (name, flags);
 		}
 	}
 }
