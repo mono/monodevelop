@@ -173,8 +173,12 @@ namespace MonoDevelop.Ide.FindInFiles
 							  (project, loop, providers) => {
 								  var conf = project.DefaultConfiguration?.Selector;
 
-								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result) {
 									  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+										  continue;
+									  if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
+										  continue;
+									  if (!filterOptions.NameMatches (file.Name))
 										  continue;
 									  if (!IdeServices.DesktopService.GetFileIsText (file.FilePath))
 										  continue;
@@ -229,8 +233,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
 				var conf = project.DefaultConfiguration?.Selector;
-				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result) {
 					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+						continue;
+					if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
+						continue;
+					if (!filterOptions.NameMatches (file.Name))
 						continue;
 					if (!IdeServices.DesktopService.GetFileIsText (file.Name))
 						continue;

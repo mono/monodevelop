@@ -729,13 +729,19 @@ namespace MonoDevelop.Projects
 			{
 				var analyzerList = new List<FilePath> ();
 				var sourceFilesList = new List<ProjectFile> ();
-
 				foreach (var item in items) {
 					var msbuildPath = MSBuildProjectService.FromMSBuildPath (project.sourceProject.BaseDirectory, item.Include);
 
-					if (item.Name == "Compile")
-						sourceFilesList.Add (new ProjectFile (msbuildPath, item.Name) { Project = project });
-					else if (item.Name == "Analyzer")
+					if (item.Name == "Compile") {
+						var projectFile = new ProjectFile (msbuildPath, item.Name) { Project = project };
+						const string subtype = "SubType";
+						if (item.Metadata.HasProperty (subtype)) {
+							var property = item.Metadata.GetProperty (subtype);
+							if (property.Value == "Designer")
+								projectFile.Subtype = Subtype.Designer;
+						}
+						sourceFilesList.Add (projectFile);
+					} else if (item.Name == "Analyzer")
 						analyzerList.Add (msbuildPath);
 				}
 
