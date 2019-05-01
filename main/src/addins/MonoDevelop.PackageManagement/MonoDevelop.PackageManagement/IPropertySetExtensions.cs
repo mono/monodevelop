@@ -1,10 +1,10 @@
-﻿//
-// TestableDotNetCoreNuGetProject.cs
+//
+// IPropertySetExtensions.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
 using MonoDevelop.Projects;
+using NuGet.Common;
+using NuGet.LibraryModel;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	class TestableDotNetCoreNuGetProject : DotNetCoreNuGetProject
+	static class IPropertySetExtensions
 	{
-		public TestableDotNetCoreNuGetProject (DotNetProject project)
-			: base (project, new [] { "netcoreapp1.0" }, ConfigurationSelector.Default)
+		internal static void SetMetadataValue (this IPropertySet propertySet, string name, LibraryIncludeFlags flags)
 		{
-			BuildIntegratedRestorer = new FakeMonoDevelopBuildIntegratedRestorer ();
-		}
-
-		public bool IsSaved { get; set; }
-
-		public bool CallBaseSaveProject { get; set; }
-
-		public override Task SaveProject ()
-		{
-			IsSaved = true;
-
-			if (CallBaseSaveProject)
-				return base.SaveProject ();
-
-			return Task.FromResult (0);
-		}
-
-		public FakeMonoDevelopBuildIntegratedRestorer BuildIntegratedRestorer;
-		public Solution SolutionUsedToCreateBuildIntegratedRestorer;
-
-		protected override IMonoDevelopBuildIntegratedRestorer CreateBuildIntegratedRestorer (Solution solution)
-		{
-			SolutionUsedToCreateBuildIntegratedRestorer = solution;
-			return BuildIntegratedRestorer;
+			string value = MSBuildStringUtility.Convert (LibraryIncludeFlagUtils.GetFlagString (flags));
+			propertySet.SetValue (name, value);
 		}
 	}
 }

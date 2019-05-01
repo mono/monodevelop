@@ -161,6 +161,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			var packageIdentity = new PackageIdentity (packageId, range.MinVersion);
 
+			if (installationContext.SuccessfulFrameworks.Any () && installationContext.UnsuccessfulFrameworks.Any ()) {
+				return await AddConditionalPackageReference (packageIdentity, nuGetProjectContext, installationContext);
+			}
+
 			bool added = await Runtime.RunInMainThread (() => {
 				return AddPackageReference (packageIdentity, nuGetProjectContext, installationContext);
 			});
@@ -170,6 +174,18 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return added;
+		}
+
+		async Task<bool> AddConditionalPackageReference (
+			PackageIdentity packageIdentity,
+			INuGetProjectContext context,
+			BuildIntegratedInstallationContext installationContext)
+		{
+			using (var handler = new ConditionalPackageReferenceHandler ()) {
+				handler.AddConditionalPackageReference (packageIdentity, context, installationContext);
+				await SaveProject ();
+			}
+			return true;
 		}
 
 		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context, BuildIntegratedInstallationContext installationContext)
