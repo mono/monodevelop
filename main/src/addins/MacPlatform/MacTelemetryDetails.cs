@@ -145,7 +145,7 @@ namespace MacPlatform
 			List<GraphicsDetails> gpus = new List<GraphicsDetails> ();
 
 			var matchingDict = IOServiceMatching ("IOPCIDevice");
-			var success = IOServiceGetMatchingServices (0, matchingDict, out var iter);
+			var success = IOServiceGetMatchingServices (kIOMasterPortDefault, matchingDict, out var iter);
 			if (success == 0) {
 				uint regEntry;
 
@@ -252,6 +252,8 @@ namespace MacPlatform
 
 			return dt;
 		}
+
+		const uint kIOMasterPortDefault = 0;
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
 		extern static IntPtr IOServiceMatching (string serviceName);
