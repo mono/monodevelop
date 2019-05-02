@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <Compile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TestProperty>Test</TestProperty>
+      <OverriddenProperty>OriginalValue</OverriddenProperty>
+    </Compile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <Compile Update="Class1.cs">
+      <OverriddenProperty>NewValue</OverriddenProperty>
+    </Compile>
+    <Compile Update="NewItem.cs">
+      <TestProperty></TestProperty>
+      <OverriddenProperty></OverriddenProperty>
+    </Compile>
+  </ItemGroup>
+</Project>

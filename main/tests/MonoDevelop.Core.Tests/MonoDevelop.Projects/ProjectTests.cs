@@ -881,6 +881,80 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ItemDefinitionGroup ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.IsTrue (projectItem.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.IsTrue (projectItem.Metadata.HasProperty ("BoolProperty"));
+				Assert.AreEqual (FileCopyMode.PreserveNewest, projectItem.CopyToOutputDirectory);
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_ItemDefinedMultipleTimes ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "multiple-item-definitions-same-item.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.IsTrue (projectItem.Metadata.HasProperty ("BoolProperty"));
+				Assert.IsTrue (projectItem.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.AreEqual (FileCopyMode.Always, projectItem.CopyToOutputDirectory);
+				Assert.AreEqual ("First", projectItem.Metadata.GetValue ("FirstItemDefinitionProperty"));
+				Assert.AreEqual ("Second", projectItem.Metadata.GetValue ("SecondItemDefinitionProperty"));
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_AddFilesWithSameMetadataAsItemDefinition_MetadataNotSaved ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				var newItemFileName = projectItem.FilePath.ChangeName ("NewItem");
+				var newProjectItem = new ProjectFile (newItemFileName, projectItem.BuildAction);
+				newProjectItem.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+				newProjectItem.Metadata.SetValue ("BoolProperty", true);
+				newProjectItem.Metadata.SetValue ("OverriddenProperty", "OriginalValue");
+
+				p.Files.Add (newProjectItem);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".add-file-match-metadata");
+				var savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_AddFilesWithoutMetadata_MetadataUsesEmptyElements ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				var newItemFileName = projectItem.FilePath.ChangeName ("NewItem");
+				var newProjectItem = new ProjectFile (newItemFileName, projectItem.BuildAction);
+				newProjectItem.CopyToOutputDirectory = FileCopyMode.Always;
+
+				p.Files.Add (newProjectItem);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".add-file-no-metadata");
+				var savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+			}
+		}
+
+		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
 			if (!Platform.IsMac) {

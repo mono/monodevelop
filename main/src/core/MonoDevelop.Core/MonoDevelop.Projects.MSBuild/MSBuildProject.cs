@@ -332,6 +332,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			MSBuildObject ob = null;
 			switch (reader.LocalName) {
+				case "ItemDefinitionGroup": ob = new MSBuildItemDefinitionGroup (); break;
 				case "ItemGroup": ob = new MSBuildItemGroup (); break;
 				case "PropertyGroup": ob = new MSBuildPropertyGroup (); break;
 				case "ImportGroup": ob = new MSBuildImportGroup (); break;
@@ -726,6 +727,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return mainProjectInstance != null ? mainProjectInstance.EvaluatedProperties : (IMSBuildEvaluatedPropertyCollection)GetGlobalPropertyGroup (); }
 		}
 
+		internal IMSBuildPropertyGroupEvaluated GetEvaluatedItemDefinitionProperties (string itemName)
+		{
+			return mainProjectInstance.GetEvaluatedItemDefinitionProperties (itemName);
+		}
+
 		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItems
 		{
 			get { return mainProjectInstance.EvaluatedItems; }
@@ -860,6 +866,11 @@ namespace MonoDevelop.Projects.MSBuild
 		public IEnumerable<MSBuildItemGroup> ItemGroups
 		{
 			get { return ChildNodes.OfType<MSBuildItemGroup> (); }
+		}
+
+		public IEnumerable<MSBuildItemDefinitionGroup> ItemDefinitionGroups
+		{
+			get { return ChildNodes.OfType<MSBuildItemDefinitionGroup> (); }
 		}
 
 		public IEnumerable<MSBuildImportGroup> ImportGroups

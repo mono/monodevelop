@@ -200,6 +200,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			throw new NotImplementedException ();
 		}
+
+		internal override IEnumerable<object> GetEvaluatedItemDefinitions (object projectInstance)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 
 	#if !WINDOWS

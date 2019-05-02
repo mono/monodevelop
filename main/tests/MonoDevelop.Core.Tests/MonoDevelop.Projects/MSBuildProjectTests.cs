@@ -558,6 +558,20 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void ItemDefinitionGroup ()
+		{
+			using (var p = LoadAndEvaluate ("project-with-item-def-group", "item-definition-group.csproj")) {
+				var itemDefinitionGroup = p.ItemDefinitionGroups.Single ();
+				Assert.AreEqual (itemDefinitionGroup.Condition, " '$(DefineMyItem)' == 'true' ");
+				MSBuildItem item = itemDefinitionGroup.Items.Single ();
+				Assert.AreEqual ("MyItem", item.Name);
+				Assert.AreEqual ("PreserveNewest", item.Metadata.GetValue ("CopyToOutputDirectory"));
+				Assert.IsTrue (item.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.AreEqual ("OriginalValue", item.Metadata.GetValue ("OverriddenProperty"));
+			}
+		}
+
+		[Test]
 		public void StartWhitespaceForImportInsertedAsLastImport ()
 		{
 			var p = LoadAndEvaluate ("ConsoleApp-VS2013", "ConsoleApplication.csproj");

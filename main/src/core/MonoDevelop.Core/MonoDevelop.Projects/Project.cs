@@ -3783,7 +3783,15 @@ namespace MonoDevelop.Projects
 						// Globbing magic can only be done if there is no metadata (for now)
 						if (globItem.Metadata.GetProperties ().Count () == 0 && !updateGlobItems.Any ()) {
 							var it = new MSBuildItem (item.ItemName);
-							item.Write (this, it);
+							var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (it.Name);
+							if (itemDefinitionProps != null) {
+								var propertiesAlreadySet = new HashSet<string> ();
+								item.Write (this, it);
+								AddEmptyItemDefinitionProperties (it, itemDefinitionProps);
+								PurgeItemDefinitionProperties (it, itemDefinitionProps, propertiesAlreadySet);
+							} else {
+								item.Write (this, it);
+							}
 							if (it.Metadata.GetProperties ().Count () == 0)
 								buildItem = globItem;
 
@@ -3857,11 +3865,24 @@ namespace MonoDevelop.Projects
 
 			if (!buildItem.IsWildcardItem) {
 				if (buildItem.IsUpdate) {
+					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
 					var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
 					item.Write (this, buildItem);
+					if (itemDefinitionProps != null) {
+						AddEmptyItemDefinitionProperties (buildItem, itemDefinitionProps);
+						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
+					}
 					PurgeUpdatePropertiesSetInSourceItems (buildItem, item.BackingEvalItem.SourceItems, propertiesAlreadySet);
 				} else {
-					item.Write (this, buildItem);
+					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
+					if (itemDefinitionProps != null) {
+						var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
+						item.Write (this, buildItem);
+						AddEmptyItemDefinitionProperties (buildItem, itemDefinitionProps);
+						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
+					} else {
+						item.Write (this, buildItem);
+					}
 					if (buildItem.Include != include)
 						buildItem.Include = include;
 				}
@@ -3908,6 +3929,40 @@ namespace MonoDevelop.Projects
 							propsToRemove.Add (p.Name);
 						}
 						break;
+					}
+				}
+			}
+			if (propsToRemove != null) {
+				foreach (var name in propsToRemove)
+					buildItem.Metadata.RemoveProperty (name);
+			}
+		}
+
+		/// <summary>
+		/// If the MSBuildItem does not define the property defined by its ItemDefinition then we need to set an empty
+		/// string for the metadata property value. Otherwise the property information for a new file will be incorrect
+		/// in the IDE.
+		/// </summary>
+		void AddEmptyItemDefinitionProperties (MSBuildItem buildItem, IMSBuildPropertyGroupEvaluated itemDefinitionProps)
+		{
+			foreach (var p in itemDefinitionProps.GetProperties ()) {
+				if (!buildItem.Metadata.HasProperty (p.Name))
+					buildItem.Metadata.SetValue (p.Name, string.Empty);
+			}
+		}
+
+		void PurgeItemDefinitionProperties (MSBuildItem buildItem, IMSBuildPropertyGroupEvaluated itemDefinitionProps, HashSet<string> propertiesAlreadySet)
+		{
+			List<string> propsToRemove = null;
+
+			foreach (var p in buildItem.Metadata.GetProperties ().Where (pr => !propertiesAlreadySet.Contains (pr.Name))) {
+				var prop = itemDefinitionProps.GetProperty (p.Name);
+				if (prop != null) {
+					if (p.ValueType.Equals (p.Value, prop.Value)) {
+						// This item definition defines the same metadata, so that metadata does not need to be set in the MSBuild item
+						if (propsToRemove == null)
+							propsToRemove = new List<string> ();
+						propsToRemove.Add (p.Name);
 					}
 				}
 			}
