@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Editor
 	/// </summary>
 	public static class EditActions
 	{
+		// Test !!! Test !!!
 		public static void MoveCaretDown (TextEditor editor)
 		{
 			editor.EditorOperations.MoveLineDown (false);
