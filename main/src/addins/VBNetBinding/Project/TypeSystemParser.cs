@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.VisualBasic;
 
 namespace MonoDevelop.VBNetBinding
 {
@@ -74,9 +75,9 @@ namespace MonoDevelop.VBNetBinding
 			return Task.FromResult<ParsedDocument> (result);
 		}
 
-		public static CSharpParseOptions GetCompilerArguments (MonoDevelop.Projects.Project project)
+		public static VisualBasicParseOptions GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
-			var compilerArguments = new CSharpParseOptions ();
+			var compilerArguments = new VisualBasicParseOptions ();
 			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null) {
 				return compilerArguments;
 			}
@@ -85,7 +86,7 @@ namespace MonoDevelop.VBNetBinding
 			if (configuration == null)
 				return compilerArguments;
 
-			compilerArguments = compilerArguments.WithPreprocessorSymbols (configuration.GetDefineSymbols ());
+			// compilerArguments = compilerArguments.WithPreprocessorSymbols (configuration.GetDefineSymbols ());
 
 			return compilerArguments;
 		}
