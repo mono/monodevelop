@@ -119,7 +119,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			bool RunHandler ()
 			{
 			tokenExit:
-				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null) {
+				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null || surface.IsDisposed) {
 					cr.Dispose ();
 					// if the surface was newly created dispose it otherwise it'll leak.
 					if (surface != mode.swapIndicatorSurface)
@@ -197,7 +197,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					drawingStep++;
 					return true;
 				default:
-					mode.DrawBreakpoints (cr);
+					if (cr.Handle != IntPtr.Zero)
+						mode.DrawBreakpoints (cr);
 					cr.Dispose ();
 					var tmp = mode.indicatorSurface;
 					mode.indicatorSurface = surface;
