@@ -48,6 +48,9 @@ using Microsoft.CodeAnalysis.CSharp.Formatting;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace MonoDevelop.Refactoring
 {
@@ -144,6 +147,7 @@ namespace MonoDevelop.Refactoring
 			if (newMember == null)
 				throw new ArgumentNullException (nameof (newMember));
 			var doc = await IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
+			var textView = await doc.GetContentWhenAvailable<ITextView> (cancellationToken);
 			await doc.DocumentContext.UpdateParseDocument ();
 			var document = doc.DocumentContext.AnalysisDocument;
 			if (document == null) {
@@ -177,6 +181,10 @@ namespace MonoDevelop.Refactoring
 				if (editor == null) {
 					// bypass the insertion point selection UI for the new editor
 					document.Project.Solution.Workspace.TryApplyChanges (document.Project.Solution);
+					var editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
+					var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
+					var point = new Microsoft.VisualStudio.Text.VirtualSnapshotPoint (textView.TextSnapshot, node.SpanStart);
+					editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
 					return;
 				}
 
