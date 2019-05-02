@@ -142,44 +142,141 @@ namespace MacPlatform
 
 		static GraphicsDetails[] GetGraphicsDetails ()
 		{
-			List<GraphicsDetails> gpus = new List<GraphicsDetails> ();
-
-			var matchingDict = IOServiceMatching ("IOPCIDevice");
+			var matchingDict = IOServiceMatching ("IOService");
 			var success = IOServiceGetMatchingServices (kIOMasterPortDefault, matchingDict, out var iter);
-			if (success == 0) {
-				uint regEntry;
+			if (success != kIOReturnSuccess) {
+				return Array.Empty<GraphicsDetails> ();
+			}
 
-				while ((regEntry = IOIteratorNext (iter)) != 0) {
-					if (IORegistryEntryCreateCFProperties (regEntry, out var serviceDictionary, IntPtr.Zero, 0) != 0) {
-						IOObjectRelease (regEntry);
-						continue;
-					}
+			var gpus = new List<GraphicsDetails> ();
 
-					var serviceProperties = ObjCRuntime.Runtime.GetNSObject<NSDictionary> (serviceDictionary, true);
-					var model = serviceProperties.ObjectForKey (new NSString ("model"));
-					if (model == null) {
-						IOObjectRelease (regEntry);
-						continue;
-					}
-
-					var memory = serviceProperties.ObjectForKey (new NSString ("VRAM,totalMB"));
-					if (memory == null) {
-						IOObjectRelease (regEntry);
-						continue;
-					}
-
-					var details = new GraphicsDetails () {
-						Model = model.ToString (),
-						Memory = memory.ToString ()
-					};
-					gpus.Add (details);
-
-					IOObjectRelease (regEntry);
+			for (uint regEntry; IOIteratorIsValid (iter) != 0; IOObjectRelease (regEntry)) {
+				regEntry = IOIteratorNext (iter);
+				if (regEntry == 0) {
+					break;
 				}
 
-				IOObjectRelease (iter);
+				if (!TryIORegistrySearch (regEntry, "IOName", false, out var name) || name != "display") {
+					continue;
+				}
+
+				if (!TryIORegistrySearch (regEntry, "model", true, out var modelValue)) {
+					continue;
+				}
+
+				if (!TryGetMemoryValue (regEntry, out string memoryValue)) {
+					continue;
+				}
+
+				var details = new GraphicsDetails () {
+					Model = modelValue,
+					Memory = memoryValue
+				};
+				gpus.Add (details);
+
+				IOObjectRelease (regEntry);
 			}
+
+			IOObjectRelease (iter);
+
 			return gpus.ToArray ();
+		}
+
+		static bool TryGetMemoryValue (uint regEntry, out string size)
+		{
+			if (TryIORegistrySearch (regEntry, "VRAM,totalsize", true, out var byteSize) && long.TryParse (byteSize, out var bytes)) {
+				size = (bytes / 1024 / 1024).ToString ();
+				return true;
+			}
+
+			if (TryIORegistrySearch (regEntry, "VRAM,totalMB", true, out size)) {
+				return true;
+			}
+
+			uint success = IORegistryEntryGetChildIterator (regEntry, "IOService", out var childIter);
+			if (success != kIOReturnSuccess) {
+				return false;
+			}
+
+			for (uint childEntry; IOIteratorIsValid (childIter) != kIOReturnSuccess; IOObjectRelease (childEntry)) {
+				// Intel seems to put the total vram here
+				childEntry = IOIteratorNext (childIter);
+				if (childEntry == 0) {
+					return false;
+				}
+
+				if (TryIORegistrySearch (childEntry, "VRAM,totalMB", true, out size)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		static Lazy<ObjCRuntime.Class> nsDataClass = new Lazy<ObjCRuntime.Class> (() => new ObjCRuntime.Class (typeof (NSData)));
+		static bool TryIORegistrySearch (uint regEntry, string key, bool recurse, out string result, bool inBytes = false)
+		{
+			using (var keyHandle = new NSString (key)) {
+				var namePtr = IORegistryEntrySearchCFProperty (regEntry, "IOService", keyHandle.Handle, IntPtr.Zero, recurse ? 0x1 : 0x0);
+				if (namePtr == IntPtr.Zero) {
+					result = null;
+					return false;
+				}
+
+				result = GetValueForNSObject (namePtr);
+				return true;
+			}
+		}
+
+		static string GetValueForNSObject (IntPtr obj)
+		{
+			using (var value = ObjCRuntime.Runtime.GetNSObject<NSObject> (obj, true)) {
+				if (!value.IsKindOfClass (nsDataClass.Value)) {
+					return value.ToString ();
+				}
+
+				var data = ObjCRuntime.Runtime.GetINativeObject<NSData> (obj, false);
+				if (data == null) {
+					return value.ToString ();
+				}
+
+				nuint detectedEncoding = NSString.DetectStringEncoding (data, new EncodingDetectionOptions {
+					EncodingDetectionAllowLossy = false,
+					EncodingDetectionUseOnlySuggestedEncodings = true,
+					EncodingDetectionSuggestedEncodings = new NSStringEncoding [] {
+						NSStringEncoding.UTF8,
+						NSStringEncoding.Unicode,
+						NSStringEncoding.ASCIIStringEncoding
+					},
+				}, out string convertedString, out bool isLossy);
+
+				if (convertedString.Length > 0 && detectedEncoding != 0 && !isLossy) {
+					return convertedString;
+				}
+
+				if (TryGetNumberValueFromNSObject (data, out var numberString)) {
+					return numberString;
+				}
+
+				return value.ToString ();
+			}
+		}
+
+		static bool TryGetNumberValueFromNSObject (NSData data, out string numberString)
+		{
+			numberString = null;
+
+			if (data.Length == 4) {
+				uint x = unchecked((uint)Marshal.ReadInt32 (data.Bytes));
+				numberString = x.ToString ();
+			}
+
+			if (data.Length == 8) {
+				uint x = unchecked((uint)Marshal.ReadInt64 (data.Bytes));
+				numberString = x.ToString ();
+			}
+
+			return numberString != null;
 		}
 
 		static PlatformHardDriveMediaType GetMediaType (string path)
@@ -230,7 +327,7 @@ namespace MacPlatform
 		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation", EntryPoint="CFRelease")]
 		static extern void CFReleaseInternal (IntPtr cfRef);
 
-		static void CFRelease (IntPtr cfRef)
+		internal static void CFRelease (IntPtr cfRef)
 		{
 			if (cfRef != IntPtr.Zero)
 				CFReleaseInternal (cfRef);
@@ -254,24 +351,28 @@ namespace MacPlatform
 		}
 
 		const uint kIOMasterPortDefault = 0;
+		const uint kIOReturnSuccess = 0;
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
-		extern static IntPtr IOServiceMatching (string serviceName);
+		internal extern static IntPtr IOServiceMatching (string serviceName);
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
-		extern static uint IOServiceGetMatchingServices (uint masterPort, IntPtr matchingDict, out uint existing);
+		internal extern static uint IOServiceGetMatchingServices (uint masterPort, IntPtr matchingDict, out uint existing);
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
-		extern static uint IOIteratorNext (uint iterator);
+		internal extern static uint IORegistryEntryGetChildIterator (uint service, string plane, out uint existing);
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
-		extern static uint IORegistryEntryCreateCFProperties (uint entry, out IntPtr properties, IntPtr allocator, uint options);
+		internal extern static uint IOIteratorNext (uint iterator);
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
-		extern static IntPtr IORegistryEntrySearchCFProperty(uint service, string plane, IntPtr key, IntPtr allocator, int options);
+		internal extern static int IOIteratorIsValid (uint iterator);
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
-		extern static int IOObjectRelease (uint handle);
+		internal extern static IntPtr IORegistryEntrySearchCFProperty(uint service, string plane, IntPtr key, IntPtr allocator, int options);
+
+		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
+		internal extern static int IOObjectRelease (uint handle);
 
 		[DllImport ("/System/Library/Frameworks/DiskArbitration.framework/DiskArbitration")]
 		extern static IntPtr DADiskCreateFromVolumePath (IntPtr allocator, IntPtr sessionRef, IntPtr pathRef);
