@@ -612,6 +612,7 @@ namespace MonoDevelop.Components
 		public int Width { get; private set; }
 		public int Height { get; private set; }
 		public object Data { get; set; }
+		public bool IsDisposed { get; private set; }
 
 		public SurfaceWrapper (Cairo.Context similar, int width, int height)
 		{
@@ -654,6 +655,7 @@ namespace MonoDevelop.Components
 
 		public void Dispose ()
 		{
+			IsDisposed = true;
 			if (Surface != null) {
 				((IDisposable)Surface).Dispose ();
 			}
