@@ -39,6 +39,7 @@ namespace MonoDevelop.Components.AutoTest
 #if MAC
 		void ProcessNSWindows (AppResult rootNode, ref AppResult lastChild)
 		{
+			// FIXME: SharedApplication.Windows is dangerous and will be deprecated in XamMac 5.10
 			NSWindow [] nswindows = NSApplication.SharedApplication.Windows;
 			if (nswindows == null)
 				return;
