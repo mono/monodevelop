@@ -167,7 +167,11 @@ namespace MonoDevelop.Ide.Gui
 		/// </remarks>
 		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
-			Runtime.AssertMainThread ();
+			// In general this method should not be called from a background thread since the returned object can only be used
+			// from the UI thread. However, this method is commontly used to get the pad and provide it as argument for
+			// GetStatusProgressMonitor. To avoid crashes in existing code, we allow this to be called from a non-UI thread.
+			if (!Runtime.IsMainThread)
+				return Runtime.RunInMainThread (() => GetPadForMonitor (monitor)).Result;
 
 			foreach (Pad pad in outputMonitors) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
