@@ -46,7 +46,6 @@ namespace MonoDevelop.Projects
 	public enum Subtype
 	{
 		Code,
-		Designer,
 		Directory
 	}
 
