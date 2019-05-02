@@ -73,7 +73,6 @@ namespace MonoDevelop.VBNet
 		void UpdateHighlighting ()
 		{
 			if (DocumentContext?.AnalysisDocument == null) {
-				Console.WriteLine ("context == null");
 				if (Editor.SyntaxHighlighting != fallbackHighlighting)
 					Editor.SyntaxHighlighting = fallbackHighlighting;
 				return;
