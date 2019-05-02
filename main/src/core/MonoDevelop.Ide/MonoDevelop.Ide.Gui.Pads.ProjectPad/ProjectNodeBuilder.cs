@@ -414,9 +414,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					tb.Update ();
 			}
 		}
-		
 	}
-	
+
 	class ProjectNodeCommandHandler: FolderCommandHandler
 	{
 		public override string GetFolderPath (object dataObject)
@@ -552,6 +551,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			base.OnNodeDrop (dataObject, operation);
+		}
+
+		public override bool CanHandleDropFromChild (object [] dataObjects, DragOperation operation, DropPosition position)
+		{
+			return ProjectFolderCommandHandler.CanHandleDropFromChild (dataObjects, position);
 		}
 	}
 }
