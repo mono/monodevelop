@@ -46,7 +46,10 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Text = WelcomePageService.HasWindowImplementation ? GettextCatalog.GetString ("Start Window") : GettextCatalog.GetString ("Welcome Page");
+			if (Platform.IsMac)
+				info.Text = WelcomePageService.HasWindowImplementation ? GettextCatalog.GetString ("Show Start Window") : GettextCatalog.GetString ("Show Welcome Page");
+			else
+				info.Text = WelcomePageService.HasWindowImplementation ? GettextCatalog.GetString ("Start Window") : GettextCatalog.GetString ("Welcome Page");
 			info.Enabled = WelcomePageService.HasWindowImplementation || (!WelcomePageService.HasWindowImplementation && !WelcomePageService.WelcomePageVisible);
 			base.Update (info);
 		}
