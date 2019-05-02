@@ -360,7 +360,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					entryWidget.Dispose ();
 					entryWidget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
 
+					#pragma warning disable 618
 					var nsWindows = NSApplication.SharedApplication.Windows;
+					#pragma warning restore 618
 					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
 						nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
 

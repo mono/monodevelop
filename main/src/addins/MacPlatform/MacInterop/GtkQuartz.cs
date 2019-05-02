@@ -58,7 +58,9 @@ namespace MonoDevelop.MacInterop
 
 		public static IEnumerable<KeyValuePair<NSWindow,Gtk.Window>> GetToplevels ()
 		{
+			#pragma warning disable 618
 			var nsWindows = NSApplication.SharedApplication.Windows;
+			#pragma warning restore 618
 			var gtkWindows = Gtk.Window.ListToplevels ();
 			foreach (var n in nsWindows) {
 				var g = gtkWindows.FirstOrDefault (w => {
