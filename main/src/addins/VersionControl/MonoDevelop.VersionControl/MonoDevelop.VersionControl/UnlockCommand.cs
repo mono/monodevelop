@@ -25,8 +25,10 @@
 //
 //
 
+using System;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -56,16 +58,21 @@ namespace MonoDevelop.VersionControl
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Unlocking...");
 			}
-			
+
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unlock (Monitor, list.Paths);
-				
-				Gtk.Application.Invoke ((o, args) => {
-					VersionControlService.NotifyFileStatusChanged (items);
-				});
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
+				try {
+					foreach (VersionControlItemList list in items.SplitByRepository ()) {
+						list [0].Repository.Unlock (Monitor, list.Paths);
+					}
+					Gtk.Application.Invoke ((o, args) => {
+						VersionControlService.NotifyFileStatusChanged (items);
+					});
+					Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unlock operation failed", ex);
+					MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
+				}
 			}
 		}
 	}
