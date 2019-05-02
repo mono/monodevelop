@@ -80,10 +80,12 @@ namespace MonoDevelop.Ide.Tasks
 
 				var files = project.Files.Where (x => {
 					var mt = IdeServices.DesktopService.GetMimeTypeForUri (x.FilePath);
-					// FIXME: Handle all language services.
+					if (!IdeServices.DesktopService.GetMimeTypeIsText (mt))
+						return false;
 
-					// Discard files with known IToDoCommentService implementations
-					return mt != "text/x-csharp";
+					// Don't process files which are handled by roslyn.
+					var useLegacy = IdeServices.DesktopService.GetRoslynLanguageForMimeType (mt) == null;
+					return useLegacy;
 				}).ToArray ();
 
 				Task.Run (async () => {
@@ -93,16 +95,7 @@ namespace MonoDevelop.Ide.Tasks
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while updating comment tags.", e);
 					}
-				});
-			}
-
-			public static string MimeTypeToLanguage (string mimeType)
-			{
-				switch (mimeType) {
-				case "text/x-csharp":
-					return Microsoft.CodeAnalysis.LanguageNames.CSharp;
-				}
-				return null;
+				}).Ignore();
 			}
 
 			internal static void LoadSolutionContents (Solution sln)
@@ -140,7 +133,7 @@ namespace MonoDevelop.Ide.Tasks
 
 			if (controller is FileDocumentController file) {
 				// C# uses the roslyn-provided todo comments system.
-				if (file.MimeType == "text/x-csharp")
+				if (IdeServices.DesktopService.GetRoslynLanguageForMimeType (file.MimeType) != null)
 					return false;
 			}
 			var s = controller.GetContent<DocumentContext> () != null;
