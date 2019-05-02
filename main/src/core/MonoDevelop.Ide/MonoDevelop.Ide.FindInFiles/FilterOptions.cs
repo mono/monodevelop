@@ -67,12 +67,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
-
-		public bool IncludeCodeBehind {
-			get;
-			set;
-		}
-
+		
 		public bool NameMatches (string name)
 		{
 			if (string.IsNullOrEmpty (FileMask) || FileMask == "*" || split_file_masks == null)
