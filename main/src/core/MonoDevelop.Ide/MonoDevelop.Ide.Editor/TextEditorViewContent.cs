@@ -386,7 +386,11 @@ namespace MonoDevelop.Ide.Editor
 		protected override void OnGrabFocus (DocumentView view)
 		{
 			textEditor.GrabFocus ();
-			DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
+			try {
+				DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error while setting up async completion.", e);
+			}
 		}
 	}
 }
