@@ -108,6 +108,22 @@ namespace MonoDevelop.Ide.Gui
 			contentCallbackRegistry?.InvokeContentChangeCallbacks ();
 		}
 
+		/// <summary>
+		/// Asynchronously waits for a specific type of content to be available and returns it
+		/// </summary>
+		/// <typeparam name="T">Type of the content to return</typeparam>
+		/// <typeparam name="cancellationToken">Cancellation token that cancels the wait</typeparam>
+		public Task<T> GetContentWhenAvailable<T> (CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var taskSource = new TaskCompletionSource<T> ();
+			var regCancel = cancellationToken.Register (() => taskSource.TrySetCanceled ());
+			var regContent = RunWhenContentAdded<T> (c => {
+				taskSource.TrySetResult (c);
+			});
+			taskSource.Task.ContinueWith (t => { regCancel.Dispose (); regContent.Dispose (); });
+			return taskSource.Task;
+		}
+
 		public T GetContent<T> (bool forActiveView) where T : class
 		{
 			return (T)GetContent (forActiveView, typeof (T));
