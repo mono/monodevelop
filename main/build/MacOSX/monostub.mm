@@ -326,7 +326,7 @@ int main (int argc, char **argv)
 	run_md_bundle_if_needed(appDir, argc, argv);
 
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"5.18.0.244";
+	NSString *req_mono_version = @"5.18.1.24";
 
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
