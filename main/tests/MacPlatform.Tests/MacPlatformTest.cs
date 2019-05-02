@@ -106,6 +106,45 @@ namespace MacPlatform.Tests
 
 			Assert.AreEqual (true, await tcs.Task, "Expected cancel handler to be called");
 		}
+
+		[Test]
+		public void TestIOKitPInvokes ()
+		{
+			// Test the pinvokes don't crash. Don't care about the details returned
+
+			var matchingDict = MacTelemetryDetails.IOServiceMatching ("IOService");
+
+			// IOServiceGetMatchingServices takes ownership of matchingDict, so no need to CFRelease it
+			var success = MacTelemetryDetails.IOServiceGetMatchingServices (0, matchingDict, out var iter);
+
+			if (MacTelemetryDetails.IOIteratorIsValid (iter) == 0) {
+				// An invalid iter isn't a test failure, but it means we can't really test anything else
+				// so just return
+				return;
+			}
+
+			var entry = MacTelemetryDetails.IOIteratorNext (iter);
+			if (entry == 0) {
+				MacTelemetryDetails.IOObjectRelease (iter);
+				return;
+			}
+
+			success = MacTelemetryDetails.IORegistryEntryGetChildIterator (entry, "IOService", out var childIter);
+			if (success != 0) {
+				MacTelemetryDetails.IOObjectRelease (entry);
+				return;
+			}
+
+			MacTelemetryDetails.IOObjectRelease (childIter);
+
+			var name = new Foundation.NSString ("testService");
+			var namePtr = MacTelemetryDetails.IORegistryEntrySearchCFProperty (entry, "IOService", name.Handle, IntPtr.Zero, 0x0);
+
+			MacTelemetryDetails.IOObjectRelease (entry);
+			MacTelemetryDetails.IOObjectRelease (iter);
+
+			MacTelemetryDetails.CFRelease (namePtr);
+		}
 	}
 }
 
