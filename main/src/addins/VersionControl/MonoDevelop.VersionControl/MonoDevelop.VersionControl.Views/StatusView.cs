@@ -774,7 +774,7 @@ namespace MonoDevelop.VersionControl.Views
 			StartUpdate ();
 		}
 
-		void OnCommitClicked (object src, EventArgs args)
+		async void OnCommitClicked (object src, EventArgs args)
 		{
 			// Nothing to commit
 			if (changeSet.IsEmpty)
@@ -789,7 +789,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 			}
 
-			CommitCommand.Commit (vc, changeSet.Clone ());
+			await CommitCommand.CommitAsync (vc, changeSet.Clone ());
 		}
 
 
