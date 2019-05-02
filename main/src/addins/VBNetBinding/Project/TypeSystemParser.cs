@@ -43,28 +43,6 @@ namespace MonoDevelop.VBNetBinding
 			var fileName = options.FileName;
 			var project = options.Project;
 			var result = new VBNetParsedDocument (options, fileName);
-
-			if (project != null) {
-				
-				var projectFile = project.Files.GetFile (fileName);
-				if (projectFile != null && !project.IsCompileable (projectFile.FilePath))
-					result.Flags |= ParsedDocumentFlags.NonSerializable;
-			}
-
-			if (project != null) {
-				var curDoc = options.RoslynDocument;
-				if (curDoc == null) {
-					var curProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (project);
-					if (curProject != null) {
-						var documentId = IdeApp.TypeSystemService.GetDocumentId (project, fileName);
-						result.DocumentId = documentId;
-					}
-				}
-			} else {
-				var compilerArguments = GetCompilerArguments (project);
-				result.ParsedUnit = VisualBasicSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
-			}
-
 			DateTime time;
 			try {
 				time = System.IO.File.GetLastWriteTimeUtc (fileName);
@@ -73,22 +51,6 @@ namespace MonoDevelop.VBNetBinding
 			}
 			result.LastWriteTimeUtc = time;
 			return Task.FromResult<ParsedDocument> (result);
-		}
-
-		public static VisualBasicParseOptions GetCompilerArguments (MonoDevelop.Projects.Project project)
-		{
-			var compilerArguments = new VisualBasicParseOptions ();
-			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null) {
-				return compilerArguments;
-			}
-
-			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-			if (configuration == null)
-				return compilerArguments;
-
-			// compilerArguments = compilerArguments.WithPreprocessorSymbols (configuration.GetDefineSymbols ());
-
-			return compilerArguments;
 		}
 	}
 }
