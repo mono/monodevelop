@@ -363,7 +363,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					var fullscreenToolbarNsWindow = searchEntry.Window;
 					if (fullscreenToolbarNsWindow == null) { // fallback to old query code and log an internal error
 						LoggingService.LogInternalError ("Getting the main fullscreen IDE window failed, this should never happen", new InvalidOperationException ());
+						#pragma warning disable CS0618
+						//TODO: reenable warning and use SharedApplication.DangerousWindows once XamMac dependency is bumped to 5.10+
 						var nsWindows = NSApplication.SharedApplication.Windows;
+						#pragma warning restore CS0618
 						fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
 							nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
 					}
