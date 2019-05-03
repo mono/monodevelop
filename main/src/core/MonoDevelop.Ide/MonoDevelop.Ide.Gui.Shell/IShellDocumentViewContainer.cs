@@ -35,12 +35,13 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void ReplaceView (int position, IShellDocumentViewItem view);
 		void RemoveView (int tabPos);
 		void ReorderView (int currentIndex, int newIndex);
-		void SetCurrentMode (DocumentViewContainerMode currentMode);
+		DocumentViewContainerMode CurrentMode { get; set; }
 		void SetSupportedModes (DocumentViewContainerMode supportedModes);
 		void RemoveAllViews ();
 		double [] GetRelativeSplitSizes ();
 		void SetRelativeSplitSizes (double [] sizes);
 		IShellDocumentViewItem ActiveView { get; set; }
 		event EventHandler ActiveViewChanged;
+		event EventHandler CurrentModeChanged;
 	}
 }

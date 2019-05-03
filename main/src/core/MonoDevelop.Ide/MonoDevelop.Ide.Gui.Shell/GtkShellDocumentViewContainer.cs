@@ -53,8 +53,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		GtkShellDocumentViewContainerSplit splitContainer;
 
 		public event EventHandler ActiveViewChanged;
-
-		public DocumentViewContainerMode CurrentMode => currentMode;
+		public event EventHandler CurrentModeChanged;
 
 		public GtkShellDocumentViewContainer ()
 		{
@@ -97,9 +96,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 				tabstrip.RemoveTab (tabstrip.TabCount - 1);
 		}
 
-		public void SetCurrentMode (DocumentViewContainerMode mode)
-		{
-			SetCurrentMode (mode, null);
+		public DocumentViewContainerMode CurrentMode {
+			get { return currentMode; }
+			set { SetCurrentMode (value, null); }
 		}
 
 		public void SetCurrentMode (DocumentViewContainerMode mode, GtkShellDocumentViewItem newActive)
@@ -150,6 +149,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 			currentContainer.ActiveView = newActive ?? activeView;
 			currentContainer.ActiveViewChanged += Container_ActiveViewChanged;
 			currentContainer.Widget.Show ();
+
+			if (newActive != activeView)
+				ActiveViewChanged?.Invoke (this, EventArgs.Empty);
+
+			CurrentModeChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		void Container_ActiveViewChanged (object sender, EventArgs e)
@@ -197,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void TabActivated (object s, EventArgs args)
 		{
 			if (hasSplit && tabstrip.ActiveTab == tabstrip.TabCount - 1) {
-				SetCurrentMode (DocumentViewContainerMode.VerticalSplit);
+				CurrentMode = DocumentViewContainerMode.VerticalSplit;
 			} else {
 				var tab = (Tab)s;
 				SetCurrentMode (DocumentViewContainerMode.Tabs, (GtkShellDocumentViewItem)tab.Tag);
