@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -37,11 +38,11 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 
-		protected override Task OnInitialize (ServiceProvider serviceProvider)
+		protected override async Task OnInitialize (ServiceProvider serviceProvider)
 		{
 			CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
-			base.KeyBindingFailed += OnKeyBindingFailed;
+			KeyBindingFailed += OnKeyBindingFailed;
 
 			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
 			KeyBindingService.LoadCurrentBindings ("MD2");
@@ -49,10 +50,14 @@ namespace MonoDevelop.Components.Commands
 			CommandError += delegate (object sender, CommandErrorArgs args) {
 				LoggingService.LogInternalError (args.ErrorMessage, args.Exception);
 			};
+
 			Counters.Initialization.Trace ("Loading Commands");
 			LoadCommands ("/MonoDevelop/Ide/Commands");
 
-			return base.OnInitialize (serviceProvider);
+			IsEnabled = false;
+			Runtime.ServiceProvider.WhenServiceInitialized<IShell> ((_) => { IsEnabled = true; });
+
+			await base.OnInitialize (serviceProvider);
 		}
 
 		static void OnKeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
