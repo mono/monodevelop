@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Navigation
 
 		static async Task<RefactoringSymbolInfo> GetNamedTypeAtCaret (Ide.Gui.Document doc)
 		{
-			if (doc == null)
+			if (doc == null || doc.Editor == null)
 				return null;
 			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
 

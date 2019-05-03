@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using MonoDevelop.Components.AutoTest.Results;
 using MonoDevelop.StressTest.Attributes;
 
 namespace MonoDevelop.StressTest
 {
 	public static class TestScenarioLeakExtensions
 	{
-		const string autoTest = "MonoDevelop.Components.AutoTest.Results.GtkWidgetResult";
+		static readonly Type[] resultTypes = {
+			typeof(GtkWidgetResult),
+			typeof(NSObjectResult),
+		};
 
 		public static HashSet<string> GetTrackedTypes (this ITestScenario scenario)
 		{
@@ -19,11 +23,13 @@ namespace MonoDevelop.StressTest
 				result.Add (attr.TypeName);
 			}
 
-			foreach (var attr in scenarioType.GetMethod("Run").GetCustomAttributes<NoLeakAttribute> (true)) {
+			foreach (var attr in scenarioType.GetMethod (nameof (ITestScenario.Run)).GetCustomAttributes<NoLeakAttribute> (true)) {
 				result.Add (attr.TypeName);
 			}
 
-			result.Add (autoTest);
+			foreach (var type in resultTypes) {
+				result.Add (type.FullName);
+			}
 
 			return result;
 		}
@@ -33,12 +39,14 @@ namespace MonoDevelop.StressTest
 			var scenarioType = scenario.GetType ();
 
 			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
-			var member = isCleanup ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
+			var member = isCleanup ? scenarioType : (MemberInfo)scenarioType.GetMethod (nameof (ITestScenario.Run));
 
 			var attributes = member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
 
-			// Ensure that we don't leak, so add GtkWidgetResult results, as they can cause retention of UI widgets.
-			attributes.Add (autoTest, new NoLeakAttribute (autoTest));
+			// Ensure that we don't leak, so add AutoTest results, as they can cause retention of UI widgets.
+			foreach (var type in resultTypes) {
+				attributes.Add (type.FullName, new NoLeakAttribute (type));
+			}
 
 			return attributes;
 		}

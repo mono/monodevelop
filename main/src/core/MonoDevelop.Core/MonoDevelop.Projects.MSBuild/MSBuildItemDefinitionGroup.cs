@@ -1,10 +1,10 @@
-﻿//
-// StringBuilderCache.cs
+//
+// MSBuildItemDefinitionGroup.cs
 //
 // Author:
-//       Mike Krüger <mikkrg@microsoft.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
 
-namespace MonoDevelop.Core
+namespace MonoDevelop.Projects.MSBuild
 {
-	static class SharedPools
+	public class MSBuildItemDefinitionGroup : MSBuildElement
 	{
-		/// <summary>
-		/// pool that uses default constructor with 100 elements pooled
-		/// </summary>
-		public static ObjectPool<T> BigDefault<T> () where T : class, new()
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			return DefaultBigPool<T>.Instance;
+			var item = new MSBuildItem ();
+			item.ParentNode = this;
+			item.Read (reader);
+			ChildNodes = ChildNodes.Add (item);
 		}
 
-		/// <summary>
-		/// pool that uses default constructor with 20 elements pooled
-		/// </summary>
-		public static ObjectPool<T> Default<T> () where T : class, new()
+		internal override string GetElementName ()
 		{
-			return DefaultNormalPool<T>.Instance;
+			return "ItemDefinitionGroup";
 		}
 
-		static class DefaultBigPool<T> where T : class, new()
-		{
-			public static readonly ObjectPool<T> Instance = new ObjectPool<T> (() => new T (), 100);
-		}
-
-		static class DefaultNormalPool<T> where T : class, new()
-		{
-			public static readonly ObjectPool<T> Instance = new ObjectPool<T> (() => new T (), 20);
+		public IEnumerable<MSBuildItem> Items {
+			get {
+				return ChildNodes.OfType<MSBuildItem> ();
+			}
 		}
 	}
 }

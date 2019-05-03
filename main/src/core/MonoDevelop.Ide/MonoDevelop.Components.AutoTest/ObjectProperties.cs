@@ -44,7 +44,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			if (!propertyMap.ContainsKey (propertyName))
 				propertyMap.Add (propertyName, propertyValue);
-			if (!propertyMetaData.ContainsKey (propertyName))
+			if (!propertyMetaData.ContainsKey (propertyName) && propertyInfo != null)
 				propertyMetaData.Add (propertyName, new PropertyMetadata (propertyInfo));
 		}
 

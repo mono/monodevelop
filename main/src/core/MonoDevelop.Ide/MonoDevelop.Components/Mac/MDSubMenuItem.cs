@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Mac
 
 		public override string Title {
 			get {
-				if (!initiallyUpdated)
+				if (!initiallyUpdated && !ces.AutoHide)
 					Update ();
 				return base.Title;
 			}

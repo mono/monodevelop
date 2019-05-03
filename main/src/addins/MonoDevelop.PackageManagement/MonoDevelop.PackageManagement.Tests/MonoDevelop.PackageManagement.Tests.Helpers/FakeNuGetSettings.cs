@@ -62,6 +62,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return new List<KeyValuePair<string, string>> ();
 		}
 
+#pragma warning disable CS0618
+
 		public Dictionary<string, List<SettingValue>> SettingValues = new Dictionary<string, List<SettingValue>> ();
 
 		public IList<SettingValue> GetSettingValues (string section, bool isPath = false)
@@ -133,6 +135,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			throw new NotImplementedException ();
 		}
 
+#pragma warning restore CS0618
+
 		public void SaveToDisk ()
 		{
 		}
@@ -145,6 +149,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public IList<string> GetConfigRoots ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public SettingSection GetSection (string sectionName)
+		{
+			return null;
+		}
+
+		public void AddOrUpdate (string sectionName, SettingItem item)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void Remove (string sectionName, SettingItem item)
 		{
 			throw new NotImplementedException ();
 		}

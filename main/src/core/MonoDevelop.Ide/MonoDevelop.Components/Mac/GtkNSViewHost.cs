@@ -66,6 +66,7 @@ namespace Gtk
 
 		NSView view;
 		NSView superview;
+		bool sizeAllocated;
 
 		public GtkNSViewHost (NSView view)
 		{
@@ -78,7 +79,7 @@ namespace Gtk
 		{
 			LogEnter ();
 			try {
-				if (view == null)
+				if (view == null || !sizeAllocated)
 					return;
 
 				var window = GdkWindow;
@@ -243,6 +244,7 @@ namespace Gtk
 			try {
 				base.OnSizeAllocated (allocation);
 
+				sizeAllocated = true;
 				UpdateViewFrame ();
 			} finally {
 				LogExit ();

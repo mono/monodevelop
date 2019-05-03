@@ -75,11 +75,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IMethod)dataObject;
 
 			var ambience = new CSharpAmbience ();
-			try {
-				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (GetText (method));
-			} catch (Exception) {
-				nodeInfo.Label = method.Name;
-			}
+			nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.GetDisplayString ());
 
 			if (method.IsPrivate ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
@@ -93,37 +89,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return "md-" + method.Accessibility.GetStockIcon () + global + "method";
 		}
 
-		public static string GetText (IMethod method)
-		{
-			var b = StringBuilderCache.Allocate ();
-			try {
-				b.Append ('(');
-				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (i > 0)
-						b.Append (", ");
-					// TODO: Fix this.
-					//b.Append (CSharpLanguage.Instance.TypeToString (method.Parameters [i].ParameterType, false, method.Parameters [i]));
-					b.Append (method.Parameters [i].Type.Name);
-				}
-				//if (method.CallingConvention == MethodCallingConvention.VarArg) {
-				//	if (method.HasParameters)
-				//		b.Append (", ");
-				//	b.Append ("...");
-				//}
-				if (method.IsConstructor) {
-					b.Append (')');
-				} else {
-					b.Append (") : ");
-					//b.Append (CSharpLanguage.Instance.TypeToString (method.ReturnType, false, method.MethodReturnType));
-					b.Append (method.ReturnType.Name);
-				}
 
-				//return CSharpLanguage.Instance.FormatMethodName (method) + b;
-				return method.Name + b;
-			} finally {
-				StringBuilderCache.Free (b);
-			}
-		}
 
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
@@ -152,6 +118,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = TypeDefinitionNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
+
 			return settings;
 		}
 
@@ -160,23 +127,20 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
 			var csharpDecompiler = assemblyLoader.CSharpDecompiler;
-			try
-			{
-				var syntaxTree = decompile(csharpDecompiler);
+			try {
+				var syntaxTree = decompile (csharpDecompiler);
 				if (!flags.MethodBodies) {
 					MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
 				}
 
-				var output = new ColoredCSharpFormatter(data);
-				TokenWriter tokenWriter = new TextTokenWriter(output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
+				var output = new ColoredCSharpFormatter (data);
+				TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
 				var formattingPolicy = settings.CSharpFormattingOptions;
-				syntaxTree.AcceptVisitor(new CSharpOutputVisitor(tokenWriter, formattingPolicy));
-				output.SetDocumentData();
+				syntaxTree.AcceptVisitor (new CSharpOutputVisitor (tokenWriter, formattingPolicy));
+				output.SetDocumentData ();
 				return output.ReferencedSegments;
-			}
-			catch (Exception e)
-			{
-				data.InsertText(data.Length, "/* decompilation failed: \n" + e + " */");
+			} catch (Exception e) {
+				data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
 			}
 			return null;
 		}

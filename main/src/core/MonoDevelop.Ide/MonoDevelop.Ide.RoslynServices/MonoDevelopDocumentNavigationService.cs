@@ -1,6 +1,7 @@
 using System;
 using System.Composition;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
@@ -206,9 +207,9 @@ namespace MonoDevelop.Ide.RoslynServices
 					// (i.e. don't give it focus).  This way if a user is just arrowing through a set 
 					// of FindAllReferences results, they don't have their cursor placed into the document.
 					//TODO: MAC we don't support this kind of opening
-					workspace.OpenDocument (documentId);
+					workspace.OpenDocument (documentId, true);
 				} else {
-					workspace.OpenDocument (documentId);
+					workspace.OpenDocument (documentId, true);
 				}
 			}
 

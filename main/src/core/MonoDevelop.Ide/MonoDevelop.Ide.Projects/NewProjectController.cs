@@ -179,7 +179,6 @@ namespace MonoDevelop.Ide.Projects
 
 			dialog.ShowDialog ();
 
-			wizardProvider.Dispose ();
 			imageProvider.Dispose ();
 
 			return IsNewItemCreated;
@@ -674,6 +673,8 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
+			dialog.CloseDialog ();
+
 			if (ParentFolder != null)
 				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
 			else
@@ -703,6 +704,7 @@ namespace MonoDevelop.Ide.Projects
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
 
+			wizardProvider.Dispose ();
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
 
@@ -712,8 +714,6 @@ namespace MonoDevelop.Ide.Projects
 				tcs.SetResult (true);
 			});
 			await tcs.Task;
-
-			dialog.CloseDialog ();
 		}
 
 		public WizardPage CurrentWizardPage {

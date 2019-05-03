@@ -201,6 +201,26 @@ namespace MonoDevelop.Ide
 
 			await serviceInitialization;
 
+			// Set initial run flags
+			Counters.Initialization.Trace ("Upgrading Settings");
+
+			if (PropertyService.Get ("MonoDevelop.Core.FirstRun", true)) {
+				isInitialRun = true;
+				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
+				PropertyService.SaveProperties ();
+			}
+
+			string lastVersionString = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.0");
+			Version.TryParse (lastVersionString, out var lastVersion);
+
+			if (Runtime.Version > lastVersion && !isInitialRun) {
+				isInitialRunAfterUpgrade = true;
+				upgradedFromVersion = lastVersion;
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
+				PropertyService.SaveProperties ();
+			}
+
 			commandService = await Runtime.GetService<CommandManager> ();
 
 			Counters.Initialization.Trace ("Creating Workbench");
@@ -254,26 +274,6 @@ namespace MonoDevelop.Ide
 			if (Customizer != null)
 				Customizer.OnIdeInitialized ();
 
-			// Set initial run flags
-			Counters.Initialization.Trace ("Upgrading Settings");
-
-			if (PropertyService.Get("MonoDevelop.Core.FirstRun", true)) {
-				isInitialRun = true;
-				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
-				PropertyService.SaveProperties ();
-			}
-
-			string lastVersionString = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.0");
-			Version.TryParse (lastVersionString, out var lastVersion);
-
-			if (Runtime.Version > lastVersion && !isInitialRun) {
-				isInitialRunAfterUpgrade = true;
-				upgradedFromVersion = lastVersion;
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
-				PropertyService.SaveProperties ();
-			}
-
 			monitor.EndTask ();
 
 			UpdateInstrumentationIcon ();
@@ -316,8 +316,11 @@ namespace MonoDevelop.Ide
 		public static void BringToFront ()
 		{
 			Initialized += (sender, e) => {
-				if (!Ide.WelcomePage.WelcomePageService.HasWindowImplementation)
+				if (WelcomePage.WelcomePageService.HasWindowImplementation && !Workbench.RootWindow.Visible) {
+					WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
+				} else {
 					Workbench.Present ();
+				}
 			};
 		}
 

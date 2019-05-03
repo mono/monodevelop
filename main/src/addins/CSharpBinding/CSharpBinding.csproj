@@ -290,6 +290,7 @@
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynExperimentationService.cs" />
     <Compile Include="MonoDevelop.CSharp.Debugger\RoslynDebugInfoProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CommandArgsFactories.cs" />
+    <Compile Include="MonoDevelop.CSharp.Debugger\DebuggerCompletionController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />

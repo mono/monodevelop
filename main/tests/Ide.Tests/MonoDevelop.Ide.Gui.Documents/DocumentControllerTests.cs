@@ -32,6 +32,8 @@ using System.Threading.Tasks;
 using UnitTests;
 using MonoDevelop.Components;
 using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -140,6 +142,265 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		[Test]
+		public async Task ContentChangedEvent ()
+		{
+			var controller = new ContentTestController ();
+			await controller.Initialize (new ModelDescriptor ());
+
+			var theContent = new SomeContent ();
+
+			int contentChangedEvents = 0;
+
+			controller.ContentChanged += (s, a) => {
+				contentChangedEvents++;
+			};
+
+			Assert.AreEqual (0, contentChangedEvents);
+
+			controller.AddContent (theContent);
+
+			Assert.AreEqual (1, contentChangedEvents);
+
+			controller.RemoveContent (theContent);
+
+			Assert.AreEqual (2, contentChangedEvents);
+		}
+
+		[Test]
+		public async Task RunWhenContentAdded ()
+		{
+			var controller = new ContentTestController ();
+			await controller.Initialize (new ModelDescriptor ());
+
+			var theContent = new SomeContent ();
+
+			int totalEvents = 0;
+			int contentAddedEvents = 0;
+			int additionalContentAddedEvents = 0;
+
+			var r1 = controller.RunWhenContentAdded<SomeContent> (c => {
+				totalEvents++;
+				if (c == theContent)
+					contentAddedEvents++;
+			});
+
+			Assert.AreEqual (0, totalEvents);
+			Assert.AreEqual (0, contentAddedEvents);
+			Assert.AreEqual (0, additionalContentAddedEvents);
+
+			controller.AddContent (theContent);
+
+			Assert.AreEqual (1, totalEvents);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.AreEqual (0, additionalContentAddedEvents);
+
+			controller.RunWhenContentAdded<SomeContent> (c => {
+				totalEvents++;
+				if (c == theContent)
+					additionalContentAddedEvents++;
+			});
+
+			Assert.AreEqual (2, totalEvents);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.AreEqual (1, additionalContentAddedEvents);
+
+			controller.RemoveContent (theContent);
+
+			Assert.AreEqual (2, totalEvents);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.AreEqual (1, additionalContentAddedEvents);
+
+			controller.AddContent (theContent);
+
+			Assert.AreEqual (4, totalEvents);
+			Assert.AreEqual (2, contentAddedEvents);
+			Assert.AreEqual (2, additionalContentAddedEvents);
+
+			var oldContent = theContent;
+			theContent = new SomeContent ();
+			controller.ReplaceContent (oldContent, theContent);
+
+			Assert.AreEqual (6, totalEvents);
+			Assert.AreEqual (3, contentAddedEvents);
+			Assert.AreEqual (3, additionalContentAddedEvents);
+
+			r1.Dispose ();
+
+			controller.RemoveContent (theContent);
+			theContent = new SomeContent ();
+			controller.AddContent (theContent);
+
+			Assert.AreEqual (7, totalEvents);
+			Assert.AreEqual (3, contentAddedEvents);
+			Assert.AreEqual (4, additionalContentAddedEvents);
+		}
+
+		[Test]
+		public async Task RunWhenContentRemoved ()
+		{
+			var controller = new ContentTestController ();
+			await controller.Initialize (new ModelDescriptor ());
+
+			var theContent = new SomeContent ();
+
+			int totalEvents = 0;
+			int contentEvents = 0;
+			int additionalContentEvents = 0;
+
+			var r1 = controller.RunWhenContentRemoved<SomeContent> (c => {
+				totalEvents++;
+				if (c == theContent)
+					contentEvents++;
+			});
+
+			Assert.AreEqual (0, totalEvents);
+			Assert.AreEqual (0, contentEvents);
+			Assert.AreEqual (0, additionalContentEvents);
+
+			controller.AddContent (theContent);
+
+			Assert.AreEqual (0, totalEvents);
+			Assert.AreEqual (0, contentEvents);
+			Assert.AreEqual (0, additionalContentEvents);
+
+			controller.RunWhenContentRemoved<SomeContent> (c => {
+				totalEvents++;
+				if (c == theContent)
+					additionalContentEvents++;
+			});
+
+			Assert.AreEqual (0, totalEvents);
+			Assert.AreEqual (0, contentEvents);
+			Assert.AreEqual (0, additionalContentEvents);
+
+			controller.RemoveContent (theContent);
+
+			Assert.AreEqual (2, totalEvents);
+			Assert.AreEqual (1, contentEvents);
+			Assert.AreEqual (1, additionalContentEvents);
+
+			controller.AddContent (theContent);
+
+			Assert.AreEqual (2, totalEvents);
+			Assert.AreEqual (1, contentEvents);
+			Assert.AreEqual (1, additionalContentEvents);
+
+			var newContent = new SomeContent ();
+			controller.ReplaceContent (theContent, newContent);
+			theContent = newContent;
+
+			Assert.AreEqual (4, totalEvents);
+			Assert.AreEqual (2, contentEvents);
+			Assert.AreEqual (2, additionalContentEvents);
+
+			r1.Dispose ();
+
+			controller.RemoveContent (theContent);
+
+			Assert.AreEqual (5, totalEvents);
+			Assert.AreEqual (2, contentEvents);
+			Assert.AreEqual (3, additionalContentEvents);
+		}
+
+		[Test]
+		public async Task RunWhenContentAddedOrRemoved ()
+		{
+			var controller = new ContentTestController ();
+			await controller.Initialize (new ModelDescriptor ());
+
+			var addedContent = new SomeContent ();
+			var removedContent = addedContent;
+
+			int totalEvents = 0;
+			int contentAddedEvents = 0;
+			int contentRemovedEvents = 0;
+			int additionalContentAddedEvents = 0;
+			int additionalContentRemovedEvents = 0;
+
+			var r1 = controller.RunWhenContentAddedOrRemoved<SomeContent> (
+				added => {
+					totalEvents++;
+					if (added == addedContent)
+						contentAddedEvents++;
+				},
+				removed => {
+					totalEvents++;
+					if (removed == removedContent)
+						contentRemovedEvents++;
+				}
+			);
+
+			Assert.AreEqual (0, totalEvents);
+			Assert.AreEqual (0, contentAddedEvents);
+			Assert.AreEqual (0, contentRemovedEvents);
+			Assert.AreEqual (0, additionalContentAddedEvents);
+			Assert.AreEqual (0, additionalContentRemovedEvents);
+
+			controller.AddContent (addedContent);
+
+			Assert.AreEqual (1, totalEvents);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.AreEqual (0, contentRemovedEvents);
+			Assert.AreEqual (0, additionalContentAddedEvents);
+			Assert.AreEqual (0, additionalContentRemovedEvents);
+
+			controller.RunWhenContentAddedOrRemoved<SomeContent> (
+				added => {
+					totalEvents++;
+					if (added == addedContent)
+						additionalContentAddedEvents++;
+				},
+				removed => {
+					totalEvents++;
+					if (removed == removedContent)
+						additionalContentRemovedEvents++;
+				}
+			);
+
+			Assert.AreEqual (2, totalEvents);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.AreEqual (0, contentRemovedEvents);
+			Assert.AreEqual (1, additionalContentAddedEvents);
+			Assert.AreEqual (0, additionalContentRemovedEvents);
+
+			controller.RemoveContent (addedContent);
+
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.AreEqual (1, contentRemovedEvents);
+			Assert.AreEqual (1, additionalContentAddedEvents);
+			Assert.AreEqual (1, additionalContentRemovedEvents);
+			Assert.AreEqual (4, totalEvents);
+
+			controller.AddContent (addedContent);
+
+			Assert.AreEqual (6, totalEvents);
+			Assert.AreEqual (2, contentAddedEvents);
+			Assert.AreEqual (1, contentRemovedEvents);
+			Assert.AreEqual (2, additionalContentAddedEvents);
+			Assert.AreEqual (1, additionalContentRemovedEvents);
+
+			addedContent = new SomeContent ();
+			controller.ReplaceContent (removedContent, addedContent);
+			removedContent = addedContent;
+
+			Assert.AreEqual (10, totalEvents);
+			Assert.AreEqual (3, contentAddedEvents);
+			Assert.AreEqual (2, contentRemovedEvents);
+			Assert.AreEqual (3, additionalContentAddedEvents);
+			Assert.AreEqual (2, additionalContentRemovedEvents);
+
+			r1.Dispose ();
+
+			controller.RemoveContent (addedContent);
+			controller.AddContent (addedContent);
+
+			Assert.AreEqual (12, totalEvents);
+			Assert.AreEqual (3, contentAddedEvents);
+			Assert.AreEqual (2, contentRemovedEvents);
+			Assert.AreEqual (4, additionalContentAddedEvents);
+			Assert.AreEqual (3, additionalContentRemovedEvents);
+		}
 	}
 
 	class DummyControl : Control
@@ -250,5 +511,41 @@ namespace MonoDevelop.Ide.Gui.Documents
 			container.Views.Add (await InnerController.GetDocumentView ());
 			return container;
 		}
+	}
+
+	class ContentTestController: DocumentController
+	{
+		List<object> content = new List<object> ();
+
+		public void AddContent (object ob)
+		{
+			content.Add (ob);
+			NotifyContentChanged ();
+		}
+
+		public void RemoveContent (object ob)
+		{
+			content.Remove (ob);
+			NotifyContentChanged ();
+		}
+
+		public void ReplaceContent (object oldOb, object newOb)
+		{
+			content.Remove (oldOb);
+			content.Add (newOb);
+			NotifyContentChanged ();
+		}
+
+		protected override object OnGetContent (Type type)
+		{
+			var c = content.FirstOrDefault (ob => type.IsInstanceOfType (ob));
+			if (c != null)
+				return c;
+			return base.OnGetContent (type);
+		}
+	}
+
+	class SomeContent
+	{
 	}
 }

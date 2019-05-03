@@ -423,15 +423,16 @@ namespace MonoDevelop.Components.AutoTest
 			return session.CreateNewTimerContext (timerName).TotalTime;
 		}
 
+		public void WaitForCounterChange (string counterName, int timeout = 20000)
+		{
+			AutoTestSession.CounterContext context = session.CreateNewCounterContext (counterName);
+
+			session.WaitForCounterToChange (context, timeout);
+		}
+
 		public T GetCounterMetadataValue<T> (string counterName, string propertyName)
 		{
-			var counter = session.GetCounterByIDOrName (counterName);
-			var metadata = counter.LastValue.Metadata;
-			if (metadata != null && metadata.TryGetValue (propertyName, out var property)) {
-				return (T)Convert.ChangeType (property, typeof (T));
-			}
-
-			return default (T);
+			return session.GetCounterMetadataValue<T> (counterName, propertyName);
 		}
 
 		public XmlDocument ResultsAsXml (AppResult[] results)

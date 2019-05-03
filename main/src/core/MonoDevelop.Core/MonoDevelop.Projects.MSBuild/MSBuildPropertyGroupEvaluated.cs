@@ -40,9 +40,10 @@ namespace MonoDevelop.Projects.MSBuild
 			ParentProject = parent;
 		}
 
-		internal void Sync (MSBuildEngine engine, object item)
+		internal void Sync (MSBuildEngine engine, object item, bool clearProperties = true)
 		{
-			properties.Clear ();
+			if (clearProperties)
+				properties.Clear ();
 			this.engine = engine;
 			foreach (var propName in engine.GetItemMetadataNames (item)) {
 				var prop = new MSBuildPropertyEvaluated (ParentProject, propName, engine.GetItemMetadata (item, propName), engine.GetEvaluatedItemMetadata (item, propName));

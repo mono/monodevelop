@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -294,16 +295,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 				if (result.Content != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
-					Document doc = result.Content.DocumentController.Document;
+					Document doc = result.Content;
 
-					ScrollToRequestedCaretLocation (doc, info);
-
-					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
-						doc.RunWhenLoaded (() => {
-							if (doc.Window != null)
-								doc.Select ();
-						});
-					}
+					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront))
+						doc.Select ();
 					return doc;
 				}
 				return null;
@@ -365,6 +360,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					foreach (Document doc in Documents) {
 						if (doc.IsNewDocument && doc.FilePath == origName) {
 							doc.Select ();
+							ScrollToRequestedCaretLocation (doc, openFileInfo);
 							return (true, doc);
 						}
 					}
@@ -619,40 +615,37 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (editorOperationsFactoryService == null)
 				editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
 
-			var ipos = doc.Editor;
-			var textView = doc.GetContent<ITextView> ();
-			if (ipos != null || textView != null) {
-				FileSettingsStore.Remove (doc.FileName);
-				doc.DisableAutoScroll ();
-				doc.RunWhenLoaded (() => {
-					if (ipos != null) {
-						var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
-						if (info.Offset >= 0) {
-							loc = ipos.OffsetToLocation (info.Offset);
-						}
-						if (loc.IsEmpty)
-							return;
-						ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
-					} else {
-						var offset = info.Offset;
-						if (offset < 0) {
-							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
-							if (info.Column >= 1)
-								offset = line.Start + info.Column - 1;
-							else
-								offset = line.Start;
-						}
+			FileSettingsStore.Remove (doc.FileName);
+			doc.DisableAutoScroll ();
 
-						if (editorOperationsFactoryService != null) {
-							var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
-							var point = new VirtualSnapshotPoint (textView.TextSnapshot, offset);
-							editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
-						} else {
-							LoggingService.LogError ("Missing editor operations");
-						}
+			doc.RunWhenContentAdded<ITextView> (textView => {
+				var ipos = doc.Editor;
+				if (ipos != null) {
+					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
+					if (info.Offset >= 0) {
+						loc = ipos.OffsetToLocation (info.Offset);
 					}
-				});
-			}
+					if (loc.IsEmpty)
+						return;
+					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+				} else {
+					var offset = info.Offset;
+					if (offset < 0) {
+						var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
+						if (info.Column >= 1)
+							offset = line.Start + info.Column - 1;
+						else
+							offset = line.Start;
+					}
+					if (editorOperationsFactoryService != null) {
+						var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
+						var point = new VirtualSnapshotPoint (textView.TextSnapshot, offset);
+						editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+					} else {
+						LoggingService.LogError ("Missing editor operations");
+					}
+				}
+			});
 
 /*			var navigator = (ISourceFileNavigator)newContent.GetContent (typeof (ISourceFileNavigator));
 			if (fileInfo.Offset >= 0)

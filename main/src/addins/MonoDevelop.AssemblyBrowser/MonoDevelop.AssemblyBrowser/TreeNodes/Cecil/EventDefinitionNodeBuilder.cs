@@ -61,9 +61,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var evt = (IEvent)dataObject;
-			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (evt.Name + " : ");
-			// TODO: Fix this.
-			//nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (evt.Name + " : " + CSharpLanguage.Instance.TypeToString (evt.ReturnType, false, evt));
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (evt.GetDisplayString ());
 			var accessor = evt.AddAccessor ?? evt.RemoveAccessor;
 
 			if (!accessor.IsPublic ())

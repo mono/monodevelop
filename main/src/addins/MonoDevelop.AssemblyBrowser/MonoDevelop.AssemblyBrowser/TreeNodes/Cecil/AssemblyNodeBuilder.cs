@@ -60,11 +60,29 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			
-			nodeInfo.Label = Path.GetFileNameWithoutExtension (compilationUnit.FileName);
+
+			nodeInfo.Label = GetMarkup (compilationUnit.Assembly);
 			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
-		
+
+		static string GetMarkup (PEFile assembly)
+		{
+			var sb = StringBuilderCache.Allocate ();
+
+			var metadata = assembly.Metadata;
+			var def = metadata.GetAssemblyDefinition ();
+
+			sb.Append (Ide.TypeSystem.Ambience.EscapeText (metadata.GetString (def.Name)));
+
+			if (def.Version.Build != 0 || def.Version.Revision != 0 || def.Version.Major != 0 || def.Version.Minor != 0) {
+				sb.Append (" <small>(");
+				sb.Append (def.Version);
+				sb.Append (")</small>");
+			}
+
+			return StringBuilderCache.ReturnAndFree (sb);
+		}
+
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;

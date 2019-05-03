@@ -158,7 +158,13 @@ namespace MonoDevelop.TextEditor
 
 		void UpdateEditorFormatMap (object sender, EventArgs args)
 		{
-			var editorFormat = editorFormatMapService.GetEditorFormatMap ("text");
+			UpdateEditorFormatMap ("text");
+			UpdateEditorFormatMap ("tooltip");
+		}
+
+		void UpdateEditorFormatMap (string appearanceCategory)
+		{
+			var editorFormat = editorFormatMapService.GetEditorFormatMap (appearanceCategory);
 			editorFormat.BeginBatchUpdate ();
 			var theme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme.Value);
 			var settingsMap = new Dictionary<string, ThemeSetting> ();
@@ -167,7 +173,7 @@ namespace MonoDevelop.TextEditor
 				var setting = theme.Settings[i];
 				settingsMap[setting.Name] = setting;
 			}
-			CreatePlainText (editorFormat, defaultSettings);
+			CreatePlainText (editorFormat, defaultSettings, appearanceCategory);
 			CreateLineNumberAndSuggestion (editorFormat, defaultSettings);
 			CreateOutlining (editorFormat, defaultSettings);
 			CreateCaret (editorFormat, defaultSettings);
@@ -200,7 +206,10 @@ namespace MonoDevelop.TextEditor
 			// all the themes expect that. Fixes https://devdiv.visualstudio.com/DevDiv/_workitems/edit/804158
 			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.BackgroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.IndentationGuide);
-			CreateRename (editorFormat, defaultSettings);
+			CreateResourceDictionary (editorFormat, defaultSettings, "NavigableSymbolFormat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
+			CreateResourceDictionary (editorFormat, defaultSettings, "urlformat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
+			CreateInlineEditField (editorFormat, defaultSettings, "RoslynRenameFieldBackgroundAndBorderTag");
+			CreateInlineEditField (editorFormat, defaultSettings, "ExpansionFieldBackgroundAndBorderTag");
 			foreach (var mapping in mappings) {
 				if (settingsMap.TryGetValue (mapping.MDThemeSettingName, out var setting))
 					CreateResourceDictionary (editorFormat, mapping.EditorFormatName, setting);
@@ -208,15 +217,15 @@ namespace MonoDevelop.TextEditor
 			editorFormat.EndBatchUpdate ();
 		}
 
-		private void CreateRename (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreateInlineEditField (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string formatName)
 		{
 			if (defaultSettings.TryGetColor (EditorThemeColors.PrimaryTemplateHighlighted2, out var selectionColor)) {
-				var resourceDictionary = editorFormat.GetProperties ("RoslynRenameFieldBackgroundAndBorderTag");
+				var resourceDictionary = editorFormat.GetProperties (formatName);
 				var (r, g, b, a) = selectionColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
 				resourceDictionary [MarkerFormatDefinition.BorderId] = new Pen (new SolidColorBrush (c), 2);
-				editorFormat.SetProperties ("RoslynRenameFieldBackgroundAndBorderTag", resourceDictionary);
+				editorFormat.SetProperties (formatName, resourceDictionary);
 			}
 		}
 
@@ -350,7 +359,7 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string appearanceCategory)
 		{
 			var resourceDictionary = editorFormat.GetProperties ("Plain Text");
 			if (defaultSettings.TryGetColor ("foreground", out var foregroundColor)) {
@@ -366,11 +375,11 @@ namespace MonoDevelop.TextEditor
 			}
 			fontName = fontName.Remove (fontName.LastIndexOf (' '));
 
-			AddFontToDictionary (resourceDictionary, fontName, fontSize);
+			AddFontToDictionary (resourceDictionary, appearanceCategory, fontName, fontSize);
 
 			editorFormat.SetProperties ("Plain Text", resourceDictionary);
 		}
 
-		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize);
+		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string appearanceCategory, string fontName, double fontSize);
 	}
 }

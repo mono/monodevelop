@@ -34,6 +34,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.AtkCocoaHelper;
 using Gdk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
@@ -76,8 +77,12 @@ namespace MonoDevelop.Ide.Gui.Shell
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			Load ().Ignore ();
-			SubscribeWindowEvents ();
+			Application.Invoke ((s,a) => {
+				// Don't execute Load inside the OnRealized handler, since Load can trigger events or async continuations that
+				// can end having an effect on the current widget, and that may cause weird behaviors of GTK.
+				Load ().Ignore ();
+				SubscribeWindowEvents ();
+			});
 		}
 
 		protected override void OnDestroyed ()
@@ -94,8 +99,15 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public Task Load (CancellationToken cancellationToken)
 		{
-			if (loadTask == null)
-				loadTask = OnLoad (cancellationToken);
+			if (loadTask == null) {
+				var cs = new TaskCompletionSource<bool> ();
+				loadTask = cs.Task;
+				OnLoad (cancellationToken).ContinueWith (t => {
+					if (t.IsFaulted)
+						LoggingService.LogError ("View failed to load", t.Exception);
+					cs.SetResult (true);
+				});
+			}
 			return loadTask;
 		}
 

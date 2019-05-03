@@ -66,8 +66,11 @@ namespace MonoDevelop.TextEditor
 		{
 			public CocoaThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) {}
 
-			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
+			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string appearanceCategory, string fontName, double fontSize)
 			{
+				if (appearanceCategory == "tooltip")
+					return;
+
 				if (fontSize <= 0)
 					fontSize = NSFont.SystemFontSize;
 

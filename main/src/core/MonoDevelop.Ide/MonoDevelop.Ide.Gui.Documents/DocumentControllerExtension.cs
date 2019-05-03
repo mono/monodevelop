@@ -152,6 +152,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 		}
 
+		/// <summary>
+		/// Invoked when the document that contains this controller has been closed, and before the controller hierarchy is disposed
+		/// </summary>
+		internal protected virtual void OnClosed ()
+		{
+		}
+
 		public IEnumerable<object> GetContents (Type type)
 		{
 			return OnGetContents (type);
@@ -206,6 +213,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return next;
+		}
+	}
+
+	[ExportDocumentControllerExtension(Id = "Default")]
+	class DefaultDocumentControllerExtension : DocumentControllerExtension
+	{
+		public override Task<bool> SupportsController (DocumentController controller)
+		{
+			return Task.FromResult (false);
 		}
 	}
 }

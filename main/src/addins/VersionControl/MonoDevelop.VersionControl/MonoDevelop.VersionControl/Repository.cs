@@ -337,7 +337,7 @@ namespace MonoDevelop.VersionControl
 		public void ClearCachedVersionInfo (params FilePath[] paths)
 		{
 			foreach (var p in paths)
-				infoCache.ClearCachedVersionInfo (p);
+				infoCache?.ClearCachedVersionInfo (p);
 		}
 
 		class VersionInfoQuery

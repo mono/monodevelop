@@ -993,7 +993,28 @@ namespace MonoDevelop.MacIntegration
 
 		public override Window GetParentForModalWindow ()
 		{
-			return NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+			try {
+				var window = NSApplication.SharedApplication.ModalWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.ModalWindow failed", e);
+			}
+			try {
+				var window = NSApplication.SharedApplication.KeyWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.KeyWindow failed", e);
+			}
+			try {
+				var window = NSApplication.SharedApplication.MainWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.MainWindow failed", e);
+			}
+			return null;
 		}
 
 		bool HasAnyDockWindowFocused ()
@@ -1162,12 +1183,8 @@ namespace MonoDevelop.MacIntegration
 			if (NSApplication.SharedApplication.ModalWindow != null)
 				return true;
 
-			var toplevels = GtkQuartz.GetToplevels ();
-
-			// Check GtkWindow's Modal flag or for a visible NSPanel
-			var ret = toplevels
-				.Where (x => !x.Key.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal))
-				.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible));
+			var toplevels = Gtk.Window.ListToplevels ();
+			var ret = toplevels.Any (w => w.Modal && w.Visible && GtkQuartz.GetWindow (w)?.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal) != true);
 
 			return ret;
 		}

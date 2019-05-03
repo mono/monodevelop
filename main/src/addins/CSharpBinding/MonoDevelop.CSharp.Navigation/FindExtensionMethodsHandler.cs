@@ -34,14 +34,15 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Navigation
 {
 	class FindExtensionMethodsHandler : CommandHandler
 	{
-		protected override async void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
-			var sym = await GetNamedTypeAtCaret (IdeApp.Workbench.ActiveDocument);
+			var sym = await GetNamedTypeAtCaret (IdeApp.Workbench.ActiveDocument, cancelToken);
 			info.Enabled = sym != null && sym.IsKind (SymbolKind.NamedType);
 			info.Bypass = !info.Enabled;
 		}
@@ -68,11 +69,11 @@ namespace MonoDevelop.CSharp.Navigation
 			}
 		}
 
-		internal static async System.Threading.Tasks.Task<INamedTypeSymbol> GetNamedTypeAtCaret (Ide.Gui.Document doc)
+		internal static async System.Threading.Tasks.Task<INamedTypeSymbol> GetNamedTypeAtCaret (Ide.Gui.Document doc, CancellationToken cancellationToken = default)
 		{
-			if (doc == null)
+			if (doc == null || doc.Editor == null)
 				return null;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor, cancellationToken);
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			return sym as INamedTypeSymbol;
 		}

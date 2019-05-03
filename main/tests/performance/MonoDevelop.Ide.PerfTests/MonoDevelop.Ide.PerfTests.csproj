@@ -14,12 +14,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
+    <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Baseline_MonoDevelop.Ide.PerfTests.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestSolutions\ExampleFormsSolution.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -46,9 +44,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestStartup.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="TestStartup.cs" />
     <Compile Include="TestSolutionLoad.cs" />
     <Compile Include="TestSolutionBuild.cs" />
   </ItemGroup>

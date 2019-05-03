@@ -105,18 +105,94 @@ namespace MonoDevelop.Ide.Gui
 		{
 			checkedDocumentContext = false;
 			ContentChanged?.Invoke (this, EventArgs.Empty);
+			contentCallbackRegistry?.InvokeContentChangeCallbacks ();
+		}
+
+		/// <summary>
+		/// Asynchronously waits for a specific type of content to be available and returns it
+		/// </summary>
+		/// <typeparam name="T">Type of the content to return</typeparam>
+		/// <typeparam name="cancellationToken">Cancellation token that cancels the wait</typeparam>
+		public Task<T> GetContentWhenAvailable<T> (CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var taskSource = new TaskCompletionSource<T> ();
+			var regCancel = cancellationToken.Register (() => taskSource.TrySetCanceled ());
+			var regContent = RunWhenContentAdded<T> (c => {
+				taskSource.TrySetResult (c);
+			});
+			taskSource.Task.ContinueWith (t => { regCancel.Dispose (); regContent.Dispose (); });
+			return taskSource.Task;
 		}
 
 		public T GetContent<T> (bool forActiveView) where T : class
 		{
-			if (forActiveView)
-				return view.GetActiveControllerHierarchy ()?.FirstOrDefault ()?.GetContent<T> ();
-			return GetControllersForContentCheck ().Select (controller => controller.GetContent (typeof (T)) as T).FirstOrDefault (c => c != null);
+			return (T)GetContent (forActiveView, typeof (T));
 		}
 
 		public T GetContent<T> () where T : class
 		{
 			return GetContent<T> (false);
+		}
+
+		object GetContent (bool forActiveView, Type type)
+		{
+			if (forActiveView)
+				return GetContentForActiveView (type);
+			return GetContentIncludingAllViews (type);
+		}
+
+		object GetContentIncludingAllViews (Type type)
+		{
+			return GetControllersForContentCheck ().Select (controller => controller.GetContent (type)).FirstOrDefault (c => c != null);
+		}
+
+		object GetContentForActiveView (Type type)
+		{
+			return view.GetActiveControllerHierarchy ()?.FirstOrDefault ()?.GetContent (type);
+		}
+
+		ContentCallbackRegistry contentCallbackRegistry;
+		ContentCallbackRegistry contentActiveViewCallbackRegistry;
+
+		ContentCallbackRegistry GetCallbackRegistry ()
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContentIncludingAllViews);
+			return contentCallbackRegistry;
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is added to the controller
+		/// </summary>
+		/// <typeparam name="T">Type of the content to track</typeparam>
+		/// <param name="contentCallback">Callback to invoke when the content is added</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentAdded<T> (Action<T> contentCallback)
+		{
+			return GetCallbackRegistry ().RunWhenContentAdded (contentCallback);
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is removed from the controller
+		/// </summary>
+		/// <typeparam name="T">Type of the content to track</typeparam>
+		/// <param name="contentCallback">Callback to invoke when the content is removed</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentRemoved<T> (Action<T> contentCallback)
+		{
+			return GetCallbackRegistry ().RunWhenContentRemoved (contentCallback);
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is added or removed from the controller
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="addedCallback">Callback to invoke when the content is added</param>
+		/// <param name="removedCallback">Callback to invoke when the content is removed</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentAddedOrRemoved<T> (Action<T> addedCallback, Action<T> removedCallback)
+		{
+			return GetCallbackRegistry ().RunWhenContentAddedOrRemoved (addedCallback, removedCallback);
 		}
 
 		public bool IsNewDocument {
@@ -546,6 +622,9 @@ namespace MonoDevelop.Ide.Gui
 			view.Dispose (); // This will also dispose the controller
 
 			window = null;
+
+			contentCallbackRegistry = null;
+			contentActiveViewCallbackRegistry = null;
 		}
 		#region document tasks
 		object lockObj = new object ();

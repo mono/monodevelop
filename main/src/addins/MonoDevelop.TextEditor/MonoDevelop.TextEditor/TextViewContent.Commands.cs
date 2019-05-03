@@ -22,10 +22,14 @@
 using System;
 using System.Collections.Generic;
 
+using Microsoft.VisualStudio.Commanding;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using Microsoft.VisualStudio.Text.Operations;
 
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Commands;
 
 #if WINDOWS
@@ -33,6 +37,8 @@ using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditor
 #else
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations4;
 #endif
+
+using ICommandHandler = MonoDevelop.Components.Commands.ICommandHandler;
 
 namespace MonoDevelop.TextEditor
 {
@@ -123,6 +129,47 @@ namespace MonoDevelop.TextEditor
 				var overWriteMode = EditorOptions.GetOptionValue (DefaultTextViewOptions.OverwriteModeId);
 				EditorOptions.SetOptionValue (DefaultTextViewOptions.OverwriteModeId, !overWriteMode);
 			};
+
+			EditorOperationCommands.Add (
+				CodeFormattingCommands.FormatBuffer,
+				new EditorOperationCommand (
+					FormatBufferExecute,
+					FormatBufferUpdate));
+		}
+
+		static Action Noop { get; } = () => { };
+		static Func<CommandState> Unspecified { get; } = () => CommandState.Unspecified;
+
+		void FormatBufferExecute (EditorOperationsInterface op)
+		{
+			if (TextView.Selection.IsEmpty)
+				commandService.Execute (
+					(v, b) => new FormatDocumentCommandArgs (v, b),
+					Noop);
+			else
+				commandService.Execute (
+					(v, b) => new FormatSelectionCommandArgs (v, b),
+					Noop);
+		}
+
+		void FormatBufferUpdate (EditorOperationsInterface op, CommandInfo info)
+		{
+			CommandState commandState;
+
+			if (TextView.Selection.IsEmpty) {
+				commandState = commandService.GetCommandState (
+					(v, b) => new FormatDocumentCommandArgs (v, b),
+					Unspecified);
+			} else {
+				info.Text = GettextCatalog.GetString ("_Format Selection");
+				commandState = commandService.GetCommandState (
+					(v, b) => new FormatSelectionCommandArgs (v, b),
+					Unspecified);
+			}
+
+			info.Visible = !commandState.IsUnspecified;
+			info.Enabled = commandState.IsAvailable;
+			info.Checked = commandState.IsChecked;
 		}
 
 		#endregion

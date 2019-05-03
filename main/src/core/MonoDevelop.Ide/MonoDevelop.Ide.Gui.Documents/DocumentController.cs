@@ -295,6 +295,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public Xwt.Drawing.Image DocumentIcon {
 			get {
 				CheckInitialized ();
+				if (documentIcon == null) {
+					documentIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.GenericFile);
+					documentIconId = null;
+					usingIconId = false;
+				}
 				return documentIcon;
 			}
 			set {
@@ -410,6 +415,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 				extensionChain?.Dispose ();
 			}
 		}
+
+		internal void Close ()
+		{
+			linkedController?.Close ();
+			OnClosed ();
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					try {
+						ext.OnClosed ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
+				}
+			}
+		}
+
 
 		/// <summary>
 		/// Tries to reuse this controler to display the content identified by the provide descriptor.
@@ -536,6 +557,48 @@ namespace MonoDevelop.Ide.Gui.Documents
 				foreach (var c in linkedController.GetContents (type))
 					yield return c;
 			}
+		}
+
+		ContentCallbackRegistry contentCallbackRegistry;
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is added to the controller
+		/// </summary>
+		/// <typeparam name="T">Type of the content to track</typeparam>
+		/// <param name="contentCallback">Callback to invoke when the content is added</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentAdded<T> (Action<T> contentCallback)
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContent);
+			return contentCallbackRegistry.RunWhenContentAdded (contentCallback);
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is removed from the controller
+		/// </summary>
+		/// <typeparam name="T">Type of the content to track</typeparam>
+		/// <param name="contentCallback">Callback to invoke when the content is removed</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentRemoved<T> (Action<T> contentCallback)
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContent);
+			return contentCallbackRegistry.RunWhenContentRemoved (contentCallback);
+		}
+
+		/// <summary>
+		/// Executes an action when a content of the provided type is added or removed from the controller
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="addedCallback">Callback to invoke when the content is added</param>
+		/// <param name="removedCallback">Callback to invoke when the content is removed</param>
+		/// <returns>A registration object that can be disposed to cancel the callback invocation.</returns>
+		public IDisposable RunWhenContentAddedOrRemoved<T> (Action<T> addedCallback, Action<T> removedCallback)
+		{
+			if (contentCallbackRegistry == null)
+				contentCallbackRegistry = new ContentCallbackRegistry (GetContent);
+			return contentCallbackRegistry.RunWhenContentAddedOrRemoved (addedCallback, removedCallback);
 		}
 
 		/// <summary>
@@ -803,7 +866,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			UpdateContentExtensions ();
 			ContentChanged?.Invoke (this, EventArgs.Empty);
 			RefreshExtensions ().Ignore ();
-
+			contentCallbackRegistry?.InvokeContentChangeCallbacks ();
 		}
 
 		internal void NotifyFocused ()
@@ -1086,6 +1149,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			if (Model != null)
 				Model.Dispose ();
+		}
+
+		/// <summary>
+		/// Invoked when the document that contains this controller has been closed, and before the controller hierarchy is disposed
+		/// </summary>
+		protected virtual void OnClosed ()
+		{
 		}
 
 		public IEnumerable<FilePath> GetDocumentFiles ()

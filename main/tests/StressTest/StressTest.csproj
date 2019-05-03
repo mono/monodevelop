@@ -26,6 +26,10 @@
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Project</StartAction>
+    <ExternalConsole>false</ExternalConsole>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="MonoDevelop.Ide">
@@ -97,6 +101,7 @@
     <Compile Include="MonoDevelop.StressTest\Profiler\GraphExtensions.cs" />
     <Compile Include="MonoDevelop.StressTest\IEditorTestScenario.cs" />
     <Compile Include="UserInterfaceTests\Properties.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\TaskQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.StressTest.Attributes\" />

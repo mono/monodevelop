@@ -127,6 +127,7 @@
     <Compile Include="MonoDevelop.Ide\BaseCredentialsProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide\FileNameEvaluatorTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceFilesCacheTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\PatternMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>

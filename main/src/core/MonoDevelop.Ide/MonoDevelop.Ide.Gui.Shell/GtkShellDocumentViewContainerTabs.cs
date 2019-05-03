@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 {
 	class GtkShellDocumentViewContainerTabs: IGtkShellDocumentViewContainer
 	{
-		Notebook notebook;
+		EventBox notebook;
 		Tabstrip tabstrip;
 		VBox rootTabsBox;
 		HBox bottomBarBox;
@@ -48,10 +48,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			bottomBarBox.Show ();
 			rootTabsBox.PackEnd (bottomBarBox, false, false, 0);
 
-			notebook = new Notebook ();
-			notebook.TabPos = PositionType.Bottom;
-			notebook.ShowTabs = false;
-			notebook.ShowBorder = false;
+			notebook = new EventBox ();
 			notebook.Show ();
 			rootTabsBox.PackStart (notebook, true, true, 0);
 
@@ -66,15 +63,15 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public GtkShellDocumentViewItem ActiveView {
 			get {
-				if (tabstrip.Tabs.Count > 0)
+				if (tabstrip.Tabs.Count > 0 && tabstrip.ActiveTab != -1)
 					return (GtkShellDocumentViewItem) tabstrip.Tabs [tabstrip.ActiveTab].Tag;
 				return null;
 			}
 			set {
-				var i = notebook.Children.IndexOf (value);
+				var i = tabstrip.Tabs.FindIndex (t => t.Tag == value);
 				if (i != -1) {
-					notebook.CurrentPage = i;
 					tabstrip.ActiveTab = i;
+					ShowActiveContent ();
 				}
 			}
 		}
@@ -84,7 +81,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public void InsertView (int position, GtkShellDocumentViewItem view)
 		{
 			tabstrip.InsertTab (position, CreateTab (view));
-			notebook.InsertPage (view, new Gtk.Label (), position);
 		}
 
 		Tab CreateTab (GtkShellDocumentViewItem view)
@@ -113,58 +109,66 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		void TabActivated (object s, EventArgs args)
 		{
-			notebook.CurrentPage = tabstrip.ActiveTab;
+			ShowActiveContent ();
 			ActiveViewChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		public void RemoveAllViews ()
 		{
-			while (notebook.NPages > 0) {
-				notebook.RemovePage (notebook.NPages - 1);
+			while (tabstrip.Tabs.Count > 0)
 				tabstrip.RemoveTab (0);
-			}
+			ShowActiveContent ();
 		}
 
 		public void RemoveView (int tabPos)
 		{
-			notebook.RemovePage (tabPos);
 			tabstrip.RemoveTab (tabPos);
 		}
 
 		public void ReorderView (int currentIndex, int newIndex)
 		{
 			var child = (GtkShellDocumentViewItem)notebook.Children [currentIndex];
-			notebook.ReorderChild (child, newIndex);
 			tabstrip.ReorderTabs (currentIndex, newIndex);
+			ShowActiveContent ();
+		}
+
+		void ShowActiveContent ()
+		{
+			if (tabstrip.ActiveTab != -1) {
+				var newChild = (GtkShellDocumentViewItem)tabstrip.Tabs [tabstrip.ActiveTab].Tag;
+				if (newChild != notebook.Child) {
+					if (notebook.Child != null)
+						notebook.Remove (notebook.Child);
+					notebook.Add (newChild);
+				}
+			} else if (notebook.Child != null)
+				notebook.Remove (notebook.Child);
 		}
 
 		public void ReplaceView (int position, GtkShellDocumentViewItem view)
 		{
-			notebook.RemovePage (position);
-			notebook.InsertPage (view, new Gtk.Label (), position);
 			tabstrip.ReplaceTab (position, CreateTab (view));
+			ShowActiveContent ();
 		}
 
 		public IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
 		{
-			return notebook.Children.Cast<GtkShellDocumentViewItem> ();
+			return tabstrip.Tabs.Select (t => t.Tag).Cast<GtkShellDocumentViewItem> ();
 		}
 
 		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
 		{
-			var i = notebook.Children.IndexOf (view);
-			if (i != -1) {
-				var tab = tabstrip.Tabs [i];
+			var tab = tabstrip.Tabs.FirstOrDefault (t => t.Tag == view);
+			if (tab != null) {
 				UpdateTab (tab, label, icon, accessibilityDescription);
 			}
 		}
 
 		public void AddViews (IEnumerable<GtkShellDocumentViewItem> views)
 		{
-			foreach (var view in views) {
+			foreach (var view in views)
 				tabstrip.AddTab (CreateTab (view));
-				notebook.AppendPage (view, new Gtk.Label ());
-			}
+			ShowActiveContent ();
 		}
 	}
 }

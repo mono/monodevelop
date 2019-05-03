@@ -4240,6 +4240,9 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Gtk.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Cocoa.cs" />
     <Compile Include="MonoDevelop.Ide\IdeStartupTracker.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\ContentCallbackRegistry.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\WebViewResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Cocoa.Webview.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
@@ -4331,6 +4334,7 @@
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
     <InternalsVisibleTo Include="MonoDevelop.Xml" />
     <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.UserInterfaceTesting" />
     <InternalsVisibleTo Include="WebToolingAddin" />
     <InternalsVisibleTo Include="WindowsPlatform" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />

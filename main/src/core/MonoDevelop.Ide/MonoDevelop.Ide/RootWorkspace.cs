@@ -41,11 +41,12 @@ using MonoDevelop.Ide.Gui.Content;
 using System.Runtime.CompilerServices;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.Ide
 {
@@ -74,6 +75,7 @@ namespace MonoDevelop.Ide
 		{
 			this.serviceProvider = serviceProvider;
 			FileService.FileRenamed += CheckFileRename;
+			FileService.FileRemoved += CheckFileRemoved;
 
 			serviceProvider.WhenServiceInitialized<DocumentManager> (s => {
 				documentManager = s;
@@ -867,19 +869,25 @@ namespace MonoDevelop.Ide
 			// Restore local configuration data
 			
 			try {
-				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
-				if (data != null) {
-					ActiveExecutionTarget = null;
+				var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
 
-					if (string.IsNullOrEmpty (data.ActiveRuntime))
-						UseDefaultRuntime = true;
-					else {
-						TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (data.ActiveRuntime);
-						if (tr != null)
-							ActiveRuntime = tr;
-						else
+				if (enabled.GetValueOrDefault ()) {
+					WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
+					if (data != null) {
+						ActiveExecutionTarget = null;
+
+						if (string.IsNullOrEmpty (data.ActiveRuntime))
 							UseDefaultRuntime = true;
+						else {
+							TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (data.ActiveRuntime);
+							if (tr != null)
+								ActiveRuntime = tr;
+							else
+								UseDefaultRuntime = true;
+						}
 					}
+				} else {
+					UseDefaultRuntime = true;
 				}
 			}
 			catch (Exception ex) {
@@ -1420,6 +1428,90 @@ namespace MonoDevelop.Ide
 				foreach (FileEventInfo e in args)
 					sol.RootFolder.RenameFileInProjects (e.SourceFile, e.TargetFile);
 			}
+		}
+
+		void CheckFileRemoved (object sender, FileEventArgs args)
+		{
+			List<WorkspaceItem> workspaceItemsRemoved = null;
+			List<SolutionItem> solutionItemsRemoved = null;
+
+			foreach (FileEventInfo info in args) {
+				foreach (WorkspaceItem workspaceItem in Items) {
+					if (workspaceItem.FileName == info.FileName ||
+						workspaceItem.FileName.IsChildPathOf (info.FileName)) {
+						if (workspaceItemsRemoved == null)
+							workspaceItemsRemoved = new List<WorkspaceItem> ();
+						workspaceItemsRemoved.Add (workspaceItem);
+
+						// No need to check child solution items since the parent workspace item will be closed.
+						continue;
+					}
+
+					foreach (SolutionItem solutionItem in workspaceItem.GetAllItems<SolutionItem> ()) {
+						if (solutionItem.FileName == info.FileName ||
+							solutionItem.FileName.IsChildPathOf (info.FileName)) {
+							if (solutionItemsRemoved == null)
+								solutionItemsRemoved = new List<SolutionItem> ();
+							solutionItemsRemoved.Add (solutionItem);
+						}
+					}
+				}
+			}
+
+			if (solutionItemsRemoved != null) {
+				UnloadRemovedSolutionItems (solutionItemsRemoved).Ignore ();
+			}
+
+			if (workspaceItemsRemoved != null) {
+				CloseWorkspaceItems (workspaceItemsRemoved).Ignore ();
+			}
+		}
+
+		/// <summary>
+		/// Unloads the solution items but does not save the solution. The solution may have been deleted
+		/// and saving the solution after the project reload will re-create the solution file.
+		/// </summary>
+		async Task UnloadRemovedSolutionItems (List<SolutionItem> solutionItems)
+		{
+			using (var monitor = CreateStatusProgressMonitor (GettextCatalog.GetString ("Unloading…"))) {
+				monitor.BeginTask (null, solutionItems.Count);
+				foreach (var item in solutionItems) {
+					item.Enabled = false;
+					await item.ParentFolder.ReloadItem (monitor, item);
+					monitor.Step (1);
+				}
+				monitor.EndTask ();
+			}
+		}
+
+		/// <summary>
+		/// Shows a warning dialog that deleted workspace items are going to be closed and then closes those items.
+		/// </summary>
+		async Task CloseWorkspaceItems (List<WorkspaceItem> workspaceItems)
+		{
+			using (var monitor = new ProgressMonitor ()) {
+				foreach (var workspaceItem in workspaceItems) {
+					if (workspaceItem is Solution)
+						monitor.ReportWarning (GettextCatalog.GetString ("Solution was deleted and will be closed. {0}", workspaceItem.FileName));
+					else
+						monitor.ReportWarning (GettextCatalog.GetString ("Workspace item was deleted and will be closed. {0}", workspaceItem.FileName));
+				}
+				monitor.ShowResultDialog ();
+			}
+
+			foreach (var item in workspaceItems) {
+				await CloseWorkspaceItem (item);
+			}
+		}
+
+		static ProgressMonitor CreateStatusProgressMonitor (string title)
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				title,
+				MonoDevelop.Ide.Gui.Stock.StatusSolutionOperation,
+				true,
+				false,
+				true);
 		}
 
 		#endregion

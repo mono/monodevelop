@@ -1509,14 +1509,14 @@ namespace MonoDevelop.Debugger
 
 			try {
 				string newVal = args.NewText;
-/*				if (newVal == null) {
-					MessageService.ShowError (GettextCatalog.GetString ("Unregognized escape sequence."));
+
+				if (val.Value == newVal)
 					return;
-				}
-*/				if (val.Value != newVal)
-					val.Value = newVal;
+
+				val.Value = newVal;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
+				return;
 			}
 
 			store.SetValue (it, ValueColumn, val.DisplayValue);
@@ -1535,6 +1535,8 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, NameColorColumn, newColor);
 			store.SetValue (it, ValueColorColumn, newColor);
 			UpdateParentValue (it);
+
+			DebuggingService.NotifyVariableChanged ();
 		}
 
 		private void UpdateParentValue (TreeIter it)

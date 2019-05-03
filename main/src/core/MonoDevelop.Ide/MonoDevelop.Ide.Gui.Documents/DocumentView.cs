@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool contentVisible;
 		DocumentView parent;
 		bool disposed;
+		bool closed;
 
 		bool hasFocus;
 		bool shown;
@@ -292,9 +293,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void Dispose ()
 		{
+			Close ();
 			if (!disposed) {
 				disposed = true;
 				OnDispose ();
+			}
+		}
+
+		internal void Close ()
+		{
+			if (!closed) {
+				closed = true;
+				OnClosed ();
 			}
 		}
 
@@ -338,6 +348,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				int pos = 1;
 				foreach (var attachedView in AttachedViews)
 					attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
+				if (activeAttachedView == this)
+					attachmentsContainer.ActiveView = mainShellView;
+				else
+					attachmentsContainer.ActiveView = activeAttachedView?.ShellView;
 				attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
 				shellView = attachmentsContainer;
 			} else
@@ -456,6 +470,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Dispose ();
+		}
+
+		internal virtual void OnClosed ()
+		{
+			// If this view was created by a controller, dispose the controller here too.
+			SourceController?.Close ();
 		}
 
 		internal virtual IEnumerable<DocumentController> GetActiveControllerHierarchy ()

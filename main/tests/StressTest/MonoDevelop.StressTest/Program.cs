@@ -59,15 +59,23 @@ namespace MonoDevelop.StressTest
 				return;
 			}
 
+			bool success = true;
 			app = new StressTestApp (options);
-			app.Start ();
-			app.Stop ();
+
+			try {
+				app.Start ();
+			} catch {
+				success = false;
+				throw;
+			} finally {
+				app.Stop (success);
+			}
 		}
 
 		static void ConsoleCancelKeyPress (object sender, ConsoleCancelEventArgs e)
 		{
 			try {
-				app?.Stop ();
+				app?.Stop (false);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}

@@ -122,15 +122,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static void InitEngineProperties (Core.Assemblies.TargetRuntime runtime, Dictionary<string, string> properties, out List<ImportSearchPathExtensionNode> searchPaths)
 		{
-			// This MSBuild loader is v15.0
-			string toolsVersion = "15.0";
+			string toolsVersion = "Current";
+			string visualStudioVersion = "16.0";
+
+			var toolsPath = runtime.GetMSBuildToolsPath (toolsVersion);
+			if (toolsPath == null) {
+				toolsVersion = "15.0";
+				visualStudioVersion = toolsVersion;
+				toolsPath = runtime.GetMSBuildToolsPath (toolsVersion);
+			}
+
 			properties.Add ("MSBuildAssemblyVersion", toolsVersion);
-
 			//VisualStudioVersion is a property set by MSBuild itself
-			string visualStudioVersion = toolsVersion;
 			properties.Add ("VisualStudioVersion", visualStudioVersion);
-
-			var toolsPath = (runtime).GetMSBuildToolsPath (toolsVersion);
 
 			var msBuildBinPath = toolsPath;
 			var msBuildBinPathEscaped = MSBuildProjectService.ToMSBuildPath (null, msBuildBinPath);

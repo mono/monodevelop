@@ -81,6 +81,31 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 				return false;
 			}
 
+			// Special case MSBuildToolsVersion when it is set to Current.
+			if (op != RelationOperator.Equal || op != RelationOperator.NotEqual) {
+				if (IsMSBuildCurrentToolsVersion (left, ls)) {
+					if (TryGetVisualStudioVersion (context, out vl)) {
+						if (right.TryEvaluateToVersion (context, out Version vr)) {
+							result = VersionCompare (vl, vr, op);
+							return true;
+						} else if (right.TryEvaluateToNumber (context, out float fr)) {
+							result = VersionCompare (vl, fr, op);
+							return true;
+						}
+					}
+				} else if (IsMSBuildCurrentToolsVersion (right, rs)) {
+					if (TryGetVisualStudioVersion (context, out Version vr)) {
+						if (left.TryEvaluateToVersion (context, out vl)) {
+							result = VersionCompare (vl, vr, op);
+							return true;
+						} else if (left.TryEvaluateToNumber (context, out float fl)) {
+							result = VersionCompare (fl, vr, op);
+							return true;
+						}
+					}
+				}
+			}
+
 			result = StringCompare (ls, rs, op);
 			return true;
 		}
@@ -273,6 +298,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 			if (i < propString.Length)
 				return propString.Substring (s, (i++) - s);
 			return propString.Substring (s);
+		}
+
+		static bool IsMSBuildCurrentToolsVersion (ConditionExpression expression, string expressionValue)
+		{
+			return expression is ConditionFactorExpression factoryExpression &&
+				StringComparer.Ordinal.Equals ("Current", expressionValue) &&
+				StringComparer.OrdinalIgnoreCase.Equals ("$(MSBuildToolsVersion)", factoryExpression.Token.Value);
+		}
+
+		static bool TryGetVisualStudioVersion (IExpressionContext context, out Version version)
+		{
+			string value = context.EvaluateString ("$(VisualStudioVersion)");
+			return Version.TryParse (value, out version);
 		}
 	}
 	
