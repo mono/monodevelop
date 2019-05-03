@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					supportedModes = value;
 					if (shellViewContainer != null)
 						shellViewContainer.SetSupportedModes (supportedModes);
-					if ((currentMode & supportedModes) == 0) {
+					if ((CurrentMode & supportedModes) == 0) {
 						if ((supportedModes & DocumentViewContainerMode.Tabs) != 0)
 							CurrentMode = DocumentViewContainerMode.Tabs;
 						else if ((supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0)
@@ -80,14 +80,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		/// <value>The supported modes.</value>
 		public DocumentViewContainerMode CurrentMode {
-			get => currentMode;
+			get => shellViewContainer != null ? shellViewContainer.CurrentMode : currentMode;
 			set {
 				if (currentMode != value) {
 					if ((value & supportedModes) == 0)
 						return;
 					currentMode = value;
 					if (shellViewContainer != null)
-						shellViewContainer.SetCurrentMode (currentMode);
+						shellViewContainer.CurrentMode = currentMode;
 					UpdateChildrenVisibility ();
 				}
 			}
@@ -143,12 +143,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			shellViewContainer = window.CreateViewContainer ();
 			shellViewContainer.SetSupportedModes (supportedModes);
-			shellViewContainer.SetCurrentMode (currentMode);
+			shellViewContainer.CurrentMode = currentMode;
 
 			for (int n = 0; n < Views.Count; n++)
 				shellViewContainer.InsertView (n, Views [n].CreateShellView (window));
 
 			shellViewContainer.ActiveViewChanged += ShellViewContainer_ActiveViewChanged;
+			shellViewContainer.CurrentModeChanged += ShellViewContainer_CurrentModeChanged;
 
 			if (activeView != null)
 				shellViewContainer.ActiveView = activeView.ShellView;
@@ -156,6 +157,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 				shellViewContainer.ActiveView = Views.FirstOrDefault ()?.ShellView;
 
 			return shellViewContainer;
+		}
+
+		private void ShellViewContainer_CurrentModeChanged (object sender, EventArgs e)
+		{
+			currentMode = shellViewContainer.CurrentMode;
+			UpdateChildrenVisibility ();
 		}
 
 		internal override void DetachFromView ()
@@ -261,9 +268,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal override IEnumerable<DocumentController> GetActiveControllerHierarchy ()
 		{
 			var result = base.GetActiveControllerHierarchy ();
-			var activeItem = shellViewContainer.ActiveView?.Item;
-			if (activeItem != null)
-				result = activeItem.GetActiveControllerHierarchy ().Concat (result);
+			if (activeView != null)
+				result = activeView.GetActiveControllerHierarchy ().Concat (result);
 			return result;
 		}
 

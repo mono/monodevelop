@@ -137,5 +137,13 @@ namespace IdeUnitTests
 					return w.Show ();
 			return Task.CompletedTask;
 		}
+
+		public MockShellWindow GetWindow (Document document)
+		{
+			foreach (var w in windows)
+				if (w.Document == document)
+					return w;
+			return null;
+		}
 	}
 }
