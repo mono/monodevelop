@@ -1,6 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
 
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler
 open MonoDevelop
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Debugger

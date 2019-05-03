@@ -1,7 +1,7 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 
 open System.Diagnostics
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 type SymbolKind =
     | Ident
@@ -48,7 +48,7 @@ module Lexer =
 
             let sourceTokenizer = FSharpSourceTokenizer(defines, None)
             let lines = String.getLines source
-            let mutable lexState = 0L
+            let mutable lexState = FSharpTokenizerLexState.Initial
             for line in lines do
                 yield lexState
                 let lineTokenizer = sourceTokenizer.CreateLineTokenizer line
@@ -75,7 +75,7 @@ module Lexer =
             Debug.Assert(line >= 0 && line < Array.length lexStates, "Should have lex states for every line.")
             lexStates.[line]
 
-    let singleLineQueryLexState _ _ _ = 0L
+    let singleLineQueryLexState _ _ _ = FSharpTokenizerLexState.Initial
 
     /// Return all tokens of current line
     let tokenizeLine source (args: string[]) line lineStr queryLexState =

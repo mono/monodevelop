@@ -3,8 +3,8 @@
 open MonoDevelop
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
 
 type FSharpNavigationTextEditorExtension() =
     inherit AbstractNavigationExtension()

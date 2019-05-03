@@ -4,7 +4,7 @@ open System.Collections
 open System.Text
 open System.Threading.Tasks
 open System.IO
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 open ExtCore
 
 module Seq =
