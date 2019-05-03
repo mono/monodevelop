@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -34,12 +35,12 @@ namespace MonoDevelop.Packaging
 	{
 		public ProjectHasNuGetMetadataCondition ()
 		{
-			IdeApp.ProjectOperations.CurrentProjectChanged += delegate { NotifyChanged (); };
+			Runtime.ServiceProvider.WhenServiceInitialized<ProjectOperations> ((s) => s.CurrentProjectChanged += delegate { NotifyChanged (); });
 		}
 
 		public override bool Evaluate (NodeElement conditionNode)
 		{
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			var project = Runtime.ServiceProvider.PeekService<ProjectOperations> ()?.CurrentSelectedProject as DotNetProject;
 			if (project is PackagingProject) {
 				return true;
 			} else if (project != null) {
