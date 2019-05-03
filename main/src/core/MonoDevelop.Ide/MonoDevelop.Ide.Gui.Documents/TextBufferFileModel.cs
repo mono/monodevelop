@@ -125,7 +125,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			ITextDocument CreateTextDocument (string text)
 			{
-				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
+				var contentType = (MimeType == null)
+					? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType
+					: GetContentTypeFromMimeType (FilePath, MimeType);
 				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, contentType);
 				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
 				return doc;
@@ -133,26 +135,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected static IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
 			{
-				if (filePath != null) {
-					var fileToContentTypeService = CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ();
-					var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
-					if (contentTypeFromPath != null &&
-						contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
-						return contentTypeFromPath;
-					}
-				}
-				var contentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType);
-				if (contentType == null) {
-					// fallback 1: see if there is a content tyhpe with the same name
-					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType (mimeType);
-					if (contentType == null) {
-						// No joy, create a content type that, by default, derives from text. This is strictly an error
-						// (there should be mappings between any mime type and any content type).
-						contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType (mimeType, new string [] { "text" });
-					}
-				}
-
-				return contentType;
+				return MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType, filePath)
+					?? PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType ("text");
 			}
 
 			void SetTextDocument (ITextDocument doc)

@@ -78,7 +78,7 @@ namespace Mono.TextEditor
 				}
 
 				mimeType = value;
-				var newContentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (value) ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
+				var newContentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (value, FileName) ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 				if (TextBuffer != null && TextBuffer.CurrentSnapshot.ContentType != newContentType) {
 					TextBuffer.ChangeContentType (newContentType, null);
 				}
@@ -362,8 +362,7 @@ namespace Mono.TextEditor
 		}
 
 		IContentType GetContentTypeFromMimeType (string fileName, string mimeType)
-			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (fileName != null ? MonoDevelop.Ide.Composition.CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
+			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType, fileName)
 				?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
