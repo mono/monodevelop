@@ -1733,7 +1733,8 @@ namespace MonoDevelop.Components.Commands
 					if (cui != null) {
 						if (cmd.CommandArray) {
 							info.ArrayInfo = new CommandArrayInfo (info);
-							cui.Run (cmdTarget, info.ArrayInfo);
+							if (IsEnabled)
+								cui.Run (cmdTarget, info.ArrayInfo);
 							if (!info.ArrayInfo.Bypass) {
 								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
@@ -1742,7 +1743,8 @@ namespace MonoDevelop.Components.Commands
 						}
 						else {
 							info.Bypass = false;
-							cui.Run (cmdTarget, info);
+							if (IsEnabled)
+								cui.Run (cmdTarget, info);
 							if (!info.Bypass) {
 								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
@@ -1814,10 +1816,12 @@ namespace MonoDevelop.Components.Commands
 			}
 			if (cmd.CommandArray) {
 				info.ArrayInfo = new CommandArrayInfo (info);
-				cmd.DefaultHandler.InternalUpdate (info.ArrayInfo);
+				if (IsEnabled)
+					cmd.DefaultHandler.InternalUpdate (info.ArrayInfo);
 			}
-			else
+			else if (IsEnabled)
 				cmd.DefaultHandler.InternalUpdate (info);
+			info.Enabled &= IsEnabled;
 		}
 		
 		/// <summary>
