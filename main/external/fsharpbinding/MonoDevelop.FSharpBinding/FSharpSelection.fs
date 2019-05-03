@@ -7,12 +7,11 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open Mono.TextEditor
-open ExtCore.Control
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.Range
-open Microsoft.FSharp.Compiler.Ast
-open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler.SourceCodeServices.AstTraversal
+//open ExtCore.Control
+open FSharp.Compiler
+open FSharp.Compiler.Ast
+open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices.AstTraversal
 
 module ExpandSelection =
     type ExpandSelectionAnnotation(editor:TextEditor) =
@@ -37,7 +36,7 @@ module ExpandSelection =
         let symbolStart, _symbolEnd = symbolRange
         symbolStart >= selection.Offset
 
-    let getExpandRange (editor:TextEditor, tree:ParsedInput) =
+    let getExpandRange (editor:TextEditor, tree:FSharp.Compiler.Ast.ParsedInput) =
         if not editor.IsSomethingSelected then
             let line = editor.GetLine editor.CaretLine
             if editor.CaretColumn = line.LengthIncludingDelimiter || editor.CaretOffset = line.Offset then
@@ -46,7 +45,7 @@ module ExpandSelection =
                 let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
                 Some (data.FindCurrentWordStart(editor.CaretOffset), data.FindCurrentWordEnd(editor.CaretOffset))
         else
-            let rangeAsOffsets(range:Range.range) =
+            let rangeAsOffsets(range:FSharp.Compiler.Range.range) =
                 let startPos = editor.LocationToOffset(range.StartLine, range.StartColumn + 1)
                 let endPos = editor.LocationToOffset(range.EndLine, range.EndColumn + 1)
                 (startPos, endPos)
@@ -74,7 +73,7 @@ module ExpandSelection =
                             else
                                 defaultTraverse(expr) }
 
-            let traversePath = AstTraversal.Traverse(mkPos editor.CaretLine (editor.CaretColumn), tree, walker)
+            let traversePath = AstTraversal.Traverse(FSharp.Compiler.Range.mkPos editor.CaretLine (editor.CaretColumn), tree, walker)
 
             let rangesFromTraverse = function
                 | TraverseStep.Binding binding -> [binding.RangeOfHeadPat; binding.RangeOfBindingAndRhs; binding.RangeOfBindingSansRhs]

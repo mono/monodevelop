@@ -2,8 +2,8 @@
 open System
 open System.Collections.Generic
 open System.Text
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
 
 module Symbols =
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =
@@ -647,7 +647,10 @@ module SymbolTooltips =
             sprintf "%s%s<small>Namespace:\t%s</small>%s<small>Assembly:\t%s</small>" fullName Environment.NewLine ns Environment.NewLine c.Assembly.SimpleName
       
         | Field f ->
-            let parent = f.DeclaringEntity.UnAnnotate().DisplayName
+            let parent =
+                match f.DeclaringEntity with
+                | Some ent -> ent.DisplayName
+                | None -> "No declaring entity"
             sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine f.Assembly.SimpleName
       
         | ActivePatternCase ap ->

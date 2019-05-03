@@ -4,8 +4,8 @@ open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
-open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
 
 module highlightUnusedCode =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
