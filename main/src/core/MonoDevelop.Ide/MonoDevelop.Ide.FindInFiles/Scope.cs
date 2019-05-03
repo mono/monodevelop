@@ -36,6 +36,7 @@ using System.Security;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -147,7 +148,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			Parallel.ForEach (IdeApp.Workspace.GetAllSolutionItems ().OfType<SolutionFolder> (),
 							  options,
-							  () => new List<FileProvider> (),
+							  () => new List<string> (),
 							  (folder, loop, providers) => {
 								  foreach (var file in folder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
 									  if (!IdeServices.DesktopService.GetFileIsText (file.FullPath))
@@ -157,19 +158,21 @@ namespace MonoDevelop.Ide.FindInFiles
 											  continue;
 										  alreadyVisited.Add (file.FullPath);
 									  }
-									  providers.Add (new FileProvider (file.FullPath));
+									  providers.Add (file.FullPath);
 								  }
 								  return providers;
 							  },
 							  (providers) => {
 								  lock (results) {
-									  results.AddRange (providers);
+									  foreach (var file in providers) {
+										  results.Add (WholeProjectScope.GetFileProvider (IdeApp.Workbench.DocumentManager, file, null));
+									  }
 								  }
 							  });
 
 			Parallel.ForEach (IdeApp.Workspace.GetAllProjects (),
 							  options,
-							  () => new List<FileProvider> (),
+							  () => new List<(string, Project)> (),
 							  (project, loop, providers) => {
 								  var conf = project.DefaultConfiguration?.Selector;
 
@@ -185,13 +188,15 @@ namespace MonoDevelop.Ide.FindInFiles
 										  alreadyVisited.Add (file.FilePath.FullPath);
 									  }
 
-									  providers.Add (new FileProvider (file.Name, project));
+									  providers.Add ((file.Name, project));
 								  }
 								  return providers;
 							  },
 							  (providers) => {
 								  lock (results) {
-									  results.AddRange (providers);
+									  foreach (var file in providers) {
+										  results.Add (WholeProjectScope.GetFileProvider (IdeApp.Workbench.DocumentManager, file.Item1, file.Item2));
+									  }
 								  }
 							  });
 
@@ -223,6 +228,19 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.project = project;
 		}
 
+		internal static FileProvider GetFileProvider (DocumentManager documentManager, string fileName, Project project)
+		{
+			foreach (var document in documentManager.Documents) {
+				if (FilePath.PathComparer.Equals (document.FileName, fileName)) {
+					var textView = document.GetContent<ITextView> ();
+					if (textView != null) 
+						return new OpenFileProvider (textView.TextBuffer, document.Owner as Project, document.FileName);
+				}
+			}
+
+			return new FileProvider (fileName, project);
+		}
+
 		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (IdeApp.Workspace.IsOpen) {
@@ -237,7 +255,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (alreadyVisited.Contains (file.FilePath.FullPath))
 						continue;
 					alreadyVisited.Add (file.FilePath.FullPath);
-					yield return new FileProvider (file.Name, project);
+					yield return GetFileProvider (IdeApp.Workbench.DocumentManager, file.Name, project);
 				}
 			}
 		}
@@ -249,7 +267,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			return GettextCatalog.GetString ("Replacing '{0}' in project '{1}'", pattern, project.Name);
 		}
 	}
-
 
 	public class AllOpenFilesScope : Scope
 	{
@@ -276,7 +293,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 	}
 
-
 	public class DirectoryScope : Scope
 	{
 		readonly string path;
@@ -295,7 +311,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		FileProvider[] fileNames;
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			fileNames = GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ();
+			fileNames = GetFileNames (filterOptions).Select (file => WholeProjectScope.GetFileProvider (IdeApp.Workbench.DocumentManager, file, null)).ToArray ();
 			return fileNames.Length;
 		}
 
