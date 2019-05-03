@@ -401,10 +401,16 @@ namespace MonoDevelop.MacIntegration
 			return map;
 		}
 
+		string currentCommandMenuPath, currentAppMenuPath;
+
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			if (setupFail)
 				return false;
+
+			// avoid reinitialization of the same menu structure
+			if (initedApp == true && currentCommandMenuPath == commandMenuAddinPath && currentAppMenuPath == appMenuAddinPath)
+				return true;
 
 			try {
 				InitApp (commandManager);
@@ -431,6 +437,9 @@ namespace MonoDevelop.MacIntegration
 				// Assign the main menu after loading the items. Otherwise a weird application menu appears.
 				if (NSApplication.SharedApplication.MainMenu == null)
 					NSApplication.SharedApplication.MainMenu = rootMenu;
+
+				currentCommandMenuPath = commandMenuAddinPath;
+				currentAppMenuPath = appMenuAddinPath;
 			} catch (Exception ex) {
 				try {
 					var m = NSApplication.SharedApplication.MainMenu;
