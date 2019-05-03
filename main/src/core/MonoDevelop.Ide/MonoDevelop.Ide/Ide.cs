@@ -221,6 +221,9 @@ namespace MonoDevelop.Ide
 
 			commandService = await Runtime.GetService<CommandManager> ();
 
+			Counters.Initialization.Trace ("Initializing WelcomePage service");
+			WelcomePage.WelcomePageService.Initialize ().Ignore ();
+
 			await serviceInitialization;
 
 			Counters.Initialization.Trace ("Creating Workbench");
@@ -232,16 +235,7 @@ namespace MonoDevelop.Ide
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
 
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 4);
-
-			Counters.Initialization.Trace ("Initializing WelcomePage service");
-			WelcomePage.WelcomePageService.Initialize ();
-			if (WelcomePage.WelcomePageService.HasWindowImplementation) {
-				await WelcomePage.WelcomePageService.ShowWelcomeWindow (new WelcomePage.WelcomeWindowShowOptions (false));
-				// load the global menu for the welcome window to avoid unresponsive menus on Mac
-				IdeServices.DesktopService.SetGlobalMenu (commandService, "/MonoDevelop/Ide/MainMenu", "/MonoDevelop/Ide/AppMenu");
-			}
-			monitor.Step (1);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 3);
 
 			// Before startup commands.
 			Counters.Initialization.Trace ("Running Pre-Startup Commands");
