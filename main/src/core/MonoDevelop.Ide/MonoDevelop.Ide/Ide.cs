@@ -204,6 +204,9 @@ namespace MonoDevelop.Ide
 				PropertyService.SaveProperties ();
 			}
 
+			Counters.Initialization.Trace ("Initializing WelcomePage service");
+			WelcomePage.WelcomePageService.Initialize ().Ignore ();
+
 			Counters.Initialization.Trace ("Creating Services");
 
 			var serviceInitialization = Task.WhenAll (
@@ -220,9 +223,6 @@ namespace MonoDevelop.Ide
 			);
 
 			commandService = await Runtime.GetService<CommandManager> ();
-
-			Counters.Initialization.Trace ("Initializing WelcomePage service");
-			WelcomePage.WelcomePageService.Initialize ().Ignore ();
 
 			await serviceInitialization;
 
