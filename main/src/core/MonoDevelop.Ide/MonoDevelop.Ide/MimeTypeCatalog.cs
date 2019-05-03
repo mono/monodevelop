@@ -191,8 +191,15 @@ namespace MonoDevelop.Ide
 		public IEnumerable<string> GetMimeTypeInheritanceChainForContentType (IContentType contentType)
 			=> GetMimeTypeInheritanceChain (GetMimeTypeNodeForContentType (contentType.TypeName));
 
-		public IContentType GetContentTypeForMimeType (string mimeType)
+		public IContentType GetContentTypeForMimeType (string mimeType, string filePath = null)
 		{
+			if (filePath != null) {
+				var contentType = Ide.Composition.CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (filePath);
+				if (contentType != null && contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
+					return contentType;
+				}
+			}
+
 			if (mimeType != null) {
 				var node = FindMimeType (mimeType);
 				foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {

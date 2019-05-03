@@ -660,8 +660,7 @@ namespace MonoDevelop.TextEditor
 		static readonly string[] textContentType = { "text" };
 
 		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
-			=> Ide.MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (FilePath != null ? Ide.Composition.CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (FilePath) : null)
+			=> Ide.MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType, filePath)
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		protected internal override ProjectReloadCapability OnGetProjectReloadCapability () => ProjectReloadCapability.Full;
