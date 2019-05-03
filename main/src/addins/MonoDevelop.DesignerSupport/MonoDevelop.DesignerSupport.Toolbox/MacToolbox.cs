@@ -190,8 +190,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.ShowCategories = catToggleButton.Active = true;
 			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-
-			Refresh ();
 		}
 
 		void ToolboxService_ToolboxConsumerChanged (object sender, ToolboxConsumerChangedEventArgs e)
