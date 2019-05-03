@@ -603,8 +603,8 @@ namespace MonoDevelop.Projects.MSBuild
 					return false;
 
 				LoggingService.LogError (Environment.StackTrace);
-				monitor.ReportError ("Could not open unmigrated project and no migrator was supplied", null);
-				throw new UserException ("Project migration failed");
+				monitor.ReportError (GettextCatalog.GetString ("Could not open unmigrated project and no migrator was supplied"), null);
+				throw new UserException (GettextCatalog.GetString ("Project migration failed"));
 			}
 			
 			var migrationType = st.MigrationHandler.CanPromptForMigration
@@ -612,8 +612,8 @@ namespace MonoDevelop.Projects.MSBuild
 				: projectLoadMonitor.ShouldMigrateProject ();
 			if (migrationType == MigrationType.Ignore) {
 				if (st.IsMigrationRequired) {
-					monitor.ReportError (string.Format ("{1} cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName), BrandingService.ApplicationName), null);
-					throw new UserException ("The user choose not to migrate the project");
+					monitor.ReportError (GettextCatalog.GetString ("{1} cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName), BrandingService.ApplicationName), null);
+					throw new UserException (GettextCatalog.GetString ("The user choose not to migrate the project"));
 				} else
 					return false;
 			}
@@ -635,7 +635,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			if (!await st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language))
-				throw new UserException ("Project migration failed");
+				throw new UserException (GettextCatalog.GetString ("Project migration failed"));
 
 			return true;
 		}
@@ -787,12 +787,12 @@ namespace MonoDevelop.Projects.MSBuild
 			return Task<SolutionItem>.Factory.StartNew (delegate {
 				var t = ReadGenericProjectType (file);
 				if (t == null)
-					throw new UnknownSolutionItemTypeException ("Unknown project type");
+					throw new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type"));
 
 				var dt = Services.ProjectService.DataContext.GetConfigurationDataType (t);
 				if (dt != null) {
 					if (!typeof (Project).IsAssignableFrom (dt.ValueType))
-						throw new UnknownSolutionItemTypeException ("Unknown project type: " + t);
+						throw new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type: {0}", t));
 
 					return (SolutionItem)Activator.CreateInstance (dt.ValueType);
 				}
@@ -800,7 +800,7 @@ namespace MonoDevelop.Projects.MSBuild
 				Type type;
 				lock (genericProjectTypes) {
 					if (!genericProjectTypes.TryGetValue (t, out type))
-						throw new UnknownSolutionItemTypeException ("Unknown project type: " + t);
+						throw new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type: {0}", t));
 				}
 				return (SolutionItem)Activator.CreateInstance (type);
 			});
