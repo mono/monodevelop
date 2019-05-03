@@ -28,8 +28,9 @@ using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Shell;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
 
-		internal static void Initialize ()
+		internal static async Task Initialize ()
 		{
 			IdeApp.Initialized += (s, args) => {
 				IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
@@ -76,6 +77,16 @@ namespace MonoDevelop.Ide.WelcomePage
 					}
 				};
 			};
+
+			if (HasWindowImplementation) {
+				await Runtime.GetService<DesktopService> ();
+				var commandManager = await Runtime.GetService<CommandManager> ();
+				Runtime.RunInMainThread (async () => {
+					await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
+					// load the global menu for the welcome window to avoid unresponsive menus on Mac
+					IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, "/MonoDevelop/Ide/MainMenu", "/MonoDevelop/Ide/AppMenu");
+				}).Ignore ();
+			}
 		}
 
 		public static bool WelcomePageVisible => visible;
