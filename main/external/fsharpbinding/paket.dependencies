@@ -4,7 +4,7 @@ source https://nuget.org/api/v2/
 source https://www.myget.org/F/fantomas/api/v3/index.json
 
 nuget ExtCore framework: >= net40
-nuget FSharp.Compiler.Service
+nuget FSharp.Compiler.Service 27.0.1
 nuget FSharp.Core
 nuget System.ValueTuple
 nuget Fantomas 2.9.2-latest
