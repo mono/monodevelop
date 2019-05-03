@@ -1038,7 +1038,7 @@ namespace MonoDevelop.MacIntegration
 		public override Window GetFocusedTopLevelWindow ()
 		{
 			if (NSApplication.SharedApplication.KeyWindow != null) {
-				if (IdeApp.Workbench.RootWindow.Visible) {
+				if (IdeApp.Workbench?.RootWindow?.Visible == true) {
 					//if is a docking window then return the current root window
 					if (HasAnyDockWindowFocused ()) {
 						return MessageService.RootWindow;
