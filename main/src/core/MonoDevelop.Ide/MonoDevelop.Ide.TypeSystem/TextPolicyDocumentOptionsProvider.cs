@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	[Export (typeof (IDocumentOptionsProviderFactory))]
 	class TextPolicyDocumentOptionsProviderFactory : IDocumentOptionsProviderFactory
 	{
-		public IDocumentOptionsProvider Create (Workspace workspace)
+		public IDocumentOptionsProvider TryCreate (Workspace workspace)
 		{
 			return new TextPolicyDocumentOptionsProvider ();
 		}

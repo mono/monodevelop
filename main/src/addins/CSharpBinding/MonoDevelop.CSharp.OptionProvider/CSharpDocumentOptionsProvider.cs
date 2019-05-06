@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.OptionProvider
 {
@@ -98,7 +99,12 @@ namespace MonoDevelop.CSharp.OptionProvider
 				if (codingConventionsSnapshot != null) {
 					var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
 					if (editorConfigPersistence != null) {
-						var allRawConventions = codingConventionsSnapshot.AllRawConventions;
+
+						var tempRawConventions = codingConventionsSnapshot.AllRawConventions;
+						// HACK: temporarly map our old Dictionary<string, object> to a Dictionary<string, string>. This will go away in a future commit.
+						// see https://github.com/dotnet/roslyn/commit/6a5be42f026f8d0432cfe8ee7770ff8f6be01bd6#diff-626aa9dd2f6e07eafa8eac7ddb0eb291R34
+						var allRawConventions = ImmutableDictionary.CreateRange (tempRawConventions.Select (c => Roslyn.Utilities.KeyValuePairUtil.Create (c.Key, c.Value.ToString ())));
+
 						try {
 							var underlyingOption = Policy.OptionSet.GetOption (option);
 							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
