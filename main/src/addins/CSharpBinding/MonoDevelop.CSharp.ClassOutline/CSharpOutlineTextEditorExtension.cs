@@ -44,6 +44,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.CSharp.ClassOutline
 {
@@ -67,7 +69,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		TreeStore outlineTreeStore;
 		TreeModelSort outlineTreeModelSort;
-		Widget[] toolbarWidgets;
+		Widget [] toolbarWidgets;
 
 		OutlineNodeComparer comparer;
 		OutlineSettings settings;
@@ -76,6 +78,18 @@ namespace MonoDevelop.CSharp.ClassOutline
 		bool disposed;
 		bool outlineReady;
 
+		Document providedAnalysisDocument;
+
+
+		public CSharpOutlineTextEditorExtension ()
+		{
+			// does nothing, but is here for legacy editor support
+		}
+
+		public CSharpOutlineTextEditorExtension (Document document)
+		{
+			providedAnalysisDocument = document;
+		}
 
 		public override bool IsValidInContext (DocumentContext context)
 		{
@@ -109,9 +123,9 @@ namespace MonoDevelop.CSharp.ClassOutline
 			if (outlineTreeView != null)
 				return outlineTreeView;
 
-			outlineTreeStore = new TreeStore (typeof(object));
+			outlineTreeStore = new TreeStore (typeof (object));
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
-			
+
 			settings = OutlineSettings.Load ();
 			comparer = new OutlineNodeComparer (new AstAmbience (IdeApp.TypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
 
@@ -141,7 +155,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			outlineTreeView.Selection.Changed += delegate {
 				JumpToDeclaration (false);
 			};
-			
+
 			outlineTreeView.RowActivated += delegate {
 				JumpToDeclaration (true);
 			};
@@ -155,17 +169,17 @@ namespace MonoDevelop.CSharp.ClassOutline
 			sw.ShowAll ();
 			return sw;
 		}
-		
+
 		IEnumerable<Widget> IOutlinedDocument.GetToolbarWidgets ()
 		{
 			if (toolbarWidgets != null)
 				return toolbarWidgets;
-			
+
 			var groupToggleButton = new ToggleButton {
 				Image = new ImageView (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Group entries by type"),
 				Active = settings.IsGrouped,
-			};	
+			};
 			groupToggleButton.Toggled += delegate {
 				if (groupToggleButton.Active == settings.IsGrouped)
 					return;
@@ -177,7 +191,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				Image = new ImageView (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
 				Active = settings.IsSorted,
-			};	
+			};
 			sortAlphabeticallyToggleButton.Toggled += delegate {
 				if (sortAlphabeticallyToggleButton.Active == settings.IsSorted)
 					return;
@@ -197,15 +211,15 @@ namespace MonoDevelop.CSharp.ClassOutline
 					}
 				}
 			};
-			
-			return toolbarWidgets = new Widget[] {
+
+			return toolbarWidgets = new Widget [] {
 				groupToggleButton,
 				sortAlphabeticallyToggleButton,
 				new VSeparator (),
 				preferencesButton,
 			};
 		}
-		
+
 		void JumpToDeclaration (bool focusEditor)
 		{
 			if (!outlineReady)
@@ -217,6 +231,18 @@ namespace MonoDevelop.CSharp.ClassOutline
 			var o = outlineTreeStore.GetValue (IsSorting () ? outlineTreeModelSort.ConvertIterToChildIter (iter) : iter, 0);
 
 			var syntaxNode = o as SyntaxNode;
+
+			// if we can do it the "new" way, let's just do that ...
+			if (Editor == null) {
+				var workspace = providedAnalysisDocument.Project.Solution.Workspace;
+				var navigationService = workspace.Services.GetService<Microsoft.CodeAnalysis.Navigation.IDocumentNavigationService> ();
+
+				navigationService.TryNavigateToSpan (workspace, providedAnalysisDocument.Id, syntaxNode?.Span ?? ((SyntaxTrivia)o).FullSpan);
+
+				return;
+			}
+
+			// ... and fallback to the legacy way if not
 			if (syntaxNode != null) {
 				Editor.CaretOffset = syntaxNode.SpanStart;
 			} else {
@@ -282,7 +308,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 		uint refillOutlineStoreId;
 		async void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			var analysisDocument = DocumentContext.AnalysisDocument;
+			var analysisDocument = DocumentContext?.AnalysisDocument ?? this.providedAnalysisDocument;
 			if (analysisDocument == null)
 				return;
 			lastCU = await analysisDocument.GetSemanticModelAsync ();
@@ -302,7 +328,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				refillOutlineStoreId = 0;
 				return false;
 			}
-			
+
 			outlineReady = false;
 			outlineTreeStore.Clear ();
 			if (lastCU != null) {
@@ -338,7 +364,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				this.curIter = curIter;
 			}
 
-			TreeIter Append (object node) 
+			TreeIter Append (object node)
 			{
 				if (!curIter.Equals (TreeIter.Zero))
 					return store.AppendValues (curIter, node);
@@ -487,7 +513,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			var root = parsedDocument.SyntaxTree.GetRoot ();
 
 			var visitor = new TreeVisitor (store, parent);
-			visitor.Visit (root); 
+			visitor.Visit (root);
 		}
 
 		void UpdateSorting ()
