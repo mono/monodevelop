@@ -29,26 +29,40 @@
 using System;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	
+
 	public class CodeTemplateToolboxProvider : IToolboxDynamicProvider
 	{
-		static string category = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
+		static string category = GettextCatalog.GetString ("Text Snippets");
 
-		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		readonly FilePath filePath;
+
+		public CodeTemplateToolboxProvider ()
 		{
-			// TOTEST
-			if (!(consumer is FileDocumentController content) || !consumer.IsTextView ()) {
-				yield break;
+		}
+
+		public CodeTemplateToolboxProvider (FilePath filePath)
+		{
+			this.filePath = filePath;
+		}
+
+		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		{
+			var file = filePath;
+
+			if (file.IsNullOrEmpty) {
+				if (!(consumer is FileDocumentController content) || !consumer.IsTextView ()) {
+					yield break;
+				}
+				file = content.FilePath;
 			}
 
-			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.FilePath)) {
+			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (file)) {
 				if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 					continue;
 				yield return new TemplateToolboxNode (ct) {

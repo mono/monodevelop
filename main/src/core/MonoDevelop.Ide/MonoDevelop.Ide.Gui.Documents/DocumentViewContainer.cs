@@ -107,22 +107,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return activeView;
 			}
 			set {
-				if (value != null) {
-					if (value.Parent != this)
+				if (activeView != value) {
+					if (value != null && value.Parent != this)
 						throw new InvalidOperationException ("View doesn't belong to this container");
-					if (shellViewContainer == null) {
-						activeView = value;
-						UpdateChildrenVisibility ();
-						activeView.OnActivated ();
-						ActiveViewChanged?.Invoke (this, EventArgs.Empty);
-					} else
-						shellViewContainer.ActiveView = value.ShellView;
-				} else {
-					activeView = null;
-					UpdateChildrenVisibility ();
+					SetActiveView (value);
 					if (shellViewContainer != null)
-						shellViewContainer.ActiveView = null;
+						shellViewContainer.ActiveView = value.ShellView;
 				}
+			}
+		}
+
+		void SetActiveView (DocumentView view)
+		{
+			if (view != activeView) {
+				activeView = view;
+				UpdateChildrenVisibility ();
+				activeView?.OnActivated ();
+				ActiveViewChanged?.Invoke (this, EventArgs.Empty);
+				if (ContentVisible)
+					GrabFocus ();
 			}
 		}
 
@@ -156,6 +159,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 			else
 				shellViewContainer.ActiveView = Views.FirstOrDefault ()?.ShellView;
 
+			// We consider the content to be inserted as soon as the container is
+			// inserted to the shell
+			OnContentInserted ();
+
 			return shellViewContainer;
 		}
 
@@ -174,10 +181,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void ShellViewContainer_ActiveViewChanged (object sender, EventArgs e)
 		{
-			activeView = shellViewContainer.ActiveView?.Item;
-			UpdateChildrenVisibility ();
-			activeView?.OnActivated ();
-			ActiveViewChanged?.Invoke (this, EventArgs.Empty);
+			SetActiveView (shellViewContainer.ActiveView?.Item);
 		}
 
 		internal override void OnActivated ()
@@ -268,8 +272,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal override IEnumerable<DocumentController> GetActiveControllerHierarchy ()
 		{
 			var result = base.GetActiveControllerHierarchy ();
-			if (activeView != null)
-				result = activeView.GetActiveControllerHierarchy ().Concat (result);
+			if (ActiveView != null)
+				result = ActiveView.GetActiveControllerHierarchy ().Concat (result);
 			return result;
 		}
 

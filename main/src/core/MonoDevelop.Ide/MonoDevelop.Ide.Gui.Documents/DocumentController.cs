@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentView finalViewItem;
 		ServiceProvider serviceProvider;
 		DocumentController linkedController;
+		DocumentController linkedControllerParent;
 
 		bool initialized;
 		bool hasUnsavedChanges;
@@ -367,7 +368,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		public Document Document { get; internal set; }
+		Document document;
+		public Document Document {
+			get { return document ?? linkedControllerParent?.Document ?? finalViewItem?.Parent?.SourceController?.Document; }
+			set { document = value; }
+		}
 
 		/// <summary>
 		/// Returns true if the controller only display data, but it doesn't allow to modify it.
@@ -867,6 +872,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			ContentChanged?.Invoke (this, EventArgs.Empty);
 			RefreshExtensions ().Ignore ();
 			contentCallbackRegistry?.InvokeContentChangeCallbacks ();
+
+			if (finalViewItem != null) {
+				// Propagate content change notification to parent controller
+				if (!finalViewItem.IsRoot && finalViewItem.Parent != null)
+					finalViewItem.Parent.SourceController?.NotifyContentChanged ();
+			}
 		}
 
 		internal void NotifyFocused ()
@@ -972,8 +983,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				}
 				// If the view already has a controller bound to it, link it to the new one, so that all
 				// events from the view are propagated to the old controller besides the new one.
-				if (viewItem.SourceController != null)
+				if (viewItem.SourceController != null) {
 					linkedController = viewItem.SourceController;
+					linkedController.linkedControllerParent = this;
+				}
 				viewItem.SourceController = this;
 			}
 			return viewItem;

@@ -87,6 +87,7 @@ namespace MonoDevelop.SourceEditor
 		bool writeAccessChecked;
 		TaskService taskService;
 		TextEditorService textEditorService;
+		CodeTemplateToolboxProvider codeTemplateToolboxProvider;
 
 		internal BreakpointStore Breakpoints => breakpoints;
 
@@ -343,6 +344,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.FileName = ContentName;
 			UpdateMimeType (Document.FileName);
+			codeTemplateToolboxProvider = new CodeTemplateToolboxProvider (contentName);
 			ContentNameChanged?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -2417,6 +2419,8 @@ namespace MonoDevelop.SourceEditor
 			var c = GetContent (type);
 			if (c != null)
 				yield return c;
+			if (typeof (IToolboxDynamicProvider).IsAssignableFrom (type) && codeTemplateToolboxProvider != null)
+				yield return codeTemplateToolboxProvider;
 		}
 
 		#region widget command handlers
