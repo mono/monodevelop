@@ -1056,7 +1056,7 @@ namespace MonoDevelop.Ide.Gui
 
 		bool IsInFullViewMode {
 			get {
-				return dock.CurrentLayout.EndsWith (fullViewModeTag);
+				return dock.CurrentLayout != null && dock.CurrentLayout.EndsWith(fullViewModeTag, StringComparison.Ordinal);
 			}
 		}
 
