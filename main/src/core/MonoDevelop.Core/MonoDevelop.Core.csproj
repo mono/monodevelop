@@ -92,6 +92,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
     <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
     <Reference Include="$(NuGetPackageRoot)microsoft.visualstudio.composition/$(NuGetVersionVSComposition)/lib/net45/Microsoft.VisualStudio.Composition.dll">
+      <NuGetPackageId>Microsoft.VisualStudio.Composition</NuGetPackageId>
       <Private>true</Private>
     </Reference>
     <PackageReference Include="Mono.Cecil" Version="$(NuGetVersionCecil)" PrivateAssets="runtime" />
