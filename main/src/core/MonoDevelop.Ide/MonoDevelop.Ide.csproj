@@ -4244,6 +4244,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\WebViewResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Cocoa.Webview.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopExtensionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopErrorLoggerService.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
