@@ -123,6 +123,7 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Elfie.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Scripting.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
