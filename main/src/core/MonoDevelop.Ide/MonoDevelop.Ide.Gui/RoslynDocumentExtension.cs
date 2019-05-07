@@ -685,7 +685,8 @@ namespace MonoDevelop.Ide.Gui
 					StartReparseThread ();
 			};
 
-			Editor.InitializeExtensionChain (this);
+			if (Editor.DocumentContext != this)
+				Editor.InitializeExtensionChain (this);
 			UpdateTextBufferRegistration ();
 		}
 
