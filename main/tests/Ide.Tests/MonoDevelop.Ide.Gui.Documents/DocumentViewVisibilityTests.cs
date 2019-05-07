@@ -26,6 +26,7 @@
 using System;
 using System.Threading.Tasks;
 using IdeUnitTests;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Shell;
 using NUnit.Framework;
@@ -391,6 +392,91 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.IsFalse (controller.View1.ContentVisible);
 			Assert.IsFalse (controller.View3.ContentVisible);
 		}
+
+		[Test]
+		public async Task ShownEvent_SingleView ()
+		{
+			// Shown event is raised when the content is available
+
+			var controller = new ShowTestController ();
+			var doc = await documentManager.OpenDocument (controller);
+			var view = await controller.GetDocumentView ();
+
+			int shown = 0;
+
+			view.ContentShown += (s,e) => {
+				shown++;
+			};
+
+			Assert.IsTrue (view.ContentVisible);
+			Assert.AreEqual (0, controller.Shown);
+			Assert.AreEqual (0, shown);
+
+			await doc.ForceShow ();
+
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (1, shown);
+		}
+
+		[Test]
+		public async Task ShownEvent_Container_Tabs ()
+		{
+			// Shown event is raised when the content is available
+
+			var controller = new ShowContainerTestController ();
+			Assert.AreEqual (0, controller.Shown);
+			Assert.AreEqual (0, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+
+			var doc = await documentManager.OpenDocument (controller);
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (0, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+
+			var view = await controller.GetDocumentView ();
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (0, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+
+			var container = (DocumentViewContainer)view;
+			container.CurrentMode = DocumentViewContainerMode.Tabs;
+
+			await doc.ForceShow ();
+
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (1, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+		}
+
+		[Test]
+		public async Task ShownEvent_Container_Split ()
+		{
+			// Shown event is raised when the content is available
+
+			var controller = new ShowContainerTestController ();
+			Assert.AreEqual (0, controller.Shown);
+			Assert.AreEqual (0, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+
+			var doc = await documentManager.OpenDocument (controller);
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (0, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+
+			var view = await controller.GetDocumentView ();
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (0, controller.View1.Shown);
+			Assert.AreEqual (0, controller.View2.Shown);
+
+			var container = (DocumentViewContainer)view;
+			container.CurrentMode = DocumentViewContainerMode.HorizontalSplit;
+
+			await doc.ForceShow ();
+
+			Assert.AreEqual (1, controller.Shown);
+			Assert.AreEqual (1, controller.View1.Shown);
+			Assert.AreEqual (1, controller.View2.Shown);
+		}
 	}
 
 	class DocumentViewTestsController: DocumentController
@@ -442,6 +528,61 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Container.Views.Add (View3);
 			View2.SetActive ();
 			return Task.FromResult<DocumentView> (Container);
+		}
+	}
+
+	class ShowTestController : DocumentController
+	{
+		public int Shown = 0;
+		public int Hidden = 0;
+
+		protected override void OnContentShown ()
+		{
+			Shown++;
+			base.OnContentShown ();
+		}
+
+		protected override void OnContentHidden ()
+		{
+			Hidden++;
+			base.OnContentHidden ();
+		}
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			return new DummyControl ();
+		}
+	}
+
+	class ShowContainerTestController : DocumentController
+	{
+		public int Shown = 0;
+		public int Hidden = 0;
+
+		public ShowTestController View1 = new ShowTestController ();
+		public ShowTestController View2 = new ShowTestController ();
+
+		protected override void OnContentShown ()
+		{
+			Shown++;
+			base.OnContentShown ();
+		}
+
+		protected override void OnContentHidden ()
+		{
+			Hidden++;
+			base.OnContentHidden ();
+		}
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			var container = new DocumentViewContainer ();
+			container.SupportedModes = DocumentViewContainerMode.Tabs | DocumentViewContainerMode.HorizontalSplit | DocumentViewContainerMode.VerticalSplit;
+			await View1.Initialize (null);
+			await View2.Initialize (null);
+			container.Views.Add (await View1.GetDocumentView ());
+			container.Views.Add (await View2.GetDocumentView ());
+			return container;
 		}
 	}
 }

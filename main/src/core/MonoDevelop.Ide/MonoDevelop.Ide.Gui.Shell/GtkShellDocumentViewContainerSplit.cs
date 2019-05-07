@@ -79,13 +79,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
-		public GtkShellDocumentViewItem ActiveView {
-			get {
-				return (GtkShellDocumentViewItem)Children.FirstOrDefault ();
-			}
-			set {
-			}
-		}
+		public GtkShellDocumentViewItem ActiveView { get; set; }
 
 		public event EventHandler ActiveViewChanged;
 

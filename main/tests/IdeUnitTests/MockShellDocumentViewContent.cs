@@ -48,6 +48,7 @@ namespace IdeUnitTests
 		{
 			await base.Show ();
 			control = await contentLoader (CancellationToken.None);
+			ContentInserted?.Invoke (this, EventArgs.Empty);
 		}
 
 		IShellDocumentToolbar IShellDocumentViewContent.GetToolbar (DocumentToolbarKind kind)
