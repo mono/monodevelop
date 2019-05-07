@@ -21,6 +21,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Expansion;
 
 namespace MonoDevelop.TextEditor
 {
@@ -29,5 +30,8 @@ namespace MonoDevelop.TextEditor
 	{
 		[Import]
 		public ICocoaTextEditorFactoryService TextEditorFactoryService { get; set; }
+
+		[Import]
+		public IExpansionManager ExpansionManager { get; set; }
 	}
 }

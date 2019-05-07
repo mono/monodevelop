@@ -64,6 +64,10 @@
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\GlyphMargin\GlyphMarginImpl.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\Structure\StructureImpl.csproj" Private="true" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\UrlTagger\UrlTagger.csproj" Private="true" />
+    <Reference Include="MonoDevelop.DesignerSupport">
+      <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />

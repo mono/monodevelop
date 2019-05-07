@@ -36,6 +36,9 @@ using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.DesignerSupport.Toolbox;
+using System.Collections.Generic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextEditor
 {
@@ -69,7 +72,8 @@ namespace MonoDevelop.TextEditor
 		}
 	}
 
-	class CocoaTextViewContent : TextViewContent<ICocoaTextView, CocoaTextViewImports>
+	class CocoaTextViewContent : TextViewContent<ICocoaTextView, CocoaTextViewImports>,
+		IToolboxDynamicProvider
 	{
 		ICocoaTextViewHost textViewHost;
 		NSView textViewHostControl;
@@ -207,8 +211,13 @@ namespace MonoDevelop.TextEditor
 			}
 
 			TextView.Properties.AddProperty (typeof (Gtk.Widget), embeddedControl.GtkView);
-
+			TextBuffer.ContentTypeChanged += TextBuffer_ContentTypeChanged;
 			return embeddedControl;
+		}
+
+		private void TextBuffer_ContentTypeChanged (object sender, Microsoft.VisualStudio.Text.ContentTypeChangedEventArgs e)
+		{
+			ItemsChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void OnGrabFocus (DocumentView view)
@@ -219,8 +228,9 @@ namespace MonoDevelop.TextEditor
 
 		protected override void OnDispose ()
 		{
+			if (TextBuffer != null)
+				TextBuffer.ContentTypeChanged -= TextBuffer_ContentTypeChanged;
 			base.OnDispose ();
-
 			if (textViewHost != null) {
 				textViewHost.Close ();
 				textViewHost = null;
@@ -258,6 +268,18 @@ namespace MonoDevelop.TextEditor
 				}
 
 				return false;
+			}
+		}
+
+		public event EventHandler ItemsChanged;
+		static string category = GettextCatalog.GetString ("Text Snippets");
+		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		{
+			foreach (var template in Imports.ExpansionManager.EnumerateExpansions (TextView.TextBuffer.ContentType, false, null, true, false)) {
+				yield return new SnippetToolboxNode (template) {
+					Category = category,
+					Icon = ImageService.GetIcon ("md-template", Gtk.IconSize.Menu)
+				};
 			}
 		}
 
