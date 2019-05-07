@@ -56,6 +56,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 				},
 				CodeRefactoringData = new CodeActionData [] {
 					new CodeActionData { Message = "To public" },
+					new CodeActionData { Message = "Move to namespace..." },
 					new CodeActionData { Message = "Generate overrides..." },
 					new CodeActionData { Message = "Generate constructor 'MyClass()'" },
 					new CodeActionData { Message = "Rename file to MyClass.cs" },
@@ -93,7 +94,9 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					new CodeActionData { Message = "Add accessibility modifiers" },
 					new CodeActionData { Message = "Fix formatting" },
 				}.OrderBy(d => d.Message).ToArray(),
-				CodeRefactoringData = new CodeActionData [0],
+				CodeRefactoringData = new CodeActionData [] {
+					new CodeActionData { Message = "Move to namespace..." },
+				},
 			};
 
 			await RunTest (3, IDisposableImplement, async (remainingUpdates, doc) => {
