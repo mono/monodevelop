@@ -31,21 +31,16 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.DesignerSupport;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
-using Microsoft.VisualStudio.Text.Editor;
-using MonoDevelop.TextEditor;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.ClassOutline
 {
@@ -233,7 +228,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			var syntaxNode = o as SyntaxNode;
 
 			// if we can do it the "new" way, let's just do that ...
-			if (Editor == null) {
+			if (providedAnalysisDocument != null) {
 				var workspace = providedAnalysisDocument.Project.Solution.Workspace;
 				var navigationService = workspace.Services.GetService<Microsoft.CodeAnalysis.Navigation.IDocumentNavigationService> ();
 
@@ -308,7 +303,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 		uint refillOutlineStoreId;
 		async void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			var analysisDocument = DocumentContext?.AnalysisDocument ?? this.providedAnalysisDocument;
+			var analysisDocument = this.providedAnalysisDocument ?? DocumentContext?.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
 			lastCU = await analysisDocument.GetSemanticModelAsync ();
