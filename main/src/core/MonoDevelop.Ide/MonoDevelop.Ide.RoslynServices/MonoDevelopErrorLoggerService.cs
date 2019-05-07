@@ -37,13 +37,12 @@ namespace MonoDevelop.Ide.RoslynServices
 	{
 		public void LogException (object source, Exception exception)
 		{
-			var name = source.GetType ().Name;
-
-			if (ShouldReportCrashDumps(this, source)) {
+			if (ShouldReportCrashDumps (source)) {
+				var name = source.GetType ().Name;
 				LoggingService.LogInternalError (name, exception);
 			}
 		}
 
-		 static bool ShouldReportCrashDumps (MonoDevelopErrorLoggerService instance, object source) => HasRoslynPublicKey (source);
+		 static bool ShouldReportCrashDumps (object source) => HasRoslynPublicKey (source);
 	}
 }
