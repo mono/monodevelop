@@ -134,9 +134,7 @@ namespace MonoDevelop.DotNetCore
 			if (Exist) {
 				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (SdksParentDirectory);
 				Exist = !IsUnsupportedSdkVersion;
-			} else {
-				IsUnsupportedSdkVersion = true;
-			}
+			} 
 		}
 
 		public bool IsUnsupportedSdkVersion { get; private set; }
