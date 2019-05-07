@@ -488,9 +488,9 @@ namespace MonoDevelop.Ide.Gui
 			ActivatePad (content, giveFocus);
 		}
 		
-		internal static string GetTitle (IWorkbenchWindow window)
+		internal static string GetTitle (SdiWorkspaceWindow window)
 		{
-			var controller = window.Document.DocumentController;
+			var controller = window.DocumentController;
 			if (string.IsNullOrEmpty (controller.DocumentTitle))
 				return GetDefaultTitle ();
 			string post = String.Empty;
