@@ -52,11 +52,12 @@ namespace MonoDevelop.Components.DockNotebook
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc == null)
 					return;
-				var rootWindow = (doc.Window as SdiWorkspaceWindow)?.Toplevel as DockWindow;
+				var workspaceWindow = doc.Window as SdiWorkspaceWindow;
+				var rootWindow = workspaceWindow?.Toplevel as DockWindow;
 				if (rootWindow == null)
 					return;
 				
-				rootWindow.Title = DefaultWorkbench.GetTitle (doc.Window);
+				rootWindow.Title = DefaultWorkbench.GetTitle (workspaceWindow);
 			};
 		}
 
