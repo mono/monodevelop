@@ -134,6 +134,18 @@ namespace MonoDevelop.Ide.Gui
 			return GetContent<T> (false);
 		}
 
+		public IEnumerable<T> GetContents<T> (bool forActiveView) where T : class
+		{
+			if (forActiveView)
+				return view.GetActiveControllerHierarchy ().Select (controller => controller.GetContents<T> ()).SelectMany (c => c);
+			return GetControllersForContentCheck ().Select (controller => controller.GetContents<T> ()).SelectMany (c => c);
+		}
+
+		public IEnumerable<T> GetContents<T> () where T : class
+		{
+			return GetContents<T> (false);
+		}
+
 		object GetContent (bool forActiveView, Type type)
 		{
 			if (forActiveView)
@@ -143,12 +155,12 @@ namespace MonoDevelop.Ide.Gui
 
 		object GetContentIncludingAllViews (Type type)
 		{
-			return GetControllersForContentCheck ().Select (controller => controller.GetContent (type)).FirstOrDefault (c => c != null);
+			return GetControllersForContentCheck ().Select (controller => controller.GetContent (type)).FirstOrDefault (content => content != null);
 		}
 
 		object GetContentForActiveView (Type type)
 		{
-			return view.GetActiveControllerHierarchy ()?.FirstOrDefault ()?.GetContent (type);
+			return view.GetActiveControllerHierarchy ().Select (controller => controller.GetContent (type)).FirstOrDefault (content => content != null);
 		}
 
 		ContentCallbackRegistry contentCallbackRegistry;
@@ -213,11 +225,6 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				return controller.DocumentTitle;
 			}
-		}
-
-		public IEnumerable<T> GetContents<T> () where T : class
-		{
-			return GetControllersForContentCheck ().Select (controller => controller.GetContent (typeof (T)) as T).Where (c => c != null);
 		}
 
 		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription)

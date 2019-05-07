@@ -371,6 +371,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				LoggingService.LogInternalError (ex);
 			}
 			SourceController?.NotifyFocused ();
+			SetActive ();
 		}
 
 		private void ShellContentView_LostFocus (object sender, EventArgs e)
