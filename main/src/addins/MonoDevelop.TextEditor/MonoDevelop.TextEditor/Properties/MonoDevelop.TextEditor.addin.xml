@@ -63,7 +63,7 @@
 
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommentSelectionCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UncommentSelectionCommandArgs" />
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleCommentSelectionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleLineCommentCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertTab" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.TabKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveTab" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackTabKeyCommandArgs" />
