@@ -4,7 +4,7 @@ open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
 
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler
 open System.Threading.Tasks
 open System.Runtime.CompilerServices
 

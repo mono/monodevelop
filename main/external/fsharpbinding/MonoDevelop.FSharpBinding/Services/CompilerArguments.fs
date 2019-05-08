@@ -15,7 +15,7 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 open ExtCore
 open ExtCore.Control
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 // --------------------------------------------------------------------------------------
 // Common utilities for working with files & extracting information from

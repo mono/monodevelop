@@ -22,8 +22,6 @@
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build\bin</StartWorkingDirectory>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <Target Name="Clean">
     <RemoveDir Directories="..\bin\" />
   </Target>
@@ -216,7 +214,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Fantomas">
-          <HintPath>..\packages\Fantomas\lib\net452\Fantomas.dll</HintPath>
+          <HintPath>..\packages\Fantomas\lib\net461\Fantomas.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -238,7 +236,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="FSharp.Compiler.Service">
-          <HintPath>..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+          <HintPath>..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
