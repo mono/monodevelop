@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
-				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
+				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.TryCreate (this));
 
 			desktopService = await serviceProvider.GetService<DesktopService> ().ConfigureAwait (false);
 			documentManager = await serviceProvider.GetService<DocumentManager> ().ConfigureAwait (false);

@@ -1229,9 +1229,9 @@ class C
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferIntrinsicPredefinedTypeKeywordInMemberAccess, GettextCatalog.GetString("For member access expressions"), s_intrinsicPreviewMemberAccessTrue, s_intrinsicPreviewMemberAccessFalse, this, optionSet, predefinedTypesGroupTitle, predefinedTypesPreferences));
 
 			// Use var
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.UseImplicitTypeForIntrinsicTypes, GettextCatalog.GetString("For built-in types"), s_varForIntrinsicsPreviewTrue, s_varForIntrinsicsPreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.UseImplicitTypeWhereApparent, GettextCatalog.GetString("When variable type is apparent"), s_varWhereApparentPreviewTrue, s_varWhereApparentPreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.UseImplicitTypeWherePossible, GettextCatalog.GetString("Elsewhere"), s_varWherePossiblePreviewTrue, s_varWherePossiblePreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
+			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.VarForBuiltInTypes, GettextCatalog.GetString("For built-in types"), s_varForIntrinsicsPreviewTrue, s_varForIntrinsicsPreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
+			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.VarWhenTypeIsApparent, GettextCatalog.GetString("When variable type is apparent"), s_varWhereApparentPreviewTrue, s_varWhereApparentPreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
+			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.VarElsewhere, GettextCatalog.GetString("Elsewhere"), s_varWherePossiblePreviewTrue, s_varWherePossiblePreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
 
 			// Code block
 			AddBracesOptions (optionSet, codeBlockPreferencesGroupTitle);
