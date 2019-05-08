@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 	<Runtime>
 		<Import assembly="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.Implementation.dll" />
@@ -87,5 +87,6 @@
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindNext" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindNextCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindPreviousCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Replace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ReplaceCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.Navigate.GotoBaseMember" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.GoToBaseMemberCommandArgs" />
 	</Extension>
 </ExtensionModel>
