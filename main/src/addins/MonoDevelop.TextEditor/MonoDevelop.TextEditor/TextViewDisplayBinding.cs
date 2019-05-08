@@ -58,7 +58,7 @@ namespace MonoDevelop.TextEditor
 				supported = IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType);
 
 			if (supported)
-				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Editor Preview"), true, DocumentControllerRole.Source);
+				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Source Code Editor"), true, DocumentControllerRole.Source);
 		}
 
 		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
