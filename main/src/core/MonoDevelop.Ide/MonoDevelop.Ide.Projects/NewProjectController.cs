@@ -179,7 +179,6 @@ namespace MonoDevelop.Ide.Projects
 
 			dialog.ShowDialog ();
 
-			wizardProvider.Dispose ();
 			imageProvider.Dispose ();
 
 			return IsNewItemCreated;
@@ -705,6 +704,7 @@ namespace MonoDevelop.Ide.Projects
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
 
+			wizardProvider.Dispose ();
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
 
