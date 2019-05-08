@@ -13,7 +13,7 @@ namespace MonoDevelop.TextEditor
 	{
 		TargetEntry [] IToolboxConsumer.DragTargets { get; } = new TargetEntry [0];
 
-		ToolboxItemFilterAttribute [] IToolboxConsumer.ToolboxFilterAttributes { get; } = new System.ComponentModel.ToolboxItemFilterAttribute [0];
+		ToolboxItemFilterAttribute [] IToolboxConsumer.ToolboxFilterAttributes { get; } = new ToolboxItemFilterAttribute [0];
 
 		string IToolboxConsumer.DefaultItemDomain => "Text";
 
