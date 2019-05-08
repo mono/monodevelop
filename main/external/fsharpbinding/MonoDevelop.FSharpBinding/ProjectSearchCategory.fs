@@ -7,7 +7,7 @@ open MonoDevelop.Components.MainToolbar
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Projects
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open Symbols
 
 [<AutoOpen>]

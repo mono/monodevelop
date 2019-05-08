@@ -58,7 +58,7 @@ Target "GenerateFastBuildProjects" (fun _ ->
   let (/) a b = Path.Combine(a, b)
   let nsuri = "http://schemas.microsoft.com/developer/msbuild/2003"
 
-  let absoluteFromRelative (projectPath: string) relPath =
+  let absoluteFromRelative projectPath relPath =
     let projectFolder = Path.GetDirectoryName projectPath
     let full = projectFolder / relPath
     Uri(full).LocalPath |> Path.GetFullPath

@@ -11,8 +11,8 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open MonoDevelop.Refactoring
-open FSharp.Compiler
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.FindInFiles
 open ExtCore.Control
 
@@ -697,7 +697,7 @@ open Microsoft.CodeAnalysis
 open Mono.Addins
 open Microsoft.CodeAnalysis.CodeFixes
 open MonoDevelop.FSharp.Editor
-open FSharp.Compiler.Range
+open Microsoft.FSharp.Compiler.Range
 open MonoDevelop.FSharp.Shared
 
 type QuickFixMenuHandler() =

@@ -1,6 +1,6 @@
 namespace MonoDevelopTests
 open System.Collections.Generic
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp

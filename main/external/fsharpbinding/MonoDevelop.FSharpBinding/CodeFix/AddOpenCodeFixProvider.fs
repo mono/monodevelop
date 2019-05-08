@@ -2,10 +2,9 @@
 namespace MonoDevelop.FSharp
 
 open System
-open FSharp.Compiler
-open FSharp.Compiler.Range
-open FSharp.Compiler.SourceCodeServices
-open FSharp.Compiler.SourceCodeServices.Extensions
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.Range
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp
 open MonoDevelop
 open MonoDevelop.Ide.Editor
@@ -103,7 +102,7 @@ module internal FSharpAddOpenCodeFixProvider =
             xs 
             |> Seq.map (fun (_, name, ctx) -> name, ctx) 
             |> Seq.distinctBy (fun (name, _) -> name)
-            |> Seq.sortBy(fun (name, _) -> name)
+            |> Seq.sort
             |> Seq.toArray)
         |> Seq.map (fun (ns, names) ->
             let multipleNames = names |> Array.length > 1
@@ -127,12 +126,6 @@ module internal FSharpAddOpenCodeFixProvider =
 
             let isAttribute = UntypedParseImpl.GetEntityKind(unresolvedIdentRange.Start, parsedInput) = Some EntityKind.Attribute
 
-            let replace index value (array: _ []) =
-                if index >= array.Length then raise (IndexOutOfRangeException "index")
-                let res = Array.copy array
-                res.[index] <- value
-                res
-
             let entities =
                 assemblyContentProvider.GetAllEntitiesInProjectAndReferencedAssemblies checkResults
                 |> List.collect (fun e -> 
@@ -145,9 +138,9 @@ module internal FSharpAddOpenCodeFixProvider =
                                    e.AutoOpenParent,
                                    e.Namespace,
                                    e.CleanedIdents 
-                                   |> replace (e.CleanedIdents.Length - 1) (lastIdent.Substring(0, lastIdent.Length - 9)) ])
+                                   |> Array.replace (e.CleanedIdents.Length - 1) (lastIdent.Substring(0, lastIdent.Length - 9)) ])
 
-            let longIdent = FSharp.Compiler.SourceCodeServices.ParsedInput.getLongIdentAt parsedInput unresolvedIdentRange.End
+            let longIdent = ParsedInput.getLongIdentAt parsedInput unresolvedIdentRange.End
             
             let! maybeUnresolvedIdents =
                 longIdent 
@@ -157,8 +150,7 @@ module internal FSharpAddOpenCodeFixProvider =
                         { Ident = ident.idText
                           Resolved = false })
                     |> List.toArray)
-
-            let createEntity = ParsedInput.tryFindInsertionContext unresolvedIdentRange.StartLine parsedInput maybeUnresolvedIdents OpenStatementInsertionPoint.TopLevel
+            let createEntity = ParsedInput.tryFindInsertionContext unresolvedIdentRange.StartLine parsedInput maybeUnresolvedIdents
             let candidates = entities |> Seq.map createEntity |> Seq.concat |> Seq.toList
             return getSuggestions editor monitor candidates |> Seq.toList
         }

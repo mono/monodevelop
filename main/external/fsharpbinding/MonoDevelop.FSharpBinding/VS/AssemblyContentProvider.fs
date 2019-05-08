@@ -5,7 +5,7 @@ namespace MonoDevelop.FSharp
 open System
 open System.ComponentModel.Composition
 
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<Export(typeof<AssemblyContentProvider>); Composition.Shared>]
 type internal AssemblyContentProvider () =

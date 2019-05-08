@@ -1,5 +1,5 @@
 ﻿namespace MonoDevelop.FSharp.Shared
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module ParameterHinting =
     let getTooltipInformation (symbol: FSharpSymbolUse) =

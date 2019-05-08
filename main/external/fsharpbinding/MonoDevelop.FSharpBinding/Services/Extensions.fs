@@ -4,7 +4,7 @@ open System.Text
 open System.IO
 open System.Threading
 open System.Threading.Tasks
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
 open System.Reactive.Linq
 

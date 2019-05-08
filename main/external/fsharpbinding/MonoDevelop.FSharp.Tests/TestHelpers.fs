@@ -1,6 +1,6 @@
 ﻿namespace MonoDevelopTests
 open System
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem

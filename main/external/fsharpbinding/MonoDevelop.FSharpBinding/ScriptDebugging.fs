@@ -3,7 +3,7 @@ open System
 open System.IO
 open System.Threading
 open System.Threading.Tasks
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies

@@ -1,6 +1,6 @@
 ﻿namespace MonoDevelopTests
 open NUnit.Framework
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.MonoDevelop
 open FsUnit
