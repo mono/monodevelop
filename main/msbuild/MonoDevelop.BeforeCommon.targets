@@ -87,6 +87,7 @@
 	<ItemGroup Condition="$(MSBuildProjectName) != 'MonoDevelop.Core'">
 		<Reference Include="$(NuGetPackageRoot)microsoft.visualstudio.composition/$(NuGetVersionVSComposition)/lib/net45/Microsoft.VisualStudio.Composition.dll">
 			<Private>false</Private>
+			<NuGetPackageId>Microsoft.VisualStudio.Composition</NuGetPackageId>
 		</Reference>
 	</ItemGroup>
 
