@@ -142,7 +142,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnNextInstruction ()
 		{
-			protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
 		}
 
 		protected override void OnNextLine ()
