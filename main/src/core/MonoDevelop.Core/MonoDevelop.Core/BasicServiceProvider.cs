@@ -88,7 +88,7 @@ namespace MonoDevelop.Core
 
 			lock (servicesByType) {
 				// Fast path, try to get a service for this specific type
-				if (servicesByType.TryGetValue (typeof (T), out var service))
+				if (servicesByType.TryGetValue (typeof (T), out var service) && !initializationTasks.ContainsKey (service))
 					return (T)service;
 				return null;
 			}

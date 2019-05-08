@@ -1,4 +1,4 @@
-//
+﻿//
 // WelcomePageService.cs
 //
 // Author:
@@ -28,8 +28,9 @@ using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Shell;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -51,29 +52,41 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
 
-		internal static void Initialize ()
+		internal static async Task Initialize ()
 		{
-			IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
-				if (!IdeApp.IsExiting && HasWindowImplementation) {
-					ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
-				}
+			IdeApp.Initialized += (s, args) => {
+				IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
+					if (!IdeApp.IsExiting && HasWindowImplementation) {
+						ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
+					}
+				};
+				IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
+					HideWelcomePageOrWindow ();
+				};
+				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+					if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
+						ShowWelcomePageOrWindow ();
+					}
+				};
+				IdeApp.Workbench.DocumentOpened += delegate {
+					HideWelcomePageOrWindow ();
+				};
+				IdeApp.Workbench.DocumentClosed += delegate {
+					if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
+						ShowWelcomePage ();
+					}
+				};
 			};
-			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
-				HideWelcomePageOrWindow ();
-			};
-			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
-					ShowWelcomePageOrWindow ();
-				}
-			};
-			IdeApp.Workbench.DocumentOpened += delegate {
-				HideWelcomePageOrWindow ();
-			};
-			IdeApp.Workbench.DocumentClosed += delegate {
-				if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
-					ShowWelcomePage ();
-				}
-			};
+
+			if (HasWindowImplementation) {
+				await Runtime.GetService<DesktopService> ();
+				var commandManager = await Runtime.GetService<CommandManager> ();
+				Runtime.RunInMainThread (async () => {
+					await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
+					// load the global menu for the welcome window to avoid unresponsive menus on Mac
+					IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, "/MonoDevelop/Ide/MainMenu", "/MonoDevelop/Ide/AppMenu");
+				}).Ignore ();
+			}
 		}
 
 		public static bool WelcomePageVisible => visible;

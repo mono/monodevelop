@@ -1,4 +1,4 @@
-//
+﻿//
 // MacPlatformService.cs
 //
 // Author:
@@ -401,10 +401,16 @@ namespace MonoDevelop.MacIntegration
 			return map;
 		}
 
+		string currentCommandMenuPath, currentAppMenuPath;
+
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			if (setupFail)
 				return false;
+
+			// avoid reinitialization of the same menu structure
+			if (initedApp == true && currentCommandMenuPath == commandMenuAddinPath && currentAppMenuPath == appMenuAddinPath)
+				return true;
 
 			try {
 				InitApp (commandManager);
@@ -431,6 +437,9 @@ namespace MonoDevelop.MacIntegration
 				// Assign the main menu after loading the items. Otherwise a weird application menu appears.
 				if (NSApplication.SharedApplication.MainMenu == null)
 					NSApplication.SharedApplication.MainMenu = rootMenu;
+
+				currentCommandMenuPath = commandMenuAddinPath;
+				currentAppMenuPath = appMenuAddinPath;
 			} catch (Exception ex) {
 				try {
 					var m = NSApplication.SharedApplication.MainMenu;
@@ -482,16 +491,18 @@ namespace MonoDevelop.MacIntegration
 
 			initedApp = true;
 
-			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			IdeApp.Initialized += (s, e) => {
+				IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
-				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
-					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
-					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
-					if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
-						win.TabbingMode = NSWindowTabbingMode.Disallowed;
-				};
-			}
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
+					IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
+						var win = GtkQuartz.GetWindow ((Gtk.Window)sender);
+						win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+						if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
+							win.TabbingMode = NSWindowTabbingMode.Disallowed;
+					};
+				}
+			};
 
 			PatchGtkTheme ();
 			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
@@ -1036,7 +1047,7 @@ namespace MonoDevelop.MacIntegration
 		public override Window GetFocusedTopLevelWindow ()
 		{
 			if (NSApplication.SharedApplication.KeyWindow != null) {
-				if (IdeApp.Workbench.RootWindow.Visible) {
+				if (IdeApp.Workbench?.RootWindow?.Visible == true) {
 					//if is a docking window then return the current root window
 					if (HasAnyDockWindowFocused ()) {
 						return MessageService.RootWindow;
