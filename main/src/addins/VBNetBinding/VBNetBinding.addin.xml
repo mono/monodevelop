@@ -51,7 +51,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-basic" _description="Visual Basic source code" icon="md-vb-file" isText="true" roslynName="Visual Basic">
+		<MimeType id="text/x-basic" _description="Visual Basic source code" icon="md-vb-file" isText="true" roslynName="Visual Basic" contentType="Basic">
 			<File pattern="*.vb" />
 		</MimeType>
 	</Extension>
@@ -71,11 +71,11 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions = ".vb" class = "MonoDevelop.VBNet.VBNetTextEditorExtension" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class="MonoDevelop.VBNetBinding.TypeSystemParser" mimeType = "text/x-basic" />
+	</Extension>
 
-	<!--
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />
-	</Extension>-->
 	<Module>
 		<!-- The GTK# template should only be available if the GTK add-in is enabled -->
 		<Dependencies>
