@@ -1,8 +1,9 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 
-open FSharp.Compiler
-open FSharp.Compiler.SourceCodeServices
-open FSharp.Compiler.Interactive.Shell
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.Interactive.Shell
+open System
 open System.IO
 
 type CompletionData = {

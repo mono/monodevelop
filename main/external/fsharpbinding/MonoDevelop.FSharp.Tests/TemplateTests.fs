@@ -5,7 +5,7 @@ open System.Reflection
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open FsUnit
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide

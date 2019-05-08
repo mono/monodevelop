@@ -4,7 +4,7 @@ namespace MonoDevelop.FSharp.Editor
 
 open System.Threading.Tasks
 open Microsoft.CodeAnalysis.Text
-open FSharp.Compiler.Range
+open Microsoft.FSharp.Compiler.Range
 
 module CommonRoslynHelpers =
 

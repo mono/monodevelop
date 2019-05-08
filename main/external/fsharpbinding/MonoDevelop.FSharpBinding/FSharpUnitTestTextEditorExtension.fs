@@ -7,7 +7,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.UnitTesting
 open MonoDevelop.Projects
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module unitTestGatherer =
     let hasAttributeNamed (att:FSharpAttribute) (unitTestMarkers: IUnitTestMarkers[]) (filter:  string -> IUnitTestMarkers -> bool) =

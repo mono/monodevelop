@@ -10,8 +10,8 @@ open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
-open FSharp.Compiler
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type SignatureHelpMarker(document, text, font, line, isFromFSharpType) =
     inherit TextLineMarker()

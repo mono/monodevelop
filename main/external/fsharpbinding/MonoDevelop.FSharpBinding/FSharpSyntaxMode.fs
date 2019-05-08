@@ -9,8 +9,8 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Highlighting
 open MonoDevelop.Core
 open Mono.TextEditor.Highlighting
-open FSharp.Compiler
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 open MonoDevelop
 open Gtk
@@ -351,8 +351,8 @@ module Patterns =
             | Some (tokens:_ list, symbols, colours, _formatters) when tokens.Length >= lineNumber ->
                 let tokens, _lineText = tokens.[lineNumber-1]
                 tokens
-                |> MonoDevelop.FSharp.Shared.Lexer.fixTokens txt
-                |> List.choose (fun (draft:MonoDevelop.FSharp.Shared.DraftToken) -> makeChunk symbols lineNumber lineOffset colours {draft.Token with RightColumn = draft.RightColumn} )
+                |> Lexer.fixTokens txt
+                |> List.choose (fun draft -> makeChunk symbols lineNumber lineOffset colours {draft.Token with RightColumn = draft.RightColumn} )
                 |> List.toSeq
             | _ -> Seq.empty
 

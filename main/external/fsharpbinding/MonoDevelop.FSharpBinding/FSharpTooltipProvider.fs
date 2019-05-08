@@ -13,13 +13,13 @@ open MonoDevelop.FSharp.Shared
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
-open FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
 module TooltipImpl =
     let extraKeywords = ["let!";"do!";"return!";"use!";"yield!";"->";"<-";"<@";"@>";"<@@";"@@>";":>";":?>"]
     let tryKeyword col lineStr =
-        maybe {let! (_col, keyword) = MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.Simple
+        maybe {let! (_col, keyword) = Parsing.findIdents col lineStr SymbolLookupKind.Simple
                let! keyword = keyword |> List.tryHead
                if PrettyNaming.KeywordNames |> List.contains keyword || extraKeywords |> List.contains keyword
                then return keyword
@@ -30,7 +30,7 @@ module MDTooltip =
         let startOffset = editor.LocationToOffset(line, col - keyword.Length+1)
         let endOffset = startOffset + keyword.Length
         let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
-        let tip = MonoDevelop.FSharp.Shared.SymbolTooltips.getKeywordTooltip keyword
+        let tip = SymbolTooltips.getKeywordTooltip keyword
         TooltipItem( tip, segment :> Text.ISegment)
 
 /// Resolves locations to tooltip items, and orchestrates their display.
@@ -68,7 +68,7 @@ type FSharpTooltipProvider() =
                         | Some ast ->
                             let! symbol = ast.GetSymbolAtLocation(line, col, lineStr) |> AsyncChoice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
                             let! signature, xmldoc, footer =
-                                MonoDevelop.FSharp.Shared.SymbolTooltips.getTooltipFromSymbolUse symbol
+                                SymbolTooltips.getTooltipFromSymbolUse symbol
                                 |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
 
                             let highlightedTip = syntaxHighlight signature, xmldoc, footer
