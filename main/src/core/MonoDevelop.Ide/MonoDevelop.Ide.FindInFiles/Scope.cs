@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var textView = doc.GetContent<ITextView> ();
+			var textView = doc.GetContent<ITextView> (true);
 			if (textView != null) {
 				var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
 				yield return new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End);

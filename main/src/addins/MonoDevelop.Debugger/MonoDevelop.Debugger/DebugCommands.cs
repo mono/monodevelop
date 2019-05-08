@@ -336,7 +336,7 @@ namespace MonoDevelop.Debugger
 			var breakpoints = DebuggingService.Breakpoints;
 			Breakpoint bp;
 
-			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ();
+			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true);
 			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
 			var point = textView.Caret.Position.BufferPosition;
 
@@ -354,7 +354,7 @@ namespace MonoDevelop.Debugger
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () != null &&
+					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 					!DebuggingService.Breakpoints.IsReadOnly;
 		}
@@ -367,7 +367,7 @@ namespace MonoDevelop.Debugger
 			var breakpoints = DebuggingService.Breakpoints;
 
 			lock (breakpoints) {
-				foreach (var bp in breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ().MDCaretLine ()))
+				foreach (var bp in breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true).MDCaretLine ()))
 					bp.Enabled = !bp.Enabled;
 			}
 		}
@@ -378,11 +378,11 @@ namespace MonoDevelop.Debugger
 
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
-			    IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () != null &&
+			    IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
 			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 			    !breakpoints.IsReadOnly) {
 				lock (breakpoints) {
-					var bpInLine = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ().MDCaretLine());
+					var bpInLine = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true).MDCaretLine());
 					info.Enabled = bpInLine.Count > 0;
 					info.Text = GettextCatalog.GetString ("Disable Breakpoint");
 					foreach (var bp in bpInLine) {
@@ -463,7 +463,7 @@ namespace MonoDevelop.Debugger
 			lock (breakpoints) {
 				IEnumerable<Breakpoint> brs = breakpoints.GetBreakpointsAtFileLine (
 					IdeApp.Workbench.ActiveDocument.FileName,
-					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ().MDCaretLine ());
+					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true).MDCaretLine ());
 
 				List<Breakpoint> list = new List<Breakpoint> (brs);
 				foreach (Breakpoint bp in list)
@@ -477,11 +477,11 @@ namespace MonoDevelop.Debugger
 
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
-			    IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () != null &&
+			    IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
 			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 			    !breakpoints.IsReadOnly) {
 				lock (breakpoints)
-					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ().MDCaretLine ()).Count > 0;
+					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true).MDCaretLine ()).Count > 0;
 			} else {
 				info.Enabled = false;
 			}
@@ -572,7 +572,7 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var textView = doc.GetContent<ITextView> ();
+			var textView = doc.GetContent<ITextView> (true);
 			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
 			if (DebuggingService.IsPaused) {
 				DebuggingService.RunToCursor (doc.FileName, caretLine, caretColumn);
@@ -599,7 +599,7 @@ namespace MonoDevelop.Debugger
 
 			var doc = IdeApp.Workbench.ActiveDocument;
 
-			if (doc?.GetContent<ITextView> () != null && doc.FileName != FilePath.Null) {
+			if (doc?.GetContent<ITextView> (true) != null && doc.FileName != FilePath.Null) {
 				var target = DebugHandler.GetRunTarget ();
 				if (target != null && IdeApp.ProjectOperations.CanDebug (target)) {
 					info.Enabled = true;
@@ -620,7 +620,7 @@ namespace MonoDevelop.Debugger
 			lock (breakpoints) {
 				brs = breakpoints.GetBreakpointsAtFileLine (
 					IdeApp.Workbench.ActiveDocument.FileName,
-					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ().MDCaretLine ());
+					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true).MDCaretLine ());
 			}
 
 			if (brs.Count > 0) {
@@ -635,11 +635,11 @@ namespace MonoDevelop.Debugger
 
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
-			    IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () != null &&
+			    IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
 			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 			    !breakpoints.IsReadOnly) {
 				lock (breakpoints)
-					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ().MDCaretLine ()).Count > 0;
+					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true).MDCaretLine ()).Count > 0;
 			} else {
 				info.Enabled = false;
 			}
@@ -650,7 +650,7 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ();
+			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true);
 			if (textView != null) {
 				var viewPrimitives = MonoDevelop.Ide.Composition.CompositionManager.GetExport<IEditorPrimitivesFactoryService> ().Value.GetViewPrimitives (textView);
 				var selectedText = viewPrimitives.Selection.GetText ();
@@ -711,7 +711,7 @@ namespace MonoDevelop.Debugger
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 
-			if (doc != null && doc.FileName != FilePath.Null && doc.GetContent<ITextView> () != null && DebuggingService.IsDebuggingSupported) {
+			if (doc != null && doc.FileName != FilePath.Null && doc.GetContent<ITextView> (true) != null && DebuggingService.IsDebuggingSupported) {
 				info.Enabled = DebuggingService.IsPaused && DebuggingService.DebuggerSession.CanSetNextStatement;
 				info.Visible = DebuggingService.IsPaused;
 			} else {
@@ -725,7 +725,7 @@ namespace MonoDevelop.Debugger
 			var doc = IdeApp.Workbench.ActiveDocument;
 
 			try {
-				var (caretLine, caretColumn) = doc.GetContent<ITextView> ().MDCaretLineAndColumn ();
+				var (caretLine, caretColumn) = doc.GetContent<ITextView> (true).MDCaretLineAndColumn ();
 				DebuggingService.SetNextStatement (doc.FileName, caretLine, caretColumn);
 			} catch (Exception e) {
 				if (e is NotSupportedException || e.InnerException is NotSupportedException) {

@@ -358,13 +358,13 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Owner as SolutionFolderItem, doc.Name, false);
-			doc.GetContent<ITextView> ().TextBuffer.Insert (0, header + "\n");
+			doc.GetContent<ITextView> (true).TextBuffer.Insert (0, header + "\n");
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc?.GetContent<ITextView> () is ITextView) {
+			if (doc?.GetContent<ITextView> (true) != null) {
 				info.Enabled = doc.CommentTags != null;
 			} else
 				info.Enabled = false;
