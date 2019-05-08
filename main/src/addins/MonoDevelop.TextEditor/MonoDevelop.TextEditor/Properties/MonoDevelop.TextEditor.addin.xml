@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 	<!-- Extension points -->
 
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/Editor" name = "Editor context menu">
@@ -182,6 +182,7 @@
 		<SeparatorItem id = "Separator0" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation" />
+		<CommandItem id = "MonoDevelop.Refactoring.Navigate.GotoBaseMember" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
