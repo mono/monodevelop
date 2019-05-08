@@ -1168,8 +1168,8 @@ namespace Mono.TextEditor
 								if (textEditor.preeditOffset < end)
 									end += (int)preeditLength;
 							}
-							var si = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							var ei = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							var si = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + start - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + end - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
 							var color = (Cairo.Color)EditorTheme.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
@@ -1200,8 +1200,8 @@ namespace Mono.TextEditor
 								if (textEditor.preeditOffset < end)
 									end += (int)preeditLength;
 							}
-							var si = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							var ei = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							var si = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + start - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + end - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
 							var color = (Cairo.Color)EditorTheme.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
@@ -1216,8 +1216,8 @@ namespace Mono.TextEditor
 							wrapper.SelectionEndIndex = (int)ei;
 						});
 
-						var translatedStartIndex = TranslateToUTF8Index (lineText, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
-						var translatedEndIndex = TranslateToUTF8Index (lineText, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
+						var translatedStartIndex = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex, lineText.Length), ref curChunkIndex, ref byteChunkIndex);
+						var translatedEndIndex = TranslateToUTF8Index (lineText, (uint)Math.Min (endIndex, lineText.Length), ref curChunkIndex, ref byteChunkIndex);
 
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
 							atts.AddWeightAttribute ((Pango.Weight)chunkStyle.FontWeight, translatedStartIndex, translatedEndIndex);
@@ -1231,8 +1231,8 @@ namespace Mono.TextEditor
 				}
 				if (containsPreedit) {
 					var byteLength = Encoding.UTF8.GetByteCount (textEditor.preeditString);
-					var si = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + byteLength), ref curIndex, ref byteIndex);
+					var si = TranslateToUTF8Index (lineText, (uint)Math.Min (textEditor.preeditOffset - offset, lineText.Length), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineText, (uint)Math.Min (textEditor.preeditOffset - offset + byteLength, lineText.Length), ref curIndex, ref byteIndex);
 
 					if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 						uint len = (uint)textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location).Length;
