@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeApp.cs
 //
 // Author:
@@ -184,23 +184,6 @@ namespace MonoDevelop.Ide
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
 
-			Counters.Initialization.Trace ("Creating Services");
-
-			var serviceInitialization = Task.WhenAll (
-				Runtime.GetService<DesktopService> (),
-				Runtime.GetService<FontService> (),
-				Runtime.GetService<TaskService> (),
-				Runtime.GetService<ProjectOperations> (),
-				Runtime.GetService<TextEditorService> (),
-				Runtime.GetService<NavigationHistoryService> (),
-				Runtime.GetService<DisplayBindingService> (),
-				Runtime.GetService<RootWorkspace> (),
-				Runtime.GetService<HelpOperations> (),
-				Runtime.GetService<HelpService> ()
-			);
-
-			await serviceInitialization;
-
 			// Set initial run flags
 			Counters.Initialization.Trace ("Upgrading Settings");
 
@@ -221,7 +204,27 @@ namespace MonoDevelop.Ide
 				PropertyService.SaveProperties ();
 			}
 
+			Counters.Initialization.Trace ("Initializing WelcomePage service");
+			WelcomePage.WelcomePageService.Initialize ().Ignore ();
+
+			Counters.Initialization.Trace ("Creating Services");
+
+			var serviceInitialization = Task.WhenAll (
+				Runtime.GetService<DesktopService> (),
+				Runtime.GetService<FontService> (),
+				Runtime.GetService<TaskService> (),
+				Runtime.GetService<ProjectOperations> (),
+				Runtime.GetService<TextEditorService> (),
+				Runtime.GetService<NavigationHistoryService> (),
+				Runtime.GetService<DisplayBindingService> (),
+				Runtime.GetService<RootWorkspace> (),
+				Runtime.GetService<HelpOperations> (),
+				Runtime.GetService<HelpService> ()
+			);
+
 			commandService = await Runtime.GetService<CommandManager> ();
+
+			await serviceInitialization;
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
@@ -230,24 +233,9 @@ namespace MonoDevelop.Ide
 
 			CustomToolService.Init ();
 			
-			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
-			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
-			commandService.KeyBindingFailed += KeyBindingFailed;
-
-			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
-			KeyBindingService.LoadCurrentBindings ("MD2");
-
-			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
-				LoggingService.LogInternalError (args.ErrorMessage, args.Exception);
-			};
-			
 			FileService.ErrorHandler = FileServiceErrorHandler;
 
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
-			Counters.Initialization.Trace ("Loading Commands");
-			
-			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
-			monitor.Step (1);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 3);
 
 			// Before startup commands.
 			Counters.Initialization.Trace ("Running Pre-Startup Commands");
@@ -256,10 +244,6 @@ namespace MonoDevelop.Ide
 
 			Counters.Initialization.Trace ("Initializing Workbench");
 			await workbench.Initialize (monitor);
-			monitor.Step (1);
-
-			Counters.Initialization.Trace ("Initializing WelcomePage service");
-			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Realizing Workbench Window");
@@ -306,11 +290,6 @@ namespace MonoDevelop.Ide
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
-		}
-
-		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
-		{
-			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
 		}
 
 		public static void BringToFront ()
@@ -577,18 +556,6 @@ namespace MonoDevelop.Ide
 		{
 			if (Exited != null)
 				Exited (null, EventArgs.Empty);
-		}
-
-		static ITimeTracker commandTimeCounter;
-			
-		static void CommandServiceCommandTargetScanStarted (object sender, EventArgs e)
-		{
-			commandTimeCounter = Counters.CommandTargetScanTime.BeginTiming ();
-		}
-
-		static void CommandServiceCommandTargetScanFinished (object sender, EventArgs e)
-		{
-			commandTimeCounter.End ();
 		}
 		
 		static StatusBarIcon instrumentationStatusIcon;
