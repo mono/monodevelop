@@ -5,7 +5,7 @@ open System.Drawing
 open System.IO
 open System.Reflection
 open Newtonsoft.Json
-open Microsoft.FSharp.Compiler.Interactive.Shell
+open FSharp.Compiler.Interactive.Shell
 open MonoDevelop.FSharp.Shared
 /// Wrapper for fsi with support for returning completions
 module CompletionServer =

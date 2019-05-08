@@ -10,7 +10,7 @@ open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Components
 open MonoDevelop.Ide
 open MonoDevelop.Projects
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 type FSharpOutlineTextEditorExtension() as x =
     inherit TextEditorExtension()

@@ -4,7 +4,7 @@ open System
 open System.Threading.Tasks
 open MonoDevelop.Core.Text
 open MonoDevelop.Ide.Editor
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler
 
 module braceMatcher =
     let noMatch = Nullable()
