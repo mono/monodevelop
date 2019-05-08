@@ -183,6 +183,12 @@ namespace MonoDevelop.VersionControl
 			get { return false; }
 		}
 
+		public virtual bool TryGetFileUpdateEventInfo (Repository rep, FilePath file, out FileUpdateEventInfo eventInfo)
+		{
+			eventInfo = new FileUpdateEventInfo (rep, file, false);
+			return true;
+		}
+
 		public virtual bool SupportsRevertToRevision {
 			get { return false; }
 		}
@@ -334,7 +340,12 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		public void ClearCachedVersionInfo (params FilePath[] paths)
+		public void ClearCachedVersionInfo (FilePath path)
+		{
+			infoCache?.ClearCachedVersionInfo (path);
+		}
+
+		public void ClearCachedVersionInfo (params FilePath [] paths)
 		{
 			foreach (var p in paths)
 				infoCache?.ClearCachedVersionInfo (p);

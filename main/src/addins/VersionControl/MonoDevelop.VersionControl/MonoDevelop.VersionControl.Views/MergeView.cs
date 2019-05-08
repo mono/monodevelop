@@ -102,6 +102,7 @@ namespace MonoDevelop.VersionControl.Views
 			RefreshMergeEditor ();
 		}
 
+
 		void RefreshMergeEditor ()
 		{
 			if (widgetContainer.Content is MergeWidget) {
@@ -120,6 +121,7 @@ namespace MonoDevelop.VersionControl.Views
 
 
 		protected internal override void OnDeselected () => ClearContainer ();
+
 
 		public override void OnDispose ()
 		{

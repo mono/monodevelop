@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl
 			this.items = items;
 		}
 		
-		protected internal override bool MultipleSelectedNodes {
+		protected override bool MultipleSelectedNodes {
 			get {
 				if (items != null)
 					return items.Count > 1;

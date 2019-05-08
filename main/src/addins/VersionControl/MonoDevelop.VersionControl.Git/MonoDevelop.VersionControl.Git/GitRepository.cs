@@ -389,6 +389,14 @@ namespace MonoDevelop.VersionControl.Git
 
 			return res;
 		}
+		public override bool TryGetFileUpdateEventInfo (Repository rep, FilePath file, out FileUpdateEventInfo eventInfo)
+		{
+			if (file.FileName == "index" && file.ParentDirectory.FileName == ".git") {
+				eventInfo = FileUpdateEventInfo.UpdateRepository (rep);
+				return true;
+			}
+			return base.TryGetFileUpdateEventInfo (rep, file, out eventInfo);
+		}
 
 		public StashApplyStatus PopStash (ProgressMonitor monitor, int stashIndex)
 		{

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl
 			// Add status overlays
 			
 			if (dataObject is WorkspaceObject) {
-				WorkspaceObject ce = (WorkspaceObject) dataObject;
+				WorkspaceObject ce = (WorkspaceObject)dataObject;
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null) {
 					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
@@ -141,11 +141,23 @@ namespace MonoDevelop.VersionControl
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
 		{
-			foreach (FileUpdateEventInfo uinfo in args) {
+			foreach (var uinfo in args) {
+				if (uinfo.RepositoryChanged) {
+					foreach (var kv in pathToObject) {
+						var builder = Context.GetTreeBuilder (kv.Value);
+						if (kv.Value is WorkspaceObject wo) {
+							var rep = VersionControlService.GetRepository (wo);
+							rep.ClearCachedVersionInfo (kv.Key);
+						}
+
+						builder?.Update ();
+					}
+					break;
+				}
 				foreach (var ob in GetObjectsForPath (uinfo.FilePath)) {
 					ITreeBuilder builder = Context.GetTreeBuilder (ob);
 					if (builder != null)
-						builder.Update();
+						builder.Update ();
 				}
 			}
 		}

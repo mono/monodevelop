@@ -127,7 +127,8 @@ namespace MonoDevelop.VersionControl
 				var rep = GetRepository (file);
 				if (rep != null && !rep.IsDisposed) {
 					rep.ClearCachedVersionInfo (file);
-					args.Add (new FileUpdateEventInfo (rep, file, false));
+					if (rep.TryGetFileUpdateEventInfo (rep, file, out var eventInfo))
+						args.Add (eventInfo);
 				}
 			}
 			VersionControlService.NotifyFileStatusChanged (args);
