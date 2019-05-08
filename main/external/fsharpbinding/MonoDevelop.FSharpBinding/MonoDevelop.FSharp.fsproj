@@ -214,7 +214,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Fantomas">
-          <HintPath>..\packages\Fantomas\lib\net452\Fantomas.dll</HintPath>
+          <HintPath>..\packages\Fantomas\lib\net461\Fantomas.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
