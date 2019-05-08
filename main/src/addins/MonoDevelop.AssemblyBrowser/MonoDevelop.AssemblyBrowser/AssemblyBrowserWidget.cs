@@ -1140,56 +1140,51 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			return AddReferenceByFileName (assemblyFile, expand, querySearch);
 		}
-		object assemblyLoadingLock = new object ();
 
 		internal AssemblyLoader AddReferenceByFileName (string fileName, bool expand = false, bool querySearch = true)
 		{
-			lock (assemblyLoadingLock) {
-				foreach (var def in definitions) {
-					if (FilePath.PathComparer.Equals (fileName, def.FileName))
-						return def;
-				}
-				if (!File.Exists (fileName))
-					return null;
-				var result = new AssemblyLoader (this, fileName);
-				definitions = definitions.Add (result);
-				result.LoadingTask = result.LoadingTask.ContinueWith (task => {
-					Application.Invoke ((o, args) => {
-						if (definitions.Count == 0)
-							return;
-						var fullName = result.Assembly.FullName;
-
-						// filter duplicate assemblies, can happen on opening the same assembly at different locations.
-						lock (assemblyLoadingLock) {
-							foreach (var d in definitions) {
-								if (!d.AssemblyTask.IsCompleted || d == result)
-									continue;
-								if (d.Assembly.FullName == fullName) {
-									definitions = definitions.Remove (result);
-									LoggingService.LogInfo ("AssemblyBrowser: Loaded duplicate assembly : " + fullName); // Write a log info in case that happens, shouldn't happen often.
-									return;
-								}
-							}
-						}
-
-						try {
-							ITreeBuilder builder;
-							if (definitions.Count + projects.Count == 1) {
-								builder = TreeView.LoadTree (result);
-							} else {
-								builder = TreeView.AddChild (result, false);
-							}
-							if (TreeView.GetSelectedNode () == null)
-								builder.Selected = builder.Expanded = expand;
-						} catch (Exception e) {
-							LoggingService.LogError ("Error while adding assembly to the assembly list", e);
-						}
-					});
-					return task.Result;
-				}
-				);
-				return result;
+			foreach (var def in definitions) {
+				if (FilePath.PathComparer.Equals (fileName, def.FileName))
+					return def;
 			}
+			if (!File.Exists (fileName))
+				return null;
+			var result = new AssemblyLoader (this, fileName);
+			definitions = definitions.Add (result);
+			result.LoadingTask = result.LoadingTask.ContinueWith (task => {
+				Application.Invoke ((o, args) => {
+					if (TreeView == null || definitions.Count == 0)
+						return;
+					var fullName = result.Assembly.FullName;
+
+					// filter duplicate assemblies, can happen on opening the same assembly at different locations.
+					foreach (var d in definitions) {
+						if (!d.IsLoaded || d == result)
+							continue;
+						if (d.Assembly.FullName == fullName) {
+							definitions = definitions.Remove (result);
+							LoggingService.LogInfo ("AssemblyBrowser: Loaded duplicate assembly : " + fullName); // Write a log info in case that happens, shouldn't happen often.
+							return;
+						}
+					}
+						
+					try {
+						ITreeBuilder builder;
+						if (definitions.Count + projects.Count == 1) {
+							builder = TreeView.LoadTree (result);
+						} else {
+							builder = TreeView.AddChild (result, false);
+						}
+						if (TreeView.GetSelectedNode () == null)
+							builder.Selected = builder.Expanded = expand;
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while adding assembly to the assembly list", e);
+					}
+				});
+				return task.Result;
+			}
+			);
+			return result;
 		}
 		
 		public void AddProject (Project project, bool selectReference = true)
@@ -1250,22 +1245,20 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		#endregion
 
-		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> definitions)
+		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> ensuredDefinitions)
 		{
-			if (definitions == null)
-				throw new ArgumentNullException (nameof (definitions));
-			lock (assemblyLoadingLock) {
-				foreach (var def in definitions) {
-					if (!this.definitions.Contains (def)) {
-						this.definitions = this.definitions.Add (def);
-						Application.Invoke ((o, args) => {
-							if (definitions.Count + projects.Count == 1) {
-								TreeView.LoadTree (def.LoadingTask.Result);
-							} else {
-								TreeView.AddChild (def.LoadingTask.Result);
-							}
-						});
-					}
+			if (ensuredDefinitions == null)
+				throw new ArgumentNullException (nameof (ensuredDefinitions));
+			foreach (var def in ensuredDefinitions) {
+				if (!definitions.Contains (def)) {
+					definitions = definitions.Add (def);
+					Application.Invoke ((o, args) => {
+						if (ensuredDefinitions.Count + projects.Count == 1) {
+							TreeView.LoadTree (def.LoadingTask.Result);
+						} else {
+							TreeView.AddChild (def.LoadingTask.Result);
+						}
+					});
 				}
 			}
 		}

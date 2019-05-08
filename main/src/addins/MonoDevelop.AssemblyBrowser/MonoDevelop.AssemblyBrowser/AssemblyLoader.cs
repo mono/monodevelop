@@ -83,15 +83,19 @@ namespace MonoDevelop.AssemblyBrowser
 
 		DecompilerTypeSystem decompilerTypeSystem;
 		public DecompilerTypeSystem DecompilerTypeSystem { 
-			get { 
-				if (decompilerTypeSystem == null) {
-					decompilerTypeSystem = new DecompilerTypeSystem (Assembly, new AssemblyResolver (widget));
-				}
-				return decompilerTypeSystem; 
+			get {
+				return decompilerTypeSystem;
 			}
 		}
 
+		void LoadTypeSystem (PEFile peFile)
+		{
+			decompilerTypeSystem = new DecompilerTypeSystem (peFile, new AssemblyResolver (widget));
+		}
+
 		public Error Error { get; internal set; }
+
+		public bool IsLoaded { get; private set; }
 
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
@@ -109,6 +113,7 @@ namespace MonoDevelop.AssemblyBrowser
 			assemblyLoaderTask = Task.Run (() => {
 				try {
 					var peFile = new PEFile (FileName, System.Reflection.PortableExecutable.PEStreamOptions.PrefetchEntireImage);
+					LoadTypeSystem (peFile);
 					assemblyDefinitionTaskSource.SetResult (peFile);
 					return peFile;
 				} catch (Exception e) {
@@ -116,7 +121,7 @@ namespace MonoDevelop.AssemblyBrowser
 					Error = new Error(e.Message);
 					assemblyDefinitionTaskSource.SetResult (null);
 					return null;
-				}
+				} finally { IsLoaded = true; }
 			});
 		}
 
