@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			});
 		}
 
-		public bool ContentVisible => TabControl.CurrentTab.Content == this;
+		public bool ContentVisible => TabControl.CurrentTab?.Content == this;
 
 		public bool CanMoveToNextNotebook ()
 		{
