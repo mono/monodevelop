@@ -1,4 +1,4 @@
-//
+﻿//
 // IgnoreCommand.cs
 //
 // Author:
@@ -78,9 +78,15 @@ namespace MonoDevelop.VersionControl
 
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Ignore (list.Paths);
-
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					try {
+						list [0].Repository.Ignore (list.Paths);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Ignore operation failed", ex);
+						Monitor.ReportError (ex.Message, null);
+						return;
+					}
+				}
 				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
@@ -137,8 +143,15 @@ namespace MonoDevelop.VersionControl
 
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unignore (list.Paths);
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					try {
+						list [0].Repository.Unignore (list.Paths);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Unignore operation failed", ex);
+						Monitor.ReportError (ex.Message, null);
+						return;
+					}
+				}
 
 				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);

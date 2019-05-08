@@ -121,7 +121,9 @@ namespace MonoDevelop.VersionControl
 					
 					// Reset the global comment on successful commit.
 					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, "", true);
-				} catch {
+				} catch (Exception ex) {
+					LoggingService.LogError ("Commit operation failed", ex);
+					Monitor.ReportError (ex.Message, null);
 					success = false;
 					throw;
 				}

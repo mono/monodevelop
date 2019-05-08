@@ -94,39 +94,43 @@ namespace MonoDevelop.VersionControl
 				else
 					return GettextCatalog.GetString ("Reverting revision {0}...", revision);
 			}
-			
+
 			protected override void Run ()
 			{
-				// A revert operation can create or remove a directory, so the directory
-				// check must be done before and after the revert.
+				try {
+					// A revert operation can create or remove a directory, so the directory
+					// check must be done before and after the revert.
 
-				bool isDir = Directory.Exists (path);
-				
-				if (toRevision) {
-					//we discard working changes (we are warning the user), it's the more intuitive action
-					vc.Revert (path, true, Monitor);
-					
-					vc.RevertToRevision (path, revision, Monitor);
-				}
-				else {
-					vc.RevertRevision (path, revision, Monitor);
-				}
-				
-				if (!(isDir || Directory.Exists (path)))
-					isDir = false;
-				
-				Gtk.Application.Invoke ((o, args) => {
-					if (!isDir) {
-						// Reload reverted files
-						Document doc = IdeApp.Workbench.GetDocument (path);
-						if (doc != null)
-							doc.Reload ();
-						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, false));
+					bool isDir = Directory.Exists (path);
+
+					if (toRevision) {
+						//we discard working changes (we are warning the user), it's the more intuitive action
+						vc.Revert (path, true, Monitor);
+
+						vc.RevertToRevision (path, revision, Monitor);
 					} else {
-						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
+						vc.RevertRevision (path, revision, Monitor);
 					}
-				});
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
+
+					if (!(isDir || Directory.Exists (path)))
+						isDir = false;
+
+					Gtk.Application.Invoke ((o, args) => {
+						if (!isDir) {
+							// Reload reverted files
+							Document doc = IdeApp.Workbench.GetDocument (path);
+							if (doc != null)
+								doc.Reload ();
+							VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, false));
+						} else {
+							VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
+						}
+					});
+					Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
+				} catch (Exception ex) {
+					LoggingService.LogError ("Revert operation failed", ex);
+					Monitor.ReportError (ex.Message, null);
+				}
 			}
 		}
 		
