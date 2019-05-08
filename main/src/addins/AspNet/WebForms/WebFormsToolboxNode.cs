@@ -129,7 +129,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (cls == null)
 				return tag;
 
-			var ed = document.GetContent<WebFormsEditorExtension> ();
+			var ed = document.GetContent<WebFormsEditorExtension> (true);
 			if (ed == null)
 				return tag;
 

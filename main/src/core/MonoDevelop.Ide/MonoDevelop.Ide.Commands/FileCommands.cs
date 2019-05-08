@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintDocument (PrintingSettings.Instance);
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> (true).PrintDocument (PrintingSettings.Instance);
 		}
 
 		protected override void Update (CommandInfo info)
