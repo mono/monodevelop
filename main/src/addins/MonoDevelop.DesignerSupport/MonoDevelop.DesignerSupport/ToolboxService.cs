@@ -445,7 +445,7 @@ namespace MonoDevelop.DesignerSupport
 			//only treat active ViewContent as a Toolbox consumer if it implements IToolboxConsumer
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				CurrentConsumer = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxConsumer> (true);
-				foreach (var viewProvider in IdeApp.Workbench.ActiveDocument.GetContents<IToolboxDynamicProvider> (true)) {
+				foreach (var viewProvider in IdeApp.Workbench.ActiveDocument.GetContents<IToolboxDynamicProvider> ()) {
 					viewProviders.Add (viewProvider);
 					dynamicProviders.Add (viewProvider);
 					viewProvider.ItemsChanged += OnProviderItemsChanged;

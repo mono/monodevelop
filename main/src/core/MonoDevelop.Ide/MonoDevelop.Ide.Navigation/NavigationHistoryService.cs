@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.Navigation
 
 			NavigationPoint point = null;
 
-			INavigable navigable = doc.GetContent<INavigable> ();
+			INavigable navigable = doc.GetContent<INavigable> (true);
 			if (navigable != null) {
 				point = navigable.BuildNavigationPoint ();
 				if (point != null)
