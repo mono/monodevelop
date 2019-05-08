@@ -20,25 +20,21 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
-
 using AppKit;
-using ObjCRuntime;
-
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.DesignerSupport.Toolbox;
-using System.Collections.Generic;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Documents;
+using ObjCRuntime;
 
 namespace MonoDevelop.TextEditor
 {
@@ -72,7 +68,8 @@ namespace MonoDevelop.TextEditor
 		}
 	}
 
-	class CocoaTextViewContent : TextViewContent<ICocoaTextView, CocoaTextViewImports>,
+	class CocoaTextViewContent :
+		TextViewContent<ICocoaTextView, CocoaTextViewImports>,
 		IToolboxDynamicProvider
 	{
 		ICocoaTextViewHost textViewHost;
@@ -81,6 +78,8 @@ namespace MonoDevelop.TextEditor
 
 		static readonly Lazy<bool> useLegacyGtkNSViewHost = new Lazy<bool> (
 			() => FeatureSwitchService.IsFeatureEnabled ("LegacyGtkNSViewHost").GetValueOrDefault ());
+
+		public event EventHandler ItemsChanged;
 
 		abstract class GtkNSViewHostControl : Control
 		{
@@ -271,7 +270,6 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		public event EventHandler ItemsChanged;
 		static string category = GettextCatalog.GetString ("Text Snippets");
 		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
