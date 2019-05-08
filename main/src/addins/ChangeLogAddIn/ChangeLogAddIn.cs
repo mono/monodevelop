@@ -82,7 +82,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		static void InsertEntry(Document document)
 		{
-			var textBuffer = document.GetContent<TextEditor>();					
+			var textBuffer = document.GetContent<TextEditor>(true);					
 			if (textBuffer == null) return;
 
 			string changeLogFileName = document.FileName;
