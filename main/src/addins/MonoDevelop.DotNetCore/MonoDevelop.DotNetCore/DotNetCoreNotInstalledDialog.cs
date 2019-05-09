@@ -33,25 +33,11 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
-		static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore{0}";
-
-		public static string GetDotNetCoreDownloadUrl (string version = "")
-		{
-			if (string.IsNullOrEmpty (version))
-				return string.Format (DotNetCoreDownloadUrl, string.Empty);
-
-			//special case for 2.0, 3.0, ..
-			if (version.EndsWith (".0", StringComparison.InvariantCulture))
-				version = version.Replace (".0", string.Empty);
-
-			return string.Format (DotNetCoreDownloadUrl, version.Replace (".", string.Empty));
-		}
-
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
 
 		GenericMessage message;
 		AlertButton downloadButton;
-		string downloadUrl = DotNetCoreDownloadUrl;
+		string downloadUrl = DotNetCoreVersion.GetDotNetCoreDownloadUrl ();
 
 		public DotNetCoreNotInstalledDialog ()
 		{
@@ -90,7 +76,7 @@ namespace MonoDevelop.DotNetCore
 				Message = DotNetCoreVersion.GetNotSupportedVersionMessage (CurrentDotNetCorePath);
 			else {
 				Message = DotNetCoreVersion.GetNotSupportedVersionMessage (CurrentDotNetCorePath, RequiredDotNetCoreVersion.OriginalString);
-				downloadUrl = GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion.OriginalString);
+				downloadUrl = DotNetCoreVersion.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
 			}
 
 			MessageService.GenericAlert (message);
