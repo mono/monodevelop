@@ -638,26 +638,28 @@ namespace MonoDevelop.Ide.Gui
 		public void Close()
 		{
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
-			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 
-			//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
-			foreach (var fv in dock.Layouts)
-				if (fv.EndsWith (fullViewModeTag))
-					dock.DeleteLayout (fv);
-			try {
-				dock.SaveLayouts (configFile);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error while saving layout.", ex);
+			if (rootWidget != null) {
+				PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
+				//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
+				foreach (var fv in dock.Layouts)
+					if (fv.EndsWith (fullViewModeTag))
+						dock.DeleteLayout (fv);
+				try {
+					dock.SaveLayouts (configFile);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while saving layout.", ex);
+				}
+				UninstallMenuBar ();
+				Remove (rootWidget);
+
+				foreach (PadCodon content in PadContentCollection) {
+					if (content.Initialized)
+						content.PadContent.Dispose ();
+				}
+
+				rootWidget.Destroy ();
 			}
-			UninstallMenuBar ();
-			Remove (rootWidget);
-
-			foreach (PadCodon content in PadContentCollection) {
-				if (content.Initialized)
-					content.PadContent.Dispose ();
-			}
-
-			rootWidget.Destroy ();
 			Destroy ();
 		}
 

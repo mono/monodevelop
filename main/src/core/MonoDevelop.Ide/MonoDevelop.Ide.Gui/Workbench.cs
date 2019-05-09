@@ -73,6 +73,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IdeProgressMonitorManager monitors;
 		DocumentManager documentManager;
+		WorkbenchStatusBar statusBar = new WorkbenchStatusBar ();
 
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		DefaultWorkbench workbench;
@@ -101,14 +102,6 @@ namespace MonoDevelop.Ide.Gui
 
 				Counters.Initialization.Trace ("Creating DefaultWorkbench");
 				workbench = (DefaultWorkbench) await Runtime.GetService<IShell> ();
-				monitor.Step (1);
-				
-				Counters.Initialization.Trace ("Initializing Workspace");
-				workbench.InitializeWorkspace();
-				monitor.Step (1);
-				
-				Counters.Initialization.Trace ("Initializing Layout");
-				workbench.InitializeLayout ();
 				monitor.Step (1);
 				
 				((Gtk.Window)workbench).Visible = false;
@@ -158,6 +151,11 @@ namespace MonoDevelop.Ide.Gui
 		void EnsureLayout ()
 		{
 			if (!hasEverBeenShown) {
+
+				workbench.InitializeWorkspace ();
+				workbench.InitializeLayout ();
+				statusBar.Attach (workbench.StatusBar);
+
 				workbench.CurrentLayout = "Solution";
 
 				// now we have an layout set notify it
@@ -373,7 +371,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public StatusBar StatusBar {
 			get {
-				return workbench.StatusBar.MainContext;
+				return statusBar.MainContext;
 			}
 		}
 
