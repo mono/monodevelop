@@ -101,10 +101,14 @@ namespace MonoDevelop.CSharp.Project
 
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
 			foreach (var (text, version) in CSharpLanguageVersionHelper.GetKnownLanguageVersions ()) {
-				if (unsupportedLanguageVersions.Contains (version) && compilerParameters.LangVersion != version) {
-					// Mono's MSBuild does not currently support C# 8.
-				} else {
-					langVerStore.AppendValues (text, version);
+				try {
+					if (unsupportedLanguageVersions.Contains (version) && compilerParameters.LangVersion != version) {
+						// Mono's MSBuild does not currently support C# 8.
+					} else {
+						langVerStore.AppendValues (text, version);
+					}
+				} catch (Exception ex) {
+					label2.Markup = GettextCatalog.GetString ("C# Language Version (<b>{0}</b>):", ex.Message);
 				}
 			}
 			langVerCombo.Model = langVerStore;
@@ -112,10 +116,14 @@ namespace MonoDevelop.CSharp.Project
 			TreeIter iter;
 			if (langVerStore.GetIterFirst (out iter)) {
 				do {
-					var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
-					if (val == compilerParameters.LangVersion) {
-						langVerCombo.SetActiveIter (iter);
-						break;
+					try {
+						var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
+						if (val == compilerParameters.LangVersion) {
+							langVerCombo.SetActiveIter (iter);
+							break;
+						}
+					} catch (Exception ex) {
+						label2.Markup = GettextCatalog.GetString ("C# Language Version (<b>{0}</b>):", ex.Message);
 					}
 				} while (langVerStore.IterNext (ref iter));
 			}
