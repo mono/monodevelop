@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreMSBuildProjectTests.cs
+// MSBuildSdkProjectTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -29,12 +29,12 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.Projects
 {
 	[TestFixture]
-	class DotNetCoreMSBuildProjectTests
+	class MSBuildSdkProjectTests
 	{
-		DotNetCoreMSBuildProject project;
+		MSBuildSdkProject project;
 		MSBuildProject msbuildProject;
 
 		void CreateMSBuildProject (string xml, string fileName = @"MyProject.csproj")
@@ -43,7 +43,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			msbuildProject.FileName = fileName;
 			msbuildProject.LoadXml (xml);
 
-			project = new DotNetCoreMSBuildProject ();
+			project = new MSBuildSdkProject ();
 		}
 
 		void AddGlobalPropertyToMSBuildProject (string name, string value, string defaultValue = null)

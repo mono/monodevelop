@@ -1,5 +1,5 @@
-﻿//
-// DotNetCoreShortTargetFramework.cs
+//
+// SdkProjectShortTargetFramework.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -23,14 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using MonoDevelop.Core.Assemblies;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.Projects
 {
-	class DotNetCoreShortTargetFramework
+	class SdkProjectShortTargetFramework
 	{
-		DotNetCoreShortTargetFramework ()
+		SdkProjectShortTargetFramework ()
 		{
 		}
 
@@ -47,28 +48,28 @@ namespace MonoDevelop.DotNetCore
 		/// Parse the specified short target framework. Logic is based on:
 		/// https://github.com/dotnet/sdk/blob/cfe8ff3c4e51c473ae75ca32d1c7a62043e96990/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.TargetFrameworkInference.targets#L50
 		/// </summary>
-		public static DotNetCoreShortTargetFramework Parse (string input)
+		public static SdkProjectShortTargetFramework Parse (string input)
 		{
 			if (string.IsNullOrEmpty (input))
-				throw new ArgumentException (".NET Core short target framework cannot be null or an empty string.", nameof (input));
+				throw new ArgumentException ("Sdk project short target framework cannot be null or an empty string.", nameof (input));
 
 			if (input.Contains (","))
-				throw new ArgumentException (".NET Core short target framework cannot contain ','.", nameof (input));
+				throw new ArgumentException ("Sdk project short target framework cannot contain ','.", nameof (input));
 
 			if (input.Contains ("+"))
-				throw new ArgumentException (".NET Core short target framework cannot contain '+'.", nameof (input));
+				throw new ArgumentException ("Sdk project short target framework cannot contain '+'.", nameof (input));
 
 			string identifier = input.TrimEnd ('.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 			string version = input.Substring (identifier.Length);
 
-			return new DotNetCoreShortTargetFramework {
+			return new SdkProjectShortTargetFramework {
 				Identifier = identifier,
 				OriginalString = input,
 				Version = version
 			};
 		}
 
-		public static bool TryParse (string input, out DotNetCoreShortTargetFramework framework)
+		public static bool TryParse (string input, out SdkProjectShortTargetFramework framework)
 		{
 			framework = null;
 

@@ -726,6 +726,10 @@
     <Compile Include="MonoDevelop.Core\CoreServices.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemDefinitionGroup.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectReader.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSdkProject.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

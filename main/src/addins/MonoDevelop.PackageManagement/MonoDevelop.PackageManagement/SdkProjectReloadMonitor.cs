@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreProjectReloadMonitor.cs
+// SdkProjectReloadMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -30,17 +30,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreProjectReloadMonitor
+	class SdkProjectReloadMonitor
 	{
-		static readonly DotNetCoreProjectReloadMonitor monitor = new DotNetCoreProjectReloadMonitor ();
+		static readonly SdkProjectReloadMonitor reloadMonitor = new SdkProjectReloadMonitor ();
 
-		DotNetCoreProjectReloadMonitor ()
+		SdkProjectReloadMonitor ()
 		{
 			if (IdeApp.IsInitialized) {
 				PackageManagementServices.ProjectService.ProjectReloaded += ProjectReloaded;
@@ -56,26 +55,26 @@ namespace MonoDevelop.DotNetCore
 		{
 			Runtime.AssertMainThread ();
 			try {
-				if (IsDotNetCoreProjectReloaded (e.NewProject)) {
-					OnDotNetCoreProjectReloaded (e);
+				if (IsSdkProjectReloaded (e.NewProject)) {
+					OnSdkProjectReloaded (e);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("DotNetCoreProjectReloadMonitor error", ex);
 			}
 		}
 
-		bool IsDotNetCoreProjectReloaded (IDotNetProject project)
+		bool IsSdkProjectReloaded (IDotNetProject project)
 		{
 			// Ignore reloads when NuGet package restore is running.
 			if (PackageManagementServices.BackgroundPackageActionRunner.IsRunning)
 				return false;
 
-			return project.DotNetProject.HasFlavor<DotNetCoreProjectExtension> ();
+			return project.DotNetProject.HasFlavor<SdkProjectExtension> ();
 		}
 
-		void OnDotNetCoreProjectReloaded (ProjectReloadedEventArgs e)
+		void OnSdkProjectReloaded (ProjectReloadedEventArgs e)
 		{
-			DotNetCoreProjectBuilderMaintainer.OnProjectReload (e);
+			SdkProjectBuilderMaintainer.OnProjectReload (e);
 			RestorePackagesInProjectHandler.Run (e.NewProject.DotNetProject, restoreTransitiveProjectReferences: true);
 		}
 
@@ -144,7 +143,7 @@ namespace MonoDevelop.DotNetCore
 			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				foreach (var project in projectsToReload) {
 					var reloadedProject = (await project.ParentFolder.ReloadItem (monitor, project)) as DotNetProject;
-					if (reloadedProject != null && reloadedProject.HasFlavor<DotNetCoreProjectExtension> ()) {
+					if (reloadedProject != null && reloadedProject.HasFlavor<SdkProjectExtension> ()) {
 						reloadedProjects.Add (reloadedProject);
 					}
 				}
