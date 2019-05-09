@@ -37,6 +37,30 @@ namespace MonoDevelop.Components
 		{
 		}
 
+		public bool IsRealized {
+			get {
+				if (nativeWidget is Gtk.Window)
+					return ((Gtk.Window)nativeWidget).IsRealized;
+#if MAC
+				if (nativeWidget is AppKit.NSWindow)
+					return ((AppKit.NSWindow)nativeWidget).IsVisible;
+#endif
+				return false;
+			}
+		}
+
+		public override bool HasFocus {
+			get {
+				if (nativeWidget is Gtk.Window)
+					return ((Gtk.Window)nativeWidget).HasToplevelFocus;
+#if MAC
+				if (nativeWidget is AppKit.NSWindow)
+					return nativeWidget == AppKit.NSApplication.SharedApplication.KeyWindow;
+#endif
+				return false;
+			}
+		}
+
 		public static implicit operator Gtk.Window (Window d)
 		{
 			if (d is XwtWindowControl)
