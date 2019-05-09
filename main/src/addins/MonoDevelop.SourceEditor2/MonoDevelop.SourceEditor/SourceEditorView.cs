@@ -864,6 +864,9 @@ namespace MonoDevelop.SourceEditor
 				RunFirstTimeFoldUpdate (text);
 				*/
 			Document.InformLoadComplete ();
+
+			// Now that the editor has been completely loaded, ask ITextView to update the aggregated focus status
+			widget.TextEditor.QueueAggregateFocusCheck ();
 		}
 
 		protected virtual string ProcessLoadText (string text)
