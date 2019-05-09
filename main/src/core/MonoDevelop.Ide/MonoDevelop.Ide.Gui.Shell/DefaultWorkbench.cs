@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow lastActive;
 
+		bool initialized;
 		bool closeAll;
 		bool? fullScreenState = null;
 
@@ -639,7 +640,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 
-			if (rootWidget != null) {
+			if (initialized) {
 				PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 				//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
 				foreach (var fv in dock.Layouts)
@@ -773,6 +774,7 @@ namespace MonoDevelop.Ide.Gui
 			initializing = true;
 			AddinManager.AddExtensionNodeHandler (viewContentPath, OnExtensionChanged);
 			initializing = false;
+			initialized = true;
 		}
 
 		Task layoutChangedTask;
@@ -1084,6 +1086,9 @@ namespace MonoDevelop.Ide.Gui
 		bool haveFocusedToolbar = false;
 		protected override bool OnFocused (DirectionType direction)
 		{
+			if (!initialized)
+				return base.OnFocused (direction);
+
 			// If the toolbar is not focused, focus it, and focus the next child once it loses focus
 			switch (direction) {
 			case DirectionType.TabForward:
