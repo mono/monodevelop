@@ -273,7 +273,10 @@ namespace MonoDevelop.TextEditor
 		static string category = GettextCatalog.GetString ("Text Snippets");
 		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			foreach (var template in Imports.ExpansionManager.EnumerateExpansions (TextView.TextBuffer.ContentType, false, null, true, false)) {
+			var contentType = TextView?.TextBuffer?.ContentType;
+			if (contentType == null)
+				yield break;
+			foreach (var template in Imports.ExpansionManager.EnumerateExpansions (contentType, false, null, true, false)) {
 				yield return new SnippetToolboxNode (template) {
 					Category = category,
 					Icon = ImageService.GetIcon ("md-template", Gtk.IconSize.Menu)
