@@ -260,9 +260,7 @@ namespace MonoDevelop.Ide.Gui
 
 			int idx = 0;
 			foreach (var f in filenames) {
-				var fullPath = (FilePath)FileService.GetFullPath (f);
-
-				var doc = documentManager.Documents.Find (d => d.GetContent<ITextBuffer>() != null && (fullPath == FileService.GetFullPath (d.Name)));
+				var doc = documentManager.Documents.Find (d => d.GetContent<ITextBuffer> () != null && FilePath.PathComparer.Equals (f, d.FileName));
 				if (doc != null) {
 					results [idx] = new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader (doc.GetContent<ITextBuffer> ().CurrentSnapshot);
 				} else {
