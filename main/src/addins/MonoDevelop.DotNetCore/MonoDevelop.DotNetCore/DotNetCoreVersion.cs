@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
@@ -226,6 +227,27 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			return false;
+		}
+
+		public static string GetNotSupportedVersionMessage (string currentPath, string version = "")
+		{
+			string GetMessage (DotNetCoreVersion currentVersion, DotNetCoreVersion minimumVersion)
+			{
+				return GettextCatalog.GetString ("The version of the .NET Core SDK currently installed ({0}) is not supported, please download version {1} or higher", currentVersion.ToString (), minimumVersion.ToString ());
+			}
+
+			var installedVersion = DotNetCoreSdk.Versions.OrderByDescending (x => x).FirstOrDefault ();
+			if (installedVersion != null) {
+				if (installedVersion < MinimumSupportedSdkVersion) {
+					return GetMessage (installedVersion, MinimumSupportedSdkVersion);
+				} else if (installedVersion.Major == 2 && installedVersion.Minor == 2 && installedVersion < MinimumSupportedSdkVersion22) {
+					return GetMessage (installedVersion, MinimumSupportedSdkVersion22);
+				} else if (installedVersion.Major == 3 && installedVersion < MinimumSupportedSdkVersion30) {
+					return GetMessage (installedVersion, MinimumSupportedSdkVersion30);
+				}
+			}
+
+			return GettextCatalog.GetString (".NET Core {0} SDK is not installed. This is required to build and run .NET Core {0} projects.", version);
 		}
 	}
 }

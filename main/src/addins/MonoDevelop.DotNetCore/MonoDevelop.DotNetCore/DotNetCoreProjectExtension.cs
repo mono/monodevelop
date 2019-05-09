@@ -459,10 +459,10 @@ namespace MonoDevelop.DotNetCore
 			string downloadUrl;
 
 			if (isUnsupportedVersion) {
-				message = DotNetCoreNotInstalledDialog.GetDotNetCoreMessage (sdkPaths.MSBuildSDKsPath);
+				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath, targetFramework.Id.Version);
 				downloadUrl = DotNetCoreNotInstalledDialog.GetDotNetCoreDownloadUrl ();
 			} else {
-				message = DotNetCoreNotInstalledDialog.GetDotNetCoreMessage (targetFramework.Id.Version);
+				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath, targetFramework.Id.Version);
 				downloadUrl = DotNetCoreNotInstalledDialog.GetDotNetCoreDownloadUrl (targetFramework.Id.Version);
 			}
 
