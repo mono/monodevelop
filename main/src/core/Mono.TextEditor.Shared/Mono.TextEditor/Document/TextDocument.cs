@@ -807,14 +807,13 @@ namespace Mono.TextEditor
 			{
 				this.beforeVersionNumber = args.BeforeVersion.VersionNumber;
 				this.afterVersionNumber = args.AfterVersion.VersionNumber;
-
 				this.changes = args.Changes;
 			}
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, textBufferChangeUndoPrimitiveType)) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, null, textBufferChangeUndoPrimitiveType)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.NewPosition, change.NewLength, change.OldText);
 
@@ -829,7 +828,7 @@ namespace Mono.TextEditor
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, textBufferChangeUndoPrimitiveType)) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, null, textBufferChangeUndoPrimitiveType)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.OldPosition, change.OldLength, change.NewText);
 
