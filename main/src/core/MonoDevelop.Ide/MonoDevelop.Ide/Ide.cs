@@ -207,6 +207,10 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing WelcomePage service");
 			WelcomePage.WelcomePageService.Initialize ().Ignore ();
 
+			// Pump the UI thread to make the start window visible
+
+			await Task.Yield ();
+
 			Counters.Initialization.Trace ("Creating Services");
 
 			var serviceInitialization = Task.WhenAll (
@@ -379,22 +383,25 @@ namespace MonoDevelop.Ide
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				try {
+				// Run handlers in different UI loops to avoid freezing the UI for too much time
+				Xwt.Application.Invoke (() => {
+					try {
 #if DEBUG
-					// Only show this in debug builds for now, we want to enable this later for addins that might delay
-					// IDE startup.
-					if (args.ExtensionNode is TypeExtensionNode node) {
-						LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
-					}
+						// Only show this in debug builds for now, we want to enable this later for addins that might delay
+						// IDE startup.
+						if (args.ExtensionNode is TypeExtensionNode node) {
+							LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
+						}
 #endif
-					if (args.ExtensionObject is CommandHandler handler) {
-						handler.InternalRun ();
-					} else {
-						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+						if (args.ExtensionObject is CommandHandler handler) {
+							handler.InternalRun ();
+						} else {
+							LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
-				}
+				});
 			}
 		}
 		
