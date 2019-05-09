@@ -628,11 +628,11 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		}
 
 		private void AdjustIndentationForSpan (
-			Document document, ITextEdit edit, TextSpan visibleSpan, IFormattingRule baseIndentationRule, OptionSet options)
+			Document document, ITextEdit edit, TextSpan visibleSpan, AbstractFormattingRule baseIndentationRule, OptionSet options)
 		{
 			var root = document.GetSyntaxRootSynchronously (CancellationToken.None);
 
-			using (var rulePool = SharedPools.Default<List<IFormattingRule>> ().GetPooledObject ())
+			using (var rulePool = SharedPools.Default<List<AbstractFormattingRule>> ().GetPooledObject ())
 			using (var spanPool = SharedPools.Default<List<TextSpan>> ().GetPooledObject ()) {
 				var venusFormattingRules = rulePool.Object;
 				var visibleSpans = spanPool.Object;
