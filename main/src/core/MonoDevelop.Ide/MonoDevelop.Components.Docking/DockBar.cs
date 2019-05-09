@@ -124,17 +124,22 @@ namespace MonoDevelop.Components.Docking
 			box.PackStart (it, false, false, 0);
 			it.ShowAll ();
 			UpdateVisibility ();
-			it.Shown += OnItemVisibilityChanged;
-			it.Hidden += OnItemVisibilityChanged;
+			it.Shown += OnItemVisibilityShown;
+			it.Hidden += OnItemVisibilityHidden;
 			return it;
 		}
 		
-		void OnItemVisibilityChanged (object o, EventArgs args)
+		void OnItemVisibilityShown (object o, EventArgs args)
 		{
 			DisableHoverActivation ();
 			UpdateVisibility ();
 		}
-		
+
+		void OnItemVisibilityHidden (object o, EventArgs args)
+		{
+			UpdateVisibility ();
+		}
+
 		internal void OnCompactLevelChanged ()
 		{
 			UpdateVisibility ();
@@ -161,8 +166,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			DisableHoverActivation ();
 			box.Remove (it);
-			it.Shown -= OnItemVisibilityChanged;
-			it.Hidden -= OnItemVisibilityChanged;
+			it.Shown -= OnItemVisibilityShown;
+			it.Hidden -= OnItemVisibilityHidden;
 			UpdateVisibility ();
 		}
 
