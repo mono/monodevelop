@@ -7,7 +7,7 @@ class X {
 	{
 		var background = new Bitmap ("dmg-bg.png");
 		var ctx = Graphics.FromImage (background);
-		
+
 		//system.drawing doesn't allow setting the actual font weight
 		//so we can't get it as heavy as we need :/
 		var font = new Font ("Helvetica", 12, FontStyle.Bold);
