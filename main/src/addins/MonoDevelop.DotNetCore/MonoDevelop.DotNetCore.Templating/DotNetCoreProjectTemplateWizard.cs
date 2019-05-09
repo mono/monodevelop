@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.Templating
 {
@@ -155,7 +156,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 			if (highestFramework != null) {
-				Parameters ["framework"] = highestFramework.Id.GetShortFrameworkName ();
+				Parameters ["framework"] = highestFramework.Id.ShortName;
 			} else {
 				Parameters ["framework"] = "netcoreapp1.1";
 			}

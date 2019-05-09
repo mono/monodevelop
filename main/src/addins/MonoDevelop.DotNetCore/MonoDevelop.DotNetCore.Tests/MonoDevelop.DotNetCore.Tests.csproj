@@ -19,7 +19,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTests.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreMSBuildProjectTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreVersionTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSdkTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateTests.cs" />

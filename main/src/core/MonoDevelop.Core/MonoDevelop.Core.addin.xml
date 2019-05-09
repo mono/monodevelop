@@ -219,6 +219,7 @@
 		<Class id="CompiledAssembly" class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
 		<Class id="Workspace" class = "MonoDevelop.Projects.WorkspaceSerializationExtension" />
 		<Class id="MSBuild" class = "MonoDevelop.Projects.MSBuildSerializationExtension" />
+		<Class id="SdkProject" class="MonoDevelop.Projects.SdkProjectReader" />
 		<Class id="MidStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
 		<Class id="FinalStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
 	</Extension>

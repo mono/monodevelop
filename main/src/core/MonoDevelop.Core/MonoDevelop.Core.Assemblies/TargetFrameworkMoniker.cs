@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.Assemblies
 	[Serializable]
 	public class TargetFrameworkMoniker : IEquatable<TargetFrameworkMoniker>
 	{
-		string identifier, version, profile;
+		string identifier, version, profile, shortName;
 		
 		TargetFrameworkMoniker ()
 		{
@@ -86,6 +86,17 @@ namespace MonoDevelop.Core.Assemblies
 		/// Optional. A named subset of a particular framework version, e.g. "Client".
 		/// </summary>
 		public string Profile { get { return profile; } }
+
+		/// <summary>
+		/// Short name (e.g. net471, netcoreapp2.0)
+		/// </summary>
+		public string ShortName {
+			get {
+				if (shortName == null)
+					shortName = GetShortFrameworkName (this);
+				return shortName;
+			}
+		}
 
 		public static TargetFrameworkMoniker Parse (string value)
 		{
@@ -222,7 +233,39 @@ namespace MonoDevelop.Core.Assemblies
 				return ((object)b) != null;
 			return !a.Equals (b);
 		}
-		
+
+		static string GetShortFrameworkName (TargetFrameworkMoniker framework)
+		{
+			if (IsNetFramework (framework))
+				return GetShortNetFrameworkName (framework);
+
+			string identifier = GetShortFrameworkIdentifier (framework);
+			return identifier + framework.Version;
+		}
+
+		static string GetShortFrameworkIdentifier (TargetFrameworkMoniker framework)
+		{
+			if (string.IsNullOrEmpty (framework.Identifier))
+				return string.Empty;
+
+			string shortFrameworkIdentifier = framework.Identifier;
+
+			if (shortFrameworkIdentifier [0] == '.')
+				shortFrameworkIdentifier = shortFrameworkIdentifier.Substring (1);
+
+			return shortFrameworkIdentifier.ToLower ();
+		}
+
+		static string GetShortNetFrameworkName (TargetFrameworkMoniker framework)
+		{
+			return "net" + framework.Version.Replace (".", string.Empty);
+		}
+
+		static bool IsNetFramework (TargetFrameworkMoniker framework)
+		{
+			return framework.Identifier == ".NETFramework";
+		}
+
 		public static TargetFrameworkMoniker Default {
 			get { return NET_1_1; }
 		}

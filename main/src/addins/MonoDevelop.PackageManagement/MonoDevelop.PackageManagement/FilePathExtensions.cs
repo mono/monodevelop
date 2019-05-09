@@ -64,6 +64,11 @@ namespace MonoDevelop.PackageManagement
 
 			return IsPackagesConfigFileName (filePath) || IsProjectJsonFileName (filePath);
 		}
+
+		public static bool HasSupportedDotNetCoreProjectFileExtension (this FilePath file)
+		{
+			return file.HasExtension (".csproj") || file.HasExtension (".fsproj") || file.HasExtension (".vbproj");
+		}
 	}
 }
 
