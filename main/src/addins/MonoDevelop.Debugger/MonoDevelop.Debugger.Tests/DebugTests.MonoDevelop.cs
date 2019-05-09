@@ -1,33 +1,39 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
+
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Debugger;
+
 using NUnit.Framework;
 
 using MDTextFile = MonoDevelop.Projects.Text.TextFile;
-using System.Diagnostics;
 
 namespace Mono.Debugging.Tests
 {
 	public abstract partial class DebugTests
 	{
+		static bool testProjectReady;
+
 		DebuggerEngine engine;
 		TargetRuntime runtime;
 
-		static bool testProjectReady;
+		protected virtual string TestAppProjectDirName {
+			get { return "MonoDevelop.Debugger.Tests.TestApp"; }
+		}
 
-		partial void SetUpPartial()
+		protected virtual string TestAppExeName {
+			get { return TestAppProjectDirName + ".exe"; }
+		}
+
+		partial void SetUpPartial ()
 		{
-			foreach (var e in DebuggingService.GetDebuggerEngines ()) {
-				if (e.Id == EngineId) {
-					engine = e;
-					break;
-				}
-			}
+			engine = DebuggingService.GetDebuggerEngines ().FirstOrDefault (e => e.Id == EngineId);
+
 			if (engine == null)
 				Assert.Ignore ("Engine not found: {0}", EngineId);
 
@@ -35,7 +41,15 @@ namespace Mono.Debugging.Tests
 				testProjectReady = true;
 				var packagesConfig = Path.Combine (TargetProjectSourceDir, "packages.config");
 				var packagesDir = Path.Combine (TargetProjectSourceDir, "packages");
-				Process.Start ("nuget", $"restore \"{packagesConfig}\" -PackagesDirectory \"{packagesDir}\"").WaitForExit ();
+
+				if (File.Exists (packagesConfig)) {
+					Process.Start ("nuget", $"restore \"{packagesConfig}\" -PackagesDirectory \"{packagesDir}\"").WaitForExit ();
+				} else {
+					var projFile = Path.Combine (TargetProjectSourceDir, TestAppProjectDirName + ".csproj");
+
+					Process.Start ("nuget", $"restore \"{projFile}\" -PackagesDirectory \"{packagesDir}\"").WaitForExit ();
+				}
+
 				Process.Start ("msbuild", "\"" + TargetProjectSourceDir + "\"").WaitForExit ();
 			}
 		}
@@ -44,23 +58,21 @@ namespace Mono.Debugging.Tests
 		{
 		}
 
-		protected string TargetExeDirectory
-		{
+		protected string TargetExeDirectory {
 			get {
-				FilePath path = TargetProjectSourceDir;
-				return path.Combine ("bin", "Debug");
+				return Path.Combine (TargetProjectSourceDir, "bin", "Debug");
 			}
 		}
 
-		protected string TargetProjectSourceDir
-		{
+		protected string TargetProjectSourceDir {
 			get {
-				FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
-				return path.Combine ("DebuggerTestProjects", TestAppProjectDirName);
+				var path = Path.GetDirectoryName (GetType ().Assembly.Location);
+
+				return Path.Combine (path, "DebuggerTestProjects", TestAppProjectDirName);
 			}
 		}
 
-		protected DebuggerSession CreateSession (string test, string engineId)
+		protected virtual DebuggerSession CreateSession (string test, string engineId)
 		{
 			switch (engineId) {
 				case "MonoDevelop.Debugger.Win32":
@@ -73,18 +85,19 @@ namespace Mono.Debugging.Tests
 							//Attempt to find latest version of Mono registred in IDE and use that for unit tests
 							if (string.IsNullOrWhiteSpace (o.Version) || o.Version == "Unknown")
 								return new Version (0, 0, 0, 0);
+
 							int indexOfBeforeDetails = o.Version.IndexOf (" (", StringComparison.Ordinal);
+
 							string hopefullyVersion;
 							if (indexOfBeforeDetails != -1)
 								hopefullyVersion = o.Version.Remove (indexOfBeforeDetails);
 							else
 								hopefullyVersion = o.Version;
-							Version version;
-							if (Version.TryParse (hopefullyVersion, out version)) {
+
+							if (Version.TryParse (hopefullyVersion, out var version))
 								return version;
-							} else {
-								return new Version (0, 0, 0, 0);
-							}
+
+							return new Version (0, 0, 0, 0);
 						}).FirstOrDefault ();
 					break;
 				default:
@@ -92,9 +105,8 @@ namespace Mono.Debugging.Tests
 					break;
 			}
 
-			if (runtime == null) {
+			if (runtime == null)
 				Assert.Ignore ("Runtime not found for: {0}", engineId);
-			}
 
 			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version + " " + (IntPtr.Size == 8 ? "64bit" : "32bit"));
 
@@ -109,12 +121,13 @@ namespace Mono.Debugging.Tests
 			if (Platform.IsWindows) {
 				var monoRuntime = runtime as MonoTargetRuntime;
 				if (monoRuntime != null) {
-					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), exe);
+					var psi = new ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), exe);
 					psi.UseShellExecute = false;
 					psi.CreateNoWindow = true;
-					System.Diagnostics.Process.Start (psi).WaitForExit ();
+					Process.Start (psi).WaitForExit ();
 				}
 			}
+
 			return engine.CreateSession ();
 		}
 
@@ -136,7 +149,7 @@ namespace Mono.Debugging.Tests
 		/// <returns></returns>
 		public static ITextFile ReadFile (string sourcePath)
 		{
-			return new TextFile(MDTextFile.ReadFile (sourcePath));
+			return new TextFile (MDTextFile.ReadFile (sourcePath));
 		}
 	}
 }

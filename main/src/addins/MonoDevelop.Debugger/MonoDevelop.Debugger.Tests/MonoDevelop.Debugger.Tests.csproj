@@ -17,6 +17,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\*.cs" />
+    <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\Sdb\*.cs" />
+    <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\Win32\*.cs" />
     <Compile Include="DebugTests.MonoDevelop.cs" />
     <Compile Include="TextFile.cs" />
   </ItemGroup>
