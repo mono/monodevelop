@@ -37,15 +37,15 @@ namespace MonoDevelop.VersionControl.Git
 {
 	partial class GitConfigurationDialog : Gtk.Dialog
 	{
-		readonly GitRepository repo;
+		GitRepository repo;
 		readonly ListStore storeBranches;
 		readonly ListStore storeTags;
 		readonly TreeStore storeRemotes;
 
-		public GitConfigurationDialog (GitRepository repo)
+		public GitConfigurationDialog (VersionControlSystem vcs, string repoPath, string repoUrl)
 		{
 			this.Build ();
-			this.repo = repo;
+			this.repo = new GitRepository (vcs, repoPath, repoUrl, false);
 			this.HasSeparator = false;
 
 			this.UseNativeContextMenus ();
@@ -69,7 +69,8 @@ namespace MonoDevelop.VersionControl.Git
 					buttonRemoveBranch.Sensitive = buttonEditBranch.Sensitive = buttonSetDefaultBranch.Sensitive = listBranches.Selection.GetSelected (out it);
 				if (!anythingSelected)
 						return;
-
+				if (repo == null || repo.IsDisposed)
+					return;
 				string currentBranch = repo.GetCurrentBranch ();
 				var b = (Branch) storeBranches.GetValue (it, 0);
 				buttonRemoveBranch.Sensitive = b.FriendlyName != currentBranch;
@@ -163,6 +164,15 @@ namespace MonoDevelop.VersionControl.Git
 			storeTags.Clear ();
 			foreach (string tag in repo.GetTags ()) {
 				storeTags.AppendValues (tag);
+			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (this.repo != null) {
+				this.repo.Dispose ();
+				this.repo = null;
 			}
 		}
 
