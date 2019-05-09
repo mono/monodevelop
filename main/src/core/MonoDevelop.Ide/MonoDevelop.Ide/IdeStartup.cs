@@ -354,7 +354,7 @@ namespace MonoDevelop.Ide
 			// On Mac, the OpenDocuments event gets handled here, so we need to get the timeout
 			// it queues before the OnIdle event so we can start opening a solution before
 			// we show the main window.
-			DispatchService.RunPendingEvents ();
+			await Task.Yield ();
 
 			IdeStartupTracker.StartupTracker.MarkSection ("PumpEventLoop");
 			IdeStartupTracker.StartupTracker.Stop (startupInfo);
@@ -538,15 +538,18 @@ namespace MonoDevelop.Ide
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				try {
-					if (args.ExtensionObject is CommandHandler handler) {
-						handler.InternalRun ();
-					} else {
-						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+				// Run handlers in different UI loops to avoid freezing the UI for too much time
+				Xwt.Application.Invoke (() => {
+					try {
+						if (args.ExtensionObject is CommandHandler handler) {
+							handler.InternalRun ();
+						} else {
+							LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
-				}
+				});
 			}
 		}
 		
