@@ -56,7 +56,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var file = filePath;
 
 			if (file.IsNullOrEmpty) {
-				if (!(consumer is FileDocumentController content) || !consumer.IsTextView ()) {
+				if (!(consumer is FileDocumentController content) || !consumer.IsTextEditor (out var _)) {
 					yield break;
 				}
 				file = content.FilePath;
