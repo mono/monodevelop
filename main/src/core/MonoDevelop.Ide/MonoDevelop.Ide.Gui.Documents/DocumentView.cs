@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		static WeakReference<DocumentView> lastFocusGrabRequest = new WeakReference<DocumentView> (null);
 
-		public void GrabFocus ()
+		public async void GrabFocus ()
 		{
 			// If the view already has the focus, don't do anything
 			//	if (hasFocus) this is disabled because native views don't always correctly report that they have the focus
@@ -251,6 +251,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 				lastFocusGrabRequest.SetTarget (this);
 				return;
 			}
+
+			// Grab the focus in the next UI iteration. 
+			// If GrabFocus is being called in an event handler, the focus may be lost again after executing
+			// the rest of the handler. Real case: if the focus is being grabbed in the double-click handler
+			// of a list, the focus will be lost since the default click handler will return the focus to
+			// the list.
+
+			await Task.Yield ();
 
 			if (SourceController != null)
 				SourceController.GrabFocusForView (this);
