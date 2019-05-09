@@ -405,8 +405,7 @@ namespace Mono.TextEditor
 		/// </remarks>
 		private void SubscribeToEvents ()
 		{
-			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
+			IdeServices.DocumentManager.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
 		}
 
 		void Workbench_ActiveDocumentChanged (object sender, EventArgs e)
@@ -416,8 +415,7 @@ namespace Mono.TextEditor
 
 		private void UnsubscribeFromEvents ()
 		{
-			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
+			IdeServices.DocumentManager.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
 		}
 
 		static readonly string[] allowedTextViewCreationListeners = {
@@ -498,7 +496,7 @@ namespace Mono.TextEditor
 #endif
 
 			if (!isClosed) {
-				bool newHasAggregateFocus = ((IdeApp.Workbench.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor == this);
+				bool newHasAggregateFocus = ((IdeServices.DocumentManager.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor == this);
 				if (newHasAggregateFocus != hasAggregateFocus) {
 					hasAggregateFocus = newHasAggregateFocus;
 
