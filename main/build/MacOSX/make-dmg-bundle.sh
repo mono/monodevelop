@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Shamelessly lifted from Banshee's build process
- 	
+
 pushd $(dirname $0) &>/dev/null
 
 DMG_APP=$1
@@ -31,7 +31,21 @@ MOUNT_POINT="$VOLUME_NAME.mounted"
 
 rm -f "$DMG_FILE"
 rm -f "$DMG_FILE.master"
- 	
+
+# Compute an approximated image size in MB, and bloat by double
+# codesign adds a unknown amount of extra size requirements and there are some
+# files where the additional size required is even more "unknown". doubling
+# is a brute force approach, but doesn't really impact final distribution size
+# because the empty space is compressed to nothing.
+image_size=$(du -ck "$DMG_APP" | tail -n1 | cut -f1)
+image_size=$((($image_size *2) / 1000))
+
+echo "Creating disk image (${image_size}MB)..."
+hdiutil create "$DMG_FILE" -megabytes $image_size -volname "$VOLUME_NAME" -fs HFS+ -quiet || exit $?
+
+echo "Attaching to disk image..."
+hdiutil attach "$DMG_FILE" -readwrite -noautoopen -mountpoint "$MOUNT_POINT" -quiet || exit $?
+
 echo "Populating image..."
 
 mkdir -p "$MOUNT_POINT/.background"
@@ -39,7 +53,7 @@ mkdir -p "$MOUNT_POINT/.background"
 # such as compatibility-check
 ditto "$DMG_APP" "$MOUNT_POINT/$DMG_APP"
 
-# This won't result in any deletions 
+# This won't result in any deletions
 #find "$MOUNT_POINT" -type d -iregex '.*\.svn$' &>/dev/null | xargs rm -rf
 
 pushd "$MOUNT_POINT" &>/dev/null
@@ -78,4 +92,4 @@ rm -rf "$MOUNT_POINT"
 
 echo "Done."
 
-popd &>/dev/null 
+popd &>/dev/null
