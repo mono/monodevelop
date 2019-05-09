@@ -67,8 +67,9 @@ namespace MonoDevelop.VersionControl.Git
 
 				rootRepository = value;
 
-				InitScheduler ();
-				InitFileWatcher (false);
+				InitScheduler (); 
+                if (this.watchGitLockfiles)
+					InitFileWatcher (false);
 			}
 		}
 
@@ -79,19 +80,27 @@ namespace MonoDevelop.VersionControl.Git
 		ConcurrentExclusiveSchedulerPair scheduler;
 		TaskFactory blockingOperationFactory;
 		TaskFactory readingOperationFactory;
+		readonly bool watchGitLockfiles;
 
 		public GitRepository ()
 		{
 			Url = "git://";
 		}
 
-		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
+		internal GitRepository (VersionControlSystem vcs, FilePath path, string url, bool watchGitLockfiles) : base (vcs)
 		{
 			RootRepository = new LibGit2Sharp.Repository (path);
 			RootPath = RootRepository.Info.WorkingDirectory;
 			Url = url;
+			this.watchGitLockfiles = watchGitLockfiles;
 
-			InitFileWatcher ();
+			if (this.watchGitLockfiles && watcher == null)
+				InitFileWatcher ();
+		}
+
+		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : this (vcs, path, url, true)
+		{
+
 		}
 
 		void InitScheduler ()

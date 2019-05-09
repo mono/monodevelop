@@ -122,7 +122,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			GitService.ShowConfigurationDialog (Repository);
+			GitService.ShowConfigurationDialog (Repository.VersionControlSystem, Repository.RootPath, Repository.Url);
 		}
 	}
 
