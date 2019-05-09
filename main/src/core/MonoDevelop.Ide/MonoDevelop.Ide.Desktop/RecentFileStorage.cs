@@ -33,14 +33,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Xml;
 using System.Linq;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -58,7 +57,8 @@ namespace MonoDevelop.Ide.Desktop
 		FileSystemWatcher watcher;
 		object cacheLock = new object ();
 		List<RecentItem> cachedItemList = new List<RecentItem> ();
-		
+		RecentFilesWatcher recentFilesWatcher;
+
 		public static string DefaultPath {
 			get {
 				return Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".recently-used");
@@ -104,6 +104,11 @@ namespace MonoDevelop.Ide.Desktop
 			watcher.Deleted += FileChanged;
 			watcher.Renamed += HandleWatcherRenamed;
 			watcher.EnableRaisingEvents = true;
+			if (recentFilesWatcher == null) {
+				recentFilesWatcher = new RecentFilesWatcher ();
+				recentFilesWatcher.RecentProjectChanged += RecentItemsChanged;
+				recentFilesWatcher.Watch (cachedItemList.Select (ci => ci.LocalPath));
+			}
 		}
 
 		void DisableWatching ()
@@ -116,9 +121,19 @@ namespace MonoDevelop.Ide.Desktop
 			watcher.Deleted -= FileChanged;
 			watcher.Renamed -= HandleWatcherRenamed;
 			watcher.Dispose ();
-			watcher = null;
+			watcher = null; 
+            if (recentFilesWatcher != null) {
+				recentFilesWatcher.RecentProjectChanged -= RecentItemsChanged;
+				recentFilesWatcher.Dispose ();
+				recentFilesWatcher = null;
+			}
 		}
-		
+
+		void RecentItemsChanged (object sender, FileSystemEventArgs e)
+		{
+			OnRecentFilesChanged (cachedItemList);
+		}
+
 		void FileChanged (object sender, FileSystemEventArgs e)
 		{
 			OnRecentFilesChanged (cachedItemList);
@@ -276,6 +291,7 @@ namespace MonoDevelop.Ide.Desktop
 						fs.Position = 0;
 						fs.SetLength (0);
 						WriteStore (fs, list);
+						recentFilesWatcher.Watch (list.Select (ci => ci.LocalPath));
 						OnRecentFilesChanged (list);
 					}
 				}
@@ -386,6 +402,74 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			changed = null;
 			DisableWatching ();
+		}
+	}
+	internal class RecentFilesWatcher : IDisposable
+	{
+		private readonly ConcurrentDictionary<string, FileSystemWatcher> fws = new ConcurrentDictionary<string, FileSystemWatcher> ();
+
+		public event EventHandler<FileSystemEventArgs> RecentProjectChanged;
+
+		public void Watch (IEnumerable<string> files)
+		{
+			var toAdd = files.Except (fws.Keys);
+			var toRemove = fws.Keys.Except (files);
+
+			foreach (var file in toAdd) {
+				var dirName = Path.GetDirectoryName (file);
+				if (Directory.Exists (dirName)) {
+					var fsw = new FileSystemWatcher (dirName, Path.GetFileName (file)) {
+						IncludeSubdirectories = false
+					};
+					fsw.Created += OnRecentProjectChanged;
+					fsw.Changed += OnRecentProjectChanged;
+					fsw.Deleted += OnRecentProjectChanged;
+					fsw.Renamed += OnRecentProjectChanged;
+					fsw.EnableRaisingEvents = true;
+					fws [file] = fsw;
+				}
+			}
+
+			Dictionary<string, FileSystemWatcher> fwsToRemove = new Dictionary<string, FileSystemWatcher> ();
+			foreach (var file in toRemove) {
+				var dirName = Path.GetDirectoryName (file);
+				var filterName = Path.GetFileName (file);
+				var fw = fws.FirstOrDefault (f => f.Value.Path.Equals (dirName) && f.Value.Filter.Equals (filterName));
+				if (fw.Value != null) {
+					fwsToRemove [fw.Key] = fw.Value;
+				}
+			}
+
+			foreach (var fwToRemove in fwsToRemove) {
+				Dispose (fwToRemove.Value);
+				fws.TryRemove (fwToRemove.Key, out _);
+			}
+
+			fwsToRemove.Clear ();
+		}
+
+		void OnRecentProjectChanged (object sender, FileSystemEventArgs e)
+		{
+			RecentProjectChanged?.Invoke (this, e);
+		}
+
+		public void Dispose ()
+		{
+			foreach (var fw in fws) {
+				Dispose (fw.Value);
+			}
+
+			fws.Clear ();
+		}
+
+		void Dispose (FileSystemWatcher fw)
+		{
+			fw.EnableRaisingEvents = false;
+			fw.Created -= OnRecentProjectChanged;
+			fw.Changed -= OnRecentProjectChanged;
+			fw.Deleted -= OnRecentProjectChanged;
+			fw.Renamed -= OnRecentProjectChanged;
+			fw.Dispose ();
 		}
 	}
 }
