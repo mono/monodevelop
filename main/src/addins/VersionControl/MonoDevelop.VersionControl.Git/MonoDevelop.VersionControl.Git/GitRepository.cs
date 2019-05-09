@@ -944,6 +944,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
 
+			bool retry = false;
 			RetryUntilSuccess (monitor, credType => {
 
 				try {
@@ -951,7 +952,11 @@ namespace MonoDevelop.VersionControl.Git
 						OnPushStatusError = delegate (PushStatusError e) {
 							throw new VersionControlException (e.Message);
 						},
-						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
+						CredentialsProvider = (url, userFromUrl, types) => {
+							LibGit2Sharp.Credentials credentials = GitCredentials.TryGet (url, userFromUrl, types, credType, retry);
+							retry = true;
+							return credentials;
+						}
 					});
 				} catch(VersionControlException vcex) {
 					RootRepository.Dispose ();
@@ -1006,6 +1011,7 @@ namespace MonoDevelop.VersionControl.Git
 						GitCredentials.StoreCredentials (credType);
 						retry = false;
 					} catch (AuthenticationException e) {
+						LoggingService.LogInternalError (e);
 						GitCredentials.InvalidateCredentials (credType);
 						retry = Runtime.RunInMainThread (() => HandleAuthenticationException (e)).Result;
 						if (!retry)
@@ -1054,10 +1060,15 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
 
+			bool retry = false;
 			RunOperation (() => {
 				var refSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification);
 				RetryUntilSuccess (monitor, credType => LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
-					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+					CredentialsProvider = (url, userFromUrl, types) => {
+						LibGit2Sharp.Credentials credentials = GitCredentials.TryGet (url, userFromUrl, types, credType, retry);
+						retry = true;
+						return credentials;
+					},
 					OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
 				}, string.Empty));
 			}, true);
@@ -1401,11 +1412,14 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				monitor.BeginTask ("Cloning...", 2);
 
+				bool retry = false;
 				RunOperation (() => RetryUntilSuccess (monitor, credType => {
 					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
 						CredentialsProvider = (url, userFromUrl, types) => {
 							transferProgress = checkoutProgress = 0;
-							return GitCredentials.TryGet (url, userFromUrl, types, credType);
+							LibGit2Sharp.Credentials credentials = GitCredentials.TryGet (url, userFromUrl, types, credType, retry);
+							retry = true;
+							return credentials;
 						},
 						RepositoryOperationStarting = ctx => {
 							Runtime.RunInMainThread (() => {
@@ -1441,13 +1455,16 @@ namespace MonoDevelop.VersionControl.Git
 		static void RecursivelyCloneSubmodules (LibGit2Sharp.Repository rootRepository, ProgressMonitor monitor)
 		{
 			var submodules = new List<string> ();
+			bool retry = false;
 			RetryUntilSuccess (monitor, credType => {
 				int transferProgress = 0, checkoutProgress = 0;
 				SubmoduleUpdateOptions updateOptions = new SubmoduleUpdateOptions () {
 					Init = true,
 					CredentialsProvider = (url, userFromUrl, types) => {
 						transferProgress = checkoutProgress = 0;
-						return GitCredentials.TryGet (url, userFromUrl, types, credType);
+						LibGit2Sharp.Credentials credentials = GitCredentials.TryGet (url, userFromUrl, types, credType, retry);
+						retry = true;
+						return credentials;
 					},
 					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
 					OnCheckoutProgress = (file, completedSteps, totalSteps) => {
@@ -1693,11 +1710,16 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}, true);
 
+			bool retry = false;
 			RunOperation (() => {
 				RetryUntilSuccess (monitor, credType =>
 					RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 						OnPushStatusError = pushStatusErrors => success = false,
-						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
+						CredentialsProvider = (url, userFromUrl, types) => {
+							LibGit2Sharp.Credentials credentials = GitCredentials.TryGet (url, userFromUrl, types, credType, retry);
+							retry = true;
+							return credentials;
+						}
 					})
 				);
 			}, true);
@@ -1831,9 +1853,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void PushTag (string name)
 		{
+			bool retry = false;
 			RunOperation (() => {
 				RetryUntilSuccess (null, credType => RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
-					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+					CredentialsProvider = (url, userFromUrl, types) => {
+						LibGit2Sharp.Credentials credentials = GitCredentials.TryGet (url, userFromUrl, types, credType, retry);
+						retry = true;
+						return credentials;
+					},
 				}));
 			}, true);
 		}
