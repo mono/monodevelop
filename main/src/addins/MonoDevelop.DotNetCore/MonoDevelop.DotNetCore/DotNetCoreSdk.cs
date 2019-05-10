@@ -198,7 +198,7 @@ namespace MonoDevelop.DotNetCore
 				}
 			}
 
-			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core 2.2 SDK by visiting {1}.", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
+			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core {0} SDK by visiting {1}.", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
 		}
 	}
 }
