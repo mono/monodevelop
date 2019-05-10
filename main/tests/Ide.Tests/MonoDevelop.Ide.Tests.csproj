@@ -130,6 +130,7 @@
     <Compile Include="MonoDevelop.Ide.FindInFiles\PatternMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\GLibLoggingTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\PatternSearcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\OutputOptionsPanelTests.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppResultTests.cs" />
   </ItemGroup>

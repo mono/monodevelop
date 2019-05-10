@@ -63,6 +63,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -248,6 +249,34 @@ namespace MonoDevelop.Ide.Gui
 		public Document GetDocument (FilePath filePath)
 		{
 			return documentManager.GetDocument (filePath);
+		}
+
+		/// <summary>
+		/// Gets the document text as string. Either from an open document or a file on disk.
+		/// </summary>
+		internal string GetDocumentText (string fileName, bool readBinaryFiles = false)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException (nameof (fileName));
+
+			foreach (var doc in documentManager.Documents) {
+				if (FilePath.PathComparer.Equals (doc.FileName, fileName)) {
+					var buffer = doc.GetContent<ITextBuffer> ();
+					if (buffer != null)
+						return buffer.CurrentSnapshot.GetText ();
+				}
+			}
+
+			try {
+				if (!File.Exists (fileName))
+					return null;
+				if (!readBinaryFiles && TextFileUtility.IsBinary (fileName))
+					return null;
+				return TextFileUtility.ReadAllText (fileName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while opening " + fileName, e);
+				return null;
+			}
 		}
 
 		internal TextReader[] GetDocumentReaders (List<string> filenames)

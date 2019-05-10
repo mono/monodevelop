@@ -130,37 +130,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 				}
 
-				var readers = IdeApp.Workbench.GetDocumentReaders (filenames);
-
-				int idx = 0;
-				if (readers != null) {
-					foreach (var r in readers) {
-						contents [idx].Reader = r;
-
-						idx++;
-					}
-				}
-
-				idx = 0;
-				int c = 0;
-				int t = 0;
-				foreach (var result in contents) {
-					if (readers == null || readers [idx] == null) {
-						result.Reader = result.Provider.GetReaderForFileName ();
-					} else {
-						result.Reader = readers [idx];
-						c++;
-					}
-					t++;
-					idx++;
-				}
-
 				var results = new List<SearchResult> ();
 				if (filter.RegexSearch && replacePattern != null) {
 					foreach (var content in contents) {
 						if (token.IsCancellationRequested)
 							return Enumerable.Empty<SearchResult> ();
-						results.AddRange (RegexSearch (monitor, content.Provider, content.Reader, replacePattern, filter));
+						results.AddRange (RegexSearch (monitor, content.Provider, replacePattern, filter));
 					}
 				} else {
 					var options = new ParallelOptions ();
@@ -176,7 +151,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								content.Encoding = content.Provider.CurrentEncoding;
 								content.Reader = new StringReader (content.Text);
 							}
-							content.Results.AddRange (FindAll (monitor, content.Provider, content.Reader, pattern, replacePattern, filter));
+							content.Results.AddRange (FindAll (monitor, content.Provider, pattern, replacePattern, filter));
 							lock (results) {
 								results.AddRange (content.Results);
 							}
@@ -216,20 +191,20 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		// Took: 17743
 
-		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, TextReader content, string pattern, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (string.IsNullOrEmpty (pattern))
 				return Enumerable.Empty<SearchResult> ();
 
 			if (filter.RegexSearch)
-				return RegexSearch (monitor, provider, content, replacePattern, filter);
+				return RegexSearch (monitor, provider, replacePattern, filter);
 
-			return Search (provider, content, pattern, filter);
+			return Search (provider, pattern, filter);
 		}
 
-		IEnumerable<SearchResult> RegexSearch (ProgressMonitor monitor, FileProvider provider, TextReader reader, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> RegexSearch (ProgressMonitor monitor, FileProvider provider, string replacePattern, FilterOptions filter)
 		{
-			string content = reader.ReadToEnd ();
+			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 			var results = new List<SearchResult> ();
 			if (replacePattern == null) {
 				foreach (Match match in regex.Matches (content)) {
@@ -268,86 +243,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			return results;
 		}
 
-		class RingBufferReader
+
+		public IEnumerable<SearchResult> Search (FileProvider provider, string pattern, FilterOptions filter)
 		{
-			int i, l;
-			char [] buffer;
-			TextReader reader;
+			var searcher = new PatternSearcher (pattern, filter.CaseSensitive, filter.WholeWordsOnly);
+			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 
-			public RingBufferReader (TextReader reader, int bufferSize)
-			{
-				this.reader = reader;
-				buffer = new char [bufferSize];
-			}
-
-			public int Next ()
-			{
-				if (l == 0) {
-					int ch = reader.Read ();
-					buffer [i] = (char)ch;
-					i = (i + 1) % buffer.Length;
-					return ch;
-				}
-				l--;
-				var result = buffer [i];
-				i = (i + 1) % buffer.Length;
-				return result;
-			}
-
-			public void TakeBack (int num)
-			{
-				l += num;
-				i = (i + buffer.Length - num) % buffer.Length;
-			}
-		}
-
-		public IEnumerable<SearchResult> Search (FileProvider provider, TextReader reader, string pattern, FilterOptions filter)
-		{
-			if (reader == null)
-				yield break;
-			int i = provider.SelectionStartPosition < 0 ? 0 : Math.Max (0, provider.SelectionStartPosition);
-			var buffer = new RingBufferReader(reader, pattern.Length + 2);
-			bool wasSeparator = true;
-			if (!filter.CaseSensitive)
-				pattern = pattern.ToUpperInvariant ();
-			while (true) {
-				int next = buffer.Next ();
-				if (next < 0)
-					yield break;
-				char ch = (char)next;
-				if ((filter.CaseSensitive ? ch : char.ToUpperInvariant (ch)) == pattern [0] &&
-				    (!filter.WholeWordsOnly || wasSeparator)) {
-					bool isMatch = true;
-					for (int j = 1; j < pattern.Length; j++) {
-						next = buffer.Next ();
-						if (next < 0)
-							yield break;
-						if ((filter.CaseSensitive ? next : char.ToUpperInvariant ((char)next)) != pattern [j]) {
-							buffer.TakeBack (j);
-							isMatch = false;
-							break;
-						}
-					}
-					if (isMatch) {
-						if (filter.WholeWordsOnly) {
-							next = buffer.Next ();
-							if (next >= 0 && !FilterOptions.IsWordSeparator ((char)next)) {
-								buffer.TakeBack (pattern.Length);
-								i++;
-								continue;
-							}
-							buffer.TakeBack (1);
-						}
-
-						yield return new SearchResult (provider, i, pattern.Length);
-						i += pattern.Length - 1;
-					}
-				}
-
-				i++;
-				if (filter.WholeWordsOnly) {
-					wasSeparator = FilterOptions.IsWordSeparator ((char)ch);
-				}
+			foreach (var idx in searcher.FindAll (content)) {
+				yield return new SearchResult (provider, idx, pattern.Length);
 			}
 		}
 
