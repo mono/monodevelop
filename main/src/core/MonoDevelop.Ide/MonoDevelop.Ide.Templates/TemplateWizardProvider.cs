@@ -63,10 +63,12 @@ namespace MonoDevelop.Ide.Templates
 			set {
 				if (currentWizardPage != null) {
 					currentWizardPage.CanMoveToNextPageChanged -= OnCanMoveToNextPageChanged;
+					currentWizardPage.NextPageRequested -= OnNextPageRequested;
 				}
 				currentWizardPage = value;
 				if (currentWizardPage != null) {
 					currentWizardPage.CanMoveToNextPageChanged += OnCanMoveToNextPageChanged;
+					currentWizardPage.NextPageRequested += OnNextPageRequested;
 				}
 			}
 		}
@@ -88,10 +90,14 @@ namespace MonoDevelop.Ide.Templates
 
 		void OnCanMoveToNextPageChanged (object sender, EventArgs e)
 		{
-			var handler = CanMoveToNextPageChanged;
-			if (handler != null) {
-				handler (sender, e);
-			}
+			CanMoveToNextPageChanged?.Invoke (sender, e);
+		}
+
+		public event EventHandler NextPageRequested;
+
+		void OnNextPageRequested (object sender, EventArgs e)
+		{
+			NextPageRequested?.Invoke (sender, e);
 		}
 
 		void OnTotalPagesChanged (object sender, EventArgs e)
