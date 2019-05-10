@@ -350,6 +350,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Select ()
 		{
 			window?.SelectWindow ();
+			view.GrabFocus ();
 		}
 
 		public TextEditor Editor {
