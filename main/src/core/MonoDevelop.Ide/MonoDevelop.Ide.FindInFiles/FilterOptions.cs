@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FilterOptions.cs
 //  
 // Author:
@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -35,6 +36,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		string file_mask;
 		string [] split_file_masks;
+		FileNameEvaluator evaluator;
 
 		public string FileMask {
 			get {
@@ -42,13 +44,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			set {
 				file_mask = value;
-
 				if (file_mask == null) {
 					split_file_masks = null;
 				}
 				else {
 					split_file_masks = file_mask.Split (separators, StringSplitOptions.RemoveEmptyEntries);
 				}
+
+				evaluator = FileNameEvaluator.CreateFileNameEvaluator (split_file_masks);
 			}
 		}
 
@@ -77,13 +80,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (string.IsNullOrEmpty (FileMask) || FileMask == "*" || split_file_masks == null)
 				return true;
-
-			foreach (string mask in split_file_masks) {
-				if (new PatternMatcher (mask).Match (System.IO.Path.GetFileName (name))) 
-					return true;
-			}
-
-			return false;
+			return evaluator.SupportsFile (name);
 		}
 		
 		public static bool IsWordSeparator (char ch)
@@ -95,77 +92,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return (offset          <= 0           || IsWordSeparator (text[offset - 1]))  &&
 				   (offset + length >= text.Length || IsWordSeparator (text[offset + length]));
-		}
-	}
-	
-	public class PatternMatcher
-	{
-		readonly List<Instruction> compiledPattern = new List<Instruction> ();
-		
-		enum Command {
-			Match,
-			AnyChar,
-			ZeroOrMoreChars
-		}
-		
-		class Instruction
-		{
-			public Command Command { get; set; }
-			public char    Char    { get; set; }
-			
-			public Instruction (Command command, char ch)
-			{
-				this.Command = command;
-				this.Char    = ch;
-			}
-			
-			public static readonly Instruction AnyChar         = new Instruction (Command.AnyChar, '\0');
-			public static readonly Instruction ZeroOrMoreChars = new Instruction (Command.ZeroOrMoreChars, '\0');
-		}
-		
-		public PatternMatcher (string pattern)
-		{
-			foreach (char ch in pattern) {
-				switch (ch) {
-				case '?':
-					compiledPattern.Add (Instruction.AnyChar);
-					break;
-				case '*':
-					compiledPattern.Add (Instruction.ZeroOrMoreChars);
-					break;
-				default:
-					compiledPattern.Add (new Instruction (Command.Match, ch));
-					break;
-				}
-			}
-		}
-
-		public bool Match (string text)
-		{
-			return Match (text, 0, 0);
-		}
-		
-		bool Match (string text, int pc, int offset)
-		{
-			if (pc >= compiledPattern.Count && offset >= text.Length)
-				return true;
-			if (pc >= compiledPattern.Count)
-				return false;
-			var cur = compiledPattern[pc];
-			if (offset >= text.Length)
-				return cur.Command == Command.ZeroOrMoreChars && compiledPattern.Count == pc + 1;
-			switch (cur.Command) {
-			case Command.AnyChar:
-				return Match (text, pc + 1, offset + 1);
-			case Command.Match:
-				if (text[offset] != cur.Char)
-					return false;
-				return Match (text, pc + 1, offset + 1);
-			case Command.ZeroOrMoreChars:
-				return Match (text, pc + 1, offset) || Match (text, pc, offset + 1) ;
-			default:
-				throw new ApplicationException ("Unknown command: " + cur.Command);
-			}
 		}
 	}
 }

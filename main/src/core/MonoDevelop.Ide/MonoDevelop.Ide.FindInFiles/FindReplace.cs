@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FindReplace.cs
 //  
 // Author:
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 
-		public IEnumerable<SearchResult> FindAll (Scope scope, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, CancellationToken token)
+		public IEnumerable<SearchResult> FindAll (IReadOnlyList<FileProvider> fileList, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, CancellationToken token)
 		{
 			if (filter.RegexSearch) {
 				RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Multiline;
@@ -106,15 +106,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
-			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 150);
 
 			try {
-				int totalWork = scope.GetTotalWork (filter);
+				int totalWork = fileList.Count;
 				int step = Math.Max (1, totalWork / 50);
 
 				var contents = new List<FileSearchResult> ();
 				var filenames = new List<string> ();
-				foreach (var provider in scope.GetFiles (monitor, filter)) {
+				foreach (var provider in fileList) {
 					if (token.IsCancellationRequested)
 						return Enumerable.Empty<SearchResult> ();
 					try {
@@ -184,7 +183,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			} catch (OperationCanceledException) {
 				return Enumerable.Empty<SearchResult> ();
 			} finally {
-				monitor.EndTask ();
 				IsRunning = false;
 			}
 		}

@@ -1,21 +1,21 @@
-﻿// 
+﻿//
 // Scope.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,6 +36,7 @@ using System.Security;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -60,8 +61,20 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		public abstract int GetTotalWork (FilterOptions filterOptions);
-		public abstract IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions);
+
+		protected static readonly Task<IReadOnlyList<FileProvider>> EmptyFileProviderTask = Task.FromResult<IReadOnlyList<FileProvider>> (new FileProvider [0]);
+
+		public abstract Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken = default);
+
+		[Obsolete ("Use GetFilesAsync")]
+		public virtual IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
+
+		public virtual bool ValidateSearchOptions (FilterOptions filterOptions) => true;
 	}
 
 	public class DocumentScope : Scope
@@ -75,13 +88,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			return 1;
 		}
 
-		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken = default)
 		{
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", IdeApp.Workbench.ActiveDocument.FileName));
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var textBuffer = doc.GetContent<ITextBuffer> ();
 			if (textBuffer != null)
-				yield return new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName);
+				return Task.FromResult<IReadOnlyList<FileProvider>> (new [] { new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName) });
+			return EmptyFileProviderTask;
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
@@ -104,14 +117,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			return 1;
 		}
 
-		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken = default)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var textView = doc.GetContent<ITextView> (true);
 			if (textView != null) {
 				var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
-				yield return new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End);
+				return Task.FromResult<IReadOnlyList<FileProvider>> (new [] { new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End) });
 			}
+			return EmptyFileProviderTask;
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
@@ -128,15 +142,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
 			int result = 0;
-			if (IdeApp.Workspace.IsOpen) 
+			if (IdeApp.Workspace.IsOpen)
 				result = IdeApp.Workspace.GetAllProjects ().Sum (p => p.Files.Count);
 			return result;
 		}
 
-		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken = default)
 		{
 			if (!IdeApp.Workspace.IsOpen) {
-				return null;
+				return EmptyFileProviderTask;
 			}
 
 			var alreadyVisited = new HashSet<string> ();
@@ -199,7 +213,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								  }
 							  });
 
-			return results;
+			return EmptyFileProviderTask;
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
@@ -227,13 +241,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.project = project;
 		}
 
-		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		public override async Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken)
 		{
+			var results = new List<FileProvider> ();
 			if (IdeApp.Workspace.IsOpen) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
 				var conf = project.DefaultConfiguration?.Selector;
-				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result) {
+				foreach (ProjectFile file in await project.GetSourceFilesAsync (conf)) {
 					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 						continue;
 					if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
@@ -242,12 +256,12 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					if (!IdeServices.DesktopService.GetFileIsText (file.Name))
 						continue;
-					if (alreadyVisited.Contains (file.FilePath.FullPath))
+					if (!alreadyVisited.Add (file.FilePath.FullPath))
 						continue;
-					alreadyVisited.Add (file.FilePath.FullPath);
-					yield return new FileProvider (file.Name, project);
+					results.Add (new FileProvider (file.Name, project));
 				}
 			}
+			return results;
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
@@ -266,8 +280,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			return IdeApp.Workbench.Documents.Count;
 		}
 
-		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken)
 		{
+			var results = new List<FileProvider> ();
 			foreach (Document document in IdeApp.Workbench.Documents) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
 				if (!filterOptions.NameMatches (document.FileName))
@@ -281,6 +296,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					yield return new FileProvider (document.FileName, document.Owner as Project);
 				}
 			}
+			return EmptyFileProviderTask;
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
@@ -310,8 +326,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		FileProvider[] fileNames;
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			fileNames = GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ();
+			EnsureFileNamesLoaded (filterOptions);
 			return fileNames.Length;
+		}
+
+		private void EnsureFileNamesLoaded (FilterOptions filterOptions)
+		{
+			if (fileNames != null)
+				return;
+			fileNames = GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ();
 		}
 
 		public DirectoryScope (string path, bool recurse)
@@ -320,14 +343,26 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.recurse = recurse;
 		}
 
+		public override bool ValidateSearchOptions (FilterOptions filterOptions)
+		{
+			if (!Directory.Exists(path)) {
+				MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"), path));
+				return false;
+			}
+			return true;
+		}
+
 		IEnumerable<string> GetFileNames (FilterOptions filterOptions)
 		{
+			if (string.IsNullOrEmpty (path))
+				yield break;
 			var directoryStack = new Stack<string> ();
 			directoryStack.Push (path);
 
 			while (directoryStack.Count > 0) {
 				var curPath = directoryStack.Pop ();
-
+				if (!Directory.Exists (curPath))
+					yield break;
 				try {
 					var readPermission = new FileIOPermission(FileIOPermissionAccess.Read, curPath);
 					readPermission.Demand ();
@@ -367,10 +402,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
+		public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FilterOptions filterOptions, CancellationToken cancellationToken)
 		{
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
-			return fileNames;
+			EnsureFileNamesLoaded (filterOptions);
+			return Task.FromResult<IReadOnlyList<FileProvider>> (fileNames);
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FindInFilesDialog.cs
 //  
 // Author:
@@ -24,20 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System; 
-using System.Linq;
-using System.Threading;
-using System.Text;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components;
-using Gtk;
+using System;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Content;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.Components.AtkCocoaHelper;
+using Gtk;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -232,6 +230,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (!buttonSearch.Sensitive) {
 				comboboxScope.Active = (int)SearchScope.Directories;
 			}
+			searchentryFileMask.Entry.Changed += ScopeRelatedEntryChanged;
 
 			Child.Show ();
 			updateTimer = GLib.Timeout.Add (750, delegate {
@@ -239,6 +238,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				return true;
 			});
 			SetupAccessibility ();
+		}
+
+		void ScopeRelatedEntryChanged (object sender, EventArgs e)
+		{
+			StartScopeTask ();
 		}
 
 		void SetupAccessibility ()
@@ -432,6 +436,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			hboxPath = new HBox ();
 			comboboxentryPath = new ComboBoxEntry ();
 			comboboxentryPath.Destroyed += ComboboxentryPathDestroyed;
+			comboboxentryPath.Entry.Changed += ScopeRelatedEntryChanged;
 			LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
 			comboboxentryPath.Show ();
 			hboxPath.PackStart (comboboxentryPath);
@@ -455,6 +460,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 			
 			checkbuttonRecursively.Destroyed += CheckbuttonRecursivelyDestroyed;
+			checkbuttonRecursively.Activated += ScopeRelatedEntryChanged;
 			checkbuttonRecursively.Show ();
 			
 			TableAddRow (tableFindAndReplace, row, null, checkbuttonRecursively);
@@ -562,9 +568,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			UpdateSensitivity ();
 			Requisition req = SizeRequest ();
 			Resize (req.Width, req.Height);
+			StartScopeTask ();
 			//this.QueueResize ();
 		}
 
+		private void StartScopeTask ()
+		{
+			var scope = GetScope ();
+			if (scope == null)
+				return;
+
+			var options = GetFilterOptions ();
+			fileProviderTask = Task.Run (async delegate {
+				return await scope.GetFilesAsync (options);
+			});
+		}
 
 		void UpdateSensitivity ()
 		{
@@ -779,13 +797,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			case SearchScope.AllOpenFiles:
 				scope = new AllOpenFilesScope ();
 				break;
-			case SearchScope.Directories: 
+			case SearchScope.Directories:
+				if (checkbuttonRecursively == null) // may occur during creation of the path UI. Just skip that in this case. 
+					return null;
 				if (!System.IO.Directory.Exists (comboboxentryPath.Entry.Text)) {
-					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"),
-						comboboxentryPath.Entry.Text));
 					return null;
 				}
-				
+
 				scope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
 				break;
 			default:
@@ -808,15 +826,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		static FindReplace find;
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
+			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), fileProviderTask, GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
+			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), fileProviderTask, GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
 		}
 
 		static CancellationTokenSource searchTokenSource = new CancellationTokenSource ();
+		Task<IReadOnlyList<FileProvider>> fileProviderTask;
 		static Task currentTask;
 		uint updateTimer;
 		SearchResultPad resultPad;
@@ -836,15 +855,17 @@ namespace MonoDevelop.Ide.FindInFiles
 			searchTokenSource.Cancel ();
 		}
 
-		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, FilterOptions options, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
+		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, Task<IReadOnlyList<FileProvider>> getFilesTask, FilterOptions options, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
 		{
 			if (find != null && find.IsRunning) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
 					return;
 			}
+			if (!scope.ValidateSearchOptions (options))
+				return;
 			searchTokenSource.Cancel ();
 
-			if (scope == null)
+			if (getFilesTask == null)
 				return;
 			
 			find = new FindReplace ();
@@ -864,10 +885,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			var cancelSource = new CancellationTokenSource ();
 			searchTokenSource = cancelSource;
 			var token = cancelSource.Token;
-			currentTask = Task.Run (delegate {
-				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
 
-					searchMonitor.PathMode = scope.PathMode;
+			currentTask = Task.Run (async delegate {
+				var files = await getFilesTask;
+				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
 
 					if (UpdateResultPad != null) {
 						Application.Invoke ((o, args) => {
@@ -875,37 +896,39 @@ namespace MonoDevelop.Ide.FindInFiles
 						});
 					}
 
-					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 					if (UpdateStopButton != null) {
 						Application.Invoke ((o, args) => {
 							UpdateStopButton ();
 						});
 					}
-
 					DateTime timer = DateTime.Now;
 					string errorMessage = null;
 						
 					try {
 						var results = new List<SearchResult> ();
-						foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options, token)) {
-							if (token.IsCancellationRequested)
-								return;
-							results.Add (result);
+						searchMonitor.BeginTask (scope.GetDescription (options, pattern, replacePattern), 150);
+						try {
+							foreach (var result in find.FindAll (files, searchMonitor, pattern, replacePattern, options, token)) {
+								if (token.IsCancellationRequested)
+									return;
+								results.Add (result);
+							}
+							searchMonitor.ReportResults (results);
+						} finally {
+							searchMonitor.EndTask ();
 						}
-						searchMonitor.ReportResults (results);
 					} catch (Exception ex) {
 						errorMessage = ex.Message;
 						LoggingService.LogError ("Error while search", ex);
 					}
-						
 					string message = null;
 					if (errorMessage != null) {
 						message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
 						searchMonitor.ReportError (message, null);
 					} else if (!searchMonitor.CancellationToken.IsCancellationRequested) {
 						string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
-						string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
-						message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
+						string fileString = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
+						message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + fileString;
 						searchMonitor.ReportSuccess (message);
 					}
 					if (message != null)

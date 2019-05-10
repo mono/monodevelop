@@ -1,4 +1,4 @@
-//
+﻿//
 // SearchInSolutionSearchCategory.cs
 //
 // Author:
@@ -36,6 +36,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
 using Roslyn.Utilities;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -85,7 +86,8 @@ namespace MonoDevelop.Components.MainToolbar
 				var options = new FilterOptions ();
 				if (PropertyService.Get ("AutoSetPatternCasing", false))
 					options.CaseSensitive = pattern.Pattern.Any (char.IsUpper);
-				FindInFilesDialog.SearchReplace (pattern.Pattern, null, new WholeSolutionScope (), options, null, null);
+				var scope = new WholeSolutionScope ();
+				FindInFilesDialog.SearchReplace (pattern.Pattern, null, scope, scope.GetFilesAsync (options), options, null, null);
 			}
 
 			public override string GetMarkupText (bool selected)
