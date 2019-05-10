@@ -1044,12 +1044,25 @@ namespace MonoDevelop.MacIntegration
 			return false;
 		}
 
+		bool CheckIfTopWindowIsWorkbench ()
+		{
+			foreach (var window in Gtk.Window.ListToplevels ()) {
+				if (!window.HasToplevelFocus) {
+					continue;
+				}
+				if (window is DefaultWorkbench) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public override Window GetFocusedTopLevelWindow ()
 		{
 			if (NSApplication.SharedApplication.KeyWindow != null) {
 				if (IdeApp.Workbench?.RootWindow?.Visible == true) {
 					//if is a docking window then return the current root window
-					if (HasAnyDockWindowFocused ()) {
+					if (CheckIfTopWindowIsWorkbench () || HasAnyDockWindowFocused ()) {
 						return MessageService.RootWindow;
 					}
 				}
