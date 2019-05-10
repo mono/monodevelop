@@ -190,9 +190,10 @@ namespace MonoDevelop.TextEditor
 
 		bool CanHandleCommand (object commandId)
 		{
-			var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (TextView);
-			if (findPresenter != null && findPresenter.IsFocused)
-				return commandsSupportedWhenFindPresenterIsFocused.Contains (commandId);
+			if (commandsSupportedWhenFindPresenterIsFocused.Contains (commandId)) {
+				var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (TextView);
+				return findPresenter != null && findPresenter.IsFocused;
+			}
 
 			return true;
 		}
