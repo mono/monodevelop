@@ -65,6 +65,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public int [] FindAll (string text)
 		{
+			return FindAll (text.AsSpan ());
+		}
+
+		public int [] FindAll (ReadOnlySpan<char> text)
+		{
 			var result = new List<int> ();
 			int index = 0;
 			int end = text.Length;
@@ -76,6 +81,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		public int Find (string text, int startIndex, int endIndex)
+		{
+			return Find (text.AsSpan (), startIndex, endIndex);
+		}
+
+		public int Find (ReadOnlySpan<char> text, int startIndex, int endIndex)
 		{
 			if (startIndex > endIndex)
 				throw new ArgumentException ($"end:{endIndex} > start:{startIndex}");
@@ -112,7 +122,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return -1;
 		}
 
-		bool IsWholeWordAt (string text, int start)
+		bool IsWholeWordAt (ReadOnlySpan<char> text, int start)
 		{
 			if (start > 0 && !FilterOptions.IsWordSeparator (text [start - 1]))
 				return false;
