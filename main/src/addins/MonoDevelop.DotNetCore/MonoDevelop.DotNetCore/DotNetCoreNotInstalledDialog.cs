@@ -73,9 +73,9 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
-				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (CurrentDotNetCorePath);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage ();
 			else {
-				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (CurrentDotNetCorePath, RequiredDotNetCoreVersion.OriginalString);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (RequiredDotNetCoreVersion.OriginalString);
 				downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
 			}
 
