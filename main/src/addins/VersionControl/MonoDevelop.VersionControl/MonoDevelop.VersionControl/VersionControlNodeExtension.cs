@@ -25,7 +25,9 @@ namespace MonoDevelop.VersionControl
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
 				|| typeof(SystemFile).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(WorkspaceObject).IsAssignableFrom (dataType);
+				|| typeof(WorkspaceObject).IsAssignableFrom (dataType) 
+                || typeof (SolutionFolder).IsAssignableFrom (dataType)
+				|| typeof (SolutionFolderFileNode).IsAssignableFrom (dataType);
 		}
 		
 		protected override void Initialize ()
@@ -60,6 +62,14 @@ namespace MonoDevelop.VersionControl
 				if (rep != null) {
 					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
 					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo, false);
+				}
+				return;
+			} else if (dataObject is SolutionFolderFileNode) {
+				SolutionFolderFileNode sn = (SolutionFolderFileNode) dataObject;
+				Repository rep = VersionControlService.GetRepository (sn.Parent);
+				if (rep != null) {
+					rep.GetDirectoryVersionInfo (sn.Path, false, false);
+					AddFolderOverlay (rep, sn.Path, nodeInfo, false);
 				}
 				return;
 			} else if (dataObject is ProjectFolder) {

@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 
-	class SolutionFolderFileNode: IFileItem
+	public class SolutionFolderFileNode: IFileItem
 	{
 		FilePath path;
 		SolutionFolder parent;
