@@ -186,7 +186,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 #if MAC
 				AppKit.NSWindow nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
 				if (nswindow != null) {
-					nswindow.MakeFirstResponder (nswindow.ContentView);
+					// Don't change the first responder if the current one is already a child of the content view
+					if (!(nswindow.FirstResponder is AppKit.NSView view) || !view.IsDescendantOf (nswindow.ContentView))
+						nswindow.MakeFirstResponder (nswindow.ContentView);
 					nswindow.MakeKeyAndOrderFront (nswindow);
 				}
 #endif
