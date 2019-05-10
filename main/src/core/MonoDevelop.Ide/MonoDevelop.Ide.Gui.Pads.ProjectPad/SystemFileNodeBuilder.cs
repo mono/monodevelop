@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						}
 						else {
 							Solution sol = node.GetParentDataItem (typeof(Solution), true) as Solution;
-							sol.RootFolder.Files.Add (file.Path);
+							sol.DefaultSolutionFolder.Files.Add (file.Path);
 							projects.Add (sol);
 						}
 					}
