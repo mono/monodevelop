@@ -39,6 +39,10 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Gui.Shell;
 
+using MonoDevelop.Components.DockNotebook;
+using System.Collections.Immutable;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Ide.Commands
 {
 	public enum FileTabCommands
@@ -48,14 +52,26 @@ namespace MonoDevelop.Ide.Commands
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
-		CloseAllToTheRight
+		CloseAllToTheRight,
+		CloseAllExceptPinned,
+		PinTab,
 	}
 
-	class CloseAllHandler : CommandHandler
+	class CloseAllHandler : TabCommandHandler
 	{
-		protected virtual Document GetDocumentException ()
+		protected virtual ImmutableArray<Document> GetDocumentExceptions ()
 		{
-			return null;
+			return ImmutableArray<Document>.Empty;
+		}
+
+		bool HasDistinctViewContent (ImmutableArray<Document> viewContents, Document document)
+		{
+			for (int i = 0; i < viewContents.Length; i++) {
+				if (document.Window.Document == viewContents[i]) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		protected virtual bool StartAfterException => false;
@@ -67,15 +83,15 @@ namespace MonoDevelop.Ide.Commands
 				return;
 
 			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
-			var except = GetDocumentException ();
+			var except = GetDocumentExceptions ();
 
 			var docs = new List<Document> ();
 			var dirtyDialogShown = false;
-			var startRemoving = except == null || !StartAfterException;
+			var startRemoving = !except.Any () || !StartAfterException;
 
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
-					if (except != null && doc == except) {
+					if (except.Any () && !HasDistinctViewContent (except, doc)) {
 						startRemoving = true;
 						continue;
 					}
@@ -102,34 +118,76 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
-	class CloseAllButThisHandler : CloseAllHandler
+ 	abstract class TabCommandHandler : CommandHandler
 	{
-		protected override Document GetDocumentException ()
+		protected DockNotebookTab GetTabFromDocument (Document document)
 		{
-			return IdeApp.Workbench.ActiveDocument;
+			var activeWindow = (SdiWorkspaceWindow)document.Window;
+			var tabControl = activeWindow.TabControl;
+			return tabControl.Tabs.FirstOrDefault (item => (item.Content as SdiWorkspaceWindow).Equals (activeWindow));
 		}
 
+		protected DockNotebookTab GetTabFromActiveDocument () 
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return null;
+			return GetTabFromDocument (active);
+		}
+	}
+
+	class CloseAllExceptPinnedHandler : CloseAllHandler
+	{
 		protected override void Update (CommandInfo info)
 		{
-			var documents = IdeApp.Workbench.Documents;
-			var activeDoc = IdeApp.Workbench.ActiveDocument;
+			info.Visible = info.Enabled = IdeApp.Preferences.EnablePinnedTabs && IdeApp.Workbench.Documents.Count != 0;
+		}
 
-			if (activeDoc == null) {
-				info.Enabled = false;
+		protected override ImmutableArray<Document> GetDocumentExceptions ()
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return ImmutableArray<Document>.Empty;
+			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
+
+			var contents = IdeApp.Workbench.Documents.Where (doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && GetTabFromDocument (doc).IsPinned)
+				.Select (s => s.Window.Document);
+
+			return contents.ToImmutableArray ();
+		}
+	}
+
+	class PinTabHandler : TabCommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = info.Enabled = IdeApp.Preferences.EnablePinnedTabs && IdeApp.Workbench.ActiveDocument != null;
+			if (!info.Visible)
 				return;
+			
+			var selectedTab = GetTabFromActiveDocument ();
+			if (selectedTab != null) {
+				info.Text = (selectedTab.IsPinned) ? GettextCatalog.GetString ("Un_pin Tab") : GettextCatalog.GetString ("_Pin Tab");
 			}
+		}
 
-			var activeNotebook = ((SdiWorkspaceWindow)activeDoc.Window).TabControl;
+		protected override void Run ()
+		{
+			var selectedTab = GetTabFromActiveDocument (); 
+			if (selectedTab != null)
+				selectedTab.IsPinned = !selectedTab.IsPinned;
+		}
+	}
 
-			// Disable if only document in tab strip
-			foreach (var doc in documents) { 
-				if (doc != activeDoc && ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
-					info.Enabled = true;
-					return;
-				}
+	class CloseAllButThisHandler : CloseAllHandler
+	{
+		protected override ImmutableArray<Document> GetDocumentExceptions ()
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null) {
+				return ImmutableArray<Document>.Empty;
 			}
-
-			info.Enabled = false;
+			return ImmutableArray.Create (active.Window.Document);
 		}
 	}
 

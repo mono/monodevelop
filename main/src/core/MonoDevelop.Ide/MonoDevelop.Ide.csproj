@@ -142,6 +142,14 @@
     <EmbeddedResource Include="templates\EmptyStruct.xft.xml" />
     <EmbeddedResource Include="templates\EmptyTextFile.xft.xml" />
     <EmbeddedResource Include="templates\EmptyXMLFile.xft.xml" />
+    <EmbeddedResource Include="icons\tab-pinned-9.png" />
+    <EmbeddedResource Include="icons\tab-pinned-9%402x.png" />
+    <EmbeddedResource Include="icons\tab-pinned-9~dark.png" />
+    <EmbeddedResource Include="icons\tab-pinned-9~dark%402x.png" />
+    <EmbeddedResource Include="icons\tab-unpinned-9.png" />
+    <EmbeddedResource Include="icons\tab-unpinned-9%402x.png" />
+    <EmbeddedResource Include="icons\tab-unpinned-9~dark.png" />
+    <EmbeddedResource Include="icons\tab-unpinned-9~dark%402x.png" />
     <EmbeddedResource Include="icons\reference-assembly-16.png" />
     <EmbeddedResource Include="icons\reference-assembly-16%402x.png" />
     <EmbeddedResource Include="icons\reference-assembly-16~dark.png" />
@@ -4259,6 +4267,7 @@
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLabel.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLine.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\TabsWindowOptionsPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

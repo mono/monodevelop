@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Shell;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -111,6 +112,23 @@ namespace MonoDevelop.Components.DockNotebook
 			};
 
 			allNotebooks.Add (this);
+
+			tabStrip.IsPinEnabled = IdeApp.Preferences.EnablePinnedTabs.Value;
+			RefreshCurrentTabStrip ();
+
+			IdeApp.Preferences.EnablePinnedTabs.Changed += EnablePinnedTabs_Changed;
+		}
+
+		void EnablePinnedTabs_Changed (object sender, EventArgs e) => RefreshCurrentTabStrip ();
+
+		void RefreshCurrentTabStrip ()
+		{
+			tabStrip.IsPinEnabled = IdeApp.Preferences.EnablePinnedTabs.Value;
+			if (!tabStrip.IsPinEnabled) {
+				for (int i = 0; i < pages.Count; i++) {
+					pages[i].IsPinned = false;
+				}
+			}
 		}
 
 		public static DockNotebook ActiveNotebook {
@@ -136,6 +154,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public event TabsReorderedHandler TabsReordered;
 		public event EventHandler<TabEventArgs> TabClosed;
+		public event EventHandler<TabEventArgs> TabPinned;
 		public event EventHandler<TabEventArgs> TabActivated;
 
 		public event EventHandler<TabEventArgs> PageAdded;
@@ -349,6 +368,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			PageAdded?.Invoke (this, new TabEventArgs { Tab = tab, });
 
+			tab.OnChangingPinned = OnTabPinned;
+
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 
 			return tab;
@@ -358,6 +379,24 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			for (int n=startIndex; n < pages.Count; n++)
 				((DockNotebookTab)pages [n]).Index = n;
+		}
+
+		void OnTabPinned (DockNotebookTab sender, bool value)
+		{
+			if (pages.Count == 1)
+				return;
+
+			var stickedPages = pages.Where (p => p.IsPinned);
+			var normalPages = pages.Where (p => !p.IsPinned);
+
+			if (value) {
+				if (stickedPages.Any ()) 
+					ReorderTab (sender, normalPages.MinValueOrDefault (s => s.Index) ?? stickedPages.MaxValueOrDefault (s => s.Index), false);
+				 else 
+					ReorderTab (sender, pages.FirstOrDefault (), false);
+			} else {
+				ReorderTab (sender, stickedPages.MaxValueOrDefault (s => s.Index) ?? normalPages.MinValueOrDefault (s => s.Index), false);
+			}
 		}
 
 		public DockNotebookTab GetTab (int n)
@@ -388,8 +427,11 @@ namespace MonoDevelop.Components.DockNotebook
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
+		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab, bool pinCheck = true)
 		{
+			if (pinCheck && tab.IsPinned != targetTab.IsPinned)
+				return;
+			
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
@@ -410,6 +452,12 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (TabClosed != null)
 				TabClosed (this, new TabEventArgs () { Tab = tab });
+		}
+
+		internal void OnPinTab (DockNotebookTab tab)
+		{
+			if (TabPinned != null)
+				TabPinned (this, new TabEventArgs () { Tab = tab });
 		}
 
 		internal void OnActivateTab (DockNotebookTab tab)
@@ -441,6 +489,12 @@ namespace MonoDevelop.Components.DockNotebook
 				fleurCursor = null;
 			}
 			base.OnDestroyed ();
+		}
+
+		public override void Dispose ()
+		{
+			IdeApp.Preferences.EnablePinnedTabs.Changed -= EnablePinnedTabs_Changed;
+			base.Dispose ();
 		}
 	}
 
