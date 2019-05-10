@@ -33,9 +33,9 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreVersion : IEquatable<DotNetCoreVersion>, IComparable, IComparable<DotNetCoreVersion>
 	{
-		static readonly DotNetCoreVersion MinimumSupportedSdkVersion = new DotNetCoreVersion (2, 1, 602);
-		static readonly DotNetCoreVersion MinimumSupportedSdkVersion22 = new DotNetCoreVersion (2, 2, 202);
-		static readonly DotNetCoreVersion MinimumSupportedSdkVersion30 = new DotNetCoreVersion (3, 0, 100) {
+		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion = new DotNetCoreVersion (2, 1, 602);
+		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion22 = new DotNetCoreVersion (2, 2, 202);
+		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion30 = new DotNetCoreVersion (3, 0, 100) {
 			ReleaseLabel = "preview3-010431",
 			IsPrerelease = true
 		};
@@ -227,50 +227,6 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			return false;
-		}
-
-		static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore{0}";
-
-		public static string GetDotNetCoreDownloadUrl (string version = "")
-		{
-			if (string.IsNullOrEmpty (version))
-				return string.Format (DotNetCoreDownloadUrl, string.Empty);
-
-			if (TryParse (version, out var dotNetCoreVersion)) {
-				return GetDotNetCoreDownloadUrl (dotNetCoreVersion);
-			}
-
-			return "https://dotnet.microsoft.com/download";
-		}
-
-		public static string GetDotNetCoreDownloadUrl (DotNetCoreVersion version)
-		{
-			//special case for 2.0, 3.0, ..
-			if (version.Minor == 0)
-				return string.Format (DotNetCoreDownloadUrl, version.Major);
-
-			return string.Format (DotNetCoreDownloadUrl, $"{version.Major}{version.Minor}");
-		}
-
-		public static string GetNotSupportedVersionMessage (string currentPath, string version = "")
-		{
-			string GetMessage (DotNetCoreVersion currentVersion)
-			{
-				return GettextCatalog.GetString ("NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} SDK by visiting {3}.", currentVersion.Major, currentVersion.Minor, currentVersion.ToString (), GetDotNetCoreDownloadUrl (currentVersion));
-			}
-
-			var installedVersion = DotNetCoreSdk.Versions.OrderByDescending (x => x).FirstOrDefault ();
-			if (installedVersion != null) {
-				if (installedVersion < MinimumSupportedSdkVersion) {
-					return GetMessage (installedVersion);
-				} else if (installedVersion.Major == 2 && installedVersion.Minor == 2 && installedVersion < MinimumSupportedSdkVersion22) {
-					return GetMessage (installedVersion);
-				} else if (installedVersion.Major == 3 && installedVersion < MinimumSupportedSdkVersion30) {
-					return GetMessage (installedVersion);
-				}
-			}
-
-			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core 2.2 SDK by visiting {1}.", version, GetDotNetCoreDownloadUrl (version));
 		}
 	}
 }

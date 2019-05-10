@@ -37,7 +37,7 @@ namespace MonoDevelop.DotNetCore
 
 		GenericMessage message;
 		AlertButton downloadButton;
-		string downloadUrl = DotNetCoreVersion.GetDotNetCoreDownloadUrl ();
+		string downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl ();
 
 		public DotNetCoreNotInstalledDialog ()
 		{
@@ -73,10 +73,10 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
-				Message = DotNetCoreVersion.GetNotSupportedVersionMessage (CurrentDotNetCorePath);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (CurrentDotNetCorePath);
 			else {
-				Message = DotNetCoreVersion.GetNotSupportedVersionMessage (CurrentDotNetCorePath, RequiredDotNetCoreVersion.OriginalString);
-				downloadUrl = DotNetCoreVersion.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (CurrentDotNetCorePath, RequiredDotNetCoreVersion.OriginalString);
+				downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
 			}
 
 			MessageService.GenericAlert (message);

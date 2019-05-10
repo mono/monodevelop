@@ -458,9 +458,9 @@ namespace MonoDevelop.DotNetCore
 			string message;
 
 			if (isUnsupportedVersion) {
-				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath);
+				message = DotNetCoreSdk.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath);
 			} else {
-				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath, targetFramework.Id.Version);
+				message = DotNetCoreSdk.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath, targetFramework.Id.Version);
 			}
 
 			return message;
