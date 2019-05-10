@@ -573,7 +573,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		async Task MoveToNextPage ()
+		public async Task MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
 				try {
