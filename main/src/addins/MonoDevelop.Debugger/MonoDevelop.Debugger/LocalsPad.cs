@@ -25,9 +25,6 @@
 //
 //
 
-using System;
-using Mono.Debugging.Client;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MonoDevelop.Debugger
@@ -40,17 +37,27 @@ namespace MonoDevelop.Debugger
 			tree.AllowAdding = false;
 		}
 
-		public override void OnUpdateList ()
+		void ReloadValues ()
 		{
-			base.OnUpdateList ();
-
 			var frame = DebuggingService.CurrentFrame;
-			
+
 			if (frame == null)
 				return;
 
 			tree.ClearValues ();
 			tree.AddValues (frame.GetAllLocals ().Where (l => !string.IsNullOrWhiteSpace (l.Name) && l.Name != "?").ToArray ());
+		}
+
+		public override void OnUpdateFrame ()
+		{
+			base.OnUpdateFrame ();
+			ReloadValues ();
+		}
+
+		public override void OnUpdateValues ()
+		{
+			base.OnUpdateValues ();
+			ReloadValues ();
 		}
 	}
 }

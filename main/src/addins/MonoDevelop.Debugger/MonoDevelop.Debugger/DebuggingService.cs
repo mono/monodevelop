@@ -87,6 +87,7 @@ namespace MonoDevelop.Debugger
 		static public event EventHandler CallStackChanged;
 		static public event EventHandler CurrentFrameChanged;
 		static public event EventHandler ExecutionLocationChanged;
+		static public event EventHandler VariableChanged;
 		static public event EventHandler DisassemblyRequested;
 		static public event EventHandler<DocumentEventArgs> DisableConditionalCompilation;
 
@@ -1052,22 +1053,26 @@ namespace MonoDevelop.Debugger
 		static void NotifyLocationChanged ()
 		{
 			Runtime.AssertMainThread ();
-			if (ExecutionLocationChanged != null)
-				ExecutionLocationChanged (null, EventArgs.Empty);
+
+			ExecutionLocationChanged?.Invoke (null, EventArgs.Empty);
 		}
 
 		static void NotifyCurrentFrameChanged ()
 		{
 			if (currentBacktrace != null)
 				pinnedWatches.InvalidateAll ();
-			if (CurrentFrameChanged != null)
-				CurrentFrameChanged (null, EventArgs.Empty);
+
+			CurrentFrameChanged?.Invoke (null, EventArgs.Empty);
 		}
 
 		static void NotifyCallStackChanged ()
 		{
-			if (CallStackChanged != null)
-				CallStackChanged (null, EventArgs.Empty);
+			CallStackChanged?.Invoke (null, EventArgs.Empty);
+		}
+
+		internal static void NotifyVariableChanged ()
+		{
+			VariableChanged?.Invoke (null, EventArgs.Empty);
 		}
 
 		public static void Stop ()

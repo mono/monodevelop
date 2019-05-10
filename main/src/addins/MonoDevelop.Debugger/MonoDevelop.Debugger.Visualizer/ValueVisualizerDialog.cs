@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ValueViewerDialog.cs
 //  
 // Author:
@@ -116,8 +116,14 @@ namespace MonoDevelop.Debugger.Viewers
 
 		protected virtual void OnSaveClicked (object sender, EventArgs e)
 		{
-			if (currentVisualizer == null || currentVisualizer.StoreValue (value))
+			bool saved = false;
+
+			if (currentVisualizer == null || (saved = currentVisualizer.StoreValue (value))) {
 				Respond (Gtk.ResponseType.Ok);
+
+				if (saved)
+					DebuggingService.NotifyVariableChanged ();
+			}
 		}
 	}
 }
