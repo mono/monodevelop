@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FileProvider.cs
 //  
 // Author:
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 	}
 
-	public class FileProvider
+	class FileProvider
 	{
 		public string FileName {
 			get;

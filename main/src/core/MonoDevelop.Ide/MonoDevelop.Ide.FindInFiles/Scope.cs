@@ -40,7 +40,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public abstract class Scope
+	abstract class Scope
 	{
 		[Obsolete ("Unused - will be removed")]
 		public bool IncludeBinaryFiles {
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public virtual bool ValidateSearchOptions (FilterOptions filterOptions) => true;
 	}
 
-	public class DocumentScope : Scope
+	class DocumentScope : Scope
 	{
 		public override PathMode PathMode {
 			get { return PathMode.Hidden; }
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	}
 
-	public class SelectionScope : Scope
+	class SelectionScope : Scope
 	{
 		public override PathMode PathMode {
 			get { return PathMode.Hidden; }
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	}
 
-	public class WholeSolutionScope : Scope
+	class WholeSolutionScope : Scope
 	{
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 	}
 
-	public class WholeProjectScope : Scope
+	class WholeProjectScope : Scope
 	{
 		readonly Project project;
 
@@ -272,8 +272,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 	}
 
-
-	public class AllOpenFilesScope : Scope
+	class AllOpenFilesScope : Scope
 	{
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
@@ -307,8 +306,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 	}
 
-
-	public class DirectoryScope : Scope
+	class DirectoryScope : Scope
 	{
 		readonly string path;
 		readonly bool recurse;

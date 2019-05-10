@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Reference.cs
 //  
 // Author:
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class MemberReference : SearchResult
 	{
-		public override FileProvider FileProvider {
+		internal override FileProvider FileProvider {
 			get {
 				return new MonoDevelop.Ide.FindInFiles.FileProvider (FileName);
 			}

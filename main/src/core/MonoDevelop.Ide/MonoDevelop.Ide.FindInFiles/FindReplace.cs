@@ -37,7 +37,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public class FindReplace
+	class FindReplace
 	{
 		Regex regex;
 

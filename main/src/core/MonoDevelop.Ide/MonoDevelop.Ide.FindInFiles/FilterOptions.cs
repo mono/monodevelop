@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public class FilterOptions
+	class FilterOptions
 	{
 		static readonly char [] separators = {';'};
 

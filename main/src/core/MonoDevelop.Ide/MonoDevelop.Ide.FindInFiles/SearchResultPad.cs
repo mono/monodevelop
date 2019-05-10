@@ -1,4 +1,4 @@
-//
+﻿//
 // SearchResultPad.cs
 //
 // Author:
@@ -37,7 +37,7 @@ using System;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public class SearchResultPad : PadContent
+	class SearchResultPad : PadContent
 	{
 		readonly SearchResultWidget widget = new SearchResultWidget ();
 		

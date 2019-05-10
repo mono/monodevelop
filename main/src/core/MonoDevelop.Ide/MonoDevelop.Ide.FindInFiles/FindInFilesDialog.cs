@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		Hidden
 	}
 
-	public partial class FindInFilesDialog : Gtk.Dialog
+	partial class FindInFilesDialog : Gtk.Dialog
 	{
 		readonly bool writeScope = true;
 		

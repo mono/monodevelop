@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public class SearchResult
 	{
-		public virtual FileProvider FileProvider { get; private set; }
+		internal virtual FileProvider FileProvider { get; private set; }
 
 		public int Offset { get; set; }
 		public int Length { get; set; }
@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			Length = length;
 		}
 
-		public SearchResult (FileProvider fileProvider, int offset, int length)
+		internal SearchResult (FileProvider fileProvider, int offset, int length)
 		{
 			FileProvider = fileProvider;
 			Offset = offset;
