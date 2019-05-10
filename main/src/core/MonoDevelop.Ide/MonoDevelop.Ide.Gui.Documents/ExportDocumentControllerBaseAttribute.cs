@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	{
 		string [] fileExtensions;
 		string [] mimeTypes;
-		FileNameEvalutor patternEvaluator;
+		FileNameEvaluator patternEvaluator;
 
 		/// <summary>
 		/// File extension to which the controller applies. Several extensions can be provided using comma as separator.
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				mimeTypes = ParseList (MimeType);
 				var filePatterns = ParseList (FilePattern);
 				if (filePatterns.Length > 0)
-					patternEvaluator = FileNameEvalutor.CreateFileNameEvaluator (filePatterns, ',');
+					patternEvaluator = FileNameEvaluator.CreateFileNameEvaluator (filePatterns, ',');
 			}
 
 			if (fileExtensions.Contains ("*") || mimeTypes.Contains ("*") || FilePattern == "*")

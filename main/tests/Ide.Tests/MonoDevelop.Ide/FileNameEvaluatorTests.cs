@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide
 		[TestCaseSource (nameof(Patterns))]
 		public void SimplePattern (string[] patterns, string[] matches, string[] nonMatches)
 		{
-			var fileNameEvalutor = FileNameEvalutor.CreateFileNameEvaluator (patterns, ',');
+			var fileNameEvalutor = FileNameEvaluator.CreateFileNameEvaluator (patterns, ',');
 			foreach (var p in matches)
 				Assert.IsTrue (fileNameEvalutor.SupportsFile (p), "File name '" + p + "' did not match");
 			foreach (var p in nonMatches)

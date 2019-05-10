@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute ("contentType", "The content type name used by the Visual Studio editor to identify this language", Required = false)]
 		public string ContentType { get; private set; }
 
-		FileNameEvalutor regex;
+		FileNameEvaluator regex;
 		
 		public IconId Icon {
 			get => icon;
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Extensions
 		public bool SupportsFile (string fileName)
 		{
 			if (regex == null)
-				regex = FileNameEvalutor.CreateFileNameEvaluator (GetPatterns ());
+				regex = FileNameEvaluator.CreateFileNameEvaluator (GetPatterns ());
 			return regex.SupportsFile (fileName);
 		}
 
