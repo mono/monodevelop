@@ -456,17 +456,14 @@ namespace MonoDevelop.DotNetCore
 		string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion, TargetFramework targetFramework)
 		{
 			string message;
-			string downloadUrl;
 
 			if (isUnsupportedVersion) {
-				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath, targetFramework.Id.Version);
-				downloadUrl = DotNetCoreVersion.GetDotNetCoreDownloadUrl ();
+				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath);
 			} else {
 				message = DotNetCoreVersion.GetNotSupportedVersionMessage (sdkPaths.MSBuildSDKsPath, targetFramework.Id.Version);
-				downloadUrl = DotNetCoreVersion.GetDotNetCoreDownloadUrl (targetFramework.Id.Version);
 			}
 
-			return $"{message} {downloadUrl}";
+			return message;
 		}
 
 		protected override void OnBeginLoad ()
