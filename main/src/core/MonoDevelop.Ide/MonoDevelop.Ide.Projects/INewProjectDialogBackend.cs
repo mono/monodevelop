@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Threading.Tasks;
+
 namespace MonoDevelop.Ide.Projects
 {
 	interface INewProjectDialogBackend
@@ -32,6 +34,7 @@ namespace MonoDevelop.Ide.Projects
 		void CloseDialog ();
 		void RegisterController (INewProjectDialogController controller);
 		bool CanMoveToNextPage { get; set; }
+		Task MoveToNextPage ();
 	}
 }
 

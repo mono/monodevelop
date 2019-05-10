@@ -295,6 +295,7 @@ namespace MonoDevelop.Ide.Projects
 			wizardProvider.CanMoveToNextPageChanged += (sender, e) => {
 				dialog.CanMoveToNextPage = wizardProvider.CanMoveToNextPage;
 			};
+			wizardProvider.NextPageRequested += async (sender, e) => await dialog.MoveToNextPage ();
 		}
 
 		public IEnumerable<TemplateCategory> TemplateCategories {
