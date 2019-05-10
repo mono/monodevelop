@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			IsRunning = false;
 		}
 
-		public bool ValidatePattern (FilterOptions filter, string pattern)
+		public bool ValidatePattern (FindInFilesModel filter, string pattern)
 		{
 			if (filter.RegexSearch) {
 				try {
@@ -96,13 +96,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 
-		public IEnumerable<SearchResult> FindAll (IReadOnlyList<FileProvider> fileList, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, CancellationToken token)
+		public IEnumerable<SearchResult> FindAll (FindInFilesModel model, IReadOnlyList<FileProvider> fileList, ProgressMonitor monitor, CancellationToken token)
 		{
-			if (filter.RegexSearch) {
+			if (model.RegexSearch) {
 				RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Multiline;
-				if (!filter.CaseSensitive)
+				if (!model.CaseSensitive)
 					regexOptions |= RegexOptions.IgnoreCase;
-				regex = new Regex (pattern, regexOptions);
+				regex = new Regex (model.FindPattern, regexOptions);
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
@@ -130,11 +130,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 
 				var results = new List<SearchResult> ();
-				if (filter.RegexSearch && replacePattern != null) {
+				if (model.RegexSearch && model.InReplaceMode) {
 					foreach (var content in contents) {
 						if (token.IsCancellationRequested)
 							return Enumerable.Empty<SearchResult> ();
-						results.AddRange (RegexSearch (monitor, content.Provider, replacePattern, filter));
+						results.AddRange (RegexSearch (model, monitor, content.Provider));
 					}
 				} else {
 					var options = new ParallelOptions ();
@@ -145,12 +145,12 @@ namespace MonoDevelop.Ide.FindInFiles
 							return;
 						try {
 							Interlocked.Increment (ref searchedFilesCount);
-							if (replacePattern != null) {
+							if (model.InReplaceMode) {
 								content.Text = content.Reader.ReadToEnd ();
 								content.Encoding = content.Provider.CurrentEncoding;
 								content.Reader = new StringReader (content.Text);
 							}
-							content.Results.AddRange (FindAll (monitor, content.Provider, pattern, replacePattern, filter));
+							content.Results.AddRange (FindAll (model, monitor, content.Provider));
 							lock (results) {
 								results.AddRange (content.Results);
 							}
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						}
 					});
 
-					if (replacePattern != null) {
+					if (model.InReplaceMode) {
 						foreach (var content in contents) {
 							if (token.IsCancellationRequested)
 								return Enumerable.Empty<SearchResult> ();
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								continue;
 							try {
 								content.Provider.BeginReplace (content.Text, content.Encoding);
-								Replace (content.Provider, content.Results, replacePattern);
+								Replace (content.Provider, content.Results, model.ReplacePattern);
 								content.Provider.EndReplace ();
 							} catch (Exception e) {
 								LoggingService.LogError ("Exception during replace.", e);
@@ -189,22 +189,22 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		// Took: 17743
 
-		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, string pattern, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> FindAll (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
-			if (string.IsNullOrEmpty (pattern))
+			if (string.IsNullOrEmpty (model.FindPattern))
 				return Enumerable.Empty<SearchResult> ();
 
-			if (filter.RegexSearch)
-				return RegexSearch (monitor, provider, replacePattern, filter);
+			if (model.RegexSearch)
+				return RegexSearch (model, monitor, provider);
 
-			return Search (provider, pattern, filter);
+			return Search (model, provider);
 		}
 
-		IEnumerable<SearchResult> RegexSearch (ProgressMonitor monitor, FileProvider provider, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> RegexSearch (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 			var results = new List<SearchResult> ();
-			if (replacePattern == null) {
+			if (!model.InReplaceMode) {
 				foreach (Match match in regex.Matches (content)) {
 					if (monitor.CancellationToken.IsCancellationRequested)
 						break;
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					if (provider.SelectionEndPosition > -1 && match.Index + match.Length > provider.SelectionEndPosition)
 						continue;
-					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt(content, match.Index, match.Length))
+					if (!model.WholeWordsOnly || FindInFilesModel.IsWholeWordAt(content, match.Index, match.Length))
 						results.Add(new SearchResult(provider, match.Index, match.Length));
 				}
 			} else {
@@ -229,8 +229,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				int delta = 0;
 				for (int i = 0; !monitor.CancellationToken.IsCancellationRequested && i < matches.Count; i++) {
 					Match match = matches[i];
-					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length)) {
-						string replacement = match.Result (replacePattern);
+					if (!model.WholeWordsOnly || FindInFilesModel.IsWholeWordAt (content, match.Index, match.Length)) {
+						string replacement = match.Result (model.ReplacePattern);
 						results.Add (new SearchResult (provider, match.Index + delta, replacement.Length));
 						provider.Replace (match.Index + delta, match.Index, match.Length, replacement);
 						delta += replacement.Length - match.Length;
@@ -242,13 +242,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 
-		public IEnumerable<SearchResult> Search (FileProvider provider, string pattern, FilterOptions filter)
+		public IEnumerable<SearchResult> Search (FindInFilesModel model, FileProvider provider)
 		{
-			var searcher = new PatternSearcher (pattern, filter.CaseSensitive, filter.WholeWordsOnly);
+			var searcher = new PatternSearcher (model.FindPattern, model.CaseSensitive, model.WholeWordsOnly);
 			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 
 			foreach (var idx in searcher.FindAll (content)) {
-				yield return new SearchResult (provider, idx, pattern.Length);
+				yield return new SearchResult (provider, idx, model.FindPattern.Length);
 			}
 		}
 

@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnFindInFiles ()
 		{
 			string path = GetDir (CurrentNode.DataItem);
-			FindInFilesDialog.FindInPath (path);
+			FindInFilesController.FindInPath (path);
 		}
 		
 		

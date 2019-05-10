@@ -1,5 +1,5 @@
 ﻿// 
-// Commands.cs
+// Scope.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,32 +24,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Components.Commands;
+using System.Collections.Generic;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	class InFilesHandler : CommandHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.Workbench.RootWindow.Visible;
-		}
-	}
 
-	class FindInFilesHandler : InFilesHandler
+	abstract partial class Scope
 	{
-		protected override void Run ()
+		class AllOpenFilesScope : Scope
 		{
-			FindInFilesController.ShowFind ();
-		}
-	}
-	
-	class ReplaceInFilesHandler : InFilesHandler
-	{
-		protected override void Run ()
-		{
-			FindInFilesController.ShowReplace ();
+			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
+			{
+				var results = new List<FileProvider> ();
+				foreach (Document document in IdeApp.Workbench.Documents) {
+					var textBuffer = document.GetContent<ITextBuffer> ();
+					if (textBuffer != null && filterOptions.NameMatches (document.FileName))
+						results.Add (new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName));
+				}
+				return EmptyFileProviderTask;
+			}
+
+			public override string GetDescription (FindInFilesModel model)
+			{
+				if (!model.InReplaceMode)
+					return GettextCatalog.GetString ("Looking for '{0}' in all open documents", model.FindPattern);
+				return GettextCatalog.GetString ("Replacing '{0}' in all open documents", model.FindPattern);
+			}
 		}
 	}
 }

@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnFindInFiles ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			FindInFilesDialog.FindInPath (solution.BaseDirectory);
+			FindInFilesController.FindInPath (solution.BaseDirectory);
 		}
 	}
 }

@@ -59,7 +59,7 @@ namespace MonoDevelop.Components.MainToolbar
 		//	return Task.Factory.StartNew (delegate {
 		//		return (ISearchDataSource)new SearchInSolutionDataSource (searchPattern);
 		//	});
-		//} 
+		//}
 		public override string [] Tags { get; } = { "search" };
 
 		public override bool IsValidTag (string tag) => tag == "search";
@@ -83,11 +83,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public override void Activate ()
 			{
-				var options = new FilterOptions ();
+				var options = new FindInFilesModel ();
+				options.SearchScope = SearchScope.WholeWorkspace;
+				options.FindPattern = pattern.Pattern;
 				if (PropertyService.Get ("AutoSetPatternCasing", false))
 					options.CaseSensitive = pattern.Pattern.Any (char.IsUpper);
-				var scope = new WholeSolutionScope ();
-				FindInFilesDialog.SearchReplace (pattern.Pattern, null, scope, scope.GetFilesAsync (options), options, null, null);
+				var scope = Scope.Create(options);
+				FindInFilesController.SearchReplace (options, scope, scope.GetFilesAsync (options), null, null);
 			}
 
 			public override string GetMarkupText (bool selected)

@@ -1,5 +1,5 @@
 ﻿// 
-// Commands.cs
+// Scope.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,32 +24,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Components.Commands;
+using System.Linq;
+using System.Collections.Generic;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text.Editor;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	class InFilesHandler : CommandHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.Workbench.RootWindow.Visible;
-		}
-	}
 
-	class FindInFilesHandler : InFilesHandler
+	abstract partial class Scope
 	{
-		protected override void Run ()
+		class SelectionScope : Scope
 		{
-			FindInFilesController.ShowFind ();
-		}
-	}
-	
-	class ReplaceInFilesHandler : InFilesHandler
-	{
-		protected override void Run ()
-		{
-			FindInFilesController.ShowReplace ();
+			public override PathMode PathMode {
+				get { return PathMode.Hidden; }
+			}
+
+			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
+			{
+				var doc = IdeApp.Workbench.ActiveDocument;
+				var textView = doc.GetContent<ITextView> (true);
+				if (textView != null) {
+					var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
+					return Task.FromResult<IReadOnlyList<FileProvider>> (new [] { new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End) });
+				}
+				return EmptyFileProviderTask;
+			}
+
+			public override string GetDescription (FindInFilesModel model)
+			{
+				if (!model.InReplaceMode)
+					return GettextCatalog.GetString ("Looking for '{0}' in current selection", model.FindPattern);
+				return GettextCatalog.GetString ("Replacing '{0}' in current selection", model.FindPattern);
+			}
+
 		}
 	}
 }

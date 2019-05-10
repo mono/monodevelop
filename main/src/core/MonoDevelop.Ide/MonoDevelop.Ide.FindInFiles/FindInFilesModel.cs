@@ -30,9 +30,9 @@ using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	class FilterOptions
+	class FindInFilesModel
 	{
-		static readonly char [] separators = {';'};
+		static readonly char [] separators = { ';' };
 
 		string file_mask;
 		string [] split_file_masks;
@@ -46,35 +46,70 @@ namespace MonoDevelop.Ide.FindInFiles
 				file_mask = value;
 				if (file_mask == null) {
 					split_file_masks = null;
-				}
-				else {
+				} else {
 					split_file_masks = file_mask.Split (separators, StringSplitOptions.RemoveEmptyEntries);
 				}
 
 				evaluator = FileNameEvaluator.CreateFileNameEvaluator (split_file_masks);
+				FileMaskChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
+		public event EventHandler FileMaskChanged;
 
-		public bool CaseSensitive {
-			get;
-			set;
-		}
-		
-		public bool WholeWordsOnly {
-			get;
-			set;
-		}
-		
-		public bool RegexSearch {
-			get;
-			set;
+		public bool InReplaceMode { get; set; }
+
+		public bool CaseSensitive { get; set; }
+
+		public bool WholeWordsOnly { get; set; }
+
+		public bool RegexSearch { get; set; }
+
+		public string FindPattern { get; set; }
+
+		public string ReplacePattern { get; set; }
+
+		SearchScope currentScope;
+		public SearchScope SearchScope {
+			get => currentScope;
+			set {
+				if (currentScope == value)
+					return;
+				currentScope = value;
+				CurrentScopeChanged?.Invoke (this, EventArgs.Empty);
+			}
 		}
 
-		public bool IncludeCodeBehind {
-			get;
-			set;
+		public event EventHandler CurrentScopeChanged;
+
+		bool recurseSubdirectories;
+		private string findInFilesPath;
+
+		public bool RecurseSubdirectories {
+			get => recurseSubdirectories;
+			set {
+				if (recurseSubdirectories == value)
+					return;
+				recurseSubdirectories = value;
+				RecurseSubdirectoriesChanged?.Invoke (this, EventArgs.Empty);
+			}
 		}
+
+		public event EventHandler RecurseSubdirectoriesChanged;
+
+		public string FindInFilesPath {
+			get => findInFilesPath;
+			internal set {
+				if (findInFilesPath == value)
+					return;
+				findInFilesPath = value;
+				FindInFilesPathChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
+		public event EventHandler FindInFilesPathChanged;
+
+		public bool IncludeCodeBehind { get; internal set; }  // unused, may be added later
 
 		public bool NameMatches (string name)
 		{
@@ -82,16 +117,21 @@ namespace MonoDevelop.Ide.FindInFiles
 				return true;
 			return evaluator.SupportsFile (name);
 		}
-		
+
 		public static bool IsWordSeparator (char ch)
 		{
-			return !Char.IsLetterOrDigit (ch) && ch != '_';
+			return !char.IsLetterOrDigit (ch) && ch != '_';
 		}
-		
+
 		public static bool IsWholeWordAt (string text, int offset, int length)
 		{
-			return (offset          <= 0           || IsWordSeparator (text[offset - 1]))  &&
-				   (offset + length >= text.Length || IsWordSeparator (text[offset + length]));
+			return (offset <= 0 || IsWordSeparator (text [offset - 1])) &&
+				   (offset + length >= text.Length || IsWordSeparator (text [offset + length]));
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[FindInFilesModel: FindPattern={5}, ReplacePattern={6}, SearchScope={7}, FileMask={0}, InReplaceMode={1}, CaseSensitive={2}, WholeWordsOnly={3}, RegexSearch={4},  RecurseSubdirectories={8}, FindInFilesPath={9}]", FileMask, InReplaceMode, CaseSensitive, WholeWordsOnly, RegexSearch, FindPattern, ReplacePattern, SearchScope, RecurseSubdirectories, FindInFilesPath);
 		}
 	}
 }

@@ -124,11 +124,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		bool IsWholeWordAt (ReadOnlySpan<char> text, int start)
 		{
-			if (start > 0 && !FilterOptions.IsWordSeparator (text [start - 1]))
+			if (start > 0 && !FindInFilesModel.IsWordSeparator (text [start - 1]))
 				return false;
 
 			int end = start + patternLength;
-			if (end < text.Length && !FilterOptions.IsWordSeparator (text [end]))
+			if (end < text.Length && !FindInFilesModel.IsWordSeparator (text [end]))
 				return false;
 
 			return true;
