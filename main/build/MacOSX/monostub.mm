@@ -23,20 +23,18 @@ typedef void (* gobject_tracker_init) (void *libmono);
 #include "monostub-utils.h"
 
 #if XM_REGISTRAR
-extern
-#if EXTERN_C
-"C"
-#endif
-int xamarin_create_classes_Xamarin_Mac ();
+# define XAMARIN_CREATE_CLASSES xamarin_create_classes_Xamarin_Mac
+#elif STATIC_REGISTRAR
+# define XAMARIN_CREATE_CLASSES xamarin_create_classes
 #endif
 
-#if STATIC_REGISTRAR
-extern
 #if EXTERN_C
-"C"
+# define EXTERNAL_API extern "C"
+#else
+# define EXTERNAL_API extern
 #endif
-void xamarin_create_classes ();
-#endif
+
+EXTERNAL_API void XAMARIN_CREATE_CLASSES ();
 
 #if NOGUI
 static void
@@ -298,6 +296,34 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
     }
 }
 
+bool should_load_xammac_registrar(char *appName)
+{
+	void *libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
+	if (!libxammac) {
+		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
+		if (!libxammac) {
+			fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
+			NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
+			exit_with_message ((char *)[msg UTF8String], appName);
+		}
+	}
+
+#if STATIC_REGISTRAR
+	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
+	void *libvsmregistrar = nil;
+	if (!registrar_toggle) {
+		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
+		if (!libvsmregistrar) {
+			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
+		}
+	}
+
+	return libvsmregistrar != nil;
+#else
+	return true;
+#endif
+}
+
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
@@ -390,32 +416,8 @@ int main (int argc, char **argv)
 		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
 
-#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
-	void *libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
-	if (!libxammac) {
-		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
-		if (!libxammac) {
-			fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
-			NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
-			exit_with_message ((char *)[msg UTF8String], argv[0]);
-		}
-	}
-
-#if STATIC_REGISTRAR
-	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
-	if (!registrar_toggle) {
-		void *libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
-		if (!libvsmregistrar) {
-			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
-		}
-		if (libvsmregistrar)
-			xamarin_create_classes ();
-	}
-#else
-	xamarin_create_classes_Xamarin_Mac ();
-#endif
-
-#endif
+	if (should_load_xammac_registrar (argv[0]))
+		XAMARIN_CREATE_CLASSES ();
 
 	try_load_gobject_tracker (libmono, argv [0]);
 
