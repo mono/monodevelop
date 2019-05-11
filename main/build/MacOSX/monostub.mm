@@ -38,14 +38,6 @@ extern
 void xamarin_create_classes ();
 #endif
 
-void *libmono;
-#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
-void *libxammac;
-#if STATIC_REGISTRAR
-void *libvsmregistrar;
-#endif
-#endif
-
 #if NOGUI
 static void
 show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
@@ -359,12 +351,10 @@ int main (int argc, char **argv)
   NSString *exePath;
   char **extra_argv;
   int extra_argc;
-#if USE_SIMPLE_PATH
-  exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: SIMPLE_PATH];
-#else
   NSString *exeName;
 	const char *basename;
 	struct rlimit limit;
+	void *libmono;
 
 	if (!(basename = strrchr (argv[0], '/')))
 		basename = argv[0];
@@ -388,7 +378,6 @@ int main (int argc, char **argv)
 
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
-#endif
 
 	// allow the MONODEVELOP_USE_SGEN environment variable to override the plist value
 	use_sgen = env2bool ("MONODEVELOP_USE_SGEN", use_sgen);
@@ -402,7 +391,7 @@ int main (int argc, char **argv)
 	}
 
 #if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
-	libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
+	void *libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
 	if (!libxammac) {
 		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
 		if (!libxammac) {
@@ -415,7 +404,7 @@ int main (int argc, char **argv)
 #if STATIC_REGISTRAR
 	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
 	if (!registrar_toggle) {
-		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
+		void *libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
 		if (!libvsmregistrar) {
 			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
 		}
