@@ -1,5 +1,5 @@
 //
-// GLibLoggingTests.cs
+// CapturingCrashReporter.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -25,36 +25,17 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
 using MonoDevelop.Core.LogReporting;
-using NUnit.Framework;
-using UnitTests;
 
-namespace MonoDevelop.Ide.Gui
+namespace UnitTests
 {
-	[TestFixture]
-	public class GLibLoggingTests
+	public class CapturingCrashReporter : CrashReporter
 	{
-		[Test]
-		public void ValidateCrashIsSentForGLibExceptions()
+		public Exception LastException { get; private set; }
+
+		public override void ReportCrash (Exception ex, bool willShutDown, IEnumerable<string> tags)
 		{
-			var old = GLibLogging.Enabled;
-			var crashReporter = new CapturingCrashReporter ();
-
-			try {
-				GLibLogging.Enabled = true;
-
-				LoggingService.RegisterCrashReporter (crashReporter);
-
-				GLib.Log.Write ("Gtk", GLib.LogLevelFlags.Warning, "{0}", "should not be captured");
-				Assert.IsNull (crashReporter.LastException);
-
-				GLib.Log.Write ("Gtk", GLib.LogLevelFlags.Critical, "{0}", "critical should be captured");
-				Assert.That (crashReporter.LastException.Message, Contains.Substring ("critical should be captured"));
-			} finally {
-				LoggingService.UnregisterCrashReporter (crashReporter);
-				GLibLogging.Enabled = old;
-			}
+			LastException = ex;
 		}
 	}
 }
