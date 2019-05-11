@@ -40,6 +40,7 @@ EXTERNAL_API void XAMARIN_CREATE_CLASSES ();
 static void
 show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 {
+	fprintf(stderr, "Could not launch: %s\n", [appName UTF8String]);
 	fprintf(stderr, "%s\n", [msg UTF8String]);
 	fprintf(stderr, "%s\n", [mono_download_url UTF8String]);
 }
