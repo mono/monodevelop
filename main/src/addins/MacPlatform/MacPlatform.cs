@@ -272,16 +272,10 @@ namespace MonoDevelop.MacIntegration
 		[DllImport (FoundationLib)]
 		static extern NSUncaughtExceptionHandler NSGetUncaughtExceptionHandler ();
 
-		internal static void RegisterUncaughtExceptionHandler ()
+		static void RegisterUncaughtExceptionHandler ()
 		{
 			oldHandler = NSGetUncaughtExceptionHandler ();
 			NSSetUncaughtExceptionHandler (uncaughtHandler);
-		}
-
-		internal static void UnregisterUncaughtExceptionHandler ()
-		{
-			NSSetUncaughtExceptionHandler (oldHandler);
-			oldHandler = null;
 		}
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
