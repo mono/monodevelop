@@ -63,7 +63,7 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 #endif
 
 static void
-exit_with_message (const char *reason, char *argv0)
+exit_with_message (const char *reason, const char *argv0)
 {
 	NSString *appName = nil;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
@@ -301,15 +301,15 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" #name ".dylib", RTLD_LAZY); \
 	}
 
-bool should_load_xammac_registrar(char *appName)
+bool should_load_xammac_registrar(const char *appName)
 {
 	void *libxammac;
 
 	LOAD_DYLIB(libxammac);
 	if (!libxammac) {
 		fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
-		NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
-		exit_with_message ((char *)[msg UTF8String], appName);
+		const char *msg = "This application requires Xamarin.Mac native library side-by-side.";
+		exit_with_message (msg, appName);
 	}
 
 #if STATIC_REGISTRAR
@@ -324,6 +324,13 @@ bool should_load_xammac_registrar(char *appName)
 	return true;
 #endif
 }
+
+#define LOAD_SYMBOL(symbol_type, symbol_name, libName, frameworkName, appName) \
+	symbol_type symbol_name = (symbol_type) dlsym (libName, #symbol_type); \
+	if (!symbol_name) { \
+		fprintf (stderr, "Could not load " #symbol_type "(): %s\n", dlerror ()); \
+		exit_with_message ("Failed to load the " frameworkName " framework.", appName); \
+	}
 
 int main (int argc, char **argv)
 {
@@ -414,7 +421,7 @@ int main (int argc, char **argv)
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
 		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]];
-		exit_with_message ((char *)[msg UTF8String], argv[0]);
+		exit_with_message ([msg UTF8String], argv[0]);
 	}
 
 	if (should_load_xammac_registrar (argv[0]))
@@ -422,29 +429,15 @@ int main (int argc, char **argv)
 
 	try_load_gobject_tracker (libmono, argv [0]);
 
-	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
-	if (!_mono_main) {
-		fprintf (stderr, "Could not load mono_main(): %s\n", dlerror ());
-		exit_with_message ("Failed to load the Mono framework.", argv[0]);
-	}
-
-	mono_free _mono_free = (mono_free) dlsym (libmono, "mono_free");
-	if (!_mono_free) {
-		fprintf (stderr, "Could not load mono_free(): %s\n", dlerror ());
-		exit_with_message ("Failed to load the Mono framework.", argv[0]);
-	}
-
-	mono_get_runtime_build_info _mono_get_runtime_build_info = (mono_get_runtime_build_info) dlsym (libmono, "mono_get_runtime_build_info");
-	if (!_mono_get_runtime_build_info) {
-		fprintf (stderr, "Could not load mono_get_runtime_build_info(): %s\n", dlerror ());
-		exit_with_message ("Failed to load the Mono framework.", argv[0]);
-	}
+	LOAD_SYMBOL(mono_main, _mono_main, libmono, "Mono", argv[0]);
+	LOAD_SYMBOL(mono_free, _mono_free, libmono, "Mono", argv[0]);
+	LOAD_SYMBOL(mono_get_runtime_build_info, _mono_get_runtime_build_info, libmono, "Mono", argv[0]);
 
 	char *mono_version = _mono_get_runtime_build_info ();
 
 	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
 		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]];
-		exit_with_message ((char *)[msg UTF8String], argv[0]);
+		exit_with_message ([msg UTF8String], argv[0]);
 	}
 
 	extra_argv = get_mono_env_options (&extra_argc);
