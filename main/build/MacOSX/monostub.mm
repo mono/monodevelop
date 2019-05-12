@@ -254,9 +254,10 @@ correct_locale(void)
 
 	preferredLanguage = [preferredLanguage stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
 
-	setenv("MONODEVELOP_STUB_LANGUAGE", [preferredLanguage UTF8String], 1);
-	setenv("LANGUAGE", [preferredLanguage UTF8String], 1);
-	setenv("LC_CTYPE", [preferredLanguage UTF8String], 1);
+	const char *value = [preferredLanguage UTF8String];
+	setenv("MONODEVELOP_STUB_LANGUAGE", value, 1);
+	setenv("LANGUAGE", value, 1);
+	setenv("LC_CTYPE", value, 1);
 }
 
 static void
@@ -294,26 +295,28 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
     }
 }
 
+#define LOAD_DYLIB(name) \
+	name = dlopen ("@loader_path/" #name ".dylib", RTLD_LAZY); \
+	if (!name) { \
+		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" #name ".dylib", RTLD_LAZY); \
+	}
+
 bool should_load_xammac_registrar(char *appName)
 {
-	void *libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
+	void *libxammac;
+
+	LOAD_DYLIB(libxammac);
 	if (!libxammac) {
-		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
-		if (!libxammac) {
-			fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
-			NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
-			exit_with_message ((char *)[msg UTF8String], appName);
-		}
+		fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
+		NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
+		exit_with_message ((char *)[msg UTF8String], appName);
 	}
 
 #if STATIC_REGISTRAR
 	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
 	void *libvsmregistrar = nil;
 	if (!registrar_toggle) {
-		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
-		if (!libvsmregistrar) {
-			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
-		}
+		LOAD_DYLIB(libvsmregistrar);
 	}
 
 	return libvsmregistrar != nil;
