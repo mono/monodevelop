@@ -270,7 +270,11 @@ namespace MonoDevelop.Ide.Gui
 			case LogLevelFlags.Error:
 			case LogLevelFlags.Critical:
 			default:
-				LoggingService.LogInternalError (new CriticalGtkException (message, stackTraceString));
+				var exception = new CriticalGtkException (message, stackTraceString);
+				if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
+					LoggingService.LogFatalError ("Fatal GLib error", exception);
+				else
+					LoggingService.LogInternalError ("Critical GLib error", exception);
 				break;
 			}
 			
