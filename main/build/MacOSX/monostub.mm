@@ -22,19 +22,16 @@ typedef void (* gobject_tracker_init) (void *libmono);
 
 #include "monostub-utils.h"
 
-#if XM_REGISTRAR
-# define XAMARIN_CREATE_CLASSES xamarin_create_classes_Xamarin_Mac
-#elif STATIC_REGISTRAR
+#if STATIC_REGISTRAR
+// We have full static registrar enabled.
+# define XM_FULL_STATIC_REGISTRAR
 # define XAMARIN_CREATE_CLASSES xamarin_create_classes
-#endif
-
-#if EXTERN_C
-# define EXTERNAL_API extern "C"
 #else
-# define EXTERNAL_API extern
+// This means we only have xammac's framework registrar
+# define XAMARIN_CREATE_CLASSES xamarin_create_classes_Xamarin_Mac
 #endif
 
-EXTERNAL_API void XAMARIN_CREATE_CLASSES ();
+extern "C" void XAMARIN_CREATE_CLASSES ();
 
 #if NOGUI
 static void
