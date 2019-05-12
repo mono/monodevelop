@@ -18,6 +18,7 @@
 typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
+typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
 typedef void (* gobject_tracker_init) (void *libmono);
 
 #include "monostub-utils.h"
@@ -82,128 +83,31 @@ exit_with_message (NSString *reason, const char *argv0)
 	exit (1);
 }
 
-typedef struct _ListNode {
-	struct _ListNode *next;
-	char *value;
-} ListNode;
-
-static char *
-decode_qstring (unsigned char **in, unsigned char qchar)
+void *
+load_symbol(const char *symbol_type, void *lib, const char *framework_name, const char *app_name)
 {
-	unsigned char *inptr = *in;
-	unsigned char *start = *in;
-	char *value, *v;
-	size_t len = 0;
-
-	while (*inptr) {
-		if (*inptr == qchar)
-			break;
-
-		if (*inptr == '\\') {
-			if (inptr[1] == '\0')
-				break;
-
-			inptr++;
-		}
-
-		inptr++;
-		len++;
+	void *symbol = dlsym (lib, symbol_type);
+	if (!symbol) {
+		fprintf (stderr, "Could not load %s(): %s\n", symbol_type, dlerror ());
+		NSString *msg = [NSString stringWithFormat:@"Failed to load the %s framework.", framework_name];
+		exit_with_message (msg, app_name);
 	}
 
-	v = value = (char *) malloc (len + 1);
-	while (start < inptr) {
-		if (*start == '\\')
-			start++;
-
-		*v++ = (char) *start++;
-	}
-
-	*v = '\0';
-
-	if (*inptr)
-		inptr++;
-
-	*in = inptr;
-
-	return value;
+	return symbol;
 }
+#define LOAD_MONO_SYMBOL(symbol_type, libmono, app_name) (symbol_type)load_symbol(#symbol_type, libmono, "Mono", app_name);
 
-static char **
-get_mono_env_options (int *count)
+static void
+get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono, char *app_name)
 {
 	const char *env = getenv ("MONO_ENV_OPTIONS");
-	ListNode *list = NULL, *node, *tail = NULL;
-	unsigned char *start, *inptr;
-	char *value, **argv;
-	int i, n = 0;
-	size_t size;
 
-	if (env == NULL) {
-		*count = 0;
-		return NULL;
-	}
+	mono_parse_options_from _mono_parse_options_from = LOAD_MONO_SYMBOL(mono_parse_options_from, libmono, app_name);
 
-	inptr = (unsigned char *) env;
-
-	while (*inptr) {
-		while (isblank ((int) *inptr))
-			inptr++;
-
-		if (*inptr == '\0')
-			break;
-
-		start = inptr++;
-		switch (*start) {
-		case '\'':
-		case '"':
-			value = decode_qstring (&inptr, *start);
-			break;
-		default:
-			while (*inptr && !isblank ((int) *inptr))
-				inptr++;
-
-			// Note: Mac OS X <= 10.6.8 do not have strndup()
-			//value = strndup ((char *) start, (size_t) (inptr - start));
-			size = (size_t) (inptr - start);
-			value = (char *) malloc (size + 1);
-			memcpy (value, start, size);
-			value[size] = '\0';
-			break;
-		}
-
-		node = (ListNode *) malloc (sizeof (ListNode));
-		node->value = value;
-		node->next = NULL;
-		n++;
-
-		if (tail != NULL)
-			tail->next = node;
-		else
-			list = node;
-
-		tail = node;
-	}
-
-	*count = n;
-
-	if (n == 0)
-		return NULL;
-
-	argv = (char **) malloc (sizeof (char *) * (n + 1));
-	i = 0;
-
-	while (list != NULL) {
-		node = list->next;
-		argv[i++] = list->value;
-		free (list);
-		list = node;
-	}
-
-	argv[i] = NULL;
-
-	return argv;
+	char *ret = _mono_parse_options_from (env, ref_argc, ref_argv);
+	if (ret)
+		fprintf(stderr, "%s", ret);
 }
-
 
 static void
 run_md_bundle (NSString *appDir, NSArray *arguments)
@@ -313,7 +217,7 @@ should_load_xammac_registrar(const char *app_name)
 		exit_with_message (msg, app_name);
 	}
 
-#if STATIC_REGISTRAR
+#if XM_FULL_STATIC_REGISTRAR
 	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
 	void *libvsmregistrar = nil;
 	if (!registrar_toggle) {
@@ -324,19 +228,6 @@ should_load_xammac_registrar(const char *app_name)
 #else
 	return true;
 #endif
-}
-
-void *
-load_symbol(const char *symbol_type, void *lib, const char *framework_name, const char *app_name)
-{
-	void *symbol = dlsym (lib, symbol_type);
-	if (!symbol) {
-		fprintf (stderr, "Could not load %s(): %s\n", symbol_type, dlerror ());
-		NSString *msg = [NSString stringWithFormat:@"Failed to load the %s framework.", framework_name];
-		exit_with_message (msg, app_name);
-	}
-
-	return symbol;
 }
 
 int main (int argc, char **argv)
@@ -390,8 +281,6 @@ int main (int argc, char **argv)
 	setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
 	NSString *exePath;
-	char **extra_argv;
-	int extra_argc;
 	NSString *exeName;
 	const char *basename;
 	struct rlimit limit;
@@ -436,10 +325,10 @@ int main (int argc, char **argv)
 
 	try_load_gobject_tracker (libmono, argv [0]);
 
-#define LOAD_MONO_SYMBOL(symbol_type) (symbol_type)load_symbol(#symbol_type, libmono, "Mono", argv[0]);
-	mono_main _mono_main = LOAD_MONO_SYMBOL(mono_main);
-	mono_free _mono_free = LOAD_MONO_SYMBOL(mono_free);
-	mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info);
+	mono_main _mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, argv[0]);
+	mono_free _mono_free = LOAD_MONO_SYMBOL(mono_free, libmono, argv[0]);
+	mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono,
+ argv[0]);
 
 	char *mono_version = _mono_get_runtime_build_info ();
 
@@ -448,31 +337,27 @@ int main (int argc, char **argv)
 		exit_with_message (msg, argv[0]);
 	}
 
-	extra_argv = get_mono_env_options (&extra_argc);
+	get_mono_env_options (&argc, &argv, libmono, argv[0]);
 
 	const int injected = 2; /* --debug and exe path */
-	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + injected + 1));
+	char **new_argv = (char **) malloc (sizeof (char *) * (argc + injected + 1));
 	int i, n = 0;
 
 	new_argv[n++] = argv[0];
-	for (i = 0; i < extra_argc; i++)
-		new_argv[n++] = extra_argv[i];
 
 	// enable --debug so that we can get useful stack traces
 	new_argv[n++] = (char *) "--debug";
-
 	new_argv[n++] = strdup ([exePath UTF8String]);
 
 	for (i = 1; i < argc; i++)
 		new_argv[n++] = argv[i];
 	new_argv[n] = NULL;
 
-	free (extra_argv);
 	[pool drain];
 
 	//clock_t end = clock();
 	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
 
-	return _mono_main (argc + extra_argc + injected, new_argv);
+	return _mono_main (argc + injected, new_argv);
 }
 
