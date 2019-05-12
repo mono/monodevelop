@@ -219,12 +219,12 @@ should_load_xammac_registrar(const char *app_name)
 
 #if XM_FULL_STATIC_REGISTRAR
 	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
-	void *libvsmregistrar = nil;
+	void *libvsmregistrar = NULL;
 	if (!registrar_toggle) {
 		LOAD_DYLIB(libvsmregistrar);
 	}
 
-	return libvsmregistrar != nil;
+	return libvsmregistrar != NULL;
 #else
 	return true;
 #endif
