@@ -382,10 +382,10 @@ int main (int argc, char **argv)
 	// To be removed: https://github.com/mono/monodevelop/issues/6326
 	setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
-  NSString *exePath;
-  char **extra_argv;
-  int extra_argc;
-  NSString *exeName;
+	NSString *exePath;
+	char **extra_argv;
+	int extra_argc;
+	NSString *exeName;
 	const char *basename;
 	struct rlimit limit;
 	void *libmono;
