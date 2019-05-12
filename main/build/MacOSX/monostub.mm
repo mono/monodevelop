@@ -16,7 +16,6 @@
 #include <libgen.h>
 
 typedef int (* mono_main) (int argc, char **argv);
-typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
 typedef void (* gobject_tracker_init) (void *libmono);
@@ -64,7 +63,7 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 #endif
 
 static void
-exit_with_message (NSString *reason, const char *argv0)
+exit_with_message (NSString *reason, NSString *entryExecutableName)
 {
 	NSString *appName = nil;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
@@ -72,7 +71,7 @@ exit_with_message (NSString *reason, const char *argv0)
 		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
 	}
 	if (!appName) {
-		appName = [[NSString stringWithUTF8String: argv0] lastPathComponent];
+		appName = entryExecutableName;
 	}
 
 	NSString *fmt = @"%@\n\nPlease download and install the latest version of Mono.";
@@ -84,7 +83,7 @@ exit_with_message (NSString *reason, const char *argv0)
 }
 
 void *
-load_symbol(const char *symbol_type, void *lib, const char *framework_name, const char *app_name)
+load_symbol(const char *symbol_type, void *lib, const char *framework_name, NSString *app_name)
 {
 	void *symbol = dlsym (lib, symbol_type);
 	if (!symbol) {
@@ -98,7 +97,7 @@ load_symbol(const char *symbol_type, void *lib, const char *framework_name, cons
 #define LOAD_MONO_SYMBOL(symbol_type, libmono, app_name) (symbol_type)load_symbol(#symbol_type, libmono, "Mono", app_name);
 
 static void
-get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono, char *app_name)
+get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono, NSString *app_name)
 {
 	const char *env = getenv ("MONO_ENV_OPTIONS");
 
@@ -165,10 +164,9 @@ correct_locale(void)
 }
 
 static void
-try_load_gobject_tracker (void *libmono, char *entry_executable)
+try_load_gobject_tracker (void *libmono, NSString *entryExecutable)
 {
 	void *gobject_tracker;
-	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: entry_executable];
 	NSString *binDir = [entryExecutable stringByDeletingLastPathComponent];
 	NSString *libgobjectPath = [binDir stringByAppendingPathComponent: @"libgobject-tracker.dylib"];
 	gobject_tracker = dlopen ((char *)[libgobjectPath UTF8String], RTLD_GLOBAL);
@@ -206,7 +204,7 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 	}
 
 bool
-should_load_xammac_registrar(const char *app_name)
+should_load_xammac_registrar(NSString *app_name)
 {
 	void *libxammac;
 
@@ -239,6 +237,7 @@ int main (int argc, char **argv)
 	// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
 	// as part of `make run` and then binDir should be '.'
 	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: argv[0]];
+	NSString *entryExecutableName = [entryExecutable lastPathComponent];
 	NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
 	NSString *binDirFullPath = [NSString pathWithComponents:components];
 	BOOL isDir = NO;
@@ -282,14 +281,8 @@ int main (int argc, char **argv)
 
 	NSString *exePath;
 	NSString *exeName;
-	const char *basename;
 	struct rlimit limit;
 	void *libmono;
-
-	if (!(basename = strrchr (argv[0], '/')))
-		basename = argv[0];
-	else
-		basename++;
 
 	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], need64Bit)) {
 		//printf ("Updated the environment.\n");
@@ -306,7 +299,7 @@ int main (int argc, char **argv)
 		setrlimit (RLIMIT_NOFILE, &limit);
 	}
 
-	exeName = [NSString stringWithFormat:@"%s.exe", basename];
+	exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 
 	// allow the MONODEVELOP_USE_SGEN environment variable to override the plist value
@@ -317,27 +310,26 @@ int main (int argc, char **argv)
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
 		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
-		exit_with_message (msg, argv[0]);
+		exit_with_message (msg, entryExecutableName);
 	}
 
-	if (should_load_xammac_registrar (argv[0]))
+	if (should_load_xammac_registrar (entryExecutableName))
 		XAMARIN_CREATE_CLASSES ();
 
-	try_load_gobject_tracker (libmono, argv [0]);
+	try_load_gobject_tracker (libmono, entryExecutableName);
 
-	mono_main _mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, argv[0]);
-	mono_free _mono_free = LOAD_MONO_SYMBOL(mono_free, libmono, argv[0]);
+	mono_main _mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, entryExecutableName);
 	mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono,
- argv[0]);
+ entryExecutableName);
 
 	char *mono_version = _mono_get_runtime_build_info ();
 
 	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
 		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
-		exit_with_message (msg, argv[0]);
+		exit_with_message (msg, entryExecutableName);
 	}
 
-	get_mono_env_options (&argc, &argv, libmono, argv[0]);
+	get_mono_env_options (&argc, &argv, libmono, entryExecutableName);
 
 	const int injected = 2; /* --debug and exe path */
 	char **new_argv = (char **) malloc (sizeof (char *) * (argc + injected + 1));
@@ -347,10 +339,10 @@ int main (int argc, char **argv)
 
 	// enable --debug so that we can get useful stack traces
 	new_argv[n++] = (char *) "--debug";
-	new_argv[n++] = strdup ([exePath UTF8String]);
-
 	for (i = 1; i < argc; i++)
 		new_argv[n++] = argv[i];
+
+	new_argv[n++] = strdup ([exePath UTF8String]);
 	new_argv[n] = NULL;
 
 	[pool drain];
