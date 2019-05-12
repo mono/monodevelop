@@ -63,7 +63,7 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 #endif
 
 static void
-exit_with_message (const char *reason, const char *argv0)
+exit_with_message (NSString *reason, const char *argv0)
 {
 	NSString *appName = nil;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
@@ -74,7 +74,7 @@ exit_with_message (const char *reason, const char *argv0)
 		appName = [[NSString stringWithUTF8String: argv0] lastPathComponent];
 	}
 
-	NSString *fmt = @"%s\n\nPlease download and install the latest version of Mono.";
+	NSString *fmt = @"%@\n\nPlease download and install the latest version of Mono.";
 	NSString *msg = [NSString stringWithFormat:fmt, reason];
 	NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 
@@ -301,15 +301,16 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" #name ".dylib", RTLD_LAZY); \
 	}
 
-bool should_load_xammac_registrar(const char *appName)
+bool
+should_load_xammac_registrar(const char *app_name)
 {
 	void *libxammac;
 
 	LOAD_DYLIB(libxammac);
 	if (!libxammac) {
 		fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
-		const char *msg = "This application requires Xamarin.Mac native library side-by-side.";
-		exit_with_message (msg, appName);
+		NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
+		exit_with_message (msg, app_name);
 	}
 
 #if STATIC_REGISTRAR
@@ -325,12 +326,18 @@ bool should_load_xammac_registrar(const char *appName)
 #endif
 }
 
-#define LOAD_SYMBOL(symbol_type, symbol_name, libName, frameworkName, appName) \
-	symbol_type symbol_name = (symbol_type) dlsym (libName, #symbol_type); \
-	if (!symbol_name) { \
-		fprintf (stderr, "Could not load " #symbol_type "(): %s\n", dlerror ()); \
-		exit_with_message ("Failed to load the " frameworkName " framework.", appName); \
+void *
+load_symbol(const char *symbol_type, void *lib, const char *framework_name, const char *app_name)
+{
+	void *symbol = dlsym (lib, symbol_type);
+	if (!symbol) {
+		fprintf (stderr, "Could not load %s(): %s\n", symbol_type, dlerror ());
+		NSString *msg = [NSString stringWithFormat:@"Failed to load the %s framework.", framework_name];
+		exit_with_message (msg, app_name);
 	}
+
+	return symbol;
+}
 
 int main (int argc, char **argv)
 {
@@ -420,8 +427,8 @@ int main (int argc, char **argv)
 
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
-		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]];
-		exit_with_message ([msg UTF8String], argv[0]);
+		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
+		exit_with_message (msg, argv[0]);
 	}
 
 	if (should_load_xammac_registrar (argv[0]))
@@ -429,15 +436,16 @@ int main (int argc, char **argv)
 
 	try_load_gobject_tracker (libmono, argv [0]);
 
-	LOAD_SYMBOL(mono_main, _mono_main, libmono, "Mono", argv[0]);
-	LOAD_SYMBOL(mono_free, _mono_free, libmono, "Mono", argv[0]);
-	LOAD_SYMBOL(mono_get_runtime_build_info, _mono_get_runtime_build_info, libmono, "Mono", argv[0]);
+#define LOAD_MONO_SYMBOL(symbol_type) (symbol_type)load_symbol(#symbol_type, libmono, "Mono", argv[0]);
+	mono_main _mono_main = LOAD_MONO_SYMBOL(mono_main);
+	mono_free _mono_free = LOAD_MONO_SYMBOL(mono_free);
+	mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info);
 
 	char *mono_version = _mono_get_runtime_build_info ();
 
 	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
-		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]];
-		exit_with_message ([msg UTF8String], argv[0]);
+		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
+		exit_with_message (msg, argv[0]);
 	}
 
 	extra_argv = get_mono_env_options (&extra_argc);
