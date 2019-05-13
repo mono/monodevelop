@@ -433,7 +433,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			// No cache.
-			await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+			await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 			if (cancellationToken.IsCancellationRequested)
 				return (solution, null);
 
@@ -445,7 +445,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
 
-				await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 				if (cancellationToken.IsCancellationRequested)
 					return;
 
