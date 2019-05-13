@@ -24,7 +24,7 @@ typedef void (* gobject_tracker_init) (void *libmono);
 
 #if STATIC_REGISTRAR
 // We have full static registrar enabled.
-# define XM_FULL_STATIC_REGISTRAR
+# define XM_FULL_STATIC_REGISTRAR 1
 # define XAMARIN_CREATE_CLASSES xamarin_create_classes
 #else
 // This means we only have xammac's framework registrar
