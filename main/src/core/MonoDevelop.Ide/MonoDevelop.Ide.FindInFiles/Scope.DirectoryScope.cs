@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						}
 						if (Path.GetFileName (fileName).StartsWith (".", StringComparison.Ordinal))
 							continue;
-						if (!filterOptions.NameMatches (fileName))
+						if (!filterOptions.IsFileNameMatching (fileName))
 							continue;
 						if (!IdeServices.DesktopService.GetFileIsText (fileName))
 							continue;

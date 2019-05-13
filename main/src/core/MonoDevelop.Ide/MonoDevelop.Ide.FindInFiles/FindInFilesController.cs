@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (getFilesTask == null)
 				return;
 
-			find = new FindReplace ();
+			find = new FindInFilesSession ();
 
 			if (string.IsNullOrEmpty (model.FindPattern))
 				return;
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		#region Static methods
 
 		static FindInFilesController currentFindInFilesController;
-		static FindReplace find;
+		static FindInFilesSession find;
 		static CancellationTokenSource searchTokenSource = new CancellationTokenSource ();
 		static Task currentTask;
 

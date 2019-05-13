@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								  options,
 								  () => new List<FileProvider> (),
 								  (folder, loop, providers) => {
-									  foreach (var file in folder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
+									  foreach (var file in folder.Files.Where (f => filterOptions.IsFileNameMatching (f.FileName) && File.Exists (f.FullPath))) {
 										  if (!IdeServices.DesktopService.GetFileIsText (file.FullPath))
 											  continue;
 										  lock (alreadyVisited) {
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.FindInFiles
 											  continue;
 										  if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
 											  continue;
-										  if (!filterOptions.NameMatches (file.Name))
+										  if (!filterOptions.IsFileNameMatching (file.Name))
 											  continue;
 										  if (!IdeServices.DesktopService.GetFileIsText (file.FilePath))
 											  continue;

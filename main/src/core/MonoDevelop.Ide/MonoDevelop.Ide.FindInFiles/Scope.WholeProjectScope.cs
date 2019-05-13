@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							continue;
 						if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
 							continue;
-						if (!filterOptions.NameMatches (file.Name))
+						if (!filterOptions.IsFileNameMatching (file.Name))
 							continue;
 						if (!IdeServices.DesktopService.GetFileIsText (file.Name))
 							continue;

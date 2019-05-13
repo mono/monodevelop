@@ -59,7 +59,6 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public bool InReplaceMode { get; set; }
 
-
 		bool caseSensitive;
 		public bool CaseSensitive { get => caseSensitive; set { patternSearcher = null; caseSensitive = value; } }
 
@@ -94,7 +93,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		public event EventHandler CurrentScopeChanged;
 
 		bool recurseSubdirectories;
-		private string findInFilesPath;
 
 		public bool RecurseSubdirectories {
 			get => recurseSubdirectories;
@@ -108,6 +106,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public event EventHandler RecurseSubdirectoriesChanged;
 
+		string findInFilesPath;
 		public string FindInFilesPath {
 			get => findInFilesPath;
 			internal set {
@@ -122,11 +121,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public bool IncludeCodeBehind { get; internal set; }  // unused, may be added later
 
-		public bool NameMatches (string name)
+		public bool IsFileNameMatching (string fileName)
 		{
 			if (string.IsNullOrEmpty (FileMask) || FileMask == "*" || split_file_masks == null)
 				return true;
-			return evaluator.SupportsFile (name);
+			return evaluator.SupportsFile (fileName);
 		}
 
 		public static bool IsWordSeparator (char ch)

@@ -1,5 +1,5 @@
 ﻿// 
-// FindReplace.cs
+// FindInFilesSession.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -37,7 +37,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	class FindReplace
+	class FindInFilesSession
 	{
 		Regex regex;
 
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		public FindReplace ()
+		public FindInFilesSession ()
 		{
 			IsRunning = false;
 		}
@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (filter.RegexSearch) {
 				try {
-					new Regex (pattern);
+					_ = new Regex (pattern);
 					return true;
 				} catch (Exception) {
 					return false;
@@ -83,18 +83,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			public FileProvider Provider;
 			public TextReader Reader;
-			public List<SearchResult> Results;
+			public SearchResult[] Results;
 			public string Text { get; internal set; }
 			public System.Text.Encoding Encoding { get; internal set; }
 
-			public FileSearchResult (FileProvider provider, TextReader reader, List<SearchResult> results)
+			public FileSearchResult (FileProvider provider, TextReader reader)
 			{
 				Provider = provider;
 				Reader = reader;
-				Results = results;
 			}
 		}
-
 
 		public IEnumerable<SearchResult> FindAll (FindInFilesModel model, IReadOnlyList<FileProvider> fileList, ProgressMonitor monitor, CancellationToken token)
 		{
@@ -111,16 +109,14 @@ namespace MonoDevelop.Ide.FindInFiles
 				int totalWork = fileList.Count;
 				int step = Math.Max (1, totalWork / 50);
 
-				var contents = new List<FileSearchResult> ();
-				var filenames = new List<string> ();
-				foreach (var provider in fileList) {
+				var contents = new FileSearchResult [fileList.Count];
+				for (var i = 0; i < fileList.Count; i++) {
+					var provider = fileList [i];
 					if (token.IsCancellationRequested)
 						return Enumerable.Empty<SearchResult> ();
 					try {
 						searchedFilesCount++;
-						contents.Add (new FileSearchResult (provider, null, new List<SearchResult> ()));
-
-						filenames.Add (Path.GetFullPath (provider.FileName));
+						contents[i] = new FileSearchResult (provider, null);
 
 						if (searchedFilesCount % step == 0)
 							monitor.Step (2);
@@ -137,9 +133,10 @@ namespace MonoDevelop.Ide.FindInFiles
 						results.AddRange (RegexSearch (model, monitor, content.Provider));
 					}
 				} else {
-					var options = new ParallelOptions ();
-					options.MaxDegreeOfParallelism = 4;
-					options.CancellationToken = token;
+					var options = new ParallelOptions {
+						MaxDegreeOfParallelism = 4,
+						CancellationToken = token
+					};
 					Parallel.ForEach (contents, options, content => {
 						if (token.IsCancellationRequested)
 							return;
@@ -150,11 +147,11 @@ namespace MonoDevelop.Ide.FindInFiles
 								content.Encoding = content.Provider.CurrentEncoding;
 								content.Reader = new StringReader (content.Text);
 							}
-							content.Results.AddRange (FindAll (model, monitor, content.Provider));
+							content.Results = FindAll (model, monitor, content.Provider);
 							lock (results) {
 								results.AddRange (content.Results);
 							}
-							FoundMatchesCount += content.Results.Count;
+							FoundMatchesCount += content.Results.Length;
 							if (searchedFilesCount % step == 0)
 								monitor.Step (1);
 						} catch (Exception e) {
@@ -166,7 +163,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						foreach (var content in contents) {
 							if (token.IsCancellationRequested)
 								return Enumerable.Empty<SearchResult> ();
-							if (content.Results.Count == 0)
+							if (content.Results == null || content.Results.Length == 0)
 								continue;
 							try {
 								content.Provider.BeginReplace (content.Text, content.Encoding);
@@ -187,12 +184,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		// Took: 17743
-
-		IEnumerable<SearchResult> FindAll (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
+		SearchResult[] FindAll (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			if (string.IsNullOrEmpty (model.FindPattern))
-				return Enumerable.Empty<SearchResult> ();
+				return new SearchResult[0];
 
 			if (model.RegexSearch)
 				return RegexSearch (model, monitor, provider);
@@ -200,7 +195,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return Search (model, provider);
 		}
 
-		IEnumerable<SearchResult> RegexSearch (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
+		SearchResult[] RegexSearch (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 			var results = new List<SearchResult> ();
@@ -238,20 +233,21 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				provider.EndReplace ();
 			}
-			return results;
+			return results.ToArray ();
 		}
 
-
-		public IEnumerable<SearchResult> Search (FindInFilesModel model, FileProvider provider)
+		SearchResult[] Search (FindInFilesModel model, FileProvider provider)
 		{
-			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
-
-			foreach (var idx in model.PatternSearcher.FindAll (content)) {
-				yield return new SearchResult (provider, idx, model.FindPattern.Length);
+			string content = IdeApp.Workbench != null ? IdeApp.Workbench.GetDocumentText (provider.FileName) : File.ReadAllText (provider.FileName);
+			var findResults = model.PatternSearcher.FindAll (content);
+			var result = new SearchResult [findResults.Length];
+			for (var i = 0; i < findResults.Length; i++) {
+				result[i] = new SearchResult (provider, findResults [i], model.FindPattern.Length);
 			}
+			return result;
 		}
 
-		public void Replace (FileProvider provider, IEnumerable<SearchResult> searchResult, string replacePattern)
+		public void Replace (FileProvider provider, SearchResult[] searchResult, string replacePattern)
 		{
 			int delta = 0;
 			foreach (var sr in searchResult) {

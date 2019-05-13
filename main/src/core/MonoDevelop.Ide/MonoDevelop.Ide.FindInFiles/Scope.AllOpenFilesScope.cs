@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var results = new List<FileProvider> ();
 				foreach (Document document in IdeApp.Workbench.Documents) {
 					var textBuffer = document.GetContent<ITextBuffer> ();
-					if (textBuffer != null && filterOptions.NameMatches (document.FileName))
+					if (textBuffer != null && filterOptions.IsFileNameMatching (document.FileName))
 						results.Add (new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName));
 				}
 				return EmptyFileProviderTask;
