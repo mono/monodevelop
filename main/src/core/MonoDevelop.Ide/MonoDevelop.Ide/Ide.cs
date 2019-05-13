@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide
 		static Workbench workbench;
 		static CommandManager commandService;
 		static TypeSystemService typeSystemService;
+		static TaskCompletionSource<bool> initializationTask = new TaskCompletionSource<bool> ();
 
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
@@ -291,6 +292,8 @@ namespace MonoDevelop.Ide
 				initializedEvent = null;
 			}
 
+			initializationTask.SetResult (true);
+
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
@@ -308,9 +311,9 @@ namespace MonoDevelop.Ide
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
+		public static Task<bool> OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
-			OpenFiles (files, null);
+			return OpenFiles (files, null);
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
@@ -318,17 +321,11 @@ namespace MonoDevelop.Ide
 		{
 			if (!files.Any ())
 				return false;
-			
-			if (!IsInitialized) {
-				EventHandler onInit = null;
-				onInit = delegate {
-					Initialized -= onInit;
-					OpenFiles (files, metadata);
-				};
-				Initialized += onInit;
-				return false;
-			}
-			
+
+			await initializationTask.Task;
+
+			Workbench.Present ();
+
 			var filteredFiles = new List<FileOpenInformation> ();
 
 			Gdk.ModifierType mtype = Components.GtkWorkarounds.GetCurrentKeyModifiers ();
@@ -362,15 +359,14 @@ namespace MonoDevelop.Ide
 			// restoration won't steal the focus from the files we are explicitly loading here.
 			await Workspace.CurrentWorkspaceLoadTask;
 
-			foreach (var file in filteredFiles) {
-				Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options).ContinueWith (t => {
-					if (t.IsFaulted)
-						MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), t.Exception);
-				}, TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
+			for (int n = 0; n < filteredFiles.Count; n++) {
+				var file = filteredFiles [n];
+				if (n == 0)
+					file.Options |= OpenDocumentOptions.BringToFront;
+				else
+					file.Options &= ~OpenDocumentOptions.BringToFront;
+				IdeServices.DocumentManager.OpenDocument (file).Ignore ();
 			}
-
-			Workbench.Present ();
-
 			return true;
 		}
 
