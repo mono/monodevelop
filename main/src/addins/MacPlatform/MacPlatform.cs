@@ -249,7 +249,7 @@ namespace MonoDevelop.MacIntegration
 
 			var nsException = ObjCRuntime.Runtime.GetNSObject<NSException> (exceptionPtr);
 			var exception = new MarshalledObjCException (nsException, new StackTrace(true).ToString ());
-			LoggingService.LogInternalError (exception.Message, exception);
+			LoggingService.LogInternalError ("Unhandled ObjC exception", exception);
 
 			oldHandler?.Invoke (exceptionPtr);
 		}
