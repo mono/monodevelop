@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.FindInFiles
 									  }
 								  });
 
-				return EmptyFileProviderTask;
+				return Task.FromResult ((IReadOnlyList<FileProvider>)results);
 			}
 
 			public override string GetDescription (FindInFilesModel model)

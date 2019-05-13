@@ -44,11 +44,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			set {
 				file_mask = value;
-				if (file_mask == null) {
-					split_file_masks = null;
-				} else {
-					split_file_masks = file_mask.Split (separators, StringSplitOptions.RemoveEmptyEntries);
-				}
+				split_file_masks = file_mask?.Split (separators, StringSplitOptions.RemoveEmptyEntries);
 
 				evaluator = FileNameEvaluator.CreateFileNameEvaluator (split_file_masks);
 				FileMaskChanged?.Invoke (this, EventArgs.Empty);

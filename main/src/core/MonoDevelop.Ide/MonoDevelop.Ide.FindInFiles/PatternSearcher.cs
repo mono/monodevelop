@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -33,8 +34,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		readonly char [] patternArray;
 		readonly int patternLength;
 
-		const int SkipTableLength = 128;
-		readonly int [] skipTable;
+		const int ShiftTableLength = 128;
+		readonly int [] shiftTable;
 
 		readonly bool isCaseSensitive;
 		readonly bool wholeWordsOnly;
@@ -45,13 +46,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.wholeWordsOnly = wholeWordsOnly;
 			patternArray = this.isCaseSensitive ? pattern.ToCharArray () : pattern.ToLowerInvariant ().ToCharArray ();
 			patternLength = pattern.Length;
-			skipTable = CalculateSkipTable ();
+			shiftTable = CalculateSkipTable ();
 		}
 
 		int [] CalculateSkipTable ()
 		{
-			var result = new int [SkipTableLength];
-			for (int i = 0; i < SkipTableLength; i++) {
+			var result = new int [ShiftTableLength];
+			for (int i = 0; i < ShiftTableLength; i++) {
 				char ch = (char)i;
 				int index;
 				for (index = patternLength - 2; index >= 0; index--) {
@@ -104,20 +105,19 @@ namespace MonoDevelop.Ide.FindInFiles
 					i--;
 					while (i >= 0) {
 						char c = text [start + i];
-						if (!CharEquals (patternArray [i], c)) break;
+						if (!CharEquals (patternArray [i], c))
+							break;
 						i--;
 					}
 					if (i < 0) {
-						if (wholeWordsOnly) {
-							if (IsWholeWordAt (text, start))
-								return start;
-						} else {
+						if (!wholeWordsOnly)
 							return start;
-						}
+						if (IsWholeWordAt (text, start))
+							return start;
 					}
 				}
 
-				start += lastChar < SkipTableLength ? skipTable [lastChar] : 1;
+				start += lastChar < ShiftTableLength ? shiftTable [lastChar] : 1;
 			}
 			return -1;
 		}
@@ -134,6 +134,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return true;
 		}
 
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		bool CharEquals (char patternChar, char ch)
 		{
 			return patternChar == (isCaseSensitive ? ch : char.ToLowerInvariant (ch));
