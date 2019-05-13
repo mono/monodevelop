@@ -279,10 +279,6 @@ int main (int argc, char **argv)
 	// To be removed: https://github.com/mono/monodevelop/issues/6326
 	setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
-	NSString *exePath;
-	NSString *exeName;
-	struct rlimit limit;
-	void *libmono;
 
 	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], need64Bit)) {
 		//printf ("Updated the environment.\n");
@@ -294,18 +290,19 @@ int main (int argc, char **argv)
 	correct_locale();
 	//printf ("Running main app.\n");
 
+	struct rlimit limit;
 	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
 		limit.rlim_cur = MIN (limit.rlim_max, 1024);
 		setrlimit (RLIMIT_NOFILE, &limit);
 	}
 
-	exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
-	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
+	NSString *exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
+	NSString *exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 
 	// allow the MONODEVELOP_USE_SGEN environment variable to override the plist value
 	use_sgen = env2bool ("MONODEVELOP_USE_SGEN", use_sgen);
 
-	libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	void *libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
 
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
@@ -329,27 +326,32 @@ int main (int argc, char **argv)
 		exit_with_message (msg, entryExecutableName);
 	}
 
-	get_mono_env_options (&argc, &argv, libmono, entryExecutableName);
+	// enable --debug so that we can get useful stack traces and add mono env options
+	int mono_argc = 1;
+	char **mono_argv = (char **) malloc (sizeof (char *) * mono_argc);
 
-	const int injected = 2; /* --debug and exe path */
-	char **new_argv = (char **) malloc (sizeof (char *) * (argc + injected + 1));
-	int i, n = 0;
+	mono_argv[0] = (char *) "--debug";
+	get_mono_env_options (&mono_argc, &mono_argv, libmono, entryExecutableName);
 
-	new_argv[n++] = argv[0];
+	// append original arguments
+	int new_argc = mono_argc + argc;
+	char **new_argv = (char **) malloc (sizeof (char *) * new_argc);
+	int n = 0;
 
-	// enable --debug so that we can get useful stack traces
-	new_argv[n++] = (char *) "--debug";
-	for (i = 1; i < argc; i++)
-		new_argv[n++] = argv[i];
+	new_argv[0] = argv[0];
+	for (int i = 0; i < mono_argc; i++)
+		new_argv[n++] = mono_argv[i];
 
+	// append old arguments
 	new_argv[n++] = strdup ([exePath UTF8String]);
-	new_argv[n] = NULL;
+	for (int i = 1; i < argc; i++)
+		new_argv[n++] = argv[i];
 
 	[pool drain];
 
 	//clock_t end = clock();
 	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
 
-	return _mono_main (argc + injected, new_argv);
+	return _mono_main (new_argc, new_argv);
 }
 
