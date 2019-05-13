@@ -318,7 +318,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						break;
 					case StoppedEvent.ReasonValue.Exception:
 						var match = VsdbgExceptionNameRegex.Match (body.Text);
-						if (match.Success && match.Groups.Count == 2 && !breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e => e.Enabled && match.Groups[1].Value == e.ExceptionName))
+						if (match.Success && match.Groups.Count == 2 && !breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e =>
+							e.Enabled &&
+							(match.Groups[1].Value == e.ExceptionName) || (e.IncludeSubclasses && e.ExceptionName == "System.Exception")))
 						{
 							OnContinue ();
 							return;
