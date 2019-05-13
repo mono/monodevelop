@@ -278,6 +278,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return sb.ToString();
 		}
 
+		bool? EvaluateCondition (int frameId, string exp)
+		{
+			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
+			if (bool.TryParse (response, out var result))
+				return result;
+			return null;
+		}
+
 		private static readonly Regex VsdbgExceptionNameRegex = new Regex ("Exception thrown: '(.*)' in .*");
 
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
@@ -303,6 +311,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						} else {
 							args.BreakEvent = bp;
 							if (breakpoints.TryGetValue (bp, out var binfo)) {
+								if (bp.ConditionExpression != null) {
+									if (EvaluateCondition(stackFrame.frameId, bp.ConditionExpression) == false) {
+										OnContinue ();
+										return;
+									}
+								}
+
 								if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None) {
 									string exp = EvaluateTrace (stackFrame.frameId, bp.TraceExpression);
 									binfo.UpdateLastTraceValue (exp);
