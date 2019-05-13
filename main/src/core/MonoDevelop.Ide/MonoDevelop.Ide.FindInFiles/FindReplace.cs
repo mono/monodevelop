@@ -244,10 +244,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public IEnumerable<SearchResult> Search (FindInFilesModel model, FileProvider provider)
 		{
-			var searcher = new PatternSearcher (model.FindPattern, model.CaseSensitive, model.WholeWordsOnly);
 			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 
-			foreach (var idx in searcher.FindAll (content)) {
+			foreach (var idx in model.PatternSearcher.FindAll (content)) {
 				yield return new SearchResult (provider, idx, model.FindPattern.Length);
 			}
 		}

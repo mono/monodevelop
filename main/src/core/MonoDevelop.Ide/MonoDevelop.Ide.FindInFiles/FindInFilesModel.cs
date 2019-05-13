@@ -59,15 +59,26 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public bool InReplaceMode { get; set; }
 
-		public bool CaseSensitive { get; set; }
 
-		public bool WholeWordsOnly { get; set; }
+		bool caseSensitive;
+		public bool CaseSensitive { get => caseSensitive; set { patternSearcher = null; caseSensitive = value; } }
+
+		bool wholeWordsOnly;
+		public bool WholeWordsOnly { get => wholeWordsOnly; set { patternSearcher = null; wholeWordsOnly = value; } }
 
 		public bool RegexSearch { get; set; }
 
-		public string FindPattern { get; set; }
+		string findPattern;
+		public string FindPattern { get => findPattern; set { patternSearcher = null; findPattern = value; } }
 
 		public string ReplacePattern { get; set; }
+
+		PatternSearcher patternSearcher;
+		public PatternSearcher PatternSearcher {
+			get {
+				return patternSearcher ?? (patternSearcher = new PatternSearcher (FindPattern, CaseSensitive, WholeWordsOnly));
+			}
+		}
 
 		SearchScope currentScope;
 		public SearchScope SearchScope {
