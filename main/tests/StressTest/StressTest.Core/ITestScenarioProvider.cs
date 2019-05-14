@@ -1,5 +1,5 @@
 using System;
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public interface ITestScenarioProvider
 	{

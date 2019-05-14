@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public class ProfilerOptions
 	{
@@ -53,5 +53,6 @@ namespace MonoDevelop.StressTest
 		public string MlpdOutputPath { get; set; } = "stress_test.mlpd";
 		public string CustomProfilerArguments { get; set; }
 		public HashSet<string> PrintReportObjectNames { get; } = new HashSet<string>(StringComparer.Ordinal);
+		public Type[] ExtraTypes { get; set; } = Array.Empty<Type> ();
 	}
 }

@@ -5,7 +5,7 @@ using QuickGraph.Algorithms.Observers;
 using QuickGraph.Algorithms.Search;
 using QuickGraph.Graphviz;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public static class GraphExtensions
 	{

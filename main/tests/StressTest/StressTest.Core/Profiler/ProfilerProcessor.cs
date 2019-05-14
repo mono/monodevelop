@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Mono.Profiler.Log;
 using QuickGraph;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public class ProfilerProcessor
 	{
@@ -23,7 +23,7 @@ namespace MonoDevelop.StressTest
 		{
 			Options = options;
 
-			visitor = new Visitor (this, scenario.GetTrackedTypes ());
+			visitor = new Visitor (this, scenario.GetTrackedTypes (options.ExtraTypes));
 			processingThread = new Thread (new ThreadStart (ProcessFile));
 			processingThread.Start ();
 		}

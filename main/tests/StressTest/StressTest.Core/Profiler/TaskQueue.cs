@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public class TaskQueue
 	{

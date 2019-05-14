@@ -13,7 +13,7 @@ using Mono.Profiler.Log;
 using QuickGraph.Graphviz.Dot;
 using System.Threading;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public class LeakProcessor
 	{
@@ -47,7 +47,7 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		public void Process (Task<Heapshot> heapshotTask, bool isCleanup, string iterationName, Components.AutoTest.AutoTestSession.MemoryStats memoryStats)
+		public void Process (Task<Heapshot> heapshotTask, bool isCleanup, string iterationName, MemoryStats memoryStats)
 		{
 			taskQueue.Enqueue (async () => {
 				var heapshot = await heapshotTask;
@@ -65,7 +65,7 @@ namespace MonoDevelop.StressTest
 			if (heapshot == null || ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
 				return new Dictionary<string, LeakItem> ();
 
-			var trackedLeaks = scenario.GetLeakAttributes (isCleanup);
+			var trackedLeaks = scenario.GetLeakAttributes (isCleanup, ProfilerOptions.ExtraTypes);
 			if (trackedLeaks.Count == 0)
 				return new Dictionary<string, LeakItem> ();
 

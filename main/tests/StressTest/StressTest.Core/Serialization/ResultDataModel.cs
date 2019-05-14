@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	/// <summary>
 	/// Model which is used to report result data in CI
@@ -37,11 +37,11 @@ namespace MonoDevelop.StressTest
 		/// </summary>
 		public Dictionary<string, LeakItem> Leaks { get; }
 
-		public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; }
+		public MemoryStats MemoryStats { get; }
 
 		// TODO: add more.
 
-		public ResultIterationData (string id, Dictionary<string, LeakItem> leaks, Components.AutoTest.AutoTestSession.MemoryStats memoryStats)
+		public ResultIterationData (string id, Dictionary<string, LeakItem> leaks, MemoryStats memoryStats)
 		{
 			Id = id;
 			Leaks = leaks;

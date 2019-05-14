@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using LeakTest;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest

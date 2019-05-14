@@ -1,4 +1,6 @@
 using System;
+using LeakTest;
+
 namespace MonoDevelop.StressTest
 {
 	public enum EditorTestRun

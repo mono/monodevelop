@@ -4,7 +4,7 @@ using System.Linq;
 using Mono.Profiler.Log;
 using QuickGraph;
 
-namespace MonoDevelop.StressTest
+namespace LeakTest
 {
 	public class NativeHeapshot
 	{

@@ -33,13 +33,14 @@ namespace UserInterfaceTests
 	public static class TestService
 	{
 		public static AutoTestClientSession Session { get; private set; }
+		public static int ProcessId { get; private set; }
 
 		public static void StartSession (string file = null, string profilePath = null, string logFile = null, string args = null)
 		{
 			Session = new AutoTestClientSession ();
 
 			profilePath = profilePath ?? Util.CreateTmpDir ("profile");
-			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
+			ProcessId = Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
 				{ "MONODEVELOP_PROFILE", profilePath },
 				{ "VISUALSTUDIO_PROFILE", profilePath },
 				{ "MONODEVELOP_LOG_FILE", logFile },

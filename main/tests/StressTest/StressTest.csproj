@@ -75,39 +75,22 @@
     <Compile Include="UserInterfaceTests\CreateBuildTemplatesTestBase.cs" />
     <Compile Include="UserInterfaceTests\WorkbenchExtensions.cs" />
     <Compile Include="MonoDevelop.StressTest\TextEditor.cs" />
-    <Compile Include="MonoDevelop.StressTest\ITestScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\StressTestOptions.cs" />
-    <Compile Include="Mono.Profiling.Log\LogEnums.cs" />
-    <Compile Include="Mono.Profiling.Log\LogStreamHeader.cs" />
-    <Compile Include="Mono.Profiling.Log\LogStream.cs" />
-    <Compile Include="Mono.Profiling.Log\LogReader.cs" />
-    <Compile Include="Mono.Profiling.Log\LogProfiler.cs" />
-    <Compile Include="Mono.Profiling.Log\LogProcessor.cs" />
-    <Compile Include="Mono.Profiling.Log\LogException.cs" />
-    <Compile Include="Mono.Profiling.Log\LogEvents.cs" />
-    <Compile Include="Mono.Profiling.Log\LogEventVisitor.cs" />
-    <Compile Include="Mono.Profiling.Log\LogEvent.cs" />
-    <Compile Include="Mono.Profiling.Log\LogBufferHeader.cs" />
-    <Compile Include="MonoDevelop.StressTest\ITestScenarioProvider.cs" />
-    <Compile Include="MonoDevelop.StressTest.Attributes\NoLeakAttribute.cs" />
-    <Compile Include="MonoDevelop.StressTest\Serialization\ResultDataModel.cs" />
     <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenarioProvider.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerProcessor.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerOptions.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\Heapshot.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\LeakProcessor.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\TestScenarioLeakExtensions.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\GraphExtensions.cs" />
     <Compile Include="MonoDevelop.StressTest\IEditorTestScenario.cs" />
     <Compile Include="UserInterfaceTests\Properties.cs" />
-    <Compile Include="MonoDevelop.StressTest\Profiler\TaskQueue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.StressTest.Attributes\" />
-    <Folder Include="MonoDevelop.StressTest\Serialization\" />
     <Folder Include="MonoDevelop.StressTest\Scenarios\" />
     <Folder Include="MonoDevelop.StressTest\Profiler\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="StressTest.Core\StressTest.Core.csproj">
+      <Project>{84CE3657-BADD-41C7-9064-03257D75CD3A}</Project>
+      <Name>LeakTest.Core</Name>
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

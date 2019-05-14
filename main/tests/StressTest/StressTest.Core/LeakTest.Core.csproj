@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{84CE3657-BADD-41C7-9064-03257D75CD3A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LeakTest</RootNamespace>
+    <AssemblyName>LeakTest.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Mono.Profiling.Log\LogBufferHeader.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEnums.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEvent.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEvents.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEventVisitor.cs" />
+    <Compile Include="Mono.Profiling.Log\LogException.cs" />
+    <Compile Include="Mono.Profiling.Log\LogProcessor.cs" />
+    <Compile Include="Mono.Profiling.Log\LogProfiler.cs" />
+    <Compile Include="Mono.Profiling.Log\LogReader.cs" />
+    <Compile Include="Mono.Profiling.Log\LogStream.cs" />
+    <Compile Include="Mono.Profiling.Log\LogStreamHeader.cs" />
+    <Compile Include="Profiler\GraphExtensions.cs" />
+    <Compile Include="Profiler\Heapshot.cs" />
+    <Compile Include="Profiler\LeakProcessor.cs" />
+    <Compile Include="Profiler\ProfilerOptions.cs" />
+    <Compile Include="Profiler\ProfilerProcessor.cs" />
+    <Compile Include="Profiler\TaskQueue.cs" />
+    <Compile Include="Profiler\TestScenarioLeakExtensions.cs" />
+    <Compile Include="Serialization\ResultDataModel.cs" />
+    <Compile Include="ITestScenario.cs" />
+    <Compile Include="ITestScenarioProvider.cs" />
+    <Compile Include="NoLeakAttribute.cs" />
+    <Compile Include="MemoryStats.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mono.Profiling.Log\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

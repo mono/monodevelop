@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StressTest", "StressTest.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultParser", "ResultParser\ResultParser.csproj", "{BE9B739B-3844-45A0-9673-19712FB2A644}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeakTest.Core", "StressTest.Core\LeakTest.Core.csproj", "{84CE3657-BADD-41C7-9064-03257D75CD3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,5 +21,9 @@ Global
 		{BE9B739B-3844-45A0-9673-19712FB2A644}.Debug|x86.Build.0 = Debug|x86
 		{BE9B739B-3844-45A0-9673-19712FB2A644}.Release|x86.ActiveCfg = Release|x86
 		{BE9B739B-3844-45A0-9673-19712FB2A644}.Release|x86.Build.0 = Release|x86
+		{84CE3657-BADD-41C7-9064-03257D75CD3A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{84CE3657-BADD-41C7-9064-03257D75CD3A}.Debug|x86.Build.0 = Debug|Any CPU
+		{84CE3657-BADD-41C7-9064-03257D75CD3A}.Release|x86.ActiveCfg = Release|Any CPU
+		{84CE3657-BADD-41C7-9064-03257D75CD3A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

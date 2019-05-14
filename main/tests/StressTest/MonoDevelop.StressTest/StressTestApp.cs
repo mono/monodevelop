@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using LeakTest;
 using MonoDevelop.Core;
 using UserInterfaceTests;
 
@@ -226,7 +227,7 @@ namespace MonoDevelop.StressTest
 
 			var heapshotTask = profilerProcessor?.TakeHeapshot ();
 
-			var memoryStats = TestService.Session.MemoryStats;
+			var memoryStats = MemoryStats.GetMemoryStats (TestService.ProcessId);
 
 			Console.WriteLine (iterationName);
 

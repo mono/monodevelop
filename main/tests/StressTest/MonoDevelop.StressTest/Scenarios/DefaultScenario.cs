@@ -27,8 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LeakTest;
 using MonoDevelop.Core;
-using MonoDevelop.StressTest.Attributes;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 using UserInterfaceTests;
