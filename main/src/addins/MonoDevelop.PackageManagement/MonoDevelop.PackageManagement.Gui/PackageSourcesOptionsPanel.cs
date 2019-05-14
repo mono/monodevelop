@@ -43,7 +43,14 @@ namespace MonoDevelop.PackageManagement.Gui
 	{
 		RegisteredPackageSourcesViewModel viewModel;
 		PackageSourcesWidget packageSourcesWidget;
+		OptionsDialog parentDialog;
 		bool loadError;
+
+		public override void Initialize (OptionsDialog dialog, object dataObject)
+		{
+			base.Initialize (dialog, dataObject);
+			parentDialog = dialog;
+		}
 
 		public override Control CreatePanelWidget()
 		{
@@ -68,7 +75,7 @@ namespace MonoDevelop.PackageManagement.Gui
 			viewModel = new RegisteredPackageSourcesViewModel (repositoryProvider);
 			viewModel.Load ();
 			
-			packageSourcesWidget = new PackageSourcesWidget (viewModel);
+			packageSourcesWidget = new PackageSourcesWidget (viewModel, parentDialog);
 			return packageSourcesWidget;
 		}
 

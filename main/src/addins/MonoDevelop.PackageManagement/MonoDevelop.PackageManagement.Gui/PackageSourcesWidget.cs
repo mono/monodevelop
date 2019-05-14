@@ -16,15 +16,17 @@ namespace MonoDevelop.PackageManagement
 	internal partial class PackageSourcesWidget : Gtk.Bin
 	{
 		RegisteredPackageSourcesViewModel viewModel;
+		Gtk.Dialog parentDialog;
 		ListStore packageSourcesStore;
 		const int IsEnabledCheckBoxColumn = 1;
 		const int PackageSourceIconColumn = 2;
 		const int PackageSourceViewModelColumn = 3;
 		
-		public PackageSourcesWidget (RegisteredPackageSourcesViewModel viewModel)
+		public PackageSourcesWidget (RegisteredPackageSourcesViewModel viewModel, Gtk.Dialog parentDialog)
 		{
 			this.Build ();
 			this.viewModel = viewModel;
+			this.parentDialog = parentDialog;
 			this.InitializeTreeView ();
 			this.LoadPackageSources ();
 			AddEventHandlers ();
@@ -237,7 +239,7 @@ namespace MonoDevelop.PackageManagement
 
 		Xwt.Command ShowDialogWithParent (AddPackageSourceDialog dialog)
 		{
-			Xwt.WindowFrame parent = Xwt.Toolkit.CurrentEngine.WrapWindow (Toplevel);
+			Xwt.WindowFrame parent = Xwt.Toolkit.CurrentEngine.WrapWindow (parentDialog);
 			return dialog.Run (parent);
 		}
 
