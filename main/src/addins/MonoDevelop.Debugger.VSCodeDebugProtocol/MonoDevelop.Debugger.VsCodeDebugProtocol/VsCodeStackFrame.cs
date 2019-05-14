@@ -1,7 +1,11 @@
 using System;
 using System.Linq;
+
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+
 using Mono.Debugging.Client;
+
+using VsStackFrame = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame;
 using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
@@ -33,14 +37,19 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
+		static SourceLocation GetSourceLocation (VsStackFrame frame)
+		{
+			return new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source));
+		}
+
 		VsFormat format;
 		readonly int threadId;
 		readonly int frameIndex;
 		internal readonly int frameId;
 		string fullStackframeText;
 
-		public VsCodeStackFrame (VsFormat format, int threadId, int frameIndex, Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame frame)
-			: base (0, new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source)), GetLanguage (frame.Source?.Path))
+		public VsCodeStackFrame (VsFormat format, int threadId, int frameIndex, VsStackFrame frame)
+			: base (0, GetSourceLocation (frame), GetLanguage (frame.Source?.Path))
 		{
 			this.format = format;
 			this.threadId = threadId;

@@ -109,10 +109,23 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var source = new Source { Name = Path.GetFileName (fileName), Path = fileName };
 			var request = new GotoTargetsRequest (source, line) { Column = column };
 			var response = protocolClient.SendRequestSync (request);
-			var target = response.Targets.FirstOrDefault (x => x.Line <= line && x.EndLine >= line && x.Column <= column && x.EndColumn >= column);
+			GotoTarget target = null;
+
+			foreach (var location in response.Targets) {
+				if (location.Line <= line && location.EndLine >= line && location.Column <= column && location.EndColumn >= column) {
+					// exact match for location
+					target = location;
+					break;
+				}
+
+				if (target == null) {
+					// closest match so far...
+					target = location;
+				}
+			}
 
 			if (target == null)
-				throw new NotSupportedException ();
+				throw new NotImplementedException ();
 
 			protocolClient.SendRequestSync (new GotoRequest ((int) threadId, target.Id));
 			RaiseStopEvent ();
