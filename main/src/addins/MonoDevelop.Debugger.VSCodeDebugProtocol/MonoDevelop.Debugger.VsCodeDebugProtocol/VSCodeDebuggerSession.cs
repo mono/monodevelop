@@ -361,11 +361,27 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						break;
 					case StoppedEvent.ReasonValue.Exception:
 						stackFrame = (VsCodeStackFrame)this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
-						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e =>
-							e.Enabled &&
-							(e.ExceptionName.Contains ("::") ? e.ExceptionName : $"global::{e.ExceptionName}") is var qualifiedExceptionType && // global:: is necessary if the exception type is contained in current namespace, and it also contains a class with the same name as the namespace itself. Example: "Tests.Tests" and "Tests.TestException"
-							(e.IncludeSubclasses && EvaluateCondition(stackFrame.frameId, $"$exception is {qualifiedExceptionType}") != false || !e.IncludeSubclasses && EvaluateCondition(stackFrame.frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})") != false) &&
-							(string.IsNullOrWhiteSpace(e.ConditionExpression) || EvaluateCondition (stackFrame.frameId, e.ConditionExpression) != false)))
+
+						bool ShouldStopOnExceptionCatchpoint(Catchpoint e)
+						{
+							if (!e.Enabled)
+								return false;
+							var qualifiedExceptionType = e.ExceptionName.Contains ("::") ? e.ExceptionName : $"global::{e.ExceptionName}";
+							// global:: is necessary if the exception type is contained in current namespace,
+							// and it also contains a class with the same name as the namespace itself.
+							// Example: "Tests.Tests" and "Tests.TestException"
+							if (e.IncludeSubclasses) {
+								if (EvaluateCondition (stackFrame.frameId, $"$exception is {qualifiedExceptionType}") == false)
+									return false;
+							}
+							else {
+								if (EvaluateCondition (stackFrame.frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})") == false)
+									return false;
+							}
+							return string.IsNullOrWhiteSpace (e.ConditionExpression) || EvaluateCondition (stackFrame.frameId, e.ConditionExpression) != false;
+						}
+
+						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (ShouldStopOnExceptionCatchpoint))
 						{
 							OnContinue ();
 							return;
