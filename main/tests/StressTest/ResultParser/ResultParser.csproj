@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,12 +40,13 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\MonoDevelop.StressTest\Serialization\ResultDataModel.cs">
-      <Link>Serialization\ResultDataModel.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Serialization\" />
+    <ProjectReference Include="..\StressTest.Core\LeakTest.Core.csproj">
+      <Project>{84CE3657-BADD-41C7-9064-03257D75CD3A}</Project>
+      <Name>LeakTest.Core</Name>
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

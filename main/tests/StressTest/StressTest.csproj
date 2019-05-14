@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -86,10 +86,9 @@
     <Folder Include="MonoDevelop.StressTest\Profiler\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="StressTest.Core\StressTest.Core.csproj">
+    <ProjectReference Include="StressTest.Core\LeakTest.Core.csproj">
       <Project>{84CE3657-BADD-41C7-9064-03257D75CD3A}</Project>
       <Name>LeakTest.Core</Name>
-      <ReferenceSourceTarget></ReferenceSourceTarget>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
