@@ -39,7 +39,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoFunctionBreakpoint = Mono.Debugging.Client.FunctionBreakpoint;
 using VsCodeFunctionBreakpoint = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.FunctionBreakpoint;
-using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
@@ -283,10 +282,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
 			if (bool.TryParse (response, out var result))
 				return result;
+			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{exp}'. The error returned was '{response}'.\n");
 			return null;
 		}
-
-		private static readonly Regex VsdbgExceptionNameRegex = new Regex ("Exception thrown: '(.*)' in .*");
 
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
 		{
@@ -311,13 +309,6 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						} else {
 							args.BreakEvent = bp;
 							if (breakpoints.TryGetValue (bp, out var binfo)) {
-								if (bp.ConditionExpression != null) {
-									if (EvaluateCondition(stackFrame.frameId, bp.ConditionExpression) == false) {
-										OnContinue ();
-										return;
-									}
-								}
-
 								if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None) {
 									string exp = EvaluateTrace (stackFrame.frameId, bp.TraceExpression);
 									binfo.UpdateLastTraceValue (exp);
@@ -332,11 +323,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetStopped);
 						break;
 					case StoppedEvent.ReasonValue.Exception:
-						var match = VsdbgExceptionNameRegex.Match (body.Text);
 						stackFrame = (VsCodeStackFrame)this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
-						if (match.Success && match.Groups.Count == 2 && !breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e =>
+						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e =>
 							e.Enabled &&
-							(match.Groups[1].Value == e.ExceptionName || e.IncludeSubclasses && e.ExceptionName == "System.Exception") &&
+							(e.ExceptionName.Contains ("::") ? e.ExceptionName : $"global::{e.ExceptionName}") is var qualifiedExceptionType && // global:: is necessary if the exception type is contained in current namespace, and it also contains a class with the same name as the namespace itself. Example: "Tests.Tests" and "Tests.TestException"
+							(e.IncludeSubclasses && EvaluateCondition(stackFrame.frameId, $"$exception is {qualifiedExceptionType}") != false || !e.IncludeSubclasses && EvaluateCondition(stackFrame.frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})") != false) &&
 							(string.IsNullOrWhiteSpace(e.ConditionExpression) || EvaluateCondition (stackFrame.frameId, e.ConditionExpression) != false)))
 						{
 							OnContinue ();
