@@ -907,14 +907,11 @@ namespace MonoDevelop.AssemblyBrowser
 			oldSize2 = size;
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
-		bool IsDestroyed => TreeView == null;
-
+		
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
 				Application.Invoke ((o, args) => {
-					if (IsDestroyed)
-						return;
 					suspendNavigation = false;
 					ITreeNavigator nav = SearchMember (url, expandNode);
 					if (definitions.Count == 0) // we've been disposed
@@ -1012,8 +1009,6 @@ namespace MonoDevelop.AssemblyBrowser
 				if (definitions.Count == 0) // disposed
 					return;
 				Application.Invoke ((o, args) => {
-					if (IsDestroyed)
-						return;
 					var nav = SearchMember (url);
 					if (nav == null) {
 						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
