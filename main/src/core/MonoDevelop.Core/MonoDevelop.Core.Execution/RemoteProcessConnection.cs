@@ -54,6 +54,7 @@ namespace MonoDevelop.Core.Execution
 		SynchronizationContext syncContext;
 		IExecutionHandler executionHandler;
 		OperationConsole console;
+		readonly Dictionary<string, string> environmentVariables;
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 		public event EventHandler StatusChanged;
@@ -75,6 +76,12 @@ namespace MonoDevelop.Core.Execution
 			: this (exePath, executionHandler, console, syncContext)
 		{
 			this.workingDirectory = workingDirectory;
+		}
+
+		public RemoteProcessConnection (string exePath, string workingDirectory, Dictionary<string, string> environmentVariables, IExecutionHandler executionHandler = null, OperationConsole console = null, SynchronizationContext syncContext = null)
+			: this (exePath, workingDirectory, executionHandler, console, syncContext)
+		{
+			this.environmentVariables = environmentVariables;
 		}
 
 		public ConnectionStatus Status {
@@ -286,6 +293,12 @@ namespace MonoDevelop.Core.Execution
 				cmd.Arguments = ((IPEndPoint)listener.LocalEndpoint).Port + " " + DebugMode;
 				if (!string.IsNullOrEmpty (workingDirectory))
 					cmd.WorkingDirectory = workingDirectory;
+
+				if (environmentVariables != null) {
+					foreach (var env in environmentVariables) {
+						cmd.EnvironmentVariables [env.Key] = env.Value;
+					}
+				}
 
 				// Explicitly propagate the PATH var to the process. It ensures that tools required
 				// to run XS are also in the PATH for remote processes.
