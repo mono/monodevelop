@@ -64,9 +64,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			DocumentTitle = GettextCatalog.GetString ("Assembly Browser");
 			widget = new AssemblyBrowserWidget ();
-			widget.Destroyed += delegate {
-				StopProgress ();
-			}; 
 			IsDisposed = false;
 			FillWidget ();
 		}
@@ -115,7 +112,6 @@ namespace MonoDevelop.AssemblyBrowser
 		protected override void OnDispose ()
 		{
 			IsDisposed = true;
-			StopProgress ();
 			if (currentWs != null) 
 				currentWs.WorkspaceLoaded -= Handle_WorkspaceLoaded;
 
@@ -183,8 +179,6 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		Ide.TypeSystem.MonoDevelopWorkspace currentWs;
-		ProgressMonitor monitor;
-
 		public async void FillWidget ()
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
@@ -197,46 +191,19 @@ namespace MonoDevelop.AssemblyBrowser
 				if (currentWs != null)
 					currentWs.WorkspaceLoaded += Handle_WorkspaceLoaded;
 				var allTasks = new List<Task> ();
-				monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (false);
-				monitor.BeginTask (GettextCatalog.GetString ("Loading assemblies…"), 1);
 				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
 					try {
 						Widget.AddProject (project, false);
-
-						var netProject = project as DotNetProject;
-						if (netProject == null)
-							continue;
-						foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-							if (!System.IO.File.Exists (file.FilePath))
-								continue;
-							if (!alreadyAdded.Add (file.FilePath))
-								continue;
-							var loader = Widget.AddReferenceByFileName (file.FilePath);
-							allTasks.Add (loader.LoadingTask);
-						}
-
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while adding project " + project.Name + " to the tree.", e);
 					}
 				}
 				await Task.WhenAll (allTasks).ContinueWith (delegate {
 					Runtime.RunInMainThread (delegate {
-						if (IsDisposed)
-							return;
-						StopProgress ();
 						widget.StartSearch ();
 					});
 				});
 			}
-		}
-
-		void StopProgress ()
-		{
-			if (monitor == null)
-				return;
-			monitor.EndTask ();
-			monitor.Dispose ();
-			monitor = null;
 		}
 	}
 }

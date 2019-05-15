@@ -48,6 +48,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
+		// Ass
+		
 		public IEnumerable<IModule> ModuleReferences {
 			get {
 				// TODO:
