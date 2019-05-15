@@ -817,7 +817,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void SetReferencedSegments (List<ReferenceSegment> refs)
 		{
 			ReferencedSegments = refs;
-			if (ReferencedSegments == null)
+			if (ReferencedSegments == null || IsDestroyed)
 				return;
 			foreach (var _seg in refs) {
 				var seg = _seg;
@@ -879,17 +879,20 @@ namespace MonoDevelop.AssemblyBrowser
 			case 0:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = false }));
+				builder.DecompileAsync (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = false })
+					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler);
 				break;
 			case 1:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-ilasm";
-				SetReferencedSegments (builder.Disassemble (inspectEditor, nav));
+				builder.DisassembleAsync (inspectEditor, nav)
+					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler);
 				break;
 			case 2:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = true }));
+				builder.DecompileAsync (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = true })
+					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler);
 				break;
 			default:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
@@ -1070,9 +1073,12 @@ namespace MonoDevelop.AssemblyBrowser
 			} while (nav.MoveNext ());
 			nav.MoveToParent ();
 		}
-		
+
+		public bool IsDestroyed { get; private set; }
+
 		protected override void OnDestroyed ()
 		{
+			IsDestroyed = true;
 			ClearReferenceSegment ();
 			searchTokenSource.Cancel ();
 

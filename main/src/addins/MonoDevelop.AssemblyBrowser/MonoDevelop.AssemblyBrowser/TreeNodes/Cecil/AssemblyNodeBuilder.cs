@@ -38,6 +38,7 @@ using System.IO;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.Metadata;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -162,22 +163,22 @@ namespace MonoDevelop.AssemblyBrowser
 			result.AppendLine ();
 		}
 		
-		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
+		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
 			var compilationUnit = assemblyLoader.Assembly;
 			if (compilationUnit == null) {
 				LoggingService.LogError ("Can't get cecil object for assembly:" + assemblyLoader.Assembly.FullName);
-				return new List<ReferenceSegment> ();
+				return Task.FromResult (new List<ReferenceSegment> ());
 			}
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.WriteAssemblyHeader (compilationUnit));
+			return MethodDefinitionNodeBuilder.DisassembleAsync (data, rd => rd.WriteAssemblyHeader (compilationUnit));
 		}
 		
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => 
+			return MethodDefinitionNodeBuilder.DecompileAsync (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => 
 				b.DecompileModuleAndAssemblyAttributes(), flags: flags);
 		}
 

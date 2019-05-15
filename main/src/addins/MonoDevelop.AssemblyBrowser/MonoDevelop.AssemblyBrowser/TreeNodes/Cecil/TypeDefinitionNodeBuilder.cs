@@ -44,6 +44,7 @@ using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using System.Security;
 using ICSharpCode.Decompiler.CSharp.Syntax;
 using ICSharpCode.Decompiler.CSharp;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -166,15 +167,15 @@ namespace MonoDevelop.AssemblyBrowser
 			return "";
 		}
 		
-		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
+		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
+				return EmptyReferenceSegmentTask;
 			var type = (ITypeDefinition)navigator.DataItem;
 			if (type == null)
-				return null;
+				return EmptyReferenceSegmentTask;
 
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type.ParentModule.PEFile, (System.Reflection.Metadata.TypeDefinitionHandle)type.MetadataToken));
+			return MethodDefinitionNodeBuilder.DisassembleAsync (data, rd => rd.DisassembleType (type.ParentModule.PEFile, (System.Reflection.Metadata.TypeDefinitionHandle)type.MetadataToken));
 		}
 
 		internal static DecompilerSettings CreateDecompilerSettings (bool publicOnly, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy codePolicy)
@@ -193,16 +194,16 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 		}
 
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
+				return EmptyReferenceSegmentTask;
 			var type = (ITypeDefinition)navigator.DataItem;
 			if (type == null)
-				return null;
+				return EmptyReferenceSegmentTask;
 			var settings = MethodDefinitionNodeBuilder.GetDecompilerSettings (data, flags.PublicOnly);
 			// CSharpLanguage.Instance.DecompileType (type, output, settings);
-			return MethodDefinitionNodeBuilder.Decompile (
+			return MethodDefinitionNodeBuilder.DecompileAsync (
 				data, 
 				MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), 
 				builder => builder.Decompile (type.MetadataToken), flags: flags);

@@ -31,13 +31,14 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	interface IAssemblyBrowserNodeBuilder
 	{
-		List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator);
-		List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags);
+		Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator);
+		Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags);
 	}
 
 	class DecompileFlags
