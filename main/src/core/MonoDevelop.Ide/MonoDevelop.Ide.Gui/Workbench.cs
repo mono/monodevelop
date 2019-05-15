@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Gui
 			Present ();
 		}
 
-		void EnsureLayout ()
+		internal void EnsureLayout ()
 		{
 			if (!hasEverBeenShown) {
 
@@ -353,6 +353,7 @@ namespace MonoDevelop.Ide.Gui
 		public string CurrentLayout {
 			get { return workbench.CurrentLayout; }
 			set {
+				EnsureLayout ();
 				if (value != workbench.CurrentLayout) {
 					workbench.CurrentLayout = value;
 					if (LayoutChanged != null)
@@ -492,12 +493,14 @@ namespace MonoDevelop.Ide.Gui
 
 		internal Pad ShowPad (PadCodon content)
 		{
+			EnsureLayout ();
 			workbench.ShowPad (content);
 			return WrapPad (content);
 		}
 
 		internal Pad AddPad (PadCodon content)
 		{
+			EnsureLayout ();
 			workbench.AddPad (content);
 			return WrapPad (content);
 		}

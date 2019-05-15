@@ -623,6 +623,9 @@ namespace MonoDevelop.Ide
 
 		internal async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences, OpenWorkspaceItemMetadata metadata)
 		{
+			if (IdeApp.IsInitialized)
+				IdeApp.Workbench.Show ();
+
 			lock (loadLock) {
 				if (++loadOperationsCount == 1)
 					currentWorkspaceLoadTask = new TaskCompletionSource<bool> ();
