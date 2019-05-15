@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
@@ -123,26 +124,36 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 
-		public static List<ReferenceSegment> Decompile (TextEditor data, AssemblyLoader assemblyLoader, Func<CSharpDecompiler, SyntaxTree> decompile, DecompilerSettings settings = null, DecompileFlags flags = null)
+		public static async Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, AssemblyLoader assemblyLoader, Func<CSharpDecompiler, SyntaxTree> decompile, DecompilerSettings settings = null, DecompileFlags flags = null)
 		{
-			settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
-			var csharpDecompiler = assemblyLoader.CSharpDecompiler;
-			try {
-				var syntaxTree = decompile (csharpDecompiler);
-				if (!flags.MethodBodies) {
-					MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
-				}
+			if (data == null) 
+				throw new ArgumentNullException (nameof (data));
+			if (assemblyLoader == null) 
+				throw new ArgumentNullException (nameof (assemblyLoader));
 
-				var output = new ColoredCSharpFormatter (data);
-				TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
-				var formattingPolicy = settings.CSharpFormattingOptions;
-				syntaxTree.AcceptVisitor (new CSharpOutputVisitor (tokenWriter, formattingPolicy));
-				output.SetDocumentData ();
-				return output.ReferencedSegments;
-			} catch (Exception e) {
-				data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
-			}
-			return null;
+			return await Task.Run (async delegate {
+				settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
+				var csharpDecompiler = assemblyLoader.CSharpDecompiler;
+				try {
+					var syntaxTree = decompile (csharpDecompiler);
+					if (!flags.MethodBodies) {
+						MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
+					}
+					return await Runtime.RunInMainThread (delegate {
+						if (data.IsDisposed)
+							return new List<ReferenceSegment> ();
+						var output = new ColoredCSharpFormatter (data);
+						TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
+						var formattingPolicy = settings.CSharpFormattingOptions;
+						syntaxTree.AcceptVisitor (new CSharpOutputVisitor (tokenWriter, formattingPolicy));
+						output.SetDocumentData ();
+						return output.ReferencedSegments;
+					});
+				} catch (Exception e) {
+					data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
+				}
+				return new List<ReferenceSegment> ();
+			});
 		}
 
 		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
@@ -160,14 +171,14 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var cecilMethod = (IMethod)navigator.DataItem;
 			if (cecilMethod == null)
 				return null;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod.MetadataToken), flags: flags);
+			return MethodDefinitionNodeBuilder.DecompileAsync (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod.MetadataToken), flags: flags);
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -179,14 +190,14 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append ("</a></u></span>");
 		}
 		
-		public static List<ReferenceSegment> Disassemble (TextEditor data, Action<ReflectionDisassembler> setData)
+		public static Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, Action<ReflectionDisassembler> setData)
 		{
 			var source = new CancellationTokenSource ();
 			var output = new ColoredCSharpFormatter (data);
 			var disassembler = new ReflectionDisassembler (output, source.Token);
 			setData (disassembler);
 			output.SetDocumentData ();
-			return output.ReferencedSegments;
+			return Task.FromResult (output.ReferencedSegments);
 		}
 		
 		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditor data)
@@ -201,14 +212,14 @@ namespace MonoDevelop.AssemblyBrowser
 						return true;*/
 			return false;
 		}
-		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
+
+		Task<List<ReferenceSegment>> IAssemblyBrowserNodeBuilder.DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			if (HandleSourceCodeEntity (navigator, data)) 
-				return null;
+				return EmptyReferenceSegmentTask;
 			if (!(navigator.DataItem is IMethod cecilMethod))
-				return null;
-			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod.ParentModule.PEFile, (System.Reflection.Metadata.MethodDefinitionHandle)cecilMethod.MetadataToken));
+				return EmptyReferenceSegmentTask;
+			return DisassembleAsync (data, rd => rd.DisassembleMethod (cecilMethod.ParentModule.PEFile, (System.Reflection.Metadata.MethodDefinitionHandle)cecilMethod.MetadataToken));
 		}
 
 		#endregion

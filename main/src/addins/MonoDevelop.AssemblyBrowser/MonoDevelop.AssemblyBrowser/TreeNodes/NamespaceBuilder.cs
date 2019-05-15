@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -101,18 +102,18 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#region IAssemblyBrowserNodeBuilder
 
-		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
+		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 		//	bool publicOnly = Widget.PublicApiOnly;
 			NamespaceData ns = (NamespaceData)navigator.DataItem;
 			
 			data.Text = "// " + ns.Name;
-			return null;
+			return EmptyReferenceSegmentTask;
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
-			return Disassemble (data, navigator);
+			return DisassembleAsync (data, navigator);
 		}
 		#endregion
 	}
