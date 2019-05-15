@@ -29,6 +29,7 @@
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Gtk;
 
 using MonoDevelop.Components;
@@ -55,6 +56,13 @@ namespace MonoDevelop.CSharp.Project
 			LanguageVersion.LatestMajor,
 			LanguageVersion.Preview
 		};
+
+		readonly Regex BadVersionRegex = new Regex (@"'(?<value>.*)'");
+
+		string ExtractBadVersion (string badValue)
+		{
+			return BadVersionRegex.Match (badValue).Groups ["value"].Value;
+		}
 		
 		public CompilerOptionsPanelWidget (DotNetProject project)
 		{
@@ -108,7 +116,9 @@ namespace MonoDevelop.CSharp.Project
 						langVerStore.AppendValues (text, version);
 					}
 				} catch (Exception ex) {
-					label2.Markup = GettextCatalog.GetString ("C# Language Version (<b>{0}</b>):", ex.Message);
+					var badVersion = ExtractBadVersion (ex.Message);
+					label2.Markup = GettextCatalog.GetString ("C# Language Version [{0} (Unknown Version)]:", badVersion);
+					langVerStore.AppendValues (ExtractBadVersion (ex.Message), LanguageVersion.Preview);
 				}
 			}
 			langVerCombo.Model = langVerStore;
@@ -123,7 +133,8 @@ namespace MonoDevelop.CSharp.Project
 							break;
 						}
 					} catch (Exception ex) {
-						label2.Markup = GettextCatalog.GetString ("C# Language Version (<b>{0}</b>):", ex.Message);
+						var badVersion = ExtractBadVersion (ex.Message);
+						label2.Markup = GettextCatalog.GetString ("C# Language Version [{0} (Unknown Version)]:", badVersion);
 					}
 				} while (langVerStore.IterNext (ref iter));
 			}

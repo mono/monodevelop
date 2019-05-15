@@ -47,6 +47,8 @@ namespace MonoDevelop.CSharp.Project
 		private global::Gtk.VBox vbox3;
 		
 		private global::Gtk.Table table2;
+
+		private global::Gtk.Image langVersionWarningIcon;
 		
 		private global::Gtk.Label label2;
 		
@@ -254,12 +256,18 @@ namespace MonoDevelop.CSharp.Project
 			this.table2.RowSpacing = ((uint)(6));
 			this.table2.ColumnSpacing = ((uint)(6));
 			// Container child table2.Gtk.Table+TableChild
+			this.langVersionWarningIcon = new global::Gtk.Image ();
+			this.langVersionWarningIcon.SetFromStock (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+			var langVersionHbox = new global::Gtk.HBox (false, 0);
+			langVersionHbox.Name = "langVersionHbox";
+			langVersionHbox.PackStart (this.langVersionWarningIcon, false, false, 0);
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("C# Language Version:");
-			this.table2.Add (this.label2);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2 [this.label2]));
+			langVersionHbox.PackStart (this.label2, false, false, 0);
+			this.table2.Add (langVersionHbox);
+			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2 [langVersionHbox]));
 			w19.XOptions = ((global::Gtk.AttachOptions)(4));
 			w19.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
