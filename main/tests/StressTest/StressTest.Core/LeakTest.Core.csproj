@@ -58,6 +58,7 @@
     <Compile Include="ITestScenarioProvider.cs" />
     <Compile Include="NoLeakAttribute.cs" />
     <Compile Include="MemoryStats.cs" />
+    <Compile Include="StressTestApp.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mono.Profiling.Log\" />
