@@ -85,25 +85,25 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var compilationUnit = (AssemblyLoader)dataObject;
-			if (compilationUnit.Error != null) {
-				treeBuilder.AddChild (compilationUnit.Error);
+			var assemblyLoader = (AssemblyLoader)dataObject;
+			if (assemblyLoader.Error != null) {
+				treeBuilder.AddChild (assemblyLoader.Error);
 				return;
 			}
-			if (compilationUnit.Assembly == null)
+			if (assemblyLoader.Assembly == null)
 				return;
-			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
+			var references = new AssemblyReferenceFolder (assemblyLoader.Assembly);
 			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
 				treeBuilder.AddChild (references);
 
-			var resources = new AssemblyResourceFolder (compilationUnit.Assembly);
+			var resources = new AssemblyResourceFolder (assemblyLoader.Assembly);
 			if (resources.Resources.Any ())
 				treeBuilder.AddChild (resources);
 			
 			var namespaces = new Dictionary<string, NamespaceData> ();
 			bool publicOnly = Widget.PublicApiOnly;
-			
-			foreach (var type in compilationUnit.DecompilerTypeSystem.MainModule.TypeDefinitions) {
+
+			foreach (var type in assemblyLoader.GetMinimalTypeSystem ().MainModule.TopLevelTypeDefinitions) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
 					namespaces [namespaceName] = new NamespaceData (namespaceName);
@@ -125,7 +125,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			return compilationUnit.DecompilerTypeSystem?.MainModule.TypeDefinitions.Any () == true || compilationUnit.Error != null;
+			return compilationUnit.Assembly.Metadata.TypeDefinitions.Count > 0 || compilationUnit.Error != null;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
