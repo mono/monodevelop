@@ -32,6 +32,9 @@ using UnitTests;
 using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
+using MonoDevelop.Core;
+using Foundation;
+using System.Runtime.InteropServices;
 
 namespace MacPlatform.Tests
 {
@@ -144,6 +147,28 @@ namespace MacPlatform.Tests
 			MacTelemetryDetails.IOObjectRelease (iter);
 
 			MacTelemetryDetails.CFRelease (namePtr);
+		}
+
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern void void_objc_msgSend (IntPtr receiver, IntPtr selector);
+
+		[Test]
+		public void TestNSExceptionLogging ()
+		{
+			var crashReporter = new CapturingCrashReporter ();
+
+			try {
+				LoggingService.RegisterCrashReporter (crashReporter);
+
+				var x = new NSException ("Test", "should be captured", null);
+				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+
+				Assert.Throws<ObjCException> (() => void_objc_msgSend (x.Handle, selector));
+
+				Assert.That (crashReporter.LastException.Message, Contains.Substring ("should be captured"));
+			} finally {
+				LoggingService.UnregisterCrashReporter (crashReporter);
+			}
 		}
 	}
 }

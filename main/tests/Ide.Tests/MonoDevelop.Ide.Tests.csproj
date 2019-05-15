@@ -129,6 +129,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceFilesCacheTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\PatternMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\GLibLoggingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

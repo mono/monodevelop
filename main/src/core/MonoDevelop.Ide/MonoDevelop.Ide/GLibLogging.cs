@@ -239,7 +239,8 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			string logDomain = GLib.Marshaller.Utf8PtrToString (logDomainPtr);
-			string message, extra = string.Empty;
+			string message;
+
 			try {
 				// Marshal message manually, because the text can contain invalid UTF-8.
 				// Specifically, with zh_CN, pango fails to render some characters and
@@ -249,11 +250,12 @@ namespace MonoDevelop.Ide.Gui
 				message = GLib.Marshaller.Utf8PtrToString (messagePtr);
 			} catch (Exception e) {
 				message = "Failed to convert message";
-				extra = "\n" + e.ToString ();
+				LoggingService.LogError (message, e);
 			}
-			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace (2, true);
-			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}{4}", 
-			    logDomain, logLevel, message, trace.ToString (), extra);
+
+			var stackTraceString = new System.Diagnostics.StackTrace (2, true).ToString ();
+
+			string msg = string.Format ("{0}-{1}: {2}", logDomain, logLevel, message);
 
 			switch (logLevel) {
 			case LogLevelFlags.Debug:
@@ -268,13 +270,32 @@ namespace MonoDevelop.Ide.Gui
 			case LogLevelFlags.Error:
 			case LogLevelFlags.Critical:
 			default:
-				LoggingService.LogError (msg);
+				var exception = new CriticalGtkException (message, stackTraceString);
+				if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
+					LoggingService.LogFatalError ("Fatal GLib error", exception);
+				else
+					LoggingService.LogInternalError ("Critical GLib error", exception);
 				break;
 			}
 			
 			RemainingBytes -= msg.Length;
 			if (RemainingBytes < 0)
 				LoggingService.LogError ("Disabling glib logging for the rest of the session");
+		}
+
+		class CriticalGtkException : Exception
+		{
+			readonly string message;
+			readonly string stacktrace;
+
+			public CriticalGtkException(string message, string stacktrace)
+			{
+				this.message = message;
+				this.stacktrace = stacktrace;
+			}
+
+			public override string Message => message;
+			public override string StackTrace => stacktrace;
 		}
 	}
 }
