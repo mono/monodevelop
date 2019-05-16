@@ -25,7 +25,7 @@ endif
 endif
 
 XBUILD=msbuild
-XBUILD_VERBOSITY ?= normal
+XBUILD_VERBOSITY ?= minimal
 XBUILD_ARGS=/verbosity:$(XBUILD_VERBOSITY) /nologo /property:CodePage=65001 /property:RestorePackages=false /property:DownloadPaket=false
 XBUILD_PROFILE=/property:Configuration=$(PROFILE_NAME)
 
