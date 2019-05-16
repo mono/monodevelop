@@ -87,7 +87,7 @@ namespace MonoDevelop.AnalysisCore
 						//addin assemblies that reference roslyn
 						default:
 							var refAsm = asm.GetReferencedAssemblies ();
-							if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+							if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly))
 								break;
 							continue;
 						}
