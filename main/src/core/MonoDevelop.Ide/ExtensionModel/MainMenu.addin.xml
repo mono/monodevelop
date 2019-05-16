@@ -65,6 +65,14 @@
 
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+		<ItemSet id="MultipleCarets" _label="_Multiple Carets">
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"/>
+		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 		
 		<SeparatorItem id = "Separator4" />
