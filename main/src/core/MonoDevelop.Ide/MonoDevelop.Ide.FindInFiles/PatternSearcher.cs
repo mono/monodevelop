@@ -86,6 +86,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			return Find (text.AsSpan (), startIndex, endIndex);
 		}
 
+		public int Find (ReadOnlySpan<char> text) => Find (text, 0, text.Length);
+
 		public int Find (ReadOnlySpan<char> text, int startIndex, int endIndex)
 		{
 			if (startIndex > endIndex)
