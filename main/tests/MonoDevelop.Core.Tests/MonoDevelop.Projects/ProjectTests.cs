@@ -581,6 +581,60 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ProjectReferences_ReferenceSourceTargetAvailableFromItemDefinitionGroup ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var p = (DotNetProject)sol.FindProjectByName ("console-with-libs");
+				var lib1Project = (DotNetProject)sol.FindProjectByName ("library1");
+				var lib2Project = (DotNetProject)sol.FindProjectByName ("library2");
+
+				var projectRefs = p.References.Where (r => r.ReferenceType == ReferenceType.Project);
+				var lib1ProjectRef = projectRefs.FirstOrDefault (r => r.Reference == "library1");
+				var lib2ProjectRef = projectRefs.FirstOrDefault (r => r.Reference == "library2");
+
+				var refs = await p.GetReferences (ConfigurationSelector.Default);
+
+				var projectAssemblyRefs = refs.Where (r => r.IsProjectReference).ToList ();
+				var lib1AssemblyRef = projectAssemblyRefs.FirstOrDefault (r => r.FilePath.FileName == "library1.dll");
+				var lib2AssemblyRef = projectAssemblyRefs.FirstOrDefault (r => r.FilePath.FileName == "library2.dll");
+
+				Assert.AreEqual ("ProjectReference", lib1ProjectRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual ("ProjectReference", lib2ProjectRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual ("ProjectReference", lib1AssemblyRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual ("ProjectReference", lib2AssemblyRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual (lib1Project, lib1AssemblyRef.GetReferencedItem (sol));
+				Assert.AreEqual (lib2Project, lib2AssemblyRef.GetReferencedItem (sol));
+				Assert.IsTrue (lib1AssemblyRef.ReferenceOutputAssembly);
+				Assert.IsTrue (lib2AssemblyRef.ReferenceOutputAssembly);
+				Assert.IsTrue (lib1AssemblyRef.IsCopyLocal);
+				Assert.IsTrue (lib2AssemblyRef.IsCopyLocal);
+			}
+		}
+
+		[Test]
+		public async Task AddProjectReference_EmptyReferenceSourceTargetNotAdded ()
+		{
+			string solFile = Util.GetSampleProject ("ref-source-target", "console-project.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var p = (DotNetProject)sol.FindProjectByName ("console-project");
+				var lib2Project = (DotNetProject)sol.FindProjectByName ("library2");
+
+				var reference = ProjectReference.CreateProjectReference (lib2Project);
+				p.References.Add (reference);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string expectedProjectXml = File.ReadAllText (p.FileName + "-saved");
+				string projectXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (expectedProjectXml, projectXml);
+			}
+		}
+
+		[Test]
 		public async Task DefaultMSBuildSupport ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");

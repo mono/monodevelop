@@ -286,6 +286,8 @@ namespace MonoDevelop.Projects
 			string name = buildItem.Metadata.GetValue ("Name", Path.GetFileNameWithoutExtension (path));
 			string projectGuid = buildItem.Metadata.GetValue ("Project");
 			Init (ReferenceType.Project, name, null, projectGuid);
+
+			ReferenceSourceTarget = buildItem.Metadata.GetValue ("ReferenceSourceTarget");
 		}
 
 		internal protected override void Write (Project project, MSBuildItem buildItem)
@@ -326,6 +328,7 @@ namespace MonoDevelop.Projects
 					buildItem.Metadata.SetValue ("Project", refProj.ItemId, preserveExistingCase:true);
 					buildItem.Metadata.SetValue ("Name", refProj.Name);
 					buildItem.Metadata.SetValue ("ReferenceOutputAssembly", ReferenceOutputAssembly, true);
+					buildItem.Metadata.SetValue ("ReferenceSourceTarget", ReferenceSourceTarget);
 				}
 			}
 
@@ -464,6 +467,8 @@ namespace MonoDevelop.Projects
 					ownerProject.NotifyModified ("References");
 			}
 		}
+
+		internal string ReferenceSourceTarget { get; set; } = "ProjectReference";
 
 		public bool IsValid {
 			get { return string.IsNullOrEmpty (ValidationErrorMessage); }
