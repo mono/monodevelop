@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		SearchResult[] FindAll (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			if (string.IsNullOrEmpty (model.FindPattern))
-				return new SearchResult[0];
+				return Array.Empty<SearchResult> ();
 
 			if (model.RegexSearch)
 				return RegexSearch (model, monitor, provider);
