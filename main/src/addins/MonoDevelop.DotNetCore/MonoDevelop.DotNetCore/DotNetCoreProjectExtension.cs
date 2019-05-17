@@ -263,8 +263,6 @@ namespace MonoDevelop.DotNetCore
 			if (!IdeApp.IsInitialized)
 				return;
 
-			PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
-
 			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
 			}
@@ -314,26 +312,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			FileService.FileChanged -= FileService_FileChanged;
 
-			if (IdeApp.IsInitialized)
-				PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged -= ProjectTargetFrameworkChanged;
-
 			base.Dispose ();
-		}
-
-		/// <summary>
-		/// This event is fired after the project is saved. Runs a restore if the project was
-		/// not reloaded.
-		/// </summary>
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
-		{
-			if (e.IsReload || e.Project.Name != this.Project.Name) {
-				// Ignore. A restore will occur on reload elsewhere.
-				return;
-			}
-
-			// Need to re-evaluate before restoring to ensure the implicit package references are correct after
-			// the target framework has changed.
-			DetectSDK (true);
 		}
 
 		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)

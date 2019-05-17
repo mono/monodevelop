@@ -46,6 +46,33 @@ namespace MonoDevelop.PackageManagement
 		{
 			base.OnItemReady ();
 			itemReady = true;
+
+			if (IdeApp.IsInitialized)
+				PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
+		}
+
+		public override void Dispose ()
+		{
+			if (IdeApp.IsInitialized)
+				PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged -= ProjectTargetFrameworkChanged;
+
+			base.Dispose ();
+		}
+
+		/// <summary>
+		/// This event is fired after the project is saved. Runs a restore if the project was
+		/// not reloaded.
+		/// </summary>
+		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		{
+			if (e.IsReload || e.Project.Name != Project.Name) {
+				// Ignore. A restore will occur on reload elsewhere.
+				return;
+			}
+
+			// Need to re-evaluate before restoring to ensure the implicit package references are correct after
+			// the target framework has changed.
+			RestorePackagesInProjectHandler.Run (Project, restoreTransitiveProjectReferences: true, reevaluateBeforeRestore: true);
 		}
 
 		protected override void OnModified (SolutionItemModifiedEventArgs args)
