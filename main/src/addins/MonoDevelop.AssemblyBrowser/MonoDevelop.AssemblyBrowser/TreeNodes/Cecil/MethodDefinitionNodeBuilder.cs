@@ -150,7 +150,9 @@ namespace MonoDevelop.AssemblyBrowser
 						return output.ReferencedSegments;
 					});
 				} catch (Exception e) {
-					data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
+					await Runtime.RunInMainThread (delegate {
+						data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
+					});
 				}
 				return new List<ReferenceSegment> ();
 			});
