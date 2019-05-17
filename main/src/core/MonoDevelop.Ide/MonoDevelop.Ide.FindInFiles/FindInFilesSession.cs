@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 				} else {
 					var options = new ParallelOptions {
-						MaxDegreeOfParallelism = 4,
+						MaxDegreeOfParallelism = Environment.ProcessorCount,
 						CancellationToken = token
 					};
 					Parallel.ForEach (contents, options, content => {
