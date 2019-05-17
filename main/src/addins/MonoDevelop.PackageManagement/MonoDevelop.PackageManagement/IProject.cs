@@ -42,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 		IDictionary ExtendedProperties { get; }
 		IEnumerable<string> FlavorGuids { get; }
 		IMSBuildEvaluatedPropertyCollection EvaluatedProperties { get; }
+		bool IsReevaluating { get; }
 
 		Task SaveAsync ();
 	}
