@@ -74,6 +74,10 @@ namespace MonoDevelop.PackageManagement
 			get { return project.MSBuildProject?.EvaluatedProperties; }
 		}
 
+		public bool IsReevaluating {
+			get { return project.IsReevaluating; }
+		}
+
 		public async Task SaveAsync ()
 		{
 			using (var monitor = new ProgressMonitor ()) {

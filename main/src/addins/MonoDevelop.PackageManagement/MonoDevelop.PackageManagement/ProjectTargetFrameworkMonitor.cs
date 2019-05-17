@@ -108,6 +108,16 @@ namespace MonoDevelop.PackageManagement
 
 		void ProjectModified (object sender, ProjectModifiedEventArgs e)
 		{
+			if (e.Project.IsReevaluating) {
+				// Ignore target framework changes if the project is re-evaluating. We are only
+				// interested in target framework changes made by the user in project options
+				// or when editing the project file.
+				// Sdk style Xamarin.Mac projects sometimes switch the target framework from
+				// .NET to Xamarin.Mac during re-evaluation. The XamMac2ProjectFlavor may change
+				// the target framework when the project file is reloaded during re-evaluation.
+				return;
+			}
+
 			if (e.IsTargetFramework ()) {
 				e.Project.Saved += ProjectSaved;
 			}
