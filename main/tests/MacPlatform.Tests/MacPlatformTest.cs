@@ -166,6 +166,8 @@ namespace MacPlatform.Tests
 				Assert.Throws<ObjCException> (() => void_objc_msgSend (x.Handle, selector));
 
 				Assert.That (crashReporter.LastException.Message, Contains.Substring ("should be captured"));
+				Assert.That (crashReporter.LastException.StackTrace, Is.Not.Null);
+				Assert.That (crashReporter.LastException.Source, Is.Not.Null);
 			} finally {
 				LoggingService.UnregisterCrashReporter (crashReporter);
 			}
