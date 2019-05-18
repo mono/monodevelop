@@ -253,8 +253,6 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError (message, e);
 			}
 
-			var stackTraceString = new System.Diagnostics.StackTrace (2, true).ToString ();
-
 			string msg = string.Format ("{0}-{1}: {2}", logDomain, logLevel, message);
 
 			switch (logLevel) {
@@ -270,11 +268,15 @@ namespace MonoDevelop.Ide.Gui
 			case LogLevelFlags.Error:
 			case LogLevelFlags.Critical:
 			default:
-				var exception = new CriticalGtkException (message, stackTraceString);
-				if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
-					LoggingService.LogFatalError ("Fatal GLib error", exception);
-				else
-					LoggingService.LogInternalError ("Critical GLib error", exception);
+				try {
+					// Otherwise exception info is not gathered.
+					throw new CriticalGtkException (message);
+				} catch (CriticalGtkException e) {
+					if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
+						LoggingService.LogFatalError ("Fatal GLib error", e);
+					else
+						LoggingService.LogInternalError ("Critical GLib error", e);
+				}
 				break;
 			}
 			
@@ -283,19 +285,11 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError ("Disabling glib logging for the rest of the session");
 		}
 
-		class CriticalGtkException : Exception
+		sealed class CriticalGtkException : Exception
 		{
-			readonly string message;
-			readonly string stacktrace;
-
-			public CriticalGtkException(string message, string stacktrace)
+			public CriticalGtkException(string message) : base(message)
 			{
-				this.message = message;
-				this.stacktrace = stacktrace;
 			}
-
-			public override string Message => message;
-			public override string StackTrace => stacktrace;
 		}
 	}
 }
