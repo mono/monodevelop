@@ -118,6 +118,7 @@
     <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
       <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
       <Name>MonoDevelop.FSharp</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
