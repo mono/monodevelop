@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
@@ -33,7 +34,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Gui
 {
-	class WorkbenchStatusBar : StatusBar
+	class WorkbenchStatusBar : ITestableStatusBar
 	{
 		StatusBar delegatedStatusBar;
 		bool autoPulse;
@@ -110,6 +111,22 @@ namespace MonoDevelop.Ide.Gui
 					delegatedStatusBar.AutoPulse = value;
 				else
 					autoPulse = value;
+			}
+		}
+
+		public string CurrentText {
+			get {
+				if (delegatedStatusBar is ITestableStatusBar ideStatusBar)
+					return ideStatusBar.CurrentText;
+				return message;
+			}
+		}
+
+		public string[] CurrentIcons {
+			get {
+				if (delegatedStatusBar is ITestableStatusBar ideStatusBar)
+					return ideStatusBar.CurrentIcons;
+				return icons.Select (x => x.ToolTip).ToArray ();
 			}
 		}
 
