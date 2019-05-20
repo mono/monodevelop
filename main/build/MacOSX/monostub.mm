@@ -53,10 +53,7 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 	[alert release];
 
 	if (answer == NSAlertFirstButtonReturn) {
-		NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
-		CFURLRef url = CFURLCreateWithString (NULL, (CFStringRef) mono_download_url, NULL);
-		LSOpenCFURLRef (url, NULL);
-		CFRelease (url);
+		[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:mono_download_url]];
 	}
 }
 #endif
@@ -64,13 +61,10 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 static void
 exit_with_message (NSString *reason, NSString *entryExecutableName)
 {
-	NSString *appName = nil;
+	NSString *appName = entryExecutableName;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
 		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
-	}
-	if (!appName) {
-		appName = entryExecutableName;
 	}
 
 	NSString *fmt = @"%@\n\nPlease download and install the latest version of Mono.";
