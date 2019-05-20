@@ -40,22 +40,6 @@ check_mono_version (const char *version, const char *req_version)
 	return TRUE;
 }
 
-static char *
-str_append (const char *base, const char *append)
-{
-	size_t baselen = strlen (base);
-	size_t len = strlen (append);
-	char *buf;
-
-	if (!(buf = (char *)malloc (baselen + len + 1)))
-		abort();
-
-	memcpy (buf, base, baselen);
-	strcpy (buf + baselen, append);
-
-	return buf;
-}
-
 static NSString *
 xcode_get_dev_path ()
 {
@@ -93,7 +77,7 @@ push_env (const char *variable, const char *value, BOOL push_to_end)
 	size_t len;
 	char *buf;
 	BOOL updated = YES;
-	
+
 	if ((current = getenv (variable)) && *current) {
 		char *token, *copy, *tofree;
 		size_t current_length;
@@ -163,11 +147,11 @@ update_environment (NSString *contentsDir)
 {
 	NSArray<NSString *> *array;
 	bool updated = NO;
-	char *value;
+	NSString *value;
 
 	if ((array = generate_fallback_paths (contentsDir))) {
-			for (NSString *token in array) {
-				if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", [token UTF8String]))
+			for (value in array) {
+				if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", [value UTF8String]))
 					updated = YES;
 			}
 	}
@@ -176,36 +160,23 @@ update_environment (NSString *contentsDir)
 		updated = YES;
 
 	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
-	const char *ccontentsDir = [contentsDir UTF8String];
-	if ((value = str_append (ccontentsDir, "/Resources/lib/pkgconfig"))) {
-		if (push_env_to_start ("PKG_CONFIG_PATH", value))
-			updated = YES;
-
-		free (value);
+	value = [contentsDir stringByAppendingPathComponent:@"Resources/lib/pkgconfig"];
+	if (push_env_to_start ("PKG_CONFIG_PATH", [value UTF8String])) {
+		updated = YES;
 	}
 
-	if ((value = str_append (ccontentsDir, "/Resources"))) {
-		if (push_env_to_start ("MONO_GAC_PREFIX", value))
+	value = [contentsDir stringByAppendingPathComponent:@"MacOS"];
+	if (push_env_to_start ("PATH", [value UTF8String]))
+		updated = YES;
+
+	value = [contentsDir stringByAppendingPathComponent:@"Resources"];
+	if (push_env_to_start ("MONO_GAC_PREFIX", [value UTF8String]))
 			updated = YES;
-
-		free (value);
-	}
-
-	if ((value = str_append (ccontentsDir, "/MacOS"))) {
-		if (push_env_to_start ("PATH", value))
-			updated = YES;
-
-		free (value);
-	}
 
 	// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
 	// and older versions of mtouch relied on this broken behavior.
-	if ((value = str_append (ccontentsDir, "/Resources"))) {
-		if (push_env_to_start ("PATH", value))
-			updated = YES;
-
-		free (value);
-	}
+	if (push_env_to_start ("PATH", [value UTF8String]))
+		updated = YES;
 
 	if (push_env_to_start ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
 		updated = YES;

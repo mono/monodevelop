@@ -70,14 +70,6 @@ void test_check_mono_version(void)
 	}
 }
 
-void test_str_append(void)
-{
-	char *str = "asdf";
-	char *conc = str_append(str, str);
-
-	check_string_equal("asdfasdf", conc);
-}
-
 void test_push_env(void)
 {
 	typedef struct {
@@ -180,7 +172,6 @@ void test_update_environment(void)
 void (*tests[])(void) = {
 	test_mono_lib_path,
 	test_check_mono_version,
-	test_str_append,
 	test_push_env,
 	test_update_environment,
 };
