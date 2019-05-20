@@ -15,7 +15,7 @@ check_mono_version (const char *version, const char *req_version)
 	while (*req_version && *version) {
 		req_val = strtol (req_version, &req_end, 10);
 		if (req_version == req_end || (*req_end && *req_end != '.')) {
-			fprintf (stderr, "Bad version requirement string '%s'\n", req_end);
+			NSLog (@"Bad version requirement string '%s'", req_end);
 			return FALSE;
 		}
 

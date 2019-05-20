@@ -37,9 +37,7 @@ extern "C" void XAMARIN_CREATE_CLASSES ();
 static void
 show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 {
-	fprintf(stderr, "Could not launch: %s\n", [appName UTF8String]);
-	fprintf(stderr, "%s\n", [msg UTF8String]);
-	fprintf(stderr, "%s\n", [mono_download_url UTF8String]);
+	NSLog (@"Could not launch: %@\n%@\n%@", appName, msg, mono_download_url);
 }
 #else
 static void
@@ -87,7 +85,7 @@ load_symbol(const char *symbol_type, void *lib, const char *framework_name, NSSt
 {
 	void *symbol = dlsym (lib, symbol_type);
 	if (!symbol) {
-		fprintf (stderr, "Could not load %s(): %s\n", symbol_type, dlerror ());
+		NSLog (@"Could not load %s(): %s", symbol_type, dlerror ());
 		NSString *msg = [NSString stringWithFormat:@"Failed to load the %s framework.", framework_name];
 		exit_with_message (msg, app_name);
 	}
@@ -105,8 +103,9 @@ get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono, NSString
 	mono_parse_options_from _mono_parse_options_from = LOAD_MONO_SYMBOL(mono_parse_options_from, libmono, app_name);
 
 	char *ret = _mono_parse_options_from (env, ref_argc, ref_argv);
-	if (ret)
-		fprintf(stderr, "%s", ret);
+	if (ret) {
+		exit_with_message ([NSString stringWithUTF8String:ret], app_name);
+	}
 }
 
 static void
@@ -211,7 +210,7 @@ should_load_xammac_registrar(NSString *app_name)
 
 	LOAD_DYLIB(libxammac);
 	if (!libxammac) {
-		fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
+		NSLog (@"Failed to load libxammac.dylib: %s", dlerror ());
 		NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
 		exit_with_message (msg, app_name);
 	}
@@ -295,7 +294,7 @@ main (int argc, char **argv)
 		libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
 
 		if (libmono == NULL) {
-			fprintf (stderr, "Failed to load libmonosgen-2.0.dylib: %s\n", dlerror ());
+			NSLog (@"Failed to load libmonosgen-2.0.dylib: %s", dlerror ());
 			NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
 			exit_with_message (msg, entryExecutableName);
 		}
