@@ -4,8 +4,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#define MONO_LIB_PATH(lib) "/Library/Frameworks/Mono.framework/Libraries/"lib
-
 static int
 check_mono_version (const char *version, const char *req_version)
 {
@@ -52,13 +50,14 @@ xcode_get_dev_path ()
 }
 
 static NSArray<NSString *> *
-generate_fallback_paths (NSString *contentsDir)
+generate_fallback_paths (NSString *binDir)
 {
+	NSString *resource_path = [[NSBundle mainBundle] resourcePath];
+
 	return @[
+		[[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent],
 		/* Inject our Resources/lib dir */
-		[contentsDir stringByAppendingPathComponent:@"Resources/lib"],
-		/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
-		[contentsDir stringByAppendingPathComponent:@"Resources/lib/monodevelop/bin"],
+		[resource_path stringByAppendingPathComponent:@"lib/monodevelop/bin"],
 		/* Add Xcode's CommandLineTools dev lib dir before Xcode's Developer dir */
 		@"/Library/Developer/CommandLineTools/usr/lib",
 		/* Add Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
@@ -143,13 +142,13 @@ replace_env (const char *variable, const char *value)
 }
 
 static bool
-update_environment (NSString *contentsDir)
+update_environment (NSString *binDir)
 {
 	NSArray<NSString *> *array;
 	bool updated = NO;
 	NSString *value;
 
-	if ((array = generate_fallback_paths (contentsDir))) {
+	if ((array = generate_fallback_paths (binDir))) {
 			for (value in array) {
 				if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", [value UTF8String]))
 					updated = YES;
@@ -159,23 +158,25 @@ update_environment (NSString *contentsDir)
 	if (push_env_to_start ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig"))
 		updated = YES;
 
+	NSBundle *bundle = [NSBundle mainBundle];
+
+	NSString *resourcePath = [bundle resourcePath];
 	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
-	value = [contentsDir stringByAppendingPathComponent:@"Resources/lib/pkgconfig"];
+	value = [resourcePath stringByAppendingPathComponent:@"lib/pkgconfig"];
 	if (push_env_to_start ("PKG_CONFIG_PATH", [value UTF8String])) {
 		updated = YES;
 	}
 
-	value = [contentsDir stringByAppendingPathComponent:@"MacOS"];
+	value = [[bundle executablePath] stringByDeletingLastPathComponent];
 	if (push_env_to_start ("PATH", [value UTF8String]))
 		updated = YES;
 
-	value = [contentsDir stringByAppendingPathComponent:@"Resources"];
-	if (push_env_to_start ("MONO_GAC_PREFIX", [value UTF8String]))
+	if (push_env_to_start ("MONO_GAC_PREFIX", [resourcePath UTF8String]))
 			updated = YES;
 
 	// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
 	// and older versions of mtouch relied on this broken behavior.
-	if (push_env_to_start ("PATH", [value UTF8String]))
+	if (push_env_to_start ("PATH", [resourcePath UTF8String]))
 		updated = YES;
 
 	if (push_env_to_start ("PATH", "/Library/Frameworks/Mono.framework/Commands"))

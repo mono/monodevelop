@@ -11,7 +11,7 @@ void fail(void)
 void check_string_equal(const char *expected, const char *actual)
 {
 	if (strcmp(expected, actual)) {
-		printf("Expected '%s'\nActual   '%s'\n", expected, actual);
+		NSLog(@"Expected '%s'\nActual   '%s'\n", expected, actual);
 		fail();
 	}
 }
@@ -19,17 +19,9 @@ void check_string_equal(const char *expected, const char *actual)
 void check_bool_equal(int expected, int actual)
 {
 	if (expected != actual) {
-		printf("Expected '%d'\nActual   '%d'\n", expected, actual);
+		NSLog(@"Expected '%d'\nActual   '%d'\n", expected, actual);
 		fail();
 	}
-}
-
-void test_mono_lib_path(void)
-{
-	char *expected = "/Library/Frameworks/Mono.framework/Libraries/test";
-	char *actual = MONO_LIB_PATH("test");
-
-	check_string_equal(expected, actual);
 }
 
 void test_check_mono_version(void)
@@ -121,7 +113,7 @@ void check_path_has_components(char *path, const char **components, int count)
 		}
 
 		if (!found) {
-			printf("Expected '%s'\nIn       '%s'", components[i], tofree);
+			NSLog(@"Expected '%s'\nIn       '%s'", components[i], tofree);
 			fail();
 		}
 		free(tofree);
@@ -130,24 +122,28 @@ void check_path_has_components(char *path, const char **components, int count)
 
 void test_update_environment(void)
 {
+	NSString *exeDir = [[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent];
+	NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+
 	const char *path_components[] = {
 		"/Library/Frameworks/Mono.framework/Commands",
-		"./Resources",
-		"./MacOS",
+		[resourcePath UTF8String],
+		[exeDir UTF8String],
 	};
+
 	const char *dyld_components[] = {
+		[exeDir UTF8String],
 		"/usr/local/lib",
 		"/usr/lib",
 		"/Library/Frameworks/Mono.framework/Libraries",
-		"./Resources/lib/monodevelop/bin",
-		"./Resources/lib",
+		[[resourcePath stringByAppendingPathComponent:@"lib/monodevelop/bin"] UTF8String],
 	};
 	const char *pkg_components[] = {
-		"./Resources/lib/pkgconfig",
+		[[resourcePath stringByAppendingPathComponent:@"lib/pkgconfig"] UTF8String],
 		"/Library/Frameworks/Mono.framework/External/pkgconfig",
 	};
 	const char *gac_components[] = {
-		"./Resources",
+		[resourcePath UTF8String],
 	};
 	const char *safe_components[] = {
 		"yes",
@@ -170,7 +166,6 @@ void test_update_environment(void)
 }
 
 void (*tests[])(void) = {
-	test_mono_lib_path,
 	test_check_mono_version,
 	test_push_env,
 	test_update_environment,

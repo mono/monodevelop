@@ -106,9 +106,9 @@ get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono)
 }
 
 static void
-run_md_bundle (NSString *appDir, NSArray *arguments)
+run_md_bundle (NSArray *arguments)
 {
-	NSURL *bundleURL = [NSURL fileURLWithPath: appDir];
+	NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
 	int myPID = [[NSProcessInfo processInfo] processIdentifier];
 	NSRunningApplication *mdApp = nil;
 
@@ -134,7 +134,7 @@ run_md_bundle (NSString *appDir, NSArray *arguments)
 
 	if (mdApp == nil)
 	{
-		NSLog(@"Failed to start bundle %@: %@", appDir, error);
+		NSLog(@"Failed to start bundle %@: %@", [[NSBundle mainBundle] bundlePath], error);
 		exit (1);
 	}
 	exit (0);
@@ -160,18 +160,10 @@ correct_locale(void)
 	setenv("LC_CTYPE", value, 1);
 }
 
-#define LOAD_DYLIB_FROM(name, dylibname) \
-	name = dlopen ("@loader_path/" dylibname ".dylib", RTLD_LAZY); \
-	if (!name) { \
-		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" dylibname ".dylib", RTLD_LAZY); \
-	}
-
-#define LOAD_DYLIB(name) LOAD_DYLIB_FROM(name, #name)
-
 static void
 try_load_gobject_tracker (void *libmono)
 {
-	void *gobject_tracker = LOAD_DYLIB_FROM(gobject_tracker, "libgobject-tracker");
+	void *gobject_tracker = dlopen("libgobject-tracker.dylib", RTLD_LAZY);
 	if (!gobject_tracker)
 		return;
 
@@ -184,8 +176,10 @@ try_load_gobject_tracker (void *libmono)
 }
 
 static void
-run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
+run_md_bundle_if_needed(int argc, char **argv)
 {
+	NSString *appDir = [[NSBundle mainBundle] bundlePath];
+
 	// if we are running inside an app bundle and --start-app-bundle has been passed
 	// run the actual bundle and exit.
 	if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
@@ -197,7 +191,7 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 				[array addObject:[NSString stringWithUTF8String:argv[i]]];
 			arguments = array;
 		}
-		run_md_bundle (appDir, arguments);
+		run_md_bundle (arguments);
 	}
 }
 
@@ -209,26 +203,23 @@ should_load_xammac_registrar()
 	if (registrar_toggle)
 		return false;
 
-	void *libvsmregistrar = LOAD_DYLIB(libvsmregistrar);
-	return libvsmregistrar != NULL;
+	return dlopen("libvsmregistrar.dylib", RTLD_LAZY);
 #else
 	return true;
 #endif
-
 }
 
 static void
 load_xammac()
 {
-	void *libxammac;
-
-	LOAD_DYLIB(libxammac);
+	void *libxammac = dlopen("libxammac.dylib", RTLD_LAZY);
 	if (!libxammac) {
-		NSLog (@"Failed to load libxammac.dylib: %s", dlerror ());
+		NSLog (@"Failed to load libxammac.dylib %s", dlerror ());
 		exit_with_message (@"This application requires Xamarin.Mac native library side-by-side.");
 	}
 
 	if (should_load_xammac_registrar()) {
+		NSLog (@"loading vsmregistrar");
 		XAMARIN_CREATE_CLASSES ();
 	}
 }
@@ -242,42 +233,19 @@ main (int argc, char **argv)
 
 	@autoreleasepool {
 		//clock_t start = clock();
-		NSString *binDir = @"Contents/Resources/lib/monodevelop/bin";
-
 		// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
 		// as part of `make run` and then binDir should be '.'
 		NSString *entryExecutable = [NSString stringWithUTF8String: argv[0]];
 		appName = [entryExecutable lastPathComponent];
 		NSString *entryExecutableDir = [entryExecutable stringByDeletingLastPathComponent];
-		NSString *binDirFullPath = [NSString stringWithFormat:@"%@/../../%@", entryExecutableDir, binDir];
+		NSString *binDirFullPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"lib/monodevelop/bin"];
 		BOOL isDir = NO;
 		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
-			binDir = @".";
+			binDirFullPath = entryExecutableDir;
 
-		NSString *appDir = [[NSBundle mainBundle] bundlePath];
+		run_md_bundle_if_needed(argc, argv);
 
-		run_md_bundle_if_needed(appDir, argc, argv);
-
-		// can be overridden with plist string MonoMinVersion
-		NSString *req_mono_version = @"5.18.1.24";
-
-		NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
-		if (plist) {
-			NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
-			if (version_obj && [version_obj length] > 0)
-				req_mono_version = version_obj;
-		}
-
-		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
-#if HYBRID_SUSPEND_ABORT
-		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
-#endif
-
-		// To be removed: https://github.com/mono/monodevelop/issues/6326
-		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
-
-
-		if (update_environment ([appDir stringByAppendingPathComponent:@"Contents"])) {
+		if (update_environment (binDirFullPath)) {
 			//printf ("Updated the environment.\n");
 
 			return execv (argv[0], argv);
@@ -292,10 +260,26 @@ main (int argc, char **argv)
 			setrlimit (RLIMIT_NOFILE, &limit);
 		}
 
-		NSString *exeName = [NSString stringWithFormat:@"%@.exe", appName];
-		NSString *exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
+		// can be overridden with plist string MonoMinVersion
+		NSString *req_mono_version = @"5.18.1.24";
 
-		void *libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
+		NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
+		if (plist) {
+			NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
+			if (version_obj && [version_obj length] > 0)
+				req_mono_version = version_obj;
+		}
+
+#if HYBRID_SUSPEND_ABORT
+		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
+#endif
+
+		// To be removed: https://github.com/mono/monodevelop/issues/6326
+		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
+
+		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
+
+		void *libmono = dlopen ("libmonosgen-2.0.dylib", RTLD_LAZY);
 
 		if (libmono == NULL) {
 			NSLog (@"Failed to load libmonosgen-2.0.dylib: %s", dlerror ());
@@ -343,6 +327,7 @@ main (int argc, char **argv)
 		_g_free(mono_argv);
 
 		// append old arguments
+		NSString *exePath = [NSString stringWithFormat:@"%@/%@.exe", binDirFullPath, appName];
 		new_argv[n++] = strdup ([exePath UTF8String]);
 		for (int i = 1; i < argc; i++)
 			new_argv[n++] = argv[i];
@@ -350,6 +335,7 @@ main (int argc, char **argv)
 		//clock_t end = clock();
 		//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
 	}
+
 	return _mono_main (new_argc, new_argv);
 }
 
