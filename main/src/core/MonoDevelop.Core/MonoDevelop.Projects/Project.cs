@@ -2747,6 +2747,10 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			// Read available item types
+			// Read this first in case the OnGetSupportsImportedItem needs this information.
+			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
+
 			timer.Trace ("Read project items");
 			LoadProjectItems (msproject, ProjectItemFlags.None, usedMSBuildItems);
 			loadedProjectItems = new HashSet<ProjectItem> (Items);
@@ -2779,10 +2783,6 @@ namespace MonoDevelop.Projects
 			timer.Trace ("Read extended properties");
 
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
-
-			// Read available item types
-
-			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
 
 			// Ensure buildActions are refreshed if loadedAvailableItemNames have been updated.
 			buildActions = null;
