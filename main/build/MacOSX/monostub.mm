@@ -237,11 +237,10 @@ main (int argc, char **argv)
 		// as part of `make run` and then binDir should be '.'
 		NSString *entryExecutable = [NSString stringWithUTF8String: argv[0]];
 		appName = [entryExecutable lastPathComponent];
-		NSString *entryExecutableDir = [entryExecutable stringByDeletingLastPathComponent];
 		NSString *binDirFullPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"lib/monodevelop/bin"];
 		BOOL isDir = NO;
 		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
-			binDirFullPath = entryExecutableDir;
+			binDirFullPath = [entryExecutable stringByDeletingLastPathComponent];
 
 		run_md_bundle_if_needed(argc, argv);
 
