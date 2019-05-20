@@ -209,7 +209,10 @@ namespace MonoDevelop.Ide
 
 			IdeApp.IsRunning = true;
 
+			// Load the main menu before running the main loop
 			var commandService = Runtime.GetService<CommandManager> ().Result;
+			var desktopService = Runtime.GetService<DesktopService> ().Result;
+			desktopService.SetGlobalMenu (commandService, DefaultWorkbench.MainMenuPath, DefaultWorkbench.AppMenuPath);
 
 			// Run the main loop
 			Gtk.Application.Invoke ((s, e) => {
