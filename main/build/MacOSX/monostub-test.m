@@ -146,7 +146,6 @@ void test_update_environment(void)
 	const char *dyld_components[] = {
 		"/usr/local/lib",
 		"/usr/lib",
-		"/lib",
 		"/Library/Frameworks/Mono.framework/Libraries",
 		"./Resources/lib/monodevelop/bin",
 		"./Resources/lib",
@@ -166,8 +165,8 @@ void test_update_environment(void)
 	};
 
 	// Check that we only get updates one time, that's how monostub works.
-	check_bool_equal(TRUE, update_environment("."));
-	check_bool_equal(FALSE, update_environment("."));
+	check_bool_equal(TRUE, update_environment(@"."));
+	check_bool_equal(FALSE, update_environment(@"."));
 
 
 	check_path_has_components(getenv("DYLD_FALLBACK_LIBRARY_PATH"), dyld_components, sizeof(dyld_components) / sizeof(char *));

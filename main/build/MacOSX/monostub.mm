@@ -268,7 +268,7 @@ main (int argc, char **argv)
 		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
 
-		if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
+		if (update_environment ([appDir stringByAppendingPathComponent:@"Contents"])) {
 			//printf ("Updated the environment.\n");
 
 			return execv (argv[0], argv);

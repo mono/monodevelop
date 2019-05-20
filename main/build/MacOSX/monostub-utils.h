@@ -56,57 +56,34 @@ str_append (const char *base, const char *append)
 	return buf;
 }
 
-static char *
-str_append_free (char *base, const char *append)
-{
-	char *new_value = str_append (base, append);
-	free (base);
-	return new_value;
-}
-
-static char *
+static NSString *
 xcode_get_dev_path ()
 {
-	int len;
-	char buf[PATH_MAX];
-	if ((len = readlink ("/var/db/xcode_select_link", (char*) &buf, PATH_MAX)) > 0) {
-		return strndup (buf, len);
-	}
+	NSString *xcode_link = [[NSFileManager defaultManager]
+		destinationOfSymbolicLinkAtPath:@"/var/db/xcode_select_link"
+		error:nil
+	];
 
-	return strdup ("/Applications/Xcode.app/Contents/Developer");
+	return xcode_link ? xcode_link : @"/Applications/Xcode.app/Contents/Developer";
 }
 
-static char *
-generate_fallback_path (const char *contentsDir)
+static NSArray<NSString *> *
+generate_fallback_paths (NSString *contentsDir)
 {
-	char *value;
-	char *xcode_dev_path;
-	char *xcode_dev_lib_path;
-
-	/* Inject our Resources/lib dir */
-	char *lib_dir = str_append (contentsDir, "/Resources/lib:");
-
-	/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
-	char *monodevelop_bin_dir = str_append (contentsDir, "/Resources/lib/monodevelop/bin:");
-
-	value = str_append_free (lib_dir, monodevelop_bin_dir);
-
-	free (monodevelop_bin_dir);
-
-	/* Add Xcode's CommandLineTools dev lib dir before Xcode's Developer dir */
-	value = str_append_free (value, "/Library/Developer/CommandLineTools/usr/lib:");
-
-	/* Add Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-	if ((xcode_dev_path = xcode_get_dev_path ()) != NULL) {
-		xcode_dev_lib_path = str_append_free (xcode_dev_path, "/usr/lib:");
-		value = str_append_free (value, xcode_dev_lib_path);
-		free (xcode_dev_lib_path);
-	}
-
-	/* Add Mono's lib lib dir */
-	value = str_append_free (value, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/usr/local/lib");
-
-	return value;
+	return @[
+		/* Inject our Resources/lib dir */
+		[contentsDir stringByAppendingPathComponent:@"Resources/lib"],
+		/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
+		[contentsDir stringByAppendingPathComponent:@"Resources/lib/monodevelop/bin"],
+		/* Add Xcode's CommandLineTools dev lib dir before Xcode's Developer dir */
+		@"/Library/Developer/CommandLineTools/usr/lib",
+		/* Add Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
+		xcode_get_dev_path(),
+		/* Add Mono's lib dir */
+		@"/Library/Frameworks/Mono.framework/Libraries",
+		@"/usr/lib",
+		@"/usr/local/lib",
+	];
 }
 
 static bool
@@ -182,42 +159,39 @@ replace_env (const char *variable, const char *value)
 }
 
 static bool
-update_environment (const char *contentsDir)
+update_environment (NSString *contentsDir)
 {
+	NSArray<NSString *> *array;
 	bool updated = NO;
 	char *value;
-	
-	if ((value = generate_fallback_path (contentsDir))) {
-		char *token, *iter;
 
-		iter = value;
-		while ((token = strsep(&iter, ":"))) {
-			if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", token))
-				updated = YES;
-		}
-
-		free (value);
+	if ((array = generate_fallback_paths (contentsDir))) {
+			for (NSString *token in array) {
+				if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", [token UTF8String]))
+					updated = YES;
+			}
 	}
-	
+
 	if (push_env_to_start ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig"))
 		updated = YES;
 
 	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
-	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig"))) {
+	const char *ccontentsDir = [contentsDir UTF8String];
+	if ((value = str_append (ccontentsDir, "/Resources/lib/pkgconfig"))) {
 		if (push_env_to_start ("PKG_CONFIG_PATH", value))
 			updated = YES;
 
 		free (value);
 	}
 
-	if ((value = str_append (contentsDir, "/Resources"))) {
+	if ((value = str_append (ccontentsDir, "/Resources"))) {
 		if (push_env_to_start ("MONO_GAC_PREFIX", value))
 			updated = YES;
-		
+
 		free (value);
 	}
-	
-	if ((value = str_append (contentsDir, "/MacOS"))) {
+
+	if ((value = str_append (ccontentsDir, "/MacOS"))) {
 		if (push_env_to_start ("PATH", value))
 			updated = YES;
 
@@ -226,7 +200,7 @@ update_environment (const char *contentsDir)
 
 	// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
 	// and older versions of mtouch relied on this broken behavior.
-	if ((value = str_append (contentsDir, "/Resources"))) {
+	if ((value = str_append (ccontentsDir, "/Resources"))) {
 		if (push_env_to_start ("PATH", value))
 			updated = YES;
 
