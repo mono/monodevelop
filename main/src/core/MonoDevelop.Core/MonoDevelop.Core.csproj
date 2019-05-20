@@ -730,6 +730,7 @@
     <Compile Include="MonoDevelop.Projects\SdkProjectReader.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSdkProject.cs" />
     <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
+    <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
