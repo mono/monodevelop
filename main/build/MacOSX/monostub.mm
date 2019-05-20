@@ -228,10 +228,9 @@ should_load_xammac_registrar(NSString *app_name)
 #endif
 }
 
-int main (int argc, char **argv)
+int monodevelop_main (int argc, char **argv)
 {
 	//clock_t start = clock();
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 
 	// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
@@ -269,7 +268,6 @@ int main (int argc, char **argv)
 
 	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
 		//printf ("Updated the environment.\n");
-		[pool drain];
 
 		return execv (argv[0], argv);
 	}
@@ -331,11 +329,17 @@ int main (int argc, char **argv)
 	for (int i = 1; i < argc; i++)
 		new_argv[n++] = argv[i];
 
-	[pool drain];
 
 	//clock_t end = clock();
 	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
 
 	return _mono_main (new_argc, new_argv);
+}
+
+int main (int argc, char **argv)
+{
+	@autoreleasepool {
+		return monodevelop_main (argc, argv);
+	}
 }
 
