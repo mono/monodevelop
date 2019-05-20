@@ -251,10 +251,6 @@ namespace MonoDevelop.Ide
 			await workbench.Initialize (monitor);
 			monitor.Step (1);
 
-			Counters.Initialization.Trace ("Realizing Workbench Window");
-			workbench.Realize ();
-			monitor.Step (1);
-
 			MessageService.RootWindow = workbench.RootWindow;
 			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (workbench.RootWindow);
 		
