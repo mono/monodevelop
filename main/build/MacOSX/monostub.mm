@@ -109,7 +109,7 @@ static void
 run_md_bundle (NSString *appDir, NSArray *arguments)
 {
 	NSURL *bundleURL = [NSURL fileURLWithPath: appDir];
-	pid_t myPID = getpid ();
+	int myPID = [[NSProcessInfo processInfo] processIdentifier];
 	NSRunningApplication *mdApp = nil;
 
 	NSArray *runningApplications = [[NSWorkspace sharedWorkspace] runningApplications];
@@ -192,10 +192,10 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 		NSArray *arguments = [NSArray array];
 		if (argc > 2) {
 			int new_argc = argc - 2;
-			NSString *strings[new_argc];
-			for (int i = 0; i < new_argc; i++)
-				strings [i] = [NSString stringWithUTF8String:argv[i+2]];
-			arguments = [NSArray arrayWithObjects:strings count:new_argc];
+			NSMutableArray *array = [NSMutableArray arrayWithCapacity:new_argc];
+			for (int i = 2; i < new_argc; i++)
+				[array addObject:[NSString stringWithUTF8String:argv[i]]];
+			arguments = array;
 		}
 		run_md_bundle (appDir, arguments);
 	}
@@ -206,7 +206,10 @@ should_load_xammac_registrar()
 {
 #if XM_FULL_STATIC_REGISTRAR
 	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
-	void *libvsmregistrar = !registrar_toggle ? LOAD_DYLIB(libvsmregistrar) : NULL;
+	if (registrar_toggle)
+		return false;
+
+	void *libvsmregistrar = LOAD_DYLIB(libvsmregistrar);
 	return libvsmregistrar != NULL;
 #else
 	return true;
