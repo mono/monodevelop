@@ -723,7 +723,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void OnDocumentOpened (DocumentEventArgs e)
 		{
 			try {
-				DocumentOpened?.Invoke (this, e);
+				DocumentOpened?.SafeInvoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while opening documents", ex);
 			}
@@ -733,7 +733,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			try {
 				var e = new DocumentEventArgs (doc);
-				DocumentClosed?.Invoke (this, e);
+				DocumentClosed?.SafeInvoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while closing documents", ex);
 			}
@@ -764,7 +764,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			foreach (var doc in documents)
 				doc.UpdateContentVisibility ();
 
-			ActiveDocumentChanged?.Invoke (s, new DocumentEventArgs (activeDocument));
+			ActiveDocumentChanged?.SafeInvoke (s, new DocumentEventArgs (activeDocument));
 
 			if (activeDocument != null) {
 				activeDocument.LastTimeActive = DateTime.Now;
