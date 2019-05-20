@@ -184,18 +184,18 @@ try_load_gobject_tracker (void *libmono, NSString *entryExecutable)
 static void
 run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 {
-    // if we are running inside an app bundle and --start-app-bundle has been passed
-    // run the actual bundle and exit.
-    if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
-        NSArray *arguments = [NSArray array];
-        if (argc > 2) {
-            NSString *strings[argc-2];
-            for (int i = 0; i < argc-2; i++)
-                strings [i] = [NSString stringWithUTF8String:argv[i+2]];
-            arguments = [NSArray arrayWithObjects:strings count:argc-2];
-        }
-        run_md_bundle (appDir, arguments);
-    }
+	// if we are running inside an app bundle and --start-app-bundle has been passed
+	// run the actual bundle and exit.
+	if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
+		NSArray *arguments = [NSArray array];
+		if (argc > 2) {
+			NSString *strings[argc-2];
+			for (int i = 0; i < argc-2; i++)
+				strings [i] = [NSString stringWithUTF8String:argv[i+2]];
+			arguments = [NSArray arrayWithObjects:strings count:argc-2];
+		}
+		run_md_bundle (appDir, arguments);
+	}
 }
 
 #define LOAD_DYLIB(name) \
