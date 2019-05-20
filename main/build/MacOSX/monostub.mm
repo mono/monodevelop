@@ -105,13 +105,13 @@ get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono)
 }
 
 static void
-run_md_bundle (NSString *bundleId, NSArray *arguments)
+run_md_bundle (NSString *bundleId, NSArray<NSString *> *arguments)
 {
 	NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
 	int myPID = [[NSProcessInfo processInfo] processIdentifier];
 	NSRunningApplication *mdApp = nil;
 
-	NSArray *runningApplications = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
+	NSArray<NSRunningApplication *> *runningApplications = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
 	for (NSRunningApplication *app in runningApplications) {
 		if ([[[app bundleURL] path] isEqual:[bundleURL path]] && myPID != [app processIdentifier])
 		{
@@ -182,10 +182,10 @@ run_md_bundle_if_needed(int argc, char **argv)
 	// if we are running inside an app bundle and --start-app-bundle has been passed
 	// run the actual bundle and exit.
 	if (bundleId && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
-		NSArray *arguments = [NSArray array];
+		NSArray<NSString *> *arguments = [NSArray<NSString *> array];
 		if (argc > 2) {
 			int new_argc = argc - 2;
-			NSMutableArray *array = [NSMutableArray arrayWithCapacity:new_argc];
+			NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:new_argc];
 			for (int i = 2; i < new_argc; i++)
 				[array addObject:[NSString stringWithUTF8String:argv[i]]];
 			arguments = array;
