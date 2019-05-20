@@ -1199,7 +1199,7 @@ namespace MonoDevelop.Projects
 			SetProperty (metadata, "Project", reference.ProjectGuid);
 			SetProperty (metadata, "MSBuildSourceProjectFile", GetProjectFileName (reference));
 			SetProperty (metadata, "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString ());
-			SetProperty (metadata, "ReferenceSourceTarget", "ProjectReference");
+			SetProperty (metadata, "ReferenceSourceTarget", reference.ReferenceSourceTarget);
 
 			return new AssemblyReference (path, metadata);
 		}
