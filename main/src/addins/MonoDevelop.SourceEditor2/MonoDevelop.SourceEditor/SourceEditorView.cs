@@ -2422,7 +2422,7 @@ namespace MonoDevelop.SourceEditor
 			var c = GetContent (type);
 			if (c != null)
 				yield return c;
-			if (typeof (IToolboxDynamicProvider).IsAssignableFrom (type) && codeTemplateToolboxProvider != null)
+			if (type == typeof (IToolboxDynamicProvider) && codeTemplateToolboxProvider != null)
 				yield return codeTemplateToolboxProvider;
 		}
 
