@@ -209,6 +209,8 @@ namespace MonoDevelop.Ide
 
 			IdeApp.IsRunning = true;
 
+			var commandService = Runtime.GetService<CommandManager> ().Result;
+
 			// Run the main loop
 			Gtk.Application.Invoke ((s, e) => {
 				MainLoop (options, startupInfo).Ignore ();
@@ -236,12 +238,17 @@ namespace MonoDevelop.Ide
 		async Task<int> MainLoop (MonoDevelopOptions options, StartupInfo startupInfo)
 		{
 			ProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
-			
+
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
 			Counters.Initialization.Trace ("Initializing Platform Service");
-			await Runtime.GetService<DesktopService> ();
+
+			var desktopService = await Runtime.GetService<DesktopService> ();
+			var commandService = await Runtime.GetService<CommandManager> ();
+
+			// load the global menu for the welcome window to avoid unresponsive menus on Mac
+			desktopService.SetGlobalMenu (commandService, DefaultWorkbench.MainMenuPath, DefaultWorkbench.AppMenuPath);
 
 			IdeStartupTracker.StartupTracker.MarkSection ("PlatformInitialization");
 
