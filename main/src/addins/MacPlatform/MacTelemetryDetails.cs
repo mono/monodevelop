@@ -224,7 +224,7 @@ namespace MacPlatform
 				}
 
 				result = GetValueForNSObject (namePtr);
-				return true;
+				return result != null;
 			}
 		}
 
@@ -249,6 +249,10 @@ namespace MacPlatform
 						NSStringEncoding.ASCIIStringEncoding
 					},
 				}, out string convertedString, out bool isLossy);
+
+				if (convertedString == null) {
+					return null;
+				}
 
 				if (convertedString.Length > 0 && detectedEncoding != 0 && !isLossy) {
 					return convertedString;
