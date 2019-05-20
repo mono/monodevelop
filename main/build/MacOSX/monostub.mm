@@ -234,7 +234,6 @@ main (int argc, char **argv)
 {
 	int new_argc;
 	char **new_argv;
-	void *libmono;
 	mono_main _mono_main;
 
 	@autoreleasepool {
@@ -292,7 +291,7 @@ main (int argc, char **argv)
 		NSString *exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
 		NSString *exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 
-		libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
+		void *libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
 
 		if (libmono == NULL) {
 			NSLog (@"Failed to load libmonosgen-2.0.dylib: %s", dlerror ());
