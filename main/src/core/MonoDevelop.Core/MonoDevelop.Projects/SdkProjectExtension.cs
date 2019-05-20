@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects
 	public class SdkProjectExtension : DotNetProjectExtension
 	{
 		MSBuildSdkProject msbuildSdkProject = new MSBuildSdkProject ();
+		string[] cachedBuildActions;
 
 		internal static bool IsSupportedProjectFileExtension (FilePath file)
 		{
@@ -106,6 +107,8 @@ namespace MonoDevelop.Projects
 			Project.UseAdvancedGlobSupport = true;
 			Project.UseDefaultMetadataForExcludedExpandedItems = true;
 			Project.UseFileWatcher = true;
+
+			cachedBuildActions = null;
 		}
 
 		internal protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -194,7 +197,7 @@ namespace MonoDevelop.Projects
 
 		internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
 		{
-			if (!BuildAction.DotNetActions.Contains (buildItem.Name))
+			if (!IsBuildActionSupported (buildItem.Name))
 				return false;
 
 			if (IsFSharpSdkProject ()) {
@@ -212,6 +215,18 @@ namespace MonoDevelop.Projects
 			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
 			return Project.MSBuildProject.EvaluatedItems
 				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
+		}
+
+		/// <summary>
+		/// Cache the build actions here since adding new files on loading the project will clear the cache
+		/// so we avoid re-building the Project's build action cache potentially multiple times. This local
+		/// cache is cleared in OnReadProject.
+		/// </summary>
+		bool IsBuildActionSupported (string buildAction)
+		{
+			if (cachedBuildActions == null)
+				cachedBuildActions = Project.GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
+			return cachedBuildActions.Contains (buildAction);
 		}
 
 		/// <summary>

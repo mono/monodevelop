@@ -608,6 +608,25 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task CustomAvailableItemName_FileImportedWithWildcard_FileAvailableInProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("sdk-imported-files", "netstandard.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+				var textFile = p.Files.SingleOrDefault (fi => fi.FilePath.FileName == "test.txt");
+
+				Assert.AreEqual ("MyTextFile", textFile.BuildAction);
+
+				// Ensure build actions are not cached too early and contain any custom MSBuild items
+				// defined directly in the project file.
+
+				string[] buildActions = p.GetBuildActions ();
+				Assert.That (buildActions, Contains.Item ("CustomBuildActionInProject"));
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);
