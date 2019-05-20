@@ -38,16 +38,16 @@ extern "C" void XAMARIN_CREATE_CLASSES ();
 
 #if NOGUI
 static void
-show_alert (NSString *msg, NSString *bundle_name, NSString *mono_download_url)
+show_alert (NSString *msg, NSString *mono_download_url)
 {
-	NSLog (@"Could not launch: %@\n%@\n%@", bundle_name, msg, mono_download_url);
+	NSLog (@"Could not launch: %@\n%@\n%@", appName, msg, mono_download_url);
 }
 #else
 static void
-show_alert (NSString *msg, NSString *bundle_name, NSString *mono_download_url)
+show_alert (NSString *msg, NSString *mono_download_url)
 {
 	NSAlert *alert = [[NSAlert alloc] init];
-	[alert setMessageText:[NSString stringWithFormat:@"Could not launch %@", bundle_name]];
+	[alert setMessageText:[NSString stringWithFormat:@"Could not launch %@", appName]];
 	[alert setInformativeText:msg];
 	[alert addButtonWithTitle:@"Download Mono Framework"];
 	[alert addButtonWithTitle:@"Cancel"];
@@ -63,17 +63,16 @@ show_alert (NSString *msg, NSString *bundle_name, NSString *mono_download_url)
 static void
 exit_with_message (NSString *reason)
 {
-	NSString *entryExecutableName = appName;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
-		entryExecutableName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
+		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
 	}
 
 	NSString *fmt = @"%@\n\nPlease download and install the latest version of Mono.";
 	NSString *msg = [NSString stringWithFormat:fmt, reason];
 	NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 
-	show_alert(msg, entryExecutableName, mono_download_url);
+	show_alert(msg, mono_download_url);
 	exit (1);
 }
 
