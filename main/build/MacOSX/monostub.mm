@@ -164,13 +164,18 @@ correct_locale(void)
 	setenv("LC_CTYPE", value, 1);
 }
 
+#define LOAD_DYLIB_FROM(name, dylibname) \
+	name = dlopen ("@loader_path/" dylibname ".dylib", RTLD_LAZY); \
+	if (!name) { \
+		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" dylibname ".dylib", RTLD_LAZY); \
+	}
+
+#define LOAD_DYLIB(name) LOAD_DYLIB_FROM(name, #name)
+
 static void
 try_load_gobject_tracker (void *libmono, NSString *entryExecutable)
 {
-	void *gobject_tracker;
-	NSString *binDir = [entryExecutable stringByDeletingLastPathComponent];
-	NSString *libgobjectPath = [binDir stringByAppendingPathComponent: @"libgobject-tracker.dylib"];
-	gobject_tracker = dlopen ((char *)[libgobjectPath UTF8String], RTLD_GLOBAL);
+	void *gobject_tracker = LOAD_DYLIB_FROM(gobject_tracker, "libgobject-tracker");
 	if (!gobject_tracker)
 		return;
 
@@ -199,12 +204,6 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 		run_md_bundle (appDir, arguments);
 	}
 }
-
-#define LOAD_DYLIB(name) \
-	name = dlopen ("@loader_path/" #name ".dylib", RTLD_LAZY); \
-	if (!name) { \
-		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" #name ".dylib", RTLD_LAZY); \
-	}
 
 static bool
 should_load_xammac_registrar(NSString *app_name)
@@ -246,8 +245,8 @@ main (int argc, char **argv)
 		// as part of `make run` and then binDir should be '.'
 		NSString *entryExecutable = [NSString stringWithUTF8String: argv[0]];
 		NSString *entryExecutableName = [entryExecutable lastPathComponent];
-		NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
-		NSString *binDirFullPath = [NSString pathWithComponents:components];
+		NSString *entryExecutableDir = [entryExecutable stringByDeletingLastPathComponent];
+		NSString *binDirFullPath = [NSString stringWithFormat:@"%@/../../%@", entryExecutableDir, binDir];
 		BOOL isDir = NO;
 		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
 			binDir = @".";
