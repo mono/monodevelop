@@ -171,7 +171,7 @@ try_load_gobject_tracker (void *libmono)
 		return;
 
 	_gobject_tracker_init (libmono);
-	printf ("Loaded gobject tracker\n");
+	NSLog (@"Loaded gobject tracker\n");
 }
 
 static void
@@ -233,12 +233,13 @@ main (int argc, char **argv)
 		//clock_t start = clock();
 		// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
 		// as part of `make run` and then binDir should be '.'
-		NSString *entryExecutable = [NSString stringWithUTF8String: argv[0]];
-		appName = [entryExecutable lastPathComponent];
-		NSString *binDirFullPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"lib/monodevelop/bin"];
+		appName = [[NSProcessInfo processInfo] processName];
+
+		NSBundle *mainBundle = [NSBundle mainBundle];
+		NSString *binDirFullPath = [[mainBundle resourcePath] stringByAppendingPathComponent:@"lib/monodevelop/bin"];
 		BOOL isDir = NO;
 		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
-			binDirFullPath = [entryExecutable stringByDeletingLastPathComponent];
+			binDirFullPath = [[mainBundle executablePath] stringByDeletingLastPathComponent];
 
 		run_md_bundle_if_needed(argc, argv);
 
@@ -260,7 +261,7 @@ main (int argc, char **argv)
 		// can be overridden with plist string MonoMinVersion
 		NSString *req_mono_version = @"5.18.1.24";
 
-		NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
+		NSDictionary *plist = [mainBundle infoDictionary];
 		if (plist) {
 			NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
 			if (version_obj && [version_obj length] > 0)
