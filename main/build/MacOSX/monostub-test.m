@@ -132,11 +132,11 @@ void test_update_environment(void)
 	};
 
 	const char *dyld_components[] = {
-		[exeDir UTF8String],
 		"/usr/local/lib",
 		"/usr/lib",
 		"/Library/Frameworks/Mono.framework/Libraries",
-		[[resourcePath stringByAppendingPathComponent:@"lib/monodevelop/bin"] UTF8String],
+		[[resourcePath stringByAppendingPathComponent:@"lib"] UTF8String],
+		"."
 	};
 	const char *pkg_components[] = {
 		[[resourcePath stringByAppendingPathComponent:@"lib/pkgconfig"] UTF8String],

@@ -105,13 +105,13 @@ get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono)
 }
 
 static void
-run_md_bundle (NSArray *arguments)
+run_md_bundle (NSString *bundleId, NSArray *arguments)
 {
 	NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
 	int myPID = [[NSProcessInfo processInfo] processIdentifier];
 	NSRunningApplication *mdApp = nil;
 
-	NSArray *runningApplications = [[NSWorkspace sharedWorkspace] runningApplications];
+	NSArray *runningApplications = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
 	for (NSRunningApplication *app in runningApplications) {
 		if ([[[app bundleURL] path] isEqual:[bundleURL path]] && myPID != [app processIdentifier])
 		{
@@ -177,11 +177,11 @@ try_load_gobject_tracker (void *libmono)
 static void
 run_md_bundle_if_needed(int argc, char **argv)
 {
-	NSString *appDir = [[NSBundle mainBundle] bundlePath];
+	NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
 
 	// if we are running inside an app bundle and --start-app-bundle has been passed
 	// run the actual bundle and exit.
-	if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
+	if (bundleId && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
 		NSArray *arguments = [NSArray array];
 		if (argc > 2) {
 			int new_argc = argc - 2;
@@ -190,7 +190,7 @@ run_md_bundle_if_needed(int argc, char **argv)
 				[array addObject:[NSString stringWithUTF8String:argv[i]]];
 			arguments = array;
 		}
-		run_md_bundle (arguments);
+		run_md_bundle (bundleId, arguments);
 	}
 }
 

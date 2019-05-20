@@ -52,12 +52,12 @@ xcode_get_dev_path ()
 static NSArray<NSString *> *
 generate_fallback_paths (NSString *binDir)
 {
-	NSString *resource_path = [[NSBundle mainBundle] resourcePath];
+	NSString *lib_path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"lib"];
 
 	return @[
-		[[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent],
-		/* Inject our Resources/lib dir */
-		[resource_path stringByAppendingPathComponent:@"lib/monodevelop/bin"],
+		/* Inject our Resources/lib and bin dirs dir */
+		binDir,
+		lib_path,
 		/* Add Xcode's CommandLineTools dev lib dir before Xcode's Developer dir */
 		@"/Library/Developer/CommandLineTools/usr/lib",
 		/* Add Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
