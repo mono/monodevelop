@@ -129,7 +129,8 @@ run_md_bundle (NSString *bundleId, NSArray<NSString *> *arguments)
 	}
 
 	NSError *error = nil;
-	mdApp = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:bundleURL options:NSWorkspaceLaunchAsync configuration:[NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments] error:&error];
+	NSDictionary<NSWorkspaceLaunchConfigurationKey, id> *configuration = [NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments];
+	mdApp = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:bundleURL options:NSWorkspaceLaunchAsync configuration: configuration error:&error];
 
 	if (mdApp == nil)
 	{
@@ -182,7 +183,7 @@ run_md_bundle_if_needed(int argc, char **argv)
 	// if we are running inside an app bundle and --start-app-bundle has been passed
 	// run the actual bundle and exit.
 	if (bundleId && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
-		NSArray<NSString *> *arguments = [NSArray<NSString *> array];
+		NSArray<NSString *> *arguments = [NSArray array];
 		if (argc > 2) {
 			int new_argc = argc - 2;
 			NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:new_argc];
