@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal void Realize ()
+		void Realize ()
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
@@ -152,6 +152,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (!hasEverBeenShown) {
 
+				Realize ();
 				workbench.InitializeWorkspace ();
 				workbench.InitializeLayout ();
 				statusBar.Attach (workbench.StatusBar);
