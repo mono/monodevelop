@@ -171,14 +171,15 @@ try_load_gobject_tracker (void *libmono, NSString *entryExecutable)
 	NSString *binDir = [entryExecutable stringByDeletingLastPathComponent];
 	NSString *libgobjectPath = [binDir stringByAppendingPathComponent: @"libgobject-tracker.dylib"];
 	gobject_tracker = dlopen ((char *)[libgobjectPath UTF8String], RTLD_GLOBAL);
-	if (gobject_tracker) {
-		gobject_tracker_init _gobject_tracker_init = (gobject_tracker_init) dlsym (gobject_tracker, "gobject_tracker_init");
-		if (_gobject_tracker_init) {
-			_gobject_tracker_init (libmono);
-			printf ("Loaded gobject tracker\n");
-			return;
-		}
-	}
+	if (!gobject_tracker)
+		return;
+
+	gobject_tracker_init _gobject_tracker_init = (gobject_tracker_init) dlsym (gobject_tracker, "gobject_tracker_init");
+	if (!_gobject_tracker_init)
+		return;
+
+	_gobject_tracker_init (libmono);
+	printf ("Loaded gobject tracker\n");
 }
 
 static void
@@ -189,10 +190,11 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 	if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
 		NSArray *arguments = [NSArray array];
 		if (argc > 2) {
-			NSString *strings[argc-2];
-			for (int i = 0; i < argc-2; i++)
+			int new_argc = argc - 2;
+			NSString *strings[new_argc];
+			for (int i = 0; i < new_argc; i++)
 				strings [i] = [NSString stringWithUTF8String:argv[i+2]];
-			arguments = [NSArray arrayWithObjects:strings count:argc-2];
+			arguments = [NSArray arrayWithObjects:strings count:new_argc];
 		}
 		run_md_bundle (appDir, arguments);
 	}
