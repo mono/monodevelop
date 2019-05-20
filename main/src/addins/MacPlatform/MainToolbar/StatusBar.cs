@@ -473,7 +473,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSFocusButton, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSFocusButton, MonoDevelop.Ide.ITestableStatusBar
 	{
 		public enum MessageType
 		{
@@ -725,6 +725,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		// Used by AutoTest.
+		string [] ITestableStatusBar.CurrentIcons => statusIcons.Select (x => x.ToolTip).ToArray ();
+		string ITestableStatusBar.CurrentText => text;
+
 		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
 
 		// Xamarin.Mac has a bug where NSView.NextKeyView cannot be set to null
@@ -741,9 +745,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void_objc_msgSend_IntPtr (parent.Handle, setNextKeyViewSelector, nextKeyView != null ? nextKeyView.Handle : IntPtr.Zero);
 		}
-
-		// Used by AutoTest.
-		internal string[] StatusIcons => statusIcons.Select(x => x.ToolTip).ToArray ();
 
 		internal void RemoveStatusIcon (StatusIcon icon)
 		{
