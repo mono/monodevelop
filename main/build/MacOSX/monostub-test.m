@@ -78,39 +78,6 @@ void test_str_append(void)
 	check_string_equal("asdfasdf", conc);
 }
 
-void test_env2bool(void)
-{
-	typedef struct {
-		bool expected, defaultValue;
-		const char *var, *value;
-	} bool_check;
-
-	bool_check bools[] = {
-		// If variable does not exist, return default.
-		{ TRUE, TRUE, "WILL_NOT_EXIST", NULL },
-		{ FALSE, FALSE, "WILL_NOT_EXIST", NULL },
-
-		// Check that truth-y values are true.
-		{ TRUE, FALSE, "WILL_EXIST", "TRUE" },
-		{ TRUE, FALSE, "WILL_EXIST", "YES" },
-		{ TRUE, FALSE, "WILL_EXIST", "1" },
-
-		// Check that false-y values are false.
-		{ FALSE, TRUE, "WILL_EXIST", "BOGUS" },
-		{ FALSE, TRUE, "WILL_EXIST", "0" },
-	};
-
-	bool_check *current;
-	int i;
-	for (i = 0; i < sizeof(bools) / sizeof(bool_check); ++i) {
-		current = &bools[i];
-		if (current->value)
-			setenv(current->var, current->value, 1);
-
-		check_bool_equal(current->expected, env2bool(current->var, current->defaultValue));
-	}
-}
-
 void test_push_env(void)
 {
 	typedef struct {
@@ -215,7 +182,6 @@ void (*tests[])(void) = {
 	test_mono_lib_path,
 	test_check_mono_version,
 	test_str_append,
-	test_env2bool,
 	test_push_env,
 	test_update_environment,
 };

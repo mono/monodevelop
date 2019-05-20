@@ -115,34 +115,6 @@ generate_fallback_path (const char *contentsDir)
 }
 
 static bool
-env2bool (const char *env, bool defaultValue)
-{
-	const char *value;
-	bool nz = NO;
-	int i;
-	
-	if (!(value = getenv (env)))
-		return defaultValue;
-	
-	if (!strcasecmp (value, "true"))
-		return YES;
-	
-	if (!strcasecmp (value, "yes"))
-		return YES;
-	
-	/* check to see if the value is numeric. All numeric values evaluate to true *except* zero */
-	for (i = 0; value[i]; i++) {
-		if (!isdigit ((int) ((unsigned char) value[i])))
-			return NO;
-		
-		if (value[i] != '0')
-			nz = YES;
-	}
-	
-	return nz;
-}
-
-static bool
 push_env (const char *variable, const char *value, BOOL push_to_end)
 {
 	const char *current;
