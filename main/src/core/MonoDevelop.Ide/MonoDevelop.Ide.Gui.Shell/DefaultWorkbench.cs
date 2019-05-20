@@ -58,8 +58,8 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	internal partial class DefaultWorkbench : WorkbenchWindow, ICommandRouter, IInfoBarHost, IShell, IService
 	{
-		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
-		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
+		internal readonly static string MainMenuPath    = "/MonoDevelop/Ide/MainMenu";
+		internal readonly static string AppMenuPath    = "/MonoDevelop/Ide/AppMenu";
 		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
 //		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		readonly static string stockLayoutsPath    = "/MonoDevelop/Ide/WorkbenchLayouts";
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
-			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
+			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, MainMenuPath, AppMenuPath)) {
 				CreateMenuBar ();
 			}
 			
@@ -297,8 +297,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath)) {
-				if (IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
+			if (args.PathChanged (MainMenuPath) || args.PathChanged (AppMenuPath)) {
+				if (IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, MainMenuPath, AppMenuPath))
 					return;
 				
 				UninstallMenuBar ();
@@ -309,8 +309,8 @@ namespace MonoDevelop.Ide.Gui
 
 		void CreateMenuBar ()
 		{
-			topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
-			var appMenu = IdeApp.CommandService.CreateMenu (appMenuPath);
+			topMenu = IdeApp.CommandService.CreateMenuBar (MainMenuPath);
+			var appMenu = IdeApp.CommandService.CreateMenu (AppMenuPath);
 			if (appMenu != null && appMenu.Children.Length > 0) {
 				var item = new MenuItem (BrandingService.ApplicationName);
 				item.Submenu = appMenu;
