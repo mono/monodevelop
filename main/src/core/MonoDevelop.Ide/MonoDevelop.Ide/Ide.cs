@@ -307,13 +307,19 @@ namespace MonoDevelop.Ide
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static Task<bool> OpenFiles (IEnumerable<FileOpenInformation> files)
+
+		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
-			return OpenFiles (files, null);
+			OpenFilesAsync (files, null).Ignore ();
+		}
+
+		public static Task<bool> OpenFilesAsync (IEnumerable<FileOpenInformation> files)
+		{
+			return OpenFilesAsync (files, null);
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		internal static async Task<bool> OpenFiles (IEnumerable<FileOpenInformation> files, OpenWorkspaceItemMetadata metadata)
+		internal static async Task<bool> OpenFilesAsync (IEnumerable<FileOpenInformation> files, OpenWorkspaceItemMetadata metadata)
 		{
 			if (!files.Any ())
 				return false;
