@@ -215,7 +215,7 @@ replace_env (const char *variable, const char *value)
 }
 
 static bool
-update_environment (const char *contentsDir, bool need64Bit)
+update_environment (const char *contentsDir)
 {
 	bool updated = NO;
 	char *value;
@@ -274,11 +274,8 @@ update_environment (const char *contentsDir, bool need64Bit)
 	if (push_env_to_end ("PATH", "~/.dotnet/tools"))
 		updated = YES;
 
-	if (need64Bit) {
-		if (push_env_to_start ("MONODEVELOP_64BIT_SAFE", "yes")) {
-			updated = YES;
-		}
-	}
+	if (push_env_to_start ("MONODEVELOP_64BIT_SAFE", "yes"))
+		updated = YES;
 
 	if (replace_env ("LC_NUMERIC", "C"))
 		updated = YES;
