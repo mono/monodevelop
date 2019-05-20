@@ -46,8 +46,8 @@ xcode_get_dev_path ()
 		error:nil
 	];
 
-	return xcode_link ? xcode_link : @"/Applications/Xcode.app/Contents/Developer";
-return xcode_link ?: @"/Applications/Xcode.app/Contents/Developer"
+	return xcode_link ?: @"/Applications/Xcode.app/Contents/Developer";
+}
 
 static NSArray<NSString *> *
 generate_fallback_paths (NSString *binDir)
