@@ -235,6 +235,48 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		const string FoundationLib = "/System/Library/Frameworks/Foundation.framework/Versions/Current/Foundation";
+
+		delegate void NSUncaughtExceptionHandler (IntPtr exception);
+
+		static readonly NSUncaughtExceptionHandler uncaughtHandler = HandleUncaughtException;
+		static NSUncaughtExceptionHandler oldHandler;
+
+		static void HandleUncaughtException(IntPtr exceptionPtr)
+		{
+			// It's non-null guaranteed by objc.
+			Debug.Assert (exceptionPtr != IntPtr.Zero);
+
+			var nsException = ObjCRuntime.Runtime.GetNSObject<NSException> (exceptionPtr);
+			try {
+				throw new MarshalledObjCException (nsException);
+			} catch (MarshalledObjCException e) {
+				// Is there a way to figure out if it's going to crash us? Maybe check MarshalObjectiveCExceptionMode and MarshalManagedExceptionMode?
+				LoggingService.LogInternalError ("Unhandled ObjC exception", e);
+			}
+
+			oldHandler?.Invoke (exceptionPtr);
+		}
+
+		sealed class MarshalledObjCException : ObjCException
+		{
+			public MarshalledObjCException (NSException exception) : base (exception)
+			{
+			}
+		}
+
+		[DllImport (FoundationLib)]
+		static extern void NSSetUncaughtExceptionHandler (NSUncaughtExceptionHandler handler);
+
+		[DllImport (FoundationLib)]
+		static extern NSUncaughtExceptionHandler NSGetUncaughtExceptionHandler ();
+
+		static void RegisterUncaughtExceptionHandler ()
+		{
+			oldHandler = NSGetUncaughtExceptionHandler ();
+			NSSetUncaughtExceptionHandler (uncaughtHandler);
+		}
+
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
@@ -247,6 +289,7 @@ namespace MonoDevelop.MacIntegration
 			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
 			loaded.RegisterBackend<Xwt.Backends.IAlertDialogBackend, ThemedMacAlertDialogBackend> ();
 
+			RegisterUncaughtExceptionHandler ();
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
 			timer.Trace ("Installing App Event Handlers");

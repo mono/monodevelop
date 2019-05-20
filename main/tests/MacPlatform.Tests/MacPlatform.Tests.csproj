@@ -15,6 +15,7 @@
     <Reference Include="System" />
     <Reference Include="Xamarin.Mac">
       <HintPath>..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
