@@ -218,7 +218,6 @@ load_xammac()
 	}
 
 	if (should_load_xammac_registrar()) {
-		NSLog (@"loading vsmregistrar");
 		XAMARIN_CREATE_CLASSES ();
 	}
 }
