@@ -316,11 +316,11 @@ int monodevelop_main (int argc, char **argv)
 	get_mono_env_options (&mono_argc, &mono_argv, libmono, entryExecutableName);
 
 	// append original arguments
-	int new_argc = mono_argc + argc;
+	int new_argc = mono_argc + argc + 1;
 	char **new_argv = (char **) malloc (sizeof (char *) * new_argc);
 	int n = 0;
 
-	new_argv[0] = argv[0];
+	new_argv[n++] = argv[0];
 	for (int i = 0; i < mono_argc; i++)
 		new_argv[n++] = mono_argv[i];
 
