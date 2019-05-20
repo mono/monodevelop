@@ -1,4 +1,4 @@
-//
+﻿//
 // Document.cs
 //
 // Author:
@@ -355,7 +355,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public TextEditor Editor {
 			get {
-				return GetContent <TextEditor> ();
+				try {
+					return GetContent<TextEditor> ();
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Exception while GetContent<TextEditor>", e);
+					return null;
+				}
 			}
 		}
 
