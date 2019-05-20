@@ -15,13 +15,15 @@
 #include <limits.h>
 #include <libgen.h>
 
+#include "monostub-utils.h"
+
 typedef int (* mono_main) (int argc, char **argv);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
 typedef void (* monoeg_g_free) (void *ptr);
 typedef void (* gobject_tracker_init) (void *libmono);
 
-#include "monostub-utils.h"
+static NSString *appName;
 
 #if STATIC_REGISTRAR
 // We have full static registrar enabled.
@@ -36,16 +38,16 @@ extern "C" void XAMARIN_CREATE_CLASSES ();
 
 #if NOGUI
 static void
-show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
+show_alert (NSString *msg, NSString *bundle_name, NSString *mono_download_url)
 {
-	NSLog (@"Could not launch: %@\n%@\n%@", appName, msg, mono_download_url);
+	NSLog (@"Could not launch: %@\n%@\n%@", bundle_name, msg, mono_download_url);
 }
 #else
 static void
-show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
+show_alert (NSString *msg, NSString *bundle_name, NSString *mono_download_url)
 {
 	NSAlert *alert = [[NSAlert alloc] init];
-	[alert setMessageText:[NSString stringWithFormat:@"Could not launch %@", appName]];
+	[alert setMessageText:[NSString stringWithFormat:@"Could not launch %@", bundle_name]];
 	[alert setInformativeText:msg];
 	[alert addButtonWithTitle:@"Download Mono Framework"];
 	[alert addButtonWithTitle:@"Cancel"];
@@ -59,47 +61,47 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 #endif
 
 static void
-exit_with_message (NSString *reason, NSString *entryExecutableName)
+exit_with_message (NSString *reason)
 {
-	NSString *appName = entryExecutableName;
+	NSString *entryExecutableName = appName;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
-		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
+		entryExecutableName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
 	}
 
 	NSString *fmt = @"%@\n\nPlease download and install the latest version of Mono.";
 	NSString *msg = [NSString stringWithFormat:fmt, reason];
 	NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 
-	show_alert(msg, appName, mono_download_url);
+	show_alert(msg, entryExecutableName, mono_download_url);
 	exit (1);
 }
 
 static void *
-load_symbol(const char *symbol_type, void *lib, const char *framework_name, NSString *app_name)
+load_symbol(const char *symbol_type, void *lib, const char *framework_name)
 {
 	void *symbol = dlsym (lib, symbol_type);
 	if (!symbol) {
 		NSLog (@"Could not load %s(): %s", symbol_type, dlerror ());
 		NSString *msg = [NSString stringWithFormat:@"Failed to load the %s framework.", framework_name];
-		exit_with_message (msg, app_name);
+		exit_with_message (msg);
 	}
 
 	return symbol;
 }
-#define LOAD_MONO_SYMBOL(symbol_type, libmono, app_name) \
-	(symbol_type)load_symbol(#symbol_type, libmono, "Mono", app_name);
+#define LOAD_MONO_SYMBOL(symbol_type, libmono) \
+	(symbol_type)load_symbol(#symbol_type, libmono, "Mono");
 
 static void
-get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono, NSString *app_name)
+get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono)
 {
 	const char *env = getenv ("MONO_ENV_OPTIONS");
 
-	mono_parse_options_from _mono_parse_options_from = LOAD_MONO_SYMBOL(mono_parse_options_from, libmono, app_name);
+	mono_parse_options_from _mono_parse_options_from = LOAD_MONO_SYMBOL(mono_parse_options_from, libmono);
 
 	char *ret = _mono_parse_options_from (env, ref_argc, ref_argv);
 	if (ret) {
-		exit_with_message ([NSString stringWithUTF8String:ret], app_name);
+		exit_with_message ([NSString stringWithUTF8String:ret]);
 	}
 }
 
@@ -167,7 +169,7 @@ correct_locale(void)
 #define LOAD_DYLIB(name) LOAD_DYLIB_FROM(name, #name)
 
 static void
-try_load_gobject_tracker (void *libmono, NSString *entryExecutable)
+try_load_gobject_tracker (void *libmono)
 {
 	void *gobject_tracker = LOAD_DYLIB_FROM(gobject_tracker, "libgobject-tracker");
 	if (!gobject_tracker)
@@ -200,28 +202,32 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 }
 
 static bool
-should_load_xammac_registrar(NSString *app_name)
+should_load_xammac_registrar()
+{
+#if XM_FULL_STATIC_REGISTRAR
+	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
+	void *libvsmregistrar = !registrar_toggle ? LOAD_DYLIB(libvsmregistrar) : NULL;
+	return libvsmregistrar != NULL;
+#else
+	return true;
+#endif
+
+}
+
+static void
+load_xammac()
 {
 	void *libxammac;
 
 	LOAD_DYLIB(libxammac);
 	if (!libxammac) {
 		NSLog (@"Failed to load libxammac.dylib: %s", dlerror ());
-		NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
-		exit_with_message (msg, app_name);
+		exit_with_message (@"This application requires Xamarin.Mac native library side-by-side.");
 	}
 
-#if XM_FULL_STATIC_REGISTRAR
-	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
-	void *libvsmregistrar = NULL;
-	if (!registrar_toggle) {
-		LOAD_DYLIB(libvsmregistrar);
+	if (should_load_xammac_registrar()) {
+		XAMARIN_CREATE_CLASSES ();
 	}
-
-	return libvsmregistrar != NULL;
-#else
-	return true;
-#endif
 }
 
 int
@@ -238,7 +244,7 @@ main (int argc, char **argv)
 		// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
 		// as part of `make run` and then binDir should be '.'
 		NSString *entryExecutable = [NSString stringWithUTF8String: argv[0]];
-		NSString *entryExecutableName = [entryExecutable lastPathComponent];
+		appName = [entryExecutable lastPathComponent];
 		NSString *entryExecutableDir = [entryExecutable stringByDeletingLastPathComponent];
 		NSString *binDirFullPath = [NSString stringWithFormat:@"%@/../../%@", entryExecutableDir, binDir];
 		BOOL isDir = NO;
@@ -283,7 +289,7 @@ main (int argc, char **argv)
 			setrlimit (RLIMIT_NOFILE, &limit);
 		}
 
-		NSString *exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
+		NSString *exeName = [NSString stringWithFormat:@"%@.exe", appName];
 		NSString *exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 
 		void *libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
@@ -291,25 +297,23 @@ main (int argc, char **argv)
 		if (libmono == NULL) {
 			NSLog (@"Failed to load libmonosgen-2.0.dylib: %s", dlerror ());
 			NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
-			exit_with_message (msg, entryExecutableName);
+			exit_with_message (msg);
 		}
 
-		if (should_load_xammac_registrar (entryExecutableName))
-			XAMARIN_CREATE_CLASSES ();
+		load_xammac();
 
-		try_load_gobject_tracker (libmono, entryExecutableName);
+		try_load_gobject_tracker (libmono);
 
-		monoeg_g_free _g_free = LOAD_MONO_SYMBOL(monoeg_g_free, libmono, entryExecutableName);
+		monoeg_g_free _g_free = LOAD_MONO_SYMBOL(monoeg_g_free, libmono);
 
-		_mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, entryExecutableName);
-		mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono,
-																					entryExecutableName);
+		_mono_main = LOAD_MONO_SYMBOL(mono_main, libmono);
+		mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono);
 
 		char *mono_version = _mono_get_runtime_build_info ();
 
 		if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
 			NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
-			exit_with_message (msg, entryExecutableName);
+			exit_with_message (msg);
 		}
 
 		_g_free (mono_version);
@@ -319,7 +323,7 @@ main (int argc, char **argv)
 		char **mono_argv = (char **) malloc (sizeof (char *) * mono_argc);
 
 		mono_argv[0] = (char *) "--debug";
-		get_mono_env_options (&mono_argc, &mono_argv, libmono, entryExecutableName);
+		get_mono_env_options (&mono_argc, &mono_argv, libmono);
 
 		// append original arguments
 		new_argc = mono_argc + argc + 1;
