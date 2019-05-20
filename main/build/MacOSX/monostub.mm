@@ -82,7 +82,7 @@ exit_with_message (NSString *reason, NSString *entryExecutableName)
 	exit (1);
 }
 
-void *
+static void *
 load_symbol(const char *symbol_type, void *lib, const char *framework_name, NSString *app_name)
 {
 	void *symbol = dlsym (lib, symbol_type);
@@ -94,7 +94,8 @@ load_symbol(const char *symbol_type, void *lib, const char *framework_name, NSSt
 
 	return symbol;
 }
-#define LOAD_MONO_SYMBOL(symbol_type, libmono, app_name) (symbol_type)load_symbol(#symbol_type, libmono, "Mono", app_name);
+#define LOAD_MONO_SYMBOL(symbol_type, libmono, app_name) \
+	(symbol_type)load_symbol(#symbol_type, libmono, "Mono", app_name);
 
 static void
 get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono, NSString *app_name)
@@ -203,7 +204,7 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
 		name = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/" #name ".dylib", RTLD_LAZY); \
 	}
 
-bool
+static bool
 should_load_xammac_registrar(NSString *app_name)
 {
 	void *libxammac;
@@ -228,118 +229,117 @@ should_load_xammac_registrar(NSString *app_name)
 #endif
 }
 
-int monodevelop_main (int argc, char **argv)
+int
+main (int argc, char **argv)
 {
-	//clock_t start = clock();
-	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
+	int new_argc;
+	char **new_argv;
+	void *libmono;
+	mono_main _mono_main;
 
-	// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
-	// as part of `make run` and then binDir should be '.'
-	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: argv[0]];
-	NSString *entryExecutableName = [entryExecutable lastPathComponent];
-	NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
-	NSString *binDirFullPath = [NSString pathWithComponents:components];
-	BOOL isDir = NO;
-	if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
-		binDir = [[NSString alloc] initWithUTF8String: "."];
+	@autoreleasepool {
+		//clock_t start = clock();
+		NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 
-	NSString *appDir = [[NSBundle mainBundle] bundlePath];
+		// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
+		// as part of `make run` and then binDir should be '.'
+		NSString *entryExecutable = [[NSString alloc] initWithUTF8String: argv[0]];
+		NSString *entryExecutableName = [entryExecutable lastPathComponent];
+		NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
+		NSString *binDirFullPath = [NSString pathWithComponents:components];
+		BOOL isDir = NO;
+		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
+			binDir = [[NSString alloc] initWithUTF8String: "."];
 
-	run_md_bundle_if_needed(appDir, argc, argv);
+		NSString *appDir = [[NSBundle mainBundle] bundlePath];
 
-	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"5.18.1.24";
+		run_md_bundle_if_needed(appDir, argc, argv);
 
-	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
-	if (plist) {
-		NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
-		if (version_obj && [version_obj length] > 0)
-			req_mono_version = version_obj;
-	}
+		// can be overridden with plist string MonoMinVersion
+		NSString *req_mono_version = @"5.18.1.24";
 
-	setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
+		NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
+		if (plist) {
+			NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
+			if (version_obj && [version_obj length] > 0)
+				req_mono_version = version_obj;
+		}
+
+		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
 #if HYBRID_SUSPEND_ABORT
-	setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
+		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
 #endif
 
-	// To be removed: https://github.com/mono/monodevelop/issues/6326
-	setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
+		// To be removed: https://github.com/mono/monodevelop/issues/6326
+		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
 
-	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
-		//printf ("Updated the environment.\n");
+		if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
+			//printf ("Updated the environment.\n");
 
-		return execv (argv[0], argv);
+			return execv (argv[0], argv);
+		}
+
+		correct_locale();
+		//printf ("Running main app.\n");
+
+		struct rlimit limit;
+		if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
+			limit.rlim_cur = MIN (limit.rlim_max, 1024);
+			setrlimit (RLIMIT_NOFILE, &limit);
+		}
+
+		NSString *exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
+		NSString *exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
+
+		libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
+
+		if (libmono == NULL) {
+			fprintf (stderr, "Failed to load libmonosgen-2.0.dylib: %s\n", dlerror ());
+			NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
+			exit_with_message (msg, entryExecutableName);
+		}
+
+		if (should_load_xammac_registrar (entryExecutableName))
+			XAMARIN_CREATE_CLASSES ();
+
+		try_load_gobject_tracker (libmono, entryExecutableName);
+
+		_mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, entryExecutableName);
+		mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono,
+																					entryExecutableName);
+
+		char *mono_version = _mono_get_runtime_build_info ();
+
+		if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
+			NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
+			exit_with_message (msg, entryExecutableName);
+		}
+
+		// enable --debug so that we can get useful stack traces and add mono env options
+		int mono_argc = 1;
+		char **mono_argv = (char **) malloc (sizeof (char *) * mono_argc);
+
+		mono_argv[0] = (char *) "--debug";
+		get_mono_env_options (&mono_argc, &mono_argv, libmono, entryExecutableName);
+
+		// append original arguments
+		new_argc = mono_argc + argc + 1;
+		new_argv = (char **) malloc (sizeof (char *) * new_argc);
+		int n = 0;
+
+		new_argv[n++] = argv[0];
+		for (int i = 0; i < mono_argc; i++)
+			new_argv[n++] = mono_argv[i];
+
+		// append old arguments
+		new_argv[n++] = strdup ([exePath UTF8String]);
+		for (int i = 1; i < argc; i++)
+			new_argv[n++] = argv[i];
+
+		//clock_t end = clock();
+		//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
 	}
-
-	correct_locale();
-	//printf ("Running main app.\n");
-
-	struct rlimit limit;
-	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
-		limit.rlim_cur = MIN (limit.rlim_max, 1024);
-		setrlimit (RLIMIT_NOFILE, &limit);
-	}
-
-	NSString *exeName = [NSString stringWithFormat:@"%@.exe", entryExecutableName];
-	NSString *exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
-
-	void *libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
-
-	if (libmono == NULL) {
-		fprintf (stderr, "Failed to load libmonosgen-2.0.dylib: %s\n", dlerror ());
-		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
-		exit_with_message (msg, entryExecutableName);
-	}
-
-	if (should_load_xammac_registrar (entryExecutableName))
-		XAMARIN_CREATE_CLASSES ();
-
-	try_load_gobject_tracker (libmono, entryExecutableName);
-
-	mono_main _mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, entryExecutableName);
-	mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono,
- entryExecutableName);
-
-	char *mono_version = _mono_get_runtime_build_info ();
-
-	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
-		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
-		exit_with_message (msg, entryExecutableName);
-	}
-
-	// enable --debug so that we can get useful stack traces and add mono env options
-	int mono_argc = 1;
-	char **mono_argv = (char **) malloc (sizeof (char *) * mono_argc);
-
-	mono_argv[0] = (char *) "--debug";
-	get_mono_env_options (&mono_argc, &mono_argv, libmono, entryExecutableName);
-
-	// append original arguments
-	int new_argc = mono_argc + argc + 1;
-	char **new_argv = (char **) malloc (sizeof (char *) * new_argc);
-	int n = 0;
-
-	new_argv[n++] = argv[0];
-	for (int i = 0; i < mono_argc; i++)
-		new_argv[n++] = mono_argv[i];
-
-	// append old arguments
-	new_argv[n++] = strdup ([exePath UTF8String]);
-	for (int i = 1; i < argc; i++)
-		new_argv[n++] = argv[i];
-
-
-	//clock_t end = clock();
-	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
-
 	return _mono_main (new_argc, new_argv);
-}
-
-int main (int argc, char **argv)
-{
-	@autoreleasepool {
-		return monodevelop_main (argc, argv);
-	}
 }
 
