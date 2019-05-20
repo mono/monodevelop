@@ -18,6 +18,7 @@
 typedef int (* mono_main) (int argc, char **argv);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
+typedef void (* monoeg_g_free) (void *ptr);
 typedef void (* gobject_tracker_init) (void *libmono);
 
 #include "monostub-utils.h"
@@ -190,7 +191,7 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
         if (argc > 2) {
             NSString *strings[argc-2];
             for (int i = 0; i < argc-2; i++)
-                strings [i] = [[NSString alloc] initWithUTF8String:argv[i+2]];
+                strings [i] = [NSString stringWithUTF8String:argv[i+2]];
             arguments = [NSArray arrayWithObjects:strings count:argc-2];
         }
         run_md_bundle (appDir, arguments);
@@ -238,17 +239,17 @@ main (int argc, char **argv)
 
 	@autoreleasepool {
 		//clock_t start = clock();
-		NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
+		NSString *binDir = @"Contents/Resources/lib/monodevelop/bin";
 
 		// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
 		// as part of `make run` and then binDir should be '.'
-		NSString *entryExecutable = [[NSString alloc] initWithUTF8String: argv[0]];
+		NSString *entryExecutable = [NSString stringWithUTF8String: argv[0]];
 		NSString *entryExecutableName = [entryExecutable lastPathComponent];
 		NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
 		NSString *binDirFullPath = [NSString pathWithComponents:components];
 		BOOL isDir = NO;
 		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
-			binDir = [[NSString alloc] initWithUTF8String: "."];
+			binDir = @".";
 
 		NSString *appDir = [[NSBundle mainBundle] bundlePath];
 
@@ -304,6 +305,8 @@ main (int argc, char **argv)
 
 		try_load_gobject_tracker (libmono, entryExecutableName);
 
+		monoeg_g_free _g_free = LOAD_MONO_SYMBOL(monoeg_g_free, libmono, entryExecutableName);
+
 		_mono_main = LOAD_MONO_SYMBOL(mono_main, libmono, entryExecutableName);
 		mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono,
 																					entryExecutableName);
@@ -314,6 +317,8 @@ main (int argc, char **argv)
 			NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
 			exit_with_message (msg, entryExecutableName);
 		}
+
+		_g_free (mono_version);
 
 		// enable --debug so that we can get useful stack traces and add mono env options
 		int mono_argc = 1;
@@ -328,8 +333,13 @@ main (int argc, char **argv)
 		int n = 0;
 
 		new_argv[n++] = argv[0];
-		for (int i = 0; i < mono_argc; i++)
-			new_argv[n++] = mono_argv[i];
+		for (int i = 0; i < mono_argc; i++) {
+			new_argv[n++] = strdup (mono_argv[i]);
+			if (i > 0)
+				_g_free (mono_argv [i]);
+		}
+
+		_g_free(mono_argv);
 
 		// append old arguments
 		new_argv[n++] = strdup ([exePath UTF8String]);

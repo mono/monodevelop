@@ -48,12 +48,20 @@ str_append (const char *base, const char *append)
 	char *buf;
 
 	if (!(buf = (char *)malloc (baselen + len + 1)))
-		return NULL;
+		abort();
 
 	memcpy (buf, base, baselen);
 	strcpy (buf + baselen, append);
 
 	return buf;
+}
+
+static char *
+str_append_free (char *base, const char *append)
+{
+	char *new_value = str_append (base, append);
+	free (base);
+	return new_value;
 }
 
 static char *
@@ -65,53 +73,40 @@ xcode_get_dev_path ()
 		return strndup (buf, len);
 	}
 
-	return strdup("/Applications/Xcode.app/Contents/Developer");
+	return strdup ("/Applications/Xcode.app/Contents/Developer");
 }
 
 static char *
 generate_fallback_path (const char *contentsDir)
 {
-	char *lib_dir;
-	char *monodevelop_bin_dir;
 	char *value;
-	char *result;
 	char *xcode_dev_path;
 	char *xcode_dev_lib_path;
-	char *tmp;
 
 	/* Inject our Resources/lib dir */
-	lib_dir = str_append (contentsDir, "/Resources/lib:");
+	char *lib_dir = str_append (contentsDir, "/Resources/lib:");
 
 	/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
-	monodevelop_bin_dir = str_append (contentsDir, "/Resources/lib/monodevelop/bin:");
+	char *monodevelop_bin_dir = str_append (contentsDir, "/Resources/lib/monodevelop/bin:");
 
-	if (lib_dir == NULL || monodevelop_bin_dir == NULL)
-		abort ();
+	value = str_append_free (lib_dir, monodevelop_bin_dir);
 
-	value = str_append (lib_dir, monodevelop_bin_dir);
-	if (value == NULL)
-		abort ();
+	free (monodevelop_bin_dir);
 
 	/* Add Xcode's CommandLineTools dev lib dir before Xcode's Developer dir */
-	value = str_append (value, "/Library/Developer/CommandLineTools/usr/lib:");
+	value = str_append_free (value, "/Library/Developer/CommandLineTools/usr/lib:");
 
 	/* Add Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
 	if ((xcode_dev_path = xcode_get_dev_path ()) != NULL) {
-		xcode_dev_lib_path = str_append (xcode_dev_path, "/usr/lib:");
-		tmp = value;
-		value = str_append (value, xcode_dev_lib_path);
-		free (tmp);
-		free (xcode_dev_path);
+		xcode_dev_lib_path = str_append_free (xcode_dev_path, "/usr/lib:");
+		value = str_append_free (value, xcode_dev_lib_path);
 		free (xcode_dev_lib_path);
 	}
 
 	/* Add Mono's lib lib dir */
-	result = str_append (value, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/usr/local/lib");
+	value = str_append_free (value, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/usr/local/lib");
 
-	free (lib_dir);
-	free (monodevelop_bin_dir);
-	free (value);
-	return result;
+	return value;
 }
 
 static bool
@@ -193,9 +188,10 @@ update_environment (const char *contentsDir)
 	char *value;
 	
 	if ((value = generate_fallback_path (contentsDir))) {
-		char *token;
+		char *token, *iter;
 
-		while ((token = strsep(&value, ":"))) {
+		iter = value;
+		while ((token = strsep(&iter, ":"))) {
 			if (push_env_to_end ("DYLD_FALLBACK_LIBRARY_PATH", token))
 				updated = YES;
 		}
