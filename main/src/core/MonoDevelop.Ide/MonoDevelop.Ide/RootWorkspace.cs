@@ -661,7 +661,7 @@ namespace MonoDevelop.Ide
 		internal async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, OpenWorkspaceItemMetadata metadata, ProgressMonitor loadMonitor)
 		{
 			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.RootWindow.Show ();
+				IdeApp.Workbench.Show ();
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				CurrentSelectedWorkspaceItem = item;
