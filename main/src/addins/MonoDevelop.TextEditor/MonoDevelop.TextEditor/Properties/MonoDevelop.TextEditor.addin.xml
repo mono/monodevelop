@@ -52,7 +52,40 @@
 		<Assembly file="MonoDevelop.TextEditor.dll"/>
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret"
+		         _label="Insert next matching caret"
+				 shortcut="Shift+Alt+."
+				 macShortcut="Shift+Alt+."/>
+		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets"
+		         _label="Insert carets at all matching"
+				 shortcut="Shift+Alt+;"
+				 macShortcut="Shift+Alt+;"/>
+		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret"
+		         _label="Remove last caret"
+				 shortcut="Shift+Alt+,"
+				 macShortcut="Shift+Alt+,"/>
+		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown"
+		         _label="Move last caret down"
+				 shortcut="Shift+Alt+/"
+				 macShortcut="Shift+Alt+/"/>
+		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext"
+		         _label="Rotate primary caret down"
+				 shortcut=""
+				 macShortcut=""/>
+		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
+		         _label="Rotate primary caret up"
+				 shortcut=""
+				 macShortcut=""/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertAllMatchingCaretsCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertNextMatchingCaretCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RemoveLastSecondaryCaretCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveLastCaretDownCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RotatePrimaryCaretNextCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RotatePrimaryCaretPreviousCommandArgs"/>
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Copy" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CopyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Cut" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CutCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Paste" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PasteCommandArgs" />
