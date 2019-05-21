@@ -268,6 +268,8 @@ namespace MonoDevelop.Core.Assemblies
 			return GetBackend (fx).GetFrameworkFolders ();
 		}
 
+		// You can't really delete Facade assemblies while running the app.
+		static readonly ConditionalWeakTable<string, string []> cachedFacadeAssemblies = new ConditionalWeakTable<string, string []> ();
 		public IEnumerable<string> FindFacadeAssembliesForPCL (TargetFramework tx)
 		{
 			foreach (var folder in GetFrameworkFolders (tx)) {
@@ -275,7 +277,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (!Directory.Exists (facades))
 					continue;
 
-				return Directory.EnumerateFiles (facades, "*.dll");
+				return cachedFacadeAssemblies.GetValue (facades, dir => Directory.GetFiles (dir, "*.dll"));
 			}
 
 			//MonoDroid is special case because it's keeping Fascades in v1.0 folder
@@ -283,12 +285,13 @@ namespace MonoDevelop.Core.Assemblies
 				var frameworkFolder = GetFrameworkFolders (tx).FirstOrDefault ();
 				if (frameworkFolder != null) {
 					var facades = Path.Combine (Path.Combine (Path.GetDirectoryName (frameworkFolder), "v1.0"), "Facades");
-					if (Directory.Exists (facades))
-						return Directory.EnumerateFiles (facades, "*.dll");
+					if (Directory.Exists (facades)) {
+						return cachedFacadeAssemblies.GetValue (facades, dir => Directory.GetFiles (dir, "*.dll"));
+					}
 				}
 			}
 
-			return new string[0];
+			return Array.Empty<string> ();
 		}
 
 		/// <summary>

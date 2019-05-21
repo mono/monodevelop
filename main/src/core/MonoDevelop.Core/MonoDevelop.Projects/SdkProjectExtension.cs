@@ -274,7 +274,7 @@ namespace MonoDevelop.Projects
 		{
 			var references = new List<AssemblyReference> ();
 
-			var traversedProjects = new HashSet<string> ();
+			var traversedProjects = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 			traversedProjects.Add (Project.ItemId);
 
 			await GetTransitiveAssemblyReferences (traversedProjects, references, configuration, true, token);
@@ -302,7 +302,7 @@ namespace MonoDevelop.Projects
 			bool includeNonProjectReferences,
 			System.Threading.CancellationToken token)
 		{
-			foreach (var reference in await base.OnGetReferences (configuration, token)) {
+			foreach (var reference in await base.OnGetReferences (configuration, token).ConfigureAwait (false)) {
 				if (!reference.IsProjectReference) {
 					if (includeNonProjectReferences) {
 						references.Add (reference);
@@ -322,15 +322,14 @@ namespace MonoDevelop.Projects
 				if (project == null)
 					continue;
 
-				if (traversedProjects.Contains (project.ItemId))
+				if (!traversedProjects.Add (project.ItemId))
 					continue;
 
 				references.Add (reference);
-				traversedProjects.Add (project.ItemId);
 
 				var extension = project.AsFlavor<SdkProjectExtension> ();
 				if (extension != null)
-					await extension.GetTransitiveAssemblyReferences (traversedProjects, references, configuration, false, token);
+					await extension.GetTransitiveAssemblyReferences (traversedProjects, references, configuration, false, token).ConfigureAwait (false);
 			}
 		}
 
