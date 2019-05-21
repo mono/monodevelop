@@ -318,6 +318,10 @@ namespace MonoDevelop.Ide.Gui
 				return dock != null && dock.DockParent == RootWindow;
 			}
 		}
+
+		public bool Visible {
+			get { return RootWindow.Visible; }
+		}
 		
 		public void Present ()
 		{
