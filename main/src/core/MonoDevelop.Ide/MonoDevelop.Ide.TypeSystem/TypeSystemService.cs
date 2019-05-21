@@ -774,6 +774,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static Func<Task> FreezeLoad = () => Task.CompletedTask;
 
+		internal static async Task SafeFreezeLoad ()
+		{
+			try {
+				await FreezeLoad ();
+			} catch (Exception) {
+				// Ignore exceptions, such as the task being cancelled. We want to freeze the load
+				// whilst the NuGet restore is being run and continue after it has finished, cancelled,
+				// or thrown an exception.
+			}
+		}
+
 		public Task ProcessPendingLoadOperations ()
 		{
 			lock (workspaceLoadLock) {
