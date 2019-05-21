@@ -550,18 +550,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			CheckInitialized ();
 			foreach (var c in OnGetContents (type))
-				yield return c;
+				yield return AssertValid (c, type);
 
 			if (extensionChain != null) {
 				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
 					foreach (var c in ext.GetContents (type))
-						yield return c;
+						yield return AssertValid (c, type);
 				}
 			}
 			if (linkedController != null) {
 				foreach (var c in linkedController.GetContents (type))
-					yield return c;
+					yield return AssertValid (c, type);
 			}
+		}
+
+		object AssertValid (object ob, Type type)
+		{
+			if (!type.IsInstanceOfType (ob))
+				throw new InvalidOperationException ($"Invalid content type. Expected: '{type}', Actual: '{ob?.GetType ()}'");
+			return ob;
 		}
 
 		ContentCallbackRegistry contentCallbackRegistry;
