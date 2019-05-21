@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Reflection;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest
@@ -66,6 +68,10 @@ namespace MonoDevelop.StressTest
 				app.Start ();
 			} catch {
 				success = false;
+
+				var thisDirectory = Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
+				var screenshotFile = Path.Combine (thisDirectory, "screenshot-failure.png");
+				UserInterfaceTests.TestService.Session.TakeScreenshot (screenshotFile);
 				throw;
 			} finally {
 				app.Stop (success);
