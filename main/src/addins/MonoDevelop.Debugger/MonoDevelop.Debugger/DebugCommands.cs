@@ -552,8 +552,8 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			if (!IdeApp.Workbench.RootWindow.Visible) {
-				IdeApp.Workbench.RootWindow.Show ();
+			if (!IdeApp.Workbench.Visible) {
+				IdeApp.Workbench.Show ();
 			}
 			var breakpointsPad = IdeApp.Workbench.Pads.FirstOrDefault (p => p.Id == "MonoDevelop.Debugger.BreakpointPad");
 			if (breakpointsPad != null) {

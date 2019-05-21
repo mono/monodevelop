@@ -30,6 +30,11 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class NavigateToHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = Ide.IdeApp.Workbench.Visible;
+		}
+
 		protected override void Run ()
 		{
 			Ide.IdeApp.Workbench.Toolbar.FocusSearchBar ();
@@ -38,6 +43,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 	class GotoTypeHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = Ide.IdeApp.Workbench.Visible;
+		}
+
 		protected override void Run ()
 		{
 			Ide.IdeApp.Workbench.Toolbar.SetSearchCategory ("type");
@@ -46,6 +56,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 	class GotoFileHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = Ide.IdeApp.Workbench.Visible;
+		}
+
 		protected override void Run ()
 		{
 			Ide.IdeApp.Workbench.Toolbar.SetSearchCategory ("file");
@@ -54,6 +69,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 	class RunCommandHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = Ide.IdeApp.Workbench.Visible;
+		}
+
 		protected override void Run ()
 		{
 			Ide.IdeApp.Workbench.Toolbar.SetSearchCategory ("command");
