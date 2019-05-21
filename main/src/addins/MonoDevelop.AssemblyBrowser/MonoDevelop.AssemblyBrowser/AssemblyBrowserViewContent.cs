@@ -194,17 +194,6 @@ namespace MonoDevelop.AssemblyBrowser
 				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
 					try {
 						Widget.AddProject (project, false);
-						var netProject = project as DotNetProject;
-						if (netProject == null)
-							continue;
-						foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-							if (!System.IO.File.Exists (file.FilePath))
-								continue;
-							if (!alreadyAdded.Add (file.FilePath))
-								continue;
-							var loader = Widget.AddReferenceByFileName (file.FilePath);
-							allTasks.Add (loader.LoadingTask);
-						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while adding project " + project.Name + " to the tree.", e);
 					}

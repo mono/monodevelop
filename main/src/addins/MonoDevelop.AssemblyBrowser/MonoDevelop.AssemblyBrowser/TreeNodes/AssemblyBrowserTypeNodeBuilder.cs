@@ -32,6 +32,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -42,6 +44,7 @@ namespace MonoDevelop.AssemblyBrowser
 			private set; 
 		}
 		readonly static CSharpAmbience ambience = new CSharpAmbience ();
+		public static readonly Task<List<ReferenceSegment>> EmptyReferenceSegmentTask = Task.FromResult (new List<ReferenceSegment> ());
 
 		protected CSharpAmbience Ambience {
 			get {

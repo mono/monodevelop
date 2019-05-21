@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using ICSharpCode.Decompiler.Metadata;
 using System.Reflection.Metadata;
 using System.Linq;
-
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -83,15 +83,20 @@ namespace MonoDevelop.AssemblyBrowser
 
 		DecompilerTypeSystem decompilerTypeSystem;
 		public DecompilerTypeSystem DecompilerTypeSystem { 
-			get { 
-				if (decompilerTypeSystem == null) {
-					decompilerTypeSystem = new DecompilerTypeSystem (Assembly, new AssemblyResolver (widget));
-				}
-				return decompilerTypeSystem; 
+			get {
+				LoadTypeSystem (Assembly);
+				return decompilerTypeSystem;
 			}
 		}
 
+		void LoadTypeSystem (PEFile peFile)
+		{
+			decompilerTypeSystem = new DecompilerTypeSystem (peFile, new AssemblyResolver (Assembly, widget));
+		}
+
 		public Error Error { get; internal set; }
+
+		public bool IsLoaded { get; private set; }
 
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
@@ -116,28 +121,57 @@ namespace MonoDevelop.AssemblyBrowser
 					Error = new Error(e.Message);
 					assemblyDefinitionTaskSource.SetResult (null);
 					return null;
-				}
+				} finally { IsLoaded = true; }
 			});
 		}
 
+		ICompilation typeSystem;
+
+		public ICompilation GetMinimalTypeSystem ()
+		{
+			if (typeSystem != null)
+				return typeSystem;
+			var assembly = Assembly;
+			if (assembly == null)
+				return null;
+			return typeSystem = new SimpleCompilation (assembly.WithOptions (TypeSystemOptions.Default | TypeSystemOptions.Uncached | TypeSystemOptions.KeepModifiers), MinimalCorlib.Instance);
+		}
+
+		class MyUniversalAssemblyResolver : UniversalAssemblyResolver
+		{
+			public MyUniversalAssemblyResolver (string mainAssemblyFileName, bool throwOnError, string targetFramework) : base (mainAssemblyFileName, throwOnError, targetFramework)
+			{
+			}
+		}
 		class AssemblyResolver : IAssemblyResolver
 		{
+			readonly PEFile assembly;
 			readonly AssemblyBrowserWidget widget;
-			public AssemblyResolver (AssemblyBrowserWidget widget)
+
+			public AssemblyResolver (PEFile assembly, AssemblyBrowserWidget widget)
 			{
+				this.assembly = assembly;
 				this.widget = widget;
 			}
 
 			public PEFile Resolve (IAssemblyReference reference)
 			{
-				var loader = widget.AddReferenceByAssemblyName (reference.FullName);
-				return loader != null ? loader.Assembly : null;
+				try {
+					var targetFramework = assembly.Reader.DetectTargetFrameworkId () ?? "";
+					var resolver = new MyUniversalAssemblyResolver (assembly.FileName, false, targetFramework);
+					var fileName = resolver.FindAssemblyFile (reference);
+					if (fileName != null && File.Exists (fileName))
+						return widget.AddReferenceByFileName (fileName)?.Assembly;
+				} catch (Exception e) {
+					LoggingService.LogInternalError ($"Error while resolving assembly {reference.FullName} for {assembly.FileName}.", e);
+				}
+
+				return widget.AddReferenceByAssemblyName (reference.FullName)?.Assembly;
 			}
 
 			public PEFile ResolveModule (PEFile mainModule, string moduleName)
 			{
-				var loader = widget.AddReferenceByFileName (mainModule.FileName);
-				return loader != null ? loader.Assembly : null;
+				return widget.AddReferenceByFileName (mainModule.FileName)?.Assembly;
 			}
 		}
 
