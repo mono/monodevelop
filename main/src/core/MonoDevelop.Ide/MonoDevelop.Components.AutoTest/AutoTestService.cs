@@ -65,6 +65,7 @@ namespace MonoDevelop.Components.AutoTest
 				BinaryFormatter bf = new BinaryFormatter ();
 				IAutoTestClient client = (IAutoTestClient) bf.Deserialize (ms);
 				client.Connect (manager.AttachClient (client));
+				Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 			}
 			if (publishServer && !manager.IsClientConnected) {
 				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
@@ -74,6 +75,7 @@ namespace MonoDevelop.Components.AutoTest
 				bf.Serialize (ms, oref);
 				sref = Convert.ToBase64String (ms.ToArray ());
 				File.WriteAllText (SessionReferenceFile, sref);
+				Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 			}
 		}
 
