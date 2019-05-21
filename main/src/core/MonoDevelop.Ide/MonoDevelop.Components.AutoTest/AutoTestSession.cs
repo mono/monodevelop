@@ -581,7 +581,7 @@ namespace MonoDevelop.Components.AutoTest
 			try {
 				ExecuteOnIdle (() => {
 					success = result.Select ();
-				});
+				}, wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Select", result.SourceQuery, result, e);
 			}
@@ -622,7 +622,7 @@ namespace MonoDevelop.Components.AutoTest
 		public bool EnterText (AppResult result, string text)
 		{
 			try {
-				ExecuteOnIdle (() => result.EnterText (text));
+				ExecuteOnIdle (() => result.EnterText (text), wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("EnterText", result.SourceQuery, result, e);
 			}
@@ -633,7 +633,7 @@ namespace MonoDevelop.Components.AutoTest
 		public bool TypeKey (AppResult result, char key, string modifiers)
 		{
 			try {
-				ExecuteOnIdle (() => result.TypeKey (key, modifiers));
+				ExecuteOnIdle (() => result.TypeKey (key, modifiers), wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
 			}
@@ -644,7 +644,7 @@ namespace MonoDevelop.Components.AutoTest
 		public bool TypeKey (AppResult result, string keyString, string modifiers)
 		{
 			try {
-				ExecuteOnIdle (() => result.TypeKey (keyString, modifiers));
+				ExecuteOnIdle (() => result.TypeKey (keyString, modifiers), wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
 			}
@@ -659,7 +659,7 @@ namespace MonoDevelop.Components.AutoTest
 			try {
 				ExecuteOnIdle (() => {
 					success = result.Toggle (active);
-				});
+				}, wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Toggle", result.SourceQuery, result, e);
 			}
@@ -679,7 +679,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void SetProperty (AppResult result, string name, object o)
 		{
 			try {
-				ExecuteOnIdle (() => result.SetProperty (name, o));
+				ExecuteOnIdle (() => result.SetProperty (name, o), wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("SetProperty", result.SourceQuery, result, e);
 			}
@@ -692,7 +692,7 @@ namespace MonoDevelop.Components.AutoTest
 			try {
 				ExecuteOnIdle (() => {
 					success = result.SetActiveConfiguration (configuration);
-				});
+				}, wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("SetActiveConfiguration", result.SourceQuery, result, e);
 			}
@@ -707,7 +707,7 @@ namespace MonoDevelop.Components.AutoTest
 			try {
 				ExecuteOnIdle (() => {
 					success = result.SetActiveRuntime (runtime);
-				});
+				}, wait: true);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("SetActiveRuntime", result.SourceQuery, result, e);
 			}
