@@ -10,6 +10,12 @@ namespace ResultParser
 	{
 		public static int Main (string[] args)
 		{
+			if (File.Exists ("screenshot-failure.png")) {
+				var url = AzureBlobStorage.DefaultInstance.UploadFile ("screenshot-failure.png", "image/png").ToString ();
+				Console.WriteLine ("Failure screenshot: {0}", url);
+				return 1;
+			}
+
 			bool hasLeaks = false;
 			foreach (var file in Directory.EnumerateFiles(".", "*.json")) {
 				var serializer = new JsonSerializer {
