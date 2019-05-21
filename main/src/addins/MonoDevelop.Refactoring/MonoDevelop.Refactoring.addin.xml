@@ -200,8 +200,6 @@
 		<Map id="MonoDevelop.CSharp.Navigation.FindExtensionMethods" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindExtensionMethodsCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Navigation.FindMemberOverloads" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindMemberOverloadsCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Navigation.FindImplementingMembers" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindImplementingMembersCommandArgs" />
-		
-<!--		<Map id="MonoDevelop.Refactoring.Navigate.GotoBaseMember" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.GoToBaseMemberCommandArgs" />-->
 	</Extension>
 	
 	<Extension path="/MonoDevelop/TextEditor/ContextMenu/Editor">
