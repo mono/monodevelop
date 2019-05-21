@@ -29,6 +29,7 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Gtk;
 
@@ -57,13 +58,6 @@ namespace MonoDevelop.CSharp.Project
 			LanguageVersion.Preview
 		};
 
-		readonly Regex BadVersionRegex = new Regex (@"'(?<value>.*)'");
-
-		string ExtractBadVersion (string badValue)
-		{
-			return BadVersionRegex.Match (badValue).Groups ["value"].Value;
-		}
-		
 		public CompilerOptionsPanelWidget (DotNetProject project)
 		{
 			this.Build();
@@ -106,9 +100,13 @@ namespace MonoDevelop.CSharp.Project
 			iconEntry.DefaultPath = project.BaseDirectory;
 			allowUnsafeCodeCheckButton.Active = compilerParameters.UnsafeCode;
 			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
+			langVersionWarningIcon.Visible = false;
 
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
-			foreach (var (text, version) in CSharpLanguageVersionHelper.GetKnownLanguageVersions ()) {
+			var langVersions = CSharpLanguageVersionHelper.GetKnownLanguageVersions ();
+			var badSet = new HashSet<string> ();
+
+			foreach (var (text, version) in langVersions) {
 				try {
 					if (unsupportedLanguageVersions.Contains (version) && compilerParameters.LangVersion != version) {
 						// Mono's MSBuild does not currently support C# 8.
@@ -116,27 +114,33 @@ namespace MonoDevelop.CSharp.Project
 						langVerStore.AppendValues (text, version);
 					}
 				} catch (Exception ex) {
-					var badVersion = ExtractBadVersion (ex.Message);
-					label2.Markup = GettextCatalog.GetString ("C# Language Version [{0} (Unknown Version)]:", badVersion);
-					langVerStore.AppendValues (ExtractBadVersion (ex.Message), LanguageVersion.Preview);
+					var badVersion = configuration.Properties.GetProperty ("LangVersion").Value;
+					badSet.Add (GettextCatalog.GetString ("C# Language Version [{0} (Unknown Version)]", badVersion));
 				}
 			}
+
 			langVerCombo.Model = langVerStore;
 
-			TreeIter iter;
-			if (langVerStore.GetIterFirst (out iter)) {
-				do {
-					try {
-						var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
-						if (val == compilerParameters.LangVersion) {
-							langVerCombo.SetActiveIter (iter);
-							break;
+			if (badSet.Any ()) {
+				langVersionWarningIcon.Visible = true;
+				foreach (var s in badSet) {
+					var badIter = langVerStore.AppendValues (s, LanguageVersion.Default);
+					langVerCombo.SetActiveIter (badIter);
+				}
+			} else {
+				TreeIter iter;
+				if (langVerStore.GetIterFirst (out iter)) {
+					do {
+						try {
+							var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
+							if (val == compilerParameters.LangVersion) {
+								langVerCombo.SetActiveIter (iter);
+								break;
+							}
+						} catch (Exception ex) {
 						}
-					} catch (Exception ex) {
-						var badVersion = ExtractBadVersion (ex.Message);
-						label2.Markup = GettextCatalog.GetString ("C# Language Version [{0} (Unknown Version)]:", badVersion);
-					}
-				} while (langVerStore.IterNext (ref iter));
+					} while (langVerStore.IterNext (ref iter));
+				}
 			}
 
 			SetupAccessibility ();

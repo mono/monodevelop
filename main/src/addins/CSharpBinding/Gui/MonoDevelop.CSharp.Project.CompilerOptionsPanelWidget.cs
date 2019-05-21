@@ -258,6 +258,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table2.Gtk.Table+TableChild
 			this.langVersionWarningIcon = new global::Gtk.Image ();
 			this.langVersionWarningIcon.SetFromStock (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+			this.langVersionWarningIcon.Visible = false;
 			var langVersionHbox = new global::Gtk.HBox (false, 0);
 			langVersionHbox.Name = "langVersionHbox";
 			langVersionHbox.PackStart (this.langVersionWarningIcon, false, false, 0);
