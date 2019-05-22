@@ -25,8 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
-using System.Reflection;
+using System.Diagnostics;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest
@@ -69,9 +68,10 @@ namespace MonoDevelop.StressTest
 			} catch {
 				success = false;
 
-				var thisDirectory = Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
-				var screenshotFile = Path.Combine (thisDirectory, "screenshot-failure.png");
-				UserInterfaceTests.TestService.Session.TakeScreenshot (screenshotFile);
+				using (var p = Process.Start ("/usr/sbin/screencapture", "screenshot-failure.png")) {
+					Console.WriteLine ("Taking screenshot at point of failure");
+					p.WaitForExit ();
+				}
 				throw;
 			} finally {
 				app.Stop (success);
