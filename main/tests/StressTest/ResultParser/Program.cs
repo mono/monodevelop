@@ -10,13 +10,14 @@ namespace ResultParser
 	{
 		public static int Main (string[] args)
 		{
-			if (File.Exists ("screenshot-failure.png")) {
-				var url = AzureBlobStorage.DefaultInstance.UploadFile ("screenshot-failure.png", "image/png").ToString ();
+			bool hasLeaks = false;
+
+			foreach (var png in Directory.EnumerableFiles(".", "*.png")) {
+				var url = AzureBlobStorage.DefaultInstance.UploadFile (png, "image/png").ToString ();
 				Console.WriteLine ("Failure screenshot: {0}", url);
-				return 1;
+				hasLeaks = true;
 			}
 
-			bool hasLeaks = false;
 			foreach (var file in Directory.EnumerateFiles(".", "*.json")) {
 				var serializer = new JsonSerializer {
 					NullValueHandling = NullValueHandling.Ignore,
