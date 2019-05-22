@@ -289,7 +289,8 @@ namespace MonoDevelop.Debugger
 		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
 		{
 			using (var dlg = new BreakpointPropertiesDialog (bp, breakpointType)) {
-				Xwt.Command response = dlg.Run ();
+				Xwt.WindowFrame parentWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+				Xwt.Command response = dlg.Run (parentWindow);
 				if (bp == null)
 					bp = dlg.GetBreakEvent ();
 				return response == Xwt.Command.Ok;
