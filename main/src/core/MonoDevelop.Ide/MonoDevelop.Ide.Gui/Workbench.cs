@@ -347,7 +347,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public void GrabDesktopFocus ()
 		{
-			IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
+			if (!Visible)
+				Show ();
+			else
+				IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
 		}
 				
 		public bool FullScreen {
