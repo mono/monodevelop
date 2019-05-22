@@ -189,16 +189,20 @@ namespace MonoDevelop.Ide
 		[Test]
 		public void FeatureTogglesAsExpected ()
 		{
-			if (Version.Parse (BuildInfo.FullVersion) >= Version.Parse ("8.1")) {
-				Assert.True (BuildOutput.IsFeatureEnabled);
-			} else {
-				Assert.False (BuildOutput.IsFeatureEnabled);
+			var oldEnabledFeatures = Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED");
+			var oldDisabledFeatures = Environment.GetEnvironmentVariable ("MD_FEATURES_DISABLED");
 
-				var oldValue = Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED");
+			if (BuildOutput.IsFeatureEnabled) {
+				Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", "IdeBuildOutputView");
+				Assert.False (BuildOutput.IsFeatureEnabled);
+			} else {
 				Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "IdeBuildOutputView");
+				Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", "");
 				Assert.True (BuildOutput.IsFeatureEnabled);
-				Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", oldValue);
 			}
+
+			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", oldEnabledFeatures);
+			Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", oldDisabledFeatures);
 		}
 	}
 }
