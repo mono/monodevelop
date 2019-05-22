@@ -12,7 +12,7 @@ namespace ResultParser
 		{
 			bool hasLeaks = false;
 
-			foreach (var png in Directory.EnumerableFiles(".", "*.png")) {
+			foreach (var png in Directory.EnumerateFiles(".", "*.png")) {
 				var url = AzureBlobStorage.DefaultInstance.UploadFile (png, "image/png").ToString ();
 				Console.WriteLine ("Failure screenshot: {0}", url);
 				hasLeaks = true;
