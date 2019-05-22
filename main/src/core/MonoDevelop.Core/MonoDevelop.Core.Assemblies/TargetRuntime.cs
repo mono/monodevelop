@@ -37,6 +37,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using System.Runtime.CompilerServices;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -269,15 +270,18 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		// You can't really delete Facade assemblies while running the app.
-		static readonly ConditionalWeakTable<string, string []> cachedFacadeAssemblies = new ConditionalWeakTable<string, string []> ();
+		static ImmutableDictionary<TargetFramework, string []> cachedFacadeAssemblies = ImmutableDictionary<TargetFramework, string []>.Empty;
 		public IEnumerable<string> FindFacadeAssembliesForPCL (TargetFramework tx)
 		{
+			if (cachedFacadeAssemblies.TryGetValue (tx, out var value))
+				return value;
+
 			foreach (var folder in GetFrameworkFolders (tx)) {
 				var facades = Path.Combine (folder, "Facades");
 				if (!Directory.Exists (facades))
 					continue;
 
-				return cachedFacadeAssemblies.GetValue (facades, dir => Directory.GetFiles (dir, "*.dll"));
+				return ImmutableInterlocked.GetOrAdd (ref cachedFacadeAssemblies, tx, (_, dir) => Directory.GetFiles (dir, "*.dll"), facades);
 			}
 
 			//MonoDroid is special case because it's keeping Fascades in v1.0 folder
@@ -286,12 +290,12 @@ namespace MonoDevelop.Core.Assemblies
 				if (frameworkFolder != null) {
 					var facades = Path.Combine (Path.Combine (Path.GetDirectoryName (frameworkFolder), "v1.0"), "Facades");
 					if (Directory.Exists (facades)) {
-						return cachedFacadeAssemblies.GetValue (facades, dir => Directory.GetFiles (dir, "*.dll"));
+						return ImmutableInterlocked.GetOrAdd (ref cachedFacadeAssemblies, tx, (_, dir) => Directory.GetFiles (dir, "*.dll"), facades);
 					}
 				}
 			}
 
-			return Array.Empty<string> ();
+			return ImmutableInterlocked.GetOrAdd (ref cachedFacadeAssemblies, tx, Array.Empty<string> ());
 		}
 
 		/// <summary>
