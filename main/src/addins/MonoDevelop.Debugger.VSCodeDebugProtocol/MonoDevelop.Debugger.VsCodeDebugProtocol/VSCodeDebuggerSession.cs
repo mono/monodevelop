@@ -384,7 +384,25 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetStopped);
 						break;
 					case StoppedEvent.ReasonValue.Exception:
-						stackFrame = (VsCodeStackFrame) this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
+						stackFrame = null;
+						var backtrace = GetThreadBacktrace (body.ThreadId ?? -1);
+						if (Options.ProjectAssembliesOnly) {
+							// We can't evaluate expressions in external code frames, the debugger will hang
+							for (int i = 0; i < backtrace.FrameCount; i++) {
+								var frame = stackFrame = (VsCodeStackFrame)backtrace.GetFrame (i);
+								if (!frame.IsExternalCode) {
+									stackFrame = frame;
+									break;
+								}
+							}
+							if (stackFrame == null) {
+								OnContinue ();
+								return;
+							}
+						} else {
+							// It's OK to evaluate expressions in external code
+							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
+						}
 
 						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
 							OnContinue ();
