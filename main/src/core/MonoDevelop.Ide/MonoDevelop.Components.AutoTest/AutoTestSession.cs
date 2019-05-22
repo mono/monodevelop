@@ -52,7 +52,6 @@ namespace MonoDevelop.Components.AutoTest
 		[System.Runtime.InteropServices.DllImport("/System/Library/Frameworks/ApplicationServices.framework/Versions/Current/ApplicationServices", EntryPoint="CGMainDisplayID")]
 		internal static extern int MainDisplayID();
 
-		readonly ManualResetEvent syncEvent = new ManualResetEvent (false);
 		public readonly AutoTestSessionDebug SessionDebug = new AutoTestSessionDebug ();
 		public IAutoTestSessionDebug<MarshalByRefObject> DebugObject { 
 			get { return SessionDebug.DebugObject; }
@@ -153,7 +152,7 @@ namespace MonoDevelop.Components.AutoTest
 				return safe ? SafeObject (res) : res;
 			}
 
-			syncEvent.Reset ();
+			var syncEvent = new ManualResetEvent (false);
 			Gtk.Application.Invoke ((o, args) => {
 				try {
 					res = del ();
@@ -391,7 +390,7 @@ namespace MonoDevelop.Components.AutoTest
 				return;
 			}
 				
-			syncEvent.Reset ();
+			var syncEvent = new ManualResetEvent (false);
 			GLib.Idle.Add (() => {
 				idleFunc ();
 				syncEvent.Set ();
@@ -433,7 +432,7 @@ namespace MonoDevelop.Components.AutoTest
 		public AppResult[] WaitForElement (AppQuery query, int timeout)
 		{
 			const int pollTime = 200;
-			syncEvent.Reset ();
+			var syncEvent = new ManualResetEvent (false);
 			AppResult[] resultSet = null;
 
 			GLib.Timeout.Add ((uint)pollTime, () => {
@@ -458,7 +457,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void WaitForNoElement (AppQuery query, int timeout)
 		{
 			const int pollTime = 100;
-			syncEvent.Reset ();
+			var syncEvent = new ManualResetEvent (false);
 			AppResult[] resultSet = null;
 
 			GLib.Timeout.Add ((uint)pollTime, () => {
