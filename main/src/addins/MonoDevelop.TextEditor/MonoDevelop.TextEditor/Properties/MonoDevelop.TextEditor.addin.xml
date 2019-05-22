@@ -53,30 +53,32 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
-		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret"
-		         _label="Insert next matching caret"
-				 shortcut="Shift+Alt+."
-				 macShortcut="Shift+Alt+."/>
-		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets"
-		         _label="Insert carets at all matching"
-				 shortcut="Shift+Alt+;"
-				 macShortcut="Shift+Alt+;"/>
-		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret"
-		         _label="Remove last caret"
-				 shortcut="Shift+Alt+,"
-				 macShortcut="Shift+Alt+,"/>
-		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown"
-		         _label="Move last caret down"
-				 shortcut="Shift+Alt+/"
-				 macShortcut="Shift+Alt+/"/>
-		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext"
-		         _label="Rotate primary caret down"
-				 shortcut=""
-				 macShortcut=""/>
-		<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
-		         _label="Rotate primary caret up"
-				 shortcut=""
-				 macShortcut=""/>
+		<Category _name="Text Editor" id="TextEditor">
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret"
+					_label="Insert next matching caret"
+					shortcut="Shift+Alt+."
+					macShortcut="Shift+Alt+."/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets"
+					_label="Insert carets at all matching"
+					shortcut="Shift+Alt+;"
+					macShortcut="Shift+Alt+;"/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret"
+					_label="Remove last caret"
+					shortcut="Shift+Alt+,"
+					macShortcut="Shift+Alt+,"/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown"
+					_label="Move last caret down"
+					shortcut="Shift+Alt+/"
+					macShortcut="Shift+Alt+/"/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext"
+					_label="Rotate primary caret down"
+					shortcut=""
+					macShortcut=""/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
+					_label="Rotate primary caret up"
+					shortcut=""
+					macShortcut=""/>
+		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
