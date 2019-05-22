@@ -275,7 +275,10 @@
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Updater.UpdateCheckHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
-		<Class class = "MonoDevelop.Ide.LogReportingStartup"/>
+
+		<Condition id = "Branding" value = "MonoDevelop">
+			<Class class = "MonoDevelop.Ide.LogReportingStartup"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
