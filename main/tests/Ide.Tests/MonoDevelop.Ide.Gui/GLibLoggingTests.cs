@@ -51,9 +51,12 @@ namespace MonoDevelop.Ide.Gui
 
 				GLib.Log.Write ("Gtk", GLib.LogLevelFlags.Critical, "{0}", "critical should be captured");
 				Assert.That (crashReporter.LastException.Message, Contains.Substring ("critical should be captured"));
-				Assert.That (crashReporter.LastException.StackTrace, Is.Not.Null);
 				Assert.That (crashReporter.LastException.Source, Is.Not.Null);
 
+				var stacktrace = crashReporter.LastException.StackTrace;
+				Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
+				Assert.That (stacktrace, Contains.Substring ("at GLib.Log.g_logv"));
+				Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLoggingTests.ValidateCrashIsSentForGLibExceptions"));
 				// Error will cause the application to exit, so we can't test for that, but it follows the same code as Critical.
 			} finally {
 				LoggingService.UnregisterCrashReporter (crashReporter);
