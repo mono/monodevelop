@@ -185,14 +185,24 @@ namespace MonoDevelop.TextEditor
 			CommandManager.ToCommandId (SearchCommands.FindNext),
 			CommandManager.ToCommandId (SearchCommands.FindPrevious),
 			CommandManager.ToCommandId (SearchCommands.FindNextSelection),
-			CommandManager.ToCommandId (SearchCommands.FindPrevious)
+			CommandManager.ToCommandId (SearchCommands.FindPrevious),
+			"MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
 		};
 
 		bool CanHandleCommand (object commandId)
 		{
-			var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (TextView);
-			if (findPresenter != null && findPresenter.IsFocused)
-				return commandsSupportedWhenFindPresenterIsFocused.Contains (commandId);
+			// check TextView for null because of https://devdiv.visualstudio.com/DevDiv/_workitems/edit/890051
+			if (TextView is ITextView textView) {
+				var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (textView);
+				if (findPresenter != null && findPresenter.IsFocused) {
+					return commandsSupportedWhenFindPresenterIsFocused.Contains (commandId);
+				}
+			}
 
 			return true;
 		}

@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				Runtime.RunInMainThread (async () => {
 					await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
 					// load the global menu for the welcome window to avoid unresponsive menus on Mac
-					IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, "/MonoDevelop/Ide/MainMenu", "/MonoDevelop/Ide/AppMenu");
+					IdeServices.DesktopService.SetGlobalMenu (commandManager, "/MonoDevelop/Ide/MainMenu", "/MonoDevelop/Ide/AppMenu");
 				}).Ignore ();
 			}
 		}

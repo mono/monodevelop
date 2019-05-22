@@ -17,7 +17,7 @@
     <NuGetVersionNewtonsoftJson>10.0.3</NuGetVersionNewtonsoftJson>
     <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
     <NuGetVersionNUnit3>3.9.0</NuGetVersionNUnit3>
-    <NuGetVersionRoslyn>3.1.0-beta4-19254-08</NuGetVersionRoslyn>
+    <NuGetVersionRoslyn>3.1.0-beta4-19261-04</NuGetVersionRoslyn>
     <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
     <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
     <NuGetVersionVSEditor>16.0.379-g4a55b0e4f2</NuGetVersionVSEditor>

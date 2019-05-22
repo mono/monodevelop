@@ -1,10 +1,10 @@
-﻿//
-// INewProjectDialogBackend.cs
+//
+// FrameworkReference.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.DotNetCore
 {
-	interface INewProjectDialogBackend
+	/// <summary>
+	/// FrameworkReference is a set of known framework assemblies that are versioned
+	/// with the project's TargetFramework. Introduced with .NET Core 3.0
+	/// https://github.com/dotnet/designs/pull/50
+	/// </summary>
+	[ExportProjectItemType ("FrameworkReference")]
+	class FrameworkReference : ProjectItem
 	{
-		void ShowDialog ();
-		void CloseDialog ();
-		void RegisterController (INewProjectDialogController controller);
-		bool CanMoveToNextPage { get; set; }
-		Task MoveToNextPage ();
 	}
 }
-

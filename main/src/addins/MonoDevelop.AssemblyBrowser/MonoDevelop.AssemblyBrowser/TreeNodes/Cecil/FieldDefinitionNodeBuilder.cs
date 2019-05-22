@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
@@ -72,24 +73,25 @@ namespace MonoDevelop.AssemblyBrowser
 
 		#region IAssemblyBrowserNodeBuilder
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
+
+		Task<List<ReferenceSegment>> IAssemblyBrowserNodeBuilder.DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
+				return EmptyReferenceSegmentTask;
 			var field = (IField)navigator.DataItem;
 			if (field == null)
-				return null;
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field.ParentModule.PEFile, (System.Reflection.Metadata.FieldDefinitionHandle)field.MetadataToken));
+				return EmptyReferenceSegmentTask;
+			return MethodDefinitionNodeBuilder.DisassembleAsync (data, rd => rd.DisassembleField (field.ParentModule.PEFile, (System.Reflection.Metadata.FieldDefinitionHandle)field.MetadataToken));
 		}
-		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+
+		Task<List<ReferenceSegment>> IAssemblyBrowserNodeBuilder.DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
+				return EmptyReferenceSegmentTask;
 			var field = (IField)navigator.DataItem;
 			if (field == null)
-				return null;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (field.MetadataToken), flags: flags);
+				return EmptyReferenceSegmentTask;
+			return MethodDefinitionNodeBuilder.DecompileAsync (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (field.MetadataToken), flags: flags);
 		}
 
 		#endregion

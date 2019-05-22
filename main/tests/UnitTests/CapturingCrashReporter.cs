@@ -1,10 +1,10 @@
-﻿//
-// INewProjectDialogBackend.cs
+//
+// CapturingCrashReporter.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,18 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using System.Collections.Generic;
+using MonoDevelop.Core.LogReporting;
 
-using System.Threading.Tasks;
-
-namespace MonoDevelop.Ide.Projects
+namespace UnitTests
 {
-	interface INewProjectDialogBackend
+	public class CapturingCrashReporter : CrashReporter
 	{
-		void ShowDialog ();
-		void CloseDialog ();
-		void RegisterController (INewProjectDialogController controller);
-		bool CanMoveToNextPage { get; set; }
-		Task MoveToNextPage ();
+		public Exception LastException { get; private set; }
+
+		public override void ReportCrash (Exception ex, bool willShutDown, IEnumerable<string> tags)
+		{
+			LastException = ex;
+		}
 	}
 }
-

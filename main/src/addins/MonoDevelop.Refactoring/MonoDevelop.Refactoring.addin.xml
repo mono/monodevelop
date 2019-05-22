@@ -1,3 +1,4 @@
+﻿
 <ExtensionModel>
 	<Runtime>
 		<Import assembly="RefactoringEssentials.dll" />
@@ -60,6 +61,11 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation"
 						_label = "Go to Implementation"
 				 		shortcut="Ctrl|F12"
+				 		macShortcut=""/>
+			
+		<Command id = "MonoDevelop.Refactoring.Navigate.GotoBaseMember"
+				 		_label = "Go to Base Member"
+				 		shortcut=""
 				 		macShortcut=""/>
 			
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
