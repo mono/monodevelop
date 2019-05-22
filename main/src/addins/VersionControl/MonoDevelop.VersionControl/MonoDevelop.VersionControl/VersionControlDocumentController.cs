@@ -1,4 +1,4 @@
-//
+﻿//
 // VersionControlDocumentController.cs
 //
 // Author:
@@ -71,7 +71,7 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return false;
 
-			var versionInfo = repo.GetVersionInfo (fileController.FilePath);
+			var versionInfo = await repo.GetVersionInfoAsync (fileController.FilePath);
 			return versionInfo.IsVersioned;
 		}
 

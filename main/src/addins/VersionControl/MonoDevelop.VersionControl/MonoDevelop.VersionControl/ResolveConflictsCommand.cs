@@ -1,4 +1,4 @@
-//
+﻿//
 // ResolveConflictsCommands.cs
 //
 // Author:
@@ -51,8 +51,6 @@ namespace MonoDevelop.VersionControl
 				var info = await item.GetVersionInfoAsync (cancellationToken);
 				if ((info.Status & VersionStatus.Conflicted) != VersionStatus.Conflicted)
 					continue;
-
-			foreach (var item in list.Where (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted)) {
 				var doc = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
 				doc?.GetContent<VersionControlDocumentController> ()?.ShowMergeView ();
 			}

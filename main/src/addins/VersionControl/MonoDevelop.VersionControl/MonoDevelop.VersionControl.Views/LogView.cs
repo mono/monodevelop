@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Gtk;
 using MonoDevelop.Core;
@@ -31,9 +31,14 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public static bool CanShow (VersionControlItemList items, Revision since)
+		public static async Task<bool> CanShow (VersionControlItemList items, Revision since)
 		{
-			return items.All (i => i.VersionInfo.CanLog);
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync ();
+				if (!info.CanLog)
+					return false;
+			}
+			return true;
 		}
 
 		public LogView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"))

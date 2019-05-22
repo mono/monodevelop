@@ -1,4 +1,4 @@
-//
+﻿//
 // MergeView.cs
 //
 // Author:
@@ -119,11 +119,9 @@ namespace MonoDevelop.VersionControl.Views
 
 		void ClearContainer () => widgetContainer.Clear ();
 
+		protected override void OnUnfocused () => ClearContainer ();
 
-		protected internal override void OnDeselected () => ClearContainer ();
-
-
-		public override void OnDispose ()
+		protected override void OnDispose ()
 		{
 			if (widgetContainer != null) {
 				ClearContainer ();

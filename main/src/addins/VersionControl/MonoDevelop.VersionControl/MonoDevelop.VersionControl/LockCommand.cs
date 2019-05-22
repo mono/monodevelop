@@ -1,4 +1,4 @@
-// Lock.cs
+﻿// Lock.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -69,7 +69,7 @@ namespace MonoDevelop.VersionControl
 					} catch (Exception ex) {
 						LoggingService.LogError ("Lock operation failed", ex);
 						Monitor.ReportError (ex.Message, null);
-						return;
+						return Task.CompletedTask;
 					}
 				}
 				Gtk.Application.Invoke ((o, args) => {
