@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class StatusProgressMonitor: ProgressMonitor
+	internal class StatusProgressMonitor : ProgressMonitor
 	{
 		string icon;
 		bool showErrorDialogs;
@@ -44,8 +44,8 @@ namespace MonoDevelop.Ide.Gui
 		string title;
 		StatusBarContext statusBar;
 		Pad statusSourcePad;
-		
-		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad, bool showCancelButton): base (Runtime.MainSynchronizationContext)
+
+		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad, bool showCancelButton) : base (Runtime.MainSynchronizationContext)
 		{
 
 			this.lockGui = lockGui;
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
 		}
-		
+
 		protected override void OnProgressChanged ()
 		{
 			if (showTaskTitles)
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui
 			} else
 				IdeServices.DesktopService.ShowGlobalProgressIndeterminate ();
 		}
-		
+
 		public void UpdateStatusBar ()
 		{
 			if (showTaskTitles)
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui
 			else
 				statusBar.SetProgressFraction (0);
 		}
-		
+
 		protected override void OnCompleted ()
 		{
 			if (lockGui)

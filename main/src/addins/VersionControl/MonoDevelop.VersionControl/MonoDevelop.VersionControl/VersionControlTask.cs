@@ -1,9 +1,7 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Gtk;
-
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -70,7 +68,8 @@ namespace MonoDevelop.VersionControl
 		public void Wakeup() {
 			try {
 				tracker.EndTask();
-				tracker.Dispose ();
+				if(IdeApp.Workbench.RootWindow?.Visible == true)
+					tracker.Dispose ();
 			} finally {
 				Finished();
 			}
