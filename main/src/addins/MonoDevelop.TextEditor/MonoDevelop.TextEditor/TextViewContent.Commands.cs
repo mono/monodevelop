@@ -185,7 +185,13 @@ namespace MonoDevelop.TextEditor
 			CommandManager.ToCommandId (SearchCommands.FindNext),
 			CommandManager.ToCommandId (SearchCommands.FindPrevious),
 			CommandManager.ToCommandId (SearchCommands.FindNextSelection),
-			CommandManager.ToCommandId (SearchCommands.FindPrevious)
+			CommandManager.ToCommandId (SearchCommands.FindPrevious),
+			"MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext",
+			"MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
 		};
 
 		bool CanHandleCommand (object commandId)
