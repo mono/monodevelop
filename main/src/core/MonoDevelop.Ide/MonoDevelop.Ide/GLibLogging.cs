@@ -31,6 +31,8 @@ using System;
 using MonoDevelop.Core;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Runtime.ExceptionServices;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -270,7 +272,7 @@ namespace MonoDevelop.Ide.Gui
 			default:
 				try {
 					// Otherwise exception info is not gathered.
-					throw new CriticalGtkException (message);
+					throw new CriticalGtkException (msg, Environment.StackTrace);
 				} catch (CriticalGtkException e) {
 					if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
 						LoggingService.LogFatalError ("Fatal GLib error", e);
@@ -287,9 +289,12 @@ namespace MonoDevelop.Ide.Gui
 
 		sealed class CriticalGtkException : Exception
 		{
-			public CriticalGtkException(string message) : base(message)
+			public CriticalGtkException(string message, string stacktrace) : base(message)
 			{
+				StackTrace = stacktrace;
 			}
+
+			public override string StackTrace { get; }
 		}
 	}
 }
