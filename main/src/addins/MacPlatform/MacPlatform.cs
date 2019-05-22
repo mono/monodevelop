@@ -249,7 +249,7 @@ namespace MonoDevelop.MacIntegration
 
 			var nsException = ObjCRuntime.Runtime.GetNSObject<NSException> (exceptionPtr);
 			try {
-				throw new MarshalledObjCException (nsException);
+				throw new MarshalledObjCException (nsException, Environment.StackTrace);
 			} catch (MarshalledObjCException e) {
 				// Is there a way to figure out if it's going to crash us? Maybe check MarshalObjectiveCExceptionMode and MarshalManagedExceptionMode?
 				LoggingService.LogInternalError ("Unhandled ObjC exception", e);
@@ -260,9 +260,12 @@ namespace MonoDevelop.MacIntegration
 
 		sealed class MarshalledObjCException : ObjCException
 		{
-			public MarshalledObjCException (NSException exception) : base (exception)
+			public MarshalledObjCException (NSException exception, string stacktrace) : base (exception)
 			{
+				StackTrace = stacktrace;
 			}
+
+			public override string StackTrace { get; }
 		}
 
 		[DllImport (FoundationLib)]

@@ -166,8 +166,12 @@ namespace MacPlatform.Tests
 				Assert.Throws<ObjCException> (() => void_objc_msgSend (x.Handle, selector));
 
 				Assert.That (crashReporter.LastException.Message, Contains.Substring ("should be captured"));
-				Assert.That (crashReporter.LastException.StackTrace, Is.Not.Null);
 				Assert.That (crashReporter.LastException.Source, Is.Not.Null);
+
+				var stacktrace = crashReporter.LastException.StackTrace;
+				Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
+				Assert.That (stacktrace, Contains.Substring ("at MacPlatform.Tests.MacPlatformTest.void_objc_msgSend"));
+				Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService.HandleUncaughtException"));
 			} finally {
 				LoggingService.UnregisterCrashReporter (crashReporter);
 			}
