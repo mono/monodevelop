@@ -314,7 +314,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return sb.ToString();
 		}
 
-		bool? EvaluateCondition (int frameId, string exp)
+		bool EvaluateCondition (int frameId, string exp)
 		{
 			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
 
@@ -323,7 +323,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{exp}'. The error returned was '{response}'.\n");
 
-			return null;
+			return false;
 		}
 
 		bool ShouldStopOnExceptionCatchpoint (Catchpoint catchpoint, int frameId)
