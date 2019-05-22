@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text;
 using MonoDevelop.Core;
 using Microsoft.VisualStudio.Text.Editor;
 using Gtk;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 {
@@ -15,6 +16,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		readonly ITextBuffer textBuffer;
 		DebugValueWindow window;
 		ITextView lastView;
+		DocumentView lastDocumentView;
 
 		public DebuggerQuickInfoSource (DebuggerQuickInfoSourceProvider provider, ITextBuffer textBuffer)
 		{
@@ -28,8 +30,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		void CurrentFrameChanged (object sender, EventArgs e)
 		{
 			if (window != null) {
-				window.Destroy ();
-				window = null;
+				DestroyWindow ();
 			}
 		}
 
@@ -39,8 +40,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				return;
 			var debuggerSession = window.Tree.Frame?.DebuggerSession;
 			if (debuggerSession == null || debuggerSession == sender) {
-				window.Destroy ();
-				window = null;
+				DestroyWindow ();
 			}
 		}
 
@@ -121,6 +121,10 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				Ide.IdeApp.CommandService.RegisterTopWindow (window);
 				var bounds = view.TextViewLines.GetCharacterBounds (point);
 				view.LayoutChanged += LayoutChanged;
+#if CLOSE_ON_FOCUS_LOST
+				view.LostAggregateFocus += View_LostAggregateFocus;
+#endif
+				RegisterForHiddenAsync (view).Ignore ();
 				window.LeaveNotifyEvent += LeaveNotifyEvent;
 #if MAC
 				var cocoaView = ((ICocoaTextView)view);
@@ -135,6 +139,31 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			return null;
 		}
 
+		private async Task RegisterForHiddenAsync (ITextView view)
+		{
+			if (view.Properties.TryGetProperty<FileDocumentController> (typeof (DocumentController), out var documentController)) {
+				lastDocumentView = await documentController.GetDocumentView ();
+				lastDocumentView.ContentHidden += DocumentView_ContentHidden;
+			}
+		}
+
+		private void DocumentView_ContentHidden (object sender, EventArgs e)
+		{
+			DestroyWindow ();
+		}
+#if CLOSE_ON_FOCUS_LOST
+		private void View_LostAggregateFocus (object sender, EventArgs e)
+		{
+#if MAC
+			var nsWindow = MacInterop.GtkQuartz.GetWindow (window);
+			if (nsWindow == AppKit.NSApplication.SharedApplication.KeyWindow)
+				return;
+			DestroyWindow ();
+#else
+			throw new NotImplementedException ();
+#endif
+		}
+#endif
 		private void LayoutChanged (object sender, TextViewLayoutChangedEventArgs e)
 		{
 			if (e.OldViewState.ViewportLeft != e.NewViewState.ViewportLeft ||
@@ -161,7 +190,14 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			}
 			if (lastView != null) {
 				lastView.LayoutChanged -= LayoutChanged;
+#if CLOSE_ON_FOCUS_LOST
+				lastView.LostAggregateFocus -= View_LostAggregateFocus;
+#endif
 				lastView = null;
+			}
+			if (lastDocumentView != null) {
+				lastDocumentView.ContentHidden -= DocumentView_ContentHidden;
+				lastDocumentView = null;
 			}
 		}
 	}
