@@ -1,4 +1,4 @@
-//
+﻿//
 // RepositoryTests.cs
 //
 // Author:
@@ -336,13 +336,13 @@ namespace MonoDevelop.VersionControl.Tests
 			// Revert to head.
 			File.WriteAllText (added, content);
 			await Task.Run (async () => await Repo.RevertAsync (added, false, monitor));
-			Assert.AreEqual (Repo.GetBaseTextAsync (added), File.ReadAllText (added));
+			Assert.AreEqual (await Repo.GetBaseTextAsync (added), File.ReadAllText (added));
 		}
 
 		[TestCase (true)]
 		[TestCase (false)]
 		// Tests Repository.Revert
-		public void Reverts2 (bool stage)
+		public async Task Reverts2 (bool stage)
 		{
 			var monitor = new ProgressMonitor ();
 			AddFile ("init", null, true, true);
@@ -351,10 +351,10 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", "test", stage, false);
 
 			// Force cache evaluation.
-			Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache);
+			await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache);
 
-			Task.Run (() => Repo.RevertAsync (added, false, monitor)).Wait ();
-			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache).Status);
+			await Task.Run (() => Repo.RevertAsync (added, false, monitor));
+			Assert.AreEqual (VersionStatus.Unversioned, (await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache)).Status);
 		}
 
 		[Test]
@@ -640,7 +640,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests bug #23275
-		public void MoveAndMoveBack ()
+		public async Task MoveAndMoveBack ()
 		{
 			var monitor = new ProgressMonitor ();
 			string added = LocalPath.Combine ("testfile");
@@ -648,27 +648,27 @@ namespace MonoDevelop.VersionControl.Tests
 			string dirFile = Path.Combine (dir, "testfile");
 			AddFile ("testfile", "test", true, true);
 			AddDirectory ("testdir", true, false);
-			Task.Run (() => Repo.MoveFileAsync (added, dirFile, true, monitor)).Wait ();
-			Task.Run (() => Repo.MoveFileAsync (dirFile, added, true, monitor)).Wait ();
+			await Task.Run (() => Repo.MoveFileAsync (added, dirFile, true, monitor));
+			await Task.Run (() => Repo.MoveFileAsync (dirFile, added, true, monitor));
 
-			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfoAsync (dirFile, VersionInfoQueryFlags.IgnoreCache).Status);
-			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache).Status);
+			Assert.AreEqual (VersionStatus.Unversioned, (await Repo.GetVersionInfoAsync (dirFile, VersionInfoQueryFlags.IgnoreCache)).Status);
+			Assert.AreEqual (VersionStatus.Versioned, (await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache)).Status);
 		}
 
 		[Test]
-		public void RevertingADeleteMakesTheFileVersioned ()
+		public async Task RevertingADeleteMakesTheFileVersioned ()
 		{
 			var monitor = new ProgressMonitor ();
 			var added = LocalPath.Combine ("testfile");
 			AddFile ("testfile", "test", true, true);
 
 			// Force cache update.
-			Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache);
+			await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache);
 
-			Task.Run (() => Repo.DeleteFileAsync (added, true, monitor, false)).Wait ();
-			Task.Run (() => Repo.RevertAsync (added, false, monitor)).Wait ();
+			await Task.Run (() => Repo.DeleteFileAsync (added, true, monitor, false));
+			await Task.Run (() => Repo.RevertAsync (added, false, monitor));
 
-			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache).Status);
+			Assert.AreEqual (VersionStatus.Versioned, (await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache)).Status);
 		}
 
 		[Test]
