@@ -1523,32 +1523,35 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		public override nint AccessibilityInsertionPointLineNumber {
 			get {
-				if (InsertionPointLineNumber == null) {
-					LoggingService.LogError ("Missing InsertionPointLineNumber");
+				try {
+					return InsertionPointLineNumber ();
+				} catch (Exception e) {
+					LoggingService.LogInternalError (e);
 					return -1;
 				}
-				return InsertionPointLineNumber ();
 			}
 		}
 
 		public override nint AccessibilityNumberOfCharacters {
 			get {
-				if (NumberOfCharacters != null) {
-					LoggingService.LogError ("Missing NumberOfCharacters");
+				try {
+					return NumberOfCharacters ();
+				} catch (Exception e) {
+					LoggingService.LogInternalError (e);
 					return -1;
 				}
-				return NumberOfCharacters ();
 			}
 		}
 
 		public override NSRange AccessibilityVisibleCharacterRange {
 			get {
-				if (GetVisibleCharacterRange == null) {
-					LoggingService.LogError ("Missing GetVisibleCharacterRange");
+				try {
+					var realRange = GetVisibleCharacterRange ();
+					return new NSRange (realRange.Location, realRange.Length);
+				} catch (Exception e) {
+					LoggingService.LogInternalError (e);
 					return default;
 				}
-				var realRange = GetVisibleCharacterRange ();
-				return new NSRange (realRange.Location, realRange.Length);
 			}
 		}
 
@@ -1568,18 +1571,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityFrameForRange:")]
 		CGRect AccessibilityFrameForRange (NSRange range)
 		{
-			if (GetFrameForRange == null) {
-				LoggingService.LogError ("Missing GetFrameForRange");
-				return CGRect.Empty;
-			}
-
 			parentRef.TryGetTarget (out var parent);
 			if (parent == null) {
 				return CGRect.Empty;
 			}
 
 			var realRange = new AtkCocoa.Range { Location = (int)range.Location, Length = (int)range.Length };
-			var frame = GetFrameForRange (realRange);
+			Rectangle frame;
+			try {
+				frame = GetFrameForRange (realRange);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+				return CGRect.Empty;
+			}
 
 			int parentX, parentY;
 
@@ -1600,72 +1604,73 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityLineForIndex:")]
 		nint AccessibilityLineForIndex (nint index)
 		{
-			if (GetLineForIndex == null) {
-				LoggingService.LogError ("Missing GetLineForIndex");
+			try {
+				return GetLineForIndex ((int)index);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 				return -1;
 			}
-			return GetLineForIndex ((int)index);
 		}
 
 		[Export ("accessibilityRangeForLine:")]
 		NSRange AccessibilityRangeForLine (nint line)
 		{
-			if (GetRangeForLine == null) {
-				LoggingService.LogError ("Missing GetRangeForLine");
+			try {
+				var range = GetRangeForLine ((int)line + 1);
+				return new NSRange (range.Location, range.Length);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 				return default;
 			}
-
-			var range = GetRangeForLine ((int)line + 1);
-			return new NSRange (range.Location, range.Length);
 		}
 
 		[Export ("accessibilityStringForRange:")]
 		string AccessibilityStringForRange (NSRange range)
 		{
-			if (GetStringForRange == null) {
-				LoggingService.LogError ("Missing GetStringForRange");
+			try {
+				var realRange = new AtkCocoa.Range { Location = (int)range.Location, Length = (int)range.Length };
+				return GetStringForRange (realRange);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 				return null;
 			}
-
-			var realRange = new AtkCocoa.Range { Location = (int)range.Location, Length = (int)range.Length };
-			return GetStringForRange (realRange);
 		}
 
 		[Export ("accessibilityRangeForIndex:")]
 		NSRange AccessibilityRangeForIndex (nint index)
 		{
-			if (GetRangeForIndex == null) {
-				LoggingService.LogError ("Missing GetRangeForIndex");
+			try {
+				var realRange = GetRangeForIndex ((int)index);
+				return new NSRange (realRange.Location, realRange.Length);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 				return default;
 			}
-
-			var realRange = GetRangeForIndex ((int)index);
-			return new NSRange (realRange.Location, realRange.Length);
 		}
 
 		[Export ("accessibilityStyleRangeForIndex:")]
 		NSRange AccessibililtyStyleRangeForIndex (nint index)
 		{
-			if (GetStyleRangeForIndex == null) {
-				LoggingService.LogError ("Missing GetStyleRangeForIndex");
+			try {
+				var realRange = GetStyleRangeForIndex ((int)index);
+				return new NSRange (realRange.Location, realRange.Length);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 				return default;
 			}
-
-			var realRange = GetStyleRangeForIndex ((int)index);
-			return new NSRange (realRange.Location, realRange.Length);
 		}
 
 		[Export ("accessibilityRangeForPosition:")]
 		NSRange AccessibilityRangeForPosition (CGPoint position)
 		{
-			if (GetRangeForPosition == null) {
-				LoggingService.LogError ("Missing GetRangeForPosition");
+			try {
+				var point = new Point ((int)position.X, (int)position.Y);
+				var realRange = GetRangeForPosition (point);
+				return new NSRange (realRange.Location, realRange.Length);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 				return default;
 			}
-
-			var point = new Point ((int)position.X, (int)position.Y);
-			var realRange = GetRangeForPosition (point);
-			return new NSRange (realRange.Location, realRange.Length);
 		}
 	}
 }
