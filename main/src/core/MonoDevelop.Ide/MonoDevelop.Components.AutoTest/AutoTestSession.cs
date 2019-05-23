@@ -162,7 +162,7 @@ namespace MonoDevelop.Components.AutoTest
 					syncEvent.Set ();
 				}
 			});
-			if (!syncEvent.WaitOne (20000))
+			if (!syncEvent.WaitOne (30000))
 				throw new TimeoutException ("Timeout while executing synchronized call");
 			if (error != null)
 				throw error;
