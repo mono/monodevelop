@@ -38,6 +38,7 @@ using Gdk;
 using ObjCRuntime;
 using MetalPerformanceShaders;
 using MonoDevelop.Components.Mac;
+using LoggingService = MonoDevelop.Core.LoggingService;
 
 namespace MonoDevelop.Components.AtkCocoaHelper
 {
@@ -1522,18 +1523,30 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		public override nint AccessibilityInsertionPointLineNumber {
 			get {
+				if (InsertionPointLineNumber == null) {
+					LoggingService.LogError ("Missing InsertionPointLineNumber");
+					return -1;
+				}
 				return InsertionPointLineNumber ();
 			}
 		}
 
 		public override nint AccessibilityNumberOfCharacters {
 			get {
+				if (NumberOfCharacters != null) {
+					LoggingService.LogError ("Missing NumberOfCharacters");
+					return -1;
+				}
 				return NumberOfCharacters ();
 			}
 		}
 
 		public override NSRange AccessibilityVisibleCharacterRange {
 			get {
+				if (GetVisibleCharacterRange == null) {
+					LoggingService.LogError ("Missing GetVisibleCharacterRange");
+					return default;
+				}
 				var realRange = GetVisibleCharacterRange ();
 				return new NSRange (realRange.Location, realRange.Length);
 			}
@@ -1555,6 +1568,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityFrameForRange:")]
 		CGRect AccessibilityFrameForRange (NSRange range)
 		{
+			if (GetFrameForRange == null) {
+				LoggingService.LogError ("Missing GetFrameForRange");
+				return CGRect.Empty;
+			}
+
 			parentRef.TryGetTarget (out var parent);
 			if (parent == null) {
 				return CGRect.Empty;
@@ -1582,12 +1600,21 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityLineForIndex:")]
 		nint AccessibilityLineForIndex (nint index)
 		{
+			if (GetLineForIndex == null) {
+				LoggingService.LogError ("Missing GetLineForIndex");
+				return -1;
+			}
 			return GetLineForIndex ((int)index);
 		}
 
 		[Export ("accessibilityRangeForLine:")]
 		NSRange AccessibilityRangeForLine (nint line)
 		{
+			if (GetRangeForLine == null) {
+				LoggingService.LogError ("Missing GetRangeForLine");
+				return default;
+			}
+
 			var range = GetRangeForLine ((int)line + 1);
 			return new NSRange (range.Location, range.Length);
 		}
@@ -1595,6 +1622,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityStringForRange:")]
 		string AccessibilityStringForRange (NSRange range)
 		{
+			if (GetStringForRange == null) {
+				LoggingService.LogError ("Missing GetStringForRange");
+				return null;
+			}
+
 			var realRange = new AtkCocoa.Range { Location = (int)range.Location, Length = (int)range.Length };
 			return GetStringForRange (realRange);
 		}
@@ -1602,6 +1634,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityRangeForIndex:")]
 		NSRange AccessibilityRangeForIndex (nint index)
 		{
+			if (GetRangeForIndex == null) {
+				LoggingService.LogError ("Missing GetRangeForIndex");
+				return default;
+			}
+
 			var realRange = GetRangeForIndex ((int)index);
 			return new NSRange (realRange.Location, realRange.Length);
 		}
@@ -1609,6 +1646,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityStyleRangeForIndex:")]
 		NSRange AccessibililtyStyleRangeForIndex (nint index)
 		{
+			if (GetStyleRangeForIndex == null) {
+				LoggingService.LogError ("Missing GetStyleRangeForIndex");
+				return default;
+			}
+
 			var realRange = GetStyleRangeForIndex ((int)index);
 			return new NSRange (realRange.Location, realRange.Length);
 		}
@@ -1616,6 +1658,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityRangeForPosition:")]
 		NSRange AccessibilityRangeForPosition (CGPoint position)
 		{
+			if (GetRangeForPosition == null) {
+				LoggingService.LogError ("Missing GetRangeForPosition");
+				return default;
+			}
+
 			var point = new Point ((int)position.X, (int)position.Y);
 			var realRange = GetRangeForPosition (point);
 			return new NSRange (realRange.Location, realRange.Length);
