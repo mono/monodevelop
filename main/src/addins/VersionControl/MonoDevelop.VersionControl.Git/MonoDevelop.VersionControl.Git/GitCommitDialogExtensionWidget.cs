@@ -1,4 +1,4 @@
-//
+﻿//
 // GitCommitDialogExtensionWidget.cs
 //
 // Author:
@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 
-			Task.Run (async () => await repo.GetCurrentRemoteAsync ()).ContinueWith (t => {
+			repo.GetCurrentRemoteAsync ().ContinueWith (t => {
 				bool hasRemote = t.Result != null;
 				if (!hasRemote) {
 					checkPush.Sensitive = false;

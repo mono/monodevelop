@@ -1,4 +1,4 @@
-// VersionControlCommandHandler.cs
+﻿// VersionControlCommandHandler.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl
 			this.items = items;
 		}
 		
-		protected override bool MultipleSelectedNodes {
+		protected internal override bool MultipleSelectedNodes {
 			get {
 				if (items != null)
 					return items.Count > 1;

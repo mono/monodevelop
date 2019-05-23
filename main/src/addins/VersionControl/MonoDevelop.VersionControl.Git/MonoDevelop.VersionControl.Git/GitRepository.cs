@@ -287,7 +287,7 @@ namespace MonoDevelop.VersionControl.Git
 			return RunOperationAsync (localFile, repository => {
 				var c = GetHeadCommit (repository);
 				return c == null ? string.Empty : GetCommitTextContent (c, localFile, repository);
-			});
+			}, cancellationToken: cancellationToken);
 		}
 
 		static Commit GetHeadCommit (LibGit2Sharp.Repository repository)

@@ -94,12 +94,10 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return;
 
-			Task.Run (async () => await repo.GetVersionInfoAsync (file)).ContinueWith (t => {
-				VersionInfo vi = t.Result;
-				var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
-				if (overlay != null)
-					nodeInfo.OverlayBottomRight = overlay;
-			}, Runtime.MainTaskScheduler);
+			var vi = repo.GetVersionInfoAsync (file).WaitAndGetResult ();
+			var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
+			if (overlay != null)
+				nodeInfo.OverlayBottomRight = overlay;
 		}
 
 /*		public override void PrepareChildNodes (object dataObject)

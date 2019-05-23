@@ -1,4 +1,4 @@
-// CommitDialogExtensionWidget.cs
+﻿// CommitDialogExtensionWidget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -160,7 +160,7 @@ namespace MonoDevelop.ChangeLogAddIn
 							if (!(await cset.Repository.GetVersionInfoAsync (ce.File)).IsVersioned)
 								cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitor ());
 							await cset.AddFileAsync (ce.File);
-						}).Ignore ();
+						}).Wait ();
 					}
 				}
 				return true;

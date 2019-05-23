@@ -1,4 +1,4 @@
-//
+﻿//
 // GitConfigurationDialog.cs
 //
 // Author:
@@ -149,7 +149,11 @@ namespace MonoDevelop.VersionControl.Git
 				state.Save ();
 				storeRemotes.Clear ();
 				string currentRemote = await repo.GetCurrentRemoteAsync ();
+				if (IsDestroyed)
+					return;
 				foreach (Remote remote in await repo.GetRemotesAsync ()) {
+					if (IsDestroyed)
+						return;
 					// Take into account fetch/push ref specs.
 					string text = remote.Name == currentRemote ? "<b>" + remote.Name + "</b>" : remote.Name;
 					string url = remote.Url;
@@ -178,6 +182,14 @@ namespace MonoDevelop.VersionControl.Git
 				this.repo.Dispose ();
 				this.repo = null;
 			}
+		}
+
+		bool IsDestroyed { get; set; }
+
+		protected override void OnDestroyed ()
+		{
+			IsDestroyed = true;
+			base.OnDestroyed ();
 		}
 
 		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
