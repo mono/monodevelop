@@ -314,7 +314,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return sb.ToString();
 		}
 
-		bool EvaluateCondition (int frameId, string exp)
+		bool? EvaluateCondition (int frameId, string exp)
 		{
 			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
 
@@ -323,7 +323,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{exp}'. The error returned was '{response}'.\n");
 
-			return false;
+			return null;
 		}
 
 		bool ShouldStopOnExceptionCatchpoint (Catchpoint catchpoint, int frameId)
@@ -337,14 +337,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var qualifiedExceptionType = catchpoint.ExceptionName.Contains ("::") ? catchpoint.ExceptionName : $"global::{catchpoint.ExceptionName}";
 
 			if (catchpoint.IncludeSubclasses) {
-				if (!EvaluateCondition (frameId, $"$exception is {qualifiedExceptionType}"))
+				if (EvaluateCondition (frameId, $"$exception is {qualifiedExceptionType}") == false)
 					return false;
 			} else {
-				if (!EvaluateCondition (frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})"))
+				if (EvaluateCondition (frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})") == false)
 					return false;
 			}
 
-			return string.IsNullOrWhiteSpace (catchpoint.ConditionExpression) || EvaluateCondition (frameId, catchpoint.ConditionExpression);
+			return string.IsNullOrWhiteSpace (catchpoint.ConditionExpression) || EvaluateCondition (frameId, catchpoint.ConditionExpression) != false;
 		}
 
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
