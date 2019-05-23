@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -3445,7 +3445,7 @@ namespace MonoDevelop.SourceEditor
 
 		public bool IsDirty {
 			get => isDirty;
-			private set {
+			set {
 				if (isDirty != value) {
 					isDirty = value;
 					DirtyChanged?.Invoke (this, EventArgs.Empty);
