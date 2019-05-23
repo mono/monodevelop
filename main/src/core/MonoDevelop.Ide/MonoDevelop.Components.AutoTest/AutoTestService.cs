@@ -64,8 +64,12 @@ namespace MonoDevelop.Components.AutoTest
 				MemoryStream ms = new MemoryStream (data);
 				BinaryFormatter bf = new BinaryFormatter ();
 				IAutoTestClient client = (IAutoTestClient) bf.Deserialize (ms);
-				client.Connect (manager.AttachClient (client));
+
+				// Initialize as much as we can before connecting back to the client
+				Ide.IdeApp.Workbench.EnsureLayout ();
 				Runtime.Preferences.EnableUpdaterForCurrentSession = false;
+
+				client.Connect (manager.AttachClient (client));
 			}
 			if (publishServer && !manager.IsClientConnected) {
 				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
