@@ -1,9 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
+
 using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
