@@ -43,6 +43,9 @@ namespace MonoDevelop.Ide
 		{
 			// Attach a handler for when exceptions need to be processed
 			LoggingService.UnhandledErrorOccurred = (enabled, ex, willShutdown) => {
+				if (Platform.IsMac)
+					return true;
+
 				var doNotSend = new AlertButton (GettextCatalog.GetString ("Do _Not Send"));
 				var sendOnce = new AlertButton (GettextCatalog.GetString ("_Send This Time"));
 				var alwaysSend = new AlertButton (GettextCatalog.GetString ("_Always Send"));

@@ -224,23 +224,25 @@ namespace MonoDevelop.Core
 
 				reporting = true;
 
-				var oldReportCrashes = ReportCrashes;
+				if (UnhandledErrorOccurred != null) {
+					var oldReportCrashes = ReportCrashes;
 
-				if (UnhandledErrorOccurred != null && !silently)
-					ReportCrashes = UnhandledErrorOccurred (ReportCrashes, ex, willShutDown);
+					if (!silently)
+						ReportCrashes = UnhandledErrorOccurred.Invoke (ReportCrashes, ex, willShutDown);
 
-				// If crash reporting has been explicitly disabled, disregard this crash
-				if (ReportCrashes.HasValue && !ReportCrashes.Value)
-					return;
+					//ensure we don't lose the setting
+					if (ReportCrashes != oldReportCrashes) {
+						PropertyService.SaveProperties ();
+					}
+
+					// If crash reporting has been explicitly disabled, disregard this crash
+					if (ReportCrashes.HasValue && !ReportCrashes.Value)
+						return;
+				}
 
 				lock (customCrashReporters) {
 					foreach (var cr in customCrashReporters.Concat (AddinManager.GetExtensionObjects<CrashReporter> (true)))
 						cr.ReportCrash (ex, willShutDown, tags);
-				}
-
-				//ensure we don't lose the setting
-				if (ReportCrashes != oldReportCrashes) {
-					PropertyService.SaveProperties ();
 				}
 
 			} catch {
