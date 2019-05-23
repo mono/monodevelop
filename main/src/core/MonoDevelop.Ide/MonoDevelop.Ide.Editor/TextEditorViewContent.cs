@@ -1,4 +1,4 @@
-//
+﻿//
 // TextEditorViewContent.cs
 //
 // Author:
@@ -61,6 +61,14 @@ namespace MonoDevelop.Ide.Editor
 
 		public TextEditorViewContent ()
 		{
+		}
+
+		protected override Task OnLoad (bool reloading)
+		{
+			return base.OnLoad (reloading).ContinueWith (delegate {
+				if (textEditor != null)
+					textEditor.IsDirty = false;
+			});
 		}
 
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)

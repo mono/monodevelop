@@ -393,8 +393,6 @@ namespace MonoDevelop.Ide.Gui
 		async Task ReloadTask ()
 		{
 			await controller.Reload ();
-			if (Editor != null) // Fixes the old editor dirty state.
-				IsDirty = false;
 			OnReload (EventArgs.Empty);
 		}
 
