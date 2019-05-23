@@ -123,6 +123,7 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Elfie.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.InteractiveHost.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Scripting.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll" />
@@ -131,7 +132,6 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
     <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
-    <IncludeCopyLocal Include="Microsoft.Microsoft.CodeAnalysis.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" />
@@ -139,6 +139,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.ImageCatalog.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.InteractiveWindow.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Intellisense.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
