@@ -42,12 +42,17 @@ namespace MonoDevelop.Ide.FindInFiles
 			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
 				var results = new List<FileProvider> ();
-				foreach (Document document in IdeApp.Workbench.Documents) {
+				foreach (var document in IdeApp.Workbench.Documents) {
+					if (!filterOptions.IsFileNameMatching (document.FileName))
+						continue;
 					var textBuffer = document.GetContent<ITextBuffer> ();
-					if (textBuffer != null && filterOptions.IsFileNameMatching (document.FileName))
+					if (textBuffer != null) {
 						results.Add (new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName));
+					} else {
+						results.Add (new FileProvider (document.FileName, document.Owner as Project));
+					}
 				}
-				return EmptyFileProviderTask;
+				return Task.FromResult ((IReadOnlyList<FileProvider>)results);
 			}
 
 			public override string GetDescription (FindInFilesModel model)
