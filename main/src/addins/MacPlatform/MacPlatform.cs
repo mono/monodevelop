@@ -266,6 +266,12 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			public override string StackTrace { get; }
+
+			public override string ToString ()
+			{
+				// Matches normal exception format:
+				return GetType () + ": " + Message + Environment.NewLine + StackTrace;
+			}
 		}
 
 		[DllImport (FoundationLib)]
