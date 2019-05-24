@@ -269,6 +269,14 @@ main (int argc, char **argv)
 				req_mono_version = version_obj;
 		}
 
+		// Xamarin.Mac sets MONO_REGISTRY_PATH to ~/Library/Application Support/...,
+		// so in the case of the Xamarin Installer, this gets set to a non
+		// existing directory, and when VSmac is started from the installer and
+		// code that uses the registry (like Publish to Azure) is ran, it tries
+		// to access the non existing directory, resulting in an exception that
+		// prevents the code from running correctly, so unset it here.
+		// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/896438
+		unsetenv ("MONO_REGISTRY_PATH");
 #if HYBRID_SUSPEND_ABORT
 		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
 #endif
