@@ -33,8 +33,10 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Logging;
 using Foundation;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace MacPlatform.Tests
 {
@@ -169,12 +171,40 @@ namespace MacPlatform.Tests
 				Assert.That (crashReporter.LastException.Source, Is.Not.Null);
 
 				var stacktrace = crashReporter.LastException.StackTrace;
-				Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
-				Assert.That (stacktrace, Contains.Substring ("at MacPlatform.Tests.MacPlatformTest.void_objc_msgSend"));
-				Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService.HandleUncaughtException"));
+				AssertMacPlatformStacktrace (stacktrace);
 			} finally {
 				LoggingService.UnregisterCrashReporter (crashReporter);
 			}
+		}
+
+		[Test]
+		public void CriticalErrorsExceptionsHaveFullStacktracesInLog ()
+		{
+			var logger = new CapturingLogger {
+				EnabledLevel = EnabledLoggingLevel.Error,
+			};
+
+			try {
+				LoggingService.AddLogger (logger);
+
+				var ex = new NSException ("Test", "should be captured", null);
+				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+
+				Assert.Throws<ObjCException> (() => void_objc_msgSend (ex.Handle, selector));
+
+				var (_, message) = logger.LogMessages.Single (x => x.Level == LogLevel.Error);
+				AssertMacPlatformStacktrace (message);
+			} finally {
+				LoggingService.RemoveLogger (logger.Name);
+			}
+		}
+
+		static void AssertMacPlatformStacktrace (string stacktrace)
+		{
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
+			Assert.That (stacktrace, Contains.Substring ("at MacPlatform.Tests.MacPlatformTest.void_objc_msgSend"));
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService.HandleUncaughtException"));
+
 		}
 	}
 }
