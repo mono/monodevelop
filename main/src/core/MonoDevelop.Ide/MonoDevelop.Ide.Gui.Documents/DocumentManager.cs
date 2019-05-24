@@ -722,21 +722,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void OnDocumentOpened (DocumentEventArgs e)
 		{
-			try {
-				DocumentOpened?.SafeInvoke (this, e);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Exception while opening documents", ex);
-			}
+			DocumentOpened?.SafeInvoke (this, e);
 		}
 
 		void OnDocumentClosed (Document doc)
 		{
-			try {
-				var e = new DocumentEventArgs (doc);
-				DocumentClosed?.SafeInvoke (this, e);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Exception while closing documents", ex);
-			}
+			var e = new DocumentEventArgs (doc);
+			DocumentClosed?.SafeInvoke (this, e);
 		}
 
 		async Task OnDocumentClosing (DocumentCloseEventArgs args)
