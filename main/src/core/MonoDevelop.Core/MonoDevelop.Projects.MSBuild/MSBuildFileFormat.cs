@@ -74,6 +74,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public static bool ToolsSupportMonikers (string toolsVersion)
 		{
+			if (StringComparer.OrdinalIgnoreCase.Equals ("Current", toolsVersion))
+				return true;
+
 			return new Version (toolsVersion) >= new Version ("4.0");
 		}
 		
