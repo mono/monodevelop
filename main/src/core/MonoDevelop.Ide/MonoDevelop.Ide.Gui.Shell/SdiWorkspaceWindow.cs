@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void Close ()
 		{
-			view.DetachFromView ();
+			view?.DetachFromView ();
 			Destroy ();
 		}
 
