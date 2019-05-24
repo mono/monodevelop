@@ -484,7 +484,7 @@ namespace MonoDevelop.TextEditor
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				DismissInfoBar ();
-				WorkbenchWindow.ShowNotification = false;
+				ShowNotification = false;
 			}
 
 			if (reloading) {
@@ -614,7 +614,7 @@ namespace MonoDevelop.TextEditor
 
 				warnOverwrite = false;
 				DismissInfoBar ();
-				WorkbenchWindow.ShowNotification = false;
+				ShowNotification = false;
 			}
 
 			if (!string.IsNullOrEmpty (FilePath))
@@ -709,7 +709,7 @@ namespace MonoDevelop.TextEditor
 				actions.Add (new InfoBarAction (GetButtonString (GettextCatalog.GetString ("_Ignore all")), IgnoreAll));
 			}
 
-			WorkbenchWindow.ShowNotification = true;
+			ShowNotification = true;
 			warnOverwrite = true;
 			MarkDirty ();
 
@@ -730,7 +730,7 @@ namespace MonoDevelop.TextEditor
 						return;
 
 					Load (true);
-					WorkbenchWindow.ShowNotification = false;
+					ShowNotification = false;
 				} catch (Exception ex) {
 					MessageService.ShowError ("Could not reload the file.", ex);
 				} finally {
@@ -742,7 +742,7 @@ namespace MonoDevelop.TextEditor
 			{
 				if (isDisposed)
 					return;
-				WorkbenchWindow.ShowNotification = false;
+				ShowNotification = false;
 				DismissInfoBar ();
 			}
 
