@@ -76,5 +76,10 @@ namespace MonoDevelop.Ide
 		/// <value>The cancellation token.</value>
 		void SetCancellationTokenSource (CancellationTokenSource source);
 	}
-	
+
+	internal interface ITestableStatusBar : StatusBar
+	{
+		string CurrentText { get; }
+		string [] CurrentIcons { get; }
+	}
 }
