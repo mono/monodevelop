@@ -625,9 +625,31 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			return new AccessibilityElementProxy (new RealAccessibilityElementButtonProxy ());
 		}
 
-		public static AccessibilityElementProxy TextElementProxy ()
+		public static AccessibilityElementProxy TextElementProxy (Func<string> contents,
+																  Func<int> numberOfCharacters,
+																  Func<int> insertionPointLineNumber,
+																  Func<AtkCocoa.Range, Rectangle> frameForRange,
+																  Func<int, int> lineForIndex,
+																  Func<int, AtkCocoa.Range> rangeForLine,
+																  Func<AtkCocoa.Range, string> stringForRange,
+																  Func<int, AtkCocoa.Range> rangeForIndex,
+																  Func<int, AtkCocoa.Range> styleRangeForIndex,
+																  Func<Point, AtkCocoa.Range> rangeForPosition,
+																  Func<AtkCocoa.Range> visibleCharacterRange)
 		{
-			return new AccessibilityElementProxy (new RealAccessibilityElementNavigableStaticTextProxy ());
+			return new AccessibilityElementProxy (new RealAccessibilityElementNavigableStaticTextProxy () {
+				Contents = contents,
+				NumberOfCharacters = numberOfCharacters,
+				InsertionPointLineNumber = insertionPointLineNumber,
+				GetFrameForRange = frameForRange,
+				GetLineForIndex = lineForIndex,
+				GetRangeForLine = rangeForLine,
+				GetStringForRange = stringForRange,
+				GetRangeForIndex = rangeForIndex,
+				GetStyleRangeForIndex = styleRangeForIndex,
+				GetRangeForPosition = rangeForPosition,
+				GetVisibleCharacterRange = visibleCharacterRange
+			});
 		}
 
 		public string Identifier {
