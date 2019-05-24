@@ -11,6 +11,13 @@ namespace ResultParser
 		public static int Main (string[] args)
 		{
 			bool hasLeaks = false;
+
+			foreach (var png in Directory.EnumerateFiles(".", "*.png")) {
+				var url = AzureBlobStorage.DefaultInstance.UploadFile (png, "image/png").ToString ();
+				Console.WriteLine ("Failure screenshot: {0}", url);
+				hasLeaks = true;
+			}
+
 			foreach (var file in Directory.EnumerateFiles(".", "*.json")) {
 				var serializer = new JsonSerializer {
 					NullValueHandling = NullValueHandling.Ignore,

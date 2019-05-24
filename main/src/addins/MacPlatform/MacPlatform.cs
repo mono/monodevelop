@@ -696,7 +696,7 @@ namespace MonoDevelop.MacIntegration
 					GLib.Idle.Add (delegate {
 						Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
-						IdeApp.OpenFiles (e.Documents.Select (
+						IdeApp.OpenFilesAsync (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal)),
 							null
 						).ContinueWith ((result) => {
@@ -718,7 +718,7 @@ namespace MonoDevelop.MacIntegration
 						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
-						IdeApp.OpenFiles (e.Urls.Select (url => {
+						IdeApp.OpenFilesAsync (e.Urls.Select (url => {
 							try {
 								var uri = new Uri (url);
 								if (uri.Host != "open")

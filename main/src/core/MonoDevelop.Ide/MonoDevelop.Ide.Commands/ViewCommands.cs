@@ -172,6 +172,11 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.ViewCommands.NewLayout
 	public class NewLayoutHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = IdeApp.Workbench.Visible;
+		}
+
 		protected override void Run ()
 		{
 			string newLayoutName = null;
@@ -193,6 +198,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
+			if (!IdeApp.Workbench.Visible) {
+				info.Visible = false;
+				return;
+			}
 			info.Enabled = !String.Equals ("Solution", IdeApp.Workbench.CurrentLayout, StringComparison.OrdinalIgnoreCase);
 			string itemName;
 			if (!LayoutListHandler.NameMapping.TryGetValue (IdeApp.Workbench.CurrentLayout, out itemName))

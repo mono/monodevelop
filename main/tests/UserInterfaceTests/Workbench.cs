@@ -44,26 +44,15 @@ namespace UserInterfaceTests
 
 		public static string GetStatusMessage (int timeout = 20000, bool waitForNonEmpty = true)
 		{
-			if (Platform.IsMac) {
-				const string macStatusTextField = "MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text";
-				if (waitForNonEmpty) {
-					Ide.WaitUntil (
-						() => Session.GetGlobalValue<string> (macStatusTextField) != string.Empty,
-						timeout
-					);
-				}
-				return (string)Session.GetGlobalValue (macStatusTextField);
-			}
-
 			if (waitForNonEmpty) {
-				const string gtkStatusMessageCount = "MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count";
+				string text = null;
 				Ide.WaitUntil (
-					() => Session.GetGlobalValue<int> (gtkStatusMessageCount) == 0,
-					timeout,
-					timeoutMessage: ()=> "MessageQueue.Count=" + Session.GetGlobalValue<int> (gtkStatusMessageCount)
+					() => (text = Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.statusBar.CurrentText")) != string.Empty,
+					timeout
 				);
+				return text;
 			}
-			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
+			return (string)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.statusBar.CurrentText");
 		}
 
 		public static void WaitForStatusIcon(int timeout = 20000, string text = "", bool waitForExisting = true)
@@ -72,7 +61,7 @@ namespace UserInterfaceTests
 			{
 				Ide.WaitUntil(
 					() => {
-						var icons = Session.GetGlobalValue<string[]>("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.StatusIcons");
+						var icons = Session.GetGlobalValue<string[]>("MonoDevelop.Ide.IdeApp.Workbench.statusBar.CurrentIcons");
 						bool found = false;
 						foreach (string icon in icons) {
 							if (icon == text) {

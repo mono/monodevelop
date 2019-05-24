@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest
@@ -66,6 +67,11 @@ namespace MonoDevelop.StressTest
 				app.Start ();
 			} catch {
 				success = false;
+
+				using (var p = Process.Start ("/usr/sbin/screencapture", "screenshot-failure.png")) {
+					Console.WriteLine ("Taking screenshot at point of failure");
+					p.WaitForExit ();
+				}
 				throw;
 			} finally {
 				app.Stop (success);
