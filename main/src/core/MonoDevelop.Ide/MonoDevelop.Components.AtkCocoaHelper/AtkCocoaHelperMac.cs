@@ -638,17 +638,17 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 																  Func<AtkCocoa.Range> visibleCharacterRange)
 		{
 			return new AccessibilityElementProxy (new RealAccessibilityElementNavigableStaticTextProxy () {
-				Contents = contents,
-				NumberOfCharacters = numberOfCharacters,
-				InsertionPointLineNumber = insertionPointLineNumber,
-				GetFrameForRange = frameForRange,
-				GetLineForIndex = lineForIndex,
-				GetRangeForLine = rangeForLine,
-				GetStringForRange = stringForRange,
-				GetRangeForIndex = rangeForIndex,
-				GetStyleRangeForIndex = styleRangeForIndex,
-				GetRangeForPosition = rangeForPosition,
-				GetVisibleCharacterRange = visibleCharacterRange
+				Contents = contents ?? throw new ArgumentNullException (nameof (contents)),
+				NumberOfCharacters = numberOfCharacters ?? throw new ArgumentNullException (nameof (numberOfCharacters)),
+				InsertionPointLineNumber = insertionPointLineNumber ?? throw new ArgumentNullException (nameof (insertionPointLineNumber)),
+				GetFrameForRange = frameForRange ?? throw new ArgumentNullException (nameof (frameForRange)),
+				GetLineForIndex = lineForIndex ?? throw new ArgumentNullException (nameof (lineForIndex)),
+				GetRangeForLine = rangeForLine ?? throw new ArgumentNullException (nameof (rangeForLine)),
+				GetStringForRange = stringForRange ?? throw new ArgumentNullException (nameof (stringForRange)),
+				GetRangeForIndex = rangeForIndex ?? throw new ArgumentNullException (nameof (rangeForIndex)),
+				GetStyleRangeForIndex = styleRangeForIndex ?? throw new ArgumentNullException (nameof (styleRangeForIndex)),
+				GetRangeForPosition = rangeForPosition ?? throw new ArgumentNullException (nameof (rangeForPosition)),
+				GetVisibleCharacterRange = visibleCharacterRange ?? throw new ArgumentNullException (nameof (visibleCharacterRange))
 			});
 		}
 
