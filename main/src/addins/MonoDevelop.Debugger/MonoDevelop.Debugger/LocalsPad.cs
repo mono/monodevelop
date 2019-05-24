@@ -33,8 +33,13 @@ namespace MonoDevelop.Debugger
 	{
 		public LocalsPad ()
 		{
-			tree.AllowEditing = true;
-			tree.AllowAdding = false;
+			if (UseNewTreeView) {
+				controller.AllowEditing = true;
+				controller.AllowAdding = false;
+			} else {
+				tree.AllowEditing = true;
+				tree.AllowAdding = false;
+			}
 		}
 
 		void ReloadValues ()
@@ -44,8 +49,20 @@ namespace MonoDevelop.Debugger
 			if (frame == null)
 				return;
 
-			tree.ClearValues ();
-			tree.AddValues (frame.GetAllLocals ().Where (l => !string.IsNullOrWhiteSpace (l.Name) && l.Name != "?").ToArray ());
+			var locals = frame.GetAllLocals ().Where (l => !string.IsNullOrWhiteSpace (l.Name) && l.Name != "?").ToArray();
+			if (UseNewTreeView) {
+				controller.ClearValues ();
+				controller.AddValues (locals);
+
+				var xx = new System.Collections.Generic.List<IObjectValueNode> ();
+				xx.Add (new FakeObjectValueNode (controller.Root.Path));
+				xx.Add (new FakeEvaluatingObjectValueNode (controller.Root.Path));
+
+				controller.AddValues (xx);
+			} else {
+				tree.ClearValues ();
+				tree.AddValues (locals);
+			}
 		}
 
 		public override void OnUpdateFrame ()

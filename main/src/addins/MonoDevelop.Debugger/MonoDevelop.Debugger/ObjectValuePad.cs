@@ -37,7 +37,12 @@ namespace MonoDevelop.Debugger
 {
 	public class ObjectValuePad : PadContent
 	{
+		protected static bool UseNewTreeView = true;
+
+		protected ObjectValueTreeViewController controller;
+		//protected ObjectValueTreeViewFake newTree;
 		protected ObjectValueTreeView tree;
+
 		readonly ScrolledWindow scrolled;
 		bool needsUpdateValues;
 		bool needsUpdateFrame;
@@ -57,15 +62,39 @@ namespace MonoDevelop.Debugger
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;
 
-			tree = new ObjectValueTreeView ();
+			if (UseNewTreeView) {
+				controller = new ObjectValueTreeViewController ();
+				controller.AllowEditing = true;
+				controller.AllowAdding = false;
 
-			fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
+				var treeView = controller.GetControl () as Gtk.TreeView;
+				treeView.HeadersVisible = true;
+				treeView.RulesHint = true;
+				scrolled.Add (treeView);
 
-			tree.AllowEditing = true;
-			tree.AllowAdding = false;
-			tree.HeadersVisible = true;
-			tree.RulesHint = true;
-			scrolled.Add (tree);
+				//newTree = new ObjectValueTreeViewFake ();
+
+				//fontChanger = new PadFontChanger (newTree, newTree.SetCustomFont, newTree.QueueResize);
+
+				//newTree.AllowEditing = true;
+				//newTree.AllowAdding = false;
+				//newTree.HeadersVisible = true;
+				//newTree.RulesHint = true;
+				//scrolled.Add (newTree);
+
+			} else {
+				tree = new ObjectValueTreeView ();
+
+				fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
+
+				tree.AllowEditing = true;
+				tree.AllowAdding = false;
+				tree.HeadersVisible = true;
+				tree.RulesHint = true;
+				scrolled.Add (tree);
+
+			}
+
 			scrolled.ShowAll ();
 
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
@@ -113,8 +142,15 @@ namespace MonoDevelop.Debugger
 			needsUpdateValues = false;
 			needsUpdateFrame = false;
 
-			if (DebuggingService.CurrentFrame != lastFrame)
-				tree.Frame = DebuggingService.CurrentFrame;
+			if (DebuggingService.CurrentFrame != lastFrame) {
+				if (UseNewTreeView) {
+					//newTree.Frame = DebuggingService.CurrentFrame;
+					controller.SetStackFrame (DebuggingService.CurrentFrame);
+				} else {
+					tree.Frame = DebuggingService.CurrentFrame;
+				}
+			}
+
 			lastFrame = DebuggingService.CurrentFrame;
 		}
 
@@ -148,10 +184,22 @@ namespace MonoDevelop.Debugger
 
 		protected virtual void OnDebuggerResumed (object s, EventArgs a)
 		{
-			if (!initialResume)
-				tree.ChangeCheckpoint ();
+			if (UseNewTreeView) {
+				if (!initialResume) {
+					//newTree.ChangeCheckpoint ();
+					controller.ChangeCheckpoint ();
+				}
 
-			tree.ClearValues ();
+				//newTree.ClearValues ();
+				controller.ClearValues ();
+			} else {
+				if (!initialResume) {
+					tree.ChangeCheckpoint ();
+				}
+
+				tree.ClearValues ();
+			}
+
 			initialResume = false;
 		}
 
@@ -159,8 +207,17 @@ namespace MonoDevelop.Debugger
 		{
 			if (DebuggingService.IsDebugging)
 				return;
-			tree.ResetChangeTracking ();
-			tree.ClearAll ();
+
+			if (UseNewTreeView) {
+				//newTree.ResetChangeTracking ();
+				//newTree.ClearAll ();
+				controller.ResetChangeTracking ();
+				controller.ClearAll ();
+			} else {
+				tree.ResetChangeTracking ();
+				tree.ClearAll ();
+			}
+
 			lastFrame = null;
 			initialResume = true;
 		}

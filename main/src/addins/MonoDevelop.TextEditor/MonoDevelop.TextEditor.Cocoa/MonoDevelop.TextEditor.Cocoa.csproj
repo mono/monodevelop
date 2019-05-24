@@ -45,8 +45,6 @@
       <Private>False</Private>
     </Reference>
     <ProjectReference Include="$(MdAddinsDirectory)Xamarin.Designer\external\xwt\Xwt\Xwt.csproj">
-      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-      <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Roslyn\EditorFeatures\Cocoa\Microsoft.CodeAnalysis.EditorFeatures.Cocoa.csproj" Private="True" />
