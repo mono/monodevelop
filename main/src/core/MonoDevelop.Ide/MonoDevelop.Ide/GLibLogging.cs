@@ -289,12 +289,18 @@ namespace MonoDevelop.Ide.Gui
 
 		sealed class CriticalGtkException : Exception
 		{
-			public CriticalGtkException(string message, string stacktrace) : base(message)
+			public CriticalGtkException (string message, string stacktrace) : base (message)
 			{
 				StackTrace = stacktrace;
 			}
 
 			public override string StackTrace { get; }
+
+			public override string ToString ()
+			{
+				// Matches normal exception format:
+				return GetType() + ": " + Message + Environment.NewLine + StackTrace;
+			}
 		}
 	}
 }
