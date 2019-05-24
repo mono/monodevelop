@@ -258,9 +258,8 @@ namespace System
 		public static void Ignore (this Task task)
 		{
 			task.ContinueWith (t => {
-				if (t.IsFaulted)
-					LoggingService.LogError ("Async operation failed", t.Exception);
-			});
+				LoggingService.LogError ("Async operation failed", t.Exception);
+			}, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
 		}
 
 		/// <summary>
