@@ -1374,7 +1374,7 @@ namespace MonoDevelop.Projects
 			string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 			string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-			var globalProperties = CreateGlobalProperties ();
+			var globalProperties = CreateGlobalProperties (target);
 			if (context != null) {
 				var md = (ProjectItemMetadata)context.GlobalProperties;
 				md.SetProject (sourceProject);
@@ -1569,11 +1569,15 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		internal Dictionary<string, string> CreateGlobalProperties ()
+		/// <summary>
+		/// Sets a global TargetFramework property for multi-target projects so MSBuild targets work.
+		/// For Build and Clean the TargetFramework property is not set so all frameworks are built.
+		/// </summary>
+		internal Dictionary<string, string> CreateGlobalProperties (string target)
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
-			if (framework != null)
+			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
 				properties ["TargetFramework"] = framework;
 			return properties;
 		}

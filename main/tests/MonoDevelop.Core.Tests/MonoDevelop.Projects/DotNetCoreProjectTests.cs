@@ -627,6 +627,35 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		[Platform (Exclude = "Win")]
+		public async Task BuildMultiTargetProject ()
+		{
+			FilePath projFile = Util.GetSampleProject ("multi-target", "multi-target2.csproj");
+
+			RunMSBuildRestore (projFile);
+
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+
+				var res = await p.RunTarget (Util.GetMonitor (false), "Build", ConfigurationSelector.Default);
+				var buildResult = res.BuildResult;
+
+				var expectedNetCoreOutputFile = projFile.ParentDirectory.Combine ("bin", "Debug", "netcoreapp1.1", "multi-target2.dll");
+				var expectedNetStandardOutputFile = projFile.ParentDirectory.Combine ("bin", "Debug", "netstandard1.0", "multi-target2.dll");
+
+				Assert.AreEqual (0, buildResult.Errors.Count);
+				Assert.IsTrue (File.Exists (expectedNetCoreOutputFile), ".NET Core assembly not built");
+				Assert.IsTrue (File.Exists (expectedNetStandardOutputFile), ".NET Standard assembly not built");
+
+				res = await p.RunTarget (Util.GetMonitor (false), "Clean", ConfigurationSelector.Default);
+				buildResult = res.BuildResult;
+
+				Assert.AreEqual (0, buildResult.Errors.Count);
+				Assert.IsFalse (File.Exists (expectedNetCoreOutputFile), ".NET Core assembly not removed on clean");
+				Assert.IsFalse (File.Exists (expectedNetStandardOutputFile), ".NET Standard assembly not removed on clean");
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);
