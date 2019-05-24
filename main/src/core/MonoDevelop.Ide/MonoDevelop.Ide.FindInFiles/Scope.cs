@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Scope.cs
 //  
 // Author:
@@ -262,9 +262,14 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			foreach (Document document in IdeApp.Workbench.Documents) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
+				if (!filterOptions.NameMatches (document.FileName))
+					continue;
 				var textBuffer = document.GetContent<ITextBuffer> ();
-				if (textBuffer != null && filterOptions.NameMatches (document.FileName))
+				if (textBuffer != null) {
 					yield return new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName);
+				} else {
+					yield return new FileProvider (document.FileName, document.Owner as Project);
+				}
 			}
 		}
 
