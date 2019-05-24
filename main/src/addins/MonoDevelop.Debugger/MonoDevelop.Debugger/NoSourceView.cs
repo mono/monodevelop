@@ -90,7 +90,7 @@ namespace MonoDevelop.Debugger
 				labelDisassembly.Markup = GettextCatalog.GetString ("View disassembly in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Disassembly Tab") + "</a>");
 				labelDisassembly.LinkClicked += (sender, e) => {
 					DebuggingService.ShowDisassembly ();
-					this.WorkbenchWindow.Document.Close (false).Ignore ();
+					Document.Close (false).Ignore ();
 				};
 				box.PackStart (labelDisassembly);
 			}
@@ -135,7 +135,7 @@ namespace MonoDevelop.Debugger
 
 						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
 						if (doc != null) {
-							await this.WorkbenchWindow.Document.Close (false);
+							await Document.Close (false);
 						}
 					}
 				} else {
