@@ -522,8 +522,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			var window = await workbench.ShowView (documentOpenInfo.DocumentController, documentOpenInfo.DockNotebook, commandHandler);
 
-			var doc = new Document (this, workbench, documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription);
-			await doc.InitializeWindow (window);
+			var doc = new Document (this, workbench, documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription, window);
+
+			// Don't wait for the view to be initialized. The document can be made visible and can be functional before getting the view.
+			doc.InitializeViewAsync ().Ignore ();
 
 			doc.Closing += OnWindowClosing;
 			doc.Closed += OnWindowClosed;

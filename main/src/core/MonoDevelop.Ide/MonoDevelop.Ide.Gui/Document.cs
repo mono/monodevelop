@@ -92,6 +92,10 @@ namespace MonoDevelop.Ide.Gui
 
 		IEnumerable<DocumentController> GetControllersForContentCheck ()
 		{
+			// This may happen if the content view is still being initialized
+			if (view == null)
+				return Enumerable.Empty<DocumentController> ();
+
 			// Exclude root controller from GetAllControllers() since it will be already returned by GetActiveControllerHierarchy()
 			return view.GetActiveControllerHierarchy ().Concat (view.GetAllControllers ().Where (c => c != controller));
 		}
@@ -160,6 +164,9 @@ namespace MonoDevelop.Ide.Gui
 
 		object GetContentForActiveView (Type type)
 		{
+			// This may happen if the content view is still being initialized
+			if (view == null)
+				return null;
 			return view.GetActiveControllerHierarchy ().Select (controller => controller.GetContent (type)).FirstOrDefault (content => content != null);
 		}
 
@@ -227,7 +234,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription)
+		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription, IWorkbenchWindow window)
 		{
 			Counters.OpenDocuments++;
 
@@ -241,16 +248,9 @@ namespace MonoDevelop.Ide.Gui
 				s.ItemRemovedFromSolution += OnEntryRemoved;
 				callbackRegistration = null;
 			});
-		}
 
-		internal async Task InitializeWindow (IWorkbenchWindow window)
-		{
 			this.window = window;
 			window.Document = this;
-
-			view = await controller.GetDocumentView ();
-			view.IsRoot = true;
-			window.SetRootView (view.CreateShellView (window));
 
 			LastTimeActive = DateTime.Now;
 			this.window.CloseRequested += Window_CloseRequested;
@@ -259,10 +259,22 @@ namespace MonoDevelop.Ide.Gui
 			DocumentRegistry.Add (this);
 		}
 
+		internal async Task InitializeViewAsync ()
+		{
+			var docView = await controller.GetDocumentView ();
+			if (closed) {
+				docView.Dispose ();
+				return;
+			}
+			view = docView;
+			view.ActiveViewInHierarchyChanged += ActiveViewInHierarchyChanged;
+			view.IsRoot = true;
+			window.SetRootView (view.CreateShellView (window));
+		}
+
 		void SubscribeControllerEvents ()
 		{
 			UnsubscribeControllerEvents ();
-			view.ActiveViewInHierarchyChanged += ActiveViewInHierarchyChanged;
 			controller.OwnerChanged += HandleOwnerChanged;
 			controller.DocumentTitleChanged += OnContentNameChanged;
 			controller.ContentChanged += ControllerContentChanged;
@@ -271,7 +283,6 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnsubscribeControllerEvents ()
 		{
-			view.ActiveViewInHierarchyChanged -= ActiveViewInHierarchyChanged;
 			controller.DocumentTitleChanged -= OnContentNameChanged;
 			controller.OwnerChanged -= HandleOwnerChanged;
 			controller.ContentChanged -= ControllerContentChanged;
@@ -350,7 +361,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Select ()
 		{
 			window?.SelectWindow ();
-			view.GrabFocus ();
+			view?.GrabFocus ();
 		}
 
 		public TextEditor Editor {
@@ -630,8 +641,11 @@ namespace MonoDevelop.Ide.Gui
 				workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			UnsubscribeControllerEvents ();
-			view.IsRoot = false;
-			view.Dispose (); // This will also dispose the controller
+			if (view != null) {
+				view.ActiveViewInHierarchyChanged -= ActiveViewInHierarchyChanged;
+				view.IsRoot = false;
+				view.Dispose (); // This will also dispose the controller
+			}
 
 			window = null;
 
@@ -734,12 +748,12 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void UpdateContentVisibility ()
 		{
-			view.UpdateContentVisibility (window.ContentVisible);
+			view?.UpdateContentVisibility (window.ContentVisible);
 		}
 
 		internal void GrabFocus ()
 		{
-			view.GrabFocus ();
+			view?.GrabFocus ();
 		}
 	}
 
