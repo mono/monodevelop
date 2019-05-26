@@ -734,6 +734,7 @@
     <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
     <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
     <Compile Include="MonoDevelop.Core\PooledListPolicy.cs" />
+    <Compile Include="MonoDevelop.Projects.FileNesting\FileNestingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
@@ -770,6 +771,9 @@
     <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Projects.FileNesting\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">

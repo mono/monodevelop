@@ -450,7 +450,17 @@ namespace MonoDevelop.Projects
 					return false;
 				}
 			} else {
-				return true;
+				// File nesting
+				var parentPath = FileNesting.FileNestingService.GetDependentFile (Name);
+				dependsOnFile = Project.Files.GetFile (parentPath);
+				if (dependsOnFile != null) {
+					if (dependsOnFile.dependentChildren == null)
+						dependsOnFile.dependentChildren = new List<ProjectFile> ();
+					dependsOnFile.dependentChildren.Add (this);
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
 		#endregion
