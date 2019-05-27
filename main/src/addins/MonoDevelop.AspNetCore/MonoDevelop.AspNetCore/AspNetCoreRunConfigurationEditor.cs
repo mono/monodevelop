@@ -158,6 +158,8 @@ namespace MonoDevelop.AspNetCore
 			config.CurrentProfile.LaunchUrl = launchUrl.Text;
 			if (!string.IsNullOrEmpty (applicationUrl.Text))
 				config.CurrentProfile.OtherSettings ["applicationUrl"] = applicationUrl.Text;
+
+			config.IsDirty = true;
 		}
 
 		public bool ValidateCore ()
