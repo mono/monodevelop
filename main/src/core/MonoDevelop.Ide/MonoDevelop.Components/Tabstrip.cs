@@ -105,7 +105,7 @@ namespace MonoDevelop.Components
 				tabSizes.Insert (index, tab.Size);
 			}
 			if (tabs.Count == 1)
-				tab.Active = true;
+				tab.Active = tab.Visible;
 			else if (activeTab >= index)
 				activeTab++;
 
@@ -164,7 +164,7 @@ namespace MonoDevelop.Components
 			tabSizes [position] = tab.Size;
 
 			if (oldTab.Active)
-				tab.Active = true;
+				tab.Active = tab.Visible;
 
 			if (oldTab.Accessible != null) {
 				Accessible.RemoveAccessibleElement (oldTab.Accessible);
@@ -186,6 +186,9 @@ namespace MonoDevelop.Components
 
 		internal void ReorderTabs (int currentIndex, int newIndex)
 		{
+			if (currentIndex == newIndex)
+				return;
+
 			var replaced = tabs [newIndex];
 			tabs [newIndex] = tabs [currentIndex];
 			tabs [currentIndex] = replaced;
@@ -223,16 +226,16 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			int i = 0;
-			var proxies = new AtkCocoaHelper.AccessibilityElementProxy [tabs.Count];
+			var proxies = new List<AtkCocoaHelper.AccessibilityElementProxy> (tabs.Count);
 			foreach (var tab in tabs) {
-				proxies [i] = tab.Accessible;
-				tab.Accessible.Index = i;
-				i++;
+				if (!tab.Visible)
+					continue;
+				tab.Accessible.Index = proxies.Count;
+				proxies.Add (tab.Accessible);
 				tab.Allocation = GetBounds (tab);
 			}
 
-			Accessible.SetTabs (proxies);
+			Accessible.SetTabs (proxies.ToArray ());
 		}
 
 		Cairo.Rectangle GetBounds (Tab tab)
@@ -244,7 +247,8 @@ namespace MonoDevelop.Components
 			int idx = tabs.IndexOf (tab);
 			double distance = 0;
 			for (int i = 0; i < idx; i++) {
-				if (tabs[i].TabPosition == tab.TabPosition)
+				var t = tabs [i];
+				if (t.Visible && t.TabPosition == tab.TabPosition)
 					distance += tabSizes[i].X - spacerWidth;
 			}
 			return new Cairo.Rectangle (tab.TabPosition == TabPosition.Left ? distance : Allocation.Width - distance - tabSizes[idx].X,
@@ -261,7 +265,7 @@ namespace MonoDevelop.Components
 			hoverTab = null;
 			
 			foreach (var tab in tabs) {
-				if (tab.IsSeparator)
+				if (tab.IsSeparator || !tab.Visible)
 					continue;
 				var bounds = GetBounds (tab);
 				if (bounds.X < mx && mx < bounds.X + bounds.Width) {
@@ -308,6 +312,7 @@ namespace MonoDevelop.Components
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
+			requisition.Width = tabs.Count == 0 ? 10 : tabs.Where (t => t.Visible).Sum (t => (int)Math.Ceiling (t.Size.X));
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -324,12 +329,14 @@ namespace MonoDevelop.Components
 						continue;
 					}
 					var tab = tabs[i];
+					if (!tab.Visible)
+						continue;
 					var bounds = GetBounds (tab);
 					tab.HoverPosition = tab == hoverTab ? new Cairo.PointD (mx - bounds.X, my) : new Cairo.PointD (-1, -1);
 					tab.Draw (cr, bounds);
 				}
 
-				if (active != null) {
+				if (active != null && active.Visible) {
 					active.Draw (cr, GetBounds (active));
 				}
 			}
@@ -346,7 +353,10 @@ namespace MonoDevelop.Components
 			switch (direction) {
 			case DirectionType.TabForward:
 			case DirectionType.Right:
-				focusedTab++;
+				do {
+					focusedTab++;
+				} while (focusedTab < tabs.Count && !tabs [focusedTab].Visible);
+
 				if (focusedTab >= tabs.Count) {
 					focusedTab = -1;
 					ret = false;
@@ -358,7 +368,11 @@ namespace MonoDevelop.Components
 				if (focusedTab <= -1) {
 					focusedTab = tabs.Count;
 				}
-				focusedTab--;
+
+				do {
+					focusedTab--;
+				} while (focusedTab >= 0 && !tabs [focusedTab].Visible);
+
 				if (focusedTab < 0) {
 					focusedTab = -1;
 					ret = false;
@@ -421,13 +435,25 @@ namespace MonoDevelop.Components
 		Pango.Layout layout;
 		Tabstrip parent;
 		int w, h;
-		
+		bool visible = true;
+
 		public string Label {
 			get => label;
 			set {
 				if (value != label) {
 					label = value;
 					CreateLayout ();
+					if (parent != null)
+						parent.Relayout ();
+				}
+			}
+		}
+
+		public bool Visible {
+			get => visible;
+			set {
+				if (value != visible) {
+					visible = value;
 					if (parent != null)
 						parent.Relayout ();
 				}

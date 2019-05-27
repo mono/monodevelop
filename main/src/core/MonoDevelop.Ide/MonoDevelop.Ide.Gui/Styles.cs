@@ -379,7 +379,7 @@ namespace MonoDevelop.Ide.Gui
 			PadLabelColor = BaseForegroundColor;
 			SubTabBarActiveBackgroundColor = BaseSelectionBackgroundColor;
 			SubTabBarActiveTextColor = BaseSelectionTextColor;
-			SubTabBarSeparatorColor = SubTabBarTextColor;
+			SubTabBarSeparatorColor = ThinSplitterColor;
 			InactiveBrowserPadBackground = InactivePadBackground;
 
 			// Tabs

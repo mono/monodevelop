@@ -553,11 +553,12 @@ namespace MonoDevelop.Ide.Gui
 
 				ClearTasks ();
 
-				try {
-					Closed?.Invoke (this, args);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while calling Closed event.", ex);
-				}
+				Closed?.SafeInvoke (this, args);
+
+				// Reset the root view before closing the view, otherwise shell.CloseView will destroy it.
+				// We need the view to be functional until after the window is closed. The Dispose() method
+				// already takes care of disposing the view, which will destroy the widget it contains
+				window.SetRootView (null);
 
 				shell.CloseView (window, true);
 
@@ -573,9 +574,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Closing != null) {
 				foreach (var handler in Closing.GetInvocationList ().Cast<DocumentCloseAsyncEventHandler> ()) {
-					await handler (this, e);
-					if (e.Cancel)
-						break;
+					try {
+						await handler (this, e);
+						if (e.Cancel)
+							break;
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
 				}
 			}
 		}
@@ -616,7 +621,7 @@ namespace MonoDevelop.Ide.Gui
 			Close ().Ignore ();
 		}
 
-		internal void Dispose ()
+		void Dispose ()
 		{
 			DocumentRegistry.Remove (this);
 			callbackRegistration?.Dispose ();
@@ -625,7 +630,6 @@ namespace MonoDevelop.Ide.Gui
 				workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			UnsubscribeControllerEvents ();
-			window.SetRootView (null);
 			view.IsRoot = false;
 			view.Dispose (); // This will also dispose the controller
 
