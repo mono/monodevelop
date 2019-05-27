@@ -156,6 +156,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 			return tabstrip.Tabs.Select (t => t.Tag).Cast<GtkShellDocumentViewItem> ();
 		}
 
+		public GtkShellDocumentViewItem GetChild (int index)
+		{
+			return (GtkShellDocumentViewItem)tabstrip.Tabs [index].Tag;
+		}
+
 		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
 		{
 			var tab = tabstrip.Tabs.FirstOrDefault (t => t.Tag == view);
