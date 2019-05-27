@@ -1,4 +1,4 @@
-//  Project.cs
+﻿//  Project.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -369,11 +369,11 @@ namespace MonoDevelop.Projects
 		{
 			// If the project doesn't have a Default run configuration, create one
 			if (!defaultRunConfigurationCreated) {
-				defaultRunConfigurationCreated = true;
 				if (!runConfigurations.Any (c => c.IsDefaultConfiguration)) {
-					var rc = CreateRunConfigurationInternal ("Default");
-					ImportDefaultRunConfiguration (rc);
-					runConfigurations.Insert (0, rc);
+					defaultBlankRunConfiguration = CreateRunConfigurationInternal ("Default");
+					ImportDefaultRunConfiguration (defaultBlankRunConfiguration);
+					runConfigurations.Insert (0, defaultBlankRunConfiguration);
+					defaultRunConfigurationCreated = true;
 				}
 			}
 		}
@@ -3083,7 +3083,8 @@ namespace MonoDevelop.Projects
 
 		internal void OnRunConfigurationRemoved (IEnumerable<SolutionItemRunConfiguration> items)
 		{
-
+			foreach (var s in items)
+				ProjectExtension.OnRemoveRunConfiguration (s.Name);
 		}
 
 		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags, HashSet<MSBuildItem> loadedItems)
