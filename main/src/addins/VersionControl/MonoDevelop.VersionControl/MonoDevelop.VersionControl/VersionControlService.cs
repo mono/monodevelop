@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Linq;
 using System.IO;
@@ -521,7 +521,7 @@ namespace MonoDevelop.VersionControl
 					if (paths.Length > 0) {
 						if (monitor == null)
 							monitor = GetStatusMonitor ();
-						repo.AddAsync (paths, false, monitor);
+						await repo.AddAsync (paths, false, monitor);
 					}
 					vargs.AddRange (repoFiles.Select (i => new FileUpdateEventInfo (repo, i.ProjectFile.FilePath, i.ProjectFile.Subtype == Subtype.Directory)));
 				}
