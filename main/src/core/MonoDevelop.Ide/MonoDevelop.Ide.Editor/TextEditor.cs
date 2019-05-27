@@ -1610,5 +1610,10 @@ namespace MonoDevelop.Ide.Editor
 		public new bool HasFocus {
 			get { return this.textEditorImpl.HasFocus; }
 		}
+
+		internal void SetNotDirtyState ()
+		{
+			textEditorImpl.SetNotDirtyState ();
+		}
 	}
 }
