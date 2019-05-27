@@ -1,4 +1,4 @@
-
+﻿
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -243,27 +243,47 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler
+	abstract class CurrentFileViewHandler<T> : FileVersionControlCommandHandler
 	{
+		protected bool CanRunCommand { get => IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> () != null; }
+
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
-			if (test)
-				return true;
-
-			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
-			return true;
+			return CanRunCommand;
 		}
 	}
 
 	class CurrentFileDiffHandler : CurrentFileViewHandler<IDiffView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (test)
+				return CanRunCommand;
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
+			return true;
+		}
 	}
-	
+
 	class CurrentFileBlameHandler : CurrentFileViewHandler<IBlameView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (test)
+				return CanRunCommand;
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowBlameView ();
+			return true;
+		}
+
 	}
-	
+
 	class CurrentFileLogHandler : CurrentFileViewHandler<ILogView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (test)
+				return CanRunCommand;
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowLogView ();
+			return true;
+		}
 	}
 }
