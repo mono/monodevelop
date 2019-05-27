@@ -24,37 +24,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MonoDevelop.AspNetCore
 {
-	internal class LaunchProfileProvider
+	internal class LaunchProfileProvider 
 	{
-		DotNetProject project;
+		readonly string baseDirectory;
+		readonly string defaultNamespace;
 		readonly object fileLocker = new object ();
 		public IDictionary<string, JToken> GlobalSettings { get; private set; }
 		internal JObject ProfilesObject { get; private set; }
-		internal string launchSettingsJsonPath => Path.Combine (project.BaseDirectory, "Properties", "launchSettings.json");
+		public ConcurrentDictionary<string, LaunchProfileData> Profiles { get; set; }
+		internal string LaunchSettingsJsonPath => Path.Combine (baseDirectory, "Properties", "launchSettings.json");
 		const string DefaultGlobalSettings = @"{
     						""windowsAuthentication"": false,
     						""anonymousAuthentication"": true
   							}";
 
-		public LaunchProfileProvider (Project project)
+		public LaunchProfileData DefaultProfile {
+			get {
+				if (!Profiles.ContainsKey (defaultNamespace)) { 
+                    var defaultProfile = CreateDefaultProfile ();
+					Profiles[defaultNamespace] = defaultProfile;
+					return defaultProfile;
+				}
+				return Profiles [defaultNamespace];
+			}
+		}
+
+		public LaunchProfileProvider (string baseDirectory, string defaultNamespace)
 		{
-			this.project = (DotNetProject) project;
+			this.baseDirectory = baseDirectory;
+			this.defaultNamespace = defaultNamespace;
 			GlobalSettings = new Dictionary<string, JToken> ();
 		}
 
 		public void LoadLaunchSettings ()
 		{
-			if (!File.Exists (launchSettingsJsonPath)) {
+			if (!File.Exists (LaunchSettingsJsonPath)) {
 				CreateAndAddDefaultLaunchSettings ();
 				return; 
 			}
@@ -69,25 +83,26 @@ namespace MonoDevelop.AspNetCore
 				}
 				GlobalSettings.Add (token.Key, token.Value);
 			}
+
+			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (LaunchProfileData.DeserializeProfiles (ProfilesObject));
 		}
 
 		JObject TryParse ()
 		{
 			try {
-				return JObject.Parse (File.ReadAllText (launchSettingsJsonPath));
+				return JObject.Parse (File.ReadAllText (LaunchSettingsJsonPath));
 			}
 			catch {
 				return new JObject ();
 			}
 		}
 
-		public void SaveLaunchSettings (IDictionary<string, Dictionary<string, object>> profilesData)
+		public void SaveLaunchSettings ()
 		{
 			var doc = new JObject ();
 			var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 
-			if (profilesData == null)
-				return;
+			var profilesData = Profiles.ToSerializableForm ();
 
 			ProfilesObject = JObject.Parse (JsonConvert.SerializeObject (profilesData, Formatting.Indented, settings));
 
@@ -99,17 +114,17 @@ namespace MonoDevelop.AspNetCore
 
 			try {
 				string jsonDocString = doc.ToString (Formatting.Indented);
-				string propertiesDirectory = Path.GetDirectoryName (launchSettingsJsonPath);
+				string propertiesDirectory = Path.GetDirectoryName (LaunchSettingsJsonPath);
 				Directory.CreateDirectory (propertiesDirectory);
 
 				lock (fileLocker) {
-					File.WriteAllText (launchSettingsJsonPath, jsonDocString);
+					File.WriteAllText (LaunchSettingsJsonPath, jsonDocString);
 				}
 			} catch (IOException ioe) {
-				string message = GettextCatalog.GetString ("Failed to write {0}", launchSettingsJsonPath);
+				string message = GettextCatalog.GetString ("Failed to write {0}", LaunchSettingsJsonPath);
 				ReportError (message, ioe);
 			} catch (UnauthorizedAccessException uae) {
-				string message = GettextCatalog.GetString ("Failed to write {0}. Unable to access file or access is denied", launchSettingsJsonPath);
+				string message = GettextCatalog.GetString ("Failed to write {0}. Unable to access file or access is denied", LaunchSettingsJsonPath);
 				ReportError (message, uae);
 			}
 		}
@@ -120,10 +135,22 @@ namespace MonoDevelop.AspNetCore
 			MessageService.ShowError (message);
 		}
 
-		public LaunchProfileData CreateDefaultProfile ()
+		public LaunchProfileData AddNewProfile (string name)
+		{
+			if (Profiles == null)
+				Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
+
+			var newProfile = CreateProfile (name);
+			Profiles [name] =  newProfile;
+			return newProfile;
+		}
+
+		public LaunchProfileData CreateDefaultProfile () => CreateProfile (defaultNamespace);
+
+		LaunchProfileData CreateProfile (string name)
 		{
 			var defaultProfile = new LaunchProfileData {
-				Name = project.DefaultNamespace,
+				Name = name,
 				CommandName = "Project",
 				LaunchBrowser = true,
 				EnvironmentVariables = new Dictionary<string, string> (StringComparer.Ordinal),
@@ -139,9 +166,11 @@ namespace MonoDevelop.AspNetCore
 		void CreateAndAddDefaultLaunchSettings ()
 		{
 			GlobalSettings.Add ("iisSettings", JToken.Parse (DefaultGlobalSettings));
-			var profilesData = new Dictionary<string, LaunchProfileData> ();
-			profilesData.Add (project.DefaultNamespace, CreateDefaultProfile ());
-			SaveLaunchSettings (profilesData.ToSerializableForm ());
+			var profiles = new Dictionary<string, LaunchProfileData> {
+				{ defaultNamespace, CreateDefaultProfile () }
+			};
+			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (profiles);
+			SaveLaunchSettings ();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-//
+﻿//
 // LaunchSettingsTests.cs
 //
 // Author:
@@ -23,12 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdeUnitTests;
-using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using Newtonsoft.Json.Linq;
@@ -91,26 +87,22 @@ namespace MonoDevelop.AspNetCore.Tests
 			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
-			var launchProfileProvider = new LaunchProfileProvider (project);
+			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory,project.DefaultNamespace);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.ProfilesObject, Is.Not.Null);
 			Assert.That (launchProfileProvider.GlobalSettings, Is.Not.Empty);
 
-			var profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
+			Assert.That (launchProfileProvider.Profiles, Has.Count.EqualTo (2));
 
-			Assert.That (profiles, Has.Count.EqualTo (2));
+			launchProfileProvider.Profiles ["Test"] = new LaunchProfileData ();
 
-			profiles.Add ("Test", new LaunchProfileData ());
+			launchProfileProvider.SaveLaunchSettings ();
 
-			launchProfileProvider.SaveLaunchSettings (profiles.ToSerializableForm ());
-
-			launchProfileProvider = new LaunchProfileProvider (project);
+			launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
 			launchProfileProvider.LoadLaunchSettings ();
 
-			profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
-
-			Assert.That (profiles, Has.Count.EqualTo (3));
+			Assert.That (launchProfileProvider.Profiles, Has.Count.EqualTo (3));
 		}
 
 		[Test]
@@ -120,22 +112,23 @@ namespace MonoDevelop.AspNetCore.Tests
 			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject) solution.GetAllProjects ().Single ();
 
-			var launchProfileProvider = new LaunchProfileProvider (project);
+			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.ProfilesObject, Is.Not.Null);
 			Assert.That (launchProfileProvider.GlobalSettings, Is.Not.Empty);
+			Assert.That (project.RunConfigurations, Has.Count.EqualTo (1));
 
-			//modifiying launchSettings.json externally
-			System.IO.File.WriteAllText (launchProfileProvider.launchSettingsJsonPath, LaunchSettings);
+			//modifiying launchSettings.json externally and loading it again
+			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+            project = (DotNetProject)solution.GetAllProjects ().Single ();
+
 			var config = project.GetDefaultRunConfiguration() as AspNetCoreRunConfiguration;
 
-			config.RefreshLaunchSettings ();
-
 			Assert.That (config, Is.Not.Null, "GetDefaultRunConfiguration cast to AspNetCoreRunConfiguration is null");
-			Assert.That (config.ActiveProfile, Is.EqualTo ("EnvironmentsSample"));
+			Assert.That (project.RunConfigurations, Has.Count.EqualTo (3));
 			Assert.That (config.CurrentProfile, Is.Not.Null);
-			Assert.That (config.CurrentProfile.TryGetApplicationUrl (), Is.EqualTo ("http://localhost:54340/"));
 		}
 
 		[Test]
@@ -175,21 +168,19 @@ namespace MonoDevelop.AspNetCore.Tests
 			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
-			var launchProfileProvider = new LaunchProfileProvider (project);
+			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.ProfilesObject, Is.Not.Null);
 			Assert.That (launchProfileProvider.GlobalSettings, Is.Not.Empty);
 
 			//modifiying launchSettings.json externally
-			System.IO.File.WriteAllText (launchProfileProvider.launchSettingsJsonPath, string.Empty);
+			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, string.Empty);
 
 			var config = project.GetDefaultRunConfiguration () as AspNetCoreRunConfiguration;
 
-			config.RefreshLaunchSettings ();
-
 			Assert.That (config, Is.Not.Null, "GetDefaultRunConfiguration cast to AspNetCoreRunConfiguration is null");
-			Assert.That (config.ActiveProfile, Is.EqualTo (project.DefaultNamespace));
+			Assert.That (config.Name, Is.EqualTo ("Default"));
 		}
 
 		[TearDown]
