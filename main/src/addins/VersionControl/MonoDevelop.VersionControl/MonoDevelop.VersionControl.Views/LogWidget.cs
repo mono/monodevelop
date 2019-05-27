@@ -606,6 +606,8 @@ namespace MonoDevelop.VersionControl.Views
 			base.OnDestroyed ();
 		}
 
+		bool IsDestroyed { get; set; }
+
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			var renderer = (CellRendererText)cell;

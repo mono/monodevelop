@@ -120,21 +120,18 @@ namespace MonoDevelop.VersionControl
 */		
 		static void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
 		{
-			Task.Run (async () => await rep.GetVersionInfoAsync (folder)).ContinueWith (t => {
-				var vinfo = t.Result;
-				Xwt.Drawing.Image overlay = null;
-				if (vinfo == null || !vinfo.IsVersioned) {
-					overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
-				} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
-					if (!skipVersionedOverlay)
-						overlay = VersionControlService.overlay_controled;
-				} else {
-					overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
-				}
-				if (overlay != null)
-					nodeInfo.OverlayBottomRight = overlay;
-
-			}, Runtime.MainTaskScheduler).Ignore ();
+    		var vinfo = rep.GetVersionInfoAsync (folder).WaitAndGetResult ();
+			Xwt.Drawing.Image overlay = null;
+			if (vinfo == null || !vinfo.IsVersioned) {
+				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
+			} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
+				if (!skipVersionedOverlay)
+					overlay = VersionControlService.overlay_controled;
+			} else {
+				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
+			}
+			if (overlay != null)
+				nodeInfo.OverlayBottomRight = overlay;
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)

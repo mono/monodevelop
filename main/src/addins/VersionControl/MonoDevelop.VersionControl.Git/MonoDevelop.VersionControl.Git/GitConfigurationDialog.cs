@@ -177,6 +177,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnDestroyed ()
 		{
+			IsDestroyed = true;
+
 			base.OnDestroyed ();
 			if (this.repo != null) {
 				this.repo.Dispose ();
@@ -185,12 +187,6 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 		bool IsDestroyed { get; set; }
-
-		protected override void OnDestroyed ()
-		{
-			IsDestroyed = true;
-			base.OnDestroyed ();
-		}
 
 		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
 		{
