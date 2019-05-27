@@ -63,12 +63,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 		}
 
-		protected override Task OnLoad (bool reloading)
+		protected override async Task OnLoad (bool reloading)
 		{
-			return base.OnLoad (reloading).ContinueWith (delegate {
-				if (textEditor != null)
-					textEditor.IsDirty = false;
-			});
+			await base.OnLoad (reloading);
+			if (isDisposed)
+				return;
+ 			textEditor.SetNotDirtyState ();
+			textEditor.IsDirty = false;
 		}
 
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
