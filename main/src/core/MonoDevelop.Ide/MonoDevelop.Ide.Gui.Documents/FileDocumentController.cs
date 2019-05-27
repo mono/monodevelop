@@ -137,7 +137,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
 		{
-			return modelDescriptor is FileDescriptor file && file.FilePath.CanonicalPath == filePath;
+			if (modelDescriptor is FileDescriptor file && file.FilePath.CanonicalPath == FilePath) {
+				if (file.Owner != null && Owner != file.Owner)
+					Owner = file.Owner;
+				return true;
+			}
+			return false;
 		}
 
 		protected virtual void OnFileNameChanged ()
