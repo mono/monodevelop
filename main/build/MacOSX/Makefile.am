@@ -25,7 +25,7 @@ CLEANFILES = render.exe monostub monostub-test
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
-MIN_MACOS_VERSION=10.11
+MIN_MACOS_VERSION=10.12
 
 all: monostub monostub-nogui monostub-test
 

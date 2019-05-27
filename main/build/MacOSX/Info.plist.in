@@ -211,7 +211,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.11</string>
+	<string>10.12</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.xamarin.monodevelop</string>
 	<key>CFBundleInfoDictionaryVersion</key>
