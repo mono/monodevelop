@@ -735,6 +735,8 @@
     <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
     <Compile Include="MonoDevelop.Core\PooledListPolicy.cs" />
     <Compile Include="MonoDevelop.Projects.FileNesting\FileNestingService.cs" />
+    <Compile Include="MonoDevelop.Projects.FileNesting\NestingRulesProvider.cs" />
+    <Compile Include="MonoDevelop.Projects.FileNesting\NestingRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

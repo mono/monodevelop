@@ -1,10 +1,10 @@
 //
-// FileNestingService.cs
+// NestingRulesFile.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft, Inc. (http://microsoft.com)
+// Copyright (c) 2019, Microsoft Inc. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,30 +26,30 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MonoDevelop.Projects.FileNesting
 {
-	public static class FileNestingService
+	internal class NestingRulesProvider
 	{
-		static List<NestingRulesProvider> rulesProviders;
+		readonly List<NestingRule> nestingRules = new List<NestingRule> ();
 
-		static FileNestingService ()
+		public NestingRulesProvider ()
 		{
-			rulesProviders = new List<NestingRulesProvider> ();
-			rulesProviders.Add (new NestingRulesProvider ());
+			nestingRules.Add (new NestingRule (NestingRuleKind.AddedExtension, ".*", null));
 		}
 
-		public static string GetParentFile (string inputFile)
+		public string GetParentFile (string inputFile)
 		{
-			foreach (var rp in rulesProviders) {
-				var parentFile = rp.GetParentFile (inputFile);
+			foreach (var rule in nestingRules) {
+				string parentFile = rule.GetParentFile (inputFile);
 				if (!String.IsNullOrEmpty (parentFile)) {
+					// Stop at the 1st rule found
 					return parentFile;
 				}
 			}
 
 			return null;
 		}
+
 	}
 }

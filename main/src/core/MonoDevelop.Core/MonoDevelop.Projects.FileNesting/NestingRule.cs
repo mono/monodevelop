@@ -1,10 +1,10 @@
 //
-// FileNestingService.cs
+// NestingRule.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft, Inc. (http://microsoft.com)
+// Copyright (c) 2019, Microsoft Inc. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,26 +27,49 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.FileNesting
 {
-	public static class FileNestingService
+	internal enum NestingRuleKind
 	{
-		static List<NestingRulesProvider> rulesProviders;
+		ExtensionToExtension,
+		FileSuffixToExtension,
+		AddedExtension,
+		PathSegment,
+		AllExtensions,
+		FileToFile
+	}
 
-		static FileNestingService ()
+	internal class NestingRule
+	{
+		List<string> patterns;
+
+		public NestingRule (NestingRuleKind kind, string appliesTo, IEnumerable<string> patterns)
 		{
-			rulesProviders = new List<NestingRulesProvider> ();
-			rulesProviders.Add (new NestingRulesProvider ());
+			Kind = kind;
+			AppliesTo = appliesTo ?? ".*";
+			this.patterns = patterns?.ToList ();
 		}
 
-		public static string GetParentFile (string inputFile)
+		public NestingRuleKind Kind { get; private set; }
+
+		public string AppliesTo { get; private set; }
+
+		public string GetParentFile (string inputFile)
 		{
-			foreach (var rp in rulesProviders) {
-				var parentFile = rp.GetParentFile (inputFile);
-				if (!String.IsNullOrEmpty (parentFile)) {
+			switch (Kind) {
+			case NestingRuleKind.AddedExtension:
+				// This is the simplest rules, and applies to all files, if we find a file
+				// with the same name minus the extension, that's the parent.
+				string parentFile = Path.Combine (Path.GetDirectoryName (inputFile), Path.GetFileNameWithoutExtension (inputFile));
+				LoggingService.LogInfo ($"Looking for nesting rules for {inputFile} under {parentFile}");
+				if (File.Exists (parentFile)) {
+					LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
 					return parentFile;
 				}
+				break;
 			}
 
 			return null;
