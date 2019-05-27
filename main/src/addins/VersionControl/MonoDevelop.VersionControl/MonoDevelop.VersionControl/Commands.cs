@@ -1,4 +1,4 @@
-
+﻿
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -257,13 +257,32 @@ namespace MonoDevelop.VersionControl
 
 	class CurrentFileDiffHandler : CurrentFileViewHandler<IDiffView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (!test)
+				IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
+			return true;
+		}
 	}
-	
+
 	class CurrentFileBlameHandler : CurrentFileViewHandler<IBlameView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (!test)
+				IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowBlameView ();
+			return true;
+		}
+
 	}
-	
+
 	class CurrentFileLogHandler : CurrentFileViewHandler<ILogView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (!test)
+				IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowLogView ();
+			return true;
+		}
 	}
 }
