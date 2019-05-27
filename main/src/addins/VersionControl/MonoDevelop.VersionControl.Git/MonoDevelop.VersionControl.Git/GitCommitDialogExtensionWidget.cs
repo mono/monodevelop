@@ -37,6 +37,8 @@ namespace MonoDevelop.VersionControl.Git
 			this.Build ();
 
 			repo.GetCurrentRemoteAsync ().ContinueWith (t => {
+				if (IsDestroyed)
+					return;
 				bool hasRemote = t.Result != null;
 				if (!hasRemote) {
 					checkPush.Sensitive = false;
@@ -75,5 +77,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		public event EventHandler Changed;
 
+		bool IsDestroyed { get; set; }
+
+		protected override void OnDestroyed ()
+		{
+			IsDestroyed = true;
+			base.OnDestroyed ();
+		}
 	}
 }

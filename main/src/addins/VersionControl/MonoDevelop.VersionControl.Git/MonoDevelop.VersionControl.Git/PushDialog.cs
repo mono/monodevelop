@@ -1,4 +1,4 @@
-//
+﻿//
 // PushDialog.cs
 //
 // Author:
@@ -46,6 +46,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			changeList.DiffLoader = DiffLoader;
 			Task.Run (async () => (await repo.GetRemotesAsync (), await repo.GetCurrentRemoteAsync ())).ContinueWith (t => {
+				if (IsDestroyed)
+					return;
 				var list = new List<string> (t.Result.Item1.Select (r => r.Name));
 				foreach (string s in list)
 					remoteCombo.AppendText (s);
@@ -100,6 +102,14 @@ namespace MonoDevelop.VersionControl.Git
 		protected virtual void OnBranchComboChanged (object sender, System.EventArgs e)
 		{
 			UpdateChangeSet ();
+		}
+
+		bool IsDestroyed { get; set; }
+
+		protected override void OnDestroyed ()
+		{
+			IsDestroyed = true;
+			base.OnDestroyed ();
 		}
 	}
 }

@@ -1,4 +1,3 @@
-
 //
 // ComparisonWidget.cs
 //
@@ -297,7 +296,10 @@ namespace MonoDevelop.VersionControl.Views
 							return text;
 						}
 					}).ContinueWith (t => {
-						((MonoTextEditor)box.Tag).Document.Text = t.Result;
+						var editor = (MonoTextEditor)box.Tag;
+						if (editor.IsDisposed)
+							return;
+						editor.Document.Text = t.Result;
 						widget.CreateDiff ();
 					}, Runtime.MainTaskScheduler);
 					return;

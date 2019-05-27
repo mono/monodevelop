@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -464,6 +464,8 @@ namespace MonoDevelop.VersionControl.Views
 		async Task RunUpdate (CancellationToken cancel)
 		{
 			try {
+				if (disposed)
+					return;
 				cancel.ThrowIfCancellationRequested ();
 				if (fileList != null) {
 					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);

@@ -1,4 +1,4 @@
-//
+﻿//
 // LogWidget.cs
 //
 // Author:
@@ -582,6 +582,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void OnDestroyed ()
 		{
+			IsDestroyed = true;
 			selectionCancellationTokenSource.Cancel ();
 
 			textviewDetails.ButtonPressEvent -= TextviewDetails_ButtonPressEvent;
@@ -767,6 +768,8 @@ namespace MonoDevelop.VersionControl.Views
 			selectionCancellationTokenSource = new CancellationTokenSource ();
 			var token = selectionCancellationTokenSource.Token;
 			Task.Run (async () => await info.Repository.GetRevisionChangesAsync (d, token)).ContinueWith (result => {
+				if (IsDestroyed)
+					return;
 				changedpathstore.Clear ();
 				revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
 				Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;

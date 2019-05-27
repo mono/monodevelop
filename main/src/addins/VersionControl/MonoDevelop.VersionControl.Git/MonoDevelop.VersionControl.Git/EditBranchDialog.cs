@@ -74,7 +74,9 @@ namespace MonoDevelop.VersionControl.Git
 				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
 			repo.GetRemotesAsync ().ContinueWith (t => {
-				foreach (Remote r in t.Result) {
+				if (IsDestroyed)
+					return;
+				foreach (var r in t.Result) {
 					foreach (string b in repo.GetRemoteBranches (r.Name))
 						AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
 				}
@@ -151,6 +153,14 @@ Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
 		{
 			UpdateStatus ();
+		}
+
+		bool IsDestroyed { get; set; }
+
+		protected override void OnDestroyed ()
+		{
+			IsDestroyed = true;
+			base.OnDestroyed ();
 		}
 	}
 }
