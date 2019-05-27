@@ -605,6 +605,36 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.AreEqual (4, additionalContentAddedEvents);
 			Assert.AreEqual (3, additionalContentRemovedEvents);
 		}
+
+		[Test]
+		public async Task RunWhenContentAddedForSlowView()
+		{
+			// In this test the SomeContent instance is provided by the view,
+			// and the view is slow to load, so it won't be available just
+			// after the document is returned.
+
+			var controller = new SlowlyLoadedController ();
+			var doc = await documentManager.OpenDocument (controller);
+
+			int contentAddedEvents = 0;
+
+			// View not yet loaded
+			Assert.IsNull (doc.GetContent<SomeContent> ());
+
+			var r1 = doc.RunWhenContentAdded<SomeContent> (_ => {
+				contentAddedEvents++;
+			});
+
+			Assert.AreEqual (0, contentAddedEvents);
+
+			// Simulate slow load done
+			controller.GoAhead ();
+
+			var c = await doc.GetContentWhenAvailable<SomeContent> ();
+			Assert.IsNotNull (c);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.IsNotNull (doc.GetContent<SomeContent> ());
+		}
 	}
 
 	class TestController: DocumentController
@@ -656,6 +686,27 @@ namespace MonoDevelop.Ide.Gui.Documents
 			DocumentClosedEvents.Clear ();
 			DocumentClosingEvents.Clear ();
 			ActiveDocumentChangedEvents.Clear ();
+		}
+	}
+
+	class SlowlyLoadedController: DocumentController
+	{
+		TaskCompletionSource<bool> slowLoad = new TaskCompletionSource<bool> ();
+
+		public void GoAhead ()
+		{
+			slowLoad.SetResult (true);
+		}
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			// Simulate slow load
+			await slowLoad.Task;
+
+			var inner = new ContentTestController ();
+			await inner.Initialize (null);
+			inner.AddContent (new SomeContent ());
+			return await inner.GetDocumentView ();
 		}
 	}
 }

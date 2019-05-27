@@ -270,6 +270,11 @@ namespace MonoDevelop.Ide.Gui
 			view.ActiveViewInHierarchyChanged += ActiveViewInHierarchyChanged;
 			view.IsRoot = true;
 			window.SetRootView (view.CreateShellView (window));
+
+			// The view may provide additional content, so raise the content change.
+			// The document can be returned before the view is initialized, so
+			// there may already be content subscribers.
+			OnContentChanged ();
 		}
 
 		void SubscribeControllerEvents ()
