@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl
 		// Returns the versioning status of a file or directory
 		public async Task<VersionInfo> GetVersionInfoAsync (FilePath localPath, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None, CancellationToken cancellationToken = default)
 		{
-			var infos = await GetVersionInfoAsync (new FilePath[] { localPath }, queryFlags, cancellationToken);
+			var infos = await GetVersionInfoAsync (new FilePath [] { localPath }, queryFlags, cancellationToken);
 			if (infos.Count != 1) {
 				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Count, localPath);
 				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
@@ -232,13 +232,34 @@ namespace MonoDevelop.VersionControl
 			// HACK: This was slowing down the IDE a lot in case in the eventuality of submodules.
 			return infos [0];
 			/*try {
-				return infos.Single ();
-			} catch (InvalidOperationException) {
-				// Workaround for #17216.
-				return infos [0];
-			}*/
+                return infos.Single ();
+            } catch (InvalidOperationException) {
+                // Workaround for #17216.
+                return infos [0];
+            }*/
 		}
-		
+
+
+		public bool TryGetVersionInfo (FilePath localPath, out VersionInfo info)
+		{
+			return TryGetVersionInfo (localPath, VersionInfoQueryFlags.None, out info);
+		}
+
+		public bool TryGetVersionInfo (FilePath localPath, VersionInfoQueryFlags queryFlags, out VersionInfo info)
+		{
+			var result = TryGetVersionInfo (new FilePath [] { localPath }, queryFlags, out var infos);
+			if (!result || infos == null) {
+				info = null;
+				return false;
+			}
+			if (infos.Count != 1) {
+				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Count, localPath);
+				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
+			}
+			info = infos [0];
+			return result;
+		}
+
 		/// <summary>
 		/// Returns the versioning status of a set of files or directories
 		/// </summary>
@@ -280,6 +301,38 @@ namespace MonoDevelop.VersionControl
 			if (pathsToQuery.Count > 0)
 				AddQuery (new VersionInfoQuery { Paths = pathsToQuery, QueryFlags = queryFlags });
 			return result;
+		}
+
+		public bool TryGetVersionInfo (IEnumerable<FilePath> paths, out IReadOnlyList<VersionInfo> infos)
+		{
+			return TryGetVersionInfo (paths, VersionInfoQueryFlags.None, out infos);
+		}
+
+		public bool TryGetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags, out IReadOnlyList<VersionInfo> infos)
+		{
+			var result = new List<VersionInfo> ();
+			var pathsToQuery = new List<FilePath> ();
+			bool getVersionInfoFailed = false;
+			foreach (var path in paths) {
+				var vi = infoCache.GetStatus (path);
+				if (vi != null) {
+					result.Add (vi);
+					// This status has been invalidated, query it asynchronously
+					if (vi.RequiresRefresh)
+						pathsToQuery.Add (path);
+				} else {
+					pathsToQuery.Add (path);
+					getVersionInfoFailed = true;
+				}
+			}
+			if (pathsToQuery.Count > 0)
+				AddQuery (new VersionInfoQuery { Paths = pathsToQuery, QueryFlags = queryFlags });
+			if (getVersionInfoFailed) {
+				infos = null;
+				return false;
+			}
+			infos = result;
+			return true;
 		}
 
 		RecursiveDirectoryInfoQuery AcquireLockForQuery (FilePath path, bool getRemoteStatus)

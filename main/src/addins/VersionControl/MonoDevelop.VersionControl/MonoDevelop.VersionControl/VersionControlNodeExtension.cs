@@ -94,10 +94,11 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return;
 
-			var vi = repo.GetVersionInfoAsync (file).WaitAndGetResult ();
-			var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
-			if (overlay != null)
-				nodeInfo.OverlayBottomRight = overlay;
+			if (repo.TryGetVersionInfo (file, out var vi)) {
+				var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
+				if (overlay != null)
+					nodeInfo.OverlayBottomRight = overlay;
+			}
 		}
 
 /*		public override void PrepareChildNodes (object dataObject)
@@ -120,7 +121,8 @@ namespace MonoDevelop.VersionControl
 */		
 		static void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
 		{
-    		var vinfo = rep.GetVersionInfoAsync (folder).WaitAndGetResult ();
+			if (!rep.TryGetVersionInfo (folder, out var vinfo))
+				return;
 			Xwt.Drawing.Image overlay = null;
 			if (vinfo == null || !vinfo.IsVersioned) {
 				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
@@ -237,9 +239,6 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	
-
-	
 	class AddinCommandHandler : VersionControlCommandHandler 
 	{
 		[AllowMultiSelection]
