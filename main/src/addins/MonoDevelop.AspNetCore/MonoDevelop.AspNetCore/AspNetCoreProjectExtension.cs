@@ -42,18 +42,17 @@ namespace MonoDevelop.AspNetCore
 
 		bool updating;
 		Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
-		readonly object profiles = new object ();
 		LaunchProfileProvider launchProfileProvider;
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			InitLaunchSettingsProvider ();
 
-			if (aspNetCoreRunConfs.ContainsKey (name))
-				return aspNetCoreRunConfs [name];
+			if (aspNetCoreRunConfs.TryGetValue (name, out var aspNetCoreRunConfiguration))
+				return aspNetCoreRunConfiguration;
 
 			var profile = new LaunchProfileData ();
-			if (!launchProfileProvider.Profiles.ContainsKey (name)) {
+			if (!launchProfileProvider.Profiles.TryGetValue (name, out var _)) {
 				if (name == "Default") {
 					profile = launchProfileProvider.AddNewProfile (Project.DefaultNamespace);
 					launchProfileProvider.Profiles [Project.DefaultNamespace] = profile;
@@ -201,64 +200,64 @@ namespace MonoDevelop.AspNetCore
 			if (launchSettings == null)
 				return;
 
-			lock (profiles) {
-				updating = true;
+			updating = true;
 
-				launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.LoadLaunchSettings ();
 
-				foreach (var profile in launchProfileProvider.Profiles) {
-					if (profile.Value.CommandName != "Project")
-						continue;
+			foreach (var profile in launchProfileProvider.Profiles) {
+				if (profile.Value.CommandName != "Project")
+					continue;
 
-					var key = string.Empty;
+				var key = string.Empty;
 
-					if (profile.Key == this.Project.DefaultNamespace) {
-						key = "Default";
-					} else {
-						key = profile.Key;
-					}
-
-					var runConfig = this.Project.RunConfigurations.FirstOrDefault (x => x.Name == key);
-					if (runConfig == null) {
-						var projectRunConfiguration = new AspNetCoreRunConfiguration (key, profile.Value) {
-							StartAction = "Project"
-						};
-						this.Project.RunConfigurations.Add (projectRunConfiguration);
-					} else {
-                        if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
-							var index = Project.RunConfigurations.IndexOf (runConfig);
-							aspNetCoreRunConfiguration.CurrentProfile = profile.Value;
-							this.Project.RunConfigurations [index] = runConfig;
-						}
-					}
+				if (profile.Key == this.Project.DefaultNamespace) {
+					key = "Default";
+				} else {
+					key = profile.Key;
 				}
 
-				var itemsRemoved = new RunConfigurationCollection ();
-
-				foreach (var config in Project.RunConfigurations) {
-					var key = config.Name;
-
-					if (config.Name == "Default") {
-						key = this.Project.DefaultNamespace;
+				var runConfig = this.Project.RunConfigurations.FirstOrDefault (x => x.Name == key);
+				if (runConfig == null) {
+					var projectRunConfiguration = new AspNetCoreRunConfiguration (key, profile.Value) {
+						StartAction = "Project"
+					};
+					this.Project.RunConfigurations.Add (projectRunConfiguration);
+				} else {
+					if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
+						var index = Project.RunConfigurations.IndexOf (runConfig);
+						aspNetCoreRunConfiguration.CurrentProfile = profile.Value;
+						this.Project.RunConfigurations [index] = runConfig;
 					}
-
-					if (launchProfileProvider.Profiles.ContainsKey (key))
-						continue;
-
-					itemsRemoved.Add (config);
 				}
-
-				Project.RunConfigurations.RemoveRange (itemsRemoved);
-
-				updating = false;
 			}
+
+			var itemsRemoved = new RunConfigurationCollection ();
+
+			foreach (var config in Project.RunConfigurations) {
+				var key = config.Name;
+
+				if (config.Name == "Default") {
+					key = this.Project.DefaultNamespace;
+				}
+
+				if (launchProfileProvider.Profiles.TryGetValue (key, out var _))
+					continue;
+
+				itemsRemoved.Add (config);
+			}
+
+			Project.RunConfigurations.RemoveRange (itemsRemoved);
+
+			updating = false;
 		}
 
-		protected override void OnRemoveRunConfiguration (string name)
+		protected override void OnRemoveRunConfiguration (IEnumerable<SolutionItemRunConfiguration> items)
 		{
 			if (updating || launchProfileProvider == null)
 				return;
-			launchProfileProvider.Profiles.TryRemove (name, out var _);
+			foreach (var item in items) {
+				launchProfileProvider.Profiles.TryRemove (item.Name, out var _);
+			}
 			launchProfileProvider.SaveLaunchSettings ();
 		}
 	}

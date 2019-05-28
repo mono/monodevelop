@@ -3056,6 +3056,8 @@ namespace MonoDevelop.Projects
 			runConfig.Read (grp);
 		}
 
+		//TODO: OnRunConfigurationsAdded: hand items in the same way than NotifyItemsAdded.
+		//NOTE that this method does not call ProjectExtension since OnRunConfigurationAdded does not exist
 		internal void OnRunConfigurationsAdded (IEnumerable<SolutionItemRunConfiguration> items)
 		{
 			// Initialize the property group only if the project is not being loaded (in which case it will
@@ -3069,8 +3071,7 @@ namespace MonoDevelop.Projects
 
 		internal void OnRunConfigurationRemoved (IEnumerable<SolutionItemRunConfiguration> items)
 		{
-			foreach (var s in items)
-				ProjectExtension.OnRemoveRunConfiguration (s.Name);
+			ProjectExtension.OnRemoveRunConfiguration (items);
 		}
 
 		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags, HashSet<MSBuildItem> loadedItems)
