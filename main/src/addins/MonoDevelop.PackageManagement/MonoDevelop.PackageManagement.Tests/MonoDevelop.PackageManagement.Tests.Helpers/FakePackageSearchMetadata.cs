@@ -75,6 +75,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public LicenseMetadata LicenseMetadata { get; set; }
 
+		public Uri PackageDetailsUrl { get; set; }
+
 		public Task<IEnumerable<VersionInfo>> GetVersionsAsync ()
 		{
 			throw new NotImplementedException ();
