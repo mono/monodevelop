@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			argumentsEntry.SetCommonAccessibilityAttributes ("DotNetRunConfigurationEditorWidget.argumentsEntry",
 					  argumentsLabel.Text,
-					  GettextCatalog.GetString ("Enter the arguments  to run with"));
+					  GettextCatalog.GetString ("Enter the arguments to run with"));
 
 			// TODO: workingDirLabel -> workingDir
 
