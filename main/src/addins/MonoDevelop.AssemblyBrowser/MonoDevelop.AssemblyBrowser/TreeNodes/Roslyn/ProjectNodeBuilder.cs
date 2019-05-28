@@ -118,7 +118,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return 1;
 				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (e1.Name, e2.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
