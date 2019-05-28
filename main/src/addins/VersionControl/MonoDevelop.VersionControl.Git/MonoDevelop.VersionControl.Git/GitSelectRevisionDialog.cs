@@ -105,7 +105,7 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			revisionList.Columns.Add (shaColumn);
 
-			Task.Factory.StartNew (async () => {
+			Task.Run (async () => {
 				const int sliceSize = 150;
 
 				var history = repo.GetHistory (repo.RootPath, null);
@@ -128,7 +128,7 @@ namespace MonoDevelop.VersionControl.Git
 						}
 					});
 				}
-			}, cts.Token);
+			}, cts.Token).Ignore ();
 
 			revisionList.SelectionChanged += delegate {
 				CheckSensitive ();
