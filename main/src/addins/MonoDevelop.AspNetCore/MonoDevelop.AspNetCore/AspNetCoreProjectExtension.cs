@@ -34,17 +34,17 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore
-{   
+{
 	[ExportProjectModelExtension]
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
 		public const string TypeScriptCompile = "TypeScriptCompile";
 
 		bool updating;
-		readonly Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
+		Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
 		readonly object profiles = new object ();
-        LaunchProfileProvider launchProfileProvider;
-         
+		LaunchProfileProvider launchProfileProvider;
+
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			InitLaunchSettingsProvider ();
@@ -66,18 +66,18 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			var aspnetconf = new AspNetCoreRunConfiguration (name, profile);
-            aspnetconf.SaveRequested += Aspnetconf_Save;
+			aspnetconf.SaveRequested += Aspnetconf_Save;
 			aspNetCoreRunConfs.Add (name, aspnetconf);
 			return aspnetconf;
 		}
 
 		void Aspnetconf_Save (object sender, EventArgs e)
 		{
-            if (sender is AspNetCoreRunConfiguration config && config.IsDirty)
-			    launchProfileProvider.SaveLaunchSettings ();
+			if (sender is AspNetCoreRunConfiguration config && config.IsDirty)
+				launchProfileProvider.SaveLaunchSettings ();
 		}
 
-        void InitLaunchSettingsProvider ()
+		void InitLaunchSettingsProvider ()
 		{
 			if (launchProfileProvider == null) {
 				launchProfileProvider = new LaunchProfileProvider (this.Project.BaseDirectory, this.Project.DefaultNamespace);
@@ -152,7 +152,7 @@ namespace MonoDevelop.AspNetCore
 
 			return base.OnGetDefaultBuildAction (fileName);
 		}
-		
+
 		protected override void OnItemReady ()
 		{
 			base.OnItemReady ();
@@ -190,6 +190,8 @@ namespace MonoDevelop.AspNetCore
 			foreach (var conf in aspNetCoreRunConfs) {
 				conf.Value.SaveRequested -= Aspnetconf_Save;
 			}
+			aspNetCoreRunConfs.Clear ();
+			aspNetCoreRunConfs = null;
 		}
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
@@ -198,12 +200,12 @@ namespace MonoDevelop.AspNetCore
 			var launchSettings = e.FirstOrDefault (x => x.FileName == launchSettingsPath && !x.FileName.IsDirectory);
 			if (launchSettings == null)
 				return;
-			
+
 			lock (profiles) {
 				updating = true;
 
 				launchProfileProvider.LoadLaunchSettings ();
-				
+
 				foreach (var profile in launchProfileProvider.Profiles) {
 					if (profile.Value.CommandName != "Project")
 						continue;
@@ -223,14 +225,17 @@ namespace MonoDevelop.AspNetCore
 						};
 						this.Project.RunConfigurations.Add (projectRunConfiguration);
 					} else {
-						var index = Project.RunConfigurations.IndexOf (runConfig);
-						this.Project.RunConfigurations [index] = runConfig;
+                        if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
+							var index = Project.RunConfigurations.IndexOf (runConfig);
+							aspNetCoreRunConfiguration.CurrentProfile = profile.Value;
+							this.Project.RunConfigurations [index] = runConfig;
+						}
 					}
 				}
 
 				var itemsRemoved = new RunConfigurationCollection ();
 
-                foreach (var config in Project.RunConfigurations) {
+				foreach (var config in Project.RunConfigurations) {
 					var key = config.Name;
 
 					if (config.Name == "Default") {

@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNetCore
 
 		public bool IsDirty { get; set; } = true;
 
-		public event EventHandler SaveRequested;
+		internal event EventHandler SaveRequested;
 
 		public AspNetCoreRunConfiguration (string name, LaunchProfileData profile)
 			: base (name)
@@ -89,7 +89,7 @@ namespace MonoDevelop.AspNetCore
 			base.Read (pset);
 			ExternalConsole = pset.GetValue (nameof (ExternalConsole), false);
 
-            // read from run config if CurrentProfile.* is empty, for backward compatibility
+			// read from run config if CurrentProfile.* is empty, for backward compatibility
 			if (!pset.HasProperty (nameof (EnvironmentVariables)) && EnvironmentVariables.Count == 0)
 				EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
 #pragma warning disable CS0618 //disables warnings threw by obsolete methods used in nameof()
@@ -106,7 +106,7 @@ namespace MonoDevelop.AspNetCore
 		{
 			EnvironmentVariables.Clear ();
 			foreach (var pair in CurrentProfile.EnvironmentVariables) {
-					EnvironmentVariables [pair.Key] = pair.Value;
+				EnvironmentVariables [pair.Key] = pair.Value;
 			}
 		}
 
@@ -117,14 +117,14 @@ namespace MonoDevelop.AspNetCore
 			pset.SetValue (nameof (ExternalConsole), ExternalConsole, false);
 			if (EnvironmentVariables.Count == 1 && EnvironmentVariables.ContainsKey ("ASPNETCORE_ENVIRONMENT") && EnvironmentVariables ["ASPNETCORE_ENVIRONMENT"] == "Development")
 				pset.RemoveProperty (nameof (EnvironmentVariables));
-                
+
 			if (CurrentProfile == null) {
 				return;
 			}
 
 			CurrentProfile.EnvironmentVariables.Clear ();
 			foreach (var pair in EnvironmentVariables) {
-					CurrentProfile.EnvironmentVariables [pair.Key] = pair.Value;
+				CurrentProfile.EnvironmentVariables [pair.Key] = pair.Value;
 			}
 
 			OnSaveRequested ();
@@ -134,8 +134,8 @@ namespace MonoDevelop.AspNetCore
 			pset.SetValue (nameof (LaunchBrowser), CurrentProfile.LaunchBrowser, true);
 			pset.SetValue (nameof (LaunchUrl), string.IsNullOrWhiteSpace (CurrentProfile.LaunchUrl) ? null : CurrentProfile.LaunchUrl, null);
 			var appUrl = CurrentProfile.TryGetApplicationUrl ();
-            if (!string.IsNullOrEmpty (appUrl))
-				pset.SetValue (nameof (ApplicationURL), appUrl , "http://localhost:5000/");
+			if (!string.IsNullOrEmpty (appUrl))
+				pset.SetValue (nameof (ApplicationURL), appUrl, "http://localhost:5000/");
 #pragma warning restore CS0618
 
 			IsDirty = false;
