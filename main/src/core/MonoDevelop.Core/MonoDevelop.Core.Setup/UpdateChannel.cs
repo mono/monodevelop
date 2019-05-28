@@ -68,7 +68,7 @@ namespace MonoDevelop.Core.Setup
 			if ((object)a == null) {
 				return false;
 			}
-			return (a.Id == Id);
+			return (a.Id == Id && a.Idx == Idx);
 		}
 
 		public static bool operator == (UpdateChannel a, UpdateChannel b)
@@ -116,7 +116,7 @@ namespace MonoDevelop.Core.Setup
 
 		public override int GetHashCode ()
 		{
-			return Idx;
+			return Id.GetHashCode() + Idx;
 		}
 
 		public override string ToString ()
