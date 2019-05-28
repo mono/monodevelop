@@ -126,8 +126,15 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 				WelcomePageShown?.Invoke (welcomePage, EventArgs.Empty);
 				welcomePage.UpdateProjectBar ();
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Visible = false;
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.AddOverlayWidget (welcomePage, animate);
+				
+				var rootWindow = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
+				if (rootWindow.BottomBar is MonoDevelopStatusBar statusBar) {
+					statusBar.Visible = false;
+				}
+
+				if (rootWindow.DockFrame is Components.Docking.DockFrame dockFrame) {
+					dockFrame.AddOverlayWidget (welcomePage, animate);
+				}
 				welcomePage.GrabFocus ();
 			}
 		}

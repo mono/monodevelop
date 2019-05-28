@@ -145,6 +145,12 @@ namespace MonoDevelop.CodeActions
 			return Task.Run (async delegate {
 				try {
 					var root = await ad.GetSyntaxRootAsync (cancellationToken);
+					if (root == null) {
+						// WebEditorRoslynWorkspace adds .json, .css, .html etc. files to the workspace
+						// but they don't support syntax trees or semantic model
+						return CodeActionContainer.Empty;
+					}
+
 					if (root.Span.End < span.End) {
 						LoggingService.LogError ($"Error in GetCurrentFixesAsync span {span.Start}/{span.Length} not inside syntax root {root.Span.End} document length {Editor.Length}.");
 						return CodeActionContainer.Empty;
