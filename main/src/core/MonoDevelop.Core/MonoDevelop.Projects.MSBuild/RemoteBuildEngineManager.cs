@@ -166,12 +166,12 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				builder = await engine.GetOrCreateRemoteProjectBuilder (projectFile);
 			} catch {
-				ReleaseProjectBuilderNoLock (engine).Ignore ();
+				ReleaseProjectBuilder (engine).Ignore ();
 				throw;
 			}
 
 			if (builder == null) {
-				ReleaseProjectBuilderNoLock (engine).Ignore ();
+				ReleaseProjectBuilder (engine).Ignore ();
 				if (engine.IsShuttingDown) {
 					// The engine was shut down. Try again, using a new engine.
 					return await GetRemoteProjectBuilder (projectFile, solutionFile, runtime, minToolsVersion, buildSessionId, setBusy, allowBusy);
@@ -373,7 +373,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (b != null)
 					result.Add (b);
 				else
-					ReleaseProjectBuilderNoLock (engine).Ignore ();
+					ReleaseProjectBuilder (engine).Ignore ();
 			}
 			return result;
 		}
