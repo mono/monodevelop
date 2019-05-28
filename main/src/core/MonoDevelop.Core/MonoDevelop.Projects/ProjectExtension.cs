@@ -77,9 +77,9 @@ namespace MonoDevelop.Projects
 			return next.OnCreateRunConfiguration (name);
 		}
 
-		internal protected virtual void OnRemoveRunConfiguration (string name)
+		internal protected virtual void OnRemoveRunConfiguration (IEnumerable<SolutionItemRunConfiguration> items)
 		{
-			next.OnRemoveRunConfiguration (name);
+			next.OnRemoveRunConfiguration (items);
 		}
 
 		internal protected virtual void OnReadRunConfiguration (ProgressMonitor monitor, ProjectRunConfiguration config, IPropertySet properties)
