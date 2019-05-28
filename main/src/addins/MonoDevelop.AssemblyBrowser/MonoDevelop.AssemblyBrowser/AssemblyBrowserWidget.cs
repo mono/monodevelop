@@ -1207,7 +1207,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (definitions.Count + projects.Count == 1) {
 				builder = TreeView.LoadTree (project);
 			} else {
-				builder = TreeView.AddChild (project);
+				builder = TreeView.AddChild (project, false);
 			}
 			builder.Selected = builder.Expanded = selectReference;
 		}
