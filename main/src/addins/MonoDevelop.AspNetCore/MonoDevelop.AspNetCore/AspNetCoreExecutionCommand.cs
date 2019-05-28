@@ -28,33 +28,16 @@ using MonoDevelop.DotNetCore;
 
 namespace MonoDevelop.AspNetCore
 {
-	class AspNetCoreExecutionCommand : ProcessExecutionCommand
+	class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
 	{
 		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+			: base (directory, outputPath, arguments)
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
-
-			Command = DotNetCoreRuntime.FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
-
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
-		public bool LaunchBrowser { get; set; }
-		public string LaunchURL { get; set; }
 		// Since we are now supporting more than one url, we added this property
 		// so that it contains the raw value of AppUrl
 		// which might provide more than one url i.e. https://localhost:5000;http://localhost:5001
 		public string ApplicationURLs { get; set; }
-		// This is only kept for compatibility with debugger and should contain just
-		// the url that is going to be launched i.e. https://localhost:5000
-		public string ApplicationURL { get; set; }
-
-		public PipeTransportSettings PipeTransport { get; set; }
 	}
 }
