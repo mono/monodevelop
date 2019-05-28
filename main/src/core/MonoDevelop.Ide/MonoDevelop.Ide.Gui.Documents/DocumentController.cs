@@ -72,8 +72,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool hasFocus;
 		bool disposed;
 
-		internal IWorkbenchWindow WorkbenchWindow { get; set; }
-
 		ExtensionChain extensionChain;
 		DocumentControllerExtension itemExtension;
 		private bool showNotification;
