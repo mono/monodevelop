@@ -34,7 +34,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MonoDevelop.AspNetCore
 {
-	internal class LaunchProfileProvider 
+	internal class LaunchProfileProvider
 	{
 		readonly string baseDirectory;
 		readonly string defaultNamespace;
@@ -50,9 +50,9 @@ namespace MonoDevelop.AspNetCore
 
 		public LaunchProfileData DefaultProfile {
 			get {
-				if (!Profiles.ContainsKey (defaultNamespace)) { 
-                    var defaultProfile = CreateDefaultProfile ();
-					Profiles[defaultNamespace] = defaultProfile;
+				if (!Profiles.ContainsKey (defaultNamespace)) {
+					var defaultProfile = CreateDefaultProfile ();
+					Profiles [defaultNamespace] = defaultProfile;
 					return defaultProfile;
 				}
 				return Profiles [defaultNamespace];
@@ -70,7 +70,7 @@ namespace MonoDevelop.AspNetCore
 		{
 			if (!File.Exists (LaunchSettingsJsonPath)) {
 				CreateAndAddDefaultLaunchSettings ();
-				return; 
+				return;
 			}
 
 			var launchSettingsJson = TryParse ();
@@ -91,8 +91,7 @@ namespace MonoDevelop.AspNetCore
 		{
 			try {
 				return JObject.Parse (File.ReadAllText (LaunchSettingsJsonPath));
-			}
-			catch {
+			} catch {
 				return new JObject ();
 			}
 		}
@@ -141,7 +140,7 @@ namespace MonoDevelop.AspNetCore
 				Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 
 			var newProfile = CreateProfile (name);
-			Profiles [name] =  newProfile;
+			Profiles [name] = newProfile;
 			return newProfile;
 		}
 
