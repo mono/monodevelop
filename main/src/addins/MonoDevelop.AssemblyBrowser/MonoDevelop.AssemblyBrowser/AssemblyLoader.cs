@@ -63,12 +63,6 @@ namespace MonoDevelop.AssemblyBrowser
 		public PEFile Assembly => AssemblyTask.Result;
 		public Task<PEFile> AssemblyTask => assemblyDefinitionTaskSource.Task;
 
-		public MetadataReader ModuleDefinition {
-			get {
-				return assemblyLoaderTask.Result.Metadata;
-			}
-		}
-
 		CSharpDecompiler csharpDecompiler;
 
 		public CSharpDecompiler CSharpDecompiler {

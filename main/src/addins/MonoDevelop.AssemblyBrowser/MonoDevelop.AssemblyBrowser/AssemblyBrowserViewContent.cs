@@ -67,11 +67,13 @@ namespace MonoDevelop.AssemblyBrowser
 			FillWidget ();
 		}
 
-		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
 			if (modelDescriptor is FileDescriptor fileDescriptor) {
 				Load (fileDescriptor.FilePath);
 			}
+
+			return Task.CompletedTask;
 		}
 
 		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
@@ -92,9 +94,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var loader = widget.AddReferenceByFileName (filePath);
 			if (loader != null) {
-				loader.LoadingTask.ContinueWith (delegate {
-					widget.SelectAssembly (loader);
-				});
+				loader.LoadingTask
+					.ContinueWith (t => widget.SelectAssembly (t.Result), Runtime.MainTaskScheduler)
+					.Ignore ();
 			}
 		}
 
@@ -105,12 +107,12 @@ namespace MonoDevelop.AssemblyBrowser
 
 		protected override void OnDispose ()
 		{
-			if (currentWs != null) 
+			if (currentWs != null) {
 				currentWs.WorkspaceLoaded -= Handle_WorkspaceLoaded;
+			}
 
 			widget = null;
-			if (Disposed != null)
-				Disposed (this, EventArgs.Empty);
+			Disposed?.Invoke (this, EventArgs.Empty);
 			base.OnDispose ();
 		}
 
@@ -172,18 +174,16 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		Ide.TypeSystem.MonoDevelopWorkspace currentWs;
-		public async void FillWidget ()
+		public void FillWidget ()
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
 				foreach (var assembly in defaultAssemblies) {
-					Widget.AddReferenceByAssemblyName (assembly); 
+					Widget.AddReferenceByAssemblyName (assembly);
 				}
 			} else {
-				var alreadyAdded = new HashSet<string> ();
 				currentWs = IdeApp.TypeSystemService.GetWorkspace (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				if (currentWs != null)
 					currentWs.WorkspaceLoaded += Handle_WorkspaceLoaded;
-				var allTasks = new List<Task> ();
 				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
 					try {
 						Widget.AddProject (project, false);
@@ -191,11 +191,7 @@ namespace MonoDevelop.AssemblyBrowser
 						LoggingService.LogError ("Error while adding project " + project.Name + " to the tree.", e);
 					}
 				}
-				await Task.WhenAll (allTasks).ContinueWith (delegate {
-					Runtime.RunInMainThread (delegate {
-						widget.StartSearch ();
-					});
-				});
+				widget.StartSearch ();
 			}
 		}
 	}
