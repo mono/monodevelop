@@ -102,20 +102,20 @@ namespace MonoDevelop.AssemblyBrowser
 				builder.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = Widget.PublicApiOnly;
 
-			foreach (var field in type.Fields.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
+			foreach (var field in type.Fields) {
 				if (publicOnly && !field.IsPublic ())
 					continue;
 				builder.AddChild (field);
 			}
 
-			foreach (var property in type.Properties.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
+			foreach (var property in type.Properties) {
 				var accessor = property.Getter ?? property.Setter;
 				if (publicOnly && !accessor.IsPublic ())
 					continue;
 				builder.AddChild (property);
 			}
 
-			foreach (var evt in type.Events.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
+			foreach (var evt in type.Events) {
 				var accessor = evt.AddAccessor ?? evt.RemoveAccessor;
 				if (publicOnly && !accessor.IsPublic ())
 					continue;
@@ -123,7 +123,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 
 			var accessorMethods = type.GetAccessors ();
-			foreach (var method in type.Methods.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
+			foreach (var method in type.Methods) {
 				if (publicOnly && !method.IsPublic ())
 					continue;
 				if (!accessorMethods.Contains (method)) {
