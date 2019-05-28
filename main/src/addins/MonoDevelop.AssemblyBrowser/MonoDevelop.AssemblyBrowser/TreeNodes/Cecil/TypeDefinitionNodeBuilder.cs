@@ -98,9 +98,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var type = (ITypeDefinition)dataObject;
-			var list = new System.Collections.ArrayList ();
 			if (type.DirectBaseTypes.Any ())
-				list.Add (new BaseTypeFolder (type));
+				builder.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = Widget.PublicApiOnly;
 
 			foreach (var field in type.Fields.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
