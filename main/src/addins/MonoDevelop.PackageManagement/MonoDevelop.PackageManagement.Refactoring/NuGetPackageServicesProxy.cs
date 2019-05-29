@@ -132,13 +132,19 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			});
 		}
 
-		public async Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
+		/// <summary>
+		/// Find packages for a given assembly name.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
+		public Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
 		{
 			var result = new List<(string PackageName, string Version, int Rank)> ();
-			if (assemblyName == "System.ValueTuple" && await IsOfficialNuGetPackageSource (source).ConfigureAwait (false)) {
+			if (assemblyName == "System.ValueTuple" && IsOfficialNuGetPackageSource (source)) {
 				result.Add (("System.ValueTuple", "4.3.0", 1)); 
 			}
-			return result;
+			return Task.FromResult<IEnumerable<(string PackageName, string Version, int Rank)>> (result);
 		}
 
 		public Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, ImmutableArray<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken)
@@ -153,14 +159,22 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			return Task.FromResult ((IEnumerable<(string AssemblyName, string TypeName, ImmutableArray<string> ContainingNamespaceNames)>)result);
 		}
 
+
+		/// <summary>
+		/// Get the installed versions of a given package.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		public ImmutableArray<string> GetInstalledVersions (string packageName)
 		{
-			return Runtime.RunInMainThread (async delegate {
+			// The UI thread may already be blocking when this is called, so defer to threadpool instead of UI thread.
+			return Task.Run (async () => {
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				var versions = await solutionManager.GetInstalledVersions (packageName).ConfigureAwait (false);
 				var versionStrings = versions.Select (version => version.ToFullString ()).ToArray ();
 				return ImmutableArray.Create (versionStrings);
-			}).WaitAndGetResult (default (CancellationToken));
+			}).WaitAndGetResult ();
 		}
 
 		public IEnumerable<Project> GetProjectsWithInstalledPackage (Solution solution, string packageName, string version)
@@ -198,19 +212,23 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			return provider.GetRepositories ();
 		}
 
-		Task<bool> IsOfficialNuGetPackageSource (string source)
+		/// <summary>
+		/// Determine if a given source is the official nuget.org package source.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
+		bool IsOfficialNuGetPackageSource (string source)
 		{
-			return Runtime.RunInMainThread (() => {
-				var matchedRepository = GetSourceRepositories ()
-					.FirstOrDefault (repository => repository.PackageSource.Name == source);
+			var matchedRepository = GetSourceRepositories ()
+				.FirstOrDefault (repository => repository.PackageSource.Name == source);
 
-				if (matchedRepository != null) {
-					string host = matchedRepository.PackageSource.SourceUri.Host;
-					return host.EndsWith ("nuget.org", StringComparison.OrdinalIgnoreCase);
-				}
+			if (matchedRepository != null) {
+				string host = matchedRepository.PackageSource.SourceUri.Host;
+				return host.EndsWith ("nuget.org", StringComparison.OrdinalIgnoreCase);
+			}
 
-				return false;
-			});
+			return false;
 		}
 	}
 }
