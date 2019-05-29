@@ -70,6 +70,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 				workbench.NotebookClosed += Workbench_NotebookClosed;
 			});
 
+			serviceProvider.WhenServiceInitialized<NavigationHistoryService> (s => navigationHistoryManager = s);
+
+
 			FileService.FileRemoved += CheckRemovedFile;
 			FileService.FileMoved += CheckRenamedFile;
 			FileService.FileRenamed += CheckRenamedFile;
@@ -205,6 +208,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public async Task<Document> OpenDocument (ModelDescriptor modelDescriptor, DocumentControllerRole? role = null, bool bringToFront = true)
 		{
+			// Try to reuse existing documents
+
+			foreach (Document doc in Documents) {
+				if (doc.TryReuseDocument (modelDescriptor)) {
+					if (bringToFront) {
+						doc.Select ();
+						navigationHistoryManager?.LogActiveDocument ();
+					}
+					return doc;
+				}
+			}
+
 			var documentControllerService = await ServiceProvider.GetService<DocumentControllerService> ();
 			var factories = (await documentControllerService.GetSupportedControllers (modelDescriptor)).Where (c => role == null || c.Role == role).ToList ();
 			var controllerDesc = factories.FirstOrDefault (c => c.CanUseAsDefault);
@@ -240,9 +255,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (string.IsNullOrEmpty (info.FileName))
 				return null;
 
-			if (navigationHistoryManager == null)
-				navigationHistoryManager = await ServiceProvider.GetService<NavigationHistoryService> ();
-
 			// Make sure composition manager is ready since ScrollToRequestedCaretLocation will use it
 			await Runtime.GetService<CompositionManager> ();
 
@@ -250,27 +262,26 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var fileDescriptor = new FileDescriptor (info.FileName, null, info.Owner);
 
 			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName, metadata)) {
-				navigationHistoryManager.LogActiveDocument ();
+				navigationHistoryManager?.LogActiveDocument ();
 				Counters.OpenDocumentTimer.Trace ("Look for open document");
 				foreach (Document doc in Documents) {
 
-					// Search all ViewContents to see if they can "re-use" this filename.
-					if (!doc.TryReuseDocument (fileDescriptor))
+					if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer) && doc.TryReuseDocument (fileDescriptor)) {
+						// If TryReuseDocument returns true it means that the document can be reused and has been reused, so look no further
+						ReuseDocument (doc, info);
+						return doc;
+					}
+
+					// If the document can't explicitly handle the new descriptor, check the file names.
+					// If the file of the document is the same, let's just focus it
+
+					if (!doc.IsFile || doc.FilePath != fileDescriptor.FilePath)
 						continue;
 
-					//if found, try to reuse or close the old view
-					// reuse the view if the binidng didn't change
+					// Reuse the document if the controller factory didn't change
+
 					if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer) || doc.DocumentControllerDescription == info.DocumentControllerDescription) {
-						if (info.Owner != null && doc.Owner != info.Owner) {
-							doc.AttachToProject (info.Owner);
-						}
-
-						ScrollToRequestedCaretLocation (doc, info);
-
-						if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
-							doc.Select ();
-							navigationHistoryManager.LogActiveDocument ();
-						}
+						ReuseDocument (doc, info);
 						return doc;
 					} else {
 						if (!await doc.Close ())
@@ -282,7 +293,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				var progressMonitorManager = await ServiceProvider.GetService<ProgressMonitorManager> ();
 				var pm = progressMonitorManager.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Opening {0}", info.Owner is SolutionFolderItem item ?
-						info.FileName.ToRelative (item.ParentSolution.BaseDirectory) :
+						info.FileName.ToRelative (item?.ParentSolution?.BaseDirectory ?? item.BaseDirectory) :
 						info.FileName),
 					Stock.StatusWorking,
 					true
@@ -302,6 +313,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 					return doc;
 				}
 				return null;
+			}
+		}
+
+		void ReuseDocument (Document doc, FileOpenInformation info)
+		{
+			if (info.Owner != null && doc.Owner != info.Owner)
+				doc.AttachToProject (info.Owner);
+
+			ScrollToRequestedCaretLocation (doc, info);
+
+			if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
+				doc.Select ();
+				navigationHistoryManager?.LogActiveDocument ();
 			}
 		}
 
@@ -522,8 +546,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			var window = await workbench.ShowView (documentOpenInfo.DocumentController, documentOpenInfo.DockNotebook, commandHandler);
 
-			var doc = new Document (this, workbench, documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription);
-			await doc.InitializeWindow (window);
+			var doc = new Document (this, workbench, documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription, window);
+
+			// Don't wait for the view to be initialized. The document can be made visible and can be functional before getting the view.
+			doc.InitializeViewAsync ().Ignore ();
 
 			doc.Closing += OnWindowClosing;
 			doc.Closed += OnWindowClosed;
@@ -722,21 +748,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void OnDocumentOpened (DocumentEventArgs e)
 		{
-			try {
-				DocumentOpened?.SafeInvoke (this, e);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Exception while opening documents", ex);
-			}
+			DocumentOpened?.SafeInvoke (this, e);
 		}
 
 		void OnDocumentClosed (Document doc)
 		{
-			try {
-				var e = new DocumentEventArgs (doc);
-				DocumentClosed?.SafeInvoke (this, e);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Exception while closing documents", ex);
-			}
+			var e = new DocumentEventArgs (doc);
+			DocumentClosed?.SafeInvoke (this, e);
 		}
 
 		async Task OnDocumentClosing (DocumentCloseEventArgs args)

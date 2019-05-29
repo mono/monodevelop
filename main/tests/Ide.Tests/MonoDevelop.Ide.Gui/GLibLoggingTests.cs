@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.LogReporting;
 using NUnit.Framework;
@@ -36,7 +37,7 @@ namespace MonoDevelop.Ide.Gui
 	public class GLibLoggingTests
 	{
 		[Test]
-		public void ValidateCrashIsSentForGLibExceptions()
+		public void ValidateCrashIsSentForGLibExceptions ()
 		{
 			var old = GLibLogging.Enabled;
 			var crashReporter = new CapturingCrashReporter ();
@@ -51,14 +52,46 @@ namespace MonoDevelop.Ide.Gui
 
 				GLib.Log.Write ("Gtk", GLib.LogLevelFlags.Critical, "{0}", "critical should be captured");
 				Assert.That (crashReporter.LastException.Message, Contains.Substring ("critical should be captured"));
-				Assert.That (crashReporter.LastException.StackTrace, Is.Not.Null);
 				Assert.That (crashReporter.LastException.Source, Is.Not.Null);
+
+				var stacktrace = crashReporter.LastException.StackTrace;
+				AssertGLibStackTrace (stacktrace);
 
 				// Error will cause the application to exit, so we can't test for that, but it follows the same code as Critical.
 			} finally {
 				LoggingService.UnregisterCrashReporter (crashReporter);
 				GLibLogging.Enabled = old;
 			}
+		}
+
+		[Test]
+		public void CriticalErrorsExceptionsHaveFullStacktracesInLog ()
+		{
+			var old = GLibLogging.Enabled;
+			var logger = new CapturingLogger {
+				EnabledLevel = Core.Logging.EnabledLoggingLevel.Error,
+			};
+
+			try {
+				LoggingService.AddLogger (logger);
+				GLibLogging.Enabled = true;
+
+				GLib.Log.Write ("Gtk", GLib.LogLevelFlags.Critical, "{0}", "critical should be captured");
+				var (_, message) = logger.LogMessages.Single (x => x.Level == Core.Logging.LogLevel.Error);
+				AssertGLibStackTrace (message);
+			} finally {
+				LoggingService.RemoveLogger (logger.Name);
+				GLibLogging.Enabled = old;
+			}
+		}
+
+		static void AssertGLibStackTrace(string stacktrace)
+		{
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
+			Assert.That (stacktrace, Contains.Substring ("at GLib.Log.g_logv"));
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLogging.LoggerMethod"));
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLoggingTests"));
+
 		}
 	}
 }

@@ -277,8 +277,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>Mono64Bit</key>
-	<true/>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>cs</string>

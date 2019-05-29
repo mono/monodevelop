@@ -209,6 +209,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 			return paned.Children.Cast<GtkShellDocumentViewItem> ();
 		}
 
+		public GtkShellDocumentViewItem GetChild (int index)
+		{
+			return (GtkShellDocumentViewItem) paned.Children [index];
+		}
+
 		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
 		{
 		}

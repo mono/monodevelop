@@ -73,6 +73,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IdeProgressMonitorManager monitors;
 		DocumentManager documentManager;
+		WorkbenchStatusBar statusBar = new WorkbenchStatusBar ();
 
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		DefaultWorkbench workbench;
@@ -103,14 +104,6 @@ namespace MonoDevelop.Ide.Gui
 				workbench = (DefaultWorkbench) await Runtime.GetService<IShell> ();
 				monitor.Step (1);
 				
-				Counters.Initialization.Trace ("Initializing Workspace");
-				workbench.InitializeWorkspace();
-				monitor.Step (1);
-				
-				Counters.Initialization.Trace ("Initializing Layout");
-				workbench.InitializeLayout ();
-				monitor.Step (1);
-				
 				((Gtk.Window)workbench).Visible = false;
 				workbench.WorkbenchTabsChanged += WorkbenchTabsChanged;
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
@@ -136,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal void Realize ()
+		void Realize ()
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
@@ -155,9 +148,15 @@ namespace MonoDevelop.Ide.Gui
 			Present ();
 		}
 
-		void EnsureLayout ()
+		internal void EnsureLayout ()
 		{
 			if (!hasEverBeenShown) {
+
+				Realize ();
+				workbench.InitializeWorkspace ();
+				workbench.InitializeLayout ();
+				statusBar.Attach (workbench.StatusBar);
+
 				workbench.CurrentLayout = "Solution";
 
 				// now we have an layout set notify it
@@ -319,6 +318,10 @@ namespace MonoDevelop.Ide.Gui
 				return dock != null && dock.DockParent == RootWindow;
 			}
 		}
+
+		public bool Visible {
+			get { return RootWindow.Visible; }
+		}
 		
 		public void Present ()
 		{
@@ -344,7 +347,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public void GrabDesktopFocus ()
 		{
-			IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
+			if (!Visible)
+				Show ();
+			else
+				IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
 		}
 				
 		public bool FullScreen {
@@ -355,6 +361,7 @@ namespace MonoDevelop.Ide.Gui
 		public string CurrentLayout {
 			get { return workbench.CurrentLayout; }
 			set {
+				EnsureLayout ();
 				if (value != workbench.CurrentLayout) {
 					workbench.CurrentLayout = value;
 					if (LayoutChanged != null)
@@ -373,7 +380,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public StatusBar StatusBar {
 			get {
-				return workbench.StatusBar.MainContext;
+				return statusBar.MainContext;
 			}
 		}
 
@@ -494,12 +501,14 @@ namespace MonoDevelop.Ide.Gui
 
 		internal Pad ShowPad (PadCodon content)
 		{
+			EnsureLayout ();
 			workbench.ShowPad (content);
 			return WrapPad (content);
 		}
 
 		internal Pad AddPad (PadCodon content)
 		{
+			EnsureLayout ();
 			workbench.AddPad (content);
 			return WrapPad (content);
 		}

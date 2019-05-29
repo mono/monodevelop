@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl
 				if (test)
 					return items.All (i => i.VersionInfo.CanRevert);
 
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?"), 
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes made in the selected files?"), 
 				                                GettextCatalog.GetString ("All changes made to the selected files will be permanently lost."),
 				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;

@@ -249,7 +249,7 @@ namespace MonoDevelop.MacIntegration
 
 			var nsException = ObjCRuntime.Runtime.GetNSObject<NSException> (exceptionPtr);
 			try {
-				throw new MarshalledObjCException (nsException);
+				throw new MarshalledObjCException (nsException, Environment.StackTrace);
 			} catch (MarshalledObjCException e) {
 				// Is there a way to figure out if it's going to crash us? Maybe check MarshalObjectiveCExceptionMode and MarshalManagedExceptionMode?
 				LoggingService.LogInternalError ("Unhandled ObjC exception", e);
@@ -260,8 +260,17 @@ namespace MonoDevelop.MacIntegration
 
 		sealed class MarshalledObjCException : ObjCException
 		{
-			public MarshalledObjCException (NSException exception) : base (exception)
+			public MarshalledObjCException (NSException exception, string stacktrace) : base (exception)
 			{
+				StackTrace = stacktrace;
+			}
+
+			public override string StackTrace { get; }
+
+			public override string ToString ()
+			{
+				// Matches normal exception format:
+				return GetType () + ": " + Message + Environment.NewLine + StackTrace;
 			}
 		}
 
@@ -693,7 +702,7 @@ namespace MonoDevelop.MacIntegration
 					GLib.Idle.Add (delegate {
 						Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
-						IdeApp.OpenFiles (e.Documents.Select (
+						IdeApp.OpenFilesAsync (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal)),
 							null
 						).ContinueWith ((result) => {
@@ -715,7 +724,7 @@ namespace MonoDevelop.MacIntegration
 						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
-						IdeApp.OpenFiles (e.Urls.Select (url => {
+						IdeApp.OpenFilesAsync (e.Urls.Select (url => {
 							try {
 								var uri = new Uri (url);
 								if (uri.Host != "open")

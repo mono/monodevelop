@@ -72,8 +72,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool hasFocus;
 		bool disposed;
 
-		internal IWorkbenchWindow WorkbenchWindow { get; set; }
-
 		ExtensionChain extensionChain;
 		DocumentControllerExtension itemExtension;
 		private bool showNotification;
@@ -208,15 +206,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <value>The owner.</value>
 		public WorkspaceObject Owner {
 			get {
-				CheckInitialized ();
 				return owner;
 			}
 			set {
 				if (value != owner) {
 					owner = value;
 
-					NotifyOwnerChanged ();
-					RefreshExtensions ().Ignore ();
+					if (initialized) {
+						NotifyOwnerChanged ();
+						RefreshExtensions ().Ignore ();
+					}
 				}
 			}
 		}

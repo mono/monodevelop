@@ -513,6 +513,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject);
 					if (oldProject != null) {
+						projectInfo = ws.AddVirtualDocuments (projectInfo);
 						ws.OnProjectReloaded (projectInfo);
 					}
 					else {

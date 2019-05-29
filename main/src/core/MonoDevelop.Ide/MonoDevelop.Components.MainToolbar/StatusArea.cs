@@ -39,10 +39,11 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
 using MonoDevelop.Ide.Fonts;
 using System.Threading;
+using System.Linq;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusArea : EventBox, StatusBar, Xwt.Motion.IAnimatable
+	class StatusArea : EventBox, ITestableStatusBar, Xwt.Motion.IAnimatable
 	{
 		struct Message
 		{
@@ -412,17 +413,21 @@ namespace MonoDevelop.Components.MainToolbar
 
 		#region StatusBar implementation
 
+		List<StatusIcon> icons = new List<StatusIcon> ();
+
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			Runtime.AssertMainThread ();
 			StatusIcon icon = new StatusIcon (this, pixbuf);
 			statusIconBox.PackEnd (icon.box);
 			statusIconBox.ShowAll ();
+			icons.Add (icon);
 			return icon;
 		}
 
 		void HideStatusIcon (StatusIcon icon)
 		{
+			icons.Remove (icon);
 			statusIconBox.Remove (icon.EventBox);
 			if (statusIconBox.Children.Length == 0)
 				statusIconBox.Hide ();
@@ -887,6 +892,9 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 		}
 		#endregion
+
+		string ITestableStatusBar.CurrentText => messageQueue.Count > 0 ? "" : renderArg.CurrentText;
+		string [] ITestableStatusBar.CurrentIcons => icons.Select (x => x.ToolTip).ToArray ();
 	}
 
 	class StatusAreaSeparator: HBox

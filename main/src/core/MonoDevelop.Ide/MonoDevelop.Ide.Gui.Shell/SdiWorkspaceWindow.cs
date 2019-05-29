@@ -201,7 +201,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
-				view.Load ().Ignore ();
+				if (view != null)
+					view.Load ().Ignore ();
 			});
 		}
 
@@ -288,7 +289,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void Close ()
 		{
-			view.DetachFromView ();
+			view?.DetachFromView ();
 			Destroy ();
 		}
 

@@ -708,6 +708,7 @@ namespace MonoDevelop.Ide
 			if (!await IdeApp.Workbench.SaveAllDirtyFiles ())
 				return false;
 
+			IdeApp.Workbench.EnsureLayout ();
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;

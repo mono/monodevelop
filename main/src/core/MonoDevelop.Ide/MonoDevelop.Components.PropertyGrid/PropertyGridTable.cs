@@ -906,12 +906,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		internal void EndEditing ()
 		{
 			if (editSession != null) {
-				Remove (currentEditor);
-				currentEditor.Destroy ();
-				currentEditor = null;
+				if (currentEditor != null) {
+					Remove (currentEditor);
+					currentEditor.Destroy ();
+					currentEditor = null;
+				}
 				editSession.Dispose ();
 				editSession = null;
-
 				parentGrid.Populate (saveEditSession: false);
 			}
 			QueueDraw ();

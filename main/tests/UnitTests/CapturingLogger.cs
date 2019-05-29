@@ -1,10 +1,10 @@
-﻿//
-// AspNetCoreExecutionCommand.cs
+//
+// CapturingLogger.cs
 //
 // Author:
-//       David Karlaš <david.karlas@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Core.Execution;
-using MonoDevelop.DotNetCore;
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using MonoDevelop.Core.Logging;
 
-namespace MonoDevelop.AspNetCore
+namespace UnitTests
 {
-	class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
+	public class CapturingLogger : ILogger
 	{
-		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
-			: base (directory, outputPath, arguments)
+		public List<(LogLevel Level, string Message)> LogMessages { get; } = new List<(LogLevel, string)> ();
+
+		public CapturingLogger ([CallerMemberName] string caller = null, int count = 0)
 		{
+			Name = "CapturingLogger_" + count.ToString () + caller;
 		}
 
-		// Since we are now supporting more than one url, we added this property
-		// so that it contains the raw value of AppUrl
-		// which might provide more than one url i.e. https://localhost:5000;http://localhost:5001
-		public string ApplicationURLs { get; set; }
+		public string Name { get; }
+		public EnabledLoggingLevel EnabledLevel { get; set; } = EnabledLoggingLevel.All;
+
+		public void Log (LogLevel level, string message) => LogMessages.Add ((level, message));
 	}
 }
