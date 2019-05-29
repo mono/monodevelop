@@ -392,29 +392,23 @@ namespace MonoDevelop.Ide
 			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
 			// Make the GTK window modal WRT the current modal NSWindow
 
+			NSWindow nativeParent = null;
 			try {
-				var nativeParent = (NSWindow)parent;
+				nativeParent = parent;
 				nativeParent.AddChildWindow (nsdialog, NSWindowOrderingMode.Above);
-				var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
-
-				EventHandler unrealizer = null;
-				unrealizer = delegate {
-					if (nativeParent != null) {
-						nativeParent.RemoveChildWindow (nsdialog);
-					}
-					NSApplication.SharedApplication.EndModalSession (s);
-					dialog.Unrealized -= unrealizer;
-				};
-				dialog.Unrealized += unrealizer;
-			} catch {
-				var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
-				EventHandler unrealizer = null;
-				unrealizer = delegate {
-					NSApplication.SharedApplication.EndModalSession (s);
-					dialog.Unrealized -= unrealizer;
-				};
-				dialog.Unrealized += unrealizer;
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Failed to get the native parent window", ex);
 			}
+			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
+			void unrealizer (object sender, EventArgs e)
+			{
+				if (nativeParent != null) {
+					nativeParent.RemoveChildWindow (nsdialog);
+				}
+				NSApplication.SharedApplication.EndModalSession (s);
+				dialog.Unrealized -= unrealizer;
+			}
+			dialog.Unrealized += unrealizer;
 
 		}
 		#endif
