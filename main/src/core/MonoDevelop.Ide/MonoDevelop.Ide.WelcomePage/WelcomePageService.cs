@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static async Task<bool> ShowWelcomeWindow (WelcomeWindowShowOptions options)
 		{
-			if (WelcomeWindowProvider == null) {
+			if (!HasWindowImplementation) {
 				return false;
 			}
 
