@@ -294,35 +294,6 @@ namespace MonoDevelop.Ide
 				if (!CheckSCPlugin ())
 					return 1;
 
-				// Load requested files
-				Counters.Initialization.Trace ("Opening Files");
-
-				if (hideWelcomePage) {
-
-					// load previous combine
-					RecentFile openedProject = null;
-					if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-						openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
-						if (openedProject != null) {
-							var metadata = GetOpenWorkspaceOnStartupMetadata ();
-							IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
-							startupInfo.OpenedRecentProject = true;
-						}
-					}
-					if (openedProject == null) {
-						IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ()).Ignore ();
-						startupInfo.OpenedFiles = startupInfo.HasFiles;
-					}
-
-				} else {
-
-					await Runtime.GetService<DesktopService> ();
-					var commandManager = await Runtime.GetService<CommandManager> ();
-					var welcomePageOptions = new WelcomePage.WelcomeWindowShowOptions (false);
-					WelcomePage.WelcomePageService.ShowWelcomePageOrWindow (welcomePageOptions);
-
-				}
-
 				monitor.Step (1);
 			
 			} catch (Exception e) {
@@ -380,7 +351,10 @@ namespace MonoDevelop.Ide
 			IdeStartupTracker.StartupTracker.MarkSection ("PumpEventLoop");
 			IdeStartupTracker.StartupTracker.Stop (startupInfo);
 
-			GLib.Idle.Add (OnIdle);
+			GLib.Idle.Add (() => {
+				OnIdle ();
+				return false;
+			});
 
 			return 0;
 		}
@@ -440,21 +414,48 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		static bool OnIdle ()
+		async static Task OnIdle ()
 		{
 			// Make sure the composition manager started initializing
-			Runtime.GetService<CompositionManager> ();
+			await Runtime.GetService<CompositionManager> ();
 
-			// OpenDocuments appears when the app is idle.
-			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
-				WelcomePage.WelcomePageService.ShowWelcomePage ();
-				Counters.Initialization.Trace ("Showed welcome page");
-				IdeApp.Workbench.Show ();
-			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
-				IdeApp.Workbench.Show ();
+			// Load requested files
+			Counters.Initialization.Trace ("Opening Files");
+
+			if (hideWelcomePage) {
+
+				// load previous combine
+				RecentFile openedProject = null;
+				if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
+					openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
+					if (openedProject != null) {
+						var metadata = GetOpenWorkspaceOnStartupMetadata ();
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
+						startupInfo.OpenedRecentProject = true;
+					}
+				}
+				if (openedProject == null) {
+					IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ()).Ignore ();
+					startupInfo.OpenedFiles = startupInfo.HasFiles;
+				}
+
+				if (!startupInfo.OpenedFiles) {
+					IdeApp.Workbench.Show ();
+				}
+
+			} else {
+
+				if (!WelcomePage.WelcomePageService.HasWindowImplementation) {
+					WelcomePage.WelcomePageService.ShowWelcomePage ();
+					Counters.Initialization.Trace ("Showed welcome page");
+					IdeApp.Workbench.Show ();
+				} else {
+					await Runtime.GetService<DesktopService> ();
+					var commandManager = Runtime.GetService<CommandManager> ();
+					var welcomePageOptions = new WelcomePage.WelcomeWindowShowOptions (false);
+					await WelcomePage.WelcomePageService.ShowWelcomeWindow (welcomePageOptions);
+				}
 			}
-
-			return false;
 		}
 
 		static DateTime lastIdle;
