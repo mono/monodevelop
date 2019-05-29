@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
 
-		internal static async Task Initialize ()
+		internal static async Task Initialize (bool hideWelcomePage)
 		{
 			IdeApp.Initialized += (s, args) => {
 				IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				};
 			};
 
-			if (HasWindowImplementation) {
+			if (!hideWelcomePage && HasWindowImplementation) {
 				await Runtime.GetService<DesktopService> ();
 				var commandManager = await Runtime.GetService<CommandManager> ();
 				await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
