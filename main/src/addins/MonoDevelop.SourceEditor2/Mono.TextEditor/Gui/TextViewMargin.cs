@@ -138,18 +138,7 @@ namespace Mono.TextEditor
 
 			public TextViewMarginAccessibilityProxy ()
 			{
-				Accessible = AccessibilityElementProxy.TextElementProxy ();
-				Accessible.Contents = GetContents;
-				Accessible.InsertionPointLineNumber = GetInsertionPointLineNumber;
-				Accessible.NumberOfCharacters = GetNumberOfCharacters;
-				Accessible.FrameForRange = GetFrameForRange;
-				Accessible.LineForIndex = GetLineForIndex;
-				Accessible.RangeForLine = GetRangeForLine;
-				Accessible.StringForRange = GetStringForRange;
-				Accessible.RangeForIndex = GetRangeForIndex;
-				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
-				Accessible.RangeForPosition = GetRangeForPosition;
-				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
+				Accessible = AccessibilityElementProxy.TextElementProxy (GetContents, GetNumberOfCharacters, GetInsertionPointLineNumber, GetFrameForRange, GetLineForIndex, GetRangeForLine, GetStringForRange, GetRangeForIndex, GetStyleRangeForIndex, GetRangeForPosition, GetVisibleCharacterRange);
 			}
 
 			public void Dispose ()
