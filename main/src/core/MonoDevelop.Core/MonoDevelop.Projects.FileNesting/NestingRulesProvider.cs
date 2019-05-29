@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.FileNesting
 		public NestingRulesProvider ()
 		{
 			nestingRules.Add (new NestingRule (NestingRuleKind.AddedExtension, ".*", null));
+			nestingRules.Add (new NestingRule (NestingRuleKind.ExtensionToExtension, ".js", new [] { ".ts", ".tsx" }));
 		}
 
 		public string GetParentFile (string inputFile)

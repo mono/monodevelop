@@ -38,7 +38,8 @@ namespace MonoDevelop.Projects
 		[TestCase ("Index.cshtml.cs", "Index.cshtml")]
 		[TestCase ("file.html.css", "file.html")]
 		[TestCase ("bootstrap.css.map", "bootstrap.css")]
-		public void GetParentFileForAddedExtension (string inputFile, string expectedParentFile)
+		[TestCase ("jquery.js", "jquery.ts")]
+		public void GetParentFileTest (string inputFile, string expectedParentFile)
 		{
 			var folder = Path.Combine (Path.GetTempPath (), Path.GetRandomFileName ());
 			Directory.CreateDirectory (folder);

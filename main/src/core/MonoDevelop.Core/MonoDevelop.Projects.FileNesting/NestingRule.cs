@@ -57,18 +57,39 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public string AppliesTo { get; private set; }
 
+		bool CheckParentForFile (string inputFile, string parentFile)
+		{
+			LoggingService.LogInfo ($"Looking for nesting rules for {inputFile} under {parentFile}");
+			if (File.Exists (parentFile)) {
+				LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
+				return true;
+			}
+
+			return false;
+		}
+
 		public string GetParentFile (string inputFile)
 		{
+			string parentFile;
+
 			switch (Kind) {
+			case NestingRuleKind.ExtensionToExtension:
+				string inputExtension = Path.GetExtension (inputFile);
+				if (inputExtension == AppliesTo) {
+					foreach (var pt in patterns) {
+						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
+						if (CheckParentForFile (inputFile, parentFile))
+							return parentFile;
+					}
+				}
+				break;
+
 			case NestingRuleKind.AddedExtension:
 				// This is the simplest rules, and applies to all files, if we find a file
 				// with the same name minus the extension, that's the parent.
-				string parentFile = Path.Combine (Path.GetDirectoryName (inputFile), Path.GetFileNameWithoutExtension (inputFile));
-				LoggingService.LogInfo ($"Looking for nesting rules for {inputFile} under {parentFile}");
-				if (File.Exists (parentFile)) {
-					LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
+				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), Path.GetFileNameWithoutExtension (inputFile));
+				if (CheckParentForFile (inputFile, parentFile))
 					return parentFile;
-				}
 				break;
 			}
 
