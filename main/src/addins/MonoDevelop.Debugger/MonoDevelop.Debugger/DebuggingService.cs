@@ -112,6 +112,15 @@ namespace MonoDevelop.Debugger
 				evaluators = null;
 			});
 			IdeApp.Exiting += IdeApp_Exiting;
+			FileService.FileRenamed += FileService_FileRenamed;
+			FileService.FileMoved += FileService_FileRenamed;
+		}
+
+		private static void FileService_FileRenamed (object sender, FileCopyEventArgs e)
+		{
+			foreach (var file in e) {
+				breakpoints.FileRenamed (file.SourceFile, file.TargetFile);
+			}
 		}
 
 		static void IdeApp_Exiting (object sender, ExitEventArgs args)
