@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		protected DotNetProject GetSelectedDotNetProject ()
 		{
-			return IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			return CurrentSelectedProject as DotNetProject;
 		}
 
 		protected bool SelectedDotNetProjectHasPackages ()
@@ -67,12 +67,12 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		protected bool IsDotNetSolutionSelected ()
 		{
-			return IdeApp.ProjectOperations.CurrentSelectedSolution != null;
+			return CurrentSelectedSolution != null;
 		}
 
 		protected bool SelectedDotNetSolutionHasPackages ()
 		{
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			Solution solution = CurrentSelectedSolution;
 			if (solution == null) {
 				return false;
 			}
@@ -96,7 +96,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			if (project != null) {
 				return project.ParentSolution;
 			}
-			return IdeApp.ProjectOperations.CurrentSelectedSolution;
+			return CurrentSelectedSolution;
 		}
 
 		protected bool CanUpdatePackagesForSelectedDotNetProject ()
@@ -107,7 +107,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		bool CanUpdatePackagesForSelectedDotNetSolution ()
 		{
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			Solution solution = CurrentSelectedSolution;
 			return solution?.CanUpdatePackages () == true;
 		}
 
@@ -119,6 +119,20 @@ namespace MonoDevelop.PackageManagement.Commands
 				return CanUpdatePackagesForSelectedDotNetSolution ();
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Used by unit tests to avoid having to initialize the IDE workspace.
+		/// </summary>
+		protected virtual Solution CurrentSelectedSolution {
+			get { return IdeApp.ProjectOperations.CurrentSelectedSolution; }
+		}
+
+		/// <summary>
+		/// Used by unit tests to avoid having to initialize the IDE workspace.
+		/// </summary>
+		protected virtual Project CurrentSelectedProject {
+			get { return IdeApp.ProjectOperations.CurrentSelectedProject; }
 		}
 	}
 }

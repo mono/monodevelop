@@ -151,6 +151,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\FullyQualifiedReferencePathTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildPackageSpecCreatorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\InstallPackageWithAvailableItemNameTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesCommandHandlerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesInProjectHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

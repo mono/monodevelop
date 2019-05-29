@@ -49,6 +49,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			DotNetProjectExtensions.FileExists = existingFiles.Contains;
 		}
 
+		[TearDown]
+		public void TearDown ()
+		{
+			DotNetProjectExtensions.FileExists = File.Exists;
+		}
+
 		void CreateProject (string fileName, string projectName)
 		{
 			project = new FakeDotNetProject (fileName.ToNativePath ()) {

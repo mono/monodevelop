@@ -1,10 +1,10 @@
 //
-// FakeNuGetAwareProject.cs
+// TestableRestorePackagesInProjectHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.ProjectManagement;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.PackageManagement.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class FakeNuGetAwareProject : DummyDotNetProject, INuGetAwareProject
+	class TestableRestorePackagesInProjectHandler : RestorePackagesInProjectHandler
 	{
-		public FakeNuGetAwareProject ()
-		{
-			Initialize (this);
+		CommandInfo info = new CommandInfo ();
+		Project project;
+		Solution solution;
+
+		public bool Enabled {
+			get { return info.Enabled; }
 		}
 
-		public NuGetProject CreateNuGetProject ()
+		public void RunUpdate (Solution solution, Project project)
 		{
-			throw new NotImplementedException ();
+			this.solution = solution;
+			this.project = project;
+
+			base.Update (info);
 		}
 
-		public Task<bool> HasMissingPackages (IMonoDevelopSolutionManager solutionManager)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public bool HasPackagesReturnValue;
-
-		public bool HasPackages ()
-		{
-			return HasPackagesReturnValue;
-		}
-
-		public Task RestorePackagesAsync (IMonoDevelopSolutionManager solutionManager, INuGetProjectContext context, CancellationToken token)
-		{
-			throw new NotImplementedException ();
-		}
+		protected override Project CurrentSelectedProject => project;
+		protected override Solution CurrentSelectedSolution => solution;
 	}
 }
