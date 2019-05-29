@@ -59,35 +59,31 @@ namespace MonoDevelop.PackageManagement.Commands
 			return CurrentSelectedProject as DotNetProject;
 		}
 
-		protected bool SelectedDotNetProjectHasPackages ()
-		{
-			DotNetProject project = GetSelectedDotNetProject ();
-			return (project != null) && project.HasPackages ();
-		}
-
 		protected bool IsDotNetSolutionSelected ()
 		{
 			return CurrentSelectedSolution != null;
 		}
 
-		protected bool SelectedDotNetSolutionHasPackages ()
-		{
-			Solution solution = CurrentSelectedSolution;
-			if (solution == null) {
-				return false;
-			}
-
-			return solution.HasAnyProjectWithPackages ();
-		}
-
-		protected bool SelectedDotNetProjectOrSolutionHasPackages ()
+		protected bool CanRestoreSelectedDotNetProjectOrSolution ()
 		{
 			if (IsDotNetProjectSelected ()) {
-				return SelectedDotNetProjectHasPackages ();
+				return CanRestorePackagesForSelectedDotNetProject ();
 			} else if (IsDotNetSolutionSelected ()) {
-				return SelectedDotNetSolutionHasPackages ();
+				return CanRestorePackagesForSelectedSolution ();
 			}
 			return false;
+		}
+
+		protected bool CanRestorePackagesForSelectedDotNetProject ()
+		{
+			DotNetProject project = GetSelectedDotNetProject ();
+			return project?.CanRestorePackages () == true;
+		}
+
+		bool CanRestorePackagesForSelectedSolution ()
+		{
+			Solution solution = CurrentSelectedSolution;
+			return solution?.CanRestorePackages () == true;
 		}
 
 		protected Solution GetSelectedSolution ()

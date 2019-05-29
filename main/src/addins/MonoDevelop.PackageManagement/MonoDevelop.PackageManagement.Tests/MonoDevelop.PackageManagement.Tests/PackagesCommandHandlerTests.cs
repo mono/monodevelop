@@ -121,9 +121,78 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public async Task SdkProject_NoPackageReferences ()
+		{
+			FilePath solutionFileName = Util.GetSampleProject ("netstandard-sdk", "netstandard-sdk.sln");
+
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllDotNetProjects ().Single ();
+
+			// Project selected.
+			restorePackagesHandler.RunUpdate (solution, project);
+			Assert.IsTrue (restorePackagesHandler.Enabled);
+
+			restorePackagesInProjectHandler.RunUpdate (solution, project);
+			Assert.IsTrue (restorePackagesInProjectHandler.Enabled);
+
+			// Solution only selected
+			restorePackagesHandler.RunUpdate (solution, project: null);
+			Assert.IsTrue (restorePackagesHandler.Enabled);
+
+			restorePackagesInProjectHandler.RunUpdate (solution, project: null);
+			Assert.IsFalse (restorePackagesInProjectHandler.Enabled, "Should be false - no project selected");
+		}
+
+		[Test]
+		public async Task SdkProject_NetFramework472 ()
+		{
+			FilePath solutionFileName = Util.GetSampleProject ("netframework-sdk", "netframework-sdk.sln");
+
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllDotNetProjects ().Single ();
+
+			// Project selected.
+			restorePackagesHandler.RunUpdate (solution, project);
+			Assert.IsTrue (restorePackagesHandler.Enabled);
+
+			restorePackagesInProjectHandler.RunUpdate (solution, project);
+			Assert.IsTrue (restorePackagesInProjectHandler.Enabled);
+
+			// Solution only selected
+			restorePackagesHandler.RunUpdate (solution, project: null);
+			Assert.IsTrue (restorePackagesHandler.Enabled);
+
+			restorePackagesInProjectHandler.RunUpdate (solution, project: null);
+			Assert.IsFalse (restorePackagesInProjectHandler.Enabled, "Should be false - no project selected");
+		}
+
+		[Test]
 		public async Task PackageReferenceProject_NonSdk ()
 		{
 			FilePath solutionFileName = Util.GetSampleProject ("package-reference", "package-reference.sln");
+
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllDotNetProjects ().Single ();
+
+			// Project selected.
+			restorePackagesHandler.RunUpdate (solution, project);
+			Assert.IsTrue (restorePackagesHandler.Enabled);
+
+			restorePackagesInProjectHandler.RunUpdate (solution, project);
+			Assert.IsTrue (restorePackagesInProjectHandler.Enabled);
+
+			// Solution only selected
+			restorePackagesHandler.RunUpdate (solution, project: null);
+			Assert.IsTrue (restorePackagesHandler.Enabled);
+
+			restorePackagesInProjectHandler.RunUpdate (solution, project: null);
+			Assert.IsFalse (restorePackagesInProjectHandler.Enabled, "Should be false - no project selected");
+		}
+
+		[Test]
+		public async Task RestoreProjectStyle_NoPackageReferences ()
+		{
+			FilePath solutionFileName = Util.GetSampleProject ("RestoreStylePackageReference", "RestoreStylePackageReference.sln");
 
 			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.GetAllDotNetProjects ().Single ();
