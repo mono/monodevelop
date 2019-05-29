@@ -74,7 +74,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (DocumentContext.AnalysisDocument == null || DocumentContext.AnalysisDocument.Id != args.DocumentId)
 				return;
 
-			var ws = (MonoDevelopWorkspace)args.Workspace;
+			var ws = args.Workspace as MonoDevelopWorkspace;
+			if (ws == null) {
+				// could be WebEditorRoslynWorkspace
+				return;
+			}
+
 			var doc = ws.GetDocument (args.DocumentId);
 			if (doc == null)
 				return;
