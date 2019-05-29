@@ -77,12 +77,6 @@ namespace MonoDevelop.Ide.WelcomePage
 					}
 				};
 			};
-
-			if (HasWindowImplementation) {
-				await Runtime.GetService<DesktopService> ();
-				var commandManager = await Runtime.GetService<CommandManager> ();
-				await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
-			}
 		}
 
 		public static bool WelcomePageVisible => visible;

@@ -297,21 +297,32 @@ namespace MonoDevelop.Ide
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
 
-				// load previous combine
-				RecentFile openedProject = null;
-				if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
-					if (openedProject != null) {
-						var metadata = GetOpenWorkspaceOnStartupMetadata ();
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore();
-						startupInfo.OpenedRecentProject = true;
+				if (hideWelcomePage) {
+
+					// load previous combine
+					RecentFile openedProject = null;
+					if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
+						openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
+						if (openedProject != null) {
+							var metadata = GetOpenWorkspaceOnStartupMetadata ();
+							IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
+							startupInfo.OpenedRecentProject = true;
+						}
 					}
+					if (openedProject == null) {
+						IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ()).Ignore ();
+						startupInfo.OpenedFiles = startupInfo.HasFiles;
+					}
+
+				} else {
+
+					await Runtime.GetService<DesktopService> ();
+					var commandManager = await Runtime.GetService<CommandManager> ();
+					var welcomePageOptions = new WelcomePage.WelcomeWindowShowOptions (false);
+					WelcomePage.WelcomePageService.ShowWelcomePageOrWindow (welcomePageOptions);
+
 				}
-				if (openedProject == null) {
-					IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ()).Ignore ();
-					startupInfo.OpenedFiles = startupInfo.HasFiles;
-				}
-				
+
 				monitor.Step (1);
 			
 			} catch (Exception e) {
