@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = info.Enabled = IdeApp.Preferences.EnablePinnedTabs && IdeApp.Workbench.Documents.Count != 0;
+			info.Visible = info.Enabled = IdeApp.Workbench.Documents.Count != 0;
 		}
 
 		protected override ImmutableArray<Document> GetDocumentExceptions ()
@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = info.Enabled = IdeApp.Preferences.EnablePinnedTabs && IdeApp.Workbench.ActiveDocument != null;
+			info.Visible = info.Enabled = IdeApp.Workbench.ActiveDocument != null;
 			if (!info.Visible)
 				return;
 			

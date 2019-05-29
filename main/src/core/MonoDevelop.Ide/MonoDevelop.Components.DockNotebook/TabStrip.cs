@@ -115,8 +115,6 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		public bool IsPinEnabled { get; set; }
-
 		public bool  NavigationButtonsVisible {
 			get { return NextButton.Visible; }
 			set {
@@ -250,11 +248,6 @@ namespace MonoDevelop.Components.DockNotebook
 			notebook.TabsReordered += PageReorderedHandler;
 
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
-		}
-
-		void EnablePinnedTabs_Changed (object sender, EventArgs e)
-		{
-			IsPinEnabled = IdeApp.Preferences.EnablePinnedTabs;
 		}
 
 		protected override void OnDestroyed ()
@@ -631,7 +624,7 @@ namespace MonoDevelop.Components.DockNotebook
 					notebook.OnCloseTab (t);
 					allowDoubleClick = false;
 					return true;
-				} else if (IsPinEnabled && t != null && overPinOnPress && IsOverPinButton (t, (int)evnt.X, (int)evnt.Y)) {
+				} else if (t != null && overPinOnPress && IsOverPinButton (t, (int)evnt.X, (int)evnt.Y)) {
 					t.IsPinned = !t.IsPinned;
 					notebook.OnPinTab (t);
 					allowDoubleClick = false;
@@ -1179,7 +1172,7 @@ namespace MonoDevelop.Components.DockNotebook
 			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
-			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active, IsPinEnabled ? tab.IsPinned : false);
+			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active, tab.IsPinned);
 
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
@@ -1201,8 +1194,8 @@ namespace MonoDevelop.Components.DockNotebook
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
 			bool pinButtonHovered = tracker.Hovered && tab.PinButtonActiveArea.Contains (tracker.MousePosition);
 			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
-			bool drawCloseButton = (IsPinEnabled && tab.IsPinned) || (active || tabHovered || focused);
-			bool drawPinButton = IsPinEnabled  && (tab.IsPinned || tabHovered);
+			bool drawCloseButton = tab.IsPinned || (active || tabHovered || focused);
+			bool drawPinButton = tab.IsPinned || tabHovered;
 
 			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
 				ctx.DrawImage (this, tabDirtyImage, closeButtonAlloation.X, closeButtonAlloation.Y);

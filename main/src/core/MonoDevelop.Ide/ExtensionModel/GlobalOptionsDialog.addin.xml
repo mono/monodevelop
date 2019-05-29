@@ -13,7 +13,6 @@
 		<Section id = "Fonts" _label = "Fonts" fill="true" class = "MonoDevelop.Ide.Fonts.FontChooserPanel" icon = "md-prefs-fonts" />
 		<Section id = "Updates" _label = "Updates" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" icon="md-prefs-updates" />
 		<Section id = "TaskList" _label = "Tasks" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" icon="md-prefs-task-list" />
-		<Section id = "TabsWindows" _label = "Tabs and Windows" fill="true" class = "MonoDevelop.Ide.Projects.OptionPanels.TabsWindowOptionsPanel" icon="md-prefs-metadata" />
 		<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" icon="md-prefs-external-tools" />
 	</Section>
 

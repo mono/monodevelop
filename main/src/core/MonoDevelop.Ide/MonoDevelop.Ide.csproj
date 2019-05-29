@@ -4267,7 +4267,6 @@
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLabel.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLine.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\TabsWindowOptionsPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

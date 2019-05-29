@@ -103,7 +103,6 @@ namespace MonoDevelop.Ide
 
 		public ConfigurationProperty<TargetRuntime> DefaultTargetRuntime => RootWorkspace.DefaultTargetRuntime;
 
-		public readonly ConfigurationProperty<bool> EnablePinnedTabs = ConfigurationProperty.Create ("MonoDevelop.TabsAndWindow.EnablePinnedTabs", false);
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
 		public readonly ConfigurationProperty<string> UserInterfaceThemeName = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
