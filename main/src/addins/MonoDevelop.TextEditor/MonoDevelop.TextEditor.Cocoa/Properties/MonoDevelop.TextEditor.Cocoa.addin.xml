@@ -89,5 +89,6 @@
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindPreviousCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Replace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ReplaceCommandArgs" />
 		<Map id="MonoDevelop.Refactoring.Navigate.GotoBaseMember" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.GoToBaseMemberCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" argsType="Microsoft.VisualStudio.Text.Extras.GoToLine.GoToLineCommandArgs" />
 	</Extension>
 </ExtensionModel>
