@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public string GetParentFile (string inputFile)
 		{
-			string parentFile;
+			string parentFile, inputExtension;
 
 			switch (Kind) {
 			case NestingRuleKind.AddedExtension:
@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.FileNesting
 				break;
 
 			case NestingRuleKind.ExtensionToExtension:
-				string inputExtension = Path.GetExtension (inputFile);
+				inputExtension = Path.GetExtension (inputFile);
 				if (inputExtension == AppliesTo) {
 					foreach (var pt in patterns) {
 						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
@@ -102,6 +102,16 @@ namespace MonoDevelop.Projects.FileNesting
 					}
 				}
 				break;
+
+			case NestingRuleKind.PathSegment:
+				inputExtension = Path.GetExtension (inputFile);
+				// Search for $filename.$extension for $filename.$path_segment.$extension
+				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
+				if (CheckParentForFile (inputFile, parentFile)) {
+					return parentFile;
+				}
+				break;
+
 			}
 
 			return null;

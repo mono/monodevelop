@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects.FileNesting
 			nestingRules.Add (new NestingRule (NestingRuleKind.AddedExtension, ".*", null));
 			nestingRules.Add (new NestingRule (NestingRuleKind.ExtensionToExtension, ".js", new [] { ".ts", ".tsx" }));
 			nestingRules.Add (new NestingRule (NestingRuleKind.FileSuffixToExtension, "-vsdoc.js", new [] { ".js" }));
+			nestingRules.Add (new NestingRule (NestingRuleKind.PathSegment, ".*", null));
 		}
 
 		public string GetParentFile (string inputFile)
