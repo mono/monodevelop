@@ -91,7 +91,6 @@ namespace MonoDevelop.Ide.Gui
 			Assert.That (stacktrace, Contains.Substring ("at GLib.Log.g_logv"));
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLogging.LoggerMethod"));
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLoggingTests"));
-
 		}
 	}
 }
