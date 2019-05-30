@@ -61,7 +61,6 @@ namespace MonoDevelop.Projects.FileNesting
 
 		bool CheckParentForFile (string inputFile, string parentFile)
 		{
-			LoggingService.LogInfo ($"Looking for nesting rules for {inputFile} under {parentFile}");
 			if (File.Exists (parentFile) && inputFile != parentFile) {
 				LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
 				return true;

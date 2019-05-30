@@ -26,26 +26,109 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.FileNesting
 {
 	internal class NestingRulesProvider
 	{
-		readonly List<NestingRule> nestingRules = new List<NestingRule> ();
+		const string RuleNameAddedExtension = "addedExtension";
+		const string RuleNameAllExtensions = "allExtensions";
+		const string RuleNameExtensionToExtension = "extensionToExtension";
+		const string RuleNameFileToFile = "fileToFile";
+		const string RuleNameFileSuffixToExtension = "fileSuffixToExtension";
+		const string RuleNamePathSegment = "pathSegment";
+
+		const string TokenNameAdd = "add";
+
+		List<NestingRule> nestingRules;
+		readonly string fromFile;
 
 		public NestingRulesProvider ()
 		{
-			// FIXME: this is temporary, remove when we load rules from json files
-			nestingRules.Add (new NestingRule (NestingRuleKind.AddedExtension, NestingRule.AllFilesWildcard, null));
-			nestingRules.Add (new NestingRule (NestingRuleKind.ExtensionToExtension, ".js", new [] { ".ts", ".tsx" }));
-			nestingRules.Add (new NestingRule (NestingRuleKind.FileSuffixToExtension, "-vsdoc.js", new [] { ".js" }));
-			nestingRules.Add (new NestingRule (NestingRuleKind.PathSegment, NestingRule.AllFilesWildcard, new [] { ".js", ".css", ".html", ".cs" }));
-			nestingRules.Add (new NestingRule (NestingRuleKind.AllExtensions, NestingRule.AllFilesWildcard, new [] { ".tt" }));
-			nestingRules.Add (new NestingRule (NestingRuleKind.FileToFile, ".bowerrc", new [] { "bower.json" }));
+		}
+
+		public NestingRulesProvider (string fromFile)
+		{
+			this.fromFile = fromFile;
+		}
+
+		void AddRule (NestingRuleKind kind, string appliesTo, IEnumerable<string> patterns)
+		{
+			if (nestingRules == null) {
+				nestingRules = new List<NestingRule> ();
+			}
+
+			nestingRules.Add (new NestingRule (kind, appliesTo, patterns));
+		}
+
+		static void ParseRulesProvider (NestingRulesProvider provider, NestingRuleKind kind, JObject jobj)
+		{
+			if (jobj == null) {
+				// Fallback to create an empty rule for this NestingRuleKind
+				provider.AddRule (kind, NestingRule.AllFilesWildcard, Array.Empty<string> ());
+				return;
+			}
+
+			foreach (var prop in jobj.Properties ()) {
+				if (prop.Value.Type == JTokenType.Array) {
+					provider.AddRule (kind, prop.Name, prop.Value<JArray> ().Values<string> ());
+					LoggingService.LogInfo ($"Added nesting rule of type {kind} for files [{prop.Value.ToString ()}]");
+				}
+			}
+		}
+
+		static bool LoadFromFile (NestingRulesProvider provider)
+		{
+			try {
+				using (var reader = new StreamReader (provider.fromFile)) {
+					var json = JObject.Parse (reader.ReadToEnd ());
+					if (json != null) {
+						var parentNode = json ["dependentFileProviders"] [TokenNameAdd] as JObject;
+						foreach (var rp in parentNode.Properties ()) {
+							JObject rpobj = null;
+							try {
+								rpobj = parentNode [rp.Name] [TokenNameAdd].Value<JObject> ();
+							} catch {
+							}
+
+							if (rp.Name == RuleNameAddedExtension) {
+								ParseRulesProvider (provider, NestingRuleKind.AddedExtension, rpobj);
+							} else if (rp.Name == RuleNameAllExtensions) {
+								ParseRulesProvider (provider, NestingRuleKind.AllExtensions, rpobj);
+							} else if (rp.Name == RuleNameExtensionToExtension) {
+								ParseRulesProvider (provider, NestingRuleKind.ExtensionToExtension, rpobj);
+							} else if (rp.Name == RuleNameFileSuffixToExtension) {
+								ParseRulesProvider (provider, NestingRuleKind.FileSuffixToExtension, rpobj);
+							} else if (rp.Name == RuleNameFileToFile) {
+								ParseRulesProvider (provider, NestingRuleKind.FileToFile, rpobj);
+							} else if (rp.Name == RuleNamePathSegment) {
+								ParseRulesProvider (provider, NestingRuleKind.PathSegment, rpobj);
+							}
+						}
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Unable to parse {provider.fromFile}: {ex}");
+			}
+
+			return false;
 		}
 
 		public string GetParentFile (string inputFile)
 		{
+			if (nestingRules == null) {
+				if (!File.Exists (fromFile)) {
+					return null;
+				}
+
+				if (!LoadFromFile (this)) {
+					return null;
+				}
+			}
+
 			foreach (var rule in nestingRules) {
 				string parentFile = rule.GetParentFile (inputFile);
 				if (!String.IsNullOrEmpty (parentFile)) {

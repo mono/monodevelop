@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MonoDevelop.Projects.FileNesting
 {
@@ -37,7 +36,8 @@ namespace MonoDevelop.Projects.FileNesting
 		static FileNestingService ()
 		{
 			rulesProviders = new List<NestingRulesProvider> ();
-			rulesProviders.Add (new NestingRulesProvider ());
+			// FIXME: this is temporary, remove when we load rules from json files
+			rulesProviders.Add (new NestingRulesProvider ("/Users/rodrigo/Downloads/Settings1.filenesting.json"));
 		}
 
 		public static string GetParentFile (string inputFile)
