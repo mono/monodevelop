@@ -117,10 +117,14 @@ namespace MonoDevelop.Projects.FileNesting
 				break;
 
 			case NestingRuleKind.PathSegment:
-				// Search for $filename.$extension for $filename.$path_segment.$extension
-				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
-				if (CheckParentForFile (inputFile, parentFile)) {
-					return parentFile;
+				if (AppliesTo == AllFilesWildcard || AppliesTo == inputExtension) {
+					foreach (var pt in patterns) {
+						// Search for $filename.$extension for $filename.$path_segment.$extension
+						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
+						if (CheckParentForFile (inputFile, parentFile)) {
+							return parentFile;
+						}
+					}
 				}
 				break;
 
