@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Project
 
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
 			var langVersions = CSharpLanguageVersionHelper.GetKnownLanguageVersions ();
-			var badSet = new HashSet<string> ();
+			string badVersion = null;
 
 			foreach (var (text, version) in langVersions) {
 				try {
@@ -114,19 +114,16 @@ namespace MonoDevelop.CSharp.Project
 						langVerStore.AppendValues (text, version);
 					}
 				} catch (Exception ex) {
-					var badVersion = configuration.Properties.GetProperty ("LangVersion").Value;
-					badSet.Add (GettextCatalog.GetString ("C# Language Version [{0} (Unknown Version)]", badVersion));
+					badVersion = configuration.Properties.GetProperty ("LangVersion").Value;
 				}
 			}
 
 			langVerCombo.Model = langVerStore;
 
-			if (badSet.Any ()) {
+			if (badVersion != null) {
+				var badIter = langVerStore.AppendValues (badVersion, LanguageVersion.Default);
+				langVerCombo.SetActiveIter (badIter);
 				langVersionWarningIcon.Visible = true;
-				foreach (var s in badSet) {
-					var badIter = langVerStore.AppendValues (s, LanguageVersion.Default);
-					langVerCombo.SetActiveIter (badIter);
-				}
 			} else {
 				TreeIter iter;
 				if (langVerStore.GetIterFirst (out iter)) {
