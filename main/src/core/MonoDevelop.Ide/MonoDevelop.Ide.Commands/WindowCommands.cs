@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 				if (splitt != null) {
 					info.Enabled = splitt.EnableSplitHorizontally;
 				} else 
@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			ISplittable splittVertically = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+			ISplittable splittVertically = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 			if (splittVertically != null)
 				splittVertically.SplitHorizontally ();
 		}
@@ -305,7 +305,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 				if (splitt != null) {
 					info.Enabled = splitt.EnableSplitVertically;
 				} else 
@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			ISplittable splittHorizontally = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+			ISplittable splittHorizontally = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 			if (splittHorizontally != null)
 				splittHorizontally.SplitVertically ();
 		}
@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 				if (splitt != null) {
 					info.Enabled = splitt.EnableUnsplit;
 				} else 
@@ -338,7 +338,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			ISplittable splittUnsplitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+			ISplittable splittUnsplitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 			if (splittUnsplitt != null)
 				splittUnsplitt.Unsplit ();
 		}
@@ -349,7 +349,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+				ISplittable splitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 				if (splitt != null) {
 					info.Enabled = splitt.EnableUnsplit;
 				} else 
@@ -360,7 +360,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			ISplittable splittUnsplitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> ();
+			ISplittable splittUnsplitt = IdeApp.Workbench.ActiveDocument.GetContent<ISplittable> (true);
 			if (splittUnsplitt != null)
 				splittUnsplitt.SwitchWindow ();
 		}

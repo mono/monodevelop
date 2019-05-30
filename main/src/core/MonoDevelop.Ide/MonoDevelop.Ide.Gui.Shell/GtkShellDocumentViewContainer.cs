@@ -65,7 +65,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			rootTabsBox.PackEnd (bottomBarBox, false, false, 0);
 
 			tabstrip = new Tabstrip ();
-			tabstrip.Show ();
 			bottomBarBox.PackStart (tabstrip, true, true, 0);
 
 			rootTabsBox.Show ();
@@ -94,6 +93,14 @@ namespace MonoDevelop.Ide.Gui.Shell
 				tab.Activated += TabActivated;
 			} else if (!hasSplit && hadSplit)
 				tabstrip.RemoveTab (tabstrip.TabCount - 1);
+
+			// If this container is showing tabs and it is inside another container, give the parent the
+			// chance to show the tabstrip in its own tab area, to avoid tab stacking
+			ParentContainer?.UpdateAttachedTabstrips ();
+
+			// This might be a container that has children with tabs. Maybe now it is possible to embed the
+			// child tabstrips into this container's tab area. Let's try!
+			UpdateAttachedTabstrips ();
 		}
 
 		public DocumentViewContainerMode CurrentMode {
@@ -156,6 +163,87 @@ namespace MonoDevelop.Ide.Gui.Shell
 			CurrentModeChanged?.Invoke (this, EventArgs.Empty);
 		}
 
+		List<GtkShellDocumentViewContainer> attachedChildTabstrips = new List<GtkShellDocumentViewContainer> ();
+
+		void UpdateAttachedTabstrips ()
+		{
+			// If we are showing tabs and there is any child which also has tabs, this method will embed the child tabstrip into
+			// into this container's tab area, to avoid tab stacking. If any of the conditions that make the tabstrip embeddable
+			// has changed and it can't be embedded anymore, it will remove it from the tab area and return it back to
+			// the child.
+
+			// We do child tab embedding only for the root container, and only if we are already showing tabs
+
+			if (!tabstrip.Visible || ParentContainer != null) {
+				// The container doesn't support embedding child tabs, remove all that are currently embedded, if any
+				foreach (var child in attachedChildTabstrips)
+					DetachTabstrip (child);
+				attachedChildTabstrips.Clear ();
+				return;
+			}
+
+			// Get a list of children with visible tabstrips. Notice that if any of the child tabstrips is hidden, then this
+			// method will be called and the tabstrip will be removed
+
+			var childrenWithTabs = GetAllViews ().OfType<GtkShellDocumentViewContainer> ().Where (c => c.tabstrip.Visible).ToList ();
+			for (int n=0; n<childrenWithTabs.Count; n++) {
+				var child = childrenWithTabs [n];
+				var alreadyAttached = attachedChildTabstrips.Contains (child);
+				if (!alreadyAttached) {
+					// The child's tabstrip is embeddable, but it is not yet embedded
+					child.OnAttachingTabstripToParent ();
+					bottomBarBox.PackStart (child.tabstrip, false, false, 0);
+					attachedChildTabstrips.Add (child);
+
+					// Hide the tab that corresponds to this child, since we are now showing the children's tabstrip
+					// directly in the parent tab area, so to switch to the child is just a matter of clicking in
+					// one of its tabs
+					var localTab = tabstrip.Tabs.FirstOrDefault (t => t.Tag == child);
+					if (localTab != null)
+						localTab.Visible = false;
+				}
+				var boxChild = (Box.BoxChild)bottomBarBox [child.tabstrip];
+				boxChild.Position = n;
+			}
+
+			// Now remove embedded tabstrips which are not embeddable anymore
+
+			for (int n=0; n < attachedChildTabstrips.Count; n++) {
+				var c = attachedChildTabstrips [n];
+				if (!childrenWithTabs.Contains (c)) {
+					DetachTabstrip (c);
+					attachedChildTabstrips.RemoveAt (n--);
+				}
+			}
+		}
+
+		void DetachTabstrip (GtkShellDocumentViewContainer item)
+		{
+			bottomBarBox.Remove (item.tabstrip);
+			item.OnDetachedTabstripFromParent ();
+
+			// Make the tab corresponding to the item visible again, since we are removing its tabstrip from our tab area
+			var localTab = tabstrip.Tabs.FirstOrDefault (t => t.Tag == item);
+			if (localTab != null)
+				localTab.Visible = true;
+		}
+
+		void OnAttachingTabstripToParent ()
+		{
+			// This is called when the tabstrip of this container is embedded in the parent's tab area
+			// We need to remove it from its own tab area and add a separator
+			bottomBarBox.Remove (tabstrip);
+			tabstrip.AddTab (new Tab (tabstrip, "|"));
+		}
+
+		void OnDetachedTabstripFromParent ()
+		{
+			// The tabstrip is not embeddable anymore, so it is returning to the child.
+			// Add it back to its own tab area and remove the separator
+			bottomBarBox.PackStart (tabstrip, true, true, 0);
+			tabstrip.RemoveTab (tabstrip.Tabs.Count - 1);
+		}
+
 		void Container_ActiveViewChanged (object sender, EventArgs e)
 		{
 			ActiveViewChanged?.Invoke (this, EventArgs.Empty);
@@ -185,6 +273,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public void InsertView (int position, IShellDocumentViewItem shellView)
 		{
 			var widget = (GtkShellDocumentViewItem)shellView;
+			widget.ParentContainer = this;
 			widget.Show ();
 			currentContainer.InsertView (position, widget);
 			tabstrip.InsertTab (position, CreateTab ((GtkShellDocumentViewItem)shellView));
@@ -200,28 +289,55 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		void TabActivated (object s, EventArgs args)
 		{
-			if (hasSplit && tabstrip.ActiveTab == tabstrip.TabCount - 1) {
+			var tab = (Tab)s;
+			if (hasSplit && tab.Tag == null) {
+				// If Tag is null it means it's clicking on the "Split" tab
 				CurrentMode = DocumentViewContainerMode.VerticalSplit;
 			} else {
-				var tab = (Tab)s;
 				SetCurrentMode (DocumentViewContainerMode.Tabs, (GtkShellDocumentViewItem)tab.Tag);
-				currentContainer.ActiveView = (GtkShellDocumentViewItem)tab.Tag;
+				ShowChildView ((GtkShellDocumentViewItem)tab.Tag);
+			}
+			// Make this container is visible on its parent
+			ParentContainer?.ShowChildView (this);
+		}
+
+		void ShowChildView (GtkShellDocumentViewItem view)
+		{
+			if (currentContainer.ActiveView != view) {
+				currentContainer.ActiveView = view;
+
+				// If this container has embedded tabstrips, reset the active tab in all of them except
+				// the one that was clicked. Otherwise several active tabs would be visible, one for
+				// each tabstrip
+
+				if (attachedChildTabstrips.Contains (view))
+					tabstrip.ActiveTab = -1;
+
+				foreach (var c in attachedChildTabstrips)
+					if (c != view)
+						c.tabstrip.ActiveTab = -1;
 			}
 		}
 
 		public void ReplaceView (int position, IShellDocumentViewItem shellView)
 		{
+			var oldView = currentContainer.GetChild (position);
 			var newView = (GtkShellDocumentViewItem)shellView;
+			newView.ParentContainer = this;
 			newView.Show ();
 			currentContainer.ReplaceView (position, newView);
 			tabstrip.ReplaceTab (position, CreateTab (newView));
+			UpdateTabstrip ();
+			oldView.ParentContainer = null;
 		}
 
 		public void RemoveView (int tabPos)
 		{
+			var oldView = currentContainer.GetChild (tabPos);
 			currentContainer.RemoveView (tabPos);
 			tabstrip.RemoveTab (tabPos);
 			UpdateTabstrip ();
+			oldView.ParentContainer = null;
 		}
 
 		public void ReorderView (int currentIndex, int newIndex)
@@ -232,10 +348,13 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void RemoveAllViews ()
 		{
+			var oldViews = currentContainer.GetAllViews ().ToList ();
 			currentContainer.RemoveAllViews ();
 			while (tabstrip.TabCount > 1)
 				tabstrip.RemoveTab (0);
 			UpdateTabstrip ();
+			foreach (var c in oldViews)
+				c.ParentContainer = null;
 		}
 
 		IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
@@ -295,6 +414,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		GtkShellDocumentViewItem ActiveView { get; set; }
 		event EventHandler ActiveViewChanged;
 		IEnumerable<GtkShellDocumentViewItem> GetAllViews ();
+		GtkShellDocumentViewItem GetChild (int index);
 		void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription);
 	}
 }

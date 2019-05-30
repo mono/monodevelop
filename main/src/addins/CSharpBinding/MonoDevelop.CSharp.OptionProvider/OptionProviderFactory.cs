@@ -33,7 +33,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 	[Export (typeof (IDocumentOptionsProviderFactory))]
 	class EditorConfigDocumentOptionsProviderFactory : IDocumentOptionsProviderFactory
 	{
-		public IDocumentOptionsProvider Create (Workspace workspace)
+		public IDocumentOptionsProvider TryCreate (Workspace workspace)
 		{
 			return new CSharpDocumentOptionsProvider ();
 		}

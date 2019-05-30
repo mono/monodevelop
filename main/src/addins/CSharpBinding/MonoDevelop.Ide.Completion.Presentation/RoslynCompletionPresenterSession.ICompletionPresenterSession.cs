@@ -26,7 +26,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		public static RoslynCompletionPresenterSession Instance { get; private set; }
 
 
-		void ICompletionPresenterSession.PresentItems (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected, ImmutableArray<CompletionItemFilter> completionItemFilters, string filterText)
+		void ICompletionPresenterSession.PresentItems (ITextSnapshot textSnapshot, ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected, ImmutableArray<CompletionItemFilter> completionItemFilters, string filterText)
 		{
 			if (!opened) {
 				Open (triggerSpan, items, selectedItem, suggestionModeItem, suggestionMode, isSoftSelected);

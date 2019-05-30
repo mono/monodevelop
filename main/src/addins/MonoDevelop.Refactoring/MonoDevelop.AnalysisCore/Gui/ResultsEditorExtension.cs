@@ -259,20 +259,26 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		const int MaxCacheSize = 10;
-		Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
+		readonly Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
+		readonly object listCacheLock = new object ();
 
 		List<IGenericTextSegmentMarker> GetCachedList ()
 		{
-			if (listCache.Count == 0)
-				return new List<IGenericTextSegmentMarker> ();
-			return listCache.Dequeue ();
+			lock (listCacheLock) {
+				if (listCache.Count == 0)
+					return new List<IGenericTextSegmentMarker> ();
+				return listCache.Dequeue () ?? new List<IGenericTextSegmentMarker> ();
+			}
 		}
 
 		void PutBackCachedList (List<IGenericTextSegmentMarker> list)
 		{
-			list.Clear ();
-			if (listCache.Count < MaxCacheSize)
-				listCache.Enqueue (list);
+			lock (listCacheLock) {
+				if (listCache.Count < MaxCacheSize) {
+					list.Clear ();
+					listCache.Enqueue (list);
+				}
+			}
 		}
 
 		class ResultsUpdater
@@ -285,11 +291,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 			List<IGenericTextSegmentMarker> oldMarkers;
 
 			int curResult = 0;
-			IReadOnlyList<Result> results;
+			readonly IReadOnlyList<Result> results;
 
-			List<IGenericTextSegmentMarker> newMarkers;
-			ImmutableArray<QuickTask>.Builder builder;
-			object id;
+			readonly List<IGenericTextSegmentMarker> newMarkers;
+			readonly ImmutableArray<QuickTask>.Builder builder;
+			readonly object id;
 
 			public ResultsUpdater (ResultsEditorExtension ext, IReadOnlyList<Result> results, object resultsId, CancellationToken cancellationToken)
 			{
@@ -308,13 +314,17 @@ namespace MonoDevelop.AnalysisCore.Gui
 				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 				this.results = results;
 				newMarkers = ext.GetCachedList ();
-				Debug.Assert (newMarkers != null);
 			}
 
 			public void Update ()
 			{
 				if (cancellationToken.IsCancellationRequested)
 					return;
+				if (newMarkers == null) {
+					// should never happen.
+					LoggingService.LogError ("Error in ResultsEditorExtension : newMarkers == null.");
+					return;
+				}
 				if (id != null)
 					lock (ext.tasks) {
 						ext.tasks.Remove (id);

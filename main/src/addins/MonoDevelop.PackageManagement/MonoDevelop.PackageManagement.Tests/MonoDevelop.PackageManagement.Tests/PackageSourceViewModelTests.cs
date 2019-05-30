@@ -152,6 +152,24 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageSource updatedPackageSource = viewModel.GetPackageSource ();
 			Assert.IsTrue (updatedPackageSource.IsEnabled);
 		}
+
+		/// <summary>
+		/// This ensures that credentials can be saved to the NuGet.Config file with NuGet 5. Originally
+		/// the url was used which was then used as the element name in the packageSourceCredentials section.
+		/// </summary>
+		[Test]
+		public void Credentials_UserNameAndPasswordSet_CredentialsSourceUsesPackageSourceNameNotUrl ()
+		{
+			packageSource = new PackageSource ("https://nuget.org", "PackageSourceName");
+			CreateViewModel (packageSource);
+			viewModel.UserName = "UserName";
+			viewModel.Password = "Password";
+
+			PackageSource updatedPackageSource = viewModel.GetPackageSource ();
+
+			Assert.AreEqual ("PackageSourceName", updatedPackageSource.Credentials.Source);
+			Assert.AreEqual ("UserName", updatedPackageSource.Credentials.Username);
+		}
 	}
 }
 

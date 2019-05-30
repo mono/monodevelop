@@ -341,6 +341,12 @@
     <Compile Include="MonoDevelop.PackageManagement\ExceptionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DependencyGraphSpecExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSpecExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ConditionalPackageReferenceHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPropertySetExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSdkProjectExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SdkProjectReloadMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SdkProjectBuilderMaintainer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SdkProjectFileRenamedHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

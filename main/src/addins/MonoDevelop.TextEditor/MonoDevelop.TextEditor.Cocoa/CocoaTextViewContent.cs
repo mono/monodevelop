@@ -20,22 +20,21 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
-
 using AppKit;
-using ObjCRuntime;
-
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
+using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Documents;
+using ObjCRuntime;
 
 namespace MonoDevelop.TextEditor
 {
@@ -69,7 +68,9 @@ namespace MonoDevelop.TextEditor
 		}
 	}
 
-	class CocoaTextViewContent : TextViewContent<ICocoaTextView, CocoaTextViewImports>
+	class CocoaTextViewContent :
+		TextViewContent<ICocoaTextView, CocoaTextViewImports>,
+		IToolboxDynamicProvider
 	{
 		ICocoaTextViewHost textViewHost;
 		NSView textViewHostControl;
@@ -77,6 +78,8 @@ namespace MonoDevelop.TextEditor
 
 		static readonly Lazy<bool> useLegacyGtkNSViewHost = new Lazy<bool> (
 			() => FeatureSwitchService.IsFeatureEnabled ("LegacyGtkNSViewHost").GetValueOrDefault ());
+
+		public event EventHandler ItemsChanged;
 
 		abstract class GtkNSViewHostControl : Control
 		{
@@ -207,8 +210,13 @@ namespace MonoDevelop.TextEditor
 			}
 
 			TextView.Properties.AddProperty (typeof (Gtk.Widget), embeddedControl.GtkView);
-
+			TextBuffer.ContentTypeChanged += TextBuffer_ContentTypeChanged;
 			return embeddedControl;
+		}
+
+		private void TextBuffer_ContentTypeChanged (object sender, Microsoft.VisualStudio.Text.ContentTypeChangedEventArgs e)
+		{
+			ItemsChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void OnGrabFocus (DocumentView view)
@@ -219,8 +227,9 @@ namespace MonoDevelop.TextEditor
 
 		protected override void OnDispose ()
 		{
+			if (TextBuffer != null)
+				TextBuffer.ContentTypeChanged -= TextBuffer_ContentTypeChanged;
 			base.OnDispose ();
-
 			if (textViewHost != null) {
 				textViewHost.Close ();
 				textViewHost = null;
@@ -258,6 +267,20 @@ namespace MonoDevelop.TextEditor
 				}
 
 				return false;
+			}
+		}
+
+		static string category = GettextCatalog.GetString ("Text Snippets");
+		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		{
+			var contentType = TextView?.TextBuffer?.ContentType;
+			if (contentType == null)
+				yield break;
+			foreach (var template in Imports.ExpansionManager.EnumerateExpansions (contentType, false, null, true, false)) {
+				yield return new SnippetToolboxNode (template) {
+					Category = category,
+					Icon = ImageService.GetIcon ("md-template", Gtk.IconSize.Menu)
+				};
 			}
 		}
 

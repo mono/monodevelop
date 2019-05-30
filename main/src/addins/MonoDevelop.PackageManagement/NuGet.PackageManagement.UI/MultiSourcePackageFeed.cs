@@ -239,18 +239,29 @@ namespace NuGet.PackageManagement.UI
 			if (_logger == null)
 			{
 				// observe the task exception when no UI logger provided.
-				Trace.WriteLine(ExceptionUtilities.DisplayMessage(task.Exception));
+				Trace.WriteLine(DisplayMessage(task.Exception));
 				return;
 			}
 
 			// UI logger only can be engaged from the main thread
 			MonoDevelop.Core.Runtime.RunInMainThread(() =>
 			{
-				var errorMessage = ExceptionUtilities.DisplayMessage(task.Exception);
+				var errorMessage = DisplayMessage(task.Exception);
 				_logger.Log(
 					ProjectManagement.MessageLevel.Error,
 					$"[{state.ToString()}] {errorMessage}");
-			});
+			}).Ignore();
+		}
+
+		static string DisplayMessage(Exception ex)
+		{
+			string errorMessage = ExceptionUtilities.DisplayMessage(ex);
+
+			// NSUrlSessionHandler exceptions contain curly braces {} in the UserInfo part of the message so
+			// to avoid a FormatException we need to escape these.
+			return errorMessage
+				.Replace("{", "{{")
+				.Replace("}", "}}");
 		}
 	}
 }

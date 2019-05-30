@@ -608,6 +608,54 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task CustomAvailableItemName_FileImportedWithWildcard_FileAvailableInProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("sdk-imported-files", "netstandard.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+				var textFile = p.Files.SingleOrDefault (fi => fi.FilePath.FileName == "test.txt");
+
+				Assert.AreEqual ("MyTextFile", textFile.BuildAction);
+
+				// Ensure build actions are not cached too early and contain any custom MSBuild items
+				// defined directly in the project file.
+
+				string[] buildActions = p.GetBuildActions ();
+				Assert.That (buildActions, Contains.Item ("CustomBuildActionInProject"));
+			}
+		}
+
+		[Test]
+		[Platform (Exclude = "Win")]
+		public async Task BuildMultiTargetProject ()
+		{
+			FilePath projFile = Util.GetSampleProject ("multi-target", "multi-target2.csproj");
+
+			RunMSBuildRestore (projFile);
+
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+
+				var res = await p.RunTarget (Util.GetMonitor (false), "Build", ConfigurationSelector.Default);
+				var buildResult = res.BuildResult;
+
+				var expectedNetCoreOutputFile = projFile.ParentDirectory.Combine ("bin", "Debug", "netcoreapp1.1", "multi-target2.dll");
+				var expectedNetStandardOutputFile = projFile.ParentDirectory.Combine ("bin", "Debug", "netstandard1.0", "multi-target2.dll");
+
+				Assert.AreEqual (0, buildResult.Errors.Count);
+				Assert.IsTrue (File.Exists (expectedNetCoreOutputFile), ".NET Core assembly not built");
+				Assert.IsTrue (File.Exists (expectedNetStandardOutputFile), ".NET Standard assembly not built");
+
+				res = await p.RunTarget (Util.GetMonitor (false), "Clean", ConfigurationSelector.Default);
+				buildResult = res.BuildResult;
+
+				Assert.AreEqual (0, buildResult.Errors.Count);
+				Assert.IsFalse (File.Exists (expectedNetCoreOutputFile), ".NET Core assembly not removed on clean");
+				Assert.IsFalse (File.Exists (expectedNetStandardOutputFile), ".NET Standard assembly not removed on clean");
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);

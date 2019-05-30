@@ -35,7 +35,7 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		class PasteFormattingRule : AbstractFormattingRule
 		{
-			public override AdjustNewLinesOperation GetAdjustNewLinesOperation (SyntaxToken previousToken, SyntaxToken currentToken, OptionSet optionSet, NextOperation<AdjustNewLinesOperation> nextOperation)
+			public override AdjustNewLinesOperation GetAdjustNewLinesOperation (SyntaxToken previousToken, SyntaxToken currentToken, OptionSet optionSet, in NextGetAdjustNewLinesOperation nextOperation)
 			{
 				if (currentToken.Parent != null) {
 					var currentTokenParentParent = currentToken.Parent.Parent;

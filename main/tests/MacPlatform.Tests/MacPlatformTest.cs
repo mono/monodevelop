@@ -32,6 +32,11 @@ using UnitTests;
 using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Logging;
+using Foundation;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace MacPlatform.Tests
 {
@@ -105,6 +110,101 @@ namespace MacPlatform.Tests
 			}
 
 			Assert.AreEqual (true, await tcs.Task, "Expected cancel handler to be called");
+		}
+
+		[Test]
+		public void TestIOKitPInvokes ()
+		{
+			// Test the pinvokes don't crash. Don't care about the details returned
+
+			var matchingDict = MacTelemetryDetails.IOServiceMatching ("IOService");
+
+			// IOServiceGetMatchingServices takes ownership of matchingDict, so no need to CFRelease it
+			var success = MacTelemetryDetails.IOServiceGetMatchingServices (0, matchingDict, out var iter);
+
+			if (MacTelemetryDetails.IOIteratorIsValid (iter) == 0) {
+				// An invalid iter isn't a test failure, but it means we can't really test anything else
+				// so just return
+				return;
+			}
+
+			var entry = MacTelemetryDetails.IOIteratorNext (iter);
+			if (entry == 0) {
+				MacTelemetryDetails.IOObjectRelease (iter);
+				return;
+			}
+
+			success = MacTelemetryDetails.IORegistryEntryGetChildIterator (entry, "IOService", out var childIter);
+			if (success != 0) {
+				MacTelemetryDetails.IOObjectRelease (entry);
+				return;
+			}
+
+			MacTelemetryDetails.IOObjectRelease (childIter);
+
+			var name = new Foundation.NSString ("testService");
+			var namePtr = MacTelemetryDetails.IORegistryEntrySearchCFProperty (entry, "IOService", name.Handle, IntPtr.Zero, 0x0);
+
+			MacTelemetryDetails.IOObjectRelease (entry);
+			MacTelemetryDetails.IOObjectRelease (iter);
+
+			MacTelemetryDetails.CFRelease (namePtr);
+		}
+
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern void void_objc_msgSend (IntPtr receiver, IntPtr selector);
+
+		[Test]
+		public void TestNSExceptionLogging ()
+		{
+			var crashReporter = new CapturingCrashReporter ();
+
+			try {
+				LoggingService.RegisterCrashReporter (crashReporter);
+
+				var x = new NSException ("Test", "should be captured", null);
+				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+
+				Assert.Throws<ObjCException> (() => void_objc_msgSend (x.Handle, selector));
+
+				Assert.That (crashReporter.LastException.Message, Contains.Substring ("should be captured"));
+				Assert.That (crashReporter.LastException.Source, Is.Not.Null);
+
+				var stacktrace = crashReporter.LastException.StackTrace;
+				AssertMacPlatformStacktrace (stacktrace);
+			} finally {
+				LoggingService.UnregisterCrashReporter (crashReporter);
+			}
+		}
+
+		[Test]
+		public void CriticalErrorsExceptionsHaveFullStacktracesInLog ()
+		{
+			var logger = new CapturingLogger {
+				EnabledLevel = EnabledLoggingLevel.Error,
+			};
+
+			try {
+				LoggingService.AddLogger (logger);
+
+				var ex = new NSException ("Test", "should be captured", null);
+				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+
+				Assert.Throws<ObjCException> (() => void_objc_msgSend (ex.Handle, selector));
+
+				var (_, message) = logger.LogMessages.Single (x => x.Level == LogLevel.Error);
+				AssertMacPlatformStacktrace (message);
+			} finally {
+				LoggingService.RemoveLogger (logger.Name);
+			}
+		}
+
+		static void AssertMacPlatformStacktrace (string stacktrace)
+		{
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
+			Assert.That (stacktrace, Contains.Substring ("at MacPlatform.Tests.MacPlatformTest.void_objc_msgSend"));
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService.HandleUncaughtException"));
+
 		}
 	}
 }

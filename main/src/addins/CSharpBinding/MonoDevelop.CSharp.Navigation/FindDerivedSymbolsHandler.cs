@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var project in currentSolution.Projects) {
 				var comp = await project.GetCompilationAsync (token).ConfigureAwait (false);
 				foreach (var i in comp.GetAllTypesInMainAssembly (token).Where (t => t.TypeKind == TypeKind.Interface)) {
-					if (i.AllInterfaces.Any (t => t.InheritsFromOrEqualsIgnoringConstruction (type)))
+					if (i.AllInterfaces.Any (t => t.InheritsFromOrImplementsOrEqualsIgnoringConstruction (type)))
 						result.Add (i);
 				}
 			}

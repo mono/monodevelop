@@ -27,14 +27,8 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizard.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectFileRenamedHandler.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReloadMonitor.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReader.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkPaths.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreMSBuildProject.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreCanReferenceProjectExtension.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectBuilderMaintainer.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreRuntimeOptionsPanelWidget.cs" />
@@ -46,7 +40,6 @@
     <Compile Include="MonoDevelop.DotNetCore\DummyMSBuildOptionsPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkMonikerExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\FilePathExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\MSBuildPropertyGroupExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore\ProjectReferenceExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNodeBuilder.cs" />
@@ -86,7 +79,6 @@
     <Compile Include="MonoDevelop.DotNetCore.Gui\GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdksPathGlobalPropertyProvider.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreShortTargetFramework.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateStringTagProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationWidget.cs" />
@@ -96,6 +88,8 @@
     <Compile Include="MonoDevelop.DotNetCore\MonoRuntimeInfoExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyInfo.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliWatch.cs" />
+    <Compile Include="DotNetCoreDownloadUrl.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\FrameworkReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreProjectFileRenamedHandler.cs
+// SdkProjectFileRenamedHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,12 +25,11 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Projects;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.PackageManagement
 {
-	static class DotNetCoreProjectFileRenamedHandler
+	static class SdkProjectFileRenamedHandler
 	{
 		public static void OnProjectFileRenamed (DotNetProject project)
 		{

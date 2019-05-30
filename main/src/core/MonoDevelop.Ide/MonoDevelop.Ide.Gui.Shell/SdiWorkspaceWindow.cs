@@ -186,7 +186,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 #if MAC
 				AppKit.NSWindow nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
 				if (nswindow != null) {
-					nswindow.MakeFirstResponder (nswindow.ContentView);
+					// Don't change the first responder if the current one is already a child of the content view
+					if (!(nswindow.FirstResponder is AppKit.NSView view) || !view.IsDescendantOf (nswindow.ContentView))
+						nswindow.MakeFirstResponder (nswindow.ContentView);
 					nswindow.MakeKeyAndOrderFront (nswindow);
 				}
 #endif
@@ -199,11 +201,12 @@ namespace MonoDevelop.Ide.Gui.Shell
 			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
-				view.Load ().Ignore ();
+				if (view != null)
+					view.Load ().Ignore ();
 			});
 		}
 
-		public bool ContentVisible => TabControl.CurrentTab.Content == this;
+		public bool ContentVisible => TabControl.CurrentTab?.Content == this;
 
 		public bool CanMoveToNextNotebook ()
 		{
@@ -286,7 +289,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void Close ()
 		{
-			view.DetachFromView ();
+			view?.DetachFromView ();
 			Destroy ();
 		}
 

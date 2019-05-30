@@ -87,11 +87,11 @@
     -->
     <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
-    <PackageReference Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
     <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
     <Reference Include="$(NuGetPackageRoot)microsoft.visualstudio.composition/$(NuGetVersionVSComposition)/lib/net45/Microsoft.VisualStudio.Composition.dll">
+      <NuGetPackageId>Microsoft.VisualStudio.Composition</NuGetPackageId>
       <Private>true</Private>
     </Reference>
     <PackageReference Include="Mono.Cecil" Version="$(NuGetVersionCecil)" PrivateAssets="runtime" />
@@ -123,6 +123,8 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Elfie.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.InteractiveHost.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Scripting.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
@@ -130,7 +132,6 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
     <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
-    <IncludeCopyLocal Include="Microsoft.Microsoft.CodeAnalysis.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" />
@@ -138,6 +139,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.ImageCatalog.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.InteractiveWindow.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Intellisense.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
@@ -725,6 +727,11 @@
     <Compile Include="MonoDevelop.Core\CoreServices.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemDefinitionGroup.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectReader.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSdkProject.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
+    <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

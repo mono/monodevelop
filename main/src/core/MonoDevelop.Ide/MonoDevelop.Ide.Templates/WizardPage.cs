@@ -47,13 +47,11 @@ namespace MonoDevelop.Ide.Templates
 
 		public event EventHandler CanMoveToNextPageChanged;
 
-		protected void OnCanMoveToNextPageChanged ()
-		{
-			var handler = CanMoveToNextPageChanged;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
-		}
+		protected void OnCanMoveToNextPageChanged () => CanMoveToNextPageChanged?.Invoke (this, EventArgs.Empty);
+
+		public event EventHandler NextPageRequested;
+
+		protected void OnNextPageRequested () => NextPageRequested?.Invoke (this, EventArgs.Empty);
 
 		public abstract string Title { get; }
 

@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreProjectBuilderMaintainer.cs
+// SdkProjectBuilderMaintainer.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,13 +25,12 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreProjectBuilderMaintainer
+	class SdkProjectBuilderMaintainer
 	{
 		/// <summary>
 		/// If the target framework of the project has changed then non .NET Core projects
@@ -43,22 +42,22 @@ namespace MonoDevelop.DotNetCore
 		public static void OnProjectReload (ProjectReloadedEventArgs reloadEventArgs)
 		{
 			var reloadedProject = reloadEventArgs.NewProject.DotNetProject;
-			foreach (var project in GetAllNonDotNetCoreProjectsReferencingProject (reloadedProject)) {
+			foreach (var project in GetAllNonSdkProjectsReferencingProject (reloadedProject)) {
 				project.ReloadProjectBuilder ();
 			}
 		}
 
-		static IEnumerable<DotNetProject> GetAllNonDotNetCoreProjects (Solution parentSolution)
+		static IEnumerable<DotNetProject> GetAllNonSdkProjects (Solution parentSolution)
 		{
 			return parentSolution.GetAllDotNetProjects ()
-				.Where (project => !project.HasFlavor<DotNetCoreProjectExtension> ());
+				.Where (project => !project.HasFlavor<SdkProjectExtension> ());
 		}
 
-		static IEnumerable<DotNetProject> GetAllNonDotNetCoreProjectsReferencingProject (DotNetProject dotNetCoreProject)
+		static IEnumerable<DotNetProject> GetAllNonSdkProjectsReferencingProject (DotNetProject dotNetCoreProject)
 		{
-			foreach (DotNetProject project in GetAllNonDotNetCoreProjects (dotNetCoreProject.ParentSolution)) {
+			foreach (DotNetProject project in GetAllNonSdkProjects (dotNetCoreProject.ParentSolution)) {
 				foreach (ProjectReference projectReference in project.References) {
-					if (projectReference.IsProjectReference ()) {
+					if (projectReference.ReferenceType == ReferenceType.Project) {
 						Project resolvedProject = projectReference.ResolveProject (project.ParentSolution);
 						if (resolvedProject == dotNetCoreProject) {
 							yield return project;

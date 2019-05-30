@@ -92,6 +92,10 @@ namespace MonoDevelop.Ide.Gui
 
 		IEnumerable<DocumentController> GetControllersForContentCheck ()
 		{
+			// This may happen if the content view is still being initialized
+			if (view == null)
+				return Enumerable.Empty<DocumentController> ();
+
 			// Exclude root controller from GetAllControllers() since it will be already returned by GetActiveControllerHierarchy()
 			return view.GetActiveControllerHierarchy ().Concat (view.GetAllControllers ().Where (c => c != controller));
 		}
@@ -134,6 +138,18 @@ namespace MonoDevelop.Ide.Gui
 			return GetContent<T> (false);
 		}
 
+		public IEnumerable<T> GetContents<T> (bool forActiveView) where T : class
+		{
+			if (forActiveView)
+				return view.GetActiveControllerHierarchy ().Select (controller => controller.GetContents<T> ()).SelectMany (c => c);
+			return GetControllersForContentCheck ().Select (controller => controller.GetContents<T> ()).SelectMany (c => c);
+		}
+
+		public IEnumerable<T> GetContents<T> () where T : class
+		{
+			return GetContents<T> (false);
+		}
+
 		object GetContent (bool forActiveView, Type type)
 		{
 			if (forActiveView)
@@ -143,12 +159,15 @@ namespace MonoDevelop.Ide.Gui
 
 		object GetContentIncludingAllViews (Type type)
 		{
-			return GetControllersForContentCheck ().Select (controller => controller.GetContent (type)).FirstOrDefault (c => c != null);
+			return GetControllersForContentCheck ().Select (controller => controller.GetContent (type)).FirstOrDefault (content => content != null);
 		}
 
 		object GetContentForActiveView (Type type)
 		{
-			return view.GetActiveControllerHierarchy ()?.FirstOrDefault ()?.GetContent (type);
+			// This may happen if the content view is still being initialized
+			if (view == null)
+				return null;
+			return view.GetActiveControllerHierarchy ().Select (controller => controller.GetContent (type)).FirstOrDefault (content => content != null);
 		}
 
 		ContentCallbackRegistry contentCallbackRegistry;
@@ -215,12 +234,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public IEnumerable<T> GetContents<T> () where T : class
-		{
-			return GetControllersForContentCheck ().Select (controller => controller.GetContent (typeof (T)) as T).Where (c => c != null);
-		}
-
-		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription)
+		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription, IWorkbenchWindow window)
 		{
 			Counters.OpenDocuments++;
 
@@ -234,16 +248,9 @@ namespace MonoDevelop.Ide.Gui
 				s.ItemRemovedFromSolution += OnEntryRemoved;
 				callbackRegistration = null;
 			});
-		}
 
-		internal async Task InitializeWindow (IWorkbenchWindow window)
-		{
 			this.window = window;
 			window.Document = this;
-
-			view = await controller.GetDocumentView ();
-			view.IsRoot = true;
-			window.SetRootView (view.CreateShellView (window));
 
 			LastTimeActive = DateTime.Now;
 			this.window.CloseRequested += Window_CloseRequested;
@@ -252,10 +259,27 @@ namespace MonoDevelop.Ide.Gui
 			DocumentRegistry.Add (this);
 		}
 
+		internal async Task InitializeViewAsync ()
+		{
+			var docView = await controller.GetDocumentView ();
+			if (closed) {
+				docView.Dispose ();
+				return;
+			}
+			view = docView;
+			view.ActiveViewInHierarchyChanged += ActiveViewInHierarchyChanged;
+			view.IsRoot = true;
+			window.SetRootView (view.CreateShellView (window));
+
+			// The view may provide additional content, so raise the content change.
+			// The document can be returned before the view is initialized, so
+			// there may already be content subscribers.
+			OnContentChanged ();
+		}
+
 		void SubscribeControllerEvents ()
 		{
 			UnsubscribeControllerEvents ();
-			view.ActiveViewInHierarchyChanged += ActiveViewInHierarchyChanged;
 			controller.OwnerChanged += HandleOwnerChanged;
 			controller.DocumentTitleChanged += OnContentNameChanged;
 			controller.ContentChanged += ControllerContentChanged;
@@ -264,7 +288,6 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnsubscribeControllerEvents ()
 		{
-			view.ActiveViewInHierarchyChanged -= ActiveViewInHierarchyChanged;
 			controller.DocumentTitleChanged -= OnContentNameChanged;
 			controller.OwnerChanged -= HandleOwnerChanged;
 			controller.ContentChanged -= ControllerContentChanged;
@@ -343,6 +366,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Select ()
 		{
 			window?.SelectWindow ();
+			view?.GrabFocus ();
 		}
 
 		public TextEditor Editor {
@@ -545,11 +569,12 @@ namespace MonoDevelop.Ide.Gui
 
 				ClearTasks ();
 
-				try {
-					Closed?.Invoke (this, args);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while calling Closed event.", ex);
-				}
+				Closed?.SafeInvoke (this, args);
+
+				// Reset the root view before closing the view, otherwise shell.CloseView will destroy it.
+				// We need the view to be functional until after the window is closed. The Dispose() method
+				// already takes care of disposing the view, which will destroy the widget it contains
+				window.SetRootView (null);
 
 				shell.CloseView (window, true);
 
@@ -565,9 +590,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Closing != null) {
 				foreach (var handler in Closing.GetInvocationList ().Cast<DocumentCloseAsyncEventHandler> ()) {
-					await handler (this, e);
-					if (e.Cancel)
-						break;
+					try {
+						await handler (this, e);
+						if (e.Cancel)
+							break;
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
 				}
 			}
 		}
@@ -608,7 +637,7 @@ namespace MonoDevelop.Ide.Gui
 			Close ().Ignore ();
 		}
 
-		internal void Dispose ()
+		void Dispose ()
 		{
 			DocumentRegistry.Remove (this);
 			callbackRegistration?.Dispose ();
@@ -617,9 +646,11 @@ namespace MonoDevelop.Ide.Gui
 				workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			UnsubscribeControllerEvents ();
-			window.SetRootView (null);
-			view.IsRoot = false;
-			view.Dispose (); // This will also dispose the controller
+			if (view != null) {
+				view.ActiveViewInHierarchyChanged -= ActiveViewInHierarchyChanged;
+				view.IsRoot = false;
+				view.Dispose (); // This will also dispose the controller
+			}
 
 			window = null;
 
@@ -722,12 +753,12 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void UpdateContentVisibility ()
 		{
-			view.UpdateContentVisibility (window.ContentVisible);
+			view?.UpdateContentVisibility (window.ContentVisible);
 		}
 
 		internal void GrabFocus ()
 		{
-			view.GrabFocus ();
+			view?.GrabFocus ();
 		}
 	}
 

@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				toggleFindInFiles.Toggle ();
 
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextView>();
+				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextView>(true);
 				if (view != null) {
 					string selectedText = FormatPatternToSelectionOption (view.Selection.SelectedSpans.FirstOrDefault ().GetText(), properties.Get ("RegexSearch", false));
 					if (!string.IsNullOrEmpty (selectedText)) {

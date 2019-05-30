@@ -43,7 +43,7 @@ namespace PerformanceDiagnosticsAddIn
 		{
 			var dialog = new OpenFileDialog (GettextCatalog.GetString ("Sample file output"), MonoDevelop.Components.FileChooserAction.Open);
 			if (dialog.Run ())
-				UIThreadMonitor.ConvertJITAddressesToMethodNames (dialog.SelectedFile, "External");
+				MonoDevelop.Utilities.SampleProfiler.ConvertJITAddressesToMethodNames (Options.OutputPath, dialog.SelectedFile, "External");
 		}
 	}
 

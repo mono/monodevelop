@@ -1,10 +1,10 @@
-﻿//
-// MSBuildPropertyGroupExtensions.cs
+//
+// IPropertySetExtensions.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Projects;
+using NuGet.Common;
+using NuGet.LibraryModel;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.PackageManagement
 {
-	static class MSBuildPropertyGroupExtensions
+	static class IPropertySetExtensions
 	{
-		public static void RemovePropertyIfHasDefaultValue (
-			this MSBuildPropertyGroup propertyGroup,
-			string propertyName,
-			string defaultPropertyValue)
+		internal static void SetMetadataValue (this IPropertySet propertySet, string name, LibraryIncludeFlags flags)
 		{
-			if (!propertyGroup.HasProperty (propertyName))
-				return;
-
-			if (propertyGroup.GetValue (propertyName) == defaultPropertyValue) {
-				propertyGroup.RemoveProperty (propertyName);
-			}
+			string value = MSBuildStringUtility.Convert (LibraryIncludeFlagUtils.GetFlagString (flags));
+			propertySet.SetValue (name, value);
 		}
 	}
 }

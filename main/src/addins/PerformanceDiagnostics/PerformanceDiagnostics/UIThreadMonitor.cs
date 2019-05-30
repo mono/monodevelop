@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	public class UIThreadMonitor
+	public class UIThreadMonitor : MonoDevelop.Utilities.SampleProfiler
 	{
 		public static UIThreadMonitor Instance { get; } = new UIThreadMonitor ();
 
-		UIThreadMonitor ()
+		UIThreadMonitor () : base (Options.OutputPath)
 		{
 			IdeApp.Exited += IdeAppExited;
 		}
@@ -28,7 +28,7 @@ namespace PerformanceDiagnosticsAddIn
 		void IdeAppExited (object sender, EventArgs e)
 		{
 			try {
-				Instance.Stop ();
+				Stop ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("UIThreadMonitor stop error.", ex);
 			}
@@ -69,44 +69,6 @@ namespace PerformanceDiagnosticsAddIn
 			}
 		}
 
-		TimeSpan forceProfileTime = TimeSpan.Zero;
-
-		public bool ToggleProfilingChecked => sampleProcessPid != -1;
-
-		int sampleProcessPid = -1;
-		public void ToggleProfiling ()
-		{
-			if (sampleProcessPid != -1) {
-				Mono.Unix.Native.Syscall.kill (sampleProcessPid, Mono.Unix.Native.Signum.SIGINT);
-				sampleProcessPid = -1;
-				return;
-			}
-
-			var outputFilePath = Path.GetTempFileName ();
-			var startInfo = new ProcessStartInfo ("sample");
-			startInfo.UseShellExecute = false;
-			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} 10000 -file {outputFilePath}";
-			var sampleProcess = Process.Start (startInfo);
-			sampleProcess.EnableRaisingEvents = true;
-			sampleProcess.Exited += delegate {
-				ConvertJITAddressesToMethodNames (outputFilePath, "Profile");
-			};
-			sampleProcessPid = sampleProcess.Id;
-		}
-
-		public void Profile (int seconds)
-		{
-			var outputFilePath = Path.GetTempFileName ();
-			var startInfo = new ProcessStartInfo ("sample");
-			startInfo.UseShellExecute = false;
-			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} {seconds} -file {outputFilePath}";
-			var sampleProcess = Process.Start (startInfo);
-			sampleProcess.EnableRaisingEvents = true;
-			sampleProcess.Exited += delegate {
-				ConvertJITAddressesToMethodNames (outputFilePath, "Profile");
-			};
-		}
-
 		public bool IsListening { get; private set; }
 		public bool IsSampling { get; private set; }
 		public string HangFileName { get; set; }
@@ -120,8 +82,8 @@ namespace PerformanceDiagnosticsAddIn
 			}
 			if (sample) {
 				if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
-					MessageService.ShowWarning ("Set environment variable",
-												$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
+					var msg = $@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.";
+					MessageService.ShowWarning ("Set environment variable", msg);
 				}
 			}
 			IsListening = true;
@@ -190,7 +152,7 @@ namespace PerformanceDiagnosticsAddIn
 			var process = (Process)param;
 			while (!process.HasExited) {
 				var fileName = process.StandardOutput.ReadLine ();
-				ConvertJITAddressesToMethodNames (fileName, "UIThreadHang");
+				ConvertJITAddressesToMethodNames (Options.OutputPath, fileName, "UIThreadHang");
 			}
 		}
 
@@ -206,44 +168,6 @@ namespace PerformanceDiagnosticsAddIn
 			IsSampling = false;
 			listener.Stop ();
 			listener = null;
-		}
-
-		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
-		{
-			// sample line to replace:
-			// ???  (in <unknown binary>)  [0x103648455]
-			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
-
-
-			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
-				Directory.CreateDirectory (Options.OutputPath);
-				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
-
-				using (var sr = new StreamReader (fileName))
-				using (var sw = new StreamWriter (outputFilename)) {
-					string line;
-					while ((line = sr.ReadLine ()) != null) {
-
-						var match = rx.Match (line);
-						if (match.Success) {
-							var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
-
-							if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
-								pmipMethodName = mono_pmip (offset)?.TrimStart ();
-								if (pmipMethodName != null)
-									pmipMethodName = PmipParser.ToSample (pmipMethodName, offset);
-								methodsCache.Add (offset, pmipMethodName);
-							}
-
-							if (pmipMethodName != null) {
-								line = line.Remove (match.Index, match.Length);
-								line = line.Insert (match.Index, pmipMethodName);
-							}
-						}
-						sw.WriteLine (line);
-					}
-				}
-			}
 		}
 
 		static class PmipParser

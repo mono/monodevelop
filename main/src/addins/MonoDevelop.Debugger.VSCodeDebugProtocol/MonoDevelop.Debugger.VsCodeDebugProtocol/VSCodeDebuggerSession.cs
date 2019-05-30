@@ -100,6 +100,37 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return threads;
 		}
 
+		public override bool CanSetNextStatement {
+			get { return true; }
+		}
+
+		protected override void OnSetNextStatement (long threadId, string fileName, int line, int column)
+		{
+			var source = new Source { Name = Path.GetFileName (fileName), Path = fileName };
+			var request = new GotoTargetsRequest (source, line) { Column = column };
+			var response = protocolClient.SendRequestSync (request);
+			GotoTarget target = null;
+
+			foreach (var location in response.Targets) {
+				if (location.Line <= line && location.EndLine >= line && location.Column <= column && location.EndColumn >= column) {
+					// exact match for location
+					target = location;
+					break;
+				}
+
+				if (target == null) {
+					// closest match so far...
+					target = location;
+				}
+			}
+
+			if (target == null)
+				throw new NotImplementedException ();
+
+			protocolClient.SendRequestSync (new GotoRequest ((int) threadId, target.Id));
+			RaiseStopEvent ();
+		}
+
 		Dictionary<BreakEvent, BreakEventInfo> breakpoints = new Dictionary<BreakEvent, BreakEventInfo> ();
 
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent breakEvent)
@@ -142,7 +173,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnNextInstruction ()
 		{
-			protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
 		}
 
 		protected override void OnNextLine ()

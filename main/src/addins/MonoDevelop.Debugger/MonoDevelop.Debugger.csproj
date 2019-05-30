@@ -66,6 +66,11 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MacPlatform\MacPlatform.csproj" Condition="$(HaveXamarinMac) == 'true'">
+      <Project>{50D6768C-C072-4E79-AFC5-C1C40767EF45}</Project>
+      <Name>MacPlatform</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

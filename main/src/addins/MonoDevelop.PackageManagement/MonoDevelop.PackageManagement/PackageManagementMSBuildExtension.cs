@@ -38,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 		public static EnsureNuGetPackageBuildImportsTargetUpdater Updater;
 		public static NuGetPackageNewImportsHandler NewImportsHandler;
 		public static NuGetPackageForcedImportsRemover ForcedImportsRemover;
+		public static ConditionalPackageReferenceHandler ConditionalPackageReferenceHandler;
 		public static Task PackageRestoreTask;
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -61,6 +62,11 @@ namespace MonoDevelop.PackageManagement
 			NuGetPackageNewImportsHandler importsHandler = NewImportsHandler;
 			if (importsHandler != null) {
 				importsHandler.UpdateProject (msproject);
+			}
+
+			ConditionalPackageReferenceHandler packageReferenceHandler = ConditionalPackageReferenceHandler;
+			if (packageReferenceHandler != null) {
+				packageReferenceHandler.UpdateProject (msproject);
 			}
 		}
 

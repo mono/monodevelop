@@ -79,13 +79,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
-		public GtkShellDocumentViewItem ActiveView {
-			get {
-				return (GtkShellDocumentViewItem)Children.FirstOrDefault ();
-			}
-			set {
-			}
-		}
+		public GtkShellDocumentViewItem ActiveView { get; set; }
 
 		public event EventHandler ActiveViewChanged;
 
@@ -213,6 +207,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
 		{
 			return paned.Children.Cast<GtkShellDocumentViewItem> ();
+		}
+
+		public GtkShellDocumentViewItem GetChild (int index)
+		{
+			return (GtkShellDocumentViewItem) paned.Children [index];
 		}
 
 		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)

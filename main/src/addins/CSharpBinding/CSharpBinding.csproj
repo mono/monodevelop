@@ -238,7 +238,6 @@
     <Compile Include="Util\PortingExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\FormatItemCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpSnippetInfoService.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\DelegateCompletionProvider.cs" />
@@ -291,6 +290,7 @@
     <Compile Include="MonoDevelop.CSharp.Debugger\RoslynDebugInfoProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CommandArgsFactories.cs" />
     <Compile Include="MonoDevelop.CSharp.Debugger\DebuggerCompletionController.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtensionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />

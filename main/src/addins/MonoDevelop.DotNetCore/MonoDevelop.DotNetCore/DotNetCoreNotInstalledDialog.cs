@@ -33,33 +33,11 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
-		static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore{0}";
-
-		public static string GetDotNetCoreDownloadUrl (string version = "")
-		{
-			if (string.IsNullOrEmpty (version))
-				return string.Format (DotNetCoreDownloadUrl, string.Empty);
-
-			//special case for 2.0, 3.0, ..
-			if (version.EndsWith (".0", StringComparison.InvariantCulture))
-				version = version.Replace (".0", string.Empty);
-
-			return string.Format (DotNetCoreDownloadUrl, version.Replace (".", string.Empty));
-		}
-
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
-
-		public static string GetDotNetCoreMessage (string currentPath, string version = "")
-		{
-			if (string.IsNullOrEmpty (version))
-				return GettextCatalog.GetString ("The version of the .NET Core SDK currently installed ({0}) is not supported and continuing to use it may result in a broken tooling experience.", currentPath);
-
-			return GettextCatalog.GetString (".NET Core {0} SDK is not installed. This is required to build and run .NET Core {0} projects.", version);
-		}
 
 		GenericMessage message;
 		AlertButton downloadButton;
-		string downloadUrl = DotNetCoreDownloadUrl;
+		string downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl ();
 
 		public DotNetCoreNotInstalledDialog ()
 		{
@@ -95,10 +73,10 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
-				Message = GetDotNetCoreMessage (CurrentDotNetCorePath);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage ();
 			else {
-				Message = GetDotNetCoreMessage (CurrentDotNetCorePath, RequiredDotNetCoreVersion.OriginalString);
-				downloadUrl = GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion.OriginalString);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (RequiredDotNetCoreVersion.OriginalString);
+				downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
 			}
 
 			MessageService.GenericAlert (message);

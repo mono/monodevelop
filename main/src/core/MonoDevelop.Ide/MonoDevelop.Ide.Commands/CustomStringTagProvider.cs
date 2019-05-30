@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Commands
 					return null;
 					
 				case "CURLINE": {
-					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view) {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
 						var pos = view.Caret.Position.BufferPosition;
 						return pos.Snapshot.GetLineNumberFromPosition (pos.Position) + 1;
 					}
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Commands
 				}
 					
 				case "CURCOLUMN": {
-					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view) {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
 						var pos = view.Caret.Position.BufferPosition;
 						var line = pos.Snapshot.GetLineFromPosition (pos.Position);
 						return pos.Position - line.Start.Position + 1;
@@ -103,21 +103,21 @@ namespace MonoDevelop.Ide.Commands
 				}
 					
 				case "CUROFFSET": {
-					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view) {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
 						return view.Caret.Position.BufferPosition.Position;
 					}
 					return null;
 				}
 					
 				case "CURTEXT": {
-					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view) {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
 						return view.Selection.IsEmpty? "" : view.Selection.SelectedSpans[0].GetText ();
 					}
 					return null;
 				}
 					
 				case "EDITORTEXT": {
-					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view) {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
 						return view.TextBuffer.CurrentSnapshot.GetText ();
 					}
 					return null;

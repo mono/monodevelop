@@ -36,6 +36,7 @@ namespace IdeUnitTests
 	public class MockShellWindow: IWorkbenchWindow
 	{
 		EventHandler<NotebookChangeEventArgs> notebookChanged;
+		TaskCompletionSource<bool> rootAssigned = new TaskCompletionSource<bool> ();
 
 		public MockShellWindow (MockShell shell, DocumentController controller, MockShellNotebook notebook)
 		{
@@ -91,10 +92,12 @@ namespace IdeUnitTests
 		void IWorkbenchWindow.SetRootView (IShellDocumentViewItem view)
 		{
 			RootView = (MockShellDocumentView)view;
+			rootAssigned.TrySetResult (true);
 		}
 
 		public async Task Show ()
 		{
+			await rootAssigned.Task;
 			if (RootView != null)
 				await RootView.Show ();
 		}

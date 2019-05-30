@@ -1,10 +1,10 @@
-﻿//
-// DotNetCoreProjectReader.cs
+//
+// SdkProjectReader.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,20 +29,19 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.Projects
 {
-	class DotNetCoreProjectReader : WorkspaceObjectReader
+	class SdkProjectReader : WorkspaceObjectReader
 	{
 		public override bool CanRead (FilePath file, Type expectedType)
 		{
-			if (!expectedType.IsAssignableFrom (typeof(SolutionItem)))
+			if (!expectedType.IsAssignableFrom (typeof (SolutionItem)))
 				return false;
 
-			if (file.HasSupportedDotNetCoreProjectFileExtension ())
-				return IsDotNetCoreProjectFile (file);
+			if (SdkProjectExtension.IsSupportedProjectFileExtension (file))
+				return IsSdkProjectFile (file);
 
 			return false;
 		}
@@ -50,15 +49,15 @@ namespace MonoDevelop.DotNetCore
 		/// <summary>
 		/// Check the Project element contains an Sdk and ToolsVersion attribute.
 		/// </summary>
-		static bool IsDotNetCoreProjectFile (FilePath file)
+		static bool IsSdkProjectFile (FilePath file)
 		{
-			return GetDotNetCoreSdk (file) != null;
+			return GetSdk (file) != null;
 		}
 
 		/// <summary>
 		/// Returns the first Sdk property defined by the project, if any exists
 		/// </summary>
-		public static string GetDotNetCoreSdk (FilePath file)
+		static string GetSdk (FilePath file)
 		{
 			try {
 				// A .NET Core project can define an sdk in any of the following ways
@@ -100,8 +99,7 @@ namespace MonoDevelop.DotNetCore
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
 			return Task.Run (() => {
-				if (CanRead (fileName, typeof(SolutionItem))) {
-					DotNetCoreSdk.EnsureInitialized ();
+				if (CanRead (fileName, typeof (SolutionItem))) {
 					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2012, typeGuid, itemGuid, ctx);
 				}
 

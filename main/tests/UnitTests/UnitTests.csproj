@@ -43,6 +43,8 @@
     <Compile Include="TestSingleThreadSynchronizationContext.cs" />
     <Compile Include="ObjectReference.cs" />
     <Compile Include="RequireServiceAttribute.cs" />
+    <Compile Include="CapturingCrashReporter.cs" />
+    <Compile Include="CapturingLogger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

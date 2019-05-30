@@ -87,6 +87,7 @@ namespace MonoDevelop.SourceEditor
 		bool writeAccessChecked;
 		TaskService taskService;
 		TextEditorService textEditorService;
+		CodeTemplateToolboxProvider codeTemplateToolboxProvider;
 
 		internal BreakpointStore Breakpoints => breakpoints;
 
@@ -343,6 +344,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.FileName = ContentName;
 			UpdateMimeType (Document.FileName);
+			codeTemplateToolboxProvider = new CodeTemplateToolboxProvider (contentName);
 			ContentNameChanged?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -862,6 +864,9 @@ namespace MonoDevelop.SourceEditor
 				RunFirstTimeFoldUpdate (text);
 				*/
 			Document.InformLoadComplete ();
+
+			// Now that the editor has been completely loaded, ask ITextView to update the aggregated focus status
+			widget.TextEditor.QueueAggregateFocusCheck ();
 		}
 
 		protected virtual string ProcessLoadText (string text)
@@ -2417,6 +2422,8 @@ namespace MonoDevelop.SourceEditor
 			var c = GetContent (type);
 			if (c != null)
 				yield return c;
+			if (type == typeof (IToolboxDynamicProvider) && codeTemplateToolboxProvider != null)
+				yield return codeTemplateToolboxProvider;
 		}
 
 		#region widget command handlers

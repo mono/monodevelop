@@ -258,9 +258,49 @@ namespace System
 		public static void Ignore (this Task task)
 		{
 			task.ContinueWith (t => {
-				if (t.IsFaulted)
-					LoggingService.LogError ("Async operation failed", t.Exception);
-			});
+				LoggingService.LogError ("Async operation failed", t.Exception);
+			}, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+		}
+
+		/// <summary>
+		/// Invokes a callback catching and reporting exceptions thrown by handlers
+		/// </summary>
+		/// <typeparam name="T">Type of the event arguments</typeparam>
+		/// <param name="event">Event to invoke</param>
+		/// <param name="sender">Sender of the event</param>
+		/// <param name="args">Arguments of the event</param>
+		public static void SafeInvoke<T> (this EventHandler<T> @event, object sender, T args)
+		{
+			var events = @event;
+			if (events == null)
+				return;
+			foreach (var ev in events.GetInvocationList ()) {
+				try {
+					((EventHandler < T > )ev) (sender, args);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Invokes a callback catching and reporting exceptions thrown by handlers
+		/// </summary>
+		/// <param name="event">Event to invoke</param>
+		/// <param name="sender">Sender of the event</param>
+		/// <param name="args">Arguments of the event</param>
+		public static void SafeInvoke (this EventHandler @event, object sender, EventArgs args)
+		{
+			var events = @event;
+			if (events == null)
+				return;
+			foreach (var ev in events.GetInvocationList ()) {
+				try {
+					((EventHandler)ev) (sender, args);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+				}
+			}
 		}
 	}
 }

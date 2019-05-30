@@ -414,7 +414,7 @@ namespace MonoDevelop.DesignerSupport
 		Document oldActiveDoc =  null;
 		SolutionFolderItem oldProject = null;
 		bool configChanged;
-		IToolboxDynamicProvider viewProvider = null;
+		List<IToolboxDynamicProvider> viewProviders = new List<IToolboxDynamicProvider> ();
 		
 		void onActiveDocChanged (object o, EventArgs e)
 		{
@@ -436,28 +436,29 @@ namespace MonoDevelop.DesignerSupport
 		
 		void OnContentChanged (object sender, EventArgs args)
 		{
-			if (viewProvider != null) {
+			foreach (var viewProvider in viewProviders) {
 				this.dynamicProviders.Remove (viewProvider);
 				viewProvider.ItemsChanged -= OnProviderItemsChanged;
 			}
-			
+			viewProviders.Clear ();
+
 			//only treat active ViewContent as a Toolbox consumer if it implements IToolboxConsumer
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				CurrentConsumer = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxConsumer> (true);
-				viewProvider    = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxDynamicProvider> (true);
-				customizer = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxCustomizer> (true);
-				if (viewProvider != null)  {
-					this.dynamicProviders.Add (viewProvider);
+				foreach (var viewProvider in IdeApp.Workbench.ActiveDocument.GetContents<IToolboxDynamicProvider> ()) {
+					viewProviders.Add (viewProvider);
+					dynamicProviders.Add (viewProvider);
 					viewProvider.ItemsChanged += OnProviderItemsChanged;
-					OnToolboxContentsChanged ();
 				}
+				customizer = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxCustomizer> (true);
+				if (viewProviders.Count > 0)
+					OnToolboxContentsChanged ();
 			} else {
 				CurrentConsumer = null;
-				viewProvider = null;
 				customizer = null;
 			}
 		}
-		
+
 		//changing project settings could cause the toolbox contents to change
 		void onProjectConfigChanged (object sender, EventArgs args)
 		{

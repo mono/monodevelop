@@ -58,8 +58,8 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	internal partial class DefaultWorkbench : WorkbenchWindow, ICommandRouter, IInfoBarHost, IShell, IService
 	{
-		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
-		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
+		internal readonly static string MainMenuPath    = "/MonoDevelop/Ide/MainMenu";
+		internal readonly static string AppMenuPath    = "/MonoDevelop/Ide/AppMenu";
 		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
 //		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		readonly static string stockLayoutsPath    = "/MonoDevelop/Ide/WorkbenchLayouts";
@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow lastActive;
 
+		bool initialized;
 		bool closeAll;
 		bool? fullScreenState = null;
 
@@ -284,7 +285,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
-			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
+			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, MainMenuPath, AppMenuPath)) {
 				CreateMenuBar ();
 			}
 			
@@ -296,8 +297,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath)) {
-				if (IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
+			if (args.PathChanged (MainMenuPath) || args.PathChanged (AppMenuPath)) {
+				if (IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, MainMenuPath, AppMenuPath))
 					return;
 				
 				UninstallMenuBar ();
@@ -308,8 +309,8 @@ namespace MonoDevelop.Ide.Gui
 
 		void CreateMenuBar ()
 		{
-			topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
-			var appMenu = IdeApp.CommandService.CreateMenu (appMenuPath);
+			topMenu = IdeApp.CommandService.CreateMenuBar (MainMenuPath);
+			var appMenu = IdeApp.CommandService.CreateMenu (AppMenuPath);
 			if (appMenu != null && appMenu.Children.Length > 0) {
 				var item = new MenuItem (BrandingService.ApplicationName);
 				item.Submenu = appMenu;
@@ -488,9 +489,9 @@ namespace MonoDevelop.Ide.Gui
 			ActivatePad (content, giveFocus);
 		}
 		
-		internal static string GetTitle (IWorkbenchWindow window)
+		internal static string GetTitle (SdiWorkspaceWindow window)
 		{
-			var controller = window.Document.DocumentController;
+			var controller = window.DocumentController;
 			if (string.IsNullOrEmpty (controller.DocumentTitle))
 				return GetDefaultTitle ();
 			string post = String.Empty;
@@ -638,26 +639,28 @@ namespace MonoDevelop.Ide.Gui
 		public void Close()
 		{
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
-			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 
-			//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
-			foreach (var fv in dock.Layouts)
-				if (fv.EndsWith (fullViewModeTag))
-					dock.DeleteLayout (fv);
-			try {
-				dock.SaveLayouts (configFile);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error while saving layout.", ex);
+			if (initialized) {
+				PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
+				//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
+				foreach (var fv in dock.Layouts)
+					if (fv.EndsWith (fullViewModeTag))
+						dock.DeleteLayout (fv);
+				try {
+					dock.SaveLayouts (configFile);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while saving layout.", ex);
+				}
+				UninstallMenuBar ();
+				Remove (rootWidget);
+
+				foreach (PadCodon content in PadContentCollection) {
+					if (content.Initialized)
+						content.PadContent.Dispose ();
+				}
+
+				rootWidget.Destroy ();
 			}
-			UninstallMenuBar ();
-			Remove (rootWidget);
-
-			foreach (PadCodon content in PadContentCollection) {
-				if (content.Initialized)
-					content.PadContent.Dispose ();
-			}
-
-			rootWidget.Destroy ();
 			Destroy ();
 		}
 
@@ -771,6 +774,7 @@ namespace MonoDevelop.Ide.Gui
 			initializing = true;
 			AddinManager.AddExtensionNodeHandler (viewContentPath, OnExtensionChanged);
 			initializing = false;
+			initialized = true;
 		}
 
 		Task layoutChangedTask;
@@ -1056,7 +1060,7 @@ namespace MonoDevelop.Ide.Gui
 
 		bool IsInFullViewMode {
 			get {
-				return dock.CurrentLayout.EndsWith (fullViewModeTag);
+				return dock.CurrentLayout != null && dock.CurrentLayout.EndsWith(fullViewModeTag, StringComparison.Ordinal);
 			}
 		}
 
@@ -1082,6 +1086,9 @@ namespace MonoDevelop.Ide.Gui
 		bool haveFocusedToolbar = false;
 		protected override bool OnFocused (DirectionType direction)
 		{
+			if (!initialized)
+				return base.OnFocused (direction);
+
 			// If the toolbar is not focused, focus it, and focus the next child once it loses focus
 			switch (direction) {
 			case DirectionType.TabForward:

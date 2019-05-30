@@ -234,8 +234,11 @@ namespace MonoDevelop.Projects.MSBuild
 				RemoteProcessConnection connection = null;
 
 				try {
+					var envVariables = new Dictionary<string, string> {
+						{ "MONO_GC_PARAMS", "nursery-size=64m" },
+					};
 
-					connection = new RemoteProcessConnection (exe, runtime.GetExecutionHandler ());
+					connection = new RemoteProcessConnection (exe, null, envVariables, runtime.GetExecutionHandler ());
 					await connection.Connect ().ConfigureAwait (false);
 
 					var props = GetCoreGlobalProperties (solutionFile, binDir, MSBuildProjectService.ToolsVersion);

@@ -289,7 +289,8 @@ namespace MonoDevelop.Debugger
 		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
 		{
 			using (var dlg = new BreakpointPropertiesDialog (bp, breakpointType)) {
-				Xwt.Command response = dlg.Run ();
+				Xwt.WindowFrame parentWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+				Xwt.Command response = dlg.Run (parentWindow);
 				if (bp == null)
 					bp = dlg.GetBreakEvent ();
 				return response == Xwt.Command.Ok;
@@ -1375,7 +1376,7 @@ namespace MonoDevelop.Debugger
 
 		static Microsoft.CodeAnalysis.ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, SourceLocation sourceLocation, string identifier)
 		{
-			var textBuffer = document.GetContent<ITextBuffer> ();
+			var textBuffer = document.GetContent<ITextBuffer> (true);
 			if (textBuffer == null)
 				return null;
 
@@ -1417,7 +1418,7 @@ namespace MonoDevelop.Debugger
 			Document doc = IdeApp.Workbench.GetDocument (location.FileName);
 			if (doc != null) {
 				Microsoft.CodeAnalysis.ISymbol rr = null;
-				if (doc.GetContent<ITextEditorResolver> () is ITextEditorResolver textEditorResolver) {
+				if (doc.GetContent<ITextEditorResolver> (true) is ITextEditorResolver textEditorResolver) {
 					rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
 				} else {
 					rr = GetLanguageItem (doc, location, identifier);
@@ -1459,7 +1460,7 @@ namespace MonoDevelop.Debugger
 			Document doc = IdeApp.Workbench.GetDocument (frame.SourceLocation.FileName);
 			if (doc == null)
 				return null;
-			var completionProvider = doc.GetContent<IDebuggerCompletionProvider> ();
+			var completionProvider = doc.GetContent<IDebuggerCompletionProvider> (true);
 			if (completionProvider == null)
 				return null;
 			return completionProvider.GetExpressionCompletionData (exp, frame, token);

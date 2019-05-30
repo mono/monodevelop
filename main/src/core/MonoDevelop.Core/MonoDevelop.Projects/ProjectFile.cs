@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects
 	public enum Subtype
 	{
 		Code,
+		Designer,
 		Directory
 	}
 
@@ -58,14 +59,18 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public ProjectFile (string filename): this (filename, MonoDevelop.Projects.BuildAction.Compile)
+		public ProjectFile (string filename) : this (filename, MonoDevelop.Projects.BuildAction.Compile)
 		{
 		}
 
-		public ProjectFile (string filename, string buildAction)
+		public ProjectFile (string filename, string buildAction) : this (filename, buildAction, Subtype.Code)
+		{
+		}
+
+		public ProjectFile (string filename, string buildAction, Subtype subtype)
 		{
 			this.filename = FileService.GetFullPath (filename);
-			subtype = Subtype.Code;
+			this.subtype = subtype;
 			BuildAction = buildAction;
 		}
 

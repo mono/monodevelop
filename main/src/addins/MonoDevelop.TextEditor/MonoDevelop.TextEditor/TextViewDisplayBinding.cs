@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.TextEditor
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.TextEditor
 				yield break;
 			}
 
-			if (modelDescriptor.FilePath == null || !(IsSupportedFileExtension (modelDescriptor.FilePath) || IsSupportedAndroidFileName (modelDescriptor.FilePath, modelDescriptor.Owner))) {
+			if (modelDescriptor.FilePath == null || !(IsSupportedFileExtension (modelDescriptor.FilePath) || IsSupportedDesignerFileName (modelDescriptor.FilePath, modelDescriptor.Owner))) {
 				yield break;
 			}
 
@@ -57,7 +58,7 @@ namespace MonoDevelop.TextEditor
 				supported = IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType);
 
 			if (supported)
-				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Editor Preview"), true, DocumentControllerRole.Source);
+				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Source Code Editor"), true, DocumentControllerRole.Source);
 		}
 
 		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
@@ -68,8 +69,7 @@ namespace MonoDevelop.TextEditor
 			//".html",
 			//".js",
 			//".json",
-			//".ts",
-			//".xaml"
+			//".ts"
 		};
 
 		bool IsSupportedFileExtension (FilePath fileName)
@@ -77,11 +77,17 @@ namespace MonoDevelop.TextEditor
 			return supportedFileExtensions.Contains (fileName.Extension);
 		}
 
+		bool IsSupportedDesignerFileName (FilePath fileName, WorkspaceObject ownerProject)
+		{
+			if (!FeatureSwitchService.IsFeatureEnabled ("DesignersNewEditor").GetValueOrDefault ())
+				return false;
+
+			return fileName.HasExtension (".xaml")
+				|| IsSupportedAndroidFileName (fileName, ownerProject);
+		}
+
 		bool IsSupportedAndroidFileName (FilePath fileName, WorkspaceObject ownerProject)
 		{
-			// disable Android XML for now
-			return false;
-
 			// We only care about .xml and .axml files that are marked as AndroidResource
 			if (!(fileName.HasExtension (".xml") || fileName.HasExtension (".axml")))
 				return false;

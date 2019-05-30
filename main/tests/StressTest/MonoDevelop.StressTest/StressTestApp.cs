@@ -77,7 +77,7 @@ namespace MonoDevelop.StressTest
 
 			TestService.Session.DebugObject = new UITestDebug ();
 
-			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench);
+			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench, 10000);
 
 			leakProcessor = new LeakProcessor (scenario, ProfilerOptions);
 

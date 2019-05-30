@@ -256,13 +256,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override void MouseDown (NSEvent theEvent)
 		{
+			// MouseDownActivated needs to be called before logic activating toolbox item
+			// because MacToolbox uses this event to focus GTK widget that hosts MacToolboxWidget
+			// resulting into stealing focus from toolbox consumer that gains focus when toolbox item is activated
+			MouseDownActivated?.Invoke (theEvent);
+
 			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
 			base.MouseDown (theEvent);
 			if (SelectedItem != null && theEvent.ClickCount > 1) {
 				OnActivateSelectedItem (EventArgs.Empty);
 			}
-
-			MouseDownActivated?.Invoke (theEvent);
 		}
 
 		public void RedrawItems (bool invalidates, bool reloads)

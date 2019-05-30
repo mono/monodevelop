@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeStartup.cs
 //
 // Author:
@@ -209,6 +209,11 @@ namespace MonoDevelop.Ide
 
 			IdeApp.IsRunning = true;
 
+			// Load the main menu before running the main loop
+			var commandService = Runtime.GetService<CommandManager> ().Result;
+			var desktopService = Runtime.GetService<DesktopService> ().Result;
+			desktopService.SetGlobalMenu (commandService, DefaultWorkbench.MainMenuPath, DefaultWorkbench.AppMenuPath);
+
 			// Run the main loop
 			Gtk.Application.Invoke ((s, e) => {
 				MainLoop (options, startupInfo).Ignore ();
@@ -236,12 +241,17 @@ namespace MonoDevelop.Ide
 		async Task<int> MainLoop (MonoDevelopOptions options, StartupInfo startupInfo)
 		{
 			ProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
-			
+
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
 			Counters.Initialization.Trace ("Initializing Platform Service");
-			await Runtime.GetService<DesktopService> ();
+
+			var desktopService = await Runtime.GetService<DesktopService> ();
+			var commandService = await Runtime.GetService<CommandManager> ();
+
+			// load the global menu for the welcome window to avoid unresponsive menus on Mac
+			desktopService.SetGlobalMenu (commandService, DefaultWorkbench.MainMenuPath, DefaultWorkbench.AppMenuPath);
 
 			IdeStartupTracker.StartupTracker.MarkSection ("PlatformInitialization");
 
@@ -269,7 +279,7 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
 				hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
-				await IdeApp.Initialize (monitor);
+				await IdeApp.Initialize (monitor, hideWelcomePage);
 
 				IdeStartupTracker.StartupTracker.MarkSection ("AppInitialization");
 
@@ -293,12 +303,12 @@ namespace MonoDevelop.Ide
 					openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore();
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore();
 						startupInfo.OpenedRecentProject = true;
 					}
 				}
 				if (openedProject == null) {
-					IdeApp.OpenFiles (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ());
+					IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ()).Ignore ();
 					startupInfo.OpenedFiles = startupInfo.HasFiles;
 				}
 				
@@ -354,7 +364,7 @@ namespace MonoDevelop.Ide
 			// On Mac, the OpenDocuments event gets handled here, so we need to get the timeout
 			// it queues before the OnIdle event so we can start opening a solution before
 			// we show the main window.
-			DispatchService.RunPendingEvents ();
+			await Task.Yield ();
 
 			IdeStartupTracker.StartupTracker.MarkSection ("PumpEventLoop");
 			IdeStartupTracker.StartupTracker.Stop (startupInfo);
@@ -367,6 +377,7 @@ namespace MonoDevelop.Ide
 		void RegisterServices ()
 		{
 			Runtime.RegisterServiceType<ProgressMonitorManager, IdeProgressMonitorManager> ();
+			Runtime.RegisterServiceType<CommandManager, IdeCommandManager> ();
 			Runtime.RegisterServiceType<IShell, DefaultWorkbench> ();
 		}
 
@@ -537,15 +548,18 @@ namespace MonoDevelop.Ide
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				try {
-					if (args.ExtensionObject is CommandHandler handler) {
-						handler.InternalRun ();
-					} else {
-						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+				// Run handlers in different UI loops to avoid freezing the UI for too much time
+				Xwt.Application.Invoke (() => {
+					try {
+						if (args.ExtensionObject is CommandHandler handler) {
+							handler.InternalRun ();
+						} else {
+							LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
-				}
+				});
 			}
 		}
 		
