@@ -1360,7 +1360,7 @@ namespace MonoDevelop.MacIntegration
 
 			public MacMemoryMonitor ()
 			{
-				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
+				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.MainQueue);
 				DispatchSource.SetEventHandler (() => {
 					var metadata = CreateMemoryMetadata (DispatchSource.PressureFlags);
 
