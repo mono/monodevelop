@@ -30,7 +30,6 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.StressTest.Attributes;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
@@ -100,7 +99,7 @@ namespace MonoDevelop.StressTest
 
 			// Wait for the text area to be available.
 			var area = TestService.Session.WaitForElement (IdeQuery.TextAreaForFile (openFile), 10000);
-			Assert.That (area, Has.Length (1));
+			Assert.That (area, Has.Length.EqualTo (1));
 
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
 
