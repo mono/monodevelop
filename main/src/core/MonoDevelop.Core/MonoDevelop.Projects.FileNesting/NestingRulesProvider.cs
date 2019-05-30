@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using MonoDevelop.Core;
 
@@ -62,6 +63,7 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 
 			nestingRules.Add (new NestingRule (kind, appliesTo, patterns));
+			LoggingService.LogInfo ($"Added nesting rule of type {kind} for {appliesTo} on files [{String.Join (", ", patterns)}]");
 		}
 
 		static void ParseRulesProvider (NestingRulesProvider provider, NestingRuleKind kind, JObject jobj)
@@ -74,8 +76,7 @@ namespace MonoDevelop.Projects.FileNesting
 
 			foreach (var prop in jobj.Properties ()) {
 				if (prop.Value.Type == JTokenType.Array) {
-					provider.AddRule (kind, prop.Name, prop.Value<JArray> ().Values<string> ());
-					LoggingService.LogInfo ($"Added nesting rule of type {kind} for files [{prop.Value.ToString ()}]");
+					provider.AddRule (kind, prop.Name, (prop.Value as JArray).Select (x => x.Value<string> ()));
 				}
 			}
 		}
