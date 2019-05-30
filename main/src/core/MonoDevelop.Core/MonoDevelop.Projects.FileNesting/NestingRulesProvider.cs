@@ -29,11 +29,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Mono.Addins;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.FileNesting
 {
-	internal class NestingRulesProvider
+	public abstract class NestingRulesProvider
 	{
 		const string RuleNameAddedExtension = "addedExtension";
 		const string RuleNameAllExtensions = "allExtensions";
@@ -45,7 +46,6 @@ namespace MonoDevelop.Projects.FileNesting
 		const string TokenNameAdd = "add";
 
 		List<NestingRule> nestingRules;
-		readonly string fromFile;
 
 		public NestingRulesProvider ()
 		{
@@ -53,8 +53,10 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public NestingRulesProvider (string fromFile)
 		{
-			this.fromFile = fromFile;
+			SourceFile = fromFile;
 		}
+
+		public string SourceFile { get; protected set; }
 
 		void AddRule (NestingRuleKind kind, string appliesTo, IEnumerable<string> patterns)
 		{
@@ -84,7 +86,7 @@ namespace MonoDevelop.Projects.FileNesting
 		static bool LoadFromFile (NestingRulesProvider provider)
 		{
 			try {
-				using (var reader = new StreamReader (provider.fromFile)) {
+				using (var reader = new StreamReader (provider.SourceFile)) {
 					var json = JObject.Parse (reader.ReadToEnd ());
 					if (json != null) {
 						var parentNode = json ["dependentFileProviders"] [TokenNameAdd] as JObject;
@@ -115,7 +117,7 @@ namespace MonoDevelop.Projects.FileNesting
 					}
 				}
 			} catch (Exception ex) {
-				LoggingService.LogError ($"Unable to parse {provider.fromFile}: {ex}");
+				LoggingService.LogError ($"Unable to parse {provider.SourceFile}: {ex}");
 			}
 
 			return false;
@@ -124,7 +126,7 @@ namespace MonoDevelop.Projects.FileNesting
 		public string GetParentFile (string inputFile)
 		{
 			if (nestingRules == null) {
-				if (!File.Exists (fromFile)) {
+				if (!File.Exists (SourceFile)) {
 					return null;
 				}
 

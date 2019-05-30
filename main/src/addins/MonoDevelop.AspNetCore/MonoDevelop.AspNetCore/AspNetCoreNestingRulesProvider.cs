@@ -1,10 +1,10 @@
 //
-// FileNestingService.cs
+// AspNetCoreNestingRulesProvider.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft, Inc. (http://microsoft.com)
+// Copyright (c) 2019 Microsoft Corp. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
+using Mono.Addins;
+using MonoDevelop.Projects.FileNesting;
 
-namespace MonoDevelop.Projects.FileNesting
+namespace MonoDevelop.AspNetCore
 {
-	internal static class FileNestingService
+	[Extension]
+	class AspNetCoreNestingRulesProvider : NestingRulesProvider
 	{
-		static List<NestingRulesProvider> rulesProviders;
-
-		static FileNestingService ()
+		public AspNetCoreNestingRulesProvider ()
 		{
-		}
-
-		public static string GetParentFile (string inputFile)
-		{
-			if (rulesProviders == null) {
-				rulesProviders = new List<NestingRulesProvider> ();
-				foreach (var pr in Mono.Addins.AddinManager.GetExtensionObjects<NestingRulesProvider> ()) {
-					rulesProviders.Add (pr);
-				}
-			}
-
-			foreach (var rp in rulesProviders) {
-				var parentFile = rp.GetParentFile (inputFile);
-				if (!String.IsNullOrEmpty (parentFile)) {
-					return parentFile;
-				}
-			}
-
-			return null;
+			SourceFile = AddinManager.CurrentAddin.GetFilePath ("Resources/AspNetCore.filenesting.json");
 		}
 	}
 }
