@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Logging;
 using MonoDevelop.Core.LogReporting;
 using NUnit.Framework;
 using UnitTests;
@@ -65,22 +66,33 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		[Test]
-		public void CriticalErrorsExceptionsHaveFullStacktracesInLog ()
+		public void GLibLoggingHaveFullStacktracesInLog ()
 		{
 			var old = GLibLogging.Enabled;
-			var logger = new CapturingLogger {
-				EnabledLevel = Core.Logging.EnabledLoggingLevel.Error,
-			};
 
 			try {
-				LoggingService.AddLogger (logger);
 				GLibLogging.Enabled = true;
 
-				GLib.Log.Write ("Gtk", GLib.LogLevelFlags.Critical, "{0}", "critical should be captured");
-				var (_, message) = logger.LogMessages.Single (x => x.Level == Core.Logging.LogLevel.Error);
-				AssertGLibStackTrace (message);
+				var flagsToCheck = new [] {
+					(GLib.LogLevelFlags.Critical, LogLevel.Error),
+					(GLib.LogLevelFlags.Debug, LogLevel.Debug),
+					(GLib.LogLevelFlags.Info, LogLevel.Info),
+					//(GLib.LogLevelFlags.Error, LogLevel.Fatal),
+				};
+
+				foreach (var (glibLevel, coreLevel) in flagsToCheck) {
+					var logger = new CapturingLogger ();
+
+					LoggingService.AddLogger (logger);
+					try {
+						GLib.Log.Write ("Gtk", glibLevel, "{0}: should be captured", glibLevel);
+						var (_, message) = logger.LogMessages.Single (x => x.Level == coreLevel);
+						AssertGLibStackTrace (message);
+					} finally {
+						LoggingService.RemoveLogger (logger.Name);
+					}
+				}
 			} finally {
-				LoggingService.RemoveLogger (logger.Name);
 				GLibLogging.Enabled = old;
 			}
 		}

@@ -256,7 +256,7 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError (message, e);
 			}
 
-			string msg = string.Format ("{0}-{1}: {2}", logDomain, logLevel, message);
+			string msg = string.Format ("{0}-{1}: {2}\n{3}", logDomain, logLevel, message, GetStacktraceIfNeeded (logLevel));
 
 			switch (logLevel) {
 			case LogLevelFlags.Debug:
@@ -275,9 +275,9 @@ namespace MonoDevelop.Ide.Gui
 					throw new CriticalGtkException (msg);
 				} catch (CriticalGtkException e) {
 					if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
-						LoggingService.LogFatalError ("Fatal GLib error", e);
+						LoggingService.LogFatalError ($"Fatal {logDomain} error", e);
 					else
-						LoggingService.LogInternalError ("Critical GLib error", e);
+						LoggingService.LogInternalError ($"Critical {logDomain} error", e);
 				}
 				break;
 			}
@@ -287,17 +287,36 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError ("Disabling glib logging for the rest of the session");
 		}
 
+		static string GetStacktraceIfNeeded (LogLevelFlags flags)
+		{
+			if (flags.HasFlag (LogLevelFlags.Error | LogLevelFlags.Critical))
+				return string.Empty;
+
+			return "Stack trace: \n" + new StackTrace (1, true);
+		}
+
 		sealed class CriticalGtkException : Exception
 		{
+			readonly StackTrace trace = new StackTrace (1, true);
+
 			public CriticalGtkException (string message) : base (message)
 			{
 				const System.Reflection.BindingFlags flags =
 					 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetField;
 
-				var trace = new [] { new StackTrace (true), };
-				//// Otherwise exception stacktrace is not gathered.
+				// HACK: We need to somehow inject our stacktrace, and this is the only way we can
+				// This is not to transform every glib error into a managed exception
 				typeof (Exception)
-					.InvokeMember ("captured_traces", flags, null, this, new object [] { trace } );
+					.GetField ("captured_traces", flags)
+					?.SetValue (this, new StackTrace [] { trace });
+			}
+
+			public override string StackTrace => trace.ToString ();
+
+			public override string ToString ()
+			{
+				// Matches normal exception format:
+				return GetType () + ": " + Message + Environment.NewLine + trace;
 			}
 		}
 	}
