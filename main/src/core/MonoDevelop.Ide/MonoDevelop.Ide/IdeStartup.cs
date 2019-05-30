@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
 				hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
-				await IdeApp.Initialize (monitor);
+				await IdeApp.Initialize (monitor, hideWelcomePage);
 
 				IdeStartupTracker.StartupTracker.MarkSection ("AppInitialization");
 
