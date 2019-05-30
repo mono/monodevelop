@@ -138,7 +138,11 @@ namespace Mono.TextEditor
 
 			public TextViewMarginAccessibilityProxy ()
 			{
+#if MAC
 				Accessible = AccessibilityElementProxy.TextElementProxy (GetContents, GetNumberOfCharacters, GetInsertionPointLineNumber, GetFrameForRange, GetLineForIndex, GetRangeForLine, GetStringForRange, GetRangeForIndex, GetStyleRangeForIndex, GetRangeForPosition, GetVisibleCharacterRange);
+#else
+				Accessible = AccessibilityElementProxy.TextElementProxy ();
+#endif
 			}
 
 			public void Dispose ()
@@ -742,7 +746,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		#region Caret blinking
+#region Caret blinking
 		internal bool caretBlink = true;
 		uint blinkTimeout = 0;
 
@@ -789,7 +793,7 @@ namespace Mono.TextEditor
 			if (handler != null)
 				handler (this, e);
 		}
-		#endregion
+#endregion
 
 		internal double caretX, caretY, nonPreeditX, nonPreeditY;
 
@@ -940,7 +944,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		#region Layout cache
+#region Layout cache
 		class LineDescriptor
 		{
 			public int Offset {
@@ -1729,7 +1733,7 @@ namespace Mono.TextEditor
 			return CreateLinePartLayout (line, -1, offset, length, selectionStart, selectionEnd);
 		}
 
-		#endregion
+#endregion
 
 		public delegate void LineDecorator (Cairo.Context ctx,LayoutWrapper layout,int offset,int length,double xPos,double y,int selectionStart,int selectionEnd);
 
@@ -3337,7 +3341,7 @@ namespace Mono.TextEditor
 			ShowCodeSegmentPreviewTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 
-		#region Coordinate transformation
+#region Coordinate transformation
 		class VisualLocationTranslator
 		{
 			TextViewMargin margin;
@@ -3616,6 +3620,6 @@ namespace Mono.TextEditor
 				return LineHeight;
 			return GetLineHeight (doc.GetLine (logicalLineNumber));
 		}
-		#endregion
+#endregion
 	}
 }
