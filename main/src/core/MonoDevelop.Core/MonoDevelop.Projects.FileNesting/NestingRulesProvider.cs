@@ -93,6 +93,7 @@ namespace MonoDevelop.Projects.FileNesting
 							try {
 								rpobj = parentNode [rp.Name] [TokenNameAdd].Value<JObject> ();
 							} catch {
+								LoggingService.LogWarning ($"No patterns specified for {rp.Name} nesting rule");
 							}
 
 							if (rp.Name == RuleNameAddedExtension) {
@@ -109,6 +110,8 @@ namespace MonoDevelop.Projects.FileNesting
 								ParseRulesProvider (provider, NestingRuleKind.PathSegment, rpobj);
 							}
 						}
+
+						return true;
 					}
 				}
 			} catch (Exception ex) {
