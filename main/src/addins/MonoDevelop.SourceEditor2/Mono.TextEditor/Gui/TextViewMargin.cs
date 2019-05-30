@@ -141,7 +141,7 @@ namespace Mono.TextEditor
 #if MAC
 				Accessible = AccessibilityElementProxy.TextElementProxy (GetContents, GetNumberOfCharacters, GetInsertionPointLineNumber, GetFrameForRange, GetLineForIndex, GetRangeForLine, GetStringForRange, GetRangeForIndex, GetStyleRangeForIndex, GetRangeForPosition, GetVisibleCharacterRange);
 #else
-				Accessible = AccessibilityElementProxy.TextElementProxy();
+				Accessible = AccessibilityElementProxy.TextElementProxy ();
 #endif
 			}
 
