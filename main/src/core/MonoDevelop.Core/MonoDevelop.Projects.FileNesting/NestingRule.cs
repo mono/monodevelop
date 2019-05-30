@@ -73,6 +73,14 @@ namespace MonoDevelop.Projects.FileNesting
 			string parentFile;
 
 			switch (Kind) {
+			case NestingRuleKind.AddedExtension:
+				// This is the simplest rules, and applies to all files, if we find a file
+				// with the same name minus the extension, that's the parent.
+				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), Path.GetFileNameWithoutExtension (inputFile));
+				if (CheckParentForFile (inputFile, parentFile))
+					return parentFile;
+				break;
+
 			case NestingRuleKind.ExtensionToExtension:
 				string inputExtension = Path.GetExtension (inputFile);
 				if (inputExtension == AppliesTo) {
@@ -84,12 +92,15 @@ namespace MonoDevelop.Projects.FileNesting
 				}
 				break;
 
-			case NestingRuleKind.AddedExtension:
-				// This is the simplest rules, and applies to all files, if we find a file
-				// with the same name minus the extension, that's the parent.
-				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), Path.GetFileNameWithoutExtension (inputFile));
-				if (CheckParentForFile (inputFile, parentFile))
-					return parentFile;
+			case NestingRuleKind.FileSuffixToExtension:
+				if (inputFile.EndsWith (AppliesTo, StringComparison.OrdinalIgnoreCase)) {
+					foreach (var pt in patterns) {
+						parentFile = inputFile.Replace (AppliesTo, pt);
+						if (CheckParentForFile (inputFile, parentFile)) {
+							return parentFile;
+						}
+					}
+				}
 				break;
 			}
 
