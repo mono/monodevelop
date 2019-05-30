@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Project
 			langVerCombo.Model = langVerStore;
 
 			if (badVersion != null) {
-				var badIter = langVerStore.AppendValues (badVersion, LanguageVersion.Default);
+				var badIter = langVerStore.AppendValues (GettextCatalog.GetString ("{0} (Unknown Version)", badVersion), LanguageVersion.Default);
 				langVerCombo.SetActiveIter (badIter);
 				langVersionWarningIcon.Visible = true;
 			} else {
