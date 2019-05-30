@@ -208,6 +208,8 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.IndentationGuide);
 			CreateResourceDictionary (editorFormat, defaultSettings, "NavigableSymbolFormat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "urlformat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
+			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes before save", EditorThemeColors.QuickDiffDirty);
+			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes after save", EditorThemeColors.QuickDiffChanged);
 			CreateInlineEditField (editorFormat, defaultSettings, "RoslynRenameFieldBackgroundAndBorderTag");
 			CreateInlineEditField (editorFormat, defaultSettings, "ExpansionFieldBackgroundAndBorderTag");
 			foreach (var mapping in mappings) {

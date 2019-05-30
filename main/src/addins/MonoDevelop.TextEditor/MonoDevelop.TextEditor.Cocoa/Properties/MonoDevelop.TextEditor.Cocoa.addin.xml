@@ -45,6 +45,7 @@
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 		<!-- these are coming from vs-editor-core (Cocoa implementations) -->
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
