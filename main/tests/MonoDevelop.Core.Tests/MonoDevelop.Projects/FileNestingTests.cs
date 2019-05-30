@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects
 		[TestCase ("jquery.min.js", "jquery.js")]
 		[TestCase ("template.cs", "template.tt")]
 		[TestCase ("template.doc", "template.tt")]
+		[TestCase (".bowerrc", "bower.json")]
 		public void GetParentFileTest (string inputFile, string expectedParentFile)
 		{
 			var folder = Path.Combine (Path.GetTempPath (), Path.GetRandomFileName ());

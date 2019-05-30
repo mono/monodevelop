@@ -116,6 +116,17 @@ namespace MonoDevelop.Projects.FileNesting
 				}
 				break;
 
+			case NestingRuleKind.FileToFile:
+				if (AppliesTo == Path.GetFileName (inputFile)) {
+					foreach (var pt in patterns) {
+						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), pt);
+						if (CheckParentForFile (inputFile, parentFile)) {
+							return parentFile;
+						}
+					}
+				}
+				break;
+
 			case NestingRuleKind.PathSegment:
 				if (AppliesTo == AllFilesWildcard || AppliesTo == inputExtension) {
 					foreach (var pt in patterns) {

@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.FileNesting
 			nestingRules.Add (new NestingRule (NestingRuleKind.FileSuffixToExtension, "-vsdoc.js", new [] { ".js" }));
 			nestingRules.Add (new NestingRule (NestingRuleKind.PathSegment, NestingRule.AllFilesWildcard, new [] { ".js", ".css", ".html", ".cs" }));
 			nestingRules.Add (new NestingRule (NestingRuleKind.AllExtensions, NestingRule.AllFilesWildcard, new [] { ".tt" }));
+			nestingRules.Add (new NestingRule (NestingRuleKind.FileToFile, ".bowerrc", new [] { "bower.json" }));
 		}
 
 		public string GetParentFile (string inputFile)
