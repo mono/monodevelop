@@ -33,6 +33,7 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.Runtime.ExceptionServices;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -255,7 +256,7 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError (message, e);
 			}
 
-			string msg = string.Format ("{0}-{1}: {2}", logDomain, logLevel, message);
+			string msg = string.Format ("{0}-{1}: {2}\n{3}", logDomain, logLevel, message, GetStacktraceIfNeeded (logLevel));
 
 			switch (logLevel) {
 			case LogLevelFlags.Debug:
@@ -271,13 +272,12 @@ namespace MonoDevelop.Ide.Gui
 			case LogLevelFlags.Critical:
 			default:
 				try {
-					// Otherwise exception info is not gathered.
-					throw new CriticalGtkException (msg, Environment.StackTrace);
+					throw new CriticalGtkException (msg);
 				} catch (CriticalGtkException e) {
 					if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
-						LoggingService.LogFatalError ("Fatal GLib error", e);
+						LoggingService.LogFatalError ($"Fatal {logDomain} error", e);
 					else
-						LoggingService.LogInternalError ("Critical GLib error", e);
+						LoggingService.LogInternalError ($"Critical {logDomain} error", e);
 				}
 				break;
 			}
@@ -287,19 +287,42 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError ("Disabling glib logging for the rest of the session");
 		}
 
+		static bool IsMono = Type.GetType ("Mono.Runtime") != null;
+
+		static string GetStacktraceIfNeeded (LogLevelFlags flags)
+		{
+			// If it's an Error or a Critical message, we're going to add the stacktrace via the logged exception property,
+			// we don't need to append it to the message in the log. But we are only doing so on Mono, nowhere else.
+			if (IsMono && flags.HasFlag (LogLevelFlags.Error | LogLevelFlags.Critical))
+				return string.Empty;
+
+			return "Stack trace: \n" + new StackTrace (1, true);
+		}
+
 		sealed class CriticalGtkException : Exception
 		{
-			public CriticalGtkException (string message, string stacktrace) : base (message)
+			readonly StackTrace trace = new StackTrace (1, true);
+
+			public CriticalGtkException (string message) : base (message)
 			{
-				StackTrace = stacktrace;
+				const System.Reflection.BindingFlags flags =
+					 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetField;
+
+				// HACK: We need to somehow inject our stacktrace, and this is the only way we can
+				// This is not to transform every glib error into a managed exception
+				if (IsMono) {
+					typeof (Exception)
+						.GetField ("captured_traces", flags)
+						?.SetValue (this, new StackTrace [] { trace });
+				}
 			}
 
-			public override string StackTrace { get; }
+			public override string StackTrace => trace.ToString ();
 
 			public override string ToString ()
 			{
 				// Matches normal exception format:
-				return GetType() + ": " + Message + Environment.NewLine + StackTrace;
+				return GetType () + ": " + Message + Environment.NewLine + trace;
 			}
 		}
 	}
