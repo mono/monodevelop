@@ -287,9 +287,13 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError ("Disabling glib logging for the rest of the session");
 		}
 
+		static bool IsMono = Type.GetType ("Mono.Runtime") != null;
+
 		static string GetStacktraceIfNeeded (LogLevelFlags flags)
 		{
-			if (flags.HasFlag (LogLevelFlags.Error | LogLevelFlags.Critical))
+			// If it's an Error or a Critical message, we're going to add the stacktrace via the logged exception property,
+			// we don't need to append it to the message in the log. But we are only doing so on Mono, nowhere else.
+			if (IsMono && flags.HasFlag (LogLevelFlags.Error | LogLevelFlags.Critical))
 				return string.Empty;
 
 			return "Stack trace: \n" + new StackTrace (1, true);
@@ -306,9 +310,11 @@ namespace MonoDevelop.Ide.Gui
 
 				// HACK: We need to somehow inject our stacktrace, and this is the only way we can
 				// This is not to transform every glib error into a managed exception
-				typeof (Exception)
-					.GetField ("captured_traces", flags)
-					?.SetValue (this, new StackTrace [] { trace });
+				if (IsMono) {
+					typeof (Exception)
+						.GetField ("captured_traces", flags)
+						?.SetValue (this, new StackTrace [] { trace });
+				}
 			}
 
 			public override string StackTrace => trace.ToString ();
