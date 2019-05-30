@@ -314,6 +314,39 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return sb.ToString();
 		}
 
+		bool? EvaluateCondition (int frameId, string exp)
+		{
+			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
+
+			if (bool.TryParse (response, out var result))
+				return result;
+
+			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{exp}'. The error returned was '{response}'.\n");
+
+			return null;
+		}
+
+		bool ShouldStopOnExceptionCatchpoint (Catchpoint catchpoint, int frameId)
+		{
+			if (!catchpoint.Enabled)
+				return false;
+
+			// global:: is necessary if the exception type is contained in current namespace,
+			// and it also contains a class with the same name as the namespace itself.
+			// Example: "Tests.Tests" and "Tests.TestException"
+			var qualifiedExceptionType = catchpoint.ExceptionName.Contains ("::") ? catchpoint.ExceptionName : $"global::{catchpoint.ExceptionName}";
+
+			if (catchpoint.IncludeSubclasses) {
+				if (EvaluateCondition (frameId, $"$exception is {qualifiedExceptionType}") == false)
+					return false;
+			} else {
+				if (EvaluateCondition (frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})") == false)
+					return false;
+			}
+
+			return string.IsNullOrWhiteSpace (catchpoint.ConditionExpression) || EvaluateCondition (frameId, catchpoint.ConditionExpression) != false;
+		}
+
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
 		{
 			Task.Run (() => {
@@ -351,6 +384,30 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetStopped);
 						break;
 					case StoppedEvent.ReasonValue.Exception:
+						stackFrame = null;
+						var backtrace = GetThreadBacktrace (body.ThreadId ?? -1);
+						if (Options.ProjectAssembliesOnly) {
+							// We can't evaluate expressions in external code frames, the debugger will hang
+							for (int i = 0; i < backtrace.FrameCount; i++) {
+								var frame = stackFrame = (VsCodeStackFrame)backtrace.GetFrame (i);
+								if (!frame.IsExternalCode) {
+									stackFrame = frame;
+									break;
+								}
+							}
+							if (stackFrame == null) {
+								OnContinue ();
+								return;
+							}
+						} else {
+							// It's OK to evaluate expressions in external code
+							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
+						}
+
+						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
+							OnContinue ();
+							return;
+						}
 						args = new TargetEventArgs (TargetEventType.ExceptionThrown);
 						break;
 					default:
