@@ -44,6 +44,8 @@ namespace MonoDevelop.Projects.FileNesting
 
 	internal class NestingRule
 	{
+		public const string AllFilesWildcard = ".*";
+
 		List<string> patterns;
 
 		public NestingRule (NestingRuleKind kind, string appliesTo, IEnumerable<string> patterns)
@@ -60,7 +62,7 @@ namespace MonoDevelop.Projects.FileNesting
 		bool CheckParentForFile (string inputFile, string parentFile)
 		{
 			LoggingService.LogInfo ($"Looking for nesting rules for {inputFile} under {parentFile}");
-			if (File.Exists (parentFile)) {
+			if (File.Exists (parentFile) && inputFile != parentFile) {
 				LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
 				return true;
 			}
@@ -72,6 +74,8 @@ namespace MonoDevelop.Projects.FileNesting
 		{
 			string parentFile, inputExtension;
 
+			inputExtension = Path.GetExtension (inputFile);
+
 			switch (Kind) {
 			case NestingRuleKind.AddedExtension:
 				// This is the simplest rules, and applies to all files, if we find a file
@@ -81,8 +85,17 @@ namespace MonoDevelop.Projects.FileNesting
 					return parentFile;
 				break;
 
+			case NestingRuleKind.AllExtensions:
+				if (AppliesTo == AllFilesWildcard || AppliesTo == inputExtension) {
+					foreach (var pt in patterns) {
+						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
+						if (CheckParentForFile (inputFile, parentFile))
+							return parentFile;
+					}
+				}
+				break;
+
 			case NestingRuleKind.ExtensionToExtension:
-				inputExtension = Path.GetExtension (inputFile);
 				if (inputExtension == AppliesTo) {
 					foreach (var pt in patterns) {
 						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
@@ -104,7 +117,6 @@ namespace MonoDevelop.Projects.FileNesting
 				break;
 
 			case NestingRuleKind.PathSegment:
-				inputExtension = Path.GetExtension (inputFile);
 				// Search for $filename.$extension for $filename.$path_segment.$extension
 				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
 				if (CheckParentForFile (inputFile, parentFile)) {

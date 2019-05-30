@@ -36,10 +36,11 @@ namespace MonoDevelop.Projects.FileNesting
 		public NestingRulesProvider ()
 		{
 			// FIXME: this is temporary, remove when we load rules from json files
-			nestingRules.Add (new NestingRule (NestingRuleKind.AddedExtension, ".*", null));
+			nestingRules.Add (new NestingRule (NestingRuleKind.AddedExtension, NestingRule.AllFilesWildcard, null));
 			nestingRules.Add (new NestingRule (NestingRuleKind.ExtensionToExtension, ".js", new [] { ".ts", ".tsx" }));
 			nestingRules.Add (new NestingRule (NestingRuleKind.FileSuffixToExtension, "-vsdoc.js", new [] { ".js" }));
-			nestingRules.Add (new NestingRule (NestingRuleKind.PathSegment, ".*", null));
+			nestingRules.Add (new NestingRule (NestingRuleKind.PathSegment, NestingRule.AllFilesWildcard, null));
+			nestingRules.Add (new NestingRule (NestingRuleKind.AllExtensions, NestingRule.AllFilesWildcard, new [] { ".tt" }));
 		}
 
 		public string GetParentFile (string inputFile)
