@@ -33,6 +33,7 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.Runtime.ExceptionServices;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -271,8 +272,7 @@ namespace MonoDevelop.Ide.Gui
 			case LogLevelFlags.Critical:
 			default:
 				try {
-					// Otherwise exception info is not gathered.
-					throw new CriticalGtkException (msg, Environment.StackTrace);
+					throw new CriticalGtkException (msg);
 				} catch (CriticalGtkException e) {
 					if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
 						LoggingService.LogFatalError ("Fatal GLib error", e);
@@ -289,17 +289,15 @@ namespace MonoDevelop.Ide.Gui
 
 		sealed class CriticalGtkException : Exception
 		{
-			public CriticalGtkException (string message, string stacktrace) : base (message)
+			public CriticalGtkException (string message) : base (message)
 			{
-				StackTrace = stacktrace;
-			}
+				const System.Reflection.BindingFlags flags =
+					 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetField;
 
-			public override string StackTrace { get; }
-
-			public override string ToString ()
-			{
-				// Matches normal exception format:
-				return GetType() + ": " + Message + Environment.NewLine + StackTrace;
+				var trace = new [] { new StackTrace (true), };
+				//// Otherwise exception stacktrace is not gathered.
+				typeof (Exception)
+					.InvokeMember ("captured_traces", flags, null, this, new object [] { trace } );
 			}
 		}
 	}
