@@ -128,13 +128,10 @@ namespace MonoDevelop.CSharp.Project
 				TreeIter iter;
 				if (langVerStore.GetIterFirst (out iter)) {
 					do {
-						try {
-							var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
-							if (val == compilerParameters.LangVersion) {
-								langVerCombo.SetActiveIter (iter);
-								break;
-							}
-						} catch (Exception ex) {
+						var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
+						if (val == compilerParameters.LangVersion) {
+							langVerCombo.SetActiveIter (iter);
+							break;
 						}
 					} while (langVerStore.IterNext (ref iter));
 				}
