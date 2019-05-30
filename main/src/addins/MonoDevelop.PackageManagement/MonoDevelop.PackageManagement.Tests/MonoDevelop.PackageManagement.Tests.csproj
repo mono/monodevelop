@@ -25,7 +25,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.PackageManagement" Version="5.1.0" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.PackageManagement" Version="5.0.2" PrivateAssets="runtime" />
     <PackageReference Include="Castle.Core" Version="4.2.1" PrivateAssets="runtime" />
     <PackageReference Include="Moq" Version="4.7.145" PrivateAssets="runtime" />
     <!-- Ensure .NET 4.7.2's System.Net.Http is used not the one from this NuGet package -->
