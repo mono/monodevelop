@@ -24,15 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
-using AppKit;
-using CoreFoundation;
-using Foundation;
-using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacIntegration;
 using NUnit.Framework;
 
@@ -42,56 +38,41 @@ namespace MacPlatform.Tests
 	public class MemoryMonitorTests : IdeTestBase
 	{
 		[Test]
-		[Ignore (@"We either need administrative privileges or to keep the system at high memory allocation pressure for a long time.
-The main problem with writing a manual test is that it's hard to not get the memory into compressed memory.'")]
 		public async Task TestMemoryMonitorWithSimulatedValues ()
 		{
 			using (var monitor = new MacPlatformService.MacMemoryMonitor ()) {
-				var tcs = new TaskCompletionSource<bool> ();
-				int statusChangedCount = 0;
+				var countsReached = new Dictionary<PlatformMemoryStatus, int> ();
 
 				monitor.StatusChanged += (o, args) => {
-					if (statusChangedCount == 0)
-						Assert.AreEqual (PlatformMemoryStatus.Low, args.MemoryStatus);
-					else if (statusChangedCount == 1) {
-						Assert.AreEqual (PlatformMemoryStatus.Critical, args.MemoryStatus);
-					} else if (statusChangedCount == 2) {
-						Assert.AreEqual (PlatformMemoryStatus.Normal, args.MemoryStatus);
-						tcs.SetResult (true);
-					} else
-						throw new Exception ("Should not be reached");
-					statusChangedCount++;
+					if (!countsReached.TryGetValue (args.MemoryStatus, out int count))
+						count = 0;
+					countsReached [args.MemoryStatus] = ++count;
 				};
 
 				await SimulateMemoryPressure ("warn");
 				await SimulateMemoryPressure ("critical");
-				await SimulateMemoryPressure ("normal");
 
-				await tcs.Task;
+				Assert.That (countsReached [PlatformMemoryStatus.Low], Is.GreaterThanOrEqualTo (1));
+				Assert.That (countsReached [PlatformMemoryStatus.Critical], Is.GreaterThanOrEqualTo (1));
 			}
 		}
 
 		// We need root for this to work.
-		static Task SimulateMemoryPressure (string kind)
+		static async Task SimulateMemoryPressure (string kind)
 		{
-			var url = NSUrl.FromFilename ("/usr/bin/memory_pressure");
-			var config = new NSMutableDictionary ();
+			using (var cts = new CancellationTokenSource (TimeSpan.FromSeconds (3))) {
+				var done = new TaskCompletionSource<bool> ();
 
-			var args = new NSMutableArray<NSString> (3);
-			args.Add (new NSString ("-S"));
-			args.Add (new NSString ("-l"));
-			args.Add (new NSString (kind));
+				var psi = new ProcessStartInfo ("/usr/bin/sudo", "-n /usr/bin/memory_pressure -S -l " + kind) {
+				};
+				
+				using (var process = Process.Start (psi)) {
+					process.Exited += (o, args) => done.SetResult (true);
+					process.EnableRaisingEvents = true;
 
-			config.Add (NSWorkspace.LaunchConfigurationArguments, args);
-
-			var done = new TaskCompletionSource<bool> ();
-			var app = NSWorkspace.SharedWorkspace.LaunchApplication (url, NSWorkspaceLaunchOptions.NewInstance, config, out var error);
-
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWorkspace.DidTerminateApplicationNotification, notification => {
-				done.SetResult (true);
-			});
-
-			return done.Task;
+					await done.Task;
+				}
+			}
 		}
 	}
 }
