@@ -22,6 +22,8 @@
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
+using MonoDevelop.Ide.Gui.Documents;
+
 namespace MonoDevelop.TextEditor
 {
 	public static class TextViewExtensions
@@ -31,16 +33,15 @@ namespace MonoDevelop.TextEditor
 		/// </summary>
 		public static Ide.Gui.Document TryGetParentDocument (this ITextView view)
 		{
-			// TOTEST
-			if (view.Properties.TryGetProperty<Ide.Gui.Document> (typeof (Ide.Gui.Document), out var document)) {
-				return document;
+			if (view.Properties.TryGetProperty (typeof (DocumentController), out DocumentController documentController)) {
+				return documentController.Document;
 			}
 			return null;
 		}
 
 		public static string GetFilePathOrNull (this ITextBuffer textBuffer)
 		{
-			if (textBuffer.Properties.TryGetProperty (typeof (Microsoft.VisualStudio.Text.ITextDocument), out Microsoft.VisualStudio.Text.ITextDocument textDocument)) {
+			if (textBuffer.Properties.TryGetProperty (typeof (ITextDocument), out ITextDocument textDocument)) {
 				return textDocument.FilePath;
 			}
 

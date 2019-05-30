@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -37,6 +38,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 
@@ -245,8 +247,14 @@ namespace MonoDevelop.CSharp
 				var point = new VirtualSnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset);
 				EditorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
 
-				// TOTEST
-				// editor.Properties.GetProperty<DocumentController> (typeof (DocumentController)).GrabFocus ();
+				GrabFocus (editor).Ignore ();
+
+				async Task GrabFocus(ITextView textView)
+				{
+					var documentController = textView.Properties.GetProperty<DocumentController> (typeof (DocumentController));
+					var view = await documentController.GetDocumentView ();
+					view.GrabFocus ();
+				}
 			}
 
 			public int IconCount {
