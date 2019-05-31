@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Author:
 //   Mikayla Hutchinson <m.j.hutchinson@gmail.com>
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Projects;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -137,7 +138,6 @@ namespace MonoDevelop.Ide.Navigation
 			if (point == null) {
 				throw new ArgumentNullException (nameof (point));
 			}
-
 			var item = new NavigationHistoryItem (point);
 			
 			//if the current node's transient but has been around for a while, consider making it permanent
@@ -200,10 +200,12 @@ namespace MonoDevelop.Ide.Navigation
 			}
 
 			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
-			var editBuf = doc.Editor;
+			var editBuf = doc.GetContent<ITextView> ();
 			if (editBuf != null) {
 				if (forClosedHistory) {
-					point = new TextFileNavigationPoint (doc.FileName, editBuf.CaretLine, editBuf.CaretColumn);
+					var line = editBuf.TextBuffer.CurrentSnapshot.GetLineFromPosition (editBuf.Caret.Position.BufferPosition);
+					var column = editBuf.Caret.Position.BufferPosition.Position - line.Start.Position;
+					point = new TextFileNavigationPoint (doc.FileName, line.LineNumber, column);
 				} else {
 					point = new TextFileNavigationPoint (doc, editBuf);
 				}
