@@ -961,6 +961,8 @@ namespace MonoDevelop.Ide.Editor
 
 		bool isDisposed;
 
+        internal bool IsDirty { get => textEditorImpl.IsDirty; set => textEditorImpl.IsDirty = false; }
+
 		internal bool IsDisposed {
 			get {
 				return isDisposed;
@@ -1607,6 +1609,11 @@ namespace MonoDevelop.Ide.Editor
 
 		public new bool HasFocus {
 			get { return this.textEditorImpl.HasFocus; }
+		}
+
+		internal void SetNotDirtyState ()
+		{
+			textEditorImpl.SetNotDirtyState ();
 		}
 	}
 }

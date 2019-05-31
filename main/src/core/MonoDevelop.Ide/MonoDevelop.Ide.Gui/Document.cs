@@ -1,4 +1,4 @@
-//
+﻿//
 // Document.cs
 //
 // Author:
