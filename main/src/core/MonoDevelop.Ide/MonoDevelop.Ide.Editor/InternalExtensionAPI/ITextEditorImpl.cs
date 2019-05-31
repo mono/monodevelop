@@ -1,4 +1,4 @@
-//
+﻿//
 // ITextEditorImpl.cs
 //
 // Author:
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Editor
 
 		Task Save (FileSaveInformation fileSaveInformation);
 
-		bool IsDirty { get; }
+		bool IsDirty { get; set; }
 
 		event EventHandler ContentNameChanged;
 
@@ -259,5 +259,6 @@ namespace MonoDevelop.Ide.Editor
 		Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 
 		double GetLineHeight (int line);
+		void SetNotDirtyState ();
 	}
 }
