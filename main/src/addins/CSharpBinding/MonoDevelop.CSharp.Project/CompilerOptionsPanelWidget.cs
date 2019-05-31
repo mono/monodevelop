@@ -102,26 +102,29 @@ namespace MonoDevelop.CSharp.Project
 			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
 			langVersionWarningIcon.Visible = false;
 
-			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
+			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion), typeof (bool));
 			var langVersions = CSharpLanguageVersionHelper.GetKnownLanguageVersions ();
 			string badVersion = null;
+			LanguageVersion langVersion;
+
+			try {
+				langVersion = compilerParameters.LangVersion;
+			} catch (Exception) {
+				badVersion = configuration.Properties.GetProperty ("LangVersion").Value;
+			}
 
 			foreach (var (text, version) in langVersions) {
-				try {
-					if (unsupportedLanguageVersions.Contains (version) && compilerParameters.LangVersion != version) {
-						// Mono's MSBuild does not currently support C# 8.
-					} else {
-						langVerStore.AppendValues (text, version);
-					}
-				} catch (Exception ex) {
-					badVersion = configuration.Properties.GetProperty ("LangVersion").Value;
+				if (unsupportedLanguageVersions.Contains (version)) {
+					// Mono's MSBuild does not currently support C# 8.
+				} else {
+					langVerStore.AppendValues (text, version, false);
 				}
 			}
 
 			langVerCombo.Model = langVerStore;
 
 			if (badVersion != null) {
-				var badIter = langVerStore.AppendValues (GettextCatalog.GetString ("{0} (Unknown Version)", badVersion), LanguageVersion.Default);
+				var badIter = langVerStore.AppendValues (GettextCatalog.GetString ("{0} (Unknown Version)", badVersion), LanguageVersion.Default, true);
 				langVerCombo.SetActiveIter (badIter);
 				langVersionWarningIcon.Visible = true;
 			} else {
@@ -192,11 +195,13 @@ namespace MonoDevelop.CSharp.Project
 		public void Store (ItemConfigurationCollection<ItemConfiguration> configs)
 		{
 			int codePage;
+			bool isBadVersion = false;
 
 			var langVersion = LanguageVersion.Default;
 			TreeIter iter;
 			if (langVerCombo.GetActiveIter (out iter)) {
 				langVersion = (LanguageVersion)langVerCombo.Model.GetValue (iter, 1);
+				isBadVersion = (bool)langVerCombo.Model.GetValue (iter, 2);
 			}
 
 			if (codepageEntry.Entry.Text.Length > 0) {
@@ -235,7 +240,8 @@ namespace MonoDevelop.CSharp.Project
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
 				compilerParameters.NoStdLib = noStdLibCheckButton.Active;
-				compilerParameters.LangVersion = langVersion;
+				if (!isBadVersion)
+					compilerParameters.LangVersion = langVersion;
 			}
 		}
 		
