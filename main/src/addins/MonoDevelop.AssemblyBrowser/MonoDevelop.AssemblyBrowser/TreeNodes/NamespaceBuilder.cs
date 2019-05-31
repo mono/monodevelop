@@ -87,12 +87,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			NamespaceData ns = (NamespaceData)dataObject;
-			bool publicOnly = Widget.PublicApiOnly;
-			Func<(bool isPublic, object typeObject), bool> filter = _ => true;
-			if (publicOnly)
-				filter = tuple => tuple.isPublic;
 
-			ctx.AddChildren (ns.Types.Where (filter).Select (t => t.typeObject));
+			IEnumerable<object> result = ns.Types;
+			if (Widget.PublicApiOnly)
+				result = result.Where (x => NamespaceData.IsPublic (x));
+
+			ctx.AddChildren (result);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

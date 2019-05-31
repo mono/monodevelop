@@ -103,9 +103,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			var mainModule = assemblyLoader.DecompilerTypeSystem.MainModule;
 			var rootData = new NamespaceData (mainModule.RootNamespace);
-
-			rootData.Types.RemoveAll (x => ((ITypeDefinition)x.typeObject).Name == "<Module>");
-			if (rootData.Types.Count > 0)
+			if (rootData.Types.Length > 0)
 				treeBuilder.AddChild (rootData);
 
 			var allNamespaces = new List<NamespaceData> (32);

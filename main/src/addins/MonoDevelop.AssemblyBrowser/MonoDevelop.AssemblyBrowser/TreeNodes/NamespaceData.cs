@@ -40,13 +40,19 @@ namespace MonoDevelop.AssemblyBrowser
 		INamespace decompilerNs;
 		Microsoft.CodeAnalysis.INamespaceSymbol roslynNamespace;
 
-		List<(bool isPublic, object typeObject)> types;
-		public List<(bool isPublic, object typeObject)> Types {
+		public static bool IsPublic (object typeObject)
+		{
+			return (typeObject is ITypeDefinition typeDefinition && typeDefinition.IsPublic ())
+				|| (typeObject is Microsoft.CodeAnalysis.INamedTypeSymbol symbol && symbol.IsPublic ());
+		}
+
+		object [] types;
+		public object[] Types {
 			get {
 				if (types == null) {
-					types = decompilerNs?.Types.Select (x => (x.IsPublic (), (object)x)).ToList ()
-						?? roslynNamespace?.GetTypeMembers ().Select (x => (x.IsPublic (), (object)x)).ToList ()
-						?? new List<(bool, object)> ();
+					types = decompilerNs?.Types.ToArray ()
+						?? roslynNamespace?.GetTypeMembers ().ToArray ()
+						?? Array.Empty<object> ();
 				}
 				return types;
 			}
@@ -56,6 +62,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Name = ns.FullName;
 			decompilerNs = ns;
+
+			// Remove <Module> from root namespace.
+			if (ns.ParentNamespace == null) {
+				types = decompilerNs.Types.Where (x => x.Name != "<Module>").ToArray ();
+			}
 		}
 
 		public NamespaceData(Microsoft.CodeAnalysis.INamespaceSymbol namespaceSymbol)
@@ -71,7 +82,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string ToString ()
 		{
-			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Count);
+			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Length);
 		}
 	}
 }
