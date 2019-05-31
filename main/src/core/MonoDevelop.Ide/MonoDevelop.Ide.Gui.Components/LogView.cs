@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		QueuedTextWrite lastTextWrite;
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
+		readonly Regex consoleTextSanitizerRegex = new Regex ("(\\e[[0-9]*m)|(\b)");
 
 		const int MAX_BUFFER_LENGTH = 4000 * 1024;
 
@@ -710,7 +711,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		/// <returns>original text with control characters and escape sequences removed</returns>
 		string SanitizeConsoleText(string text)
 		{
-			return Regex.Replace (text, "(\\e[[0-9]*m)|(\b)", string.Empty);
+			return consoleTextSanitizerRegex.Replace (text, string.Empty);
 		}
 
 		protected void UnsafeAddText (TextMark mark, string text, TextTag indentTag, TextTag extraTag)
