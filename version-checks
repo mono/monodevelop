@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=fd1df9efb41e9c091ea2de0816130db0c1b78b4f
+DEP_NEEDED_VERSION[0]=376acc9ef1ce356085c0f79efee0c8302c40dfb3
 DEP_BRANCH_AND_REMOTE[0]="cadsit-sign-all-binaries origin/cadsit-sign-all-binaries"
 
 # heap-shot
