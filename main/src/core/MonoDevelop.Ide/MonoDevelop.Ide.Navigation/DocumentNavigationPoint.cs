@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DocumentNavigationPoint.cs
 // 
 // Author:
@@ -37,11 +37,11 @@ namespace MonoDevelop.Ide.Navigation
 {
 	public class DocumentNavigationPoint : NavigationPoint
 	{
-		Document doc;
+		Document document;
 
 		public Document Document {
 			get {
-				return doc;
+				return document;
 			}
 		}
 
@@ -53,22 +53,24 @@ namespace MonoDevelop.Ide.Navigation
 			SetDocument (doc);
 		}
 
-		protected void SetDocument (Document doc)
-		{
-			this.doc = doc;
-			doc.Closed += HandleClosed;
-		}
-
 		public DocumentNavigationPoint (FilePath fileName)
 		{
 			this.fileName = fileName;
 		}
-		
+
+		protected void SetDocument (Document doc)
+		{
+			if (this.document != null)
+				doc.Closed -= HandleClosed;
+			this.document = doc;
+			doc.Closed += HandleClosed;
+		}
+
 		public override void Dispose ()
 		{
-			if (doc != null) {
-				doc.Closed -= HandleClosed;
-				doc = null;
+			if (document != null) {
+				document.Closed -= HandleClosed;
+				document = null;
 			}
 			base.Dispose ();
 		}
@@ -80,19 +82,19 @@ namespace MonoDevelop.Ide.Navigation
 		void HandleClosed (object sender, EventArgs e)
 		{
 			OnDocumentClosing ();
-			fileName = doc.FileName;
-			project = doc.Owner is SolutionItem item ? item.ItemId : null;
+			fileName = document.FileName;
+			project = document.Owner is SolutionItem item ? item.ItemId : null;
 			if (fileName == FilePath.Null) {
 				// If the document is not a file, dispose the navigation point because the document can't be reopened
 				Dispose ();
 			} else {
-				doc.Closed -= HandleClosed;
-				doc = null;
+				document.Closed -= HandleClosed;
+				document = null;
 			}
 		}
 		
 		public FilePath FileName {
-			get { return doc != null? doc.FileName : fileName; }
+			get { return document != null? document.FileName : fileName; }
 		}
 
 		public override Task<Document> ShowDocument ()
@@ -102,9 +104,9 @@ namespace MonoDevelop.Ide.Navigation
 		
 		protected virtual async Task<Document> DoShow ()
 		{
-			if (doc != null) {
-				doc.Select ();
-				return doc;
+			if (document != null) {
+				document.Select ();
+				return document;
 			}
 			MonoDevelop.Projects.Project p = null;
 			foreach (var curP in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
@@ -118,24 +120,24 @@ namespace MonoDevelop.Ide.Navigation
 		
 		public override string DisplayName {
 			get {
-				return System.IO.Path.GetFileName (doc != null? doc.Name : (string) fileName);
+				return System.IO.Path.GetFileName (document != null? document.Name : (string) fileName);
 			}
 		}
 		
 		public override bool Equals (object o)
 		{
 			DocumentNavigationPoint dp = o as DocumentNavigationPoint;
-			return dp != null && ((doc != null && doc == dp.doc) || (FileName != FilePath.Null && FileName == dp.FileName));
+			return dp != null && ((document != null && document == dp.document) || (FileName != FilePath.Null && FileName == dp.FileName));
 		}
 		
 		public override int GetHashCode ()
 		{
-			return (FileName != FilePath.Null ? FileName.GetHashCode () : 0) + (doc != null ? doc.GetHashCode () : 0);
+			return (FileName != FilePath.Null ? FileName.GetHashCode () : 0) + (document != null ? document.GetHashCode () : 0);
 		}
 		
 		internal bool HandleRenameEvent (string oldName, string newName)
 		{
-			if (doc == null && oldName == fileName) {
+			if (document == null && oldName == fileName) {
 				fileName = newName;
 				return true;
 			}
