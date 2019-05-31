@@ -88,30 +88,24 @@ namespace MonoDevelop.AssemblyBrowser
 			if (classData.TypeKind == TypeKind.Delegate)
 				return;
 
-			builder.AddChildren (classData.GetTypeMembers ()
-								 .Where (innerClass => innerClass.DeclaredAccessibility == Accessibility.Public ||
-													   (innerClass.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
-													   !publicOnly));
+			Func<ISymbol, bool> filter = symbol => !MethodPropertyFilter (symbol);
+			if (Widget.PublicApiOnly)
+				filter = symbol => symbol.IsPublic () && !MethodPropertyFilter (symbol);
 
-			builder.AddChildren (classData.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind != MethodKind.PropertyGet && m.MethodKind != MethodKind.PropertySet)
-								 .Where (method => method.DeclaredAccessibility == Accessibility.Public ||
-												   (method.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
-												   !publicOnly));
+			var typeMembers = classData.GetTypeMembers ();
+			if (typeMembers.Length > 0) {
+				builder.AddChildren (Enumerable.Where (typeMembers, filter));
+			}
 
-			builder.AddChildren (classData.GetMembers ().OfType<IPropertySymbol> ()
-								 .Where (property => property.DeclaredAccessibility == Accessibility.Public ||
-										 (property.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
-										 !publicOnly));
+			var members = classData.GetMembers ();
+			if (members.Length > 0) {
+				builder.AddChildren (members.Where (filter));
+			}
 
-			builder.AddChildren (classData.GetMembers ().OfType<IFieldSymbol> ()
-								 .Where (field => field.DeclaredAccessibility == Accessibility.Public ||
-										 (field.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
-										 !publicOnly));
-
-			builder.AddChildren (classData.GetMembers ().OfType<IEventSymbol> ()
-								 .Where (e => e.DeclaredAccessibility == Accessibility.Public ||
-										 (e.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
-										 !publicOnly));
+			bool MethodPropertyFilter (ISymbol symbol)
+			{
+				return symbol is IMethodSymbol method && (method.MethodKind == MethodKind.PropertyGet || method.MethodKind == MethodKind.PropertySet);
+			}
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

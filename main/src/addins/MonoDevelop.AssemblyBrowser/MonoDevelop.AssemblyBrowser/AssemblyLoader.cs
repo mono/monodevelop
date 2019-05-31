@@ -119,18 +119,6 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 
-		ICompilation typeSystem;
-
-		public ICompilation GetMinimalTypeSystem ()
-		{
-			if (typeSystem != null)
-				return typeSystem;
-			var assembly = Assembly;
-			if (assembly == null)
-				return null;
-			return typeSystem = new SimpleCompilation (assembly.WithOptions (TypeSystemOptions.Default | TypeSystemOptions.Uncached | TypeSystemOptions.KeepModifiers), MinimalCorlib.Instance);
-		}
-
 		class MyUniversalAssemblyResolver : UniversalAssemblyResolver
 		{
 			public MyUniversalAssemblyResolver (string mainAssemblyFileName, bool throwOnError, string targetFramework) : base (mainAssemblyFileName, throwOnError, targetFramework)

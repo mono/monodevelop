@@ -28,37 +28,45 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Decompiler.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class NamespaceData : IDisposable
 	{
-		List<(bool, object)> types = new List<(bool, object)> ();
-		
-		public string Name {
-			get;
-			private set;
-		}
+		public string Name { get; }
+		INamespace decompilerNs;
+		Microsoft.CodeAnalysis.INamespaceSymbol roslynNamespace;
 
+		List<(bool isPublic, object typeObject)> types;
 		public List<(bool isPublic, object typeObject)> Types {
 			get {
+				if (types == null) {
+					types = decompilerNs?.Types.Select (x => (x.IsPublic (), (object)x)).ToList ()
+						?? roslynNamespace?.GetTypeMembers ().Select (x => (x.IsPublic (), (object)x)).ToList ()
+						?? new List<(bool, object)> ();
+				}
 				return types;
 			}
 		}
-		
-		public NamespaceData (string name)
+
+		public NamespaceData(INamespace ns)
 		{
-			this.Name = name;
+			Name = ns.FullName;
+			decompilerNs = ns;
+		}
+
+		public NamespaceData(Microsoft.CodeAnalysis.INamespaceSymbol namespaceSymbol)
+		{
+			Name = namespaceSymbol.GetFullName ();
+			roslynNamespace = namespaceSymbol;
 		}
 		
 		public void Dispose ()
 		{
-			if (types != null) {
-			//	types.ForEach (t => t.Dispose ());
-				types.Clear ();
-				types = null;
-			}
+			types = null;
 		}
 		
 		public override string ToString ()
