@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Navigation
 		protected void SetDocument (Document doc)
 		{
 			if (this.document != null)
-				doc.Closed -= HandleClosed;
+				this.document.Closed -= HandleClosed;
 			this.document = doc;
 			doc.Closed += HandleClosed;
 		}
