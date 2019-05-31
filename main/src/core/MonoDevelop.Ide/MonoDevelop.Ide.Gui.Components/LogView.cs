@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		QueuedTextWrite lastTextWrite;
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
-		readonly Regex consoleTextSanitizerRegex = new Regex ("(\\e[[0-9]*m)|(\b)");
+		readonly Regex consoleTextSanitizerRegex = new Regex ("(\\e[[0-9]*m)|(\b)", RegexOptions.Compiled);
 
 		const int MAX_BUFFER_LENGTH = 4000 * 1024;
 
