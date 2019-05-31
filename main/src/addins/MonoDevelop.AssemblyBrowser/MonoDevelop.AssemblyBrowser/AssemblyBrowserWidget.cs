@@ -914,8 +914,12 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
+				// At least one of them failed.
 				if (d.IsFaulted) {
 					LoggingService.LogError ("Failed to load assemblies", d.Exception);
+
+					// It's possible the assembly in which the type we're looking for exists
+					// so try probing for it regardless.
 				}
 
 				suspendNavigation = false;
