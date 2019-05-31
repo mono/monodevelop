@@ -97,12 +97,12 @@ namespace MonoDevelop.Ide
 			return Task.CompletedTask;
 		}
 
-		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
+		static void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
 		{
 			Counters.MemoryPressure.Inc (args.CounterMetadata);
 		}
 
-		void OnThermalStatusChanged (object sender, PlatformThermalStatusEventArgs args)
+		static void OnThermalStatusChanged (object sender, PlatformThermalStatusEventArgs args)
 		{
 			Counters.ThermalNotification.Inc (args.CounterMetadata);
 		}
