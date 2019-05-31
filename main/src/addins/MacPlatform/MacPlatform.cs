@@ -251,7 +251,7 @@ namespace MonoDevelop.MacIntegration
 			try {
 				throw new MarshalledObjCException (nsException);
 			} catch (MarshalledObjCException e) {
-				LoggingService.LogInternalError ("Unhandled ObjC Exception", e);
+				LoggingService.LogFatalError ("Unhandled ObjC Exception", e);
 				// Is there a way to figure out if it's going to crash us? Maybe check MarshalObjectiveCExceptionMode and MarshalManagedExceptionMode?
 			}
 
