@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Editor
 		protected override async Task OnLoad (bool reloading)
 		{
 			await base.OnLoad (reloading);
-			if (isDisposed)
+			if (isDisposed || textEditor == null)
 				return;
  			textEditor.SetNotDirtyState ();
 			textEditor.IsDirty = false;
