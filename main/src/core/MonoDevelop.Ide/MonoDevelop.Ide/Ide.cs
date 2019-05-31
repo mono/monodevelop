@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeApp.cs
 //
 // Author:
@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide
 		static Workbench workbench;
 		static CommandManager commandService;
 		static TypeSystemService typeSystemService;
+		static TaskCompletionSource<bool> initializationTask = new TaskCompletionSource<bool> ();
 
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
@@ -179,27 +180,10 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static async Task Initialize (ProgressMonitor monitor)
+		public static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage = false)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
-
-			Counters.Initialization.Trace ("Creating Services");
-
-			var serviceInitialization = Task.WhenAll (
-				Runtime.GetService<DesktopService> (),
-				Runtime.GetService<FontService> (),
-				Runtime.GetService<TaskService> (),
-				Runtime.GetService<ProjectOperations> (),
-				Runtime.GetService<TextEditorService> (),
-				Runtime.GetService<NavigationHistoryService> (),
-				Runtime.GetService<DisplayBindingService> (),
-				Runtime.GetService<RootWorkspace> (),
-				Runtime.GetService<HelpOperations> (),
-				Runtime.GetService<HelpService> ()
-			);
-
-			await serviceInitialization;
 
 			// Set initial run flags
 			Counters.Initialization.Trace ("Upgrading Settings");
@@ -221,7 +205,31 @@ namespace MonoDevelop.Ide
 				PropertyService.SaveProperties ();
 			}
 
+			Counters.Initialization.Trace ("Initializing WelcomePage service");
+			WelcomePage.WelcomePageService.Initialize (hideWelcomePage).Ignore ();
+
+			// Pump the UI thread to make the start window visible
+
+			await Task.Yield ();
+
+			Counters.Initialization.Trace ("Creating Services");
+
+			var serviceInitialization = Task.WhenAll (
+				Runtime.GetService<DesktopService> (),
+				Runtime.GetService<FontService> (),
+				Runtime.GetService<TaskService> (),
+				Runtime.GetService<ProjectOperations> (),
+				Runtime.GetService<TextEditorService> (),
+				Runtime.GetService<NavigationHistoryService> (),
+				Runtime.GetService<DisplayBindingService> (),
+				Runtime.GetService<RootWorkspace> (),
+				Runtime.GetService<HelpOperations> (),
+				Runtime.GetService<HelpService> ()
+			);
+
 			commandService = await Runtime.GetService<CommandManager> ();
+
+			await serviceInitialization;
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
@@ -230,24 +238,9 @@ namespace MonoDevelop.Ide
 
 			CustomToolService.Init ();
 			
-			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
-			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
-			commandService.KeyBindingFailed += KeyBindingFailed;
-
-			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
-			KeyBindingService.LoadCurrentBindings ("MD2");
-
-			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
-				LoggingService.LogInternalError (args.ErrorMessage, args.Exception);
-			};
-			
 			FileService.ErrorHandler = FileServiceErrorHandler;
 
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
-			Counters.Initialization.Trace ("Loading Commands");
-			
-			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
-			monitor.Step (1);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 3);
 
 			// Before startup commands.
 			Counters.Initialization.Trace ("Running Pre-Startup Commands");
@@ -256,14 +249,6 @@ namespace MonoDevelop.Ide
 
 			Counters.Initialization.Trace ("Initializing Workbench");
 			await workbench.Initialize (monitor);
-			monitor.Step (1);
-
-			Counters.Initialization.Trace ("Initializing WelcomePage service");
-			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
-			monitor.Step (1);
-
-			Counters.Initialization.Trace ("Realizing Workbench Window");
-			workbench.Realize ();
 			monitor.Step (1);
 
 			MessageService.RootWindow = workbench.RootWindow;
@@ -303,14 +288,11 @@ namespace MonoDevelop.Ide
 				initializedEvent = null;
 			}
 
+			initializationTask.SetResult (true);
+
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
-		}
-
-		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
-		{
-			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
 		}
 
 		public static void BringToFront ()
@@ -325,27 +307,27 @@ namespace MonoDevelop.Ide
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
+
 		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
-			OpenFiles (files, null);
+			OpenFilesAsync (files, null).Ignore ();
+		}
+
+		public static Task<bool> OpenFilesAsync (IEnumerable<FileOpenInformation> files)
+		{
+			return OpenFilesAsync (files, null);
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		internal static async Task<bool> OpenFiles (IEnumerable<FileOpenInformation> files, OpenWorkspaceItemMetadata metadata)
+		internal static async Task<bool> OpenFilesAsync (IEnumerable<FileOpenInformation> files, OpenWorkspaceItemMetadata metadata)
 		{
 			if (!files.Any ())
 				return false;
-			
-			if (!IsInitialized) {
-				EventHandler onInit = null;
-				onInit = delegate {
-					Initialized -= onInit;
-					OpenFiles (files, metadata);
-				};
-				Initialized += onInit;
-				return false;
-			}
-			
+
+			await initializationTask.Task;
+
+			Workbench.Present ();
+
 			var filteredFiles = new List<FileOpenInformation> ();
 
 			Gdk.ModifierType mtype = Components.GtkWorkarounds.GetCurrentKeyModifiers ();
@@ -379,15 +361,14 @@ namespace MonoDevelop.Ide
 			// restoration won't steal the focus from the files we are explicitly loading here.
 			await Workspace.CurrentWorkspaceLoadTask;
 
-			foreach (var file in filteredFiles) {
-				Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options).ContinueWith (t => {
-					if (t.IsFaulted)
-						MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), t.Exception);
-				}, TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
+			for (int n = 0; n < filteredFiles.Count; n++) {
+				var file = filteredFiles [n];
+				if (n == 0)
+					file.Options |= OpenDocumentOptions.BringToFront;
+				else
+					file.Options &= ~OpenDocumentOptions.BringToFront;
+				IdeServices.DocumentManager.OpenDocument (file).Ignore ();
 			}
-
-			Workbench.Present ();
-
 			return true;
 		}
 
@@ -400,22 +381,25 @@ namespace MonoDevelop.Ide
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				try {
+				// Run handlers in different UI loops to avoid freezing the UI for too much time
+				Xwt.Application.Invoke (() => {
+					try {
 #if DEBUG
-					// Only show this in debug builds for now, we want to enable this later for addins that might delay
-					// IDE startup.
-					if (args.ExtensionNode is TypeExtensionNode node) {
-						LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
-					}
+						// Only show this in debug builds for now, we want to enable this later for addins that might delay
+						// IDE startup.
+						if (args.ExtensionNode is TypeExtensionNode node) {
+							LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
+						}
 #endif
-					if (args.ExtensionObject is CommandHandler handler) {
-						handler.InternalRun ();
-					} else {
-						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+						if (args.ExtensionObject is CommandHandler handler) {
+							handler.InternalRun ();
+						} else {
+							LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
-				}
+				});
 			}
 		}
 		
@@ -577,18 +561,6 @@ namespace MonoDevelop.Ide
 		{
 			if (Exited != null)
 				Exited (null, EventArgs.Empty);
-		}
-
-		static ITimeTracker commandTimeCounter;
-			
-		static void CommandServiceCommandTargetScanStarted (object sender, EventArgs e)
-		{
-			commandTimeCounter = Counters.CommandTargetScanTime.BeginTiming ();
-		}
-
-		static void CommandServiceCommandTargetScanFinished (object sender, EventArgs e)
-		{
-			commandTimeCounter.End ();
 		}
 		
 		static StatusBarIcon instrumentationStatusIcon;

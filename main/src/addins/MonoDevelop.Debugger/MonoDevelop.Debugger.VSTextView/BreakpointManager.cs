@@ -10,20 +10,28 @@ namespace MonoDevelop.Debugger
 	class BreakpointManager
 	{
 		private ITextBuffer textBuffer;
-		private readonly string file;
+		private readonly ITextDocument textDocument;
 
 		public BreakpointManager (ITextBuffer textBuffer)
 		{
 			this.textBuffer = textBuffer;
-			file = textBuffer.GetFilePathOrNull ();
-			if (file == null) {
+			if (textBuffer.Properties.TryGetProperty (typeof (ITextDocument), out textDocument) && textDocument.FilePath != null) {
+				textDocument.FileActionOccurred += TextDocument_FileActionOccurred;
+			} else {
 				LoggingService.LogWarning ("Failed to get filename of textbuffer, breakpoints integration will not work.");
 				return;
 			}
 			textBuffer.Changed += TextBuffer_Changed;
 			DebuggingService.Breakpoints.Changed += OnBreakpointsChanged;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += OnBreakpointsChanged;
+			DebuggingService.Breakpoints.BreakpointModified += OnBreakpointsChanged;
 			OnBreakpointsChanged (null, null);
+		}
+
+		private void TextDocument_FileActionOccurred (object sender, TextDocumentFileActionEventArgs e)
+		{
+			if (e.FileActionType == FileActionTypes.DocumentRenamed)
+				OnBreakpointsChanged (null, null);
 		}
 
 		void TextBuffer_Changed (object sender, TextContentChangedEventArgs e)
@@ -55,7 +63,7 @@ namespace MonoDevelop.Debugger
 			var snapshot = textBuffer.CurrentSnapshot;
 			var newBreakpoints = new Dictionary<Breakpoint, ManagerBreakpoint> ();
 			bool needsUpdate = false;
-			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (file)) {
+			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (textDocument.FilePath)) {
 				if (breakpoint.Line > snapshot.LineCount)
 					continue;
 				if (eventArgs is BreakpointEventArgs breakpointEventArgs && breakpointEventArgs.Breakpoint == breakpoint)
@@ -93,6 +101,9 @@ namespace MonoDevelop.Debugger
 			textBuffer.Changed -= TextBuffer_Changed;
 			DebuggingService.Breakpoints.Changed -= OnBreakpointsChanged;
 			DebuggingService.Breakpoints.BreakpointStatusChanged -= OnBreakpointsChanged;
+			DebuggingService.Breakpoints.BreakpointModified -= OnBreakpointsChanged;
+			if (textDocument != null)
+				textDocument.FileActionOccurred -= TextDocument_FileActionOccurred;
 		}
 
 		public IEnumerable<BreakpointSpan> GetBreakpoints (ITextSnapshot snapshot)

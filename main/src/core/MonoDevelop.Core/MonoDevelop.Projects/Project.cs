@@ -729,13 +729,22 @@ namespace MonoDevelop.Projects
 			{
 				var analyzerList = new List<FilePath> ();
 				var sourceFilesList = new List<ProjectFile> ();
-
 				foreach (var item in items) {
 					var msbuildPath = MSBuildProjectService.FromMSBuildPath (project.sourceProject.BaseDirectory, item.Include);
 
-					if (item.Name == "Compile")
-						sourceFilesList.Add (new ProjectFile (msbuildPath, item.Name) { Project = project });
-					else if (item.Name == "Analyzer")
+					if (item.Name == "Compile") {
+						var subtype = Subtype.Code;
+
+						const string subtypeKey = "SubType";
+						if (item.Metadata.HasProperty (subtypeKey)) {
+							var property = item.Metadata.GetProperty (subtypeKey);
+							if (property.Value == "Designer")
+								subtype = Subtype.Designer;
+						}
+
+						var projectFile = new ProjectFile (msbuildPath, item.Name, subtype) { Project = project };
+						sourceFilesList.Add (projectFile);
+					} else if (item.Name == "Analyzer")
 						analyzerList.Add (msbuildPath);
 				}
 
@@ -1365,7 +1374,7 @@ namespace MonoDevelop.Projects
 			string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 			string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-			var globalProperties = CreateGlobalProperties ();
+			var globalProperties = CreateGlobalProperties (target);
 			if (context != null) {
 				var md = (ProjectItemMetadata)context.GlobalProperties;
 				md.SetProject (sourceProject);
@@ -1560,11 +1569,15 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		internal Dictionary<string, string> CreateGlobalProperties ()
+		/// <summary>
+		/// Sets a global TargetFramework property for multi-target projects so MSBuild targets work.
+		/// For Build and Clean the TargetFramework property is not set so all frameworks are built.
+		/// </summary>
+		internal Dictionary<string, string> CreateGlobalProperties (string target)
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
-			if (framework != null)
+			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
 				properties ["TargetFramework"] = framework;
 			return properties;
 		}
@@ -2738,6 +2751,10 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			// Read available item types
+			// Read this first in case the OnGetSupportsImportedItem needs this information.
+			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
+
 			timer.Trace ("Read project items");
 			LoadProjectItems (msproject, ProjectItemFlags.None, usedMSBuildItems);
 			loadedProjectItems = new HashSet<ProjectItem> (Items);
@@ -2770,10 +2787,6 @@ namespace MonoDevelop.Projects
 			timer.Trace ("Read extended properties");
 
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
-
-			// Read available item types
-
-			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
 
 			// Ensure buildActions are refreshed if loadedAvailableItemNames have been updated.
 			buildActions = null;

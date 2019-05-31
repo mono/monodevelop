@@ -3,8 +3,8 @@ open System
 open System.Collections.Generic
 open System.IO
 open System.Diagnostics
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
@@ -66,7 +66,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         async {
             match infoOpt with
             | Some checkResults ->
-                match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent with
+                match MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent with
                 | None -> return None
                 | Some(col,identIsland) ->
                     let! res = checkResults.GetToolTipText(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
@@ -77,7 +77,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         async {
             match infoOpt with
             | Some checkResults ->
-                match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent with
+                match MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent with
                 | None -> return FSharpFindDeclResult.DeclNotFound (FSharpFindDeclFailureReason.Unknown "No idents found")
                 | Some(col,identIsland) -> return! checkResults.GetDeclarationLocation(line, col, lineStr, identIsland, false)
             | None -> return FSharpFindDeclResult.DeclNotFound (FSharpFindDeclFailureReason.Unknown "No check results")}
@@ -86,8 +86,8 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         async {
             match infoOpt with
             | Some (checkResults) ->
-                match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent 
-                      |> Option.orTry (fun () -> Parsing.findIdents col lineStr SymbolLookupKind.Fuzzy) with
+                match MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent 
+                      |> Option.orTry (fun () -> MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.Fuzzy) with
                 | None -> return None
                 | Some(colu, identIsland) ->
                     try
@@ -106,7 +106,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                 let column = lineToCaret |> Seq.tryFindIndexBack (fun c -> c <> '(' && c <> ' ')
                 match column with
                 | Some col ->
-                    match Parsing.findIdents (col-1) lineToCaret SymbolLookupKind.ByLongIdent with
+                    match MonoDevelop.FSharp.Shared.Parsing.findIdents (col-1) lineToCaret MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent with
                     | None -> return None
                     | Some(colu, identIsland) ->
                         return! checkResults.GetMethodsAsSymbols(line, colu, lineToCaret, identIsland)
@@ -503,7 +503,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
     member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
         asyncMaybe {
             LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
-            let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
+            let! _colu, identIsland = MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent |> async.Return
             let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
             let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
             let lastIdent = Seq.last identIsland
@@ -513,7 +513,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
     member x.GetSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
         asyncMaybe {
             LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
-            let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
+            let! _colu, identIsland = MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent |> async.Return
             let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
             let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
             let lastIdent = Seq.last identIsland

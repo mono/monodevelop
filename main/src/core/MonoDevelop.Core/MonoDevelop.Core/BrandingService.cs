@@ -41,9 +41,9 @@ namespace MonoDevelop.Core
 		static FilePath localizedBrandingDir;
 		static XDocument brandingDocument;
 		static XDocument localizedBrandingDocument;
-		
-		static string applicationName;
-		static string applicationLongName;
+
+		static string applicationName = "MonoDevelop";
+		static string applicationLongName = "MonoDevelop";
 
 		public static readonly string SuiteName;
 		public static readonly string ProfileDirectoryName;

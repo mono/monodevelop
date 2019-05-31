@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentView finalViewItem;
 		ServiceProvider serviceProvider;
 		DocumentController linkedController;
+		DocumentController linkedControllerParent;
 
 		bool initialized;
 		bool hasUnsavedChanges;
@@ -70,8 +71,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool shown;
 		bool hasFocus;
 		bool disposed;
-
-		internal IWorkbenchWindow WorkbenchWindow { get; set; }
 
 		ExtensionChain extensionChain;
 		DocumentControllerExtension itemExtension;
@@ -207,15 +206,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <value>The owner.</value>
 		public WorkspaceObject Owner {
 			get {
-				CheckInitialized ();
 				return owner;
 			}
 			set {
 				if (value != owner) {
 					owner = value;
 
-					NotifyOwnerChanged ();
-					RefreshExtensions ().Ignore ();
+					if (initialized) {
+						NotifyOwnerChanged ();
+						RefreshExtensions ().Ignore ();
+					}
 				}
 			}
 		}
@@ -367,7 +367,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		public Document Document { get; internal set; }
+		Document document;
+		public Document Document {
+			get { return document ?? linkedControllerParent?.Document ?? finalViewItem?.Parent?.SourceController?.Document; }
+			set { document = value; }
+		}
 
 		/// <summary>
 		/// Returns true if the controller only display data, but it doesn't allow to modify it.
@@ -545,18 +549,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			CheckInitialized ();
 			foreach (var c in OnGetContents (type))
-				yield return c;
+				yield return AssertValid (c, type);
 
 			if (extensionChain != null) {
 				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
 					foreach (var c in ext.GetContents (type))
-						yield return c;
+						yield return AssertValid (c, type);
 				}
 			}
 			if (linkedController != null) {
 				foreach (var c in linkedController.GetContents (type))
-					yield return c;
+					yield return AssertValid (c, type);
 			}
+		}
+
+		object AssertValid (object ob, Type type)
+		{
+			if (!type.IsInstanceOfType (ob))
+				throw new InvalidOperationException ($"Invalid content type. Expected: '{type}', Actual: '{ob?.GetType ()}'");
+			return ob;
 		}
 
 		ContentCallbackRegistry contentCallbackRegistry;
@@ -867,6 +878,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			ContentChanged?.Invoke (this, EventArgs.Empty);
 			RefreshExtensions ().Ignore ();
 			contentCallbackRegistry?.InvokeContentChangeCallbacks ();
+
+			if (finalViewItem != null) {
+				// Propagate content change notification to parent controller
+				if (!finalViewItem.IsRoot && finalViewItem.Parent != null)
+					finalViewItem.Parent.SourceController?.NotifyContentChanged ();
+			}
 		}
 
 		internal void NotifyFocused ()
@@ -972,8 +989,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				}
 				// If the view already has a controller bound to it, link it to the new one, so that all
 				// events from the view are propagated to the old controller besides the new one.
-				if (viewItem.SourceController != null)
+				if (viewItem.SourceController != null) {
 					linkedController = viewItem.SourceController;
+					linkedController.linkedControllerParent = this;
+				}
 				viewItem.SourceController = this;
 			}
 			return viewItem;

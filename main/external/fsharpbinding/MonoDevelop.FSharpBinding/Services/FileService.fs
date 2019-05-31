@@ -1,5 +1,5 @@
 ﻿namespace MonoDevelop.FSharp
-open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
+open FSharp.Compiler.AbstractIL.Internal.Library
 open System.IO
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui

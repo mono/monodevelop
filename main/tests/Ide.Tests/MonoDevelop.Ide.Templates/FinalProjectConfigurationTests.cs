@@ -353,6 +353,27 @@ namespace MonoDevelop.Ide.Templates
 			AssertPathsAreEqual (@"d:\projects\MySolution\MyProject", config.ProjectLocation);
 			AssertPathsAreEqual (@"d:\projects\MySolution", config.SolutionLocation);
 		}
+
+		[TestCase ("A", "A")]
+		[TestCase ("A B", "AB")]
+		[TestCase ("A/B", "AB")]
+		[TestCase ("A.B", "A.B")]
+		[TestCase ("A-B", "A-B")]
+		[TestCase ("A_B", "A_B")]
+		[TestCase ("A1", "A1")]
+		[TestCase ("A,B", "AB")]
+		public void GenerateValidNames (string name, string generatedName)
+		{
+			CreateProjectConfig (@"d:\projects\MySolution");
+			config.ProjectName = name;
+			config.SolutionName = name;
+			config.CreateProjectDirectoryInsideSolutionDirectory = true;
+			config.CreateSolution = true;
+
+			Assert.AreEqual (generatedName, NewProjectConfiguration.GenerateValidProjectName (name));
+			Assert.AreEqual (generatedName, config.GetValidProjectName ());
+			Assert.AreEqual (generatedName, config.GetValidSolutionName ());
+		}
 	}
 }
 

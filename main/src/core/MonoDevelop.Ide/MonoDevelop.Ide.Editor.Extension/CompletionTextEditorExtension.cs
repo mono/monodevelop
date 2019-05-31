@@ -1,4 +1,4 @@
-// CompletionTextEditorExtension.cs
+﻿// CompletionTextEditorExtension.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -537,11 +537,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
 		internal void OnUpdateSelectionSurroundWith (CommandInfo info)
 		{
-			info.Enabled = Editor.IsSomethingSelected;
+			info.Enabled = Editor.IsSomethingSelected && !string.IsNullOrWhiteSpace (Editor.SelectedText);
 			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
-				int cpos, wlen;
-				if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				if (!GetCompletionCommandOffset (out var cpos, out var wlen)) {
 					cpos = Editor.CaretOffset;
 					wlen = 0;
 				}

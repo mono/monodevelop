@@ -1159,10 +1159,6 @@
  		<NodeBuilder class="MonoDevelop.DotNetCore.ProjXNodeBuilderExtension" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
-		<Class id="DotNetCoreProjectReader" class="MonoDevelop.DotNetCore.DotNetCoreProjectReader" />
-	</Extension>
-
 	<ExtensionPoint path="/MonoDevelop/DotNetCore/ContextMenu/ProjectPad/PackageDependency">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>

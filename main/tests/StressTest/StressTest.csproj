@@ -38,11 +38,9 @@
     <Reference Include="MonoDevelop.Core">
       <HintPath>..\..\build\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
   </ItemGroup>

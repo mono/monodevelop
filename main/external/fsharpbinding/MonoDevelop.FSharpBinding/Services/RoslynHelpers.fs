@@ -2,7 +2,7 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Immutable
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 module RoslynHelpers =
     ///Barebones symbol

@@ -219,16 +219,15 @@ namespace MonoDevelop.MacInterop
 		public static void SetProcessName (string name)
 		{
 			try {
-				ProcessSerialNumber psn;
-				if (GetCurrentProcess (out psn) == 0)
+				if (GetCurrentProcess (out ProcessSerialNumber psn) == 0)
 					CPSSetProcessName (ref psn, name);
 			} catch {} //EntryPointNotFoundException?
 		}
 		
 		struct ProcessSerialNumber {
 #pragma warning disable 0169
-			ulong highLongOfPSN;
-			ulong lowLongOfPSN;
+			uint highLongOfPSN;
+			uint lowLongOfPSN;
 #pragma warning restore 0169
 		}
 		

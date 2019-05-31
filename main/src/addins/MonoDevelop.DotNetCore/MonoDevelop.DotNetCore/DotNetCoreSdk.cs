@@ -179,5 +179,26 @@ namespace MonoDevelop.DotNetCore
 		{
 			SdkRootPath = path;
 		}
+
+		internal static string GetNotSupportedVersionMessage (string version = "")
+		{
+			string GetMessage (DotNetCoreVersion currentVersion)
+			{
+				return GettextCatalog.GetString ("NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} SDK by visiting {3}.", currentVersion.Major, currentVersion.Minor, currentVersion.ToString (), DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (currentVersion));
+			}
+
+			var installedVersion = Versions.OrderByDescending (x => x).FirstOrDefault ();
+			if (installedVersion != null) {
+				if (installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion) {
+					return GetMessage (installedVersion);
+				} else if (installedVersion.Major == 2 && installedVersion.Minor == 2 && installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion22) {
+					return GetMessage (installedVersion);
+				} else if (installedVersion.Major == 3 && installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion30) {
+					return GetMessage (installedVersion);
+				}
+			}
+
+			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core {0} SDK by visiting {1}.", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
+		}
 	}
 }

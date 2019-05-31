@@ -9,7 +9,7 @@ open System.Collections.Generic
 open System.Text.RegularExpressions
 open System.Threading.Tasks
 open Microsoft.CodeAnalysis.Text
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.FSharp.Shared
@@ -472,7 +472,7 @@ module Completion =
                         |> Seq.cast<CompletionData>
 
                     result.AddRange completions
-                    let _longName,residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+                    let _longName,residue = MonoDevelop.FSharp.Shared.Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if completionChar <> '.' && result.Count > 0 then
 
                         LoggingService.logDebug "Completion: residue %s" residue
@@ -532,11 +532,11 @@ module Completion =
                 let result = CompletionDataList()
 
                 let addIdentCompletions() =
-                    let (idents, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+                    let (idents, residue) = MonoDevelop.FSharp.Shared.Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if idents.IsEmpty then
                         let lineWithoutResidue = lineToCaret.[0..column-residue.Length-1]
                         if not (lineWithoutResidue.EndsWith ".") then
-                            let tokens = Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
+                            let tokens = MonoDevelop.FSharp.Shared.Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
                             let tokenToCompletion (token:FSharpTokenInfo) =
                                 let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
                                 CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
@@ -572,7 +572,7 @@ module Completion =
                                 // can be empty when it comes after an application
                                 // such as DateTime.Now.ToString().Subs <-
                                 // Here, we do a simple lookup for `Subs` in the above example.
-                                Parsing.findResidue lineToCaret
+                                MonoDevelop.FSharp.Shared.Parsing.findResidue lineToCaret
                             else
                                 residue
 
@@ -620,7 +620,7 @@ module Completion =
             ctrlSpace = ctrlSpace
             } = context
 
-        let (_, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+        let (_, residue) = MonoDevelop.FSharp.Shared.Parsing.findLongIdentsAndResidue(column, lineToCaret)
         let result = CompletionDataList()
         result.DefaultCompletionString <- residue
         result.TriggerWordLength <- residue.Length

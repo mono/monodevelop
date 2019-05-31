@@ -46,7 +46,7 @@ using System.Threading;
 
 namespace MonoDevelop.Components.Commands
 {
-	[DefaultServiceImplementation]
+	[DefaultServiceImplementation (typeof (IdeCommandManager))]
 	public class CommandManager: Service, IDisposable
 	{
 		// Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h
@@ -243,11 +243,7 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
-			CommandEntrySet cset = new CommandEntrySet ();
-			object[] items = AddinManager.GetExtensionObjects (addinPath, false);
-			foreach (CommandEntry e in items)
-				cset.Add (e);
-			return cset;
+			return CreateCommandEntrySet (AddinManager.AddinEngine, addinPath);
 		}
 		
 		bool isEnabled = true;
@@ -1733,7 +1729,8 @@ namespace MonoDevelop.Components.Commands
 					if (cui != null) {
 						if (cmd.CommandArray) {
 							info.ArrayInfo = new CommandArrayInfo (info);
-							cui.Run (cmdTarget, info.ArrayInfo);
+							if (IsEnabled)
+								cui.Run (cmdTarget, info.ArrayInfo);
 							if (!info.ArrayInfo.Bypass) {
 								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
@@ -1742,7 +1739,8 @@ namespace MonoDevelop.Components.Commands
 						}
 						else {
 							info.Bypass = false;
-							cui.Run (cmdTarget, info);
+							if (IsEnabled)
+								cui.Run (cmdTarget, info);
 							if (!info.Bypass) {
 								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
@@ -1814,10 +1812,12 @@ namespace MonoDevelop.Components.Commands
 			}
 			if (cmd.CommandArray) {
 				info.ArrayInfo = new CommandArrayInfo (info);
-				cmd.DefaultHandler.InternalUpdate (info.ArrayInfo);
+				if (IsEnabled)
+					cmd.DefaultHandler.InternalUpdate (info.ArrayInfo);
 			}
-			else
+			else if (IsEnabled)
 				cmd.DefaultHandler.InternalUpdate (info);
+			info.Enabled &= IsEnabled;
 		}
 		
 		/// <summary>

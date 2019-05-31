@@ -724,13 +724,15 @@ namespace MonoDevelop.Components.MainToolbar
 			if (pattern.Pattern == null && pattern.LineNumber > 0) {
 				DestroyPopup ();
 				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc?.GetContent<ITextView> () is ITextView view) {
+				if (doc?.GetContent<ITextView> (true) is ITextView view) {
 					doc.Select ();
 					var snapshot = view.TextBuffer.CurrentSnapshot;
-					var line = snapshot.GetLineFromLineNumber (pattern.LineNumber - 1);
+					int lineNumber = Math.Min (Math.Max (1, pattern.LineNumber), snapshot.LineCount);
+					var line = snapshot.GetLineFromLineNumber (lineNumber - 1);
 					if (line != null) {
-						view.Caret.MoveTo (new SnapshotPoint (snapshot, line.Start + Math.Min (pattern.Column - 1, line.Length)));
+						view.Caret.MoveTo (new SnapshotPoint (snapshot, line.Start + Math.Max (0, Math.Min (pattern.Column - 1, line.Length))));
 						IdeApp.CommandService.DispatchCommand (ViewCommands.CenterAndFocusCurrentDocument);
+						ToolbarView.SearchText = "";
 					}
 				}
 				return;

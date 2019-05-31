@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Shell;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -90,22 +91,27 @@ namespace MonoDevelop.Components.DockNotebook
 				documents.Sort (DirtyFilesFirst);
 			}
 
-			foreach (var d in documents) {
-				if (howManyDirtyFiles > 1)
+			if (howManyDirtyFiles > 1) {
+				foreach (var d in documents)
 					d.Close (true).Ignore ();
-				else {
-					// d.Close() could leave the UI synchronization context, letting the Gtk signal handler pass
-					// and Gtk would destroy the window immediately. Since we need to preserve the window
-					// state until the async document.Close () has finished, we interrupt the signal (return true)
-					// and destoy the window in a continuation task after the document has been closed.
-					d.Close ().ContinueWith ((arg) => {
-						if (arg.Result)
-							Destroy ();
-					}, Core.Runtime.MainTaskScheduler);
-					return true; 
-				}
+			} else if (documents.Count > 0) {
+				// Document.Close() could leave the UI synchronization context, letting the Gtk signal handler pass
+				// and Gtk would destroy the window immediately. Since we need to preserve the window
+				// state until the async document.Close () has finished, we interrupt the signal (return true)
+				// and destoy the window in a continuation task after the document has been closed.
+				CloseDocumentsAsync (documents).Ignore ();
+				return true;
 			}
 			return base.OnDeleteEvent (evnt);
+		}
+
+		async Task CloseDocumentsAsync (List<Document> documents)
+		{
+			foreach (var d in documents) {
+				if (!await d.Close ())
+					return;
+			}
+			Destroy ();
 		}
 
 		static int DirtyFilesFirst (Document x, Document y)

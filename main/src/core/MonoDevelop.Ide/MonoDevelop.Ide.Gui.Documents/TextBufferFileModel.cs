@@ -68,12 +68,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
 				MimeType = (await Runtime.GetService<DesktopService> ()).GetMimeTypeForUri (FilePath);
 				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
-
-				if (textDocument != null && textDocument.TextBuffer.ContentType == contentType) {
+				if (textDocument != null) {
 					// Reloading
 					try {
 						FreezeChangeEvent ();
 						OnSetText (text.Text);
+						if (textDocument.TextBuffer.ContentType != contentType)
+							textDocument.TextBuffer.ChangeContentType (contentType, null);
 						textDocument.Encoding = text.Encoding;
 						textDocument.UpdateDirtyState (false, System.IO.File.GetLastWriteTime (FilePath));
 					} finally {

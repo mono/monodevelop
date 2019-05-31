@@ -398,6 +398,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, eventArgs.Count);
 		}
+
+		[Test]
+		public void ProjectTargetFrameworkChanged_ProjectIsReevaluating_EventDoesNotFire ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			FakeDotNetProject project = LoadSolutionWithOneProject ();
+			CaptureProjectTargetFrameworkChangedEvents ();
+
+			project.IsReevaluating = true;
+			project.RaiseModifiedEvent (project, targetFrameworkPropertyName);
+			project.RaiseSavedEvent ();
+
+			Assert.AreEqual (0, eventArgs.Count);
+		}
 	}
 }
 

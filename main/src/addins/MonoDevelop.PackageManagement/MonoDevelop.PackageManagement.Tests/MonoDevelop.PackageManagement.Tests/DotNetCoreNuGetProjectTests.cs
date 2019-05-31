@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NuGet.Frameworks;
@@ -84,10 +85,15 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		Task<bool> InstallPackageAsync (string packageId, string version)
 		{
+			var installationContext = CreateInstallationContext ();
+			return InstallPackageAsync (packageId, version, installationContext);
+		}
+
+		Task<bool> InstallPackageAsync (string packageId, string version, BuildIntegratedInstallationContext installationContext)
+		{
 			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
 			var versionRange = new VersionRange (packageIdentity.Version);
 
-			var installationContext = CreateInstallationContext ();
 			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
 		}
 
@@ -353,7 +359,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectPath);
 				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectUniqueName);
 				Assert.AreSame (projectSpec, dependencyGraphCacheContext.PackageSpecCache [projectFile]);
-				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.2-[2.9.406, )", dotNetCliToolSpec.Name);
+				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.1-[2.9.406, )", dotNetCliToolSpec.Name);
 				Assert.AreEqual (projectFile, dotNetCliToolSpec.RestoreMetadata.ProjectPath);
 				Assert.AreSame (dotNetCliToolSpec, dependencyGraphCacheContext.PackageSpecCache [dotNetCliToolSpec.Name]);
 			}
@@ -589,6 +595,223 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsNull (dotNetCoreProject.MSBuildProject);
 			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstall_PackageReferenceAddedWithCondition ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework[] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool result = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.IsFalse (packageReference.Metadata.HasProperty ("IncludeAssets"));
+			Assert.IsFalse (packageReference.Metadata.HasProperty ("PrivateAssets"));
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstallNonStandardOriginalFramework_OriginalFrameworkUsedInCondition ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var net472Framework = NuGetFramework.Parse ("net472");
+
+			var successfulFrameworks = new NuGetFramework [] {
+				net472Framework
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+			originalFrameworks [net472Framework] = ".NETFramework4.7.2";
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool result = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == '.NETFramework4.7.2'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual (packageReference.Metadata.GetValue ("Version"), "2.6.1");
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstallPrivateAndIncludeAssets_PackageReferenceHasAssetInfo ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			installationContext.IncludeType = LibraryIncludeFlags.Runtime |
+				LibraryIncludeFlags.Build |
+				LibraryIncludeFlags.Native |
+				LibraryIncludeFlags.ContentFiles |
+				LibraryIncludeFlags.Analyzers;
+
+			installationContext.SuppressParent = LibraryIncludeFlags.All;
+
+			bool result = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.AreEqual ("runtime; build; native; contentfiles; analyzers", packageReference.Metadata.GetValue ("IncludeAssets"));
+			Assert.AreEqual ("all", packageReference.Metadata.GetValue ("PrivateAssets"));
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstallTwice_PackageReferenceAddedToSameItemGroup ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool firstInstallResult = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			// Update.
+			bool result = await InstallPackageAsync ("AnotherTestPackage", "3.0.1", installationContext);
+
+			var secondPackageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.FirstOrDefault (item => item.Include == "AnotherTestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.IsTrue (firstInstallResult);
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", secondPackageReference.ParentGroup.Condition);
+			Assert.AreEqual ("3.0.1", secondPackageReference.Metadata.GetValue ("Version"));
+			Assert.AreEqual (packageReference.ParentGroup, secondPackageReference.ParentGroup);
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialUpdate_PackageReferenceUpdated ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool firstInstallResult = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+
+			bool result = await InstallPackageAsync ("TestPackage", "3.0.1", installationContext);
+
+			var updatedPackageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.FirstOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("3.0.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.IsTrue (firstInstallResult);
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", updatedPackageReference.ParentGroup.Condition);
+			Assert.AreEqual ("3.0.1", updatedPackageReference.Metadata.GetValue ("Version"));
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
 		}
 	}
 }

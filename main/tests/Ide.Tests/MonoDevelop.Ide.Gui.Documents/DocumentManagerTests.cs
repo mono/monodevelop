@@ -26,12 +26,14 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using IdeUnitTests;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Shell;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
 
@@ -202,19 +204,28 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			var doc = await documentManager.OpenDocument (new TestController ());
 
-			documentManager.DocumentClosing += async (o, e) => {
-				await Task.Delay (100); e.Cancel = true;
-			};
+			documentManager.DocumentClosing += DontClose;
 
-			eventTracker.Reset ();
+			try {
 
-			bool result = await doc.Close ();
-			Assert.IsFalse (result);
+				eventTracker.Reset ();
 
-			Assert.AreEqual (1, shell.Windows.Count);
-			Assert.AreEqual (1, documentManager.Documents.Count);
-			Assert.AreEqual (0, eventTracker.DocumentClosedEvents.Count);
-			Assert.AreEqual (0, eventTracker.ActiveDocumentChangedEvents.Count);
+				bool result = await doc.Close ();
+				Assert.IsFalse (result);
+
+				Assert.AreEqual (1, shell.Windows.Count);
+				Assert.AreEqual (1, documentManager.Documents.Count);
+				Assert.AreEqual (0, eventTracker.DocumentClosedEvents.Count);
+				Assert.AreEqual (0, eventTracker.ActiveDocumentChangedEvents.Count);
+			} finally {
+				documentManager.DocumentClosing -= DontClose;
+			}
+		}
+
+		async Task DontClose (object s, DocumentCloseEventArgs e)
+		{
+			await Task.Delay (100);
+			e.Cancel = true;
 		}
 
 		[Test]
@@ -366,6 +377,188 @@ namespace MonoDevelop.Ide.Gui.Documents
 			container.SetActive ();
 			Assert.AreEqual (subView1, root.ActiveViewInHierarchy);
 			Assert.AreEqual (subView1, container.ActiveViewInHierarchy);
+		}
+
+		[Test]
+		public async Task ReuseFileDocument ()
+		{
+			var f1 = new ReusableControllerFactory ();
+			var f2 = new ReusableFileControllerFactory ();
+			documentControllerService.RegisterFactory (f1);
+			documentControllerService.RegisterFactory (f2);
+
+			var foo_dll_test = GetTempFile (".dll_test");
+			var bar_dll_test = GetTempFile (".dll_test");
+			var bar_exe_test = GetTempFile (".exe_test");
+			var foo_txt = GetTempFile (".txt");
+
+			try {
+				var controller = new ReusableFileController ();
+				var descriptor = new FileDescriptor (foo_dll_test, null, null);
+				await controller.Initialize (descriptor);
+				var doc = await documentManager.OpenDocument (controller);
+				Assert.NotNull (doc);
+
+				var doc2 = await documentManager.OpenDocument (new FileDescriptor (foo_dll_test, null, null));
+				Assert.AreSame (doc, doc2);
+
+				doc2 = await documentManager.OpenDocument (new FileDescriptor (bar_dll_test, null, null));
+				Assert.AreSame (doc, doc2);
+
+				doc2 = await documentManager.OpenDocument (new FileDescriptor (bar_exe_test, null, null));
+				Assert.AreSame (doc, doc2);
+
+				doc2 = await documentManager.OpenDocument (new FileDescriptor (foo_txt, null, null));
+				Assert.AreNotSame (doc, doc2);
+				await doc2.Close ();
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (foo_dll_test));
+				Assert.AreSame (doc, doc2);
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (bar_dll_test));
+				Assert.AreSame (doc, doc2);
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (bar_exe_test));
+				Assert.AreSame (doc, doc2);
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (foo_txt));
+				Assert.AreNotSame (doc, doc2);
+				await doc2.Close ();
+
+				await documentManager.CloseAllDocuments (false);
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (foo_dll_test) { Options = OpenDocumentOptions.None });
+				Assert.AreNotSame (doc, doc2);
+				await doc2.Close ();
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (bar_dll_test) { Options = OpenDocumentOptions.None });
+				Assert.AreNotSame (doc, doc2);
+				await doc2.Close ();
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (bar_exe_test) { Options = OpenDocumentOptions.None });
+				Assert.AreNotSame (doc, doc2);
+				await doc2.Close ();
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (foo_txt) { Options = OpenDocumentOptions.None });
+				Assert.AreNotSame (doc, doc2);
+				await doc2.Close ();
+			} finally {
+				documentControllerService.UnregisterFactory (f1);
+				documentControllerService.UnregisterFactory (f2);
+				File.Delete (foo_dll_test);
+				File.Delete (bar_dll_test);
+				File.Delete (bar_exe_test);
+				File.Delete (foo_txt);
+			}
+		}
+
+		string GetTempFile (string extension)
+		{
+			var tempFile = Path.GetTempFileName ();
+			var finalFile = tempFile + extension;
+			File.Copy (GetType ().Assembly.Location, finalFile, true); // We need a binary file to avoid the file being opened in the text editor by default
+			return finalFile;
+		}
+
+		[Test]
+		public async Task ReuseFileDocumentChangingOwner()
+		{
+			var f2 = new ReusableFileControllerFactory ();
+			documentControllerService.RegisterFactory (f2);
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			var project2 = Services.ProjectService.CreateDotNetProject ("C#");
+
+			var file = GetTempFile (".dll_test");
+
+			try {
+				var doc = await documentManager.OpenDocument (new FileOpenInformation (file, project));
+				Assert.NotNull (doc);
+				Assert.AreSame (project, doc.DocumentController.Owner);
+
+				// Reuse
+
+				var doc2 = await documentManager.OpenDocument (new FileOpenInformation (file, project));
+				Assert.AreSame (doc, doc2);
+				Assert.AreSame (project, doc.DocumentController.Owner);
+
+				// Reuse, changing owner
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (file, project2));
+				Assert.AreSame (doc, doc2);
+				Assert.AreSame (project2, doc.DocumentController.Owner);
+
+			} finally {
+				documentControllerService.UnregisterFactory (f2);
+				project.Dispose ();
+				project2.Dispose ();
+				File.Delete (file);
+			}
+		}
+
+		[Test]
+		public async Task ReuseFileDocumentWithNoReuseFlag ()
+		{
+			var f1 = new ReusableFileControllerFactory ();
+			var f2 = new ReusableFileControllerFactory ();
+
+			documentControllerService.RegisterFactory (f1);
+			documentControllerService.RegisterFactory (f2);
+
+			f1.Enabled = true;
+			f2.Enabled = false;
+
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+
+			var file = GetTempFile (".dll_test");
+
+			try {
+				var doc = await documentManager.OpenDocument (new FileOpenInformation (file, project));
+				Assert.NotNull (doc);
+				var controller = (ReusableFileController)doc.DocumentController;
+				controller.AllowReuse = false;
+
+				// If the reusable flag is set, reuse the doc since even if TryReuseDocument returns false, the file names match.
+
+				var doc2 = await documentManager.OpenDocument (new FileOpenInformation (file, project) { Options = OpenDocumentOptions.TryToReuseViewer });
+				Assert.AreSame (doc, doc2);
+
+				// If the reusable flag is not set, the document can't be reused, even if names match
+
+				doc2 = await documentManager.OpenDocument (new FileOpenInformation (file, project) { Options = OpenDocumentOptions.None });
+				Assert.AreNotSame (doc, doc2);
+
+				// The old non-reusable document must have been closed
+				Assert.AreEqual (1, documentManager.Documents.Count);
+
+			} finally {
+				documentControllerService.UnregisterFactory (f1);
+				documentControllerService.UnregisterFactory (f2);
+				project.Dispose ();
+				File.Delete (file);	
+			}
+		}
+
+		[Test]
+		public async Task ReuseDocumentIdentifiedByDescriptor ()
+		{
+			var f1 = new ReusableControllerFactory ();
+			documentControllerService.RegisterFactory (f1);
+			try {
+				var controller = new ReusableController ();
+				var descriptor = new ReusableDescriptor ();
+				await controller.Initialize (descriptor);
+				var doc = await documentManager.OpenDocument (controller);
+
+				Assert.NotNull (doc);
+
+				var doc2 = await documentManager.OpenDocument (descriptor);
+				Assert.AreSame (doc, doc2);
+
+				var doc3 = await documentManager.OpenDocument (new ReusableDescriptor ());
+				Assert.AreNotSame (doc, doc3);
+			} finally {
+				documentControllerService.UnregisterFactory (f1);
+			}
 		}
 
 		[Test]
@@ -605,6 +798,36 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.AreEqual (4, additionalContentAddedEvents);
 			Assert.AreEqual (3, additionalContentRemovedEvents);
 		}
+
+		[Test]
+		public async Task RunWhenContentAddedForSlowView()
+		{
+			// In this test the SomeContent instance is provided by the view,
+			// and the view is slow to load, so it won't be available just
+			// after the document is returned.
+
+			var controller = new SlowlyLoadedController ();
+			var doc = await documentManager.OpenDocument (controller);
+
+			int contentAddedEvents = 0;
+
+			// View not yet loaded
+			Assert.IsNull (doc.GetContent<SomeContent> ());
+
+			var r1 = doc.RunWhenContentAdded<SomeContent> (_ => {
+				contentAddedEvents++;
+			});
+
+			Assert.AreEqual (0, contentAddedEvents);
+
+			// Simulate slow load done
+			controller.GoAhead ();
+
+			var c = await doc.GetContentWhenAvailable<SomeContent> ();
+			Assert.IsNotNull (c);
+			Assert.AreEqual (1, contentAddedEvents);
+			Assert.IsNotNull (doc.GetContent<SomeContent> ());
+		}
 	}
 
 	class TestController: DocumentController
@@ -657,5 +880,91 @@ namespace MonoDevelop.Ide.Gui.Documents
 			DocumentClosingEvents.Clear ();
 			ActiveDocumentChangedEvents.Clear ();
 		}
+	}
+
+	class SlowlyLoadedController: DocumentController
+	{
+		TaskCompletionSource<bool> slowLoad = new TaskCompletionSource<bool> ();
+
+		public void GoAhead ()
+		{
+			slowLoad.SetResult (true);
+		}
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			// Simulate slow load
+			await slowLoad.Task;
+
+			var inner = new ContentTestController ();
+			await inner.Initialize (null);
+			inner.AddContent (new SomeContent ());
+			return await inner.GetDocumentView ();
+		}
+	}
+  
+	class ReusableController : DocumentController
+	{
+		ModelDescriptor modelDescriptor;
+
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			this.modelDescriptor = modelDescriptor;
+			return base.OnInitialize (modelDescriptor, status);
+		}
+
+		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
+		{
+			if (this.modelDescriptor == modelDescriptor)
+				return true;
+			return base.OnTryReuseDocument (modelDescriptor);
+		}
+	}
+
+	class ReusableFileController : FileDocumentController
+	{
+		public bool AllowReuse { get; set; } = true;
+		
+		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
+		{
+			var fileDesc = modelDescriptor as FileDescriptor;
+			var ext = fileDesc.FilePath.Extension;
+			return AllowReuse && (ext == ".dll_test" || ext == ".exe_test");
+		}
+	}
+
+	class ReusableFileControllerFactory : FileDocumentControllerFactory
+	{
+		public bool Enabled { get; set; } = true;
+
+		public override Task<DocumentController> CreateController (FileDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
+		{
+			return Task.FromResult<DocumentController> (new ReusableFileController ());
+		}
+
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
+		{
+			if (Enabled && (modelDescriptor.FilePath.Extension == ".dll_test" || modelDescriptor.FilePath.Extension == ".exe_test"))
+				yield return new DocumentControllerDescription ("Assembly_Test", true, DocumentControllerRole.Tool);
+		}
+	}
+
+	class ReusableControllerFactory : DocumentControllerFactory
+	{
+		public override Task<DocumentController> CreateController (ModelDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
+		{
+			return Task.FromResult<DocumentController> (new ReusableController ());
+		}
+
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		{
+			if (modelDescriptor is ReusableDescriptor)
+				yield return new DocumentControllerDescription ("Reusable", true, DocumentControllerRole.Tool);
+		}
+	}
+
+
+	class ReusableDescriptor : ModelDescriptor
+	{
 	}
 }

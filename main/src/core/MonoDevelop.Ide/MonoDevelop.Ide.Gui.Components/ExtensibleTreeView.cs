@@ -1292,7 +1292,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		static bool TryHandlePaste (TreeNodeNavigator node, object[] copyObjects, DragOperation currentTransferOperation, bool simulatePaste, bool parentDrop)
 		{
-			if (node == null || copyObjects?.Length <= 0)
+			if (node == null || copyObjects == null || copyObjects.Length == 0)
 				return false;
 			var pos = node.CurrentPosition;
 			foreach (var b in node.NodeBuilderChain) {

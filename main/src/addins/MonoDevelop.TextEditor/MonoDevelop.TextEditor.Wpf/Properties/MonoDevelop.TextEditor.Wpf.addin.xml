@@ -1,6 +1,7 @@
 <ExtensionModel>
 	<Runtime>
 		<Import assembly="MonoDevelop.TextEditor.Wpf.dll"/>
+		<Import assembly="../../../bin/Microsoft.VisualStudio.InteractiveWindow.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
 		<Import assembly="Microsoft.VisualStudio.Text.Extras.dll" />

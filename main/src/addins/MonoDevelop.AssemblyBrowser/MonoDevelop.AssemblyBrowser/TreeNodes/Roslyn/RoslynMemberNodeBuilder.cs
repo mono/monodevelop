@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -79,20 +80,18 @@ namespace MonoDevelop.AssemblyBrowser
 			return 4;
 		}
 
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
-			return Disassemble (data, navigator);
+			return DisassembleAsync (data, navigator);
 		}
 
-		static readonly List<ReferenceSegment> emptyReferences = new List<ReferenceSegment> ();
-
-		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
+		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			var symbol = navigator.DataItem as ISymbol;
 			if (symbol == null) {
 				data.Text = "// DataItem is no symbol " + navigator.DataItem; // should never happen
 				LoggingService.LogError ("DataItem is no symbol " + navigator.DataItem);
-				return emptyReferences;
+				return AssemblyBrowserTypeNodeBuilder.EmptyReferenceSegmentTask;
 			}
 			var location = symbol.Locations [0];
 			if (location.IsInSource) {
@@ -107,7 +106,7 @@ namespace MonoDevelop.AssemblyBrowser
 				data.Text = "// Error: Symbol " + symbol.MetadataName + " is not in source."; // should never happen
 				LoggingService.LogError ("Symbol " + symbol.MetadataName + " is not in source.");
 			}
-			return emptyReferences;
+			return AssemblyBrowserTypeNodeBuilder.EmptyReferenceSegmentTask;
 		}
 
 

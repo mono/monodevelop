@@ -708,6 +708,7 @@ namespace MonoDevelop.Ide
 			if (!await IdeApp.Workbench.SaveAllDirtyFiles ())
 				return false;
 
+			IdeApp.Workbench.EnsureLayout ();
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
@@ -2075,6 +2076,10 @@ namespace MonoDevelop.Ide
 							bool? result = MoveCopyFile (file, targetPath, action == AddAction.Move, confirmReplaceFileMessage);
 							if (result == true) {
 								if (vfile == null) {
+									// Build action may depend on file location if globs are used so check again after moving the file.
+									if (string.IsNullOrEmpty (buildAction))
+										fileBuildAction = project.GetDefaultBuildAction (targetPath);
+
 									var pf = new ProjectFile (targetPath, fileBuildAction);
 									vpathsInProject [pf.ProjectVirtualPath] = pf;
 									filesInProject [pf.FilePath] = pf;

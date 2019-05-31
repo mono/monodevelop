@@ -78,9 +78,9 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public static void ShowConfigurationDialog (GitRepository repo)
+		public static void ShowConfigurationDialog (VersionControlSystem vcs, string repoPath, string repoUrl)
 		{
-			using (var dlg = new GitConfigurationDialog (repo))
+			using (var dlg = new GitConfigurationDialog (vcs, repoPath, repoUrl))
 				MessageService.ShowCustomDialog (dlg);
 		}
 

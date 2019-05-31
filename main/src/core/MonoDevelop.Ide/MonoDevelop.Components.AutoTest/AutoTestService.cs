@@ -64,6 +64,11 @@ namespace MonoDevelop.Components.AutoTest
 				MemoryStream ms = new MemoryStream (data);
 				BinaryFormatter bf = new BinaryFormatter ();
 				IAutoTestClient client = (IAutoTestClient) bf.Deserialize (ms);
+
+				// Initialize as much as we can before connecting back to the client
+				Ide.IdeApp.Workbench.EnsureLayout ();
+				Runtime.Preferences.EnableUpdaterForCurrentSession = false;
+
 				client.Connect (manager.AttachClient (client));
 			}
 			if (publishServer && !manager.IsClientConnected) {
@@ -74,6 +79,7 @@ namespace MonoDevelop.Components.AutoTest
 				bf.Serialize (ms, oref);
 				sref = Convert.ToBase64String (ms.ToArray ());
 				File.WriteAllText (SessionReferenceFile, sref);
+				Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 			}
 		}
 

@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -87,6 +87,7 @@ namespace MonoDevelop.SourceEditor
 		bool writeAccessChecked;
 		TaskService taskService;
 		TextEditorService textEditorService;
+		CodeTemplateToolboxProvider codeTemplateToolboxProvider;
 
 		internal BreakpointStore Breakpoints => breakpoints;
 
@@ -343,6 +344,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.FileName = ContentName;
 			UpdateMimeType (Document.FileName);
+			codeTemplateToolboxProvider = new CodeTemplateToolboxProvider (contentName);
 			ContentNameChanged?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -862,6 +864,9 @@ namespace MonoDevelop.SourceEditor
 				RunFirstTimeFoldUpdate (text);
 				*/
 			Document.InformLoadComplete ();
+
+			// Now that the editor has been completely loaded, ask ITextView to update the aggregated focus status
+			widget.TextEditor.QueueAggregateFocusCheck ();
 		}
 
 		protected virtual string ProcessLoadText (string text)
@@ -2417,6 +2422,8 @@ namespace MonoDevelop.SourceEditor
 			var c = GetContent (type);
 			if (c != null)
 				yield return c;
+			if (type == typeof (IToolboxDynamicProvider) && codeTemplateToolboxProvider != null)
+				yield return codeTemplateToolboxProvider;
 		}
 
 		#region widget command handlers
@@ -3424,6 +3431,12 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetLineHeight (line);
 		}
 
+		void ITextEditorImpl.SetNotDirtyState ()
+		{
+			TextEditor.Document.SetNotDirtyState ();
+		}
+
+
 		public bool DeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.DeleteItem (node);
 
 		public bool CanDeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.GetToolboxItems ().Contains (node);
@@ -3438,7 +3451,7 @@ namespace MonoDevelop.SourceEditor
 
 		public bool IsDirty {
 			get => isDirty;
-			private set {
+			set {
 				if (isDirty != value) {
 					isDirty = value;
 					DirtyChanged?.Invoke (this, EventArgs.Empty);

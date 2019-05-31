@@ -9,9 +9,7 @@ EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
 EXTERNAL=../../external
-MONOSTUB_DEFINES=-DXM_REGISTRAR
 MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a
-EXTERN_C_XM_REGISTRAR_DEFINE=$(shell ./check-xm-extern.sh)
 
 if !RELEASE_BUILDS
 HYBRID_SUSPEND_ABORT=-DHYBRID_SUSPEND_ABORT
@@ -27,6 +25,7 @@ CLEANFILES = render.exe monostub monostub-test
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
+export MACOSX_DEPLOYMENT_TARGET=10.12
 
 all: monostub monostub-nogui monostub-test
 
@@ -37,23 +36,23 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
 	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
 	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCEFILES)
-	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
+	gcc -g -Wall -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
 	./monostub-test
 
 clean-local:

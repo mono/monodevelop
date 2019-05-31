@@ -26,8 +26,8 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
-    <PackageReference Include="NuGet.PackageManagement" Version="5.0.2" PrivateAssets="runtime" />
-    <PackageReference Include="NuGet.Indexing" Version="5.0.2" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.PackageManagement" Version="5.1.0" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.Indexing" Version="5.1.0" PrivateAssets="runtime" />
     <!-- Ensure .NET 4.7.2's System.Net.Http is used not the one from this NuGet package -->
     <PackageReference Include="System.Net.Http" Version="4.3.3" ExcludeAssets="all" />
     <!-- Ensure .NET 4.7.2's System.IO.Compression is used not the one from this NuGet package -->
@@ -341,6 +341,12 @@
     <Compile Include="MonoDevelop.PackageManagement\ExceptionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DependencyGraphSpecExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSpecExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ConditionalPackageReferenceHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPropertySetExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSdkProjectExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SdkProjectReloadMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SdkProjectBuilderMaintainer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SdkProjectFileRenamedHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -445,7 +451,6 @@
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore" />

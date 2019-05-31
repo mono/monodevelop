@@ -58,6 +58,7 @@
 	</ItemGroup>
 
 	<PropertyGroup>
+		<XamarinMacAnalyzerMinimumOSVersion>10.11</XamarinMacAnalyzerMinimumOSVersion>
 		<MonoDevelopDevAnalyzer>$(PackagesDirectory)\MonoDevelopDev.Analyzers.$(NugetVersionMonoDevelopAnalyzers)\analyzers\dotnet\cs\MonoDevelop.Analyzers.dll</MonoDevelopDevAnalyzer>
 	</PropertyGroup>
 

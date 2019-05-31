@@ -28,8 +28,9 @@ using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Shell;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -51,29 +52,37 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
 
-		internal static void Initialize ()
+		internal static async Task Initialize (bool hideWelcomePage)
 		{
-			IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
-				if (!IdeApp.IsExiting && HasWindowImplementation) {
-					ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
-				}
+			IdeApp.Initialized += (s, args) => {
+				IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
+					if (!IdeApp.IsExiting && HasWindowImplementation) {
+						ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
+					}
+				};
+				IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
+					HideWelcomePageOrWindow ();
+				};
+				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+					if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
+						ShowWelcomePageOrWindow ();
+					}
+				};
+				IdeApp.Workbench.DocumentOpened += delegate {
+					HideWelcomePageOrWindow ();
+				};
+				IdeApp.Workbench.DocumentClosed += delegate {
+					if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
+						ShowWelcomePage ();
+					}
+				};
 			};
-			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
-				HideWelcomePageOrWindow ();
-			};
-			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
-					ShowWelcomePageOrWindow ();
-				}
-			};
-			IdeApp.Workbench.DocumentOpened += delegate {
-				HideWelcomePageOrWindow ();
-			};
-			IdeApp.Workbench.DocumentClosed += delegate {
-				if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
-					ShowWelcomePage ();
-				}
-			};
+
+			if (!hideWelcomePage && HasWindowImplementation) {
+				await Runtime.GetService<DesktopService> ();
+				var commandManager = await Runtime.GetService<CommandManager> ();
+				await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
+			}
 		}
 
 		public static bool WelcomePageVisible => visible;
@@ -117,8 +126,15 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 				WelcomePageShown?.Invoke (welcomePage, EventArgs.Empty);
 				welcomePage.UpdateProjectBar ();
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Visible = false;
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.AddOverlayWidget (welcomePage, animate);
+				
+				var rootWindow = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
+				if (rootWindow.BottomBar is MonoDevelopStatusBar statusBar) {
+					statusBar.Visible = false;
+				}
+
+				if (rootWindow.DockFrame is Components.Docking.DockFrame dockFrame) {
+					dockFrame.AddOverlayWidget (welcomePage, animate);
+				}
 				welcomePage.GrabFocus ();
 			}
 		}
@@ -135,7 +151,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static async Task<bool> ShowWelcomeWindow (WelcomeWindowShowOptions options)
 		{
-			if (WelcomeWindowProvider == null) {
+			if (!HasWindowImplementation) {
 				return false;
 			}
 

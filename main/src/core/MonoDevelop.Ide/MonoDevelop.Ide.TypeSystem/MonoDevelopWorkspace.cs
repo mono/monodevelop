@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
-				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
+				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.TryCreate (this));
 
 			desktopService = await serviceProvider.GetService<DesktopService> ().ConfigureAwait (false);
 			documentManager = await serviceProvider.GetService<DocumentManager> ().ConfigureAwait (false);
@@ -280,11 +280,24 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		/// <summary>
+		/// Stores the additional C# buffers added to the workspace by Razor. These usually
+		/// have the .cshtml.g.cs extension and don't exist on disk.
+		/// We need to keep track of these separately so that when we reload an ASP.NET project
+		/// we re-add these manually as they do not come from the project system.
+		/// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/889145
+		/// </summary>
+		readonly HashSet<DocumentInfo> virtualDocuments = new HashSet<DocumentInfo> ();
+
+		/// <summary>
 		/// Used by WebTools to add a C# buffer from .cshtml as a "file"
 		/// to the workspace while .cshtml is open
 		/// </summary>
 		internal void AddDocument(DocumentInfo documentInfo)
 		{
+			lock (virtualDocuments) {
+				virtualDocuments.Add (documentInfo);
+			}
+
 			OnDocumentAdded (documentInfo);
 		}
 
@@ -294,7 +307,28 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </summary>
 		internal void RemoveDocument(DocumentId documentId)
 		{
+			lock (virtualDocuments) {
+				virtualDocuments.RemoveWhere (d => d.Id == documentId);
+			}
+
 			OnDocumentRemoved (documentId);
+		}
+
+		/// <summary>
+		/// Razor (.cshtml) needs to be able to add C# documents to a project that are not backed by a file on disk.
+		/// As these don't come from the project system, we need to keep track of these documents to readd them
+		/// manually every time the project is reloaded from disk.
+		/// </summary>
+		internal ProjectInfo AddVirtualDocuments(ProjectInfo projectInfo)
+		{
+			lock (virtualDocuments) {
+				var virtualDocumentsToAdd = virtualDocuments.Where (d => d.Id.ProjectId == projectInfo.Id);
+				if (virtualDocumentsToAdd.Any ()) {
+					projectInfo = projectInfo.WithDocuments (projectInfo.Documents.Concat (virtualDocumentsToAdd));
+				}
+			}
+
+			return projectInfo;
 		}
 
 		// This is called by OnProjectRemoved.
@@ -433,7 +467,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			// No cache.
-			await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+			await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 			if (cancellationToken.IsCancellationRequested)
 				return (solution, null);
 
@@ -445,7 +479,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
 
-				await TypeSystemService.FreezeLoad ().ConfigureAwait (false);
+				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 				if (cancellationToken.IsCancellationRequested)
 					return;
 
@@ -465,6 +499,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 					lock (projectModifyLock) {
+						projectInfo = AddVirtualDocuments (projectInfo);
 						OnProjectReloaded (projectInfo);
 					}
 					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
@@ -1348,7 +1383,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 							try {
 								lock (projectModifyLock) {
-									OnProjectReloaded (t.Result);
+									ProjectInfo newProjectContents = t.Result;
+									newProjectContents = AddVirtualDocuments (newProjectContents);
+									OnProjectReloaded (newProjectContents);
 									Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
 								}
 							} catch (Exception e) {
