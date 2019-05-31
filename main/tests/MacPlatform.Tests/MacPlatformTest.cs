@@ -192,7 +192,7 @@ namespace MacPlatform.Tests
 
 				Assert.Throws<ObjCException> (() => void_objc_msgSend (ex.Handle, selector));
 
-				var (_, message) = logger.LogMessages.Single (x => x.Level == LogLevel.Error);
+				var (_, message) = logger.LogMessages.Single (x => x.Level == LogLevel.Fatal);
 				AssertMacPlatformStacktrace (message);
 			} finally {
 				LoggingService.RemoveLogger (logger.Name);
