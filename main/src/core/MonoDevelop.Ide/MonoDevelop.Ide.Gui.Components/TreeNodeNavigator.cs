@@ -358,8 +358,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				get {
 					object data = DataItem;
 					NodeBuilder[] chain = BuilderChain;
-					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain[0]).GetNodeName (this, data);
-					else return GetStoreNodeInfo ().Label;
+					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain [0]).GetNodeName (this, data);
+					else {
+						var ni = GetStoreNodeInfo ();
+						return ni != null ? ni.Label : "";
+					}
 				}
 			}
 			
