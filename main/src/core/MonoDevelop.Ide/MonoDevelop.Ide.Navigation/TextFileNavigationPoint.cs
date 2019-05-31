@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TextFileNavigationPoint.cs
 // 
 // Author:
@@ -35,6 +35,10 @@ using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Text;
 using System.Linq;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -44,37 +48,33 @@ namespace MonoDevelop.Ide.Navigation
 		int line;
 		int column;
 
-		int offset;
-		ITextSourceVersion version;
-		TextEditor buffer;
+		SnapshotPoint? offset;
+		ITextVersion version;
+		ITextView textView;
 
-		public TextFileNavigationPoint (Document doc, TextEditor buffer)
+		public TextFileNavigationPoint (Document doc, ITextView textView)
 			: base (doc)
 		{
-			var location = buffer.CaretLocation;
-			version = buffer.Version;
-			offset = buffer.CaretOffset;
-			line = location.Line;
-			column = location.Column;
-			this.buffer = buffer;
+			version = textView.TextSnapshot.Version;
+			offset = textView.Caret.Position.BufferPosition;
+			this.textView = textView;
 		}
 
 		protected override void OnDocumentClosing ()
 		{
 			try {
 				// text source version becomes invalid on document close.
-				if (buffer != null) {
-					if (version.BelongsToSameDocumentAs (buffer.Version))
-						offset = version.MoveOffsetTo (buffer.Version, offset);
-					var location = buffer.CaretLocation;
-					line = location.Line;
-					column = location.Column;
+				if (textView != null) {
+					var offset = textView.Caret.Position.BufferPosition.Position;
+					var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (offset);
+					line = snapshotLine.LineNumber;
+					column = offset - snapshotLine.Start.Position;
 				}
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}
 			version = null;
-			buffer = null;
+			textView = null;
 		}
 
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -111,32 +111,24 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			Document doc = await base.DoShow ();
 			if (doc != null) {
-				var buf = doc.Editor;
-				if (buf != null) {
+				doc.RunWhenContentAdded<ITextView> (textView => {
 					doc.DisableAutoScroll ();
-					buf.RunWhenLoaded (() => {
-						JumpToCurrentLocation (buf);
-					});
-				}
+					JumpToCurrentLocation (textView);
+				});
 			}
 			return doc;
 		}
 
-		protected void JumpToCurrentLocation (TextEditor editor)
+		protected void JumpToCurrentLocation (ITextView textView)
 		{
-			if (version != null && version.BelongsToSameDocumentAs (editor.Version)) {
-				var currentOffset = version.MoveOffsetTo (editor.Version, offset);
-				var loc = editor.OffsetToLocation (currentOffset);
-				editor.SetCaretLocation (loc);
+			if (version != null && textView == this.textView && offset.HasValue) {
+				textView.TryMoveCaretToAndEnsureVisible (offset.Value);
 			} else {
-				var doc = IdeApp.Workbench.Documents.FirstOrDefault (d => d.Editor == editor);
-				if (doc != null) {
-					buffer = doc.Editor;
-					version = buffer.Version;
-					offset = buffer.LocationToOffset (line, column);
-					SetDocument (doc);
-				}
-				editor.SetCaretLocation (Math.Max (line, 1), Math.Max (column, 1));
+				var editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
+				var snapshotLine = textView.TextSnapshot.GetLineFromLineNumber (this.line);
+				var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
+				var point = new VirtualSnapshotPoint (textView.TextSnapshot, snapshotLine.Start.Position + column);
+				editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
 			}
 		}
 
