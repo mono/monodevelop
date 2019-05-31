@@ -78,7 +78,15 @@ namespace MonoDevelop.AssemblyBrowser
 			var data = new List<NamespaceData> (32);
 			CollectNamespaces (data, dom.Assembly.GlobalNamespace.GetNamespaceMembers ());
 			builder.AddChildren (data);
-			builder.AddChildren (dom.Assembly.GlobalNamespace.GetTypeMembers ().Where (type => !publicOnly || type.IsPublic ()));
+
+			var types = dom.Assembly.GlobalNamespace.GetTypeMembers ();
+			if (types.Length > 0) {
+				var children = publicOnly
+					? types.Where (t => t.IsPublic ())
+					: types;
+
+				builder.AddChildren (children);
+			}
 		}
 
 		static void CollectNamespaces (List<NamespaceData> acc, IEnumerable<Microsoft.CodeAnalysis.INamespaceSymbol> namespaces)

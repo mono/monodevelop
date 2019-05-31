@@ -1177,7 +1177,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (definitions.Count + projects.Count == 1) {
 						builder = TreeView.LoadTree (result);
 					} else {
-						builder = TreeView.AddChild (result, false);
+						builder = TreeView.AddChild (result, expand);
 					}
 					if (TreeView.GetSelectedNode () == null)
 						builder.Selected = builder.Expanded = expand;
@@ -1213,7 +1213,9 @@ namespace MonoDevelop.AssemblyBrowser
 			} else {
 				builder = TreeView.AddChild (project, false);
 			}
-			builder.Selected = builder.Expanded = selectReference;
+
+			if (TreeView.GetSelectedNode () == null || selectReference)
+				builder.Selected = builder.Expanded = selectReference;
 		}
 
 		//MonoDevelop.Components.RoundedFrame popupWidgetFrame;

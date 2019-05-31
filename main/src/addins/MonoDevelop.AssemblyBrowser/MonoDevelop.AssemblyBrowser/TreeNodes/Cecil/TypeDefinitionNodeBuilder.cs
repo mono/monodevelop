@@ -101,20 +101,13 @@ namespace MonoDevelop.AssemblyBrowser
 			if (type.DirectBaseTypes.Any ())
 				builder.AddChild (new BaseTypeFolder (type));
 
-			Func<IEntity, bool> filter = member => true;
-			if (Widget.PublicApiOnly)
-				filter = member => member.IsPublic ();
+			bool publicOnly = Widget.PublicApiOnly;
 
 			// PERF: We can take advantage of the fact that AddChildren is faster than AddChild, due to not processing
 			// sorting of child nodes. Avoid creating additional collection, as TreeBuilder does not optimize for ICollection implementors,
 			// thus the overhead of creating a IEnumerable is not that big.
-			var members = type.Members;
-			if (members.Count > 0)
-				builder.AddChildren (members.Where (filter));
-
-			var nestedTypes = type.NestedTypes;
-			if (nestedTypes.Count > 0)
-				builder.AddChildren (nestedTypes.Where (filter));
+			AddFilteredChildren (builder, type.Members, publicOnly);
+			AddFilteredChildren (builder, type.NestedTypes, publicOnly);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
