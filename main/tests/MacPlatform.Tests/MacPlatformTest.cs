@@ -181,7 +181,7 @@ namespace MacPlatform.Tests
 		public void CriticalErrorsExceptionsHaveFullStacktracesInLog ()
 		{
 			var logger = new CapturingLogger {
-				EnabledLevel = EnabledLoggingLevel.Error,
+				EnabledLevel = EnabledLoggingLevel.Fatal,
 			};
 
 			try {
