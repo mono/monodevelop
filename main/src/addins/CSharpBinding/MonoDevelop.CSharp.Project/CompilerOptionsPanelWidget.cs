@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Project
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion), typeof (bool));
 			var langVersions = CSharpLanguageVersionHelper.GetKnownLanguageVersions ();
 			string badVersion = null;
-			LanguageVersion langVersion;
+			LanguageVersion? langVersion = null;
 
 			try {
 				langVersion = compilerParameters.LangVersion;
@@ -115,7 +115,14 @@ namespace MonoDevelop.CSharp.Project
 
 			foreach (var (text, version) in langVersions) {
 				if (unsupportedLanguageVersions.Contains (version)) {
-					// Mono's MSBuild does not currently support C# 8.
+					if (langVersion == version) {
+						if (badVersion == null)
+							badVersion = text;
+					} else {
+						// Otherwise if it's an unsupported language but it's not the current project's
+						// version then it must be an unsupported version of Mono. Let's not add that to
+						// the list store.
+					}
 				} else {
 					langVerStore.AppendValues (text, version, false);
 				}
