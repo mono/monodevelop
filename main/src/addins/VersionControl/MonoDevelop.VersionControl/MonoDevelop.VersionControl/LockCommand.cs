@@ -77,13 +77,3 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 }
-
-				foreach (VersionControlItemList list in items.SplitByRepository ()) {
-					try {
-						list [0].Repository.Lock (Monitor, list.Paths);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Lock operation failed", ex);
-						Monitor.ReportError (ex.Message, null);
-						return;
-					}
-				}

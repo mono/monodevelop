@@ -63,17 +63,6 @@ namespace MonoDevelop.VersionControl
 
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unlock (Monitor, list.Paths);
-				
-				Gtk.Application.Invoke ((o, args) => {
-					VersionControlService.NotifyFileStatusChanged (items);
-				});
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
-			}
-		}
-	}
-}
 				try {
 					foreach (VersionControlItemList list in items.SplitByRepository ()) {
 						list [0].Repository.Unlock (Monitor, list.Paths);
@@ -86,3 +75,7 @@ namespace MonoDevelop.VersionControl
 					LoggingService.LogError ("Unlock operation failed", ex);
 					MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
 				}
+			}
+		}
+	}
+}
