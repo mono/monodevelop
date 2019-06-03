@@ -552,7 +552,8 @@ namespace MonoDevelop.Components.Commands
 			var dispatched = false;
 
 			for (int i = 0; i < commands.Count; i++) {
-				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
+				Command command = commands [i];
+				CommandInfo cinfo = GetCommandInfo (command.Id, new CommandTargetRoute ());
 				if (cinfo.IsUpdatingAsynchronously)
 					cinfo.UpdateTask.Wait (); // Not nice, but we need a synchronous result here
 				if (cinfo.Bypass) {
@@ -562,8 +563,9 @@ namespace MonoDevelop.Components.Commands
 
 				if (cinfo.Enabled && cinfo.Visible) {
 					if (!dispatched)
-						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time, cinfo);
-					conflict.Add (commands [i]);
+						dispatched = DispatchCommand (command.Id, null, null, CommandSource.Keybinding, ev.Time, cinfo);
+					if (command != null)
+						conflict.Add (command);
 				} else
 					bypass = true; // allow Gtk to handle the event if the command is disabled
 			}
