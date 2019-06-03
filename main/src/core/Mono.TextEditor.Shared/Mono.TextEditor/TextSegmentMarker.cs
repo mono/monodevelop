@@ -1,4 +1,4 @@
-//
+﻿//
 // TextSegmentMarker.cs
 //
 // Author:
@@ -152,18 +152,26 @@ namespace Mono.TextEditor
 				int /*lineNr,*/ x_pos;
 				uint curIndex = 0;
 				uint byteIndex = 0;
-				uint idx = (uint)Math.Min (Math.Max (0, start - startOffset), metrics.Layout.Text.Length - 1);
-				metrics.Layout.TranslateToUTF8Index (idx, ref curIndex, ref byteIndex);
-				
-				x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
-				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				idx = (uint)Math.Min (Math.Max (0, end - startOffset), metrics.Layout.Text.Length - 1);
-				metrics.Layout.TranslateToUTF8Index (idx, ref curIndex, ref byteIndex);
+				var textLength = metrics.Layout.Text.Length;
+				if (textLength > 0) {
+					uint idx = (uint)Math.Min (Math.Max (0, start - startOffset), textLength - 1);
+					metrics.Layout.TranslateToUTF8Index (idx, ref curIndex, ref byteIndex);
+
+					x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
+					@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+
+					idx = (uint)Math.Min (Math.Max (0, end - startOffset), textLength - 1);
+					metrics.Layout.TranslateToUTF8Index (idx, ref curIndex, ref byteIndex);
+
+					x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
+
+					to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+				} else {
+					@from = startXPos;
+					to = startXPos + editor.TextViewMargin.CharWidth;
+				}
 				
-				x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
-				
-				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				var line = editor.GetLineByOffset (endOffset);
 				if (markerEnd > endOffset || @from == to) {
 					to += editor.TextViewMargin.CharWidth;
