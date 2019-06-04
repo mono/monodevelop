@@ -64,7 +64,12 @@ namespace MonoDevelop.Ide.Extensions
 		/// Set to true if the workspace has to be closed before opening a solution. To be set by the handler.
 		/// </summary>
 		public bool CloseCurrentWorkspace { get; set; }
-		
+
+		/// <summary>
+		/// Set to true if we want change the default behaviour to center dialog to parent window
+		/// </summary>
+		public bool CenterToParent { get; set; }
+
 		/// <summary>
 		/// Selected viewer. To be set by the handler.
 		/// </summary>

@@ -435,7 +435,7 @@ namespace MonoDevelop.Ide
 		}
 
 		/// <summary>Centers a window relative to its parent.</summary>
-		static void CenterWindow (Window childControl, Window parentControl)
+		internal static void CenterWindow (Window childControl, Window parentControl)
 		{
 			var gtkChild = childControl?.nativeWidget as Gtk.Window;
 			var gtkParent = parentControl?.nativeWidget as Gtk.Window;
