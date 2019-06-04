@@ -27,6 +27,7 @@ using System;
 using System.Net.Http;
 using LibGit2Sharp;
 using System.IO;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -79,9 +80,8 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			// Grab the credentials from the user.
-			var httpClient = new HttpClient {
-				Timeout = TimeSpan.FromMinutes (1.0),
-			};
+			var httpClient = HttpClientProvider.CreateHttpClient (serviceUri);
+			httpClient.Timeout = TimeSpan.FromMinutes (1.0);
 
 			var res = httpClient.GetAsync (serviceUri).Result;
 			if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized) {
