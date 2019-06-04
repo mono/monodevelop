@@ -309,7 +309,7 @@ namespace console61
 				var endLine = doc.Editor.GetLineByOffset (endOfStatement);
 				var endColumn = endOfStatement - endLine.Offset;
 
-				var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
+				var completionResult = await compExt.GetExpressionCompletionDataAsync ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
 				Assert.IsNotNull (completionResult);
 				Assert.Less (10, completionResult.Items.Count);//Just randomly high number
 				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));
