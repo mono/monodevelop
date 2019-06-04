@@ -29,10 +29,12 @@ using NUnit.Framework;
 using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using UnitTests;
 
 namespace MonoDevelop.Ide.Gui.DocumentModels
 {
-	public class FileModelTests: DocumentModelTestsBase
+	[RequireService(typeof(DesktopService))]
+	public class FileModelTests : DocumentModelTestsBase
 	{
 		string tempFile;
 
@@ -154,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 
 				var file = CreateFileModel ();
 				await file.LinkToFile (fileName);
-				Assert.AreEqual (fileName, file.FilePath.ToString());
+				Assert.AreEqual (fileName, file.FilePath.ToString ());
 				Assert.IsFalse (file.IsNew);
 				Assert.IsFalse (file.IsLoaded);
 				Assert.IsFalse (file.HasUnsavedChanges);
@@ -168,6 +170,20 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			} finally {
 				File.Delete (fileName);
 			}
+		}
+
+		[Test]
+		public async Task UnsharedFileModelLoadSetsMimeType ()
+		{
+			var dir = Util.CreateTmpDir ("UnsharedFileModelLoadSetsMimeType");
+			var fileName = Path.Combine (dir, "Foo.cs");
+			File.WriteAllText (fileName, "Foo");
+
+			var file = CreateFileModel ();
+			await file.LinkToFile (fileName);
+			Assert.AreEqual (null, file.MimeType);
+			await file.Load ();
+			Assert.AreEqual ("text/x-csharp", file.MimeType);
 		}
 
 		[Test]
@@ -257,6 +273,35 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 
 			} finally {
 				File.Delete (fileName);
+			}
+		}
+
+		[Test]
+		public void CreateNewFile ()
+		{
+			using (var model = CreateFileModel ()) {
+				model.CreateNew ("foo.cs", null);
+				Assert.AreEqual ("foo.cs", model.FilePath.ToString ());
+				Assert.AreEqual ("text/x-csharp", model.MimeType);
+			}
+			using (var model = CreateFileModel ()) {
+				model.CreateNew (null, "text/x-csharp");
+				Assert.AreEqual (FilePath.Null, model.FilePath);
+				Assert.AreEqual ("text/x-csharp", model.MimeType);
+			}
+		}
+
+		[Test]
+		public async Task CreateNewFileRenameWhenSaving ()
+		{
+			using (var model = CreateFileModel ()) {
+				model.CreateNew ("foo.cs", null);
+
+				var dir = UnitTests.Util.CreateTmpDir ("CreateNewFileRenameWhenSaving");
+				var file = Path.Combine (dir, "bar.txt");
+				await model.SaveAs (file);
+				Assert.AreEqual ("text/plain", model.MimeType);
+				Assert.AreEqual (file, model.FilePath.ToString ());
 			}
 		}
 	}
