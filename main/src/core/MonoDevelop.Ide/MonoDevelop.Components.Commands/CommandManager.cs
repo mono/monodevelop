@@ -564,8 +564,7 @@ namespace MonoDevelop.Components.Commands
 				if (cinfo.Enabled && cinfo.Visible) {
 					if (!dispatched)
 						dispatched = DispatchCommand (command.Id, null, null, CommandSource.Keybinding, ev.Time, cinfo);
-					if (command != null)
-						conflict.Add (command);
+					conflict.Add (command);
 				} else
 					bypass = true; // allow Gtk to handle the event if the command is disabled
 			}
