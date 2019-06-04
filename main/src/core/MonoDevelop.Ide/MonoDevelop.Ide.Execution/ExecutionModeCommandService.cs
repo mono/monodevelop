@@ -519,7 +519,7 @@ namespace MonoDevelop.Ide.Execution
 				}
 				else if ((string)data == "custom") {
 					using (var dlg = new RunWithCustomParametersDialog ((Project)item)) {
-						var cmd = dlg.Run ();
+						var cmd = dlg.Run (IdeServices.DesktopService.GetFocusedTopLevelWindow ());
 						if (cmd?.Id == "run") {
 							// Run the configuration
 							IdeApp.ProjectOperations.Execute (item, dlg.SelectedExecutionMode.ExecutionHandler, IdeApp.Workspace.ActiveConfiguration, dlg.SelectedConfiguration);
