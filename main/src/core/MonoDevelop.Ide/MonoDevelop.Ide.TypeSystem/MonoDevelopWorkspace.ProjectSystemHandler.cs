@@ -97,9 +97,24 @@ namespace MonoDevelop.Ide.TypeSystem
 				public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> ();
 			}
 
-			internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject, ProjectCacheInfo cacheInfo)
+			static string[] NonMultiTargetProjectFrameworks = { null };
+
+			internal IEnumerable<string> GetFrameworks (MonoDevelop.Projects.Project p)
 			{
-				var projectId = projectMap.GetOrCreateId (p, oldProject);
+				var frameworks = p.GetTargetFrameworks ();
+				if (frameworks.Any ())
+					return frameworks;
+				return NonMultiTargetProjectFrameworks;
+			}
+
+			internal async Task<ProjectInfo>  LoadProject (
+				MonoDevelop.Projects.Project p,
+				CancellationToken token,
+				MonoDevelop.Projects.Project oldProject,
+				ProjectCacheInfo cacheInfo,
+				string framework)
+			{
+				var projectId = projectMap.GetOrCreateId (p, oldProject, framework);
 
 				var config = GetDotNetProjectConfiguration (p);
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
@@ -110,12 +125,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				if (cacheInfo == null) {
-					cacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
+					cacheInfo = await LoadProjectCacheInfo (p, config, framework, token).ConfigureAwait (false);
 					if (token.IsCancellationRequested)
 						return null;
 
 					if (config != null)
-						workspaceCache.Update (config, p, projectMap, cacheInfo);
+						workspaceCache.Update (config, framework, p, projectMap, cacheInfo);
 				}
 
 				if (token.IsCancellationRequested)
@@ -145,7 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var info = ProjectInfo.Create (
 					projectId,
 					GetVersionStamp (p),
-					p.Name,
+					GetProjectInfoName (p.Name, framework),
 					fileName.FileNameWithoutExtension,
 					(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
 					p.FileName,
@@ -165,6 +180,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				return info;
 			}
 
+			static string GetProjectInfoName (string name, string framework)
+			{
+				if (string.IsNullOrEmpty (framework))
+					return name;
+
+				return $"{name} ({framework})";
+			}
+
 			VersionStamp GetVersionStamp (MonoDevelop.Projects.Project project)
 			{
 				try {
@@ -181,23 +204,31 @@ namespace MonoDevelop.Ide.TypeSystem
 				return workspace != null ? p.GetConfiguration (workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : p.DefaultConfiguration as MonoDevelop.Projects.DotNetProjectConfiguration;
 			}
 
-			async Task<ProjectCacheInfo> LoadProjectCacheInfo (MonoDevelop.Projects.Project p, DotNetProjectConfiguration config, CancellationToken token)
+			async Task<ProjectCacheInfo> LoadProjectCacheInfo (
+				MonoDevelop.Projects.Project p,
+				DotNetProjectConfiguration config,
+				string framework,
+				CancellationToken token)
 			{
 				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
 
-				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token).ConfigureAwait (false);
+				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, framework, token).ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
+
+				var configSelector = config?.Selector;
+				if (p is MonoDevelop.Projects.DotNetProject && configSelector != null && !string.IsNullOrEmpty (framework))
+					configSelector = new MonoDevelop.Projects.ItemFrameworkConfigurationSelector (config.Selector, framework);
+
+				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
+				var sourceFiles = await p.GetSourceFilesAsync (configSelector).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
 
 				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
-				var sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
-				if (token.IsCancellationRequested)
-					return null;
-
-				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
-				var analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+				var analyzerFiles = await p.GetAnalyzerFilesAsync (configSelector).ConfigureAwait (false);
 
 				return new ProjectCacheInfo {
 					AnalyzerFiles = analyzerFiles,
@@ -217,12 +248,14 @@ namespace MonoDevelop.Ide.TypeSystem
 						return null;
 					if (!CanLoadProject (proj))
 						continue;
-					var tp = LoadProject (proj, token, null, null).ContinueWith (t => {
-						if (!t.IsCanceled)
-							projects.Add (t.Result);
-					}, TaskContinuationOptions.ExecuteSynchronously);
-					allTasks.Add (tp);
 
+					foreach (string framework in GetFrameworks (proj)) {
+						var tp = LoadProject (proj, token, null, null, framework).ContinueWith (t => {
+							if (!t.IsCanceled)
+								projects.Add (t.Result);
+						}, TaskContinuationOptions.ExecuteSynchronously);
+						allTasks.Add (tp);
+					}
 				}
 				await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
@@ -244,14 +277,16 @@ namespace MonoDevelop.Ide.TypeSystem
 						return null;
 					if (!CanLoadProject (proj))
 						continue;
-					if (!workspaceCache.TryGetCachedItems (proj, workspace.MetadataReferenceManager, projectMap, out var cacheInfo))
-						continue;
+					foreach (string framework in GetFrameworks (proj)) {
+						if (!workspaceCache.TryGetCachedItems (proj, workspace.MetadataReferenceManager, projectMap, framework, out var cacheInfo))
+							continue;
 
-					var tp = LoadProject (proj, token, null, cacheInfo).ContinueWith (t => {
-						if (!t.IsCanceled)
-							projects.Add (t.Result);
-					}, TaskContinuationOptions.ExecuteSynchronously);
-					allTasks.Add (tp);
+						var tp = LoadProject (proj, token, null, cacheInfo, framework).ContinueWith (t => {
+							if (!t.IsCanceled)
+								projects.Add (t.Result);
+						}, TaskContinuationOptions.ExecuteSynchronously);
+						allTasks.Add (tp);
+					}
 				}
 
 				if (allTasks.Count == 0) {
@@ -287,15 +322,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				return false;
 			}
 
-			internal async Task<ProjectInfo> LoadProjectIfCacheOutOfDate (MonoDevelop.Projects.Project p, CancellationToken token)
+			internal async Task<ProjectInfo> LoadProjectIfCacheOutOfDate (MonoDevelop.Projects.Project p, string framework, CancellationToken token)
 			{
-				if (!workspaceCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var cacheInfo)) {
+				if (!workspaceCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, framework, out var cacheInfo)) {
 					// No cached info need to load the project
-					return await LoadProject (p, token, null, null).ConfigureAwait (false);
+					return await LoadProject (p, token, null, null, framework).ConfigureAwait (false);
 				}
 
 				var config = GetDotNetProjectConfiguration (p);
-				var updatedCacheInfo = await LoadProjectCacheInfo (p, config, token).ConfigureAwait (false);
+				var updatedCacheInfo = await LoadProjectCacheInfo (p, config, framework, token).ConfigureAwait (false);
 				if (updatedCacheInfo == null)
 					return null;
 
@@ -306,9 +341,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				// Update cache.
 				if (config != null)
-					workspaceCache.Update (config, p, projectMap, updatedCacheInfo);
+					workspaceCache.Update (config, framework, p, projectMap, updatedCacheInfo);
 
-				return await LoadProject (p, token, null, updatedCacheInfo).ConfigureAwait (false);
+				return await LoadProject (p, token, null, updatedCacheInfo, framework).ConfigureAwait (false);
 			}
 
 			/// <summary>

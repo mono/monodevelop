@@ -56,6 +56,11 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		internal DotNetProjectConfiguration (string name, string platform, string framework)
+			: base (name, platform, framework)
+		{
+		}
+
 		internal protected override void Read (IPropertySet pset)
 		{
 			base.Read (pset);
@@ -205,6 +210,20 @@ namespace MonoDevelop.Projects
 			if (CompilationParameters != null)
 				return CompilationParameters.GetDefineSymbols ();
 			return new string[0];
+		}
+
+		public override ConfigurationSelector Selector {
+			get {
+				if (string.IsNullOrEmpty (Framework))
+					return base.Selector;
+
+				string id = Name;
+				if (!string.IsNullOrEmpty (Platform))
+					id += "|" + Platform;
+
+				var selector = new ItemConfigurationSelector (id);
+				return new ItemFrameworkConfigurationSelector (selector, Framework);
+			}
 		}
 	}
 	

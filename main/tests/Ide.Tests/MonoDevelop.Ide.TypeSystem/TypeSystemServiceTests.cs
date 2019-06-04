@@ -70,5 +70,93 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
+
+		[Test]
+		public async Task MultiTargetFramework ()
+		{
+			FilePath solFile = Util.GetSampleProject ("multi-target-netframework", "multi-target.sln");
+
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var project = sol.GetAllProjects ().Single ();
+
+					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+					var projects = ws.CurrentSolution.Projects.ToArray ();
+
+					var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net472)");
+					var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+
+					// Should be two projects - one for each target framework.
+					Assert.AreEqual (2, projectIds.Length);
+					Assert.AreEqual (2, projects.Length);
+
+					Assert.IsNotNull (netframeworkProject);
+					Assert.IsNotNull (netstandardProject);
+
+					// Check references.
+					var mscorlibNetFramework = netframeworkProject.MetadataReferences
+						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference > ()
+						.FirstOrDefault (r => Path.GetFileName (r.FilePath) == "mscorlib.dll");
+
+					var systemCollectionsNetFramework = netframeworkProject.MetadataReferences
+						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference> ()
+						.FirstOrDefault (r => Path.GetFileName (r.FilePath) == "System.Collections.dll");
+
+					var mscorlibNetStandard = netstandardProject.MetadataReferences
+						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference> ()
+						.FirstOrDefault (r => Path.GetFileName (r.FilePath) == "mscorlib.dll");
+
+					var systemCollectionsNetStandard = netstandardProject.MetadataReferences
+						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference> ()
+					.FirstOrDefault (r => Path.GetFileName (r.FilePath) == "System.Collections.dll");
+
+					Assert.AreNotEqual (netframeworkProject.MetadataReferences.Count, netstandardProject.MetadataReferences.Count);
+
+					Assert.IsNotNull (mscorlibNetFramework);
+					Assert.IsNull (mscorlibNetStandard);
+
+					Assert.IsNull (systemCollectionsNetFramework);
+					Assert.IsNotNull (systemCollectionsNetStandard);
+
+					// Check source files are correct for each framework.
+					Assert.IsFalse (netframeworkProject.Documents.Any (d => d.Name == "MyClass-netstandard.cs"));
+					Assert.IsTrue (netframeworkProject.Documents.Any (d => d.Name == "MyClass-netframework.cs"));
+					Assert.IsTrue (netstandardProject.Documents.Any (d => d.Name == "MyClass-netstandard.cs"));
+					Assert.IsFalse (netstandardProject.Documents.Any (d => d.Name == "MyClass-netframework.cs"));
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project tests.
+		/// </summary>
+		static void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
+		}
+
+		void RunMSBuild (string arguments)
+		{
+			var process = Process.Start ("msbuild", arguments);
+			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
+			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
+		}
 	}
 }

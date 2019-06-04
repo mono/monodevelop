@@ -493,7 +493,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!ProjectHandler.CanLoadProject (project))
 						continue;
 
-					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, cts.Token).ConfigureAwait (false);
+					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, null, cts.Token).ConfigureAwait (false);
 					if (projectInfo == null)
 						continue;
 
@@ -1497,24 +1497,26 @@ namespace MonoDevelop.Ide.TypeSystem
 					cts = new CancellationTokenSource ();
 					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null).ContinueWith (t => {
-							if (t.IsCanceled)
-								return;
-							if (t.IsFaulted) {
-								LoggingService.LogError ("Failed to reload project", t.Exception);
-								return;
-							}
-							try {
-								lock (projectModifyLock) {
-									ProjectInfo newProjectContents = t.Result;
-									newProjectContents = AddVirtualDocuments (newProjectContents);
-									OnProjectReloaded (newProjectContents);
-									Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
+						foreach (string framework in ProjectHandler.GetFrameworks (project)) {
+							var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null, framework).ContinueWith (t => {
+								if (t.IsCanceled)
+									return;
+								if (t.IsFaulted) {
+									LoggingService.LogError ("Failed to reload project", t.Exception);
+									return;
 								}
-							} catch (Exception e) {
-								LoggingService.LogError ("Error while reloading project " + project.Name, e);
-							}
-						}, cts.Token);
+								try {
+									lock (projectModifyLock) {
+										ProjectInfo newProjectContents = t.Result;
+										newProjectContents = AddVirtualDocuments (newProjectContents);
+										OnProjectReloaded (newProjectContents);
+										Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
+									}
+								} catch (Exception e) {
+									LoggingService.LogError ("Error while reloading project " + project.Name, e);
+								}
+							}, cts.Token);
+						}
 					} else {
 						modifiedProjects.Add (project);
 					}

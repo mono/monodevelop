@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		FilePath cacheDir;
 
-		Dictionary<FilePath, ProjectCache> cachedItems = new Dictionary<FilePath, ProjectCache> ();
+		Dictionary<FilePath, List<ProjectCache>> cachedItems = new Dictionary<FilePath, List<ProjectCache>> ();
 		Dictionary<string, FileLock> writeLockMap = new Dictionary<string, FileLock> ();
 		bool loaded;
 
@@ -78,34 +78,57 @@ namespace MonoDevelop.Ide.TypeSystem
 				var config = solConfig.GetMappedConfiguration (project);
 
 				var projectFilePath = project.FileName;
-				var cacheFilePath = GetProjectCacheFile (project, config);
+				string cacheFilePath = null;
 
-				try {
-					if (!File.Exists (cacheFilePath))
-						continue;
+				List<ProjectCache> cacheList = null;
 
-					using (var sr = File.OpenText (cacheFilePath)) {
-						var value = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
+				foreach (string framework in GetFrameworks (project)) {
+					try {
+						cacheFilePath = GetProjectCacheFile (project, config, framework);
 
-						if (format != value.Format)
+						if (!File.Exists (cacheFilePath))
 							continue;
 
-						cachedItems [projectFilePath] = value;
+						using (var sr = File.OpenText (cacheFilePath)) {
+							var value = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
 
+							if (format != value.Format)
+								continue;
+
+							value.Framework = framework;
+							if (cacheList == null)
+								cacheList = new List<ProjectCache> ();
+							cacheList.Add (value);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not deserialize project cache", ex);
+						TryDeleteFile (cacheFilePath);
+						continue;
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not deserialize project cache", ex);
-					TryDeleteFile (cacheFilePath);
-					continue;
 				}
+
+				if (cacheList != null)
+					cachedItems [projectFilePath] = cacheList;
 			}
+		}
+
+		static string[] NullFramework = { null };
+
+		static IEnumerable<string> GetFrameworks (Project project)
+		{
+			var frameworks = project.GetTargetFrameworks ();
+			if (frameworks.Any ())
+				return frameworks;
+
+			return NullFramework;
 		}
 
 		// We only care about invalid characters on Windows, as unix-systems only have `/` as invalid character.
 		static readonly char [] invalidChars = Platform.IsWindows ? Path.GetInvalidFileNameChars () : Array.Empty<char> ();
-		string GetProjectCacheFile (Project proj, string configuration)
+		string GetProjectCacheFile (Project proj, string configuration, string framework)
 		{
-			return cacheDir.Combine (proj.FileName.FileNameWithoutExtension + "-" + Sanitize (configuration) + ".json");
+			string cacheId = string.IsNullOrEmpty (framework) ? configuration : configuration + "-" + framework;
+			return cacheDir.Combine (proj.FileName.FileNameWithoutExtension + "-" + Sanitize (cacheId) + ".json");
 
 			string Sanitize(string value)
 			{
@@ -130,12 +153,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void Update (ProjectConfiguration projConfig, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap, ProjectCacheInfo info)
+		public void Update (ProjectConfiguration projConfig, string framework, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap, ProjectCacheInfo info)
 		{
-			Update (projConfig, proj, projectMap, info.SourceFiles, info.AnalyzerFiles, info.References, info.ProjectReferences);
+			Update (projConfig, framework, proj, projectMap, info.SourceFiles, info.AnalyzerFiles, info.References, info.ProjectReferences);
 		}
 
-		public void Update (ProjectConfiguration projConfig, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap,
+		public void Update (ProjectConfiguration projConfig, string framework, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap,
 			ImmutableArray<ProjectFile> files,
 			ImmutableArray<FilePath> analyzers,
 			ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
@@ -177,7 +200,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				ProjectReferences = projectRefs,
 			};
 
-			var cacheFile = GetProjectCacheFile (proj, projConfig.Id);
+			var cacheFile = GetProjectCacheFile (proj, projConfig.Id, framework);
 
 			FileLock fileLock = AcquireWriteLock (cacheFile);
 			try {
@@ -193,14 +216,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap,
+		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap, string framework,
 			out ProjectCacheInfo info)
 		{
 			info = new ProjectCacheInfo ();
-			return TryGetCachedItems (p, provider, projectMap, out info.SourceFiles, out info.AnalyzerFiles, out info.References, out info.ProjectReferences);
+			return TryGetCachedItems (p, provider, projectMap, framework, out info.SourceFiles, out info.AnalyzerFiles, out info.References, out info.ProjectReferences);
 		}
 
-		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap,
+		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap, string framework,
 			out ImmutableArray<ProjectFile> files,
 			out ImmutableArray<FilePath> analyzers,
 			out ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
@@ -211,12 +234,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			metadataReferences = ImmutableArray<MonoDevelopMetadataReference>.Empty;
 			projectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty;
 
-			ProjectCache cachedData;
+			List<ProjectCache> cachedDataList;
+
 			lock (cachedItems) {
-				if (!cachedItems.TryGetValue (p.FileName, out cachedData)) {
+				if (!cachedItems.TryGetValue (p.FileName, out cachedDataList)) {
 					return false;
 				}
 			}
+
+			ProjectCache cachedData = cachedDataList.FirstOrDefault (cache => cache.Framework == framework);
+			if (cachedData == null)
+				return false;
 
 			var filesBuilder = ImmutableArray.CreateBuilder<ProjectFile> (cachedData.Files.Length);
 			for (int i = 0; i < cachedData.Files.Length; ++i) {
@@ -304,6 +332,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			public string [] Files;
 			public string [] BuildActions;
 			public string [] Analyzers;
+
+			internal string Framework;
 		}
 
 		[Serializable]

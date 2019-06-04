@@ -47,6 +47,11 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		internal ProjectConfiguration (string name, string platform, string framework)
+			: base (name, platform, framework)
+		{
+		}
+
 		internal protected virtual void Read (IPropertySet pset)
 		{
 			properties = pset;

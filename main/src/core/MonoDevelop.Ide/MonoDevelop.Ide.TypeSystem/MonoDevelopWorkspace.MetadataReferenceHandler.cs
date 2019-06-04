@@ -65,9 +65,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				return builder.MoveToImmutable ();
 			}
 
-			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, ImmutableArray<ProjectReference>)> CreateReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
+			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, ImmutableArray<ProjectReference>)> CreateReferences (
+				MonoDevelop.Projects.Project proj,
+				string framework,
+				CancellationToken token)
 			{
-				var metadataReferences = await CreateMetadataReferences (proj, token).ConfigureAwait (false);
+				var metadataReferences = await CreateMetadataReferences (proj, framework, token).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, ImmutableArray<ProjectReference>.Empty);
 
@@ -75,18 +78,26 @@ namespace MonoDevelop.Ide.TypeSystem
 				return (metadataReferences, projectReferences);
 			}
 
-			async Task<ImmutableArray<MonoDevelopMetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
+			async Task<ImmutableArray<MonoDevelopMetadataReference>> CreateMetadataReferences (
+				MonoDevelop.Projects.Project proj,
+				string framework,
+				CancellationToken token)
 			{
 				// create some default references for unsupported project types.
 				if (!(proj is MonoDevelop.Projects.DotNetProject netProject)) {
 					return CreateDefaultMetadataReferences ();
 				}
 
+				var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
+
+				if (proj is MonoDevelop.Projects.DotNetProject && !string.IsNullOrEmpty (framework))
+					config = new MonoDevelop.Projects.ItemFrameworkConfigurationSelector (config, framework);
+
 				var data = new AddMetadataReferencesData {
 					Result = new List<MonoDevelopMetadataReference> (),
 					Project = netProject,
 					Visited = new HashSet<string> (FilePath.PathComparer),
-					ConfigurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default,
+					ConfigurationSelector = config,
 					Token = token,
 				};
 

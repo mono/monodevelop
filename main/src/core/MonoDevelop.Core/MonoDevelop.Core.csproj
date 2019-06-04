@@ -742,6 +742,7 @@
     <Compile Include="CoreExtensions.EventHandlers.cs" />
     <Compile Include="CoreExtensions.Array.cs" />
     <Compile Include="CoreExtensions.ReaderWriterLockSlim.cs" />
+    <Compile Include="MonoDevelop.Projects\ItemFrameworkConfigurationSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
