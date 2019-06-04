@@ -24,7 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Documents;
+using NUnit.Framework;
 
 namespace MonoDevelop.Ide.Gui.DocumentModels
 {
@@ -33,6 +37,33 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 		public override DocumentModel CreateModel ()
 		{
 			return new TextBufferFileModel ();
+		}
+
+		[Test]
+		public void CreateNewTextBufferFile ()
+		{
+			using (var model = new TextBufferFileModel ()) {
+				model.CreateNew ("foo.cs", null);
+				Assert.AreEqual ("CSharp", model.TextBuffer.ContentType.TypeName);
+			}
+			using (var model = new TextBufferFileModel ()) {
+				model.CreateNew (null, "text/x-csharp");
+				Assert.AreEqual ("CSharp", model.TextBuffer.ContentType.TypeName);
+			}
+		}
+
+		[Test]
+		public async Task CreateNewTextBufferFileRenameWhenSaving ()
+		{
+			using (var model = new TextBufferFileModel ()) {
+				model.CreateNew ("foo.cs", null);
+				Assert.AreEqual ("CSharp", model.TextBuffer.ContentType.TypeName);
+
+				var dir = UnitTests.Util.CreateTmpDir ("CreateNewFileRenameWhenSaving");
+				var file = Path.Combine (dir, "bar.txt");
+				await model.SaveAs (file);
+				Assert.AreEqual ("text", model.TextBuffer.ContentType.TypeName);
+			}
 		}
 	}
 }

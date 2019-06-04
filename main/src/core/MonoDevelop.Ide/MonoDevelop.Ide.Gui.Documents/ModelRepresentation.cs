@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			try {
 				await WaitHandle.WaitAsync ();
+				await CheckIdChange ();
 				if (IsLoaded)
 					return;
 				if (DocumentModelData.IsLinked)
@@ -96,6 +97,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			try {
 				await WaitHandle.WaitAsync ();
+				await CheckIdChange ();
 				await OnLoad ();
 				IsLoaded = true;
 				HasUnsavedChanges = false;
@@ -108,6 +110,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			try {
 				await WaitHandle.WaitAsync ();
+				await CheckIdChange ();
 				await OnSave ();
 				HasUnsavedChanges = false;
 			} finally {
@@ -137,6 +140,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		protected abstract void OnCreateNew ();
+
+		/// <summary>
+		/// Invoked just before a load or save operation when the Id of a model has changed
+		/// </summary>
+		protected virtual Task OnIdChanged ()
+		{
+			return Task.CompletedTask;
+		}
+
+		object id;
+
+		Task CheckIdChange ()
+		{
+			if (id != Id) {
+				id = Id;
+				return OnIdChanged ();
+			} else
+				return Task.CompletedTask;
+		}
 
 		protected abstract Task OnLoad ();
 

@@ -41,9 +41,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 		}
 
-		public string MimeType { get; set; }
+		public string MimeType => IsLoaded ? GetRepresentation<FileModelRepresentation> ().MimeType : null;
 
-		public FilePath FilePath => Id != null ? (FilePath)Id : FilePath.Null;
+		public FilePath FilePath => Id != null ? (FilePath) Id : (IsLoaded ? GetRepresentation<FileModelRepresentation> ().FilePath : FilePath.Null);
 
 		public bool CanWrite {
 			get {
@@ -55,6 +55,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 				} else
 					return true;
 			}
+		}
+
+		public void CreateNew (string fileName, string mimeType)
+		{
+			InitializeNew ();
+			var rep = GetRepresentation<FileModelRepresentation> ();
+			rep.InitUnsaved (fileName, mimeType);
+			rep.CreateNew ();
 		}
 
 		public Task LinkToFile (FilePath filePath)
@@ -70,10 +78,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 			await UnlinkFromId ();
 		}
 
-		public Task SaveAs (FilePath filePath)
+		public async Task SaveAs (FilePath filePath)
 		{
-			LinkToFile (filePath);
-			return Save ();
+			await LinkToFile (filePath);
+			await Save ();
 		}
 
 		/// <summary>
@@ -99,8 +107,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected abstract class FileModelRepresentation : ModelRepresentation
 		{
-			public FilePath FilePath => Id != null ? (FilePath)Id : FilePath.Null;
+			FilePath unsavedFilePath;
+
+			public FilePath FilePath => Id != null ? (FilePath)Id : unsavedFilePath;
 			public string MimeType { get; set; }
+
+			internal void InitUnsaved (FilePath filePath, string mimeType)
+			{
+				unsavedFilePath = filePath;
+				if (mimeType != null)
+					MimeType = mimeType;
+				else if (!filePath.IsNullOrEmpty)
+					MimeType = Runtime.PeekService<DesktopService> ()?.GetMimeTypeForUri (filePath);
+			}
 
 			public async Task SetContent (Stream content)
 			{
@@ -127,6 +146,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 					await SetContent (file.GetContent ());
 				} else
 					throw new InvalidOperationException ($"Can't copy data from model of type {other.GetType ()} into a model of type {GetType ()}");
+			}
+
+			protected override async Task OnIdChanged ()
+			{
+				MimeType = (await Runtime.GetService<DesktopService> ()).GetMimeTypeForUri (FilePath);
 			}
 		}
 

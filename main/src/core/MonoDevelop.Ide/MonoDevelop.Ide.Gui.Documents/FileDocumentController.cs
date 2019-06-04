@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					if (!typeof (FileModel).IsAssignableFrom (FileModelType))
 						throw new InvalidOperationException ("Invalid file model type: " + FileModelType);
 					var fileModel = (FileModel)Activator.CreateInstance (FileModelType);
-					fileModel.CreateNew ();
+					fileModel.CreateNew (fileDescriptor.FilePath, fileDescriptor.MimeType);
 					await fileModel.SetContent (fileDescriptor.Content);
 					if (fileDescriptor.Encoding != null && fileModel is TextFileModel textFileModel)
 						textFileModel.Encoding = fileDescriptor.Encoding;
