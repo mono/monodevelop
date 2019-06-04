@@ -103,13 +103,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void CreateNew ()
 		{
+			InitializeNew ();
+			ModelRepresentation.CreateNew ();
+		}
+
+		protected void InitializeNew ()
+		{
 			if (IsLoaded)
 				throw new InvalidOperationException ("Model already loaded");
 			if (Data.IsLinked)
 				throw new InvalidOperationException ("Model already linked");
 			isNew = true;
-			ModelRepresentation.CreateNew ();
 		}
+
 
 		public bool IsNew {
 			get {
