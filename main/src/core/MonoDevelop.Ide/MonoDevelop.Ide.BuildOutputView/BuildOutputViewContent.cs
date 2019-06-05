@@ -1,4 +1,4 @@
-//
+﻿//
 // BuildOutputView.cs
 //
 // Author:
@@ -110,16 +110,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return control;
 		}
 
-		bool disposed = false;
 
 		protected override void OnDispose ()
 		{
-			if (!disposed) {
+			if (!IsDisposed) {
 				if (control != null) {
 					control.FileNameChanged -= FileNameChanged;
 					control.Dispose ();
 				}
-				disposed = true;
 			}
 			base.OnDispose ();
 		}

@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -291,13 +291,10 @@ namespace MonoDevelop.TextEditor
 
 		Components.Control control;
 
-		bool isDisposed;
 		protected override void OnDispose ()
 		{
-			if (isDisposed)
+			if (IsDisposed)
 				return;
-
-			isDisposed = true;
 
 			textBufferRegistration?.Dispose ();
 			textBufferRegistration = null;
@@ -579,7 +576,7 @@ namespace MonoDevelop.TextEditor
 		Task autoSaveTask;
 		void InformAutoSave ()
 		{
-			if (isDisposed)
+			if (IsDisposed)
 				return;
 			RemoveAutoSaveTimer ();
 			autoSaveTimer = GLib.Timeout.Add (500, delegate {
@@ -725,7 +722,7 @@ namespace MonoDevelop.TextEditor
 			void ReloadFromDisk ()
 			{
 				try {
-					if (isDisposed || !File.Exists (FilePath))
+					if (IsDisposed || !File.Exists (FilePath))
 						return;
 
 					Load (true);
@@ -739,7 +736,7 @@ namespace MonoDevelop.TextEditor
 
 			void KeepChanges ()
 			{
-				if (isDisposed)
+				if (IsDisposed)
 					return;
 				ShowNotification = false;
 				DismissInfoBar ();
