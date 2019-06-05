@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl
 		public virtual string Url
 		{
 			get { return url; }
-			set { url = value; CreateUri (); }
+			set { url = SanitizerUrl (value); CreateUri (); }
 		}
 		
 		internal Uri Uri {
@@ -95,5 +95,10 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
+		string SanitizerUrl (string url)
+		{
+			// Remove unnecessary spaces from the beginning or the end.
+			return url.Trim ();
+		}
 	}
 }
