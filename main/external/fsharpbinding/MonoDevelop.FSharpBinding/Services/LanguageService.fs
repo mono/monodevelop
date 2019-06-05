@@ -171,6 +171,19 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         | Some checkResults -> Some(checkResults.GetFormatSpecifierLocationsAndArity())
         | None -> None
 
+    /// Get all the uses of a symbol in the given file
+    member x.GetUsesOfSymbolAtLocationInFile(fileName, line, col, lineStr) =
+        asyncMaybe {
+            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
+            let! colu, identIsland = MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent |> async.Return
+            let! results = infoOpt |> async.Return
+            let! symbolUse = results.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
+            let! symbolUse = x.GetSymbolAtLocation(line, col, lineStr)
+            let lastIdent = Seq.last identIsland
+            let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
+            return (lastIdent, refs)
+        }
+
 [<RequireQualifiedAccess>]
 type AllowStaleResults =
     // Allow checker results where the source doesn't even match
@@ -498,17 +511,6 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let options = x.GetCheckerOptions(fileName, projectFilename, src)
         LoggingService.logDebug "LanguageService: GetTypedParseResultIfAvailable: file=%s" (Path.GetFileName(fileName))
         options |> Option.bind(fun opts -> x.TryGetStaleTypedParseResult(fileName, opts, src, stale))
-
-    /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
-    member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
-        asyncMaybe {
-            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
-            let! _colu, identIsland = MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent |> async.Return
-            let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
-            let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
-            let lastIdent = Seq.last identIsland
-            let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
-            return (lastIdent, refs) }
 
     member x.GetSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
         asyncMaybe {
