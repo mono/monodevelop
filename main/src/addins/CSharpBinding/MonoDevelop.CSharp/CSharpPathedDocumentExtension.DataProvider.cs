@@ -244,9 +244,6 @@ namespace MonoDevelop.CSharp
 				//FIXME: use the snapshot that the nodes came from
 				var point = new VirtualSnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset);
 				EditorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
-
-				// TOTEST
-				// editor.Properties.GetProperty<DocumentController> (typeof (DocumentController)).GrabFocus ();
 			}
 
 			public int IconCount {
