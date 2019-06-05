@@ -48,8 +48,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			var options = NSTrackingAreaOptions.ActiveInKeyWindow |
 				NSTrackingAreaOptions.InVisibleRect |
-				NSTrackingAreaOptions.MouseEnteredAndExited |
-				NSTrackingAreaOptions.EnabledDuringMouseDrag;
+				NSTrackingAreaOptions.MouseEnteredAndExited;
 			var trackingArea = new NSTrackingArea (default, options, this, null);
 			AddTrackingArea (trackingArea);
 		}
