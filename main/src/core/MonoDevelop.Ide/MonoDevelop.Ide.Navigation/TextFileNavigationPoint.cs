@@ -49,13 +49,11 @@ namespace MonoDevelop.Ide.Navigation
 		int column;
 
 		SnapshotPoint? offset;
-		ITextVersion version;
 		ITextView textView;
 
 		public TextFileNavigationPoint (Document doc, ITextView textView)
 			: base (doc)
 		{
-			version = textView.TextSnapshot.Version;
 			offset = textView.Caret.Position.BufferPosition;
 			this.textView = textView;
 		}
@@ -65,15 +63,15 @@ namespace MonoDevelop.Ide.Navigation
 			try {
 				// text source version becomes invalid on document close.
 				if (textView != null) {
-					var offset = textView.Caret.Position.BufferPosition.Position;
-					var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (offset);
+					var translatedOffset = this.offset.Value.TranslateTo (textView.TextSnapshot, PointTrackingMode.Positive);
+					var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (translatedOffset);
 					line = snapshotLine.LineNumber;
-					column = offset - snapshotLine.Start.Position;
+					column = translatedOffset - snapshotLine.Start.Position;
+					offset = null;
 				}
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}
-			version = null;
 			textView = null;
 		}
 
@@ -89,7 +87,13 @@ namespace MonoDevelop.Ide.Navigation
 			TextFileNavigationPoint tf = oldPoint as TextFileNavigationPoint;
 			if (tf == null)
 				return false;
-			return base.Equals (tf) && Math.Abs (line - tf.line) < 5;
+			var translatedOffset1 = this.offset.Value.TranslateTo (textView.TextSnapshot, PointTrackingMode.Positive);
+			var snapshotLine1 = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (translatedOffset1);
+
+			var translatedOffset2 = tf.offset.Value.TranslateTo (textView.TextSnapshot, PointTrackingMode.Positive);
+			var snapshotLine2 = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (translatedOffset2);
+
+			return base.Equals (tf) && Math.Abs (snapshotLine1.LineNumber - snapshotLine2.LineNumber) < 5;
 		}
 		
 		
@@ -121,14 +125,15 @@ namespace MonoDevelop.Ide.Navigation
 
 		protected void JumpToCurrentLocation (ITextView textView)
 		{
-			if (version != null && textView == this.textView && offset.HasValue) {
-				textView.TryMoveCaretToAndEnsureVisible (offset.Value);
+			if (textView == this.textView && offset.HasValue) {
+				textView.TryMoveCaretToAndEnsureVisible (offset.Value.TranslateTo (textView.TextSnapshot, PointTrackingMode.Positive));
 			} else {
 				var editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
 				var snapshotLine = textView.TextSnapshot.GetLineFromLineNumber (this.line);
 				var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
 				var point = new VirtualSnapshotPoint (textView.TextSnapshot, snapshotLine.Start.Position + column);
 				editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+				offset = textView.Caret.Position.BufferPosition;
 			}
 		}
 
@@ -202,7 +207,7 @@ namespace MonoDevelop.Ide.Navigation
 		public override bool Equals (object o)
 		{
 			TextFileNavigationPoint other = o as TextFileNavigationPoint;
-			return other != null && other.line == line && base.Equals (other);
+			return other != null && other.offset.Value.Equals (offset.Value) && base.Equals (other);
 		}
 		
 		public override int GetHashCode ()
