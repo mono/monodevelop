@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var projectId = projectMap.GetOrCreateId (p, oldProject, framework);
 
-				var config = GetDotNetProjectConfiguration (p);
+				var config = await GetDotNetProjectConfiguration (p, framework);
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
 				FilePath fileName = IdeApp.IsInitialized ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 
@@ -198,10 +198,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			static DotNetProjectConfiguration GetDotNetProjectConfiguration (MonoDevelop.Projects.Project p)
+			static async Task<DotNetProjectConfiguration> GetDotNetProjectConfiguration (MonoDevelop.Projects.Project p, string framework)
 			{
 				var workspace = Runtime.PeekService<RootWorkspace> ();
-				return workspace != null ? p.GetConfiguration (workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : p.DefaultConfiguration as MonoDevelop.Projects.DotNetProjectConfiguration;
+				var config = workspace != null ? p.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration : p.DefaultConfiguration as DotNetProjectConfiguration;
+				if (config == null || string.IsNullOrEmpty (framework))
+					return config;
+
+				return await p.GetConfigurationAsync (config.Name, config.Platform, framework) as DotNetProjectConfiguration;
 			}
 
 			async Task<ProjectCacheInfo> LoadProjectCacheInfo (
@@ -329,7 +333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return await LoadProject (p, token, null, null, framework).ConfigureAwait (false);
 				}
 
-				var config = GetDotNetProjectConfiguration (p);
+				var config = await GetDotNetProjectConfiguration (p, framework);
 				var updatedCacheInfo = await LoadProjectCacheInfo (p, config, framework, token).ConfigureAwait (false);
 				if (updatedCacheInfo == null)
 					return null;

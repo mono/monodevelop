@@ -301,6 +301,30 @@ namespace MonoDevelop.Projects
 			conf.ProjectInstance = pi;
 		}
 
+		public async Task<ProjectConfiguration> GetConfigurationAsync (string name, string platform, string framework)
+		{
+			ProjectConfiguration existingConfig = null;
+			foreach (SolutionItemConfiguration config in Configurations) {
+				if (config.Name == name && config.Platform == platform) {
+					existingConfig = config as ProjectConfiguration;
+					break;
+				}
+			}
+
+			if (existingConfig == null)
+				return null;
+
+			var newConfig = CloneConfiguration (existingConfig, name, platform);
+
+			var pi = await CreateProjectInstanceForConfigurationAsync (name, platform, framework);
+			newConfig.Properties = pi.GetPropertiesLinkedToGroup (newConfig.MainPropertyGroup);
+			newConfig.ProjectInstance = pi;
+
+			newConfig.Read (newConfig.Properties);
+
+			return newConfig;
+		}
+
 		protected override void OnConfigurationRemoved (ConfigurationEventArgs args)
 		{
 			var conf = (ProjectConfiguration) args.Configuration;

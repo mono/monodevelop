@@ -127,6 +127,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					Assert.IsTrue (netframeworkProject.Documents.Any (d => d.Name == "MyClass-netframework.cs"));
 					Assert.IsTrue (netstandardProject.Documents.Any (d => d.Name == "MyClass-netstandard.cs"));
 					Assert.IsFalse (netstandardProject.Documents.Any (d => d.Name == "MyClass-netframework.cs"));
+
+					// Check compiler parameter information
+					Assert.That (netframeworkProject.ParseOptions.PreprocessorSymbolNames, Contains.Item ("NET472"));
+					Assert.That (netstandardProject.ParseOptions.PreprocessorSymbolNames, Contains.Item ("NETSTANDARD1_0"));
+
+					Assert.That (netframeworkProject.CompilationOptions.SpecificDiagnosticOptions.Keys, Contains.Item ("NET12345"));
+					Assert.IsFalse (netframeworkProject.CompilationOptions.SpecificDiagnosticOptions.Keys.Contains ("STA4433"));
+					Assert.That (netstandardProject.CompilationOptions.SpecificDiagnosticOptions.Keys, Contains.Item ("STA4433"));
+					Assert.IsFalse (netstandardProject.CompilationOptions.SpecificDiagnosticOptions.Keys.Contains ("NET12345"));
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
