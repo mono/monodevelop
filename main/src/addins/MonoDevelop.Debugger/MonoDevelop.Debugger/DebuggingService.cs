@@ -1331,11 +1331,19 @@ namespace MonoDevelop.Debugger
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)
 		{
 			lock (breakpoints) {
-				foreach (Breakpoint bp in breakpoints.GetBreakpoints ()) {
+				foreach (var bp in breakpoints.GetBreakpoints ()) {
 					if (bp.FileName == a.TextFile.Name) {
 						if (bp.Line > a.LineNumber) {
+							var startIndex = a.TextFile.GetPositionFromLineColumn (bp.Line, bp.Column);
+							var endIndex = a.TextFile.GetPositionFromLineColumn (bp.Line + 1, 0) - 1;
+
+							if (endIndex < startIndex)
+								endIndex = startIndex;
+
+							var text = a.TextFile.GetText (startIndex, endIndex);
+
 							// If the line that has the breakpoint is deleted, delete the breakpoint, otherwise update the line #.
-							if (bp.Line + a.LineCount >= a.LineNumber)
+							if (bp.Line + a.LineCount >= a.LineNumber && !string.IsNullOrWhiteSpace (text))
 								breakpoints.UpdateBreakpointLine (bp, bp.Line + a.LineCount);
 							else
 								breakpoints.Remove (bp);
@@ -1481,6 +1489,19 @@ namespace MonoDevelop.Debugger
 			if (result != null)
 				return result;
 			return frame.GetExpressionCompletionData (exp);
+		}
+
+		public static Task<Span> GetBreakpointSpanAsync (ITextDocument document, int position, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var doc = IdeApp.Workbench.GetDocument (document.FilePath);
+			IBreakpointSpanResolver resolver = null;
+
+			if (doc != null)
+				resolver = doc.GetContent<IBreakpointSpanResolver> ();
+
+			resolver = resolver ?? new DefaultBreakpointSpanResolver ();
+
+			return resolver.GetBreakpointSpanAsync (document.TextBuffer, position, cancellationToken);
 		}
 	}
 
