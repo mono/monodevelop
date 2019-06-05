@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.Completion
 			return token.FullSpan.End;
 		}
 
-		public async Task<Mono.Debugging.Client.CompletionData> GetExpressionCompletionData (string exp, Mono.Debugging.Client.StackFrame frame, CancellationToken token)
+		public async Task<Mono.Debugging.Client.CompletionData> GetExpressionCompletionDataAsync (string exp, Mono.Debugging.Client.StackFrame frame, CancellationToken token)
 		{
 			var location = frame.SourceLocation;
 			var document = DocumentContext.AnalysisDocument;

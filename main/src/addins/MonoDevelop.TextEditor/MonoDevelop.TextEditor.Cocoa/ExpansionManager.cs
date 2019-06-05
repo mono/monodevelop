@@ -67,6 +67,8 @@ namespace MonoDevelop.TextEditor.Cocoa
 		{
 			var codeSnippet = new CodeSnippet ();
 			codeSnippet.Code = codeTemplate.Code;
+			if (!codeSnippet.Code.Contains ("$end$"))
+				codeSnippet.Code += "$end$";
 			codeSnippet.Description = codeTemplate.Description;
 			codeSnippet.Fields = new List<ExpansionField> ();
 			foreach (var variable in codeTemplate.Variables) {

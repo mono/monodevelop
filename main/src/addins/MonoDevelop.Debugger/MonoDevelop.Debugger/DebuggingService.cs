@@ -112,6 +112,15 @@ namespace MonoDevelop.Debugger
 				evaluators = null;
 			});
 			IdeApp.Exiting += IdeApp_Exiting;
+			FileService.FileRenamed += FileService_FileRenamed;
+			FileService.FileMoved += FileService_FileRenamed;
+		}
+
+		private static void FileService_FileRenamed (object sender, FileCopyEventArgs e)
+		{
+			foreach (var file in e) {
+				breakpoints.FileRenamed (file.SourceFile, file.TargetFile);
+			}
 		}
 
 		static void IdeApp_Exiting (object sender, ExitEventArgs args)
@@ -1455,7 +1464,7 @@ namespace MonoDevelop.Debugger
 			return info != null ? info.Evaluator : null;
 		}
 
-		static Task<CompletionData> GetExpressionCompletionData (string exp, StackFrame frame, CancellationToken token)
+		static Task<CompletionData> GetExpressionCompletionDataAsync (string exp, StackFrame frame, CancellationToken token)
 		{
 			Document doc = IdeApp.Workbench.GetDocument (frame.SourceLocation.FileName);
 			if (doc == null)
@@ -1463,12 +1472,12 @@ namespace MonoDevelop.Debugger
 			var completionProvider = doc.GetContent<IDebuggerCompletionProvider> (true);
 			if (completionProvider == null)
 				return null;
-			return completionProvider.GetExpressionCompletionData (exp, frame, token);
+			return completionProvider.GetExpressionCompletionDataAsync (exp, frame, token);
 		}
 
 		public static async Task<CompletionData> GetCompletionDataAsync (StackFrame frame, string exp, CancellationToken token = default (CancellationToken))
 		{
-			var result = await GetExpressionCompletionData (exp, frame, token);
+			var result = await GetExpressionCompletionDataAsync (exp, frame, token);
 			if (result != null)
 				return result;
 			return frame.GetExpressionCompletionData (exp);

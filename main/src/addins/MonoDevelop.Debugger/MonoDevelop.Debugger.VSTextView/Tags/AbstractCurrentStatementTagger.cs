@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using MonoDevelop.Debugger;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
@@ -15,7 +14,7 @@ namespace MonoDevelop.Debugger
 	{
 		private readonly ITextBuffer textBuffer;
 		private readonly T tag;
-		private readonly string filePath;
+		private readonly ITextDocument textDocument;
 		private readonly bool isGreen;
 		private ITextSnapshot snapshotAtStartOfDebugging;
 
@@ -23,7 +22,7 @@ namespace MonoDevelop.Debugger
 		{
 			this.textBuffer = textBuffer;
 			this.snapshotAtStartOfDebugging = textBuffer.CurrentSnapshot;
-			this.filePath = textBuffer.GetFilePathOrNull ();
+			textBuffer.Properties.TryGetProperty (typeof (ITextDocument), out textDocument);
 			this.tag = tag;
 			this.isGreen = isGreen;
 			DebuggingService.CurrentFrameChanged += OnDebuggerCurrentStatementChanged;
@@ -68,8 +67,8 @@ namespace MonoDevelop.Debugger
 
 		SourceLocation CheckLocationIsInFile (SourceLocation location)
 		{
-			if (!string.IsNullOrEmpty (filePath) && location != null && !string.IsNullOrEmpty (location.FileName)
-				&& ((FilePath)location.FileName).FullPath == ((FilePath)filePath).FullPath)
+			if (!string.IsNullOrEmpty (textDocument?.FilePath) && location != null && !string.IsNullOrEmpty (location.FileName)
+				&& ((FilePath)location.FileName).FullPath == ((FilePath)textDocument.FilePath).FullPath)
 				return location;
 			return null;
 		}

@@ -249,28 +249,26 @@ namespace MonoDevelop.MacIntegration
 
 			var nsException = ObjCRuntime.Runtime.GetNSObject<NSException> (exceptionPtr);
 			try {
-				throw new MarshalledObjCException (nsException, Environment.StackTrace);
+				throw new MarshalledObjCException (nsException);
 			} catch (MarshalledObjCException e) {
+				LoggingService.LogFatalError ("Unhandled ObjC Exception", e);
 				// Is there a way to figure out if it's going to crash us? Maybe check MarshalObjectiveCExceptionMode and MarshalManagedExceptionMode?
-				LoggingService.LogInternalError ("Unhandled ObjC exception", e);
 			}
 
+			// Invoke the default xamarin.mac one, so if it bubbles up an exception, the caller receives it.
 			oldHandler?.Invoke (exceptionPtr);
 		}
 
 		sealed class MarshalledObjCException : ObjCException
 		{
-			public MarshalledObjCException (NSException exception, string stacktrace) : base (exception)
+			public MarshalledObjCException (NSException exception) : base (exception)
 			{
-				StackTrace = stacktrace;
-			}
+				const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetField;
 
-			public override string StackTrace { get; }
-
-			public override string ToString ()
-			{
-				// Matches normal exception format:
-				return GetType () + ": " + Message + Environment.NewLine + StackTrace;
+				var trace = new [] { new StackTrace (true), };
+				//// Otherwise exception stacktrace is not gathered.
+				typeof (Exception)
+					.InvokeMember ("captured_traces", flags, null, this, new object [] { trace });
 			}
 		}
 
@@ -1360,7 +1358,7 @@ namespace MonoDevelop.MacIntegration
 
 			public MacMemoryMonitor ()
 			{
-				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
+				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.MainQueue);
 				DispatchSource.SetEventHandler (() => {
 					var metadata = CreateMemoryMetadata (DispatchSource.PressureFlags);
 

@@ -66,14 +66,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			protected override async Task OnLoad ()
 			{
 				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
-				MimeType = (await Runtime.GetService<DesktopService> ()).GetMimeTypeForUri (FilePath);
-				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
-
-				if (textDocument != null && textDocument.TextBuffer.ContentType == contentType) {
+				var contentType = GetContentTypeFromMimeType ();
+				if (textDocument != null) {
 					// Reloading
 					try {
 						FreezeChangeEvent ();
 						OnSetText (text.Text);
+						if (textDocument.TextBuffer.ContentType != contentType)
+							textDocument.TextBuffer.ChangeContentType (contentType, null);
 						textDocument.Encoding = text.Encoding;
 						textDocument.UpdateDirtyState (false, System.IO.File.GetLastWriteTime (FilePath));
 					} finally {
@@ -114,6 +114,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected override Task OnSave ()
 			{
+				var contentType = GetContentTypeFromMimeType ();
+				if (textDocument.TextBuffer.ContentType != contentType)
+					textDocument.TextBuffer.ChangeContentType (contentType, null);
+
 				// OnLoad is always called before anything else, so the document should be ready
 				textDocument.SaveAs (FilePath, true);
 				cleanReiteratedVersion = textDocument.TextBuffer.CurrentSnapshot.Version.ReiteratedVersionNumber;
@@ -125,17 +129,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			ITextDocument CreateTextDocument (string text)
 			{
-				var contentType = (MimeType == null)
-					? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType
-					: GetContentTypeFromMimeType (FilePath, MimeType);
+				var contentType = GetContentTypeFromMimeType ();
 				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, contentType);
 				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
 				return doc;
 			}
 
-			protected static IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+			IContentType GetContentTypeFromMimeType ()
 			{
-				return MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType, filePath)
+				if (MimeType == null)
+					return PlatformCatalog.Instance.TextBufferFactoryService.InertContentType;
+
+				return MimeTypeCatalog.Instance.GetContentTypeForMimeType (MimeType, FilePath)
 					?? PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType ("text");
 			}
 

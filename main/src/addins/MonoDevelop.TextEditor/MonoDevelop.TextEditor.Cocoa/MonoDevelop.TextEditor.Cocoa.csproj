@@ -65,6 +65,7 @@
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\Structure\StructureImpl.csproj" Private="true" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\UrlTagger\UrlTagger.csproj" Private="true" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DragDrop\DragDropImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ChangeTagger\ChangeTagger.csproj" Private="True" />
     <Reference Include="MonoDevelop.DesignerSupport">
       <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
@@ -73,21 +74,22 @@
   <ItemGroup>
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.UrlTagger.Implementation.dll" />
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.UrlTagger.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="icons\vs-find-replace-close-16.png" />

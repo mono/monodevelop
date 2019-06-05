@@ -1,4 +1,4 @@
-//
+﻿//
 // DocumentController.cs
 //
 // Author:
@@ -384,11 +384,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		CancellationTokenSource disposedTokenSource = new CancellationTokenSource ();
+
+		/// <summary>
+		/// Returns a dispose token that's canceled when the document controller disposes.
+		/// </summary>
+		protected CancellationToken DisposedToken { get; }
+
+		protected bool IsDisposed { get => disposed; }
+
 		protected virtual bool ControllerIsViewOnly => false;
 
 		internal FilePath OriginalContentName { get; set; }
 
 		internal bool Initialized => initialized;
+
+		public DocumentController ()
+		{
+			DisposedToken = disposedTokenSource.Token;
+		}
 
 		/// <summary>
 		/// Initializes the controller
@@ -413,6 +427,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public void Dispose ()
 		{
 			if (!disposed) {
+				disposedTokenSource.Cancel ();
+				disposedTokenSource.Dispose ();
+				disposedTokenSource = null;
 				linkedController?.Dispose ();
 				disposed = true;
 				OnDispose ();

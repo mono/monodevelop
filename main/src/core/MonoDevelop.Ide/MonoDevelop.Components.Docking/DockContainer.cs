@@ -457,24 +457,28 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (placeholderWindow == null || !placeholderWindow.Visible)
 				return;
-			
-			if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
-				item.Status = DockItemStatus.Dockable;
-				DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
-				DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
-				gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
-				placeholderWindow.DockDelegate (item);
-				dummyItem.ParentGroup.Remove (dummyItem);
-				RelayoutWidgets ();
-			} else {
-				int px, py;
-				GetPointer (out px, out py);
-				DockGroupItem gi = FindDockGroupItem (item.Id);
-				int pw, ph;
-				placeholderWindow.GetPosition (out px, out py);
-				placeholderWindow.GetSize (out pw, out ph);
-				gi.FloatRect = new Rectangle (px, py, pw, ph);
-				item.Status = DockItemStatus.Floating;
+
+			try {
+				if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
+					item.Status = DockItemStatus.Dockable;
+					DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
+					DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
+					gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
+					placeholderWindow.DockDelegate (item);
+					dummyItem.ParentGroup.Remove (dummyItem);
+					RelayoutWidgets ();
+				} else {
+					int px, py;
+					GetPointer (out px, out py);
+					DockGroupItem gi = FindDockGroupItem (item.Id);
+					int pw, ph;
+					placeholderWindow.GetPosition (out px, out py);
+					placeholderWindow.GetSize (out pw, out ph);
+					gi.FloatRect = new Rectangle (px, py, pw, ph);
+					item.Status = DockItemStatus.Floating;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Updating the dock container placeholder failed", ex);
 			}
 		}
 		

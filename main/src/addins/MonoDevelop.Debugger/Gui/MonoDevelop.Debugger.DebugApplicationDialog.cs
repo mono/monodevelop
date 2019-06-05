@@ -176,7 +176,6 @@ namespace MonoDevelop.Debugger
 			}
 			this.DefaultWidth = 656;
 			this.DefaultHeight = 300;
-			this.Show ();
 		}
 	}
 }

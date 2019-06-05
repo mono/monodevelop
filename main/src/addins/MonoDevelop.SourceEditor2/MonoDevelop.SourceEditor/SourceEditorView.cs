@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -3431,6 +3431,12 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetLineHeight (line);
 		}
 
+		void ITextEditorImpl.SetNotDirtyState ()
+		{
+			TextEditor.Document.SetNotDirtyState ();
+		}
+
+
 		public bool DeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.DeleteItem (node);
 
 		public bool CanDeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.GetToolboxItems ().Contains (node);
@@ -3445,7 +3451,7 @@ namespace MonoDevelop.SourceEditor
 
 		public bool IsDirty {
 			get => isDirty;
-			private set {
+			set {
 				if (isDirty != value) {
 					isDirty = value;
 					DirtyChanged?.Invoke (this, EventArgs.Empty);

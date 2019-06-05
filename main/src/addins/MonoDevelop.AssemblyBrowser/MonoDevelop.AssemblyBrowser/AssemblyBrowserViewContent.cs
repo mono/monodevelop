@@ -64,7 +64,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			DocumentTitle = GettextCatalog.GetString ("Assembly Browser");
 			widget = new AssemblyBrowserWidget ();
-			IsDisposed = false;
 			FillWidget ();
 		}
 
@@ -104,14 +103,8 @@ namespace MonoDevelop.AssemblyBrowser
 			widget.EnsureDefinitionsLoaded (definitions);
 		}
 
-		public bool IsDisposed {
-			get;
-			private set;
-		}
-
 		protected override void OnDispose ()
 		{
-			IsDisposed = true;
 			if (currentWs != null) 
 				currentWs.WorkspaceLoaded -= Handle_WorkspaceLoaded;
 

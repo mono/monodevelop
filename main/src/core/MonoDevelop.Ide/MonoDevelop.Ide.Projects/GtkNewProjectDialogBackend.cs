@@ -179,7 +179,9 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			}
 
-			if (languageCellRenderer.IsLanguageButtonPressed (args.Event)) {
+			// Only display the popup menu on a single press, ignore anything else
+			// Fixes a crash when triple clicking. VSTS #849556
+			if (args.Event.Type == Gdk.EventType.ButtonPress && languageCellRenderer.IsLanguageButtonPressed (args.Event)) {
 				HandlePopup (template, args.Event.Time);
 			}
 		}

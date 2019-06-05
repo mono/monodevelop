@@ -138,7 +138,11 @@ namespace Mono.TextEditor
 
 			public TextViewMarginAccessibilityProxy ()
 			{
+#if MAC
 				Accessible = AccessibilityElementProxy.TextElementProxy (GetContents, GetNumberOfCharacters, GetInsertionPointLineNumber, GetFrameForRange, GetLineForIndex, GetRangeForLine, GetStringForRange, GetRangeForIndex, GetStyleRangeForIndex, GetRangeForPosition, GetVisibleCharacterRange);
+#else
+				Accessible = AccessibilityElementProxy.TextElementProxy();
+#endif
 			}
 
 			public void Dispose ()

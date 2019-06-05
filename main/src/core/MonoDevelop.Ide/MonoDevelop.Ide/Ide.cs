@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static async Task Initialize (ProgressMonitor monitor)
+		public static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage = false)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide
 			}
 
 			Counters.Initialization.Trace ("Initializing WelcomePage service");
-			WelcomePage.WelcomePageService.Initialize ().Ignore ();
+			WelcomePage.WelcomePageService.Initialize (hideWelcomePage).Ignore ();
 
 			// Pump the UI thread to make the start window visible
 

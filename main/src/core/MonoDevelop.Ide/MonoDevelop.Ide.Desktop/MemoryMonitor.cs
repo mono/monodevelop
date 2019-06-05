@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Desktop
 		/// </summary>
 		protected virtual void OnStatusChanged (PlatformMemoryStatusEventArgs args)
 		{
-			StatusChanged?.Invoke (this, args);
+			StatusChanged?.SafeInvoke (this, args);
 		}
 
 		/// <summary>
