@@ -168,18 +168,54 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static void ReportStashResult (StashApplyStatus status)
 		{
-			if (status == StashApplyStatus.Conflicts) {
-				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
-				Runtime.RunInMainThread (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
-				});
+			string msg;
+			StashResultType stashResultType;
+
+			switch (status) {
+			case StashApplyStatus.Conflicts:
+				msg = GettextCatalog.GetString ("A conflicting change has been detected in the index.");
+				stashResultType = StashResultType.Warning;
+				break;
+			case StashApplyStatus.UncommittedChanges:
+				msg = GettextCatalog.GetString ("The stash application was aborted due to uncommitted changes in the index.");
+				stashResultType = StashResultType.Warning;
+				break;
+			case StashApplyStatus.NotFound:
+				msg = GettextCatalog.GetString ("The stash index given was not found.");
+				stashResultType = StashResultType.Error;
+				break;
+			default:
+				msg = GettextCatalog.GetString ("Stash successfully applied.");
+				stashResultType = StashResultType.Message;
+				break;
 			}
-			else {
-				string msg = GettextCatalog.GetString ("Stash successfully applied");
-				Runtime.RunInMainThread (delegate {
-					IdeApp.Workbench.StatusBar.ShowMessage (msg);
-				});
-			}
+
+			ShowStashResult (msg, stashResultType);
+		}
+
+		enum StashResultType
+		{
+			Error,
+			Message,
+			Warning
+		}
+
+		static void ShowStashResult (string msg, StashResultType stashResultType)
+		{
+			Runtime.RunInMainThread (delegate {
+				switch (stashResultType)
+				{
+					case StashResultType.Error:
+						IdeApp.Workbench.StatusBar.ShowError (msg);
+						break;
+					case StashResultType.Message:
+						IdeApp.Workbench.StatusBar.ShowMessage (msg);
+						break;
+					case StashResultType.Warning:
+						IdeApp.Workbench.StatusBar.ShowWarning (msg);
+						break;
+				}
+			});
 		}
 	}
 }
