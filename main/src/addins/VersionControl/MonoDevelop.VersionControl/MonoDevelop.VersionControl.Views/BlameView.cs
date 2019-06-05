@@ -1,4 +1,4 @@
-//
+﻿//
 // BlameView.cs
 //
 // Author:
@@ -32,6 +32,8 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -39,7 +41,7 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	internal class BlameView : DocumentController, IBlameView, IClipboardHandler
+	internal class BlameView : DocumentController, IBlameView
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
@@ -111,57 +113,25 @@ namespace MonoDevelop.VersionControl.Views
 		#endregion
 
 		#region IClipboardHandler implementation
-		void IClipboardHandler.Cut ()
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo info)
 		{
+			info.Enabled = this.widget.Editor.IsSomethingSelected;
 		}
 
-		void IClipboardHandler.Copy ()
+		[CommandHandler (EditCommands.Copy)]
+		protected void Copy ()
 		{
 			this.widget.Editor.RunAction (ClipboardActions.Copy);
 		}
 
-		void IClipboardHandler.Paste ()
-		{
-		}
-
-		void IClipboardHandler.Delete ()
-		{
-		}
-
-		void IClipboardHandler.SelectAll ()
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void SelectAll ()
 		{
 			this.widget.Editor.RunAction (SelectionActions.SelectAll);
 		}
 
-		bool IClipboardHandler.EnableCut {
-			get {
-				return false;
-			}
-		}
-
-		bool IClipboardHandler.EnableCopy {
-			get {
-				return this.widget.Editor.IsSomethingSelected;
-			}
-		}
-
-		bool IClipboardHandler.EnablePaste {
-			get {
-				return false;
-			}
-		}
-
-		bool IClipboardHandler.EnableDelete {
-			get {
-				return false;
-			}
-		}
-
-		bool IClipboardHandler.EnableSelectAll {
-			get {
-				return true;
-			}
-		}
 		#endregion
 	}
 }
