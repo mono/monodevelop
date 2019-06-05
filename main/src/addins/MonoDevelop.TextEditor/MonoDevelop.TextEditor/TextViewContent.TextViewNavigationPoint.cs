@@ -43,7 +43,7 @@ namespace MonoDevelop.TextEditor
 
 		void TryLogNavPoint (bool transient)
 		{
-			if (TextView != null && TextView.Properties.TryGetProperty<Document> (typeof (Document), out var doc) && doc == Ide.IdeApp.Workbench.ActiveDocument) {
+			if (TextView != null && TextView.TryGetParentDocument () is Ide.Gui.Document doc && doc == Ide.IdeApp.Workbench.ActiveDocument) {
 				IdeServices.NavigationHistoryService.LogNavigationPoint (new TextViewNavigationPoint (doc, TextView), transient);
 			}
 		}

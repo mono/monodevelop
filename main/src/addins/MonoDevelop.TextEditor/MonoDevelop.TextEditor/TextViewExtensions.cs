@@ -21,6 +21,7 @@
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.TextEditor
 {
@@ -31,9 +32,8 @@ namespace MonoDevelop.TextEditor
 		/// </summary>
 		public static Ide.Gui.Document TryGetParentDocument (this ITextView view)
 		{
-			// TOTEST
-			if (view.Properties.TryGetProperty<Ide.Gui.Document> (typeof (Ide.Gui.Document), out var document)) {
-				return document;
+			if (view.Properties.TryGetProperty<DocumentController> (typeof (DocumentController), out var document)) {
+				return document.Document;
 			}
 			return null;
 		}
