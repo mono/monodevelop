@@ -1,4 +1,4 @@
-﻿namespace MonoDevelop.FSharp
+namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.IO
@@ -20,7 +20,7 @@ module Symbol =
     let trimSymbolRegion(symbolUse:FSharpSymbolUse) (lastIdentAtLoc:string) =
         let m = symbolUse.RangeAlternate
         let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
-    
+
         let (beginLine, beginCol) =
             if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then
                 (endLine,endCol-lastIdentAtLoc.Length)
@@ -36,7 +36,7 @@ module ServiceSettings =
     let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 1000
     let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 10000
     let idleBackgroundCheckTime = getEnvInteger "FSharpBinding_IdleBackgroundCheckTime" 2000
- 
+
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips).
@@ -86,7 +86,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         async {
             match infoOpt with
             | Some (checkResults) ->
-                match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent 
+                match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent
                       |> Option.orTry (fun () -> Parsing.findIdents col lineStr SymbolLookupKind.Fuzzy) with
                 | None -> return None
                 | Some(colu, identIsland) ->
@@ -171,6 +171,19 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         | Some checkResults -> Some(checkResults.GetFormatSpecifierLocationsAndArity())
         | None -> None
 
+    /// Get all the uses of a symbol in the given file
+    member x.GetUsesOfSymbolAtLocationInFile(fileName, line, col, lineStr) =
+        asyncMaybe {
+            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
+            let! colu, identIsland = MonoDevelop.FSharp.Shared.Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent |> async.Return
+            let! results = infoOpt |> async.Return
+            let! symbolUse = results.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
+            let! symbolUse = x.GetSymbolAtLocation(line, col, lineStr)
+            let lastIdent = Seq.last identIsland
+            let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
+            return (lastIdent, refs)
+        }
+
 [<RequireQualifiedAccess>]
 type AllowStaleResults =
     // Allow checker results where the source doesn't even match
@@ -248,7 +261,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         checker.FileParsed.Add (fun (filename, _) -> LoggingService.logDebug "LanguageService: File parsed: %s" filename)
         checker.FileChecked.Add (fun (filename, _) -> LoggingService.logDebug "LanguageService: File type checked: %s" filename)
 #endif
-        checker.ProjectChecked.Add (fun (filename, _) -> 
+        checker.ProjectChecked.Add (fun (filename, _) ->
             projectChecked filename
             hideStatusIcon filename)
         checker
@@ -361,12 +374,12 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                                      match getOptions reference with
                                      | Some outFile, Some opts  -> (outFile, opts) :: acc
                                      | _ -> acc) ([])
-                                    
+
                 (Some (referencedProject.GetOutputFileName(config).ToString()), Some ({ projOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } ))
             | None -> None, None
         let _file, projectOptions = getOptions project
         projectOptions
-                
+
     member x.TryGetProjectCheckerOptionsFromCache(projFilename, ?properties) : FSharpProjectOptions option =
         let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
         let key = (projFilename, properties)
@@ -499,17 +512,6 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         LoggingService.logDebug "LanguageService: GetTypedParseResultIfAvailable: file=%s" (Path.GetFileName(fileName))
         options |> Option.bind(fun opts -> x.TryGetStaleTypedParseResult(fileName, opts, src, stale))
 
-    /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
-    member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
-        asyncMaybe {
-            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
-            let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
-            let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
-            let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
-            let lastIdent = Seq.last identIsland
-            let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
-            return (lastIdent, refs) }
-
     member x.GetSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
         asyncMaybe {
             LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
@@ -526,7 +528,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
 
             let! dependentProjectsOptions =
-                 defaultArg dependentProjects [] 
+                 defaultArg dependentProjects []
                  |> Async.List.map optionsForDependentProject
 
             let! allProjectResults  =
@@ -540,7 +542,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 |> Async.Parallel
                 |> Async.map Array.concat
 
-            return allSymbolUses 
+            return allSymbolUses
         }
 
     member x.MatchingBraces(filename, projectFilename, source) =
@@ -593,7 +595,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
 
             let! dependentProjectsOptions =
-                 defaultArg dependentProjects [] 
+                 defaultArg dependentProjects []
                  |> Async.List.map optionsForDependentProject
 
             let! allProjectResults =
