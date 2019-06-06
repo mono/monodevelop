@@ -493,17 +493,19 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!ProjectHandler.CanLoadProject (project))
 						continue;
 
-					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, null, cts.Token).ConfigureAwait (false);
-					if (projectInfo == null)
-						continue;
+					foreach (string framework in ProjectHandler.GetFrameworks (project)) {
+						var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, framework, cts.Token).ConfigureAwait (false);
+						if (projectInfo == null)
+							continue;
 
-					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
-						// Cache did not contain project so add it to the solution.
-						OnProjectAdded (projectInfo);
-					} else {
-						lock (projectModifyLock) {
-							projectInfo = AddVirtualDocuments (projectInfo);
-							OnProjectReloaded (projectInfo);
+						if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
+							// Cache did not contain project so add it to the solution.
+							OnProjectAdded (projectInfo);
+						} else {
+							lock (projectModifyLock) {
+								projectInfo = AddVirtualDocuments (projectInfo);
+								OnProjectReloaded (projectInfo);
+							}
 						}
 					}
 					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments).ConfigureAwait (false);
