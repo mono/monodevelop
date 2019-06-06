@@ -473,7 +473,7 @@ namespace MonoDevelop.VersionControl.Views
 						// Is directory.
 						if (item.Key) {
 							foreach (var directory in item)
-								changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+								changeSet.AddFiles (vc.GetDirectoryVersionInfoAsync (directory.Path, remoteStatus, true));
 						} else {
 							var files = new List<VersionInfo> ();
 							foreach (var i in item) {
@@ -489,7 +489,7 @@ namespace MonoDevelop.VersionControl.Views
 
 				cancel.ThrowIfCancellationRequested ();
 				var newList = new List<VersionInfo> ();
-				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
+				newList.AddRange (vc.GetDirectoryVersionInfoAsync (filepath, remoteStatus, true));
 
 				cancel.ThrowIfCancellationRequested ();
 				Runtime.RunInMainThread (delegate {

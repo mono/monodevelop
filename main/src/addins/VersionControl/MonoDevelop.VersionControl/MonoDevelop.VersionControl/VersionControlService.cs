@@ -18,6 +18,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Instrumentation;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -587,7 +588,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		static void OnEntryAdded (object o, SolutionItemEventArgs args)
+		static async void OnEntryAdded (object o, SolutionItemEventArgs args)
 		{
 			if (args is SolutionItemChangeEventArgs && ((SolutionItemChangeEventArgs) args).Reloading)
 				return;
@@ -622,21 +623,23 @@ namespace MonoDevelop.VersionControl
 
 			if (entry is SolutionFolder && files.Count == 1)
 				return;
-
-			using (ProgressMonitor monitor = GetStatusMonitor ()) {
-				foreach (var file in files) {
-					var status = repo.GetDirectoryVersionInfo (file, false, false);
-					foreach (var v in status) {
-						if (!v.IsVersioned && files.Contains (v.LocalPath))
-							repo.Add (v.LocalPath, false, monitor);
+			try {
+				using (ProgressMonitor monitor = GetStatusMonitor ()) {
+					foreach (var file in files) {
+						var status = await repo.GetDirectoryVersionInfoAsync (file, false, false);
+						foreach (var v in status) {
+							if (!v.IsVersioned && files.Contains (v.LocalPath))
+								repo.Add (v.LocalPath, false, monitor);
+						}
 					}
 				}
+				if (entry is SolutionFolder && files.Count == 1)
+					return;
+
+				NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 			}
-
-			if (entry is SolutionFolder && files.Count == 1)
-				return;
-
-			NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));
 		}
 		
 		public static ProgressMonitor GetProgressMonitor (string operation)
