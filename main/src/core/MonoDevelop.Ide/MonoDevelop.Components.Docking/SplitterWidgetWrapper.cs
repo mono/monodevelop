@@ -45,13 +45,8 @@ namespace MonoDevelop.Components.Docking
 
 	class SplitterWidgetWrapper : ISplitterWidget
 	{
-		public Gtk.Widget Parent {
-			get => nativeWidget.Parent;
-		}
-
-		public Gtk.Widget Widget {
-			get => nativeWidget.Widget;
-		}
+		public Gtk.Widget Parent => nativeWidget.Parent;
+		public Gtk.Widget Widget => nativeWidget.Widget;
 
 		public bool Visible {
 			get => nativeWidget.Visible;
@@ -65,24 +60,11 @@ namespace MonoDevelop.Components.Docking
 			nativeWidget = splitterWidget;
 		}
 
-		public void Init (DockGroup grp, int index)
-		{
-			nativeWidget.Init (grp, index);
-		}
+		public void Init (DockGroup grp, int index) => nativeWidget.Init (grp, index);
 
-		public void SizeAllocate (Rectangle rect)
-		{
-			nativeWidget.SizeAllocate (rect);
-		}
+		public void SizeAllocate (Rectangle rect) => nativeWidget.SizeAllocate (rect);
 
-		public void Show ()
-		{
-			nativeWidget.Show ();
-		}
-
-		public void Hide ()
-		{
-			nativeWidget.Hide ();
-		}
+		public void Show () => nativeWidget.Show ();
+		public void Hide () => nativeWidget.Hide ();
 	}
 }

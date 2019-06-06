@@ -3,7 +3,6 @@
 // Author:
 //   Jose Medrano
 //
-
 //
 // Copyright (C) 2918 Microsoft
 //
@@ -31,7 +30,6 @@
 using System;
 using AppKit;
 using Gtk;
-using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -39,7 +37,6 @@ namespace MonoDevelop.Components.Docking
 	{
 		DockGroup dockGroup;
 		int dockIndex;
-		Widget parent;
 
 		int dragPos, dragSize;
 		bool hover, dragging;
@@ -164,8 +161,8 @@ namespace MonoDevelop.Components.Docking
 			else
 				Gdk.Window.RemoveFilterForAll (Filter);
 		}
-		static Gdk.FilterReturn Filter (IntPtr xevent, Gdk.Event evnt) => Gdk.FilterReturn.Remove;
 
+		static Gdk.FilterReturn Filter (IntPtr xevent, Gdk.Event evnt) => Gdk.FilterReturn.Remove;
 	}
 
 }
