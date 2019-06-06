@@ -900,12 +900,9 @@ namespace MonoDevelop.Projects
 		{
 			return BindTask<IEnumerable<AssemblyReference>> (async ct => {
 				var res = await ProjectExtension.OnGetReferencedAssemblies (configuration);
-				
-				if (includeProjectReferences) {
-					foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-						foreach (var asm in pref.GetReferencedFileNames (configuration))
-							res.Add (CreateProjectAssemblyReference (asm, pref));
-					}
+
+				if (!includeProjectReferences) {
+					res.RemoveAll (r => r.IsProjectReference);
 				}
 				return res;
 			});
@@ -1084,14 +1081,15 @@ namespace MonoDevelop.Projects
 				var monitor = new ProgressMonitor ();
 
 				var context = new TargetEvaluationContext ();
-				context.ItemsToEvaluate.Add ("ReferencePath");
+				context.ItemsToEvaluate.Add ("_ReferencesFromRAR");
+				context.ItemsToEvaluate.Add ("_ProjectReferencesFromRAR");
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 				context.GlobalProperties.SetValue ("Silent", true);
+				context.GlobalProperties.SetValue ("DesignTimeBuild", true);
 
-				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferences", configuration, context);
-
+				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferencesDesignTime;ResolveProjectReferencesDesignTime", configuration, context);
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
 				referenceCache = referenceCache.SetItem (confId, refs);
@@ -1196,47 +1194,9 @@ namespace MonoDevelop.Projects
 			await base.OnClearCachedData ();
 		}
 
-		internal protected virtual async Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+		internal protected virtual Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			var result = await OnGetReferencedAssemblies (configuration);
-
-			foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-				foreach (var asm in pref.GetReferencedFileNames (configuration))
-					result.Add (CreateProjectAssemblyReference (asm, pref));
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// This should be removed once the project reference information is retrieved from MSBuild.
-		/// </summary>
-		AssemblyReference CreateProjectAssemblyReference (string path, ProjectReference reference)
-		{
-			var metadata = new MSBuildPropertyGroupEvaluated (MSBuildProject);
-			SetProperty (metadata, "Aliases", reference.Aliases);
-			SetProperty (metadata, "CopyLocal", reference.LocalCopy.ToString ());
-			SetProperty (metadata, "Project", reference.ProjectGuid);
-			SetProperty (metadata, "MSBuildSourceProjectFile", GetProjectFileName (reference));
-			SetProperty (metadata, "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString ());
-			SetProperty (metadata, "ReferenceSourceTarget", reference.ReferenceSourceTarget);
-
-			return new AssemblyReference (path, metadata);
-		}
-
-		void SetProperty (MSBuildPropertyGroupEvaluated metadata, string name, string value)
-		{
-			var property = new MSBuildPropertyEvaluated (MSBuildProject, name, value, value);
-			metadata.SetProperty (name, property);
-		}
-
-		static string GetProjectFileName (ProjectReference reference)
-		{
-			if (reference.OwnerProject?.ParentSolution == null)
-				return null;
-
-			Project project = reference.ResolveProject (reference.OwnerProject.ParentSolution);
-			return project?.FileName;
+			return OnGetReferencedAssemblies (configuration);
 		}
 
 		[Obsolete]

@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			async Task<bool> AddMetadataAssemblyReferences (AddMetadataReferencesData data)
 			{
 				try {
-					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, false).ConfigureAwait (false);
+					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, true).ConfigureAwait (false);
 					foreach (var file in referencedAssemblies) {
 						if (file.IsProjectReference) {
 							var referencedItem = file.GetReferencedItem (data.Project.ParentSolution);
