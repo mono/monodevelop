@@ -1,4 +1,4 @@
-//
+﻿//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -397,7 +397,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				else if (!(nb is NodeBuilderExtension))
 					throw new InvalidOperationException (string.Format ("Invalid NodeBuilder type: {0}. NodeBuilders must inherit either from TypeNodeBuilder or NodeBuilderExtension", nb.GetType()));
 			}
-
+			if (NodeBuilders != null) {
+				var builderHash = new HashSet<NodeBuilder> (builders);
+				foreach (var builder in NodeBuilders) {
+					if (!builderHash.Contains (builder))
+						builder.Dispose ();
+				}
+			}
 			NodeBuilders = builders.ToArray ();
 
 			foreach (NodeBuilder nb in builders)
