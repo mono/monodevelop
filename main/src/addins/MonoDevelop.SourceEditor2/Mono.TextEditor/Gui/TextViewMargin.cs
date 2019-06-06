@@ -1957,7 +1957,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var metrics  = new LineMetrics {
+			var metrics = new LineMetrics {
 				LineSegment = line,
 				Layout = layout,
 
@@ -1980,17 +1980,25 @@ namespace Mono.TextEditor
 				if (!marker.IsVisible)
 					continue;
 
-				if (marker.DrawBackground (textEditor, cr, metrics)) {
-					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
+				try {
+					if (marker.DrawBackground (textEditor, cr, metrics)) {
+						isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
+					}
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing backround marker " + marker, e);
 				}
 			}
 
 			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in textSegmentMarkers) {
-				if (layout.Layout != null)
+				if (layout.Layout == null)
+					continue;
+				try {
 					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing backround marker " + marker, e);
+				}
 			}
-
 
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
@@ -2175,17 +2183,24 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
-				if (!marker.IsVisible)
+			foreach (var marker in textEditor.Document.GetMarkers (line)) {
+				if (!marker.IsVisible || layout.Layout == null)
 					continue;
-
-				if (layout.Layout != null)
+				try {
 					marker.Draw (textEditor, cr, metrics);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing line marker " + marker, e);
+				}
 			}
 
 			foreach (var marker in textSegmentMarkers) {
-				if (layout.Layout != null)
+				if (layout.Layout == null)
+					continue;
+				try {
 					marker.Draw (textEditor, cr, metrics, offset, offset + length);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing segment marker " + marker, e);
+				}
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 
