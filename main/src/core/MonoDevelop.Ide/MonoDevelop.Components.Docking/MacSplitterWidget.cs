@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.Docking
 
 		public MacSplitterWidget ()
 		{
-			var options = NSTrackingAreaOptions.ActiveInKeyWindow |
+			const NSTrackingAreaOptions options = NSTrackingAreaOptions.ActiveInKeyWindow |
 				NSTrackingAreaOptions.InVisibleRect |
 				NSTrackingAreaOptions.MouseEnteredAndExited;
 			var trackingArea = new NSTrackingArea (default, options, this, null);
