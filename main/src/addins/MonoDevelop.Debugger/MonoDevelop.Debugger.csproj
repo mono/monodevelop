@@ -176,6 +176,8 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValueTreeViewController.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValueTreeView_Gtk.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValueTreeViewModels.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValueTreeViewFakes.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />

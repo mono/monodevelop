@@ -43,12 +43,6 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
-	public interface IDebuggerService
-	{
-		bool IsConnected { get; }
-		bool IsPaused { get; }
-	}
-
 	public class ObjectValueTreeViewController
 	{
 		/// <summary>
@@ -102,7 +96,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
-		/// Adds values to the root node
+		/// Adds values to the root node, eg locals or watch expressions
 		/// </summary>
 		public void AddValues(IEnumerable<IObjectValueNode> values)
 		{
@@ -111,7 +105,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			var allNodes = values.ToList ();
-			this.Root.AddValues (allNodes);
+			((RootObjectValueNode)this.Root).AddValues (allNodes);
 
 			// TODO: we want to enumerate just the once
 			foreach (var x in allNodes) {
@@ -251,70 +245,7 @@ namespace MonoDevelop.Debugger
 
 	}
 
-	public sealed class ProxyDebuggerService : IDebuggerService
-	{
-		public bool IsConnected => DebuggingService.IsConnected;
-
-		public bool IsPaused => DebuggingService.IsPaused;
-	}
-
-	public interface IObjectValueNode
-	{
-		/// <summary>
-		/// Gets the path of the node from the root.
-		/// </summary>
-		string Path { get; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the node is expanded
-		/// </summary>
-		bool IsExpanded { get; set; }
-
-
-
-		string Name { get; }
-		bool HasChildren { get; }
-		bool IsEvaluating { get; }
-
-		IEnumerable<IObjectValueNode> Children { get; }
-		bool IsUnknown { get; }
-		bool IsReadOnly { get; }
-		bool IsError { get; }
-		bool IsNotSupported { get; }
-		string Value { get; }
-		bool IsImplicitNotSupported { get; }
-		bool IsEvaluatingGroup { get; }
-		ObjectValueFlags Flags { get; }
-		bool IsNull { get; }
-		bool IsPrimitive { get; }
-		string TypeName { get; }
-		string DisplayValue { get; }
-		bool CanRefresh { get; }
-		bool HasFlag (ObjectValueFlags flag);
-
-		event EventHandler ValueChanged;
-
-		void AddValues (IEnumerable<IObjectValueNode> values);
-		Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken);
-	}
-
-	public interface IStackFrame
-	{
-
-	}
-
-	public sealed class ObjectValueTreeViewStackFrame : IStackFrame
-	{
-		readonly StackFrame frame;
-
-		public ObjectValueTreeViewStackFrame (StackFrame frame)
-		{
-			this.frame = frame;
-		}
-
-		public StackFrame StackFrame => this.frame;
-	}
-
+	#region Extension methods and helpers
 	/// <summary>
 	/// Helper class to mimic existing API
 	/// </summary>
@@ -322,12 +253,12 @@ namespace MonoDevelop.Debugger
 	{
 		public static void SetStackFrame(this ObjectValueTreeViewController controller, StackFrame frame)
 		{
-			controller.Frame = new ObjectValueTreeViewStackFrame (frame);
+			controller.Frame = new ProxyStackFrame (frame);
 		}
 
 		public static StackFrame GetStackFrame (this ObjectValueTreeViewController controller)
 		{
-			return (controller.Frame as ObjectValueTreeViewStackFrame)?.StackFrame;
+			return (controller.Frame as ProxyStackFrame)?.StackFrame;
 		}
 
 
@@ -363,259 +294,5 @@ namespace MonoDevelop.Debugger
 			return null;
 		}
 	}
-
-	/// <summary>
-	/// Represents a node in a tree structure that holds ObjectValue from the debugger.
-	/// </summary>
-	public sealed class ObjectValueNode : AbstractObjectValueNode
-	{
-		bool childrenLoaded;
-
-		public ObjectValueNode (ObjectValue value, string parentPath) : base (parentPath, value.Name)
-		{
-			this.DebuggerObject = value;
-
-			value.ValueChanged += OnDebuggerValueChanged;
-		}
-
-		public ObjectValue DebuggerObject { get; }
-
-		public override bool HasChildren => this.DebuggerObject.HasChildren;
-
-		public override bool IsEvaluating => this.DebuggerObject.IsEvaluating;
-
-		public override bool IsUnknown => this.DebuggerObject.IsUnknown;
-		public override bool IsReadOnly => this.DebuggerObject.IsReadOnly;
-		public override bool IsError => this.DebuggerObject.IsError;
-		public override bool IsNotSupported => this.DebuggerObject.IsNotSupported;
-		public override string Value => this.DebuggerObject.Value;
-		public override bool IsImplicitNotSupported => this.DebuggerObject.IsImplicitNotSupported;
-		public override bool IsEvaluatingGroup => this.DebuggerObject.IsEvaluatingGroup;
-		public override ObjectValueFlags Flags => this.DebuggerObject.Flags;
-		public override bool IsNull => this.DebuggerObject.IsNull;
-		public override bool IsPrimitive => this.DebuggerObject.IsPrimitive;
-		public override string TypeName => this.DebuggerObject.TypeName;
-		public override string DisplayValue => this.DebuggerObject.DisplayValue;
-		public override bool CanRefresh => this.DebuggerObject.CanRefresh;
-		public override bool HasFlag (ObjectValueFlags flag) => this.DebuggerObject.HasFlag(flag);
-
-		public override async Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
-		{
-			if (this.childrenLoaded) {
-				return this.Children;
-			}
-
-			var childValues = await GetChildrenAsync (this.DebuggerObject, cancellationToken);
-
-			this.childrenLoaded = true;
-			this.ClearChildren ();
-			this.AddValues (childValues.Select (x => new ObjectValueNode (x, this.Path)));
-
-			return this.Children;
-		}
-
-
-		static Task<ObjectValue []> GetChildrenAsync (ObjectValue value, CancellationToken cancellationToken)
-		{
-			return Task.Factory.StartNew<ObjectValue []> (delegate (object arg) {
-				try {
-					return ((ObjectValue)arg).GetAllChildren ();
-				} catch (Exception ex) {
-					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
-					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
-					return new ObjectValue [0];
-				}
-			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
-		}
-
-		private void OnDebuggerValueChanged (object sender, EventArgs e)
-		{
-			this.OnValueChanged (e);
-		}
-
-	}
-
-	public abstract class NodeEventArgs : EventArgs
-	{
-		public NodeEventArgs (IObjectValueNode node)
-		{
-			this.Node = node;
-		}
-
-		public IObjectValueNode Node { get; }
-	}
-
-	public sealed class NodeEvaluationCompletedEventArgs : NodeEventArgs
-	{
-		public NodeEvaluationCompletedEventArgs (IObjectValueNode node) : base(node)
-		{
-		}
-	}
-
-	public sealed class ChildrenChangedEventArgs : NodeEventArgs
-	{
-		public ChildrenChangedEventArgs (IObjectValueNode node, bool expandOnCompletion) : base (node)
-		{
-			this.Expand = expandOnCompletion;
-		}
-
-		public bool Expand { get; }
-	}
-
-	public sealed class NodeChangedEventArgs : NodeEventArgs
-	{
-		public NodeChangedEventArgs (IObjectValueNode node) : base (node)
-		{
-		}
-	}
-
-
-	public abstract class AbstractObjectValueNode : IObjectValueNode
-	{
-		readonly List<IObjectValueNode> children = new List<IObjectValueNode> ();
-
-		protected AbstractObjectValueNode (string parentPath, string name)
-		{
-			this.Name = name;
-			if (parentPath.EndsWith("/", StringComparison.OrdinalIgnoreCase)) {
-				this.Path = parentPath + name;
-			} else {
-				this.Path = parentPath + "/" + name;
-			}
-		}
-
-		public string Path { get; }
-		public string Name { get; }
-
-		public virtual string DisplayValue => string.Empty;
-
-		public virtual bool HasChildren => false;
-
-		public virtual bool IsEvaluating => false;
-		public virtual bool IsUnknown => false;
-		public virtual bool IsReadOnly => false;
-		public virtual bool IsError => false;
-		public virtual bool IsNotSupported => false;
-		public virtual string Value => string.Empty;
-		public virtual bool IsImplicitNotSupported => false;
-		public virtual bool IsEvaluatingGroup => false;
-		public virtual ObjectValueFlags Flags => ObjectValueFlags.None;
-		public virtual bool IsNull => false;
-		public virtual bool IsPrimitive => false;
-		public virtual string TypeName => string.Empty;
-		public virtual bool CanRefresh => false;
-		public virtual bool HasFlag (ObjectValueFlags flag) => false;
-
-		public virtual bool IsExpanded { get; set; }
-
-		public event EventHandler ValueChanged;
-
-		public IEnumerable<IObjectValueNode> Children => this.children;
-
-		public void AddValues (IEnumerable<IObjectValueNode> values)
-		{
-			this.children.AddRange (values);
-		}
-
-		public virtual Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
-		{
-			return Task.FromResult (Enumerable.Empty<IObjectValueNode> ());
-		}
-
-		protected void ClearChildren()
-		{
-			this.children.Clear ();
-		}
-
-		protected void OnValueChanged(EventArgs e)
-		{
-			this.ValueChanged?.Invoke (this, e);
-		}
-	}
-
-
-
-	public sealed class RootObjectValueNode : AbstractObjectValueNode
-	{
-		public RootObjectValueNode () : base(string.Empty, string.Empty)
-		{
-		}
-
-		public override bool HasChildren => true;
-	}
-
-	public abstract class DebugObjectValueNode : AbstractObjectValueNode
-	{
-		protected DebugObjectValueNode (string parentPath, string name) : base (parentPath, name)
-		{
-		}
-
-		public override bool HasChildren => true;
-
-		public override string Value => "none";
-		public override string TypeName => "No Type";
-		public override string DisplayValue => "dummy";
-	}
-
-
-	public sealed class FakeObjectValueNode : DebugObjectValueNode
-	{
-		public FakeObjectValueNode (string parentPath) : base (parentPath, "fake")
-		{
-		}
-
-		public override bool HasChildren => true;
-
-		public override string Value => "none";
-		public override string TypeName => "No Type";
-		public override string DisplayValue => "dummy";
-
-
-		public override async Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
-		{
-			// TODO: do some sleeping...
-			await Task.Delay (1000);
-
-			this.ClearChildren ();
-			this.AddValues (new [] { new FakeObjectValueNode (this.Path) });
-			return this.Children;
-		}
-	}
-
-	public sealed class FakeEvaluatingObjectValueNode : DebugObjectValueNode
-	{
-		bool isEvaluating;
-		bool hasChildren;
-		public FakeEvaluatingObjectValueNode (string parentPath) : base (parentPath, "evaluating")
-		{
-			this.isEvaluating = true;
-			DoTest ();
-		}
-
-		public override bool HasChildren => hasChildren;
-		public override bool IsEvaluating => isEvaluating;
-
-		public override string Value => "none";
-		public override string TypeName => "No Type";
-		public override string DisplayValue => "dummy";
-
-
-		public override async Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
-		{
-			// TODO: do some sleeping...
-			await Task.Delay (1000);
-
-			this.ClearChildren ();
-			this.AddValues (new [] { new FakeObjectValueNode (this.Path) });
-			return this.Children;
-		}
-
-		async void DoTest()
-		{
-			await Task.Delay (3000);
-			this.isEvaluating = false;
-			this.hasChildren = true;
-			this.OnValueChanged (EventArgs.Empty);
-		}
-	}
+	#endregion
 }
