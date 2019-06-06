@@ -312,5 +312,16 @@ namespace MonoDevelop.PackageManagement
 
 			return HasPackages (project.BaseDirectory, project.Name) || project.Items.OfType<ProjectPackageReference> ().Any ();
 		}
+
+		public static bool CanRestorePackages (this DotNetProject project)
+		{
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null)
+				return nugetAwareProject.HasPackages ();
+
+			return HasPackages (project.BaseDirectory, project.Name) ||
+				DotNetCoreNuGetProject.CanCreate (project) ||
+				PackageReferenceNuGetProject.CanCreate (project);
+		}
 	}
 }
