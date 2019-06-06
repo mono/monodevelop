@@ -76,6 +76,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			fileDescriptor = modelDescriptor as FileDescriptor;
 			await base.OnInitialize (modelDescriptor, status);
+			Encoding = fileDescriptor.Encoding;
 		}
 
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
