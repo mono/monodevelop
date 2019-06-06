@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Composition
 		internal interface ICachingFaultInjector
 		{
 			void FaultAssemblyInfo (MefControlCacheAssemblyInfo info);
+			void FaultWritingComposition ();
 		}
 
 		internal class RuntimeCompositionExceptionHandler
@@ -71,7 +72,7 @@ namespace MonoDevelop.Ide.Composition
 			internal string MefCacheFile { get; }
 			internal string MefCacheControlFile { get; }
 
-			public Caching (HashSet<Assembly> mefAssemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null, RuntimeCompositionExceptionHandler exceptionHandler = null)
+			public Caching (HashSet<Assembly> mefAssemblies, RuntimeCompositionExceptionHandler exceptionHandler, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
 			{
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
 
@@ -189,9 +190,12 @@ namespace MonoDevelop.Ide.Composition
 
 					saveTask = Task.Run (async () => {
 						try {
+							cachingFaultInjector?.FaultWritingComposition ();
 							await WriteMefCache (runtimeComposition, catalog, cacheManager);
 						} catch (Exception ex) {
-							exceptionHandler.HandleException ("Failed to write MEF cache", ex);
+							Runtime.RunInMainThread (() => {
+								exceptionHandler.HandleException ("Failed to write MEF cache", ex);
+							}).Ignore ();
 						}
 					});
 					await saveTask;
@@ -261,7 +265,7 @@ namespace MonoDevelop.Ide.Composition
 			}
 		}
 
-		class InvalidRuntimeCompositionException : Exception
+		internal sealed class InvalidRuntimeCompositionException : Exception
 		{
 			public InvalidRuntimeCompositionException (string assemblyName) : base($"Input assemblies contained {assemblyName} but composition extension point didn't")
 			{
