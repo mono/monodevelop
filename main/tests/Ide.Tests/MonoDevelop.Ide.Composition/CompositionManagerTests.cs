@@ -39,14 +39,14 @@ namespace MonoDevelop.Ide.Composition
 		public async Task ValidateRuntimeCompositionIsValid ()
 		{
 			var mefAssemblies = CompositionManager.ReadAssembliesFromAddins ();
-			var caching = new CompositionManager.Caching (mefAssemblies, file => {
+			var caching = new CompositionManager.Caching (mefAssemblies, new ThrowingHandler (), file => {
 				var tmpDir = Path.Combine (Util.TmpDir, "mef", nameof(ValidateRuntimeCompositionIsValid));
 				if (Directory.Exists (tmpDir)) {
 					Directory.Delete (tmpDir, true);
 				}
 				Directory.CreateDirectory (tmpDir);
 				return Path.Combine (tmpDir, file);
-			}, exceptionHandler: new ThrowingHandler ());
+			});
 
 			var (composition, catalog) = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
 			var cacheManager = new CachedComposition ();
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Composition
 			await caching.Write (composition, catalog, cacheManager);
 		}
 
-		class ThrowingHandler : CompositionManager.RuntimeCompositionExceptionHandler
+		sealed class ThrowingHandler : CompositionManager.RuntimeCompositionExceptionHandler
 		{
 			public override void HandleException (string message, Exception e)
 			{

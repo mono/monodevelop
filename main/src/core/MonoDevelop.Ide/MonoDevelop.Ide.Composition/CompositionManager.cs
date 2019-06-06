@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Composition
 				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
-				var caching = new Caching (mefAssemblies);
+				var caching = new Caching (mefAssemblies, new IdeRuntimeCompositionExceptionHandler ());
 
 				// Try to use cached MEF data
 
@@ -235,6 +235,23 @@ namespace MonoDevelop.Ide.Composition
 							LoggingService.LogError ("Composition can't load assembly: " + assemblyNode.FileName, e);
 						}
 					}
+				}
+			}
+		}
+
+		sealed class IdeRuntimeCompositionExceptionHandler : RuntimeCompositionExceptionHandler
+		{
+			public override void HandleException (string message, Exception e)
+			{
+				base.HandleException (message, e);
+
+				if (e is InvalidRuntimeCompositionException) {
+					// TODO: Fix text.
+					var text = GettextCatalog.GetString ("Some extensions failed to initialize, requiring a restart of {0}", BrandingService.ApplicationName);
+					var restartLabel = GettextCatalog.GetString ("Restart");
+
+					MessageService.GenericAlert (IdeServices.DesktopService.GetFocusedTopLevelWindow (), Gui.Stock.Error, text, secondaryText: null, new AlertButton (restartLabel));
+					IdeApp.Restart (false).Ignore ();
 				}
 			}
 		}
