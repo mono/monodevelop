@@ -142,6 +142,76 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Test]
+		public async Task MultiTargetFramework_ProjectReferences ()
+		{
+			FilePath solFile = Util.GetSampleProject ("multi-target-project-ref", "multi-target.sln");
+
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+					var projects = ws.CurrentSolution.Projects.ToArray ();
+
+					var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net471)");
+					var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+					var netframeworkProjectRef = projects.FirstOrDefault (p => p.Name == "multi-target-ref (net472)");
+					var netstandardProjectRef = projects.FirstOrDefault (p => p.Name == "multi-target-ref (netstandard1.4)");
+
+					// Should be four projects - one for each target framework.
+					Assert.AreEqual (4, projectIds.Length);
+					Assert.AreEqual (4, projects.Length);
+
+					Assert.IsNotNull (netframeworkProject);
+					Assert.IsNotNull (netstandardProject);
+					Assert.IsNotNull (netframeworkProjectRef);
+					Assert.IsNotNull (netstandardProjectRef);
+
+					// Check project references.
+					var projectReferences = netstandardProjectRef.ProjectReferences.ToArray ();
+
+					Assert.AreEqual (1, projectReferences.Length);
+					Assert.AreEqual (netstandardProject.Id, projectReferences [0].ProjectId);
+
+					projectReferences = netframeworkProjectRef.ProjectReferences.ToArray ();
+
+					Assert.AreEqual (1, projectReferences.Length);
+					Assert.AreEqual (netframeworkProject.Id, projectReferences [0].ProjectId);
+
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
+		[Test]
+		public async Task ProjectReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("netstandard-project", "NetStandardTest.sln");
+
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var projects = ws.CurrentSolution.Projects.ToArray ();
+
+					var netframeworkProject = projects.FirstOrDefault (p => p.Name == "NetStandardTest");
+					var netstandardProject = projects.FirstOrDefault (p => p.Name == "Lib");
+					var projectReferences = netframeworkProject.ProjectReferences.ToArray ();
+
+					Assert.AreEqual (1, projectReferences.Length);
+					Assert.AreEqual (netstandardProject.Id, projectReferences [0].ProjectId);
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Clear all other package sources and just use the main NuGet package source when
 		/// restoring the packages for the project tests.

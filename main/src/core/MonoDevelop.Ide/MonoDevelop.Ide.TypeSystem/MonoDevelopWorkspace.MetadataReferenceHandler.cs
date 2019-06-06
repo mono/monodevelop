@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (token.IsCancellationRequested)
 					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, ImmutableArray<ProjectReference>.Empty);
 
-				var projectReferences = await CreateProjectReferences (proj, token).ConfigureAwait (false);
+				var projectReferences = await CreateProjectReferences (proj, framework, token).ConfigureAwait (false);
 				return (metadataReferences, projectReferences);
 			}
 
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			async Task<ImmutableArray<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+			async Task<ImmutableArray<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, string framework, CancellationToken token)
 			{
 				if (!(p is MonoDevelop.Projects.DotNetProject netProj))
 					return ImmutableArray<ProjectReference>.Empty;
@@ -157,6 +157,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				List<MonoDevelop.Projects.AssemblyReference> references;
 				try {
 					var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
+					if (!string.IsNullOrEmpty (framework))
+						config = new MonoDevelop.Projects.ItemFrameworkConfigurationSelector (config, framework);
+
 					references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting referenced projects.", e);
@@ -183,8 +186,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
 						continue;
 
+					string framework = pr.HasSingleTargetFramework ? null : pr.NearestTargetFramework;
 					var aliases = pr.EnumerateAliases ();
-					yield return new ProjectReference (projectMap.GetOrCreateId (referencedProject, null), aliases.ToImmutableArray ());
+					yield return new ProjectReference (projectMap.GetOrCreateId (referencedProject, null, framework), aliases.ToImmutableArray ());
 				}
 			}
 		}
