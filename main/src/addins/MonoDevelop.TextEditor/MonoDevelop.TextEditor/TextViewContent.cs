@@ -65,7 +65,6 @@ namespace MonoDevelop.TextEditor
 {
 	abstract partial class TextViewContent<TView, TImports> :
 		FileDocumentController,
-		INavigable,
 		ICustomCommandTarget,
 		ICommandHandler,
 		ICommandUpdater,
@@ -327,8 +326,6 @@ namespace MonoDevelop.TextEditor
 			sourceEditorOptions.Changed += UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
 			TextBuffer.Changed += HandleTextBufferChanged;
-			TextView.Caret.PositionChanged += CaretPositionChanged;
-			TextView.TextBuffer.Changed += TextBufferChanged;
 			TextView.Options.OptionChanged += TextBufferOptionsChanged;
 		}
 
@@ -338,8 +335,6 @@ namespace MonoDevelop.TextEditor
 			if (TextDocument != null) {
 				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
 				TextBuffer.Changed -= HandleTextBufferChanged;
-				TextView.Caret.PositionChanged -= CaretPositionChanged;
-				TextView.TextBuffer.Changed -= TextBufferChanged;
 				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
 			}
 		}
@@ -664,16 +659,6 @@ namespace MonoDevelop.TextEditor
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		protected internal override ProjectReloadCapability OnGetProjectReloadCapability () => ProjectReloadCapability.Full;
-
-		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
-		{
-			TryLogNavPoint (true);
-		}
-
-		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
-		{
-			TryLogNavPoint (false);
-		}
 
 		void TextBufferOptionsChanged (object sender, EventArgs a)
 		{
