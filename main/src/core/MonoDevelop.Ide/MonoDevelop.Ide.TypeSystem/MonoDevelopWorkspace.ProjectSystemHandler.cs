@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var tp = LoadProject (proj, token, null, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
-					});
+					}, TaskContinuationOptions.ExecuteSynchronously);
 					allTasks.Add (tp);
 
 				}
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var tp = LoadProject (proj, token, null, cacheInfo).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
-					});
+					}, TaskContinuationOptions.ExecuteSynchronously);
 					allTasks.Add (tp);
 				}
 

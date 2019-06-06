@@ -1207,11 +1207,11 @@ namespace MonoDevelop.Ide
 		async Task LoadWorkspaceTypeSystem (WorkspaceItem item)
 		{
 			try {
-				var typeSystem = await serviceProvider.GetService<TypeSystemService> ();
-				await typeSystem.Load (item, null);
+				var typeSystem = await serviceProvider.GetService<TypeSystemService> ().ConfigureAwait (false);
+				await typeSystem.Load (item, null).ConfigureAwait (false);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
-			};
+			}
 		}
 
 		internal void NotifyItemRemoved (WorkspaceItem item)

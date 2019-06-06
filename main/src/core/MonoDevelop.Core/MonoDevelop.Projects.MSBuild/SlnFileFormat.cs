@@ -381,7 +381,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
 					projectLoadMonitor.CurrentSolution = sol;
-				await Task.Factory.StartNew (() => {
+				await Task.Run (() => {
 					sol.ReadSolution (monitor);
 				});
 			} catch (Exception ex) {

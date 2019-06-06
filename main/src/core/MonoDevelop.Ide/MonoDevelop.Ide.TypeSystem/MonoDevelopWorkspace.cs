@@ -450,7 +450,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				BeginLoad ();
-				return await InternalLoadSolution (cancellationToken);
+				return await InternalLoadSolution (cancellationToken).ConfigureAwait (false);
 			} finally {
 				EndLoad ();
 			}
@@ -496,13 +496,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
 						// Cache did not contain project so add it to the solution.
 						OnProjectAdded (projectInfo);
+					} else {
+						lock (projectModifyLock) {
+							projectInfo = AddVirtualDocuments (projectInfo);
+							OnProjectReloaded (projectInfo);
+						}
 					}
-
-					lock (projectModifyLock) {
-						projectInfo = AddVirtualDocuments (projectInfo);
-						OnProjectReloaded (projectInfo);
-					}
-					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
+					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments).ConfigureAwait (false);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);

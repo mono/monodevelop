@@ -58,15 +58,19 @@ namespace MonoDevelop.DotNetCore
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
 		{
-			var globalJson = e.FirstOrDefault (x => x.FileName.FileName.IndexOf ("global.json", StringComparison.OrdinalIgnoreCase) == 0 && !x.FileName.IsDirectory);
-			if (globalJson == null)
-				return;
+			foreach (var arg in e) {
+				if (arg.IsDirectory || !arg.FileName.HasExtension (".json"))
+					continue;
 
-			// make sure the global.json file that has been changed is the one we got when loading the project
-			if (Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPath 
-				&& globalJsonPath.IndexOf (globalJson.FileName, StringComparison.OrdinalIgnoreCase) == 0) {
-				DetectSDK (restore: true);
+				// avoid allocation caused by not querying .FileName
+				string fileName = arg.FileName;
+				// make sure the global.json file that has been changed is the one we got when loading the project
+				if (Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPath
+					&& globalJsonPath.Equals (fileName, StringComparison.OrdinalIgnoreCase)) {
+					DetectSDK (restore: true);
+				}
 			}
+
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)

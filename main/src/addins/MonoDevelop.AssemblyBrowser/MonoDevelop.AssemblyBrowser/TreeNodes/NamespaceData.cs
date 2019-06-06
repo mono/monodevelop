@@ -28,42 +28,61 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Decompiler.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class NamespaceData : IDisposable
 	{
-		List<(bool, object)> types = new List<(bool, object)> ();
-		
-		public string Name {
-			get;
-			private set;
+		public string Name { get; }
+		INamespace decompilerNs;
+		Microsoft.CodeAnalysis.INamespaceSymbol roslynNamespace;
+
+		public static bool IsPublic (object typeObject)
+		{
+			return (typeObject is ITypeDefinition typeDefinition && typeDefinition.IsPublic ())
+				|| (typeObject is Microsoft.CodeAnalysis.INamedTypeSymbol symbol && symbol.IsPublic ());
 		}
 
-		public List<(bool isPublic, object typeObject)> Types {
+		object [] types;
+		public object[] Types {
 			get {
+				if (types == null) {
+					types = decompilerNs?.Types.ToArray ()
+						?? roslynNamespace?.GetTypeMembers ().ToArray ()
+						?? Array.Empty<object> ();
+				}
 				return types;
 			}
 		}
-		
-		public NamespaceData (string name)
+
+		public NamespaceData(INamespace ns)
 		{
-			this.Name = name;
+			Name = ns.FullName;
+			decompilerNs = ns;
+
+			// Remove <Module> from root namespace.
+			if (ns.ParentNamespace == null) {
+				types = decompilerNs.Types.Where (x => x.Name != "<Module>").ToArray ();
+			}
+		}
+
+		public NamespaceData(Microsoft.CodeAnalysis.INamespaceSymbol namespaceSymbol)
+		{
+			Name = namespaceSymbol.GetFullName ();
+			roslynNamespace = namespaceSymbol;
 		}
 		
 		public void Dispose ()
 		{
-			if (types != null) {
-			//	types.ForEach (t => t.Dispose ());
-				types.Clear ();
-				types = null;
-			}
+			types = null;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Count);
+			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Length);
 		}
 	}
 }

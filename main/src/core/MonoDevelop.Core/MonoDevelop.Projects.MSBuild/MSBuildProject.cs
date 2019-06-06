@@ -207,7 +207,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public static Task<MSBuildProject> LoadAsync (string file)
 		{
-			return Task<MSBuildProject>.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				var p = new MSBuildProject ();
 				p.Load (file);
 				return p;

@@ -40,6 +40,11 @@ namespace MonoDevelop.AssemblyBrowser
 			entity.Accessibility == Accessibility.ProtectedOrInternal ||
 			entity.Accessibility == Accessibility.Public;
 
+		public static bool IsPublic (this Microsoft.CodeAnalysis.ISymbol entity) =>
+			entity.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Protected ||
+			entity.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal ||
+			entity.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
+
 		public static string GetStockIcon (this Accessibility attributes)
 		{
 			switch (attributes) {
