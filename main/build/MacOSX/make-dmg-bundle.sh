@@ -75,7 +75,14 @@ fi
 SetFile -a C "$MOUNT_POINT"
 
 echo "Detaching from disk image..."
-hdiutil detach "$MOUNT_POINT" -quiet || exit $?
+for n in `seq 1 5`
+do
+	hdiutil detach "$MOUNT_POINT" && break
+	if [ $n = 5 ]; then
+		hdiutil detach -force "$MOUNT_POINT"
+		exit $?
+	fi
+done
 
 mv "$DMG_FILE" "$DMG_FILE.master"
 
