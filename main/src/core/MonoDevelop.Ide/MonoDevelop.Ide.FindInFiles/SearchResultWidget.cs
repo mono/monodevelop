@@ -630,14 +630,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			var sb = new StringBuilder ();
 			foreach (TreePath p in treeviewSearchResults.Selection.GetSelectedRows (out model)) {
 				TreeIter iter;
-				if (!model.GetIter (out iter, p))
+				if (!model.GetIter (out iter, p)) {
 					continue;
+				}
 				var result = store.GetValue (iter, SearchResultColumn) as SearchResult;
-				if (result == null)
+				if (result == null) {
 					continue;
-
-				sb.AppendFormat (result.GetCopyData (this));
-				sb.AppendLine ();
+				}
+				try {
+					sb.AppendLine (result.GetCopyData (this));
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while getting copy data from search results", e);
+				}
 			}
 			Clipboard clipboard = Clipboard.Get (Atom.Intern ("CLIPBOARD", false));
 			clipboard.Text = sb.ToString ();
