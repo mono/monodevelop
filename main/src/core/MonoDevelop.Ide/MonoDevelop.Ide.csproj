@@ -4249,7 +4249,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchStatusBar.cs" />
     <Compile Include="MonoDevelop.Components.Docking\MacSplitterWidget.cs" />
     <Compile Include="MonoDevelop.Components.Docking\SplitterWidgetWrapper.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\SplitterGtkNSViewHostWidget.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\SplitterMacHostWidget.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

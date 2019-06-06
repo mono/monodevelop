@@ -45,11 +45,6 @@ namespace MonoDevelop.Components.Docking
 			host = new GtkNSViewHost (view);
 		}
 
-		public void Init (DockGroup grp, int index)
-		{
-			view.Init (grp, index);
-		}
-
 		public Widget Parent => host.Parent;
 
 		public bool Visible {
@@ -59,21 +54,13 @@ namespace MonoDevelop.Components.Docking
 
 		public Widget Widget => host;
 
-		public void SizeAllocate (Rectangle rect)
-		{
-			host.SizeAllocate (rect);
-		}
+		public void Init (DockGroup grp, int index) => view.Init (grp, index);
 
-		public void Hide ()
-		{
-			host.Hide ();
-		}
+		public void SizeAllocate (Rectangle rect) => host.SizeAllocate (rect);
 
-		public void Show ()
-		{
-			host.Show ();
-		}
+		public void Hide () => host.Hide ();
 
+		public void Show () => host.Show ();
 	}
 }
 
