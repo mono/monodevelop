@@ -617,7 +617,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					// update documents
 					if (documentManager != null) {
 						foreach (var openDocument in documentManager.Documents)
-							openDocument.DocumentContext.ReparseDocument ();
+							openDocument.DocumentContext?.ReparseDocument ();
 					}
 				}
 			}
