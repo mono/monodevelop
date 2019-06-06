@@ -152,7 +152,7 @@ namespace MonoDevelop.VersionControl.Git
 			var t = Task.Run (delegate {
 				try {
 					var res = repo.ApplyStash (monitor, s);
-					ReportStashResult (res);
+					ReportStashResult (repo, res);
 					return true;
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
@@ -166,7 +166,7 @@ namespace MonoDevelop.VersionControl.Git
 			return t;
 		}
 
-		public static void ReportStashResult (StashApplyStatus status)
+		public static void ReportStashResult (Repository repo, StashApplyStatus status)
 		{
 			string msg;
 			StashResultType stashResultType;
@@ -174,6 +174,17 @@ namespace MonoDevelop.VersionControl.Git
 			switch (status) {
 			case StashApplyStatus.Conflicts:
 				msg = GettextCatalog.GetString ("A conflicting change has been detected in the index.");
+
+				// Include conflicts in the msg
+				using (var RootRepository = new LibGit2Sharp.Repository (repo.RootPath)) {
+					if (!RootRepository.Index.IsFullyMerged) {
+						msg += GettextCatalog.GetString ("The following conflicts have been found:") + Environment.NewLine;
+						foreach (var conflictFile in RootRepository.Index.Conflicts) {
+							msg += conflictFile.Ancestor.Path + Environment.NewLine;
+						}
+					}
+				}
+
 				stashResultType = StashResultType.Warning;
 				break;
 			case StashApplyStatus.UncommittedChanges:

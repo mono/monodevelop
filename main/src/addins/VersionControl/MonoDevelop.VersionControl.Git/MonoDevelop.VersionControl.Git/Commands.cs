@@ -199,7 +199,7 @@ namespace MonoDevelop.VersionControl.Git
 			FileService.FreezeEvents ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					GitService.ReportStashResult (Repository.PopStash (monitor, 0));
+					GitService.ReportStashResult (Repository, Repository.PopStash (monitor, 0));
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("Stash operation failed"), ex);
 				}
