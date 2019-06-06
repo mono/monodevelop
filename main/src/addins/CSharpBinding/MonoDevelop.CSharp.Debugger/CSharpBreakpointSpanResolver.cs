@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Documents;
 namespace MonoDevelop.CSharp.Debugger
 {
 	[ExportDocumentControllerExtension (MimeType = "text/x-csharp")]
-	public class CSharpBreakpointSpanResolver : DocumentControllerExtension, IBreakpointSpanResolver
+	class CSharpBreakpointSpanResolver : DocumentControllerExtension, IBreakpointSpanResolver
 	{
 		public override Task<bool> SupportsController (DocumentController controller)
 		{
