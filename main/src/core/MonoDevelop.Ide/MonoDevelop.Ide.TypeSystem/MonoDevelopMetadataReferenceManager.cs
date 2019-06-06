@@ -217,8 +217,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public void ClearCache ()
 		{
-			_metadataCache.ClearCache();
+			// Clear the reference cache before the metadata cache
+			// as the FileWatcher updates can technically trigger while the metadata cache
+			// is being cleared, avoiding unnecessary work and possible items not being invalidated.
 			_metadataReferenceCache.ClearCache ();
+			_metadataCache.ClearCache();
 		}
 
 
