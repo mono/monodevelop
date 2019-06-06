@@ -565,10 +565,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (mdProject == null)
 				return;
 
-			var task = OpenDocumentWithTextViewAsync (doc, mdProject, activate);
-			// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
-			while (!task.IsCompleted) {
-				DispatchService.RunPendingEvents (30);
+			using (var cts = new CancellationTokenSource ()) {
+				// Timeout on the wait because:
+				// * Document may not show a text view at all
+				// * In the case of lightbulb actions like "Generate class in new file",
+				//   document open may be blocked as long as we keep pumping
+				var task = Task.WhenAny (
+					Task.Delay (1000, cts.Token),
+					OpenDocumentWithTextViewAsync (doc, mdProject, activate));
+
+				// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
+				while (!task.IsCompleted) {
+					DispatchService.RunPendingEvents (30);
+				}
 			}
 		}
 
@@ -580,8 +589,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			shellDoc.RunWhenContentAdded<Microsoft.VisualStudio.Text.Editor.ITextView> (v => {
 				openTask.SetResult (true);
 			});
-			// Wait for the ITextView with a timeout, since the document may not show a text view at all
-			await Task.WhenAny (openTask.Task, Task.Delay (1000));
+
+			await openTask.Task;
 		}
 
 		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer)
