@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Editor
 
 				await Init (editor, impl);
 				HasUnsavedChanges = impl.IsDirty;
-				await UpdateStyleParent (Owner, editor.MimeType, default);
+				await UpdateStyleParent (Owner, editor.MimeType, token);
 
 				// Editor extensions can provide additional content
 				NotifyContentChanged ();
