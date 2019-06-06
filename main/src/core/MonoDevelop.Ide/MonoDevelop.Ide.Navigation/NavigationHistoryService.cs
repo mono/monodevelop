@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Navigation
 					return point;
 			}
 
-			if (doc.GetContent<ITextView> () is ITextView textView) {
+			if (doc.GetContent<ITextView> (forActiveView: true) is ITextView textView) {
 				if (forClosedHistory) {
 					var caretPosition = textView.Caret.Position.BufferPosition;
 					var line = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (caretPosition);
