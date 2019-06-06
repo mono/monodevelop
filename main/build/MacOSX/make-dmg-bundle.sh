@@ -79,6 +79,7 @@ for n in `seq 1 5`
 do
 	hdiutil detach "$MOUNT_POINT" && break
 	if [ $n = 5 ]; then
+		hdiutil detach -force "$MOUNT_POINT"
 		exit $?
 	fi
 done
