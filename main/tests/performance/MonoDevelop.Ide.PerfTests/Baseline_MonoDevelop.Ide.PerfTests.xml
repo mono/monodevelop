@@ -15,8 +15,8 @@
                     <results>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestSolutionBuild.TestBuild" executed="True" result="Success" success="True" time="21.392" asserts="1">
                         <properties>
-                          <property name="Time" value="1.424" />
-                          <property name="Tolerance" value="0.1" />
+                          <property name="Time" value="4.118" />
+                          <property name="Tolerance" value="0.3" />
                         </properties>
                       </test-case>
                     </results>
@@ -25,8 +25,8 @@
                     <results>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestSolutionLoad.TestLoad" executed="True" result="Success" success="True" time="18.720" asserts="1">
                         <properties>
-                          <property name="Time" value="4.645" />
-                          <property name="Tolerance" value="0.1" />
+                          <property name="Time" value="20.615" />
+                          <property name="Tolerance" value="0.2" />
                         </properties>
                       </test-case>
                     </results>
@@ -41,7 +41,7 @@
                       </test-case>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestTimeToCode" executed="True" result="Success" success="True" time="18.884" asserts="1">
                         <properties>
-                          <property name="Time" value="18.42" />
+                          <property name="Time" value="37.018" />
                           <property name="Tolerance" value="0.1" />
                         </properties>
                       </test-case>
