@@ -76,6 +76,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.TextMate.Core.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="vs-find-replace-search" resource="vs-find-replace-search-16.png" size="Menu" imageid="{6114fe54-2a4a-4354-aabb-d2b8fad160a5}#1" />

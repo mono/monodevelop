@@ -61,6 +61,7 @@
 
 	<Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
 		<SupportedFileType id="csharp" extensions=".cs,.csx" featureFlag="CSharpEnableNewEditor" />
+		<SupportedFileType id="textmate" extensions=".py,.md,.txt,.c,.cpp,.cxx,.h,.php"  featureFlag="CSharpEnableNewEditor" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks">
