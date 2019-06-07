@@ -328,11 +328,14 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	sealed class ShowMoreValuesObjectValueNode : AbstractObjectValueNode
 	{
-		public ShowMoreValuesObjectValueNode (string parentPath) : base (parentPath, "more")
+		public ShowMoreValuesObjectValueNode (IObjectValueNode enumerableNode) : base (enumerableNode.Path, string.Empty)
 		{
+			this.EnumerableNode = enumerableNode;
 		}
 
 		public override bool IsEnumerable => true;
+
+		public IObjectValueNode EnumerableNode { get; }
 	}
 
 	#region Mocking support abstractions
@@ -398,9 +401,21 @@ namespace MonoDevelop.Debugger
 
 	public sealed class ChildrenChangedEventArgs : NodeEventArgs
 	{
-		public ChildrenChangedEventArgs (IObjectValueNode node) : base (node)
+		public ChildrenChangedEventArgs (IObjectValueNode node, int index, int count) : base (node)
 		{
+			this.Index = index;
+			this.Count = count;
 		}
+
+		/// <summary>
+		/// Gets the count of child nodes that were loaded
+		/// </summary>
+		public int Count { get; }
+
+		/// <summary>
+		/// Gets the index of the first child that was loaded
+		/// </summary>
+		public int Index { get; }
 	}
 
 	public sealed class NodeChangedEventArgs : NodeEventArgs

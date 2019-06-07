@@ -110,7 +110,7 @@ namespace MonoDevelop.Debugger
 		public void ClearValues()
 		{
 			this.Root = this.OnCreateRoot ();
-			this.OnChildrenLoaded (this.Root);
+			this.OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
 		}
 
 		/// <summary>
@@ -130,7 +130,7 @@ namespace MonoDevelop.Debugger
 				this.RegisterForEvaluationCompletion (x);
 			}
 
-			this.OnChildrenLoaded (this.Root);
+			this.OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
 		}
 
 		public void ChangeCheckpoint ()
@@ -161,25 +161,22 @@ namespace MonoDevelop.Debugger
 
 			node.IsExpanded = true;
 
-			// fetch children of the node and indicate whether the we fetched children or not
+			int loadedCount = 0;
 			if (node.IsEnumerable) {
-				// page the children in, instead of loading them all at once
-				var loadedCount = await this.FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationToken);
-				if (loadedCount > 0) {
-					OnChildrenLoaded (node);
+				// if we already have some loaded, don't load more - that is a specific user gesture
+				if (node.Children.Count == 0) {
+					// page the children in, instead of loading them all at once
+					loadedCount = await this.FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationToken);
 				}
-
-				OnNodeExpanded (node);
 			} else {
-
-				var loadedCount = await this.FetchChildrenAsync (node, 0, cancellationToken);
-
-				if (loadedCount > 0) {
-					OnChildrenLoaded (node);
-				}
-
-				OnNodeExpanded (node);
+				loadedCount = await this.FetchChildrenAsync (node, 0, cancellationToken);
 			}
+
+			if (loadedCount > 0) {
+				OnChildrenLoaded (node, 0, node.Children.Count);
+			}
+
+			OnNodeExpanded (node);
 		}
 
 		/// <summary>
@@ -188,6 +185,43 @@ namespace MonoDevelop.Debugger
 		public void CollapseNode(IObjectValueNode node)
 		{
 			node.IsExpanded = false;
+		}
+
+		public async Task<int> FetchMoreChildrenAsync (IObjectValueNode node, CancellationToken cancellationToken)
+		{
+			if (node.ChildrenLoaded) {
+				return 0;
+			}
+
+			try {
+				if (childFetchTasks.TryGetValue (node, out Task<int> task)) {
+					// there is already a task to fetch the children
+					return await task;
+				} else {
+					try {
+						var oldCount = node.Children.Count;
+						var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationToken);
+
+						// if any of them are still evaluating register for
+						// a completion event so that we can tell the UI
+						for (int i = oldCount; i < oldCount + result; i++) {
+							var c = node.Children [i];
+							this.RegisterForEvaluationCompletion (c);
+						}
+
+						// always send the event so that the UI can determine if the node has finished loading.
+						OnChildrenLoaded (node, oldCount, result);
+
+						return result;
+					} finally {
+						childFetchTasks.Remove (node);
+					}
+				}
+			} catch (Exception ex) {
+				// TODO: log or fail?
+			}
+
+			return 0;
 		}
 
 		/// <summary>
@@ -345,9 +379,9 @@ namespace MonoDevelop.Debugger
 		}
 
 		#region Event triggers
-		void OnChildrenLoaded (IObjectValueNode node)
+		void OnChildrenLoaded (IObjectValueNode node, int index, int count)
 		{
-			ChildrenLoaded?.Invoke (this, new ChildrenChangedEventArgs (node));
+			ChildrenLoaded?.Invoke (this, new ChildrenChangedEventArgs (node, index, count));
 		}
 
 		/// <summary>

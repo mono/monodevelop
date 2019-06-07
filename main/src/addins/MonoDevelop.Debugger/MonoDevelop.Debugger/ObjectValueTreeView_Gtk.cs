@@ -336,7 +336,7 @@ public StackFrame Frame {
 		void Controller_NodeChildrenLoaded (object sender, ChildrenChangedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
-				OnChildrenLoaded (e.Node);
+				OnChildrenLoaded (e.Node, e.Index, e.Count);
 			}).Ignore ();
 		}
 
@@ -362,7 +362,7 @@ public StackFrame Frame {
 			}).Ignore ();
 		}
 
-		void OnChildrenLoaded (IObjectValueNode node)
+		void OnChildrenLoaded (IObjectValueNode node, int index, int count)
 		{
 			if (disposed)
 				return;
@@ -376,7 +376,12 @@ public StackFrame Frame {
 				if (GetNodeIterFromNodePath (node.Path, out TreeIter iter, out TreeIter parent)) {
 					// rather than simply replacing the children of this node we will merge
 					// them in so that the tree does not collapse the row when the last child is removed
-					MergeChildrenIntoTree (node, iter);
+					MergeChildrenIntoTree (node, iter, index, count);
+
+					// if we did not load all the children, add a More node
+					if (!node.ChildrenLoaded) {
+						this.AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
+					}
 				}
 
 				if (compact) {
@@ -411,7 +416,7 @@ public StackFrame Frame {
 		/// <summary>
 		/// Merge the node's children as children of the node in the tree
 		/// </summary>
-		void MergeChildrenIntoTree(IObjectValueNode node, TreeIter nodeIter)
+		void MergeChildrenIntoTree(IObjectValueNode node, TreeIter nodeIter, int index, int count)
 		{
 			var nodeChildren = node.Children.ToList ();
 
@@ -422,24 +427,24 @@ public StackFrame Frame {
 
 			var visibleChildrenCount = store.IterNChildren (nodeIter);
 
-			int index = 0;
-			while (index < nodeChildren.Count) {
+			int ix = 0;
+			while (ix < nodeChildren.Count) {
 				// if we have existing visible rows in the tree, update the values and remove children
-				if (index < visibleChildrenCount) {
-					if (store.IterNthChild (out TreeIter childIter, nodeIter, index)) {
+				if (ix < visibleChildrenCount) {
+					if (store.IterNthChild (out TreeIter childIter, nodeIter, ix)) {
 						RemoveChildren (childIter);
-						SetValues (nodeIter, childIter, null, nodeChildren [index]);
+						SetValues (nodeIter, childIter, null, nodeChildren [ix]);
 					}
 				} else {
-					AppendNodeToTreeModel (nodeIter, null, nodeChildren [index]);
+					AppendNodeToTreeModel (nodeIter, null, nodeChildren [ix]);
 				}
 
-				index++;
+				ix++;
 			}
 
-			if (index < visibleChildrenCount) {
+			if (ix < visibleChildrenCount) {
 				// remove extra nodes we don't need anymore
-				while (store.IterNthChild (out TreeIter childIter, nodeIter, index)) {
+				while (store.IterNthChild (out TreeIter childIter, nodeIter, ix)) {
 					store.Remove (ref childIter);
 				}
 			}
@@ -755,9 +760,27 @@ public StackFrame Frame {
 			Refresh (true);
 		}
 
+		/// <summary>
+		/// Fired when the user clicks on the value button, eg "Show Value", 'More Values", "Show Values"
+		/// </summary>
+		/// <param name="it"></param>
 		void HandleValueButton (TreeIter it)
 		{
 			var node = GetNodeAtIter (it);
+			HideValueButton (it);
+
+			if (node.IsEnumerable) {
+				if (node is ShowMoreValuesObjectValueNode moreNode) {
+					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, cancellationTokenSource.Token).Ignore ();
+				} else {
+					controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore ();
+				}
+			} else {
+				//TODO: RefreshRow (it, val);
+
+			}
+
+			return;
 			var val = node?.GetDebuggerObjectValue ();
 			if (val == null) {
 				//TODO: remove this
@@ -773,6 +796,11 @@ public StackFrame Frame {
 			} else {
 				RefreshRow (it, val);
 			}
+		}
+
+		void HideValueButton(TreeIter iter)
+		{
+			store.SetValue (iter, ValueButtonTextColumn, string.Empty);
 		}
 
 		void LoadIEnumerableChildren (TreeIter iter)
@@ -1316,6 +1344,7 @@ public StackFrame Frame {
 			var node = GetNodeAtIter (iter);
 			base.OnRowExpanded (iter, path);
 
+			HideValueButton (iter);
 			this.controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore();
 
 			//rowNode.IsExpanded = true;
