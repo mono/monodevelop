@@ -224,10 +224,19 @@ namespace MonoDevelop.Components.DockNotebook
 			return newNotebook;
 		}
 
+		static HPaned CreatePaned ()
+		{
+			// FIXME: Bug #910879: HPanedThin is not functional with the new editor,
+			//        fall-back to the regular Gtk paned until we find the right solution
+			if (Ide.Editor.DefaultSourceEditorOptions.Instance.EnableNewEditor)
+				return new HPaned ();
+			return new HPanedThin { GrabAreaSize = 6 };
+		}
+
 		public DockNotebook InsertLeft (SdiWorkspaceWindow window)
 		{
 			return Insert (window, container => {
-				var box = new HPanedThin { GrabAreaSize = 6 };
+				var box = CreatePaned ();
 				var new_container = new DockNotebookContainer (tabControl);
 
 				box.Pack1 (container, true, true);
@@ -239,7 +248,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook InsertRight (SdiWorkspaceWindow window)
 		{
 			return Insert (window, container => {
-				var box = new HPanedThin () { GrabAreaSize = 6 };
+				var box = CreatePaned ();
 				var new_container = new DockNotebookContainer (tabControl);
 
 				box.Pack1 (new_container, true, true);
