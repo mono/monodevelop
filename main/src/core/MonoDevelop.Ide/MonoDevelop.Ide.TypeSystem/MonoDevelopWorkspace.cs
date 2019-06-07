@@ -450,7 +450,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				BeginLoad ();
-				return await InternalLoadSolution (cancellationToken);
+				return await InternalLoadSolution (cancellationToken).ConfigureAwait (false);
 			} finally {
 				EndLoad ();
 			}
@@ -496,13 +496,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
 						// Cache did not contain project so add it to the solution.
 						OnProjectAdded (projectInfo);
+					} else {
+						lock (projectModifyLock) {
+							projectInfo = AddVirtualDocuments (projectInfo);
+							OnProjectReloaded (projectInfo);
+						}
 					}
-
-					lock (projectModifyLock) {
-						projectInfo = AddVirtualDocuments (projectInfo);
-						OnProjectReloaded (projectInfo);
-					}
-					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
+					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments).ConfigureAwait (false);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -565,10 +565,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (mdProject == null)
 				return;
 
-			var task = OpenDocumentWithTextViewAsync (doc, mdProject, activate);
-			// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
-			while (!task.IsCompleted) {
-				DispatchService.RunPendingEvents (30);
+			// This method can be called by Roslyn or the editor in a context which is not the GTK UI context
+			// that MonoDevelop uses. In that case, before starting async an operation that may queue
+			// task continuations into the current context, we switch to the GTK context, so that
+			// whatever is queued will be dispatched when we run RunPendingEvents.
+
+			var oldContext = SynchronizationContext.Current;
+			try {
+				SynchronizationContext.SetSynchronizationContext (Runtime.MainSynchronizationContext);
+				var task = OpenDocumentWithTextViewAsync (doc, mdProject, activate);
+				// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
+				while (!task.IsCompleted) {
+					DispatchService.RunPendingEvents (30);
+				}
+			} finally {
+				SynchronizationContext.SetSynchronizationContext (oldContext);
 			}
 		}
 

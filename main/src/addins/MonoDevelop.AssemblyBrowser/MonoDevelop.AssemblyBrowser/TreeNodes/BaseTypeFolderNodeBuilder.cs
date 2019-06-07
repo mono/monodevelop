@@ -67,9 +67,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			var r1 = thisNode.DataItem as ITypeReference;
-			var r2 = thisNode.DataItem as ITypeReference;
-			return r1.ToString ().CompareTo (r2.ToString ());
+			return string.Compare (thisNode.NodeName, otherNode.NodeName, StringComparison.Ordinal);
 		}
 	}
 	

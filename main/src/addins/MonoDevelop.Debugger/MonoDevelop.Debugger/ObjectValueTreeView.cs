@@ -947,15 +947,15 @@ namespace MonoDevelop.Debugger
 			}
 
 			int numberOfChildren = store.IterNChildren (iter);
-			Task.Factory.StartNew<ObjectValue[]> (delegate (object arg) {
+			Task.Run (() => {
 				try {
-					return ((ObjectValue)arg).GetRangeOfChildren (numberOfChildren - 1, 20);
+					return value.GetRangeOfChildren (numberOfChildren - 1, 20);
 				} catch (Exception ex) {
 					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
 					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
 					return new ObjectValue[0];
 				}
-			}, value, cancellationTokenSource.Token).ContinueWith (t => {
+			}, cancellationTokenSource.Token).ContinueWith (t => {
 				TreeIter it;
 				if (disposed)
 					return;
@@ -975,7 +975,7 @@ namespace MonoDevelop.Debugger
 				if (compact)
 					RecalculateWidth ();
 				enumerableLoading.Remove (value);
-			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
+			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
 		}
 
 		void RefreshRow (TreeIter iter, ObjectValue val)

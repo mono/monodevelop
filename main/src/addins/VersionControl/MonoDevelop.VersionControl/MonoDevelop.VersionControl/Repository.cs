@@ -281,7 +281,7 @@ namespace MonoDevelop.VersionControl
 			RecursiveDirectoryInfoQuery rq;
 			bool query = false;
 			lock (queryLock) {
-				rq = recursiveDirectoryQueryQueue.FirstOrDefault (q => q.Directory == path);
+				rq = recursiveDirectoryQueryQueue.FirstOrDefault (q => q.Directory == path || path.IsChildPathOf (q.Directory));
 				if (rq == null) {
 					query = true;
 					var mre = new ManualResetEvent (false);

@@ -1,10 +1,10 @@
 //
-// FakeNuGetAwareProject.cs
+// IBreakpointSpanResolver.cs
 //
 // Author:
-//       Matt Ward <matt.ward@microsoft.com>
+//       Jeffrey Stedfast <jestedfa@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2019 Microsoft Corp.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+using Microsoft.VisualStudio.Text;
+
+namespace MonoDevelop.Debugger
 {
-	class FakeNuGetAwareProject : DummyDotNetProject, INuGetAwareProject
+	/// <summary>
+	/// An interface for resolving the span of a breakpoint.
+	/// </summary>
+	public interface IBreakpointSpanResolver
 	{
-		public FakeNuGetAwareProject ()
-		{
-			Initialize (this);
-		}
-
-		public NuGetProject CreateNuGetProject ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		public Task<bool> HasMissingPackages (IMonoDevelopSolutionManager solutionManager)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public bool HasPackagesReturnValue;
-
-		public bool HasPackages ()
-		{
-			return HasPackagesReturnValue;
-		}
-
-		public Task RestorePackagesAsync (IMonoDevelopSolutionManager solutionManager, INuGetProjectContext context, CancellationToken token)
-		{
-			throw new NotImplementedException ();
-		}
+		/// <summary>
+		/// Resolve the span of a breakpoint.
+		/// </summary>
+		/// <param name="buffer">The text buffer.</param>
+		/// <param name="position">The cursor position.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The span of the breakpoint.</returns>
+		Task<Span> GetBreakpointSpanAsync (ITextBuffer buffer, int position, CancellationToken cancellationToken);
 	}
 }

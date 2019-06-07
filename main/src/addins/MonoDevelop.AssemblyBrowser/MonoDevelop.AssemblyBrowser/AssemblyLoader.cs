@@ -35,6 +35,7 @@ using ICSharpCode.Decompiler.Metadata;
 using System.Reflection.Metadata;
 using System.Linq;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.CSharp.Transforms;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -63,18 +64,13 @@ namespace MonoDevelop.AssemblyBrowser
 		public PEFile Assembly => AssemblyTask.Result;
 		public Task<PEFile> AssemblyTask => assemblyDefinitionTaskSource.Task;
 
-		public MetadataReader ModuleDefinition {
-			get {
-				return assemblyLoaderTask.Result.Metadata;
-			}
-		}
-
 		CSharpDecompiler csharpDecompiler;
 
 		public CSharpDecompiler CSharpDecompiler {
 			get {
 				if (csharpDecompiler == null) {
-					csharpDecompiler = new CSharpDecompiler (DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings ());
+					csharpDecompiler = new CSharpDecompiler (DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings (LanguageVersion.Latest));
+					csharpDecompiler.AstTransforms.Add (new EscapeInvalidIdentifiers ());
 				}
 
 				return csharpDecompiler;
@@ -84,14 +80,11 @@ namespace MonoDevelop.AssemblyBrowser
 		DecompilerTypeSystem decompilerTypeSystem;
 		public DecompilerTypeSystem DecompilerTypeSystem { 
 			get {
-				LoadTypeSystem (Assembly);
+				if (decompilerTypeSystem == null) {
+					decompilerTypeSystem = new DecompilerTypeSystem (Assembly, new AssemblyResolver (Assembly, widget));
+				}
 				return decompilerTypeSystem;
 			}
-		}
-
-		void LoadTypeSystem (PEFile peFile)
-		{
-			decompilerTypeSystem = new DecompilerTypeSystem (peFile, new AssemblyResolver (Assembly, widget));
 		}
 
 		public Error Error { get; internal set; }
@@ -122,19 +115,7 @@ namespace MonoDevelop.AssemblyBrowser
 					assemblyDefinitionTaskSource.SetResult (null);
 					return null;
 				} finally { IsLoaded = true; }
-			});
-		}
-
-		ICompilation typeSystem;
-
-		public ICompilation GetMinimalTypeSystem ()
-		{
-			if (typeSystem != null)
-				return typeSystem;
-			var assembly = Assembly;
-			if (assembly == null)
-				return null;
-			return typeSystem = new SimpleCompilation (assembly.WithOptions (TypeSystemOptions.Default | TypeSystemOptions.Uncached | TypeSystemOptions.KeepModifiers), MinimalCorlib.Instance);
+			}, src.Token);
 		}
 
 		class MyUniversalAssemblyResolver : UniversalAssemblyResolver

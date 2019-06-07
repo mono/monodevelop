@@ -100,26 +100,23 @@ namespace MonoDevelop.AssemblyBrowser
 			var resources = new AssemblyResourceFolder (assemblyLoader.Assembly);
 			if (resources.Resources.Any ())
 				treeBuilder.AddChild (resources);
-			
-			var namespaces = new Dictionary<string, NamespaceData> ();
-			bool publicOnly = Widget.PublicApiOnly;
 
-			foreach (var type in assemblyLoader.GetMinimalTypeSystem ().MainModule.TopLevelTypeDefinitions) {
-				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
-				if (!namespaces.ContainsKey (namespaceName))
-					namespaces [namespaceName] = new NamespaceData (namespaceName);
-				
-				var ns = namespaces [namespaceName];
-				ns.Types.Add ((type.IsPublic (),  type));
-			}
+			var mainModule = assemblyLoader.DecompilerTypeSystem.MainModule;
+			var rootData = new NamespaceData (mainModule.RootNamespace);
+			if (rootData.Types.Length > 0)
+				treeBuilder.AddChild (rootData);
 
-			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.isPublic))).Select (n => n.Value));
-			if (namespaces.ContainsKey ("")) {
-				foreach (var child in namespaces [""].Types) {
-					if (((INamedElement)child.typeObject).Name == "<Module>")
-						continue;
-					treeBuilder.AddChild (child);
-				}
+			var allNamespaces = new List<NamespaceData> (32);
+			CollectNamespaces (allNamespaces, mainModule.RootNamespace.ChildNamespaces);
+			treeBuilder.AddChildren (allNamespaces);
+		}
+
+		void CollectNamespaces (List<NamespaceData> accumulator, IEnumerable<INamespace> namespaces)
+		{
+			accumulator.AddRange (namespaces.Select (x => new NamespaceData(x)));
+
+			foreach (var ns in namespaces) {
+				CollectNamespaces (accumulator, ns.ChildNamespaces);
 			}
 		}
 		

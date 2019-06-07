@@ -1,10 +1,10 @@
 //
-// FakeNuGetAwareProject.cs
+// CSharpBreakpointSpanResolver.cs
 //
 // Author:
-//       Matt Ward <matt.ward@microsoft.com>
+//       Jeffrey Stedfast <jestedfa@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2019 Microsoft Corp.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,37 +27,32 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.CSharp.EditAndContinue;
+
+using MonoDevelop.Debugger;
+using MonoDevelop.Ide.Gui.Documents;
+
+namespace MonoDevelop.CSharp.Debugger
 {
-	class FakeNuGetAwareProject : DummyDotNetProject, INuGetAwareProject
+	[ExportDocumentControllerExtension (MimeType = "text/x-csharp")]
+	class CSharpBreakpointSpanResolver : DocumentControllerExtension, IBreakpointSpanResolver
 	{
-		public FakeNuGetAwareProject ()
+		public override Task<bool> SupportsController (DocumentController controller)
 		{
-			Initialize (this);
+			return Task.FromResult (controller.GetContent<ITextBuffer> () != null);
 		}
 
-		public NuGetProject CreateNuGetProject ()
+		public async Task<Span> GetBreakpointSpanAsync (ITextBuffer buffer, int position, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException ();
-		}
+			var document = buffer.AsTextContainer ().GetOpenDocumentInCurrentContext ();
+			var tree = await document.GetSyntaxTreeAsync (cancellationToken);
 
-		public Task<bool> HasMissingPackages (IMonoDevelopSolutionManager solutionManager)
-		{
-			throw new NotImplementedException ();
-		}
+			BreakpointSpans.TryGetBreakpointSpan (tree, position, cancellationToken, out var span);
 
-		public bool HasPackagesReturnValue;
-
-		public bool HasPackages ()
-		{
-			return HasPackagesReturnValue;
-		}
-
-		public Task RestorePackagesAsync (IMonoDevelopSolutionManager solutionManager, INuGetProjectContext context, CancellationToken token)
-		{
-			throw new NotImplementedException ();
+			return new Span (span.Start, span.Length);
 		}
 	}
 }

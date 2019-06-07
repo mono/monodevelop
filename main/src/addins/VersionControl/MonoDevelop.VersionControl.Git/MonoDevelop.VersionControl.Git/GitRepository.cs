@@ -107,8 +107,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (scheduler == null) {
 				scheduler = new ConcurrentExclusiveSchedulerPair ();
-				blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
-				readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
+				blockingOperationFactory = new TaskFactory (default, TaskCreationOptions.PreferFairness, TaskContinuationOptions.PreferFairness, scheduler.ExclusiveScheduler);
+				readingOperationFactory = new TaskFactory (default, TaskCreationOptions.PreferFairness, TaskContinuationOptions.PreferFairness, scheduler.ConcurrentScheduler);
 			}
 		}
 
@@ -431,10 +431,12 @@ namespace MonoDevelop.VersionControl.Git
 			var submoduleWriteTime = File.GetLastWriteTimeUtc (RootPath.Combine (".gitmodules"));
 			if (cachedSubmoduleTime != submoduleWriteTime) {
 				cachedSubmoduleTime = submoduleWriteTime;
-				cachedSubmodules = RootRepository.Submodules.Select (s => {
+				lock (this) {
+					cachedSubmodules = RootRepository.Submodules.Select (s => {
 						var fp = new FilePath (Path.Combine (RootRepository.Info.WorkingDirectory, s.Path.Replace ('/', Path.DirectorySeparatorChar))).CanonicalPath;
 						return new Tuple<FilePath, LibGit2Sharp.Repository> (fp, new LibGit2Sharp.Repository (fp));
 					}).ToArray ();
+				}
 			}
 			return cachedSubmodules;
 		}

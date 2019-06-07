@@ -880,19 +880,19 @@ namespace MonoDevelop.AssemblyBrowser
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
 				builder.DecompileAsync (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = false })
-					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler);
+					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler).Ignore ();
 				break;
 			case 1:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-ilasm";
 				builder.DisassembleAsync (inspectEditor, nav)
-					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler);
+					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler).Ignore ();
 				break;
 			case 2:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
 				builder.DecompileAsync (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = true })
-					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler);
+					.ContinueWith (l => SetReferencedSegments (l.Result), Runtime.MainTaskScheduler).Ignore ();
 				break;
 			default:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
@@ -914,24 +914,30 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
-				Application.Invoke ((o, args) => {
-					suspendNavigation = false;
-					ITreeNavigator nav = SearchMember (url, expandNode);
-					if (definitions.Count == 0) // we've been disposed
-						return;
-					if (nav != null)
-						return;
-					try {
-						if (currentAssembly != null) {
-							OpenFromAssembly (url, currentAssembly);
-						} else {
-							OpenFromAssemblyNames (url);
-						}
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e);
+				// At least one of them failed.
+				if (d.IsFaulted) {
+					LoggingService.LogError ("Failed to load assemblies", d.Exception);
+
+					// It's possible the assembly in which the type we're looking for exists
+					// so try probing for it regardless.
+				}
+
+				suspendNavigation = false;
+				ITreeNavigator nav = SearchMember (url, expandNode);
+				if (definitions.Count == 0) // we've been disposed
+					return;
+				if (nav != null)
+					return;
+				try {
+					if (currentAssembly != null) {
+						OpenFromAssembly (url, currentAssembly);
+					} else {
+						OpenFromAssemblyNames (url);
 					}
-				});
-			});
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e);
+				}
+			}, Runtime.MainTaskScheduler).Ignore ();
 		}
 
 		void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
@@ -960,16 +966,14 @@ namespace MonoDevelop.AssemblyBrowser
 				result.LoadingTask.ContinueWith (t2 => {
 					if (definitions.Count == 0) // disposed
 						return;
-					Application.Invoke ((o, args) => {
-						var nav = SearchMember (url, expandNode);
-						if (nav == null) {
-							if (++i == references.Length)
-								LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
-							else
-								loadNext ();
-						}
-					});
-				}, TaskScheduler.Current);
+					var nav = SearchMember (url, expandNode);
+					if (nav == null) {
+						if (++i == references.Length)
+							LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+						else
+							loadNext ();
+					}
+				}, Runtime.MainTaskScheduler).Ignore ();
 			};
 		}
 
@@ -997,51 +1001,44 @@ namespace MonoDevelop.AssemblyBrowser
 					LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
 				}
 				return;
-			};
-			Task.Factory.ContinueWhenAll (tasks.ToArray (), tarr => {
-				var exceptions = tarr.Where (t => t.IsFaulted).Select (t => t.Exception).ToArray ();
-				if (exceptions != null) {
-					var ex = new AggregateException (exceptions).Flatten ();
-					if (ex.InnerExceptions.Count > 0) {
-						foreach (var inner in ex.InnerExceptions) {
-							LoggingService.LogError ("Error while loading assembly in the browser.", inner);
-						}
-						throw ex;
+			}
+
+			Task.WhenAll (tasks.ToArray ())
+				.ContinueWith (t => {
+					if (t.IsFaulted) {
+						LoggingService.LogError ("Error while loading assemblies in the browser", t.Exception);
+						return;
 					}
-				}
-				if (definitions.Count == 0) // disposed
-					return;
-				Application.Invoke ((o, args) => {
+
+					if (definitions.Count == 0) // disposed
+						return;
+
 					var nav = SearchMember (url);
 					if (nav == null) {
 						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
 					}
-				});
-			}, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
+				}, Runtime.MainTaskScheduler).Ignore ();
 		}
 		
-		internal void SelectAssembly (AssemblyLoader loader)
+		internal void SelectAssembly (PEFile cu)
 		{
-			PEFile cu = loader.Assembly;
-			Application.Invoke ((o, args) => {
-				ITreeNavigator nav = TreeView.GetRootNode ();
-				if (nav == null)
-					return;
+			ITreeNavigator nav = TreeView.GetRootNode ();
+			if (nav == null)
+				return;
 
-				if (expandedMember) {
-					expandedMember = false;
+			if (expandedMember) {
+				expandedMember = false;
+				return;
+			}
+
+			do {
+				if (nav.DataItem == cu || (nav.DataItem as AssemblyLoader)?.Assembly == cu) {
+					nav.ExpandToNode ();
+					nav.Selected = true;
+					nav.ScrollToNode ();
 					return;
 				}
-
-				do {
-					if (nav.DataItem == cu || (nav.DataItem as AssemblyLoader)?.Assembly == cu) {
-						nav.ExpandToNode ();
-						nav.Selected = true;
-						nav.ScrollToNode ();
-						return;
-					}
-				} while (nav.MoveNext ());
-			});
+			} while (nav.MoveNext ());
 		}
 		
 		void Dispose<T> (ITreeNavigator nav) where T:class, IDisposable
@@ -1095,6 +1092,8 @@ namespace MonoDevelop.AssemblyBrowser
 					def.Dispose ();
 				definitions = definitions.Clear ();
 			}
+
+			projects.Clear ();
 			
 			ActiveMember = null;
 			resultListStore = null;
@@ -1124,7 +1123,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 
 		ImmutableList<AssemblyLoader> definitions = ImmutableList<AssemblyLoader>.Empty;
-		List<Project> projects = new List<Project> ();
+		HashSet<Project> projects = new HashSet<Project> ();
 		
 		internal AssemblyLoader AddReferenceByAssemblyName (PEFile reference, bool expand = false)
 		{
@@ -1158,38 +1157,36 @@ namespace MonoDevelop.AssemblyBrowser
 			var result = new AssemblyLoader (this, fileName);
 			definitions = definitions.Add (result);
 			result.LoadingTask = result.LoadingTask.ContinueWith (task => {
-				Application.Invoke ((o, args) => {
-					if (TreeView == null || definitions.Count == 0)
-						return;
-					var fullName = result.Assembly.FullName;
+				if (TreeView == null || definitions.Count == 0)
+					return task.Result;
+				var fullName = result.Assembly.FullName;
 
-					// filter duplicate assemblies, can happen on opening the same assembly at different locations.
-					foreach (var d in definitions) {
-						if (!d.IsLoaded || d == result)
-							continue;
-						if (d.Assembly.FullName == fullName) {
-							definitions = definitions.Remove (result);
-							LoggingService.LogInfo ("AssemblyBrowser: Loaded duplicate assembly : " + fullName); // Write a log info in case that happens, shouldn't happen often.
-							return;
-						}
+				// filter duplicate assemblies, can happen on opening the same assembly at different locations.
+				foreach (var d in definitions) {
+					if (!d.IsLoaded || d == result)
+						continue;
+					if (d.Assembly.FullName == fullName) {
+						definitions = definitions.Remove (result);
+						LoggingService.LogInfo ("AssemblyBrowser: Loaded duplicate assembly : " + fullName); // Write a log info in case that happens, shouldn't happen often.
+						return task.Result;
 					}
-						
-					try {
-						ITreeBuilder builder;
-						if (definitions.Count + projects.Count == 1) {
-							builder = TreeView.LoadTree (result);
-						} else {
-							builder = TreeView.AddChild (result, false);
-						}
-						if (TreeView.GetSelectedNode () == null)
-							builder.Selected = builder.Expanded = expand;
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while adding assembly to the assembly list", e);
+				}
+
+				try {
+					ITreeBuilder builder;
+					if (definitions.Count + projects.Count == 1) {
+						builder = TreeView.LoadTree (result);
+					} else {
+						builder = TreeView.AddChild (result, expand);
 					}
-				});
+					if (TreeView.GetSelectedNode () == null)
+						builder.Selected = builder.Expanded = expand;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while adding assembly to the assembly list", e);
+				}
 				return task.Result;
-			}
-			);
+			}, Runtime.MainTaskScheduler);
+		
 			return result;
 		}
 		
@@ -1198,7 +1195,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (project == null)
 				throw new ArgumentNullException ("project");
 
-			if (projects.Contains (project)) {
+			if (!projects.Add (project)) {
 				// Select the project.
 				if (selectReference) {
 					ITreeNavigator navigator = TreeView.GetNodeAtObject (project);
@@ -1209,14 +1206,16 @@ namespace MonoDevelop.AssemblyBrowser
 
 				return;
 			}
-			projects.Add (project);
+
 			ITreeBuilder builder;
 			if (definitions.Count + projects.Count == 1) {
 				builder = TreeView.LoadTree (project);
 			} else {
-				builder = TreeView.AddChild (project);
+				builder = TreeView.AddChild (project, false);
 			}
-			builder.Selected = builder.Expanded = selectReference;
+
+			if (TreeView.GetSelectedNode () == null || selectReference)
+				builder.Selected = builder.Expanded = selectReference;
 		}
 
 		//MonoDevelop.Components.RoundedFrame popupWidgetFrame;
@@ -1258,6 +1257,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (var def in ensuredDefinitions) {
 				if (!definitions.Contains (def)) {
 					definitions = definitions.Add (def);
+
 					Application.Invoke ((o, args) => {
 						if (ensuredDefinitions.Count + projects.Count == 1) {
 							TreeView.LoadTree (def.LoadingTask.Result);

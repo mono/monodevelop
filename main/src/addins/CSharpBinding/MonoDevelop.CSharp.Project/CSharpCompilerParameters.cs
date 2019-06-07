@@ -227,9 +227,11 @@ namespace MonoDevelop.CSharp.Project
 				return val;
 			}
 			set {
-				if (LangVersion == value) {
-					return;
-				}
+				try {
+					if (LangVersion == value) {
+						return;
+					}
+				} catch (Exception) { }
 
 				langVersion = LanguageVersionToString (value);
 				NotifyChange ();

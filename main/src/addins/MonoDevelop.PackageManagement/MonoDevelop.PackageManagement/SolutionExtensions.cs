@@ -48,16 +48,18 @@ namespace MonoDevelop.PackageManagement
 				.Where (project => project.HasPackages ());
 		}
 
-		public static bool HasAnyProjectWithPackages (this Solution solution)
-		{
-			return solution.GetAllProjectsWithPackages ().Any ();
-		}
-
 		public static bool CanUpdatePackages (this Solution solution)
 		{
 			return solution
 				.GetAllDotNetProjects ()
 				.Any (project => project.CanUpdatePackages ());
+		}
+
+		public static bool CanRestorePackages (this Solution solution)
+		{
+			return solution
+				.GetAllDotNetProjects ()
+				.Any (project => project.CanRestorePackages ());
 		}
 	}
 }

@@ -277,12 +277,10 @@ main (int argc, char **argv)
 		// prevents the code from running correctly, so unset it here.
 		// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/896438
 		unsetenv ("MONO_REGISTRY_PATH");
-#if HYBRID_SUSPEND_ABORT
+
+#if HYBRID_SUSPEND_ABORT_DEBUG
 		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
 #endif
-
-		// To be removed: https://github.com/mono/monodevelop/issues/6326
-		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
 		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
 

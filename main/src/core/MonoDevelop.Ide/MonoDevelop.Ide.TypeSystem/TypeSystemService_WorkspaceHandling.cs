@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
-				await CreateWorkspaces (item, wsList);
+				await CreateWorkspaces (item, wsList).ConfigureAwait (false);
 				//If we want BeginTiming to work correctly we need to `await`
 				await InternalLoad (wsList, progressMonitor, cancellationToken).ConfigureAwait (false);
 				return wsList;
@@ -138,12 +138,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (item is MonoDevelop.Projects.Workspace ws) {
 				foreach (var wsItem in ws.Items)
-					await CreateWorkspaces (wsItem, result);
+					await CreateWorkspaces (wsItem, result).ConfigureAwait (false);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is MonoDevelop.Projects.Solution solution) {
 				var workspace = new MonoDevelopWorkspace (compositionManager.HostServices, solution, this);
-				await workspace.Initialize ();
+				await workspace.Initialize ().ConfigureAwait (false);
 				lock (workspaceLock)
 					workspaces = workspaces.Add (workspace);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -617,7 +617,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					// update documents
 					if (documentManager != null) {
 						foreach (var openDocument in documentManager.Documents)
-							openDocument.DocumentContext.ReparseDocument ();
+							openDocument.DocumentContext?.ReparseDocument ();
 					}
 				}
 			}
