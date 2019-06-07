@@ -89,6 +89,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
+		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestCacheKeepsObjectAlive1 ()
 		{
 			Test ((cacheService, projectId, owner, instance) => {
@@ -105,6 +106,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
+		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestCacheKeepsObjectAlive2 ()
 		{
 			Test ((cacheService, projectId, owner, instance) => {
@@ -121,6 +123,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
+		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestCacheDoesNotKeepObjectsAliveAfterOwnerIsCollected1 ()
 		{
 			Test ((cacheService, projectId, owner, instance) => {
@@ -169,6 +172,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
+		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestP2PReference ()
 		{
 			var workspace = new AdhocWorkspace ();
@@ -195,6 +199,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
+		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestEjectFromImplicitCache ()
 		{
 			ProjectCacheService cache = null;
