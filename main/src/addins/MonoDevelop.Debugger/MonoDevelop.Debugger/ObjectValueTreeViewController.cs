@@ -79,6 +79,12 @@ namespace MonoDevelop.Debugger
 
 		public event EventHandler<ChildrenChangedEventArgs> ChildrenChanged;
 
+		/// <summary>
+		/// NodeExpanded is fired when the node has expanded and the children
+		/// for the node have been loaded and are in the node's children collection
+		/// </summary>
+		public event EventHandler<NodeExpandedEventArgs> NodeExpanded;
+
 		public event EventHandler<NodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
 		public object GetControl()
@@ -132,31 +138,67 @@ namespace MonoDevelop.Debugger
 		}
 
 		#region Expanding children Tasks
-		/// <summary>
-		/// Fetches the child nodes and executes the completion handler once fetched
-		/// </summary>
-		public void FetchChildren(IObjectValueNode node, CancellationToken cancellationToken, bool expandOnCompletion)
+
+		public async Task ExpandNodeAsync(IObjectValueNode node, CancellationToken cancellationToken)
 		{
-			if (!childFetchTasks.TryGetValue (node, out Task task)) {
-				// fetch the child of the node
-				task = node.LoadChildrenAsync (cancellationToken).ContinueWith (t => {
+			// if we think the node is expanded already, no need to trigger this again
+			if (node.IsExpanded)
+				return;
+
+			node.IsExpanded = true;
+
+			// fetch children of the node and indicate whether the we fetched children or not
+			if (node.HasFlag (ObjectValueFlags.IEnumerable)) {
+			//	LoadIEnumerableChildren (iter);
+			} else {
+				var childrenLoaded = await this.FetchChildrenAsync (node, cancellationToken);
+				OnNodeExpanded (node, childrenLoaded);
+			}
+		}
+
+		public void CollapseNode(IObjectValueNode node)
+		{
+			node.IsExpanded = false;
+		}
+
+
+
+		// TODO: make this private
+		/// <summary>
+		/// Fetches the child nodes and returns a value indicating whether the children were loaded for the first
+		/// time. The children will be in node.Children.
+		/// </summary>
+		async Task<bool> FetchChildrenAsync(IObjectValueNode node, CancellationToken cancellationToken)
+		{
+			if (node.ChildrenLoaded) {
+				return false;
+			}
+
+			try {
+				if (childFetchTasks.TryGetValue (node, out Task task)) {
+					// there is already a task to fetch the children
+					await task;
+				} else {
 					try {
-						if (!t.IsFaulted && !t.IsCanceled) {
-							var allChildren = t.Result.ToList ();
+						await node.LoadChildrenAsync (cancellationToken);
 
-							foreach (var c in allChildren) {
-								this.RegisterForEvaluationCompletion (c);
-							}
-
-							this.OnChildrenChanged (node, expandOnCompletion);
+						// we have the children loaded for the first time
+						// if any of them are still evaluating register for
+						// a completion event so that we can tell the UI
+						foreach (var c in node.Children) {
+							this.RegisterForEvaluationCompletion (c);
 						}
+
 					} finally {
 						childFetchTasks.Remove (node);
 					}
-				}, cancellationToken, TaskContinuationOptions.None, Xwt.Application.UITaskScheduler);
 
-				childFetchTasks.Add (node, task);
+				}
+			} catch (Exception ex) {
+				// TODO: log or fail?
 			}
+
+			return true;
 		}
 		#endregion
 
@@ -219,6 +261,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		#region Event triggers
 		void OnChildrenChanged (IObjectValueNode node, bool expandOnCompletion)
 		{
 			ChildrenChanged?.Invoke (this, new ChildrenChangedEventArgs (node, expandOnCompletion));
@@ -235,7 +278,7 @@ namespace MonoDevelop.Debugger
 
 			this.OnEvaluationCompleted (sender as IObjectValueNode);
 
-			// TODO: if is evaluating group, fetch the children
+			// TODO: if is evaluating group, fetch the children and notify...
 		}
 
 		void OnEvaluationCompleted (IObjectValueNode node)
@@ -243,6 +286,11 @@ namespace MonoDevelop.Debugger
 			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node));
 		}
 
+		void OnNodeExpanded(IObjectValueNode node, bool childrenLoaded)
+		{
+			NodeExpanded?.Invoke (this, new NodeExpandedEventArgs (node, childrenLoaded));
+		}
+		#endregion
 	}
 
 	#region Extension methods and helpers

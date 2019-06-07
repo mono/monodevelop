@@ -62,14 +62,11 @@ namespace MonoDevelop.Debugger
 		public override string DisplayValue => "dummy";
 
 
-		public override async Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
-
-			this.ClearChildren ();
-			this.AddValues (new [] { new FakeObjectValueNode (this.Path) });
-			return this.Children;
+			return new [] { new FakeObjectValueNode (this.Path) };
 		}
 	}
 
@@ -94,14 +91,12 @@ namespace MonoDevelop.Debugger
 		public override string DisplayValue => "dummy";
 
 
-		public override async Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
 
-			this.ClearChildren ();
-			this.AddValues (new [] { new FakeObjectValueNode (this.Path) });
-			return this.Children;
+			return new [] { new FakeObjectValueNode (this.Path) };
 		}
 
 		async void DoTest ()

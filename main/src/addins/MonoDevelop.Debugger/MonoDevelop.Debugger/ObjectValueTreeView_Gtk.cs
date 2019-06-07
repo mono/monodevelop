@@ -149,6 +149,7 @@ namespace MonoDevelop.Debugger
 			this.controller = controller;
 			this.controller.ChildrenChanged += Controller_NodeChildrenChanged;
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
+			this.controller.NodeExpanded += Controller_NodeExpanded;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (ObjectValue), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (IObjectValueNode));
 			Model = store;
@@ -347,6 +348,13 @@ public StackFrame Frame {
 			}).Ignore();
 		}
 
+		void Controller_NodeExpanded (object sender, NodeExpandedEventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				OnNodeExpanded (e.Node, e.ChildrenLoaded);
+			}).Ignore ();
+		}
+
 		void OnChildrenChanged (IObjectValueNode node, bool expand)
 		{
 			if (disposed)
@@ -376,7 +384,7 @@ public StackFrame Frame {
 			}
 		}
 
-		void OnEvaluationCompleted(IObjectValueNode node)
+		void OnEvaluationCompleted (IObjectValueNode node)
 		{
 			if (disposed)
 				return;
@@ -423,10 +431,33 @@ public StackFrame Frame {
 				} else {
 					SetValues (parent, iter, node.Name, node);
 				}
+
+				// TODO: maybe do this instead?
+				//OnChildrenChanged (node, false);
 			}
 
 			if (compact) {
 				RecalculateWidth ();
+			}
+		}
+
+		void OnNodeExpanded(IObjectValueNode node, bool childrenLoaded)
+		{
+			if (disposed)
+				return;
+
+			if (childrenLoaded) {
+				OnChildrenChanged (node, true);
+			}
+
+			if (node.IsExpanded) {
+				// if the node is _still_ expanded then adjust UI and scroll
+				if (compact)
+					RecalculateWidth ();
+
+				var path = GetTreePathForNodePath (node.Path);
+				if (path != null)
+					ScrollToCell (path, expCol, true, 0f, 0f);
 			}
 		}
 
@@ -1231,36 +1262,40 @@ public StackFrame Frame {
 
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
-			var rowNode = GetNodeAtIter (iter);
-			rowNode.IsExpanded = true;
-
-			if (store.IterChildren (out TreeIter child, iter)) {
-				// get the value of the 1st child, if it is null then it is the "loading" node
-				// find the node of the item that is being expanded and tell it to get it's children.
-				var node = GetNodeAtIter (child);
-				if (node == null) {
-					node = rowNode;
-
-					if (node.HasFlag (ObjectValueFlags.IEnumerable)) {
-						LoadIEnumerableChildren (iter);
-					} else {
-						this.controller.FetchChildren (node, cancellationTokenSource.Token, true);
-					}
-				}
-			}
-
+			var node = GetNodeAtIter (iter);
 			base.OnRowExpanded (iter, path);
 
-			if (compact)
-				RecalculateWidth ();
+			this.controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore();
 
-			ScrollToCell (path, expCol, true, 0f, 0f);
+			//rowNode.IsExpanded = true;
+
+			//if (store.IterChildren (out TreeIter child, iter)) {
+			//	// get the value of the 1st child, if it is null then it is the "loading" node
+			//	// find the node of the item that is being expanded and tell it to get it's children.
+			//	var node = GetNodeAtIter (child);
+			//	if (node == null) {
+			//		node = rowNode;
+
+			//		if (node.HasFlag (ObjectValueFlags.IEnumerable)) {
+			//			LoadIEnumerableChildren (iter);
+			//		} else {
+			//			this.controller.FetchChildren (node, cancellationTokenSource.Token, true);
+			//		}
+			//	}
+			//}
+
+			// TODO: move this code to after the children have been loaded
+			// or make the expand method be async 
+			//if (compact)
+			//	RecalculateWidth ();
+
+			//ScrollToCell (path, expCol, true, 0f, 0f);
 		}
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
-			var rowNode = GetNodeAtIter (iter);
-			rowNode.IsExpanded = false;
+			var node = GetNodeAtIter (iter);
+			controller.CollapseNode (node);
 
 			base.OnRowCollapsed (iter, path);
 
@@ -2753,6 +2788,17 @@ public StackFrame Frame {
 		ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter)
 		{
 			return GetDebuggerObjectValueAtIter (iter, store);
+		}
+
+		TreePath GetTreePathForNodePath(string path)
+		{
+			if (allNodes.TryGetValue (path, out TreeRowReference treeRef)) {
+				if (treeRef.Valid ()) {
+					return treeRef.Path;
+				}
+			}
+
+			return null;
 		}
 
 		/// <summary>
