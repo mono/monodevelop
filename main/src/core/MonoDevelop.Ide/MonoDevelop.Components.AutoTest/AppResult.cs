@@ -152,9 +152,16 @@ namespace MonoDevelop.Components.AutoTest
 				if (propertyInfo == null)
 					LoggingService.LogError ($"GetPropertyValue : propertyName {propertyName} not found on object {requestedObject}.");
 				if (propertyInfo != null && propertyInfo.CanRead && !propertyInfo.GetIndexParameters ().Any ()) {
-					var propertyValue = propertyInfo.GetValue (requestedObject);
-					if (propertyValue != null) {
-						return propertyValue;
+					try {
+						var propertyValue = propertyInfo.GetValue (requestedObject);
+						if (propertyValue != null) {
+							return propertyValue;
+						}
+					} catch {
+						// Supress the exception as we have faced unhandled ObjC exceptions. e.g.
+						// FATAL ERROR[2019-06-07 14:17:58Z]: Unhandled ObjC Exception
+						// MonoDevelop.MacIntegration.MacPlatformService + MarshalledObjCException: NSInvalidArgumentException: 
+						// -[MonoDevelop_MacIntegration_ThemedMacDialogBackend appearanceSource]: unrecognized selector sent to instance 
 					}
 				}
 
