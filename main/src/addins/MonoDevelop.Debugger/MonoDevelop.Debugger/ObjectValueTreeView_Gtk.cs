@@ -2695,7 +2695,7 @@ public StackFrame Frame {
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
-						if (((ObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
+						if (((GtkObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
 							YOffset += 1;
 						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
 						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,

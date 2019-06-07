@@ -67,14 +67,13 @@ namespace MonoDevelop.Debugger
 				controller.AllowEditing = true;
 				controller.AllowAdding = false;
 
-				var treeView = controller.GetControl () as Gtk.TreeView;
+				var treeView = controller.GetControl () as GtkObjectValueTreeView;
+				fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
+
 				treeView.HeadersVisible = true;
 				treeView.RulesHint = true;
+
 				scrolled.Add (treeView);
-
-				//newTree = new ObjectValueTreeViewFake ();
-
-				//fontChanger = new PadFontChanger (newTree, newTree.SetCustomFont, newTree.QueueResize);
 
 				//newTree.AllowEditing = true;
 				//newTree.AllowAdding = false;
