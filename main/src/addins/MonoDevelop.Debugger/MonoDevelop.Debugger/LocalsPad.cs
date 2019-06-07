@@ -31,7 +31,7 @@ namespace MonoDevelop.Debugger
 {
 	public class LocalsPad : ObjectValuePad
 	{
-		public LocalsPad ()
+		public LocalsPad () : base (true)
 		{
 			if (UseNewTreeView) {
 				controller.AllowEditing = true;

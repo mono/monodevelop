@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger
 {
 	public class ObjectValuePad : PadContent
 	{
-		protected static bool UseNewTreeView = true;
+		protected bool UseNewTreeView = false;
 
 		protected ObjectValueTreeViewController controller;
 		//protected ObjectValueTreeViewFake newTree;
@@ -56,8 +56,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public ObjectValuePad ()
+		public ObjectValuePad (bool useNewTreeView = false)
 		{
+			this.UseNewTreeView = useNewTreeView;
+
 			scrolled = new ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;
