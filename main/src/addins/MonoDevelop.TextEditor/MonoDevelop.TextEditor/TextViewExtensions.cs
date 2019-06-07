@@ -20,24 +20,11 @@
 // THE SOFTWARE.
 
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.TextEditor
 {
 	public static class TextViewExtensions
 	{
-		/// <summary>
-		/// Gets the parent <see cref="Ide.Gui.Document"/> from an <see cref="ITextView"/>
-		/// </summary>
-		public static Ide.Gui.Document TryGetParentDocument (this ITextView view)
-		{
-			// TOTEST
-			if (view.Properties.TryGetProperty<Ide.Gui.Document> (typeof (Ide.Gui.Document), out var document)) {
-				return document;
-			}
-			return null;
-		}
-
 		public static string GetFilePathOrNull (this ITextBuffer textBuffer)
 		{
 			if (textBuffer.Properties.TryGetProperty (typeof (Microsoft.VisualStudio.Text.ITextDocument), out Microsoft.VisualStudio.Text.ITextDocument textDocument)) {
