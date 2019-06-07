@@ -334,7 +334,7 @@ public StackFrame Frame {
 		private void Controller_NodeChildrenChanged (object sender, ChildrenChangedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
-				OnChildrenChanged (e.Node, e.Expand);
+				OnChildrenChanged (e.Node);
 			}).Ignore ();
 		}
 
@@ -355,7 +355,7 @@ public StackFrame Frame {
 			}).Ignore ();
 		}
 
-		void OnChildrenChanged (IObjectValueNode node, bool expand)
+		void OnChildrenChanged (IObjectValueNode node)
 		{
 			if (disposed)
 				return;
@@ -367,19 +367,48 @@ public StackFrame Frame {
 				// the children of a specific node changed
 				// remove the children for that node, then reload the children
 				if (GetNodeIterFromNodePath (node.Path, out TreeIter iter, out TreeIter parent)) {
-					RemoveChildren (iter);
-
-					foreach (var child in node.Children) {
-						AppendNodeToTreeModel (iter, null, child);
-					}
-
-					if (expand) {
-						this.ExpandRow (store.GetPath (iter), false);
-					}
+					MergeChildrenIntoTree (node, iter);
 				}
 
 				if (compact) {
 					RecalculateWidth ();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Merge the node's children as children of the node in the tree
+		/// </summary>
+		void MergeChildrenIntoTree(IObjectValueNode node, TreeIter nodeIter)
+		{
+			var nodeChildren = node.Children.ToList ();
+
+			if (nodeChildren.Count == 0) {
+				RemoveChildren (nodeIter);
+				return;
+			}
+
+			var visibleChildrenCount = store.IterNChildren (nodeIter);
+
+			int index = 0;
+			while (index < nodeChildren.Count) {
+				// if we have existing visible rows in the tree, update the values and remove children
+				if (index < visibleChildrenCount) {
+					if (store.IterNthChild (out TreeIter childIter, nodeIter, index)) {
+						RemoveChildren (childIter);
+						SetValues (nodeIter, childIter, null, nodeChildren [index]);
+					}
+				} else {
+					AppendNodeToTreeModel (nodeIter, null, nodeChildren [index]);
+				}
+
+				index++;
+			}
+
+			if (index < visibleChildrenCount) {
+				// remove extra nodes we don't need anymore
+				while (store.IterNthChild (out TreeIter childIter, nodeIter, index)) {
+					store.Remove (ref childIter);
 				}
 			}
 		}
@@ -447,15 +476,20 @@ public StackFrame Frame {
 				return;
 
 			if (childrenLoaded) {
-				OnChildrenChanged (node, true);
+				OnChildrenChanged (node);
 			}
 
 			if (node.IsExpanded) {
 				// if the node is _still_ expanded then adjust UI and scroll
+				var path = GetTreePathForNodePath (node.Path);
+
+				if (!this.GetRowExpanded(path)) {
+					this.ExpandRow (path, false);
+				}
+
 				if (compact)
 					RecalculateWidth ();
 
-				var path = GetTreePathForNodePath (node.Path);
 				if (path != null)
 					ScrollToCell (path, expCol, true, 0f, 0f);
 			}

@@ -98,7 +98,7 @@ namespace MonoDevelop.Debugger
 		public void ClearValues()
 		{
 			this.Root = this.OnCreateRoot ();
-			this.OnChildrenChanged (this.Root, false);
+			this.OnChildrenChanged (this.Root);
 		}
 
 		/// <summary>
@@ -118,7 +118,7 @@ namespace MonoDevelop.Debugger
 				this.RegisterForEvaluationCompletion (x);
 			}
 
-			this.OnChildrenChanged (this.Root, false);
+			this.OnChildrenChanged (this.Root);
 		}
 
 		public void ChangeCheckpoint ()
@@ -262,9 +262,9 @@ namespace MonoDevelop.Debugger
 		}
 
 		#region Event triggers
-		void OnChildrenChanged (IObjectValueNode node, bool expandOnCompletion)
+		void OnChildrenChanged (IObjectValueNode node)
 		{
-			ChildrenChanged?.Invoke (this, new ChildrenChangedEventArgs (node, expandOnCompletion));
+			ChildrenChanged?.Invoke (this, new ChildrenChangedEventArgs (node));
 		}
 
 		/// <summary>

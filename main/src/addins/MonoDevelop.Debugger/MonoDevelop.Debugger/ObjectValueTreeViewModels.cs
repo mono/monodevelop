@@ -321,12 +321,9 @@ namespace MonoDevelop.Debugger
 
 	public sealed class ChildrenChangedEventArgs : NodeEventArgs
 	{
-		public ChildrenChangedEventArgs (IObjectValueNode node, bool expandOnCompletion) : base (node)
+		public ChildrenChangedEventArgs (IObjectValueNode node) : base (node)
 		{
-			this.Expand = expandOnCompletion;
 		}
-
-		public bool Expand { get; }
 	}
 
 	public sealed class NodeChangedEventArgs : NodeEventArgs
