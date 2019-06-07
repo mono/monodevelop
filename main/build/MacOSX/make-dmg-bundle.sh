@@ -32,22 +32,9 @@ MOUNT_POINT="$VOLUME_NAME.mounted"
 rm -f "$DMG_FILE"
 rm -f "$DMG_FILE.master"
  	
-# Compute an approximated image size in MB, and bloat by double
-# codesign adds a unknown amount of extra size requirements and there are some
-# files where the additional size required is even more "unknown". doubling
-# is a brute force approach, but doesn't really impact final distribution size
-# because the empty space is compressed to nothing.
-image_size=$(du -ck "$DMG_APP" | tail -n1 | cut -f1)
-image_size=$((($image_size *2) / 1000))
-
-echo "Creating disk image (${image_size}MB)..."
-hdiutil create "$DMG_FILE" -megabytes $image_size -volname "$VOLUME_NAME" -fs HFS+ -quiet || exit $?
-
-echo "Attaching to disk image..."
-hdiutil attach "$DMG_FILE" -readwrite -noautoopen -mountpoint "$MOUNT_POINT" -quiet || exit $?
-
 echo "Populating image..."
 
+mkdir -p "$MOUNT_POINT/.background"
 # this used to be mv, but we need to preserve the bundle directory to do more checks on the contents
 # such as compatibility-check
 ditto "$DMG_APP" "$MOUNT_POINT/$DMG_APP"
@@ -74,26 +61,18 @@ if [ -e VolumeIcon.icns ] ; then
 fi
 SetFile -a C "$MOUNT_POINT"
 
-echo "Detaching from disk image..."
-for n in `seq 1 5`
-do
-	hdiutil detach "$MOUNT_POINT" && break
-	if [ $n = 5 ]; then
-		hdiutil detach -force "$MOUNT_POINT"
-		exit $?
-	fi
-done
+# Compute an approximated image size in MB, and bloat by double
+# codesign adds a unknown amount of extra size requirements and there are some
+# files where the additional size required is even more "unknown". doubling
+# is a brute force approach, but doesn't really impact final distribution size
+# because the empty space is compressed to nothing.
+image_size=$(du -ck "$DMG_APP" | tail -n1 | cut -f1)
+image_size=$((($image_size *2) / 1000))
 
-mv "$DMG_FILE" "$DMG_FILE.master"
-
-echo "Creating distributable image..."
-hdiutil convert -quiet -format UDBZ -o "$DMG_FILE" "$DMG_FILE.master" || exit $?
+echo "Creating disk image (${image_size}MB)..."
+hdiutil create -srcfolder "$MOUNT_POINT" -megabytes $image_size -ov "$DMG_FILE" -volname "$VOLUME_NAME" -fs HFS+ -format UDBZ || exit $?
 
 echo "Built disk image $DMG_FILE"
-
-if [ ! "x$1" = "x-m" ]; then
-rm "$DMG_FILE.master"
-fi
 
 rm -rf "$MOUNT_POINT"
 
