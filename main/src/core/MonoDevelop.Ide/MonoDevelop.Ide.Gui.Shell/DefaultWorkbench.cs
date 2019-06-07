@@ -655,8 +655,13 @@ namespace MonoDevelop.Ide.Gui
 				Remove (rootWidget);
 
 				foreach (PadCodon content in PadContentCollection) {
-					if (content.Initialized)
-						content.PadContent.Dispose ();
+					if (content.Initialized) {
+						try {
+							content.PadContent.Dispose ();
+						} catch (Exception ex) {
+							LoggingService.LogInternalError ("Failed to dispose pad " + content.PadId, ex);
+						}
+					}
 				}
 
 				rootWidget.Destroy ();
