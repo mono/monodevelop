@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Foo.TestVal", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta1"));
 
-			it = items [2];
+			it = items [2].Include == "file1.txt" ? items[2] : items[3];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
@@ -232,7 +232,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[0]);
 
-			it = items [3];
+			it = items [3].Include == "file2.txt" ? items [3] : items [2];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
@@ -261,7 +261,7 @@ namespace MonoDevelop.Projects
 
 			// [4] is an Update element, no real elements by itself.
 
-			it = items [6];
+			it = items [6].Include == "file1.txt" ? items[6] : items [7];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
@@ -269,7 +269,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[5]);
 
-			it = items [7];
+			it = items [7].Include == "file2.txt" ? items [7] : items [6];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
@@ -277,7 +277,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[5]);
 
-			it = items [8];
+			it = items [8].Include == "file1.txt" ? items [8] : items [9];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
@@ -286,7 +286,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
 
-			it = items [9];
+			it = items [9].Include == "file2.txt" ? items [9] : items [8];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
@@ -295,7 +295,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
 
-			it = items [10];
+			it = items [10].Include == "file1.txt" ? items [10] : items [11];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
@@ -304,7 +304,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
 
-			it = items [11];
+			it = items [11].Include == "file2.txt" ? items [11] : items [10];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
