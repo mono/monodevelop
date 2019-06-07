@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Editor.Options;
 using Microsoft.CodeAnalysis.Editor.Shared.Options;
 using Microsoft.CodeAnalysis.Editor.Implementation.TodoComments;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Shared.Options;
 using MonoDevelop.Core;
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				);
 
 				AutoFormattingOnReturn = preferences.Wrap<bool> (
-					new OptionKey (FeatureOnOffOptions.AutoFormattingOnReturn, language),
+					new OptionKey (FormattingOptions.AutoFormattingOnReturn, language),
 					language + ".AutoFormattingOnReturn"
 				);
 
