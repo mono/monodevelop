@@ -184,8 +184,14 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 
 			await p.SaveAsync (Util.GetMonitor ());
+			p.Dispose ();
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			mp = (Project)p;
+
+			Assert.Null (mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Data1.cs"));
+			Assert.NotNull (mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt" && pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest));
 
 			p.Dispose ();
 		}
