@@ -178,10 +178,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectRefs = new ReferenceItem [projectReferences.Length];
 			for (int i = 0; i < projectReferences.Length; ++i) {
 				var pr = projectReferences [i];
-				var mdProject = projectMap.GetMonoProject (pr.ProjectId);
+				(Project mdProject, string projectReferenceFramework) = projectMap.GetMonoProjectAndFramework (pr.ProjectId);
 				projectRefs [i] = new ReferenceItem {
 					FilePath = mdProject.FileName,
 					Aliases = pr.Aliases.ToArray (),
+					Framework = projectReferenceFramework
 				};
 			}
 
@@ -278,7 +279,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return false;
 
 				var aliases = item.Aliases != null ? item.Aliases.ToImmutableArray () : default;
-				var pr = new Microsoft.CodeAnalysis.ProjectReference (projectMap.GetOrCreateId (mdProject, null), aliases.ToImmutableArray ());
+				var pr = new Microsoft.CodeAnalysis.ProjectReference (projectMap.GetOrCreateId (mdProject, null, item.Framework), aliases.ToImmutableArray ());
 				prBuilder.Add (pr);
 			}
 			projectReferences = prBuilder.MoveToImmutable ();
@@ -341,6 +342,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			public string FilePath;
 			public string [] Aliases = Array.Empty<string> ();
+			public string Framework;
 		}
 
 		class FileLock

@@ -303,6 +303,72 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Test]
+		public async Task TestWorkspaceFilesCache_MultiTargetProjectReference_UsedOnLoad ()
+		{
+			// First we create the cache by loading the solution.
+			string solFile = Util.GetSampleProject ("multi-target-project-ref", "multi-target.sln");
+
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			var project = sol.FindProjectByName ("multi-target-ref") as DotNetProject;
+
+			// Check cache created for active configuration.
+			var cacheInfo = GetProjectCacheInfo (sol, project, "netstandard1.4");
+			Assert.IsNotNull (cacheInfo);
+			cacheInfo = GetProjectCacheInfo (sol, project, "net472");
+			Assert.IsNotNull (cacheInfo);
+
+			await IdeServices.Workspace.Close (false);
+
+			// Load the solution again.
+			var fn = new CustomItemNode<DelayGetReferencesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			project = sol.FindProjectByName ("multi-target-ref") as DotNetProject;
+			var referencedProject = sol.FindProjectByName ("multi-target") as DotNetProject;
+			try {
+				var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
+
+				var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+				var projects = ws.CurrentSolution.Projects.ToArray ();
+
+				var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net471)");
+				var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+				var netframeworkProjectRef = projects.FirstOrDefault (p => p.Name == "multi-target-ref (net472)");
+				var netstandardProjectRef = projects.FirstOrDefault (p => p.Name == "multi-target-ref (netstandard1.4)");
+
+				Assert.AreEqual (4, projectIds.Length);
+				Assert.AreEqual (4, projects.Length);
+
+				// Check project references.
+				var projectReferences = netstandardProjectRef.ProjectReferences.ToArray ();
+
+				Assert.AreEqual (1, projectReferences.Length);
+				Assert.AreEqual (netstandardProject.Id, projectReferences [0].ProjectId);
+
+				projectReferences = netframeworkProjectRef.ProjectReferences.ToArray ();
+
+				Assert.AreEqual (1, projectReferences.Length);
+				Assert.AreEqual (netframeworkProject.Id, projectReferences [0].ProjectId);
+
+				var ext = project.GetFlavor<DelayGetReferencesProjectExtension> ();
+				ext.TaskCompletionSource.TrySetResult (true);
+				Assert.IsFalse (ext.IsCalled);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+				TypeSystemServiceTestExtensions.UnloadSolution (sol);
+			}
+		}
+
 		/// <summary>
 		/// Tests that the cache, when it was available on initial load, is updated later on when the cache
 		/// is out of date compared with the project information returned from MSBuild. For example, the

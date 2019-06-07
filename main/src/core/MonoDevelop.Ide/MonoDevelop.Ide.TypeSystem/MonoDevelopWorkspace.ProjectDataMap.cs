@@ -146,6 +146,19 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			internal (MonoDevelop.Projects.Project project, string framework) GetMonoProjectAndFramework (ProjectId projectId)
+			{
+				lock (gate) {
+					var project = projectIdToMdProjectMap.TryGetValue (projectId, out var result) ? result : null;
+					if (project != null && projectIdMap.TryGetValue (project, out var frameworkMappings)) {
+						var frameworkMap = frameworkMappings.FirstOrDefault (mapping => mapping.ProjectId == projectId);
+						return (project, frameworkMap.Framework);
+					}
+
+					return (project, null);
+				}
+			}
+
 			internal bool Contains (ProjectId projectId)
 			{
 				lock (updatingProjectDataLock) {
