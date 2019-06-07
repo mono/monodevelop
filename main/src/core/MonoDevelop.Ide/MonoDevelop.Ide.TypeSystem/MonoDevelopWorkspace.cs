@@ -565,10 +565,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (mdProject == null)
 				return;
 
-			var task = OpenDocumentWithTextViewAsync (doc, mdProject, activate);
-			// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
-			while (!task.IsCompleted) {
-				DispatchService.RunPendingEvents (30);
+			// This method can be called by Roslyn or the editor in a context which is not the GTK UI context
+			// that MonoDevelop uses. In that case, before starting async an operation that may queue
+			// task continuations into the current context, we switch to the GTK context, so that
+			// whatever is queued will be dispatched when we run RunPendingEvents.
+
+			var oldContext = SynchronizationContext.Current;
+			try {
+				SynchronizationContext.SetSynchronizationContext (Runtime.MainSynchronizationContext);
+				var task = OpenDocumentWithTextViewAsync (doc, mdProject, activate);
+				// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
+				while (!task.IsCompleted) {
+					DispatchService.RunPendingEvents (30);
+				}
+			} finally {
+				SynchronizationContext.SetSynchronizationContext (oldContext);
 			}
 		}
 
