@@ -23,15 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using MonoDevelop.Core;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using System.Linq;
-using MonoDevelop.Ide;
-using MonoDevelop.Projects;
+using System.Collections.Generic;
+
 using Mono.Debugging.Client;
+
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Debugger
 {
@@ -120,50 +122,9 @@ namespace MonoDevelop.Debugger
 			return FilePath.Null;
 		}
 
-		public static bool CheckFileHash (FilePath file, byte[] hash)
+		public static bool CheckFileHash (FilePath path, byte[] checksum)
 		{
-			if (hash == null)
-				return false;
-			if (File.Exists (file)) {
-				using (var fs = File.OpenRead (file)) {
-					// Roslyn SHA1 checksum always starts with 20
-					if (hash.Length > 0 && hash [0] == 20)
-						using (var sha1 = SHA1.Create ()) {
-							if (sha1.ComputeHash (fs).Take (15).SequenceEqual (hash.Skip (1))) {
-								return true;
-							}
-						}
-					if (hash.Length > 0 && hash [0] == 32)
-						using (var sha1 = SHA256.Create ()) {
-							if (sha1.ComputeHash (fs).Take (15).SequenceEqual (hash.Skip (1))) {
-								return true;
-							}
-						}
-					if (hash.Length == 20) {
-						using (var sha1 = SHA1.Create ()) {
-							fs.Position = 0;
-							if (sha1.ComputeHash (fs).SequenceEqual (hash)) {
-								return true;
-							}
-						}
-					}
-					if (hash.Length == 32) {
-						using (var sha256 = SHA256.Create ()) {
-							fs.Position = 0;
-							if (sha256.ComputeHash (fs).SequenceEqual (hash)) {
-								return true;
-							}
-						}
-					}
-					fs.Position = 0;
-					using (var md5 = MD5.Create ()) {
-						if (md5.ComputeHash (fs).SequenceEqual (hash)) {
-							return true;
-						}
-					}
-				}
-			}
-			return false;
+			return SourceLocation.CheckFileHash (path, checksum);
 		}
 
 		/// <summary>
@@ -223,4 +184,3 @@ namespace MonoDevelop.Debugger
 		}
 	}
 }
-
