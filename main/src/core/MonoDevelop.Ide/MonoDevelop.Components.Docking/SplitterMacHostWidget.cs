@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.Docking
 		public SplitterMacHostWidget ()
 		{
 			view = new MacSplitterWidget ();
-			host = new GtkNSViewHost (view);
+			host = new GtkNSViewHost (view, AppKit.NSWindowOrderingMode.Above);
 		}
 
 		public Widget Parent => host.Parent;
