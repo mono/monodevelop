@@ -36,12 +36,20 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
 {
+	/// <summary>
+	/// Represents an object value returned from the debugger 
+	/// </summary>
 	public interface IObjectValueNode
 	{
 		/// <summary>
 		/// Gets the path of the node from the root.
 		/// </summary>
 		string Path { get; }
+
+		/// <summary>
+		/// Gets the collection of children that have been loaded from the debugger
+		/// </summary>
+		IReadOnlyList<IObjectValueNode> Children { get; }
 
 		// TODO: make the setter private and get the node to do the expansion
 		/// <summary>
@@ -56,15 +64,20 @@ namespace MonoDevelop.Debugger
 		bool HasChildren { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether the children of the node have been loaded or not
+		/// Gets a value indicating whether all children for this node have been loaded from the debugger
 		/// </summary>
 		bool ChildrenLoaded { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the object is an enumerable
+		/// </summary>
+		bool IsEnumerable { get; }
 
 
 		string Name { get; }
 		bool IsEvaluating { get; }
 
-		IEnumerable<IObjectValueNode> Children { get; }
+
 		bool IsUnknown { get; }
 		bool IsReadOnly { get; }
 		bool IsError { get; }
@@ -82,7 +95,21 @@ namespace MonoDevelop.Debugger
 
 		event EventHandler ValueChanged;
 
-		Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken);
+		/// <summary>
+		/// Asynchronously loads all children for the node into Children.
+		/// The task will complete immediately if all the children have previously been loaded and
+		/// the debugger will not be re-queried
+		/// </summary>
+		Task<int> LoadChildrenAsync (CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Asynchronously loads a range of at most count children for the node into Children.
+		/// Subsequent calls will load an additional count children into Children until all children
+		/// have been loaded.
+		/// The task will complete immediately if all the children have previously been loaded and
+		/// the debugger will not be re-queried. 
+		/// </summary>
+		Task<int> LoadChildrenAsync (int count, CancellationToken cancellationToken);
 	}
 
 	/// <summary>
@@ -91,7 +118,7 @@ namespace MonoDevelop.Debugger
 	public abstract class AbstractObjectValueNode : IObjectValueNode
 	{
 		readonly List<IObjectValueNode> children = new List<IObjectValueNode> ();
-		bool childrenLoaded;
+		bool allChildrenLoaded;
 
 		protected AbstractObjectValueNode (string parentPath, string name)
 		{
@@ -105,9 +132,12 @@ namespace MonoDevelop.Debugger
 
 		public string Path { get; }
 		public string Name { get; }
+		public IReadOnlyList<IObjectValueNode> Children => this.children;
 		public virtual bool IsExpanded { get; set; }
 		public virtual bool HasChildren => false;
-		public bool ChildrenLoaded => this.childrenLoaded;
+		public bool ChildrenLoaded => allChildrenLoaded;
+		public virtual bool IsEnumerable => false;
+
 
 
 		public virtual string DisplayValue => string.Empty;
@@ -131,36 +161,55 @@ namespace MonoDevelop.Debugger
 
 		public event EventHandler ValueChanged;
 
-		public IEnumerable<IObjectValueNode> Children => this.children;
 
 		protected void AddValues (IEnumerable<IObjectValueNode> values)
 		{
 			this.children.AddRange (values);
 		}
 
-		public async Task<IEnumerable<IObjectValueNode>> LoadChildrenAsync (CancellationToken cancellationToken)
+		public async Task<int> LoadChildrenAsync (CancellationToken cancellationToken)
 		{
-			if (ChildrenLoaded) {
-				return Children;
+			if (!allChildrenLoaded) {
+				var loadedChildren = await OnLoadChildrenAsync (cancellationToken);
+				this.AddValues (loadedChildren);
+
+				allChildrenLoaded = true;
+				return loadedChildren.Count ();
 			}
 
-			var loadedChildren = await OnLoadChildrenAsync (cancellationToken);
-			this.AddValues (loadedChildren);
+			return 0;
+		}
 
-			childrenLoaded = true;
+		public async Task<int> LoadChildrenAsync (int count, CancellationToken cancellationToken)
+		{
+			if (!allChildrenLoaded) {
+				var loadedChildren = await OnLoadChildrenAsync (children.Count, count, cancellationToken);
+				this.AddValues (loadedChildren.Item1);
 
-			return Children;
+				allChildrenLoaded = loadedChildren.Item2;
+				return loadedChildren.Item1.Count ();
+			}
+
+			return 0;
 		}
 
 		protected void ClearChildren ()
 		{
 			children.Clear ();
-			childrenLoaded = false;
+			allChildrenLoaded = false;
 		}
 
 		protected virtual Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			return Task.FromResult (Enumerable.Empty<IObjectValueNode> ());
+		}
+
+		/// <summary>
+		/// Returns the children that were loaded and a bool indicating whether all children have now been loaded
+		/// </summary>
+		protected virtual Task<Tuple<IEnumerable<IObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		{
+			return Task.FromResult (Tuple.Create(Enumerable.Empty<IObjectValueNode> (), true));
 		}
 
 		protected void OnValueChanged (EventArgs e)
@@ -186,6 +235,7 @@ namespace MonoDevelop.Debugger
 
 
 		public override bool HasChildren => this.DebuggerObject.HasChildren;
+		public override bool IsEnumerable => this.DebuggerObject.Flags.HasFlag (ObjectValueFlags.IEnumerable);
 
 
 
@@ -203,7 +253,7 @@ namespace MonoDevelop.Debugger
 		public override bool IsPrimitive => this.DebuggerObject.IsPrimitive;
 		public override string TypeName => this.DebuggerObject.TypeName;
 		public override string DisplayValue => this.DebuggerObject.DisplayValue;
-		public override bool CanRefresh => this.DebuggerObject.CanRefresh;
+		public override bool CanRefresh => true;//this.DebuggerObject.CanRefresh;
 		public override bool HasFlag (ObjectValueFlags flag) => this.DebuggerObject.HasFlag (flag);
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
@@ -211,6 +261,15 @@ namespace MonoDevelop.Debugger
 			var childValues = await GetChildrenAsync (this.DebuggerObject, cancellationToken);
 
 			return childValues.Select (x => new ObjectValueNode (x, this.Path));
+		}
+
+		protected override async Task<Tuple<IEnumerable<IObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		{
+			var childValues = await GetChildrenAsync (this.DebuggerObject, index, count, cancellationToken);
+			var result = childValues.Select (x => new ObjectValueNode (x, this.Path));
+
+			// if we returned less that we asked for, we assume we've now loaded all children
+			return Tuple.Create<IEnumerable<IObjectValueNode>, bool> (result, childValues.Length < count);
 		}
 
 
@@ -222,6 +281,19 @@ namespace MonoDevelop.Debugger
 				} catch (Exception ex) {
 					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
 					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
+					return new ObjectValue [0];
+				}
+			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+		}
+
+		static Task<ObjectValue []> GetChildrenAsync (ObjectValue value, int index, int count, CancellationToken cancellationToken)
+		{
+			return Task.Factory.StartNew<ObjectValue []> (delegate (object arg) {
+				try {
+					return ((ObjectValue)arg).GetRangeOfChildren (index, count);
+				} catch (Exception ex) {
+					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
+					LoggingService.LogError ("Failed to get ObjectValue range of children.", ex);
 					return new ObjectValue [0];
 				}
 			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
@@ -249,6 +321,18 @@ namespace MonoDevelop.Debugger
 		{
 			base.AddValues (values);
 		}
+	}
+
+	/// <summary>
+	/// Special node used to indicate that more values are available. 
+	/// </summary>
+	sealed class ShowMoreValuesObjectValueNode : AbstractObjectValueNode
+	{
+		public ShowMoreValuesObjectValueNode (string parentPath) : base (parentPath, "more")
+		{
+		}
+
+		public override bool IsEnumerable => true;
 	}
 
 	#region Mocking support abstractions
@@ -307,16 +391,9 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	public sealed class NodeExpandedEventArgs : NodeEventArgs
 	{
-		public NodeExpandedEventArgs (IObjectValueNode node, bool childrenLoaded) : base (node)
+		public NodeExpandedEventArgs (IObjectValueNode node) : base (node)
 		{
-			this.ChildrenLoaded = childrenLoaded;
 		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the children of the node were loaded when the
-		/// node was expanded
-		/// </summary>
-		public bool ChildrenLoaded { get; }
 	}
 
 	public sealed class ChildrenChangedEventArgs : NodeEventArgs

@@ -147,7 +147,7 @@ namespace MonoDevelop.Debugger
 		public GtkObjectValueTreeView (ObjectValueTreeViewController controller)
 		{
 			this.controller = controller;
-			this.controller.ChildrenChanged += Controller_NodeChildrenChanged;
+			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 			this.controller.NodeExpanded += Controller_NodeExpanded;
 
@@ -284,7 +284,9 @@ namespace MonoDevelop.Debugger
 				oldVadjustment = null;
 			}
 
-			this.controller.ChildrenChanged -= Controller_NodeChildrenChanged;
+			this.controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
+			this.controller.EvaluationCompleted -= Controller_EvaluationCompleted;
+			this.controller.NodeExpanded -= Controller_NodeExpanded;
 
 			values.Clear ();
 			valueNames.Clear ();
@@ -329,33 +331,38 @@ public StackFrame Frame {
 		}
 
 		/// <summary>
-		/// Triggered when the children of a node have changed
+		/// Triggered when the children of a node have been loaded
 		/// </summary>
-		private void Controller_NodeChildrenChanged (object sender, ChildrenChangedEventArgs e)
+		void Controller_NodeChildrenLoaded (object sender, ChildrenChangedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
-				OnChildrenChanged (e.Node);
+				OnChildrenLoaded (e.Node);
+			}).Ignore ();
+		}
+
+		/// <summary>
+		/// Triggered when a node has completed expanding and we have children to show
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void Controller_NodeExpanded (object sender, NodeExpandedEventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				OnNodeExpanded (e.Node);
 			}).Ignore ();
 		}
 
 		/// <summary>
 		/// Triggered when a node has completed evaluation and we have data to show the user
 		/// </summary>
-		private void Controller_EvaluationCompleted (object sender, NodeEvaluationCompletedEventArgs e)
+		void Controller_EvaluationCompleted (object sender, NodeEvaluationCompletedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
 				OnEvaluationCompleted (e.Node);
-			}).Ignore();
-		}
-
-		void Controller_NodeExpanded (object sender, NodeExpandedEventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				OnNodeExpanded (e.Node, e.ChildrenLoaded);
 			}).Ignore ();
 		}
 
-		void OnChildrenChanged (IObjectValueNode node)
+		void OnChildrenLoaded (IObjectValueNode node)
 		{
 			if (disposed)
 				return;
@@ -367,12 +374,37 @@ public StackFrame Frame {
 				// the children of a specific node changed
 				// remove the children for that node, then reload the children
 				if (GetNodeIterFromNodePath (node.Path, out TreeIter iter, out TreeIter parent)) {
+					// rather than simply replacing the children of this node we will merge
+					// them in so that the tree does not collapse the row when the last child is removed
 					MergeChildrenIntoTree (node, iter);
 				}
 
 				if (compact) {
 					RecalculateWidth ();
 				}
+			}
+		}
+
+		// TODO: if we don't want the scrolling, we can probably get rid of this
+		void OnNodeExpanded (IObjectValueNode node)
+		{
+			if (disposed)
+				return;
+
+			if (node.IsExpanded) {
+				// if the node is _still_ expanded then adjust UI and scroll
+				var path = GetTreePathForNodePath (node.Path);
+
+				if (!this.GetRowExpanded (path)) {
+					this.ExpandRow (path, false);
+				}
+
+				if (compact)
+					RecalculateWidth ();
+
+				// TODO: all this scrolling kind of seems awkward
+				//if (path != null)
+				//	ScrollToCell (path, expCol, true, 0f, 0f);
 			}
 		}
 
@@ -470,37 +502,9 @@ public StackFrame Frame {
 			}
 		}
 
-		void OnNodeExpanded(IObjectValueNode node, bool childrenLoaded)
-		{
-			if (disposed)
-				return;
-
-			if (childrenLoaded) {
-				OnChildrenChanged (node);
-			}
-
-			if (node.IsExpanded) {
-				// if the node is _still_ expanded then adjust UI and scroll
-				var path = GetTreePathForNodePath (node.Path);
-
-				if (!this.GetRowExpanded(path)) {
-					this.ExpandRow (path, false);
-				}
-
-				if (compact)
-					RecalculateWidth ();
-
-				if (path != null)
-					ScrollToCell (path, expCol, true, 0f, 0f);
-			}
-		}
-
 		void RemoveChildren (TreeIter iter)
 		{
 			TreeIter citer;
-
-			// TODO: remove from allNodes, we can kill the unregister since
-			// TODO: ideally, remove from the controller first, use the children updated events to do the removal from allNodes
 
 			while (store.IterChildren (out citer, iter)) {
 				var val = GetDebuggerObjectValueAtIter (citer);
@@ -777,12 +781,17 @@ public StackFrame Frame {
 			if (enumerableLoading.Contains (value))
 				return;
 			enumerableLoading.Add (value);
+
+			// this is the equivalent of hiding the more values button
 			store.SetValue (iter, ValueButtonTextColumn, "");
+
+			// this is to find the enumerable parent since the more button is a child of that node
 			if (value.Name == "") {
 				store.IterParent (out iter, iter);
 				value = GetDebuggerObjectValueAtIter (iter);
 			}
 
+			// this is the bulk of the work
 			int numberOfChildren = store.IterNChildren (iter);
 			Task.Factory.StartNew<ObjectValue []> (delegate (object arg) {
 				try {
@@ -1196,8 +1205,16 @@ public StackFrame Frame {
 					name = val.Name;
 				}
 				canEdit = false;
-			} else if (val.Flags.HasFlag (ObjectValueFlags.IEnumerable)) {
+			} else if (val.IsEnumerable) {
 				if (val.Name == "") {
+					valueButton = GettextCatalog.GetString ("Show More");
+				} else {
+					valueButton = GettextCatalog.GetString ("Show Values");
+				}
+				strval = "";
+				canEdit = false;
+			} else if (val.IsEnumerable) {
+				if (val is ShowMoreValuesObjectValueNode) {
 					valueButton = GettextCatalog.GetString ("Show More");
 				} else {
 					valueButton = GettextCatalog.GetString ("Show Values");
@@ -1336,7 +1353,8 @@ public StackFrame Frame {
 			if (compact)
 				RecalculateWidth ();
 
-			ScrollToCell (path, expCol, true, 0f, 0f);
+			// TODO: all this scrolling kind of seems awkward
+			//ScrollToCell (path, expCol, true, 0f, 0f);
 		}
 
 		string GetIterPath (TreeIter iter)

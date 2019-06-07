@@ -43,13 +43,25 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
+	/*
+	 * Issues?
+	 *
+	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
+	 * refreshing a node (which may replace it's children nodes)
+	 *
+	 */ 
+
+
 	public class ObjectValueTreeViewController
 	{
+		public static int MaxEnumerableChildrenToFetch = 20;
+
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
 		/// </summary>
-		readonly Dictionary<IObjectValueNode, Task> childFetchTasks = new Dictionary<IObjectValueNode, Task> ();
+		readonly Dictionary<IObjectValueNode, Task<int>> childFetchTasks = new Dictionary<IObjectValueNode, Task<int>> ();
 
+		// TODO: can we refactor this to a separate class?
 		/// <summary>
 		/// Holds a dictionary of arbitrary objects for nodes that are currently "Evaluating" by the debugger
 		/// When the node has completed evaluation ValueUpdated event will be fired, passing the given object
@@ -77,7 +89,7 @@ namespace MonoDevelop.Debugger
 
 
 
-		public event EventHandler<ChildrenChangedEventArgs> ChildrenChanged;
+		public event EventHandler<ChildrenChangedEventArgs> ChildrenLoaded;
 
 		/// <summary>
 		/// NodeExpanded is fired when the node has expanded and the children
@@ -98,7 +110,7 @@ namespace MonoDevelop.Debugger
 		public void ClearValues()
 		{
 			this.Root = this.OnCreateRoot ();
-			this.OnChildrenChanged (this.Root);
+			this.OnChildrenLoaded (this.Root);
 		}
 
 		/// <summary>
@@ -118,7 +130,7 @@ namespace MonoDevelop.Debugger
 				this.RegisterForEvaluationCompletion (x);
 			}
 
-			this.OnChildrenChanged (this.Root);
+			this.OnChildrenLoaded (this.Root);
 		}
 
 		public void ChangeCheckpoint ()
@@ -137,8 +149,10 @@ namespace MonoDevelop.Debugger
 			this.ClearValues ();
 		}
 
-		#region Expanding children Tasks
-
+		#region Fetching and loading children
+		/// <summary>
+		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
+		/// </summary>
 		public async Task ExpandNodeAsync(IObjectValueNode node, CancellationToken cancellationToken)
 		{
 			// if we think the node is expanded already, no need to trigger this again
@@ -148,58 +162,127 @@ namespace MonoDevelop.Debugger
 			node.IsExpanded = true;
 
 			// fetch children of the node and indicate whether the we fetched children or not
-			if (node.HasFlag (ObjectValueFlags.IEnumerable)) {
-			//	LoadIEnumerableChildren (iter);
+			if (node.IsEnumerable) {
+				// page the children in, instead of loading them all at once
+				var loadedCount = await this.FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationToken);
+				if (loadedCount > 0) {
+					OnChildrenLoaded (node);
+				}
+
+				OnNodeExpanded (node);
 			} else {
-				var childrenLoaded = await this.FetchChildrenAsync (node, cancellationToken);
-				OnNodeExpanded (node, childrenLoaded);
+
+				var loadedCount = await this.FetchChildrenAsync (node, 0, cancellationToken);
+
+				if (loadedCount > 0) {
+					OnChildrenLoaded (node);
+				}
+
+				OnNodeExpanded (node);
 			}
 		}
 
+		/// <summary>
+		/// Marks a node as not expanded
+		/// </summary>
 		public void CollapseNode(IObjectValueNode node)
 		{
 			node.IsExpanded = false;
 		}
 
-
-
-		// TODO: make this private
 		/// <summary>
-		/// Fetches the child nodes and returns a value indicating whether the children were loaded for the first
-		/// time. The children will be in node.Children.
+		/// Fetches the child nodes and returns the count of new children that were loaded.
+		/// The children will be in node.Children.
 		/// </summary>
-		async Task<bool> FetchChildrenAsync(IObjectValueNode node, CancellationToken cancellationToken)
+		async Task<int> FetchChildrenAsync(IObjectValueNode node, int count, CancellationToken cancellationToken)
 		{
 			if (node.ChildrenLoaded) {
-				return false;
+				return 0;
 			}
 
 			try {
-				if (childFetchTasks.TryGetValue (node, out Task task)) {
+				if (childFetchTasks.TryGetValue (node, out Task<int> task)) {
 					// there is already a task to fetch the children
-					await task;
+					return await task;
 				} else {
 					try {
-						await node.LoadChildrenAsync (cancellationToken);
+						int result = 0;
+						if (count > 0) {
+							var oldCount = node.Children.Count;
+							result = await node.LoadChildrenAsync (count, cancellationToken);
 
-						// we have the children loaded for the first time
-						// if any of them are still evaluating register for
-						// a completion event so that we can tell the UI
-						foreach (var c in node.Children) {
-							this.RegisterForEvaluationCompletion (c);
+							// if any of them are still evaluating register for
+							// a completion event so that we can tell the UI
+							for (int i = oldCount; i < oldCount + result; i++) {
+								var c = node.Children [i];
+								this.RegisterForEvaluationCompletion (c);
+							}
+						} else {
+							result = await node.LoadChildrenAsync (cancellationToken);
+
+							// if any of them are still evaluating register for
+							// a completion event so that we can tell the UI
+							foreach (var c in node.Children) {
+								this.RegisterForEvaluationCompletion (c);
+							}
 						}
 
+						return result;
 					} finally {
 						childFetchTasks.Remove (node);
 					}
-
 				}
 			} catch (Exception ex) {
 				// TODO: log or fail?
 			}
 
-			return true;
+			return 0;
 		}
+		/*
+		async Task LoadIEnumerableChildrenAsync (IObjectValueNode node, CancellationToken cancellationToken)
+		{
+			var value = GetDebuggerObjectValueAtIter (iter);
+			if (enumerableLoading.Contains (value))
+				return;
+			enumerableLoading.Add (value);
+			store.SetValue (iter, ValueButtonTextColumn, "");
+			if (value.Name == "") {
+				store.IterParent (out iter, iter);
+				value = GetDebuggerObjectValueAtIter (iter);
+			}
+
+			int numberOfChildren = store.IterNChildren (iter);
+			Task.Factory.StartNew<ObjectValue []> (delegate (object arg) {
+				try {
+					return ((ObjectValue)arg).GetRangeOfChildren (numberOfChildren - 1, 20);
+				} catch (Exception ex) {
+					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
+					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
+					return new ObjectValue [0];
+				}
+			}, value, cancellationTokenSource.Token).ContinueWith (t => {
+				TreeIter it;
+				if (disposed)
+					return;
+				store.IterNthChild (out it, iter, numberOfChildren - 1);
+				foreach (var child in t.Result) {
+					SetValues (iter, it, null, child);
+					RegisterValue (child, it);
+					it = store.InsertNodeAfter (it);
+				}
+				ScrollToCell (store.GetPath (it), expCol, true, 0f, 0f);
+				if (t.Result.Length == 20) {//If we get back 20 elements it means there is probably more...
+					SetValues (iter, it, null, ObjectValue.CreateNullObject (null, "", "", ObjectValueFlags.IEnumerable));
+				} else {
+					store.Remove (ref it);
+				}
+
+				if (compact)
+					RecalculateWidth ();
+				enumerableLoading.Remove (value);
+			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
+		}
+		*/
 		#endregion
 
 		#region Evaluation watches
@@ -207,7 +290,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Registers the ValueChanged event for a node where IsEvaluating is true
 		/// </summary>
-		void RegisterForEvaluationCompletion(IObjectValueNode node)
+		void RegisterForEvaluationCompletion (IObjectValueNode node)
 		{
 			if (node != null && node.IsEvaluating) {
 				this.evaluationWatches [node] = null;
@@ -262,9 +345,9 @@ namespace MonoDevelop.Debugger
 		}
 
 		#region Event triggers
-		void OnChildrenChanged (IObjectValueNode node)
+		void OnChildrenLoaded (IObjectValueNode node)
 		{
-			ChildrenChanged?.Invoke (this, new ChildrenChangedEventArgs (node));
+			ChildrenLoaded?.Invoke (this, new ChildrenChangedEventArgs (node));
 		}
 
 		/// <summary>
@@ -286,9 +369,9 @@ namespace MonoDevelop.Debugger
 			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node));
 		}
 
-		void OnNodeExpanded(IObjectValueNode node, bool childrenLoaded)
+		void OnNodeExpanded(IObjectValueNode node)
 		{
-			NodeExpanded?.Invoke (this, new NodeExpandedEventArgs (node, childrenLoaded));
+			NodeExpanded?.Invoke (this, new NodeExpandedEventArgs (node));
 		}
 		#endregion
 	}
