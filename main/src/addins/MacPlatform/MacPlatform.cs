@@ -1281,7 +1281,7 @@ namespace MonoDevelop.MacIntegration
 			y += GetTitleBarHeight (w);
 			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
 			var r = w.FrameRectFor (dr);
-			w.SetFrame (r, true);
+
 			base.PlaceWindow (window, x, y, width, height);
 		}
 
