@@ -112,28 +112,45 @@ namespace PerfTool
 			return changed;
 		}
 
-		public List<TestCase> RegisterPerformanceRegressions (TestSuiteResult baseline, out List<TestCase> regressions, out List<TestCase> improvements)
+		public List<TestCase> RegisterPerformanceRegressions (TestSuiteResult baseline, out List<TestCase> regressions, out List<TestCase> improvements, out List<TestCase> newTests)
 		{
 			regressions = new List<TestCase> ();
 			improvements = new List<TestCase> ();
+			newTests = new List<TestCase> ();
+
 			foreach (var testResult in resultsByTestId.Values) {
-				if (testResult.Success && baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
-					if (IsRegression (baselineResult, testResult)) {
-						testResult.Success = false;
-						testResult.Result = "Error";
-						testResult.Failure = new Failure {
-							Message = $"Performance regression. Baseline: {baselineResult.Time}, Result: {testResult.Time} (+{(testResult.Time/baselineResult.Time) - 1:0.00})"
-						};
-						regressions.Add (testResult);
-						results.Errors++;
-					} else if (IsImprovement (baselineResult, testResult)) {
-						testResult.Improvement = new Improvement {
-							Message = $"Performance improvement. Baseline: {baselineResult.Time}, Result: {testResult.Time}",
-							OldTime = baselineResult.Time,
-							Time = testResult.Time
-						};
-						improvements.Add (testResult);
-					}
+				if (!testResult.Success) {
+					// Don't want to signal data changes on failed test runs.
+					continue;
+				}
+
+				if (!baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
+					// If we don't have a baseline for this, report a new test
+					testResult.Success = false;
+					testResult.Result = "Error";
+					testResult.Failure = new Failure {
+						Message = $"New performance test. With value: {testResult.Time})"
+					};
+					newTests.Add (testResult);
+					results.Errors++;
+					continue;
+				}
+
+				if (IsRegression (baselineResult, testResult)) {
+					testResult.Success = false;
+					testResult.Result = "Error";
+					testResult.Failure = new Failure {
+						Message = $"Performance regression. Baseline: {baselineResult.Time}, Result: {testResult.Time} (+{(testResult.Time / baselineResult.Time) - 1:0.00})"
+					};
+					regressions.Add (testResult);
+					results.Errors++;
+				} else if (IsImprovement (baselineResult, testResult)) {
+					testResult.Improvement = new Improvement {
+						Message = $"Performance improvement. Baseline: {baselineResult.Time}, Result: {testResult.Time}",
+						OldTime = baselineResult.Time,
+						Time = testResult.Time
+					};
+					improvements.Add (testResult);
 				}
 			}
 			return regressions;
