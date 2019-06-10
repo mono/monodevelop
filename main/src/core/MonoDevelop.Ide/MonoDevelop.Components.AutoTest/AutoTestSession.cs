@@ -675,6 +675,15 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public void GetProperty (AppResult result, string propertyName)
+		{
+			try {
+				ExecuteOnIdle (() => result.GetProperty (propertyName), wait: true);
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("GetProperty", result.SourceQuery, result, e);
+			}
+		}
+
 		public void SetProperty (AppResult result, string name, object o)
 		{
 			try {

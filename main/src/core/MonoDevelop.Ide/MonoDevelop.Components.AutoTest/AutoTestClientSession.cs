@@ -159,14 +159,14 @@ namespace MonoDevelop.Components.AutoTest
 			session.ExecuteCommand (cmd, dataItem, source);
 		}
 
-		/*
+
 		public object GetPropertyValue (string propertyName)
 		{
 			ClearEventQueue ();
 			return session.GetPropertyValue (propertyName);
 		}
 
-		public bool SetPropertyValue (string propertyName, object value, object[] index = null)
+		/*public bool SetPropertyValue (string propertyName, object value, object[] index = null)
 		{
 			ClearEventQueue ();
 			return session.SetPropertyValue (propertyName, value, index);
