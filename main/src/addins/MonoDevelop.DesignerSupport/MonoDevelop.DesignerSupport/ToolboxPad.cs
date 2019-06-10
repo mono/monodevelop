@@ -69,9 +69,11 @@ namespace MonoDevelop.DesignerSupport
 			toolbox.ContentFocused += Toolbox_ContentFocused;
 			toolbox.DragSourceSet += Toolbox_DragSourceSet;
 			toolbox.DragBegin += Toolbox_DragBegin;
+		
+			widget.ShowAll ();
+
 			toolbox.Refresh ();
 
-			widget.ShowAll ();
 #else
 			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, window);
 #endif
