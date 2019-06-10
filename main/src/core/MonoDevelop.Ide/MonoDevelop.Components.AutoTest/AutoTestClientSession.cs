@@ -376,7 +376,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
-		public object GetProperty (Func<AppQuery, AppQuery> query, string propertyName)
+		public ObjectProperties GetProperty (Func<AppQuery, AppQuery> query, string propertyName)
 		{
 			AppResult [] results = Query (query);
 			return session.GetProperty (results[0], propertyName);

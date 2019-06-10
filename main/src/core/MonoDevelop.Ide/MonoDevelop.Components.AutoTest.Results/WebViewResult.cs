@@ -146,7 +146,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		public override object GetProperty (string propertyName)
+		public override ObjectProperties GetProperty (string propertyName)
 		{
 			return base.GetProperty (node, propertyName);
 		}

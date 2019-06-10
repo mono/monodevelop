@@ -675,9 +675,9 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
-		public object GetProperty (AppResult result, string propertyName)
+		public ObjectProperties GetProperty (AppResult result, string propertyName)
 		{
-			object objectResult = null;
+			ObjectProperties objectResult = null;
 			try {
 				ExecuteOnIdle (() => {
 					objectResult = result.GetProperty (propertyName);
