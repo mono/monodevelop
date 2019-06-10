@@ -159,13 +159,6 @@ namespace MonoDevelop.Components.AutoTest
 			session.ExecuteCommand (cmd, dataItem, source);
 		}
 
-
-		public object GetPropertyValue (string propertyName)
-		{
-			ClearEventQueue ();
-			return session.GetPropertyValue (propertyName);
-		}
-
 		/*public bool SetPropertyValue (string propertyName, object value, object[] index = null)
 		{
 			ClearEventQueue ();
@@ -381,6 +374,12 @@ namespace MonoDevelop.Components.AutoTest
 			foreach (var result in results) {
 				session.Flash (result);
 			}
+		}
+
+		public object GetProperty (Func<AppQuery, AppQuery> query, string propertyName)
+		{
+			AppResult [] results = Query (query);
+			return session.GetProperty (results[0], propertyName);
 		}
 
 		public void SetProperty (Func<AppQuery, AppQuery> query, string propertyName, object value)
