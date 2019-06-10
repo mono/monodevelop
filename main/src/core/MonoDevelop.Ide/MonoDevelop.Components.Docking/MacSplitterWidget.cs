@@ -52,6 +52,7 @@ namespace MonoDevelop.Components.Docking
 
 		public override void MouseEntered (NSEvent theEvent)
 		{
+			lastEventTimestamp = theEvent.Timestamp;
 			if (!dragging) {
 				SetResizeCursor ();
 			}
@@ -61,6 +62,7 @@ namespace MonoDevelop.Components.Docking
 
 		public override void MouseExited (NSEvent theEvent)
 		{
+			lastEventTimestamp = theEvent.Timestamp;
 			if (!dragging) {
 				SetDefaultCursor ();
 			}
@@ -85,6 +87,7 @@ namespace MonoDevelop.Components.Docking
 
 		public override void MouseMoved (NSEvent theEvent)
 		{
+			lastEventTimestamp = theEvent.Timestamp;
 			if (!dragging) {
 				SetResizeCursor ();
 			}
@@ -95,7 +98,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (dragging) {
 				dragging = false;
-				AddRemoveFilter (false);
+				RemoveGdkEventFilter ();
 			}
 		}
 
@@ -107,6 +110,7 @@ namespace MonoDevelop.Components.Docking
 
 		public override void MouseDown (NSEvent theEvent)
 		{
+			lastEventTimestamp = theEvent.Timestamp;
 			dragging = true;
 
 			var point = NSEvent.CurrentMouseLocation;
@@ -120,7 +124,7 @@ namespace MonoDevelop.Components.Docking
 				dragSize = obj.Allocation.Height;
 			}
 
-			AddRemoveFilter (true);
+			AddGdkEventFilter ();
 		}
 
 		void SetDefaultCursor ()
@@ -133,6 +137,7 @@ namespace MonoDevelop.Components.Docking
 
 		public override void MouseUp (NSEvent theEvent)
 		{
+			lastEventTimestamp = theEvent.Timestamp;
 			if (hover) {
 				SetResizeCursor ();
 			} else {
@@ -144,6 +149,7 @@ namespace MonoDevelop.Components.Docking
 
 		public override void MouseDragged (NSEvent theEvent)
 		{
+			lastEventTimestamp = theEvent.Timestamp;
 			SetResizeCursor ();
 
 			var point = NSEvent.CurrentMouseLocation;
@@ -165,15 +171,55 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		void AddRemoveFilter (bool enable)
+		double lastEventTimestamp = Foundation.NSProcessInfo.ProcessInfo.SystemUptime;
+		bool enableGdkEventFiler;
+		bool gdkEventFilterInserted;
+		bool isDisposed;
+
+		public override void RemoveFromSuperview ()
 		{
-			if (enable)
-				Gdk.Window.AddFilterForAll (Filter);
-			else
-				Gdk.Window.RemoveFilterForAll (Filter);
+			RemoveGdkEventFilter ();
+			base.RemoveFromSuperview ();
 		}
 
-		static Gdk.FilterReturn Filter (IntPtr xevent, Gdk.Event evnt) => Gdk.FilterReturn.Remove;
+		protected override void Dispose (bool disposing)
+		{
+			isDisposed = true;
+			if (disposing)
+				RemoveGdkEventFilter ();
+			base.Dispose (disposing);
+		}
+
+		void AddGdkEventFilter ()
+		{
+			enableGdkEventFiler = true;
+			if (!gdkEventFilterInserted) {
+				Gdk.Window.AddFilterForAll (Filter);
+				gdkEventFilterInserted = true;
+			}
+		}
+
+		void RemoveGdkEventFilter ()
+		{
+			enableGdkEventFiler = false;
+			if (gdkEventFilterInserted) {
+				Gdk.Window.RemoveFilterForAll (Filter);
+				gdkEventFilterInserted = false;
+			}
+		}
+
+		Gdk.FilterReturn Filter (IntPtr xevent, Gdk.Event evnt)
+		{
+			if (enableGdkEventFiler && !isDisposed && Window != null) {
+				// always recover GDK events after 2 seconds of inactivity, this makes sure
+				// that we don't lose GDK events forever if some other native view steals events
+				// which are required for the drag exit condition.
+				if (Foundation.NSProcessInfo.ProcessInfo.SystemUptime - lastEventTimestamp < 2.0)
+					return Gdk.FilterReturn.Remove;
+			}
+			RemoveGdkEventFilter ();
+			return Gdk.FilterReturn.Continue;
+		}
 	}
 
 }
