@@ -112,7 +112,11 @@ namespace MonoDevelop.Components.AutoTest
 
 		public ObjectProperties GetProperty (object o, string propertyName)
 		{
-			return null;
+			LoggingService.LogDebug ($"[AppResult.GetProperty] Trying to fetch property '{propertyName}' on '{o.GetType().FullName}'");
+			var propertiesObject = new ObjectProperties ();
+			var result = GetPropertyAppResultFromObject (o, propertyName);
+			propertiesObject.Add (propertyName, result, null);
+			return propertiesObject;
 		}
 
 		public void SetProperty (object o, string propertyName, object value)
