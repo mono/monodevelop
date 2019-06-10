@@ -18,7 +18,7 @@
         internal IObscuringTipManager obscuringTipManager;
 
         [Import]
-        internal ToolTipStyleFactory styleFactory;
+        internal ToolTipStyleFactory2 styleFactory;
 
         public IToolTipPresenter Create(ITextView textView, ToolTipParameters parameters)
         {

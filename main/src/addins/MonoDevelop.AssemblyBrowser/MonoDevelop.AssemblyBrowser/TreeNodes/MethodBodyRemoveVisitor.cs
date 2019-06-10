@@ -55,7 +55,7 @@ namespace MonoDevelop.AssemblyBrowser
 			accessor.Body = null;
 		}
 
-		internal static void RemoveMethodBodies (SyntaxTree syntaxTree)
+		internal static void RemoveMethodBodies (AstNode syntaxTree)
 		{
 			syntaxTree.AcceptVisitor (new MethodBodyRemoveVisitor ());
 		}

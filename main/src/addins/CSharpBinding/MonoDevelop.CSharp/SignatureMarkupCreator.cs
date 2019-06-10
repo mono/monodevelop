@@ -1,4 +1,4 @@
-//
+﻿//
 // SignatureMarkupCreator.cs
 //
 // Author:
@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp
 			if (ctx != null) {
 				this.options = ctx.GetOptionSet ();
 			} else {
-				this.options = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace.Options;
+				this.options = IdeApp.TypeSystemService.Workspace.Options;
 			}
 		}
 

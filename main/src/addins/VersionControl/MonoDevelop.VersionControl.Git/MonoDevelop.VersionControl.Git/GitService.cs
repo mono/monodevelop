@@ -38,8 +38,8 @@ namespace MonoDevelop.VersionControl.Git
 	public static class GitService
 	{
 		public static ConfigurationProperty<bool> UseRebaseOptionWhenPulling = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", true);
-		public static ConfigurationProperty<bool> StashUnstashWhenUpdating = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", true);
-		public static ConfigurationProperty<bool> StashUnstashWhenSwitchingBranches = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", true);
+		public static ConfigurationProperty<bool> StashUnstashWhenUpdating = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", false);
+		public static ConfigurationProperty<bool> StashUnstashWhenSwitchingBranches = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", false);
 
 		public static void Push (GitRepository repo)
 		{
@@ -78,9 +78,9 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public static void ShowConfigurationDialog (GitRepository repo)
+		public static void ShowConfigurationDialog (VersionControlSystem vcs, string repoPath, string repoUrl)
 		{
-			using (var dlg = new GitConfigurationDialog (repo))
+			using (var dlg = new GitConfigurationDialog (vcs, repoPath, repoUrl))
 				MessageService.ShowCustomDialog (dlg);
 		}
 

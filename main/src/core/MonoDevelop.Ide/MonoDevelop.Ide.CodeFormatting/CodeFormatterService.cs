@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CodeFormatterService.cs
 //  
 // Author:
@@ -34,6 +34,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public sealed class CodeFormatterService
 	{
 		static List<CodeFormatterExtensionNode> nodes = new List<CodeFormatterExtensionNode> ();
@@ -57,14 +58,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		public static CodeFormatter GetFormatter (string mimeType)
 		{
-			//find the most specific formatter that can handle the document			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			//find the most specific formatter that can handle the document			var chain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			foreach (var mt in chain) {
 				var node = nodes.FirstOrDefault (f => f.MimeType == mt);
 				if (node != null)
 					return new CodeFormatter (mimeType, node.GetFormatter ());
 			}
 			
-			if (DesktopService.GetMimeTypeIsText (mimeType))
+			if (IdeServices.DesktopService.GetMimeTypeIsText (mimeType))
 				return new CodeFormatter (mimeType, new DefaultCodeFormatter ());
 			
 			return null;

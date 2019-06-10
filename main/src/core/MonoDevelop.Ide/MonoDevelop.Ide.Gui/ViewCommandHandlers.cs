@@ -1,4 +1,4 @@
-//
+﻿//
 // ViewCommandHandlers.cs
 //
 // Author:
@@ -44,15 +44,15 @@ namespace MonoDevelop.Ide.Gui
 		IWorkbenchWindow window;
 		Document doc;
 
-		public ViewCommandHandlers (IWorkbenchWindow window)
+		public void Initialize (Document doc)
 		{
-			this.window = window;
-			doc = IdeApp.Workbench.WrapDocument (window);
+			window = doc.Window;
+			this.doc = doc;
 		}
 		
 		public T GetContent <T>() where T : class
 		{
-			return (T) window.ActiveViewContent.GetContent (typeof(T));
+			return doc.GetContent<T> (true);
 		}
 		
 		[CommandHandler (FileCommands.Save)]
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (FileCommands.ReloadFile)]
 		protected void OnUpdateReloadFile (CommandInfo info)
 		{
-			info.Enabled = window.ViewContent.ContentName != null && !window.ViewContent.IsViewOnly && window.Document != null && window.Document.IsDirty;
+			info.Enabled = !doc.IsNewDocument && !doc.IsViewOnly && !doc.IsDirty;
 		}
 
 		[CommandHandler (FileCommands.OpenContainingFolder)]
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// A tab will always hold a file, never a folder.
 			FilePath path = Path.GetDirectoryName (doc.FileName);
-			DesktopService.OpenFolder (path, doc.FileName);
+			IdeServices.DesktopService.OpenFolder (path, doc.FileName);
 		}
 		
 		[CommandUpdateHandler (FileCommands.OpenContainingFolder)]

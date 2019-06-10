@@ -9,6 +9,9 @@
 		<Import assembly="NuGet.Commands.dll" />
 		<Import assembly="NuGet.LibraryModel.dll" />
 		<Import assembly="NuGet.Common.dll" />
+		<Import assembly="NuGet.Protocol.dll" />
+		<Import assembly="NuGet.Configuration.dll" />
+		<Import assembly="NuGet.ProjectModel.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -165,6 +168,7 @@
 
 	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class="MonoDevelop.PackageManagement.PackageManagementMSBuildExtension" />
+		<Class class="MonoDevelop.PackageManagement.PackageManagementSdkProjectExtension" />
 	</Extension>
 	<!--
 	<Extension path="/MonoDevelop/Refactoring/CodeDiagnosticProvider">

@@ -16,10 +16,6 @@
       <HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -35,6 +31,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="UIThreadMonitorDaemon.exe" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -55,10 +54,8 @@
     <ProjectReference Include="..\UIThreadMonitorDaemon\UIThreadMonitorDaemon.csproj">
       <Project>{3FDB97B5-916E-4817-8098-41659687A8FF}</Project>
       <Name>UIThreadMonitorDaemon</Name>
+      <Private>true</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Tasks
 
 			public async Task AddToDoFile (Options options = null)
 			{
-				var project = IdeApp.Workspace.GetAllProjects ().Single ();
+				var project = IdeServices.Workspace.GetAllProjects ().Single ();
 
 				var tcs = RegisterCallback (options);
 				BindTimeout (tcs);
@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Tasks
 
 				var monitor = new ProgressMonitor ();
 				// Load the solution into the workspace.
-				bool opened = await IdeApp.Workspace.OpenWorkspaceItemInternal (solFile, true, true, null, monitor);
+				bool opened = await IdeServices.Workspace.OpenWorkspaceItemInternal (solFile, true, true, null, monitor);
 
 				var errorString = string.Join (Environment.NewLine, monitor.Errors.Select (x => x.Message + ":" + x.Exception));
 				Assert.IsFalse (monitor.HasErrors, $"Monitor reported errors: {errorString}");
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Tasks
 				var tcs = RegisterCallback (options);
 				BindTimeout (tcs);
 
-				var proj = IdeApp.Workspace.GetAllProjects ().Single ();
+				var proj = IdeServices.Workspace.GetAllProjects ().Single ();
 				WriteFileText (proj, FileName, content + Environment.NewLine + toAppend);
 
 				await tcs.Task;
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Tasks
 				var gatheredFiles = new HashSet<string> ();
 				int count = 0;
 				IReadOnlyList<TypeSystem.Tag> comments = null;
-				TaskService.CommentTasksChanged += (s, args) => {
+				IdeServices.TaskService.CommentTasksChanged += (s, args) => {
 					if (tcs.Task.IsCompleted)
 						return;
 
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.Tasks
 
 			public async Task DisposeAsync ()
 			{
-				await IdeApp.Workspace.Close ();
+				await IdeServices.Workspace.Close (saveWorkspacePreferencies:false, closeProjectFiles:false, force:true);
 			}
 		}
 	}

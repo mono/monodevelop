@@ -1,4 +1,4 @@
-//
+﻿//
 // RoslynCompletionPresenterSession.View.cs
 //
 // Author:
@@ -61,14 +61,14 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		int rowHeight;
 
 		Pango.Layout layout, categoryLayout, noMatchLayout;
-		IMdTextView textView;
+		ITextView textView;
 		private readonly CompletionService completionService;
 		FontDescription itemFont, noMatchFont;
 		Adjustment vadj;
 		XwtPopupWindowTheme Theme;
 
 		int selection = 0;
-		ISpaceReservationAgent agent;
+		dynamic agent;
 
 		bool buttonPressed;
 		IList<CompletionItem> filteredItems = new List<CompletionItem> (0);
@@ -83,8 +83,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			if (noMatchFont != null)
 				noMatchFont.Dispose ();
 
-			itemFont = FontService.MonospaceFont.Copy ();
-			noMatchFont = FontService.SansFont.CopyModified (Styles.FontScale11);
+			itemFont = IdeServices.FontService.MonospaceFont.Copy ();
+			noMatchFont = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11);
 
 			var newItemFontSize = itemFont.Size;
 			var newNoMatchFontSize = noMatchFont.Size;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		ScrolledWindow scrollbar;
 		EventBox box;
 		ITextBuffer _subjectBuffer;
-		public RoslynCompletionPresenterSession (IMdTextView textView, ITextBuffer subjectBuffer, CompletionService completionService)
+		public RoslynCompletionPresenterSession (ITextView textView, ITextBuffer subjectBuffer, CompletionService completionService)
 		{
 			var vbox = new VBox ();
 			this.textView = textView;
@@ -589,10 +589,10 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = true;
 			textView.LostAggregateFocus += CloseOnTextviewLostFocus;
 			box.ShowAll ();
-			var manager = textView.GetSpaceReservationManager ("completion");
+			var manager = ((IMdTextView)textView).GetSpaceReservationManager ("completion");
 			agent = manager.CreatePopupAgent (triggerSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
 			//HACK...
-			Theme = ((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent.PopUpContainer)((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent)agent)._popup)._popup.Theme;
+			Theme = ((MonoDevelop.SourceEditor.PopupAgent.PopUpContainer)((MonoDevelop.SourceEditor.PopupAgent)agent)._popup)._popup.Theme;
 			Theme.CornerRadius = 0;
 			Theme.Padding = 0;
 			UpdateStyle ();
@@ -628,7 +628,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			Instance = null;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = false;
 			HideDescription ();
-			var manager = textView.GetSpaceReservationManager ("completion");
+			var manager = ((IMdTextView)textView).GetSpaceReservationManager ("completion");
 			if (agent != null)
 				manager.RemoveAgent (agent);
 		}

@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeRulePanel.cs
 //
 // Author:
@@ -57,7 +57,7 @@ namespace MonoDevelop.CodeIssues
 			readonly Encoding encoding;
 			readonly bool loadingError;
 
-			public TextEditor TextEditor { get; private set; }
+			public Ide.Editor.TextEditor TextEditor { get; private set; }
 
 			public CodeRulePanelWidget ()
 			{
@@ -65,9 +65,9 @@ namespace MonoDevelop.CodeIssues
 				TextEditor.MimeType = "application/xml";
 				TextEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 				try {
-					TextEditor.Text = TextFileUtility.GetText (TypeSystemService.RuleSetManager.GlobalRulesetFileName, out encoding);
+					TextEditor.Text = TextFileUtility.GetText (IdeApp.TypeSystemService.RuleSetManager.GlobalRulesetFileName, out encoding);
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while loading global rule set file " + TypeSystemService.RuleSetManager, e);
+					LoggingService.LogError ("Error while loading global rule set file " + IdeApp.TypeSystemService.RuleSetManager, e);
 					loadingError = true;
 				}
 			}
@@ -77,10 +77,10 @@ namespace MonoDevelop.CodeIssues
 				if (loadingError)
 					return;
 				try {
-					TextFileUtility.WriteText (TypeSystemService.RuleSetManager.GlobalRulesetFileName, TextEditor.Text, encoding);
+					TextFileUtility.WriteText (IdeApp.TypeSystemService.RuleSetManager.GlobalRulesetFileName, TextEditor.Text, encoding);
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while saving global rule set file " + TypeSystemService.RuleSetManager.GlobalRulesetFileName, e);
-					MessageService.ShowError (GettextCatalog.GetString ("Error while saving global rule set file '{0}'.", TypeSystemService.RuleSetManager.GlobalRulesetFileName));
+					LoggingService.LogError ("Error while saving global rule set file " + IdeApp.TypeSystemService.RuleSetManager.GlobalRulesetFileName, e);
+					MessageService.ShowError (GettextCatalog.GetString ("Error while saving global rule set file '{0}'.", IdeApp.TypeSystemService.RuleSetManager.GlobalRulesetFileName));
 				}
 			}
 		}

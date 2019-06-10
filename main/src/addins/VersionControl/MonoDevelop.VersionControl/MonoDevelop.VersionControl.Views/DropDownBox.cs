@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DropDownBox.cs
 //  
 // Author:
@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using MonoDevelop.Ide;
 using Gtk;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
@@ -110,7 +109,7 @@ namespace MonoDevelop.VersionControl.Views
 			window.WidthRequest = Allocation.Width;
 			int width, height;
 			window.GetSizeRequest (out width, out height);
-			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
+			Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
 			
 			if (dy + height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - height;

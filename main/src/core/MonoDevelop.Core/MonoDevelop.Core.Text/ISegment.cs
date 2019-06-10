@@ -1,4 +1,4 @@
-﻿//
+//
 // ISegment.cs
 //
 // Author:
@@ -398,6 +398,7 @@ namespace MonoDevelop.Core.Text
 			return overlapStart < overlapEnd;
 		}
 
+		[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 		public static ISegment AdjustSegment (this ISegment segment, TextChangeEventArgs args)
 		{
 			if (segment == null)
@@ -407,6 +408,7 @@ namespace MonoDevelop.Core.Text
 			return new TextSegment (newStartOffset, newEndOffset - newStartOffset);
 		}
 
+		[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 		public static IEnumerable<ISegment> AdjustSegments (this IEnumerable<ISegment> segments, TextChangeEventArgs args)
 		{
 			if (segments == null)

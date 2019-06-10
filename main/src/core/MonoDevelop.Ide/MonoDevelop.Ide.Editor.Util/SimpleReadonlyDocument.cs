@@ -1,4 +1,4 @@
-﻿//
+//
 // SimpleReadonlyDocument.cs
 //
 // Author:
@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Editor.Util
 	/// <summary>
 	/// A simple and fast implementation for a read only text document.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class SimpleReadonlyDocument : IReadonlyTextDocument
 	{
 		readonly ITextSource textSource;

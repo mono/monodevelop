@@ -1,4 +1,4 @@
-﻿//
+//
 // RoslynCompletionData.cs
 //
 // Author:
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			}
 		}
 
-		protected abstract void Format (TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end);
+		protected abstract void Format (Ide.Editor.TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end);
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			else {
 				markup.AppendTaggedText (theme, taggedParts.Take (i));
 				markup.Append ("<span font='");
-				markup.Append (FontService.SansFontName);
+				markup.Append (IdeServices.FontService.SansFontName);
 				markup.Append ("' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();

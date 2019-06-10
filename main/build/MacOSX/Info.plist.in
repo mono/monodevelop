@@ -211,13 +211,15 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.11</string>
+	<string>10.12</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.xamarin.monodevelop</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>@APP_NAME@</string>
+	<key>CFBundleDisplayName</key>
+	<string>@APP_DISPLAY_NAME@</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -275,8 +277,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>Mono64Bit</key>
-	<true/>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>cs</string>

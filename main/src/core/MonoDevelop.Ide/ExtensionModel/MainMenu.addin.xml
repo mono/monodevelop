@@ -65,6 +65,14 @@
 
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+		<ItemSet id="MultipleCarets" _label="_Multiple Carets">
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext"/>
+			<CommandItem id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"/>
+		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 		
 		<SeparatorItem id = "Separator4" />
@@ -101,6 +109,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
 		</Condition>
+		<SeparatorItem id = "Separator6" />
 	</ItemSet>
 	
 	<ItemSet id = "View" _label = "_View">
@@ -264,6 +273,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />-->
+		<SeparatorItem id = "welcomePageSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<SeparatorItem id = "contentSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 		<SeparatorItem id = "windowDocSep" />
@@ -277,8 +288,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument8" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument9" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
-		<SeparatorItem id = "welcomePageSep" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 	</ItemSet> 
 
 	<ItemSet id = "Help" _label = "_Help">

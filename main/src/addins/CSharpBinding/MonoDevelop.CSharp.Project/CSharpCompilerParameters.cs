@@ -1,4 +1,4 @@
-//
+﻿//
 // CSharpCompilerParameters.cs
 //
 // Author:
@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp.Project
@@ -127,16 +128,23 @@ namespace MonoDevelop.CSharp.Project
 		public override CompilationOptions CreateCompilationOptions ()
 		{
 			var project = (CSharpProject)ParentProject;
-			var workspace = Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
+			var workspace = IdeApp.TypeSystemService.GetWorkspace (project.ParentSolution);
 			var metadataReferenceResolver = CreateMetadataReferenceResolver (
 					workspace.Services.GetService<IMetadataService> (),
 					project.BaseDirectory,
 					ParentConfiguration.OutputDirectory
 			);
 
+			bool isLibrary = ParentProject.IsLibraryBasedProjectType;
+			string mainTypeName = project.MainClass;
+			if (isLibrary || mainTypeName == string.Empty) {
+				// empty string is not accepted by Roslyn
+				mainTypeName = null;
+			}
+
 			var options = new CSharpCompilationOptions (
-				OutputKind.ConsoleApplication,
-				mainTypeName: project.MainClass,
+				isLibrary ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
+				mainTypeName: mainTypeName,
 				scriptClassName: "Script",
 				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
 				checkOverflow: GenerateOverflowChecks,
@@ -164,7 +172,7 @@ namespace MonoDevelop.CSharp.Project
 			foreach (var warning in GetSuppressedWarnings ())
 				result [warning] = ReportDiagnostic.Suppress;
 
-			var globalRuleSet = Ide.TypeSystem.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
+			var globalRuleSet = IdeApp.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
 			if (globalRuleSet != null) {
 				foreach (var kv in globalRuleSet.SpecificDiagnosticOptions) {
 					result [kv.Key] = kv.Value;
@@ -219,9 +227,11 @@ namespace MonoDevelop.CSharp.Project
 				return val;
 			}
 			set {
-				if (LangVersion == value) {
-					return;
-				}
+				try {
+					if (LangVersion == value) {
+						return;
+					}
+				} catch (Exception) { }
 
 				langVersion = LanguageVersionToString (value);
 				NotifyChange ();
@@ -397,18 +407,7 @@ namespace MonoDevelop.CSharp.Project
 		#endregion
 
 		internal static string LanguageVersionToString (LanguageVersion value)
-		{
-			switch (value) {
-			case LanguageVersion.Default: return "Default";
-			case LanguageVersion.Latest: return "Latest";
-			case LanguageVersion.CSharp1: return "ISO-1";
-			case LanguageVersion.CSharp2: return "ISO-2";
-			case LanguageVersion.CSharp7_1: return "7.1";
-			case LanguageVersion.CSharp7_2: return "7.2";
-			case LanguageVersion.CSharp7_3: return "7.3";
-			default: return ((int)value).ToString ();
-			}
-		}
+			=> LanguageVersionFacts.ToDisplayString (value);
 
 		void NotifyChange ()
 		{

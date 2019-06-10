@@ -33,12 +33,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Parser
 {
 	sealed class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
-		public override async System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 		{
 			var fileName = options.FileName;
 			var project = options.Project;
@@ -51,40 +52,19 @@ namespace MonoDevelop.CSharp.Parser
 					result.Flags |= ParsedDocumentFlags.NonSerializable;
 			}
 
-			SyntaxTree unit = null;
-
 			if (project != null) {
 				var curDoc = options.RoslynDocument;
 				if (curDoc == null) {
-					var curProject = TypeSystemService.GetCodeAnalysisProject (project);
+					var curProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (project);
 					if (curProject != null) {
-						var documentId = TypeSystemService.GetDocumentId (project, fileName);
-						if (documentId != null)
-							curDoc = curProject.GetDocument (documentId);
+						var documentId = IdeApp.TypeSystemService.GetDocumentId (project, fileName);
+						result.DocumentId = documentId;
 					}
 				}
-				if (curDoc != null) {
-					try {
-						var model = await curDoc.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
-						unit = model.SyntaxTree;
-						result.Ast = model;
-					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (x => x is OperationCanceledException); 
-						return result;
-					} catch (OperationCanceledException) {
-						return result;
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
-					}
-				}
-			}
-
-			if (unit == null) {
+			} else {
 				var compilerArguments = GetCompilerArguments (project);
-				unit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
-			} 
-
-			result.Unit = unit;
+				result.ParsedUnit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
+			}
 
 			DateTime time;
 			try {
@@ -93,7 +73,7 @@ namespace MonoDevelop.CSharp.Parser
 				time = DateTime.UtcNow;
 			}
 			result.LastWriteTimeUtc = time;
-			return result;
+			return Task.FromResult<ParsedDocument> (result);
 		}
 
 		public static CSharpParseOptions GetCompilerArguments (MonoDevelop.Projects.Project project)

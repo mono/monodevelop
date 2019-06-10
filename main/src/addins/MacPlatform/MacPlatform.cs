@@ -1,4 +1,4 @@
-//
+﻿//
 // MacPlatformService.cs
 //
 // Author:
@@ -235,6 +235,55 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		const string FoundationLib = "/System/Library/Frameworks/Foundation.framework/Versions/Current/Foundation";
+
+		delegate void NSUncaughtExceptionHandler (IntPtr exception);
+
+		static readonly NSUncaughtExceptionHandler uncaughtHandler = HandleUncaughtException;
+		static NSUncaughtExceptionHandler oldHandler;
+
+		static void HandleUncaughtException(IntPtr exceptionPtr)
+		{
+			// It's non-null guaranteed by objc.
+			Debug.Assert (exceptionPtr != IntPtr.Zero);
+
+			var nsException = ObjCRuntime.Runtime.GetNSObject<NSException> (exceptionPtr);
+			try {
+				throw new MarshalledObjCException (nsException);
+			} catch (MarshalledObjCException e) {
+				LoggingService.LogFatalError ("Unhandled ObjC Exception", e);
+				// Is there a way to figure out if it's going to crash us? Maybe check MarshalObjectiveCExceptionMode and MarshalManagedExceptionMode?
+			}
+
+			// Invoke the default xamarin.mac one, so if it bubbles up an exception, the caller receives it.
+			oldHandler?.Invoke (exceptionPtr);
+		}
+
+		sealed class MarshalledObjCException : ObjCException
+		{
+			public MarshalledObjCException (NSException exception) : base (exception)
+			{
+				const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetField;
+
+				var trace = new [] { new StackTrace (true), };
+				//// Otherwise exception stacktrace is not gathered.
+				typeof (Exception)
+					.InvokeMember ("captured_traces", flags, null, this, new object [] { trace });
+			}
+		}
+
+		[DllImport (FoundationLib)]
+		static extern void NSSetUncaughtExceptionHandler (NSUncaughtExceptionHandler handler);
+
+		[DllImport (FoundationLib)]
+		static extern NSUncaughtExceptionHandler NSGetUncaughtExceptionHandler ();
+
+		static void RegisterUncaughtExceptionHandler ()
+		{
+			oldHandler = NSGetUncaughtExceptionHandler ();
+			NSSetUncaughtExceptionHandler (uncaughtHandler);
+		}
+
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
@@ -247,6 +296,7 @@ namespace MonoDevelop.MacIntegration
 			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
 			loaded.RegisterBackend<Xwt.Backends.IAlertDialogBackend, ThemedMacAlertDialogBackend> ();
 
+			RegisterUncaughtExceptionHandler ();
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
 			timer.Trace ("Installing App Event Handlers");
@@ -401,10 +451,16 @@ namespace MonoDevelop.MacIntegration
 			return map;
 		}
 
+		string currentCommandMenuPath, currentAppMenuPath;
+
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			if (setupFail)
 				return false;
+
+			// avoid reinitialization of the same menu structure
+			if (initedApp == true && currentCommandMenuPath == commandMenuAddinPath && currentAppMenuPath == appMenuAddinPath)
+				return true;
 
 			try {
 				InitApp (commandManager);
@@ -414,7 +470,6 @@ namespace MonoDevelop.MacIntegration
 				var rootMenu = NSApplication.SharedApplication.MainMenu;
 				if (rootMenu == null) {
 					rootMenu = new NSMenu ();
-					NSApplication.SharedApplication.MainMenu = rootMenu;
 				} else {
 					rootMenu.RemoveAllItems ();
 				}
@@ -424,8 +479,17 @@ namespace MonoDevelop.MacIntegration
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
+					var item = new MDSubMenuItem (commandManager, (CommandEntrySet)ce);
+					rootMenu.AddItem (item);
+					if (ce.CommandId as string == "Help" && item.HasSubmenu && NSApplication.SharedApplication.HelpMenu == null)
+						NSApplication.SharedApplication.HelpMenu = item.Submenu;
 				}
+				// Assign the main menu after loading the items. Otherwise a weird application menu appears.
+				if (NSApplication.SharedApplication.MainMenu == null)
+					NSApplication.SharedApplication.MainMenu = rootMenu;
+
+				currentCommandMenuPath = commandMenuAddinPath;
+				currentAppMenuPath = appMenuAddinPath;
 			} catch (Exception ex) {
 				try {
 					var m = NSApplication.SharedApplication.MainMenu;
@@ -433,6 +497,11 @@ namespace MonoDevelop.MacIntegration
 						m.Dispose ();
 					}
 					NSApplication.SharedApplication.MainMenu = null;
+					m = NSApplication.SharedApplication.HelpMenu;
+					if (m != null) {
+						m.Dispose ();
+					}
+					NSApplication.SharedApplication.HelpMenu = null;
 				} catch {}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
@@ -472,16 +541,18 @@ namespace MonoDevelop.MacIntegration
 
 			initedApp = true;
 
-			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			IdeApp.Initialized += (s, e) => {
+				IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
-				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
-					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
-					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
-					if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
-						win.TabbingMode = NSWindowTabbingMode.Disallowed;
-				};
-			}
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
+					IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
+						var win = GtkQuartz.GetWindow ((Gtk.Window)sender);
+						win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+						if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
+							win.TabbingMode = NSWindowTabbingMode.Disallowed;
+					};
+				}
+			};
 
 			PatchGtkTheme ();
 			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
@@ -620,28 +691,16 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
-					if (Ide.WelcomePage.WelcomePageService.HasWindowImplementation && !(IdeApp.Workbench.RootWindow?.Visible ?? false)) {
-						if (IdeApp.Workbench.RootWindow != null) {
-							IdeApp.Workbench.RootWindow.Visible = false;
-						}
-						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
-
-						e.Handled = true;
-					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
-						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Visible = true;
-
-						IdeApp.Workbench.RootWindow.Present ();
-						e.Handled = true;
-					}
+					e.Handled = true;
+					IdeApp.BringToFront ();
 				};
 
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent
 					GLib.Idle.Add (delegate {
 						Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
-						var trackTTC = IdeApp.StartTimeToCodeLoadTimer ();
-						IdeApp.OpenFiles (e.Documents.Select (
+						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
+						IdeApp.OpenFilesAsync (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal)),
 							null
 						).ContinueWith ((result) => {
@@ -651,7 +710,7 @@ namespace MonoDevelop.MacIntegration
 
 							var firstFile = e.Documents.First ().Key;
 
-							IdeApp.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+							IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
 						});
 						return false;
 					});
@@ -660,10 +719,10 @@ namespace MonoDevelop.MacIntegration
 
 				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
 					GLib.Idle.Add (delegate {
-						var trackTTC = IdeApp.StartTimeToCodeLoadTimer ();
+						var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
-						IdeApp.OpenFiles (e.Urls.Select (url => {
+						IdeApp.OpenFilesAsync (e.Urls.Select (url => {
 							try {
 								var uri = new Uri (url);
 								if (uri.Host != "open")
@@ -690,7 +749,7 @@ namespace MonoDevelop.MacIntegration
 							}
 							var firstFile = e.Urls.First ();
 
-							IdeApp.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+							IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
 						});
 						return false;
 					});
@@ -765,7 +824,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			args.RetVal = true;
 			if (await IdeApp.Workspace.Close ()) {
-				IdeApp.Workbench.RootWindow.Visible = false;
+				IdeApp.Workbench.Hide ();
 			}
 		}
 
@@ -995,12 +1054,71 @@ namespace MonoDevelop.MacIntegration
 
 		public override Window GetParentForModalWindow ()
 		{
-			return NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+			try {
+				var window = NSApplication.SharedApplication.ModalWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.ModalWindow failed", e);
+			}
+			try {
+				var window = NSApplication.SharedApplication.KeyWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.KeyWindow failed", e);
+			}
+			try {
+				var window = NSApplication.SharedApplication.MainWindow;
+				if (window != null)
+					return window;
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Getting SharedApplication.MainWindow failed", e);
+			}
+			return null;
+		}
+
+		bool HasAnyDockWindowFocused ()
+		{
+			foreach (var window in Gtk.Window.ListToplevels ()) {
+				if (!window.HasToplevelFocus) {
+					continue;
+				}
+				if (window is Components.Docking.DockFloatingWindow floatingWindow) {
+					return true;
+				}
+				if (window is IdeWindow ideWindow && ideWindow.Child is Components.Docking.AutoHideBox) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool CheckIfTopWindowIsWorkbench ()
+		{
+			foreach (var window in Gtk.Window.ListToplevels ()) {
+				if (!window.HasToplevelFocus) {
+					continue;
+				}
+				if (window is DefaultWorkbench) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public override Window GetFocusedTopLevelWindow ()
 		{
-			return NSApplication.SharedApplication.KeyWindow;
+			if (NSApplication.SharedApplication.KeyWindow != null) {
+				if (IdeApp.Workbench?.RootWindow?.Visible == true) {
+					//if is a docking window then return the current root window
+					if (CheckIfTopWindowIsWorkbench () || HasAnyDockWindowFocused ()) {
+						return MessageService.RootWindow;
+					}
+				}
+				return NSApplication.SharedApplication.KeyWindow;
+			}
+			return null;
 		}
 
 		public override void FocusWindow (Window window)
@@ -1139,12 +1257,8 @@ namespace MonoDevelop.MacIntegration
 			if (NSApplication.SharedApplication.ModalWindow != null)
 				return true;
 
-			var toplevels = GtkQuartz.GetToplevels ();
-
-			// Check GtkWindow's Modal flag or for a visible NSPanel
-			var ret = toplevels
-				.Where (x => !x.Key.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal))
-				.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible));
+			var toplevels = Gtk.Window.ListToplevels ();
+			var ret = toplevels.Any (w => w.Modal && w.Visible && GtkQuartz.GetWindow (w)?.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal) != true);
 
 			return ret;
 		}
@@ -1167,7 +1281,7 @@ namespace MonoDevelop.MacIntegration
 			y += GetTitleBarHeight (w);
 			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
 			var r = w.FrameRectFor (dr);
-			w.SetFrame (r, true);
+
 			base.PlaceWindow (window, x, y, width, height);
 		}
 
@@ -1222,7 +1336,7 @@ namespace MonoDevelop.MacIntegration
 				Arguments = "--start-app-bundle",
 			};
 
-			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			var recentWorkspace = reopen ? IdeServices.DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
 			if (!string.IsNullOrEmpty (recentWorkspace))
 				psi.Arguments += " " + recentWorkspace;
 
@@ -1244,7 +1358,7 @@ namespace MonoDevelop.MacIntegration
 
 			public MacMemoryMonitor ()
 			{
-				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
+				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.MainQueue);
 				DispatchSource.SetEventHandler (() => {
 					var metadata = CreateMemoryMetadata (DispatchSource.PressureFlags);
 

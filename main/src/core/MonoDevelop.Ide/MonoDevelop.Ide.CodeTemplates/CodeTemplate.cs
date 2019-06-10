@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeTemplate.cs
 //
 // Author:
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						continue;
 
 					// '-' because CSS property names templates include them
-					if (c == '-' && DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
+					if (c == '-' && IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
 						continue;
 
 					break;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			int start  = FindPrevWordStart (editor, offset);
 
 			// HTML snippets include the opening '<', so ensure that we remove the old one if present
-			if (start > 0 && '<' == editor.GetCharAt(start - 1) && DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
+			if (start > 0 && '<' == editor.GetCharAt(start - 1) && IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
 				start -= 1;
 
 			editor.RemoveText (start, offset - start);
@@ -444,7 +444,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 		public void Insert (MonoDevelop.Ide.Gui.Document document)
 		{
-			Insert (document.Editor, document);
+			Insert (document.Editor, document.DocumentContext);
 		}
 
 		public void Insert (TextEditor editor, DocumentContext context)
@@ -517,14 +517,30 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
 				int endOffset = template.InsertPosition + template.Code.Length;
 				var oldVersion = data.Version;
-				prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (template.InsertPosition, editor.CaretOffset));
-				if (editor.CaretOffset < endOffset)
-					prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (editor.CaretOffset, endOffset));
-				
+
+				try {
+					prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (template.InsertPosition, editor.CaretOffset));
+					endOffset = oldVersion.MoveOffsetTo (data.Version, endOffset);
+					if (editor.CaretOffset < endOffset)
+						prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (editor.CaretOffset, endOffset));
+				} catch (Exception e) {
+					LoggingService.LogInternalError (e);
+				}
 				foreach (var textLink in template.TextLinks) {
 					for (int i = 0; i < textLink.Links.Count; i++) {
 						var segment = textLink.Links [i];
-						var translatedOffset = oldVersion.MoveOffsetTo (data.Version, template.InsertPosition + segment.Offset) - template.InsertPosition;
+						var translatedOffset = segment.Offset;
+						foreach (var args in oldVersion.GetChangesTo (data.Version)) {
+							foreach (var change in args.TextChanges) {
+								if (change.Offset > template.InsertPosition + segment.Offset)
+									break;
+								if (change.Offset + change.RemovalLength < template.InsertPosition + segment.Offset) {
+									translatedOffset += change.InsertionLength - change.RemovalLength;
+								} else {
+									translatedOffset += GetDeltaInsideChange (change.InsertedText, change.RemovedText, template.InsertPosition + segment.Offset - change.Offset);
+								}
+							}
+						}
 						textLink.Links [i] = new TextSegment (translatedOffset, segment.Length);
 					}
 				}
@@ -532,11 +548,34 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return template;
 		}
 
+		static int GetDeltaInsideChange (ITextSource insertedText, ITextSource removedText, int offset)
+		{
+			int i = 0;
+			int j = 0;
+			while (i < offset) {
+				if (insertedText [i] == removedText [j]) {
+					i++;
+					j++;
+					continue;
+				}
+				if (char.IsWhiteSpace (removedText [j])) {
+					j++;
+					continue;
+				}
+				if (char.IsWhiteSpace (insertedText [i])) {
+					i++;
+					continue;
+				}
+				break;
+			}
+			return i - j;
+		}
+
 		public TemplateResult InsertTemplateContents (Document document)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			return InsertTemplateContents (document.Editor, document);
+			return InsertTemplateContents (document.Editor, document.DocumentContext);
 		}
 #region I/O
 		public const string Node        = "CodeTemplate";

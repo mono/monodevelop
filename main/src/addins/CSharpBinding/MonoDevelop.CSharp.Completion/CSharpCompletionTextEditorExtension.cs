@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Completion
 		public CSharpFormattingPolicy FormattingPolicy {
 			get {
 				if (policy == null) {
-					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+					IEnumerable<string> types = MonoDevelop.Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 					policy = DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
 				}
 				return policy;
@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Completion
 		/// Used in testing environment.
 		/// </summary>
 		[System.ComponentModel.Browsable (false)]
-		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc, bool addEventHandlersInInitialization = true)
+		public CSharpCompletionTextEditorExtension (Ide.Gui.RoslynDocumentContext doc, bool addEventHandlersInInitialization = true)
 		{
 			this.addEventHandlersInInitialization = addEventHandlersInInitialization;
 			Initialize (doc.Editor, doc);
@@ -280,7 +280,10 @@ namespace MonoDevelop.CSharp.Completion
 					syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 					return;
 
-				var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
+				var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (
+					position,
+					syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken).GetPreviousTokenIfTouchingWord (position),
+					cancellationToken);
 				ITypeSymbol extensionMethodReceiverType = null;
 
 				if (extensionMethodImport) {
@@ -700,7 +703,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		internal static Lazy<ImmutableArray<ISignatureHelpProvider>> signatureProviders = new Lazy<ImmutableArray<ISignatureHelpProvider>> (() => {
-			var workspace = TypeSystemService.Workspace;
+			var workspace = IdeApp.TypeSystemService.Workspace;
 			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
 			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
 				.FilterToSpecificLanguage (LanguageNames.CSharp);

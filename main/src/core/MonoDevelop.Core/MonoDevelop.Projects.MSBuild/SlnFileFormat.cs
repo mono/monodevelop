@@ -381,7 +381,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
 					projectLoadMonitor.CurrentSolution = sol;
-				await Task.Factory.StartNew (() => {
+				await Task.Run (() => {
 					sol.ReadSolution (monitor);
 				});
 			} catch (Exception ex) {
@@ -492,14 +492,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 						string unsupportedMessage = e.Message;
 
-						if (e is UserException) {
-							var ex = (UserException) e;
+						switch (e) {
+						case UserException ex:
 							LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
+
 							monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
-						} else {
+							break;
+
+						case UnknownSolutionItemTypeException ux:
+							LoggingService.LogError ("{0}: {1}", ux.Message, projectPath);
+							break;
+
+						default:
 							LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
 							monitor.ReportWarning (GettextCatalog.GetString (
 								"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
+							break;
 						}
 
 						SolutionItem uitem;

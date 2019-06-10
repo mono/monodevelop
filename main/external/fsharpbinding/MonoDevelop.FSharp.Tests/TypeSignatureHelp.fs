@@ -1,9 +1,11 @@
 ﻿namespace MonoDevelopTests
 open NUnit.Framework
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.MonoDevelop
 open FsUnit
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 module TypeSignatureHelp =
@@ -28,6 +30,10 @@ module TypeSignatureHelp =
             | Some (tooltip, _) ->
                 signatureHelp.extractSignature tooltip (isFSharp symbolUse')
         | None -> failwith "No symbol found at location"
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     [<Test>]
     let ``Function signature without parameters``() =

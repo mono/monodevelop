@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,6 +10,10 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <!--
+    This needs to be ported to the new editor, and currently makes use of many, many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -26,6 +31,7 @@
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Xml.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
@@ -35,24 +41,17 @@
     <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
       <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
       <Name>IdeUnitTests</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\tests\UnitTests\UnitTests.csproj">
       <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
       <Name>UnitTests</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parser\ActiveElementStartPathTestFixture.cs" />
@@ -124,12 +123,6 @@
     <EmbeddedResource Include="..\..\AspNet\Html\Schemas\xhtml1-strict.xsd">
       <Link>Resources\xhtml1-strict.xsd</Link>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CodeCompletion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

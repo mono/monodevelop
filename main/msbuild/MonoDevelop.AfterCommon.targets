@@ -5,4 +5,32 @@
 	</PropertyGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)\GenerateInternalsVisibleTo.targets" />
+	<Import Project="$(MSBuildThisFileDirectory)\MDBuildTasks.targets" />
+
+
+	<!--
+	Disable transitive project references in SDK style projects.
+
+	Right now, if project B has a private (i.e. the default) project reference to project A
+	and project project C has a *non-private* ref to project B, project C will transitively
+	get a *private ref* to project A.
+
+	This seems very wrong, and is very much NOT what we want.
+
+	Extensions reference each other with non-private refs so we only get one copy of
+	each dll in the app. This breaks that.
+
+	Setting PrivateAssets="runtime,contentFiles" on the private reference does NOT
+	fix it, hence this horrible hack.
+
+	https://github.com/dotnet/sdk/issues/1366
+
+	-->
+	<Target Name="_MakeTransitiveProjectRefsNonPrivate" AfterTargets="IncludeTransitiveProjectReferences">
+		<ItemGroup>
+			<!-- remove the transitive project references and re-add them as non-private project references -->
+			<ProjectReference Remove="@(_TransitiveProjectReferences)" />
+			<ProjectReference Include="@(_TransitiveProjectReferences)" Private="False" />
+		</ItemGroup>
+	</Target>
 </Project>

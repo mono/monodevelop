@@ -67,6 +67,8 @@ namespace MonoDevelop.Core
 
 		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
 
+		static TraceListener assertLogger;
+
 		static LoggingService ()
 		{
 			var consoleLogger = new ConsoleLogger ();
@@ -112,7 +114,8 @@ namespace MonoDevelop.Core
 			Debug.Listeners.Clear ();
 
 			//add a new listener that just logs failed asserts
-			Debug.Listeners.Add (new AssertLoggingTraceListener ());
+			assertLogger = new AssertLoggingTraceListener ();
+			Debug.Listeners.Add (assertLogger);
 		}
 
 		public static bool? ReportCrashes {
@@ -185,6 +188,7 @@ namespace MonoDevelop.Core
 		
 		public static void Shutdown ()
 		{
+			Debug.Listeners.Remove (assertLogger);
 			RestoreOutputRedirection ();
 		}
 
@@ -220,23 +224,25 @@ namespace MonoDevelop.Core
 
 				reporting = true;
 
-				var oldReportCrashes = ReportCrashes;
+				if (UnhandledErrorOccurred != null) {
+					var oldReportCrashes = ReportCrashes;
 
-				if (UnhandledErrorOccurred != null && !silently)
-					ReportCrashes = UnhandledErrorOccurred (ReportCrashes, ex, willShutDown);
+					if (!silently)
+						ReportCrashes = UnhandledErrorOccurred.Invoke (ReportCrashes, ex, willShutDown);
 
-				// If crash reporting has been explicitly disabled, disregard this crash
-				if (ReportCrashes.HasValue && !ReportCrashes.Value)
-					return;
+					//ensure we don't lose the setting
+					if (ReportCrashes != oldReportCrashes) {
+						PropertyService.SaveProperties ();
+					}
+
+					// If crash reporting has been explicitly disabled, disregard this crash
+					if (ReportCrashes.HasValue && !ReportCrashes.Value)
+						return;
+				}
 
 				lock (customCrashReporters) {
 					foreach (var cr in customCrashReporters.Concat (AddinManager.GetExtensionObjects<CrashReporter> (true)))
 						cr.ReportCrash (ex, willShutDown, tags);
-				}
-
-				//ensure we don't lose the setting
-				if (ReportCrashes != oldReportCrashes) {
-					PropertyService.SaveProperties ();
 				}
 
 			} catch {

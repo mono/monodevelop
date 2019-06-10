@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DropDownBoxListWindow.cs
 //  
 // Author:
@@ -92,6 +92,8 @@ namespace MonoDevelop.Components
 				var sel = list.Selection;
 				if (sel >= 0 && sel < DataProvider.IconCount) {
 					DataProvider.ActivateItem (sel);
+					// This is so parent window of dropdown regains focus
+					TransientFor.Present ();
 					Destroy ();
 				}
 			};
@@ -601,7 +603,7 @@ namespace MonoDevelop.Components
 					layout.Dispose ();
 				layout = new Pango.Layout (PangoContext);
 				layout.Wrap = Pango.WrapMode.Char;
-				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+				layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 				CalcRowHeight ();
 				CalcVisibleRows ();
 			}

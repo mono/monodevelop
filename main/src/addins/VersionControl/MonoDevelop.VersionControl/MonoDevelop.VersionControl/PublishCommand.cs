@@ -97,6 +97,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					vc.Publish (moduleName, path, files, message, Monitor);
 				} catch (VersionControlException e) {
+					LoggingService.LogError ("Publish operation failed", e);
 					Monitor.ReportError (e.Message, null);
 					return;
 				}

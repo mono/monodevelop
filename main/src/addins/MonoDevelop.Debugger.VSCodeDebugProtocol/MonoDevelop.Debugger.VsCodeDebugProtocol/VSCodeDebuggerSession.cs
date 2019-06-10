@@ -1,4 +1,4 @@
-﻿//
+//
 // VSCodeDebuggerSession.cs
 //
 // Author:
@@ -100,24 +100,61 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return threads;
 		}
 
+		public override bool CanSetNextStatement {
+			get { return true; }
+		}
+
+		protected override void OnSetNextStatement (long threadId, string fileName, int line, int column)
+		{
+			var source = new Source { Name = Path.GetFileName (fileName), Path = fileName };
+			var request = new GotoTargetsRequest (source, line) { Column = column };
+			var response = protocolClient.SendRequestSync (request);
+			GotoTarget target = null;
+
+			foreach (var location in response.Targets) {
+				if (location.Line <= line && location.EndLine >= line && location.Column <= column && location.EndColumn >= column) {
+					// exact match for location
+					target = location;
+					break;
+				}
+
+				if (target == null) {
+					// closest match so far...
+					target = location;
+				}
+			}
+
+			if (target == null)
+				throw new NotImplementedException ();
+
+			protocolClient.SendRequestSync (new GotoRequest ((int) threadId, target.Id));
+			RaiseStopEvent ();
+		}
+
 		Dictionary<BreakEvent, BreakEventInfo> breakpoints = new Dictionary<BreakEvent, BreakEventInfo> ();
 
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent breakEvent)
 		{
-			if (breakEvent is Mono.Debugging.Client.Breakpoint) {
-				var breakEventInfo = new BreakEventInfo ();
-				breakpoints.Add ((Mono.Debugging.Client.Breakpoint)breakEvent, breakEventInfo);
-				UpdateBreakpoints ();
+			BreakEventInfo breakEventInfo;
+
+			if (breakpoints.TryGetValue (breakEvent, out breakEventInfo))
 				return breakEventInfo;
+
+			breakEventInfo = new BreakEventInfo ();
+
+			if (breakEvent is Mono.Debugging.Client.Breakpoint) {
+				breakpoints.Add (breakEvent, breakEventInfo);
+				UpdateBreakpoints ();
 			} else if (breakEvent is Catchpoint) {
-				var catchpoint = (Catchpoint)breakEvent;
-				var breakEventInfo = new BreakEventInfo ();
 				breakpoints.Add (breakEvent, breakEventInfo);
 				UpdateExceptions ();
-				return breakEventInfo;
+			} else {
+				throw new NotImplementedException (breakEvent.GetType ().FullName);
 			}
-			throw new NotImplementedException (breakEvent.GetType ().FullName);
+
+			return breakEventInfo;
 		}
+
 		bool currentExceptionState = false;
 		void UpdateExceptions ()
 		{
@@ -136,7 +173,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnNextInstruction ()
 		{
-			protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
 		}
 
 		protected override void OnNextLine ()
@@ -267,7 +304,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				if (j == -1)
 					break;
 				string se = exp.Substring(i + 1, j - i - 1);
-				se = protocolClient.SendRequestSync(new EvaluateRequest(se, frameId)).Result;
+				se = protocolClient.SendRequestSync(new EvaluateRequest (se) { FrameId = frameId }).Result;
 				sb.Append(exp, last, i - last);
 				sb.Append(se);
 				last = j + 1;
@@ -275,6 +312,39 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			}
 			sb.Append(exp, last, exp.Length - last);
 			return sb.ToString();
+		}
+
+		bool? EvaluateCondition (int frameId, string exp)
+		{
+			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
+
+			if (bool.TryParse (response, out var result))
+				return result;
+
+			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{exp}'. The error returned was '{response}'.\n");
+
+			return null;
+		}
+
+		bool ShouldStopOnExceptionCatchpoint (Catchpoint catchpoint, int frameId)
+		{
+			if (!catchpoint.Enabled)
+				return false;
+
+			// global:: is necessary if the exception type is contained in current namespace,
+			// and it also contains a class with the same name as the namespace itself.
+			// Example: "Tests.Tests" and "Tests.TestException"
+			var qualifiedExceptionType = catchpoint.ExceptionName.Contains ("::") ? catchpoint.ExceptionName : $"global::{catchpoint.ExceptionName}";
+
+			if (catchpoint.IncludeSubclasses) {
+				if (EvaluateCondition (frameId, $"$exception is {qualifiedExceptionType}") == false)
+					return false;
+			} else {
+				if (EvaluateCondition (frameId, $"$exception.GetType() == typeof({qualifiedExceptionType})") == false)
+					return false;
+			}
+
+			return string.IsNullOrWhiteSpace (catchpoint.ConditionExpression) || EvaluateCondition (frameId, catchpoint.ConditionExpression) != false;
 		}
 
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
@@ -314,6 +384,30 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetStopped);
 						break;
 					case StoppedEvent.ReasonValue.Exception:
+						stackFrame = null;
+						var backtrace = GetThreadBacktrace (body.ThreadId ?? -1);
+						if (Options.ProjectAssembliesOnly) {
+							// We can't evaluate expressions in external code frames, the debugger will hang
+							for (int i = 0; i < backtrace.FrameCount; i++) {
+								var frame = stackFrame = (VsCodeStackFrame)backtrace.GetFrame (i);
+								if (!frame.IsExternalCode) {
+									stackFrame = frame;
+									break;
+								}
+							}
+							if (stackFrame == null) {
+								OnContinue ();
+								return;
+							}
+						} else {
+							// It's OK to evaluate expressions in external code
+							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
+						}
+
+						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
+							OnContinue ();
+							return;
+						}
 						args = new TargetEventArgs (TargetEventType.ExceptionThrown);
 						break;
 					default:
@@ -366,29 +460,56 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		List<string> pathsWithBreakpoints = new List<string> ();
 
+		static readonly Dictionary<HitCountMode, string> conditions = new Dictionary<HitCountMode, string> {
+			{ HitCountMode.EqualTo, "=" },
+			{ HitCountMode.GreaterThan, ">" },
+			{ HitCountMode.GreaterThanOrEqualTo, ">=" },
+			{ HitCountMode.LessThan, "<" },
+			{ HitCountMode.LessThanOrEqualTo, "<=" },
+			{ HitCountMode.MultipleOf, "%" }};
+
+		string GetHitCondition (Mono.Debugging.Client.Breakpoint breakpoint)
+		{
+			if (breakpoint.HitCountMode == HitCountMode.None)
+				return null;
+
+			return conditions [breakpoint.HitCountMode] + breakpoint.HitCount;
+		}
+
 		void UpdateBreakpoints ()
 		{
-			//Disposed
-			if (protocolClient == null)
-				return;
-
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled && !string.IsNullOrEmpty (b.FileName)).GroupBy (b => b.FileName).ToArray ();
 			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
 			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
 
-			foreach (var path in filesForRemoval)
-				protocolClient.SendRequest (new SetBreakpointsRequest (new Source (Path.GetFileName (path), path), new List<SourceBreakpoint> ()), null);
+			foreach (var path in filesForRemoval) {
+				//Disposed
+				if (protocolClient == null)
+					return;
+
+				protocolClient.SendRequest (
+						new SetBreakpointsRequest (
+							new Source { Name = Path.GetFileName (path), Path = path }) {
+							Breakpoints = new List<SourceBreakpoint> ()
+						},
+						null);
+			}
 
 			foreach (var sourceFile in bks) {
-				var source = new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key);
-				protocolClient.SendRequest (new SetBreakpointsRequest (
-					source,
-					sourceFile.Select (b => new SourceBreakpoint {
-						Line = b.OriginalLine,
-						Column = b.OriginalColumn,
-						Condition = b.ConditionExpression
-						//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
-					}).ToList ()), (obj) => {
+				var source = new Source { Name = Path.GetFileName (sourceFile.Key), Path = sourceFile.Key };
+				//Disposed
+				if (protocolClient == null)
+					return;
+
+				protocolClient.SendRequest (
+					new SetBreakpointsRequest (source) {
+						Breakpoints = sourceFile.Select (b => new SourceBreakpoint {
+							Line = b.OriginalLine,
+							Column = b.OriginalColumn,
+							Condition = b.ConditionExpression,
+							HitCondition = GetHitCondition(b)
+						}).ToList ()
+					}, (obj) => {
 						Task.Run (() => {
 							for (int i = 0; i < obj.Breakpoints.Count; i++) {
 								breakpoints [sourceFile.ElementAt (i)].SetStatus (obj.Breakpoints [i].Line != -1 ? BreakEventStatus.Bound : BreakEventStatus.NotBound, "");
@@ -398,6 +519,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						});
 					});
 			}
+
+			//Disposed
+			if (protocolClient == null)
+				return;
 
 			//Notice that .NET Core adapter doesn't support Functions breakpoints yet: https://github.com/OmniSharp/omnisharp-vscode/issues/295
 			protocolClient.SendRequest (

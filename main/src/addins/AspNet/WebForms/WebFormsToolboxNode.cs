@@ -89,9 +89,9 @@ namespace MonoDevelop.AspNet.WebForms
 			return code;
 		}
 		
-		void RegisterReference (MonoDevelop.Projects.Project project)
+		void RegisterReference (MonoDevelop.Projects.DotNetProject project)
 		{
-			var dnp = (MonoDevelop.Projects.DotNetProject) project;
+			var dnp = project;
 			var pr = base.Type.GetProjectReference ();
 			
 			//add the reference if it doesn't match an existing one
@@ -121,7 +121,7 @@ namespace MonoDevelop.AspNet.WebForms
 			
 			//register the assembly and look up the class
 			//FIXME: only do this on the insert, not the preview - or remove it afterwards
-			RegisterReference (document.Project);
+			RegisterReference ((MonoDevelop.Projects.DotNetProject) document.Owner);
 			
 			var database = document.GetCompilationAsync ().Result;
 			
@@ -129,7 +129,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (cls == null)
 				return tag;
 
-			var ed = document.GetContent<WebFormsEditorExtension> ();
+			var ed = document.GetContent<WebFormsEditorExtension> (true);
 			if (ed == null)
 				return tag;
 
@@ -166,7 +166,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			
 			var clrVersion = ClrVersion.Net_2_0;
-			var aspProj = document.Project as DotNetProject;
+			var aspProj = document.Owner as DotNetProject;
 			if (aspProj != null && aspProj.TargetFramework.ClrVersion != ClrVersion.Default)
 				clrVersion = aspProj.TargetFramework.ClrVersion;
 			

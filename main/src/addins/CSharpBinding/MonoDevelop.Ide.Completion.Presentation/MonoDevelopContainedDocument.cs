@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -77,7 +78,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			DataBuffer = dataBuffer;
 			ContainedLanguageHost = containedLanguageHost;
 
-			_differenceSelectorService = CompositionManager.GetExportedValue<ITextDifferencingSelectorService> ();
+			_differenceSelectorService = CompositionManager.Instance.GetExportedValue<ITextDifferencingSelectorService> ();
 
 			var container = languageBuffer.CurrentSnapshot.AsText ().Container;
 			var registration = Workspace.GetWorkspaceRegistration (container);
@@ -597,11 +598,11 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			}
 
 			var originalText = document.GetTextAsync (CancellationToken.None).WaitAndGetResult (CancellationToken.None);
-			Contract.Requires (object.ReferenceEquals (originalText, snapshot.AsText ()));
+			Debug.Assert (object.ReferenceEquals (originalText, snapshot.AsText ()));
 
 			var root = document.GetSyntaxRootSynchronously (CancellationToken.None);
 
-			var editorOptionsFactory = CompositionManager.GetExportedValue<IEditorOptionsFactoryService> ();
+			var editorOptionsFactory = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService> ();
 			var editorOptions = editorOptionsFactory.GetOptions (DataBuffer);
 			var options = _workspace.Options
 										.WithChangedOption (FormattingOptions.NewLine, root.Language, editorOptions.GetNewLineCharacter ())
@@ -627,11 +628,11 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		}
 
 		private void AdjustIndentationForSpan (
-			Document document, ITextEdit edit, TextSpan visibleSpan, IFormattingRule baseIndentationRule, OptionSet options)
+			Document document, ITextEdit edit, TextSpan visibleSpan, AbstractFormattingRule baseIndentationRule, OptionSet options)
 		{
 			var root = document.GetSyntaxRootSynchronously (CancellationToken.None);
 
-			using (var rulePool = SharedPools.Default<List<IFormattingRule>> ().GetPooledObject ())
+			using (var rulePool = SharedPools.Default<List<AbstractFormattingRule>> ().GetPooledObject ())
 			using (var spanPool = SharedPools.Default<List<TextSpan>> ().GetPooledObject ()) {
 				var venusFormattingRules = rulePool.Object;
 				var visibleSpans = spanPool.Object;
@@ -708,7 +709,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		private int GetBaseIndentation (SyntaxNode root, SourceText text, TextSpan span)
 		{
 			// Is this right?  We should probably get this from the IVsContainedLanguageHost instead.
-			var editorOptionsFactory = CompositionManager.GetExportedValue<IEditorOptionsFactoryService> ();
+			var editorOptionsFactory = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService> ();
 			var editorOptions = editorOptionsFactory.GetOptions (DataBuffer);
 
 			var additionalIndentation = GetAdditionalIndentation (root, text, span);

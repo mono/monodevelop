@@ -90,7 +90,12 @@ namespace MonoDevelop.Core.Assemblies
 				throw new ArgumentNullException (nameof (assemblyPath));
 
 			if (TryReadPEHeaders (assemblyPath, out var peKind, out var machine)) {
-				if ((peKind & (PortableExecutableKinds.Preferred32Bit | PortableExecutableKinds.Required32Bit)) != 0)
+				if ((peKind & PortableExecutableKinds.Preferred32Bit) != 0) {
+					// macOS has deprecated 32bit applications, so maintain running in 32bit for non-Mac platforms.
+					return Platform.IsMac ? ProcessExecutionArchitecture.X64 : ProcessExecutionArchitecture.X86;
+				}
+
+				if ((peKind & PortableExecutableKinds.Required32Bit) != 0)
 					return ProcessExecutionArchitecture.X86;
 
 				if ((peKind & PortableExecutableKinds.PE32Plus) != 0 || Is64BitPE (machine))

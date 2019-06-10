@@ -1,7 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
+
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+
 using Mono.Debugging.Client;
+
+using VsStackFrame = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame;
 using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
@@ -10,15 +14,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 	{
 		public static VsFormat GetStackFrameFormat (EvaluationOptions evalOptions)
 		{
-			return new VsFormat (
-				evalOptions.StackFrameFormat.ParameterTypes ||
-				evalOptions.StackFrameFormat.ParameterNames ||
-				evalOptions.StackFrameFormat.ParameterValues,
-				evalOptions.StackFrameFormat.ParameterTypes,
-				evalOptions.StackFrameFormat.ParameterNames,
-				evalOptions.StackFrameFormat.ParameterValues,
-				evalOptions.StackFrameFormat.Line,
-				evalOptions.StackFrameFormat.Module);
+			return new VsFormat {
+				Parameters = evalOptions.StackFrameFormat.ParameterTypes || evalOptions.StackFrameFormat.ParameterNames || evalOptions.StackFrameFormat.ParameterValues,
+				ParameterTypes = evalOptions.StackFrameFormat.ParameterTypes,
+				ParameterNames = evalOptions.StackFrameFormat.ParameterNames,
+				ParameterValues = evalOptions.StackFrameFormat.ParameterValues,
+				Line = evalOptions.StackFrameFormat.Line,
+				Module = evalOptions.StackFrameFormat.Module
+			};
 		}
 
 		static string GetLanguage (string path)
@@ -34,14 +37,19 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
+		static SourceLocation GetSourceLocation (VsStackFrame frame)
+		{
+			return new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source));
+		}
+
 		VsFormat format;
 		readonly int threadId;
 		readonly int frameIndex;
 		internal readonly int frameId;
 		string fullStackframeText;
 
-		public VsCodeStackFrame (VsFormat format, int threadId, int frameIndex, Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame frame)
-			: base (0, new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source)), GetLanguage (frame.Source?.Path))
+		public VsCodeStackFrame (VsFormat format, int threadId, int frameIndex, VsStackFrame frame)
+			: base (0, GetSourceLocation (frame), GetLanguage (frame.Source?.Path))
 		{
 			this.format = format;
 			this.threadId = threadId;
@@ -83,7 +91,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					currentFormat.ParameterTypes != format.ParameterTypes ||
 					currentFormat.ParameterValues != format.ParameterValues) {
 					format = currentFormat;
-					var body = ((VSCodeDebuggerSession)DebuggerSession).protocolClient.SendRequestSync (new StackTraceRequest (threadId, frameIndex, 1, currentFormat));
+					var body = ((VSCodeDebuggerSession)DebuggerSession).protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = frameIndex, Levels = 1, Format = currentFormat });
 					fullStackframeText = body.StackFrames [0].Name;
 				}
 				return fullStackframeText;

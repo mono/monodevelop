@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GenerateCodeWindow.cs
 //  
 // Author:
@@ -138,7 +138,7 @@ namespace MonoDevelop.CodeGeneration
 			GetSize (out w, out h);
 			
 			int myMonitor = Screen.GetMonitorAtPoint (x, y);
-			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, myMonitor);
+			Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, myMonitor);
 
 			if (x + w > geometry.Right)
 				x = (int)geometry.Right - w;
@@ -178,7 +178,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public static void ShowIfValid (TextEditor editor, DocumentContext context, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public static void ShowIfValid (Ide.Editor.TextEditor editor, DocumentContext context, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
 			var options = CodeGenerationOptions.CreateCodeGenerationOptions (editor, context);
 			

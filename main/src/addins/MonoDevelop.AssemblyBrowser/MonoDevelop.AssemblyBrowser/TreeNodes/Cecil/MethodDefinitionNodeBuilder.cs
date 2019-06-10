@@ -1,4 +1,4 @@
-//
+﻿//
 // DomMethodNodeBuilder.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
@@ -39,21 +40,18 @@ using ICSharpCode.Decompiler.CSharp.TypeSystem;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.ILSpy;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class MethodDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(MethodDefinition); }
+			get { return typeof(IMethod); }
 		}
 		
 		public MethodDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -62,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var method = (MethodDefinition)dataObject;
+			var method = (IMethod)dataObject;
 			if (method.IsConstructor)
 				return method.DeclaringType.Name;
 			return method.Name;
@@ -75,73 +73,24 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var method = (MethodDefinition)dataObject;
+			var method = (IMethod)dataObject;
 
 			var ambience = new CSharpAmbience ();
-			try {
-				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (GetText (method));
-			} catch (Exception) {
-				nodeInfo.Label = method.Name;
-			}
+			nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (method.GetDisplayString ());
 
-			if (method.IsPrivate || method.IsAssembly)
+			if (method.IsPrivate ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon (method));
 		}
 
-		public static IconId GetStockIcon (MethodDefinition method)
+		public static IconId GetStockIcon (IMethod method)
 		{
-			var isStatic = (method.Attributes & MethodAttributes.Static) != 0;
-			var global = isStatic ? "static-" : "";
-			return "md-" + GetAccess (method.Attributes) + global + "method";
+			var global = method.IsStatic ? "static-" : "";
+			return "md-" + method.Accessibility.GetStockIcon () + global + "method";
 		}
 
-		internal static string GetAccess (MethodAttributes attributes)
-		{
-			switch (attributes & MethodAttributes.MemberAccessMask) {
-			case MethodAttributes.Private:
-				return "private-";
-			case MethodAttributes.Public:
-				return "";
-			case MethodAttributes.Family:
-				return "protected-";
-			case MethodAttributes.Assembly:
-				return "internal-";
-			case MethodAttributes.FamORAssem:
-			case MethodAttributes.FamANDAssem:
-				return "ProtectedOrInternal-";
-			default:
-				return "";
-			}
-		}
 
-		public static string GetText (MethodDefinition method)
-		{
-			var b = StringBuilderCache.Allocate ();
-			try {
-				b.Append ('(');
-				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (i > 0)
-						b.Append (", ");
-					b.Append (CSharpLanguage.Instance.TypeToString (method.Parameters [i].ParameterType, false, method.Parameters [i]));
-				}
-				if (method.CallingConvention == MethodCallingConvention.VarArg) {
-					if (method.HasParameters)
-						b.Append (", ");
-					b.Append ("...");
-				}
-				if (method.IsConstructor) {
-					b.Append (')');
-				} else {
-					b.Append (") : ");
-					b.Append (CSharpLanguage.Instance.TypeToString (method.ReturnType, false, method.MethodReturnType));
-				}
-				return CSharpLanguage.Instance.FormatMethodName (method) + b;
-			} finally {
-				StringBuilderCache.Free (b);
-			}
-		}
 
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
@@ -152,11 +101,6 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			result.Append (GettextCatalog.GetString ("<b>Declaring Type:</b>\t{0}", type.FullName));
 			result.AppendLine ();
-		}
-		
-		static string GetInstructionOffset (Instruction instruction)
-		{
-			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
 		public static AssemblyLoader GetAssemblyLoader (ITreeNavigator navigator)
@@ -172,36 +116,46 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public static DecompilerSettings GetDecompilerSettings (TextEditor data, bool publicOnly = false)
 		{
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
+			var types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = TypeDefinitionNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
+
 			return settings;
 		}
 
 
-		public static List<ReferenceSegment> Decompile (TextEditor data, AssemblyLoader assemblyLoader, Func<CSharpDecompiler, SyntaxTree> decompile, DecompilerSettings settings = null, DecompileFlags flags = null)
+		public static Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, AssemblyLoader assemblyLoader, Func<CSharpDecompiler, SyntaxTree> decompile, DecompilerSettings settings = null, DecompileFlags flags = null)
 		{
-			settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
-			var csharpDecompiler = assemblyLoader.CSharpDecompiler;
-			try
-			{
-				var syntaxTree = decompile(csharpDecompiler);
-				if (!flags.MethodBodies) {
-					MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
-				}
+			if (data == null) 
+				throw new ArgumentNullException (nameof (data));
+			if (assemblyLoader == null) 
+				throw new ArgumentNullException (nameof (assemblyLoader));
 
-				var output = new ColoredCSharpFormatter(data);
-				TokenWriter tokenWriter = new TextTokenWriter(output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
-				var formattingPolicy = settings.CSharpFormattingOptions;
-				syntaxTree.AcceptVisitor(new CSharpOutputVisitor(tokenWriter, formattingPolicy));
-				output.SetDocumentData();
-				return output.ReferencedSegments;
-			}
-			catch (Exception e)
-			{
-				data.InsertText(data.Length, "/* decompilation failed: \n" + e + " */");
-			}
-			return null;
+			return Task.Run (async delegate {
+				settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
+				var csharpDecompiler = assemblyLoader.CSharpDecompiler;
+				try {
+					var syntaxTree = decompile (csharpDecompiler);
+					if (!flags.MethodBodies) {
+						MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
+					}
+					return await Runtime.RunInMainThread (delegate {
+						if (data.IsDisposed)
+							return new List<ReferenceSegment> ();
+						var output = new ColoredCSharpFormatter (data);
+						TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
+						var formattingPolicy = settings.CSharpFormattingOptions;
+						syntaxTree.AcceptVisitor (new CSharpOutputVisitor (tokenWriter, formattingPolicy));
+						output.SetDocumentData ();
+						return output.ReferencedSegments;
+					});
+				} catch (Exception e) {
+					await Runtime.RunInMainThread (delegate {
+						data.InsertText (data.Length, "/* decompilation failed: \n" + e + " */");
+					});
+				}
+				return new List<ReferenceSegment> ();
+			});
 		}
 
 		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
@@ -219,14 +173,14 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = (MethodDefinition)navigator.DataItem;
+			var cecilMethod = (IMethod)navigator.DataItem;
 			if (cecilMethod == null)
 				return null;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod), flags: flags);
+			return MethodDefinitionNodeBuilder.DecompileAsync (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod.MetadataToken), flags: flags);
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -238,14 +192,14 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append ("</a></u></span>");
 		}
 		
-		public static List<ReferenceSegment> Disassemble (TextEditor data, Action<ReflectionDisassembler> setData)
+		public static Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, Action<ReflectionDisassembler> setData)
 		{
 			var source = new CancellationTokenSource ();
 			var output = new ColoredCSharpFormatter (data);
 			var disassembler = new ReflectionDisassembler (output, source.Token);
 			setData (disassembler);
 			output.SetDocumentData ();
-			return output.ReferencedSegments;
+			return Task.FromResult (output.ReferencedSegments);
 		}
 		
 		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditor data)
@@ -260,15 +214,14 @@ namespace MonoDevelop.AssemblyBrowser
 						return true;*/
 			return false;
 		}
-		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
+
+		Task<List<ReferenceSegment>> IAssemblyBrowserNodeBuilder.DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			if (HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var cecilMethod = (MethodDefinition)navigator.DataItem;
-			if (cecilMethod == null)
-				return null;
-			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod));
+				return EmptyReferenceSegmentTask;
+			if (!(navigator.DataItem is IMethod cecilMethod))
+				return EmptyReferenceSegmentTask;
+			return DisassembleAsync (data, rd => rd.DisassembleMethod (cecilMethod.ParentModule.PEFile, (System.Reflection.Metadata.MethodDefinitionHandle)cecilMethod.MetadataToken));
 		}
 
 		#endregion

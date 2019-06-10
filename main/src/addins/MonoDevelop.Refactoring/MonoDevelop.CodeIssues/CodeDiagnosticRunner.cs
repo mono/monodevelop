@@ -46,6 +46,7 @@ using System.Globalization;
 
 namespace MonoDevelop.CodeIssues
 {
+	[Obsolete ("Old editor")]
 	static class CodeDiagnosticRunner
 	{
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
@@ -77,7 +78,7 @@ namespace MonoDevelop.CodeIssues
 					if (skip)
 						continue;
 
-					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
 					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !data.IsEnabledByDefault)
 						continue;
 

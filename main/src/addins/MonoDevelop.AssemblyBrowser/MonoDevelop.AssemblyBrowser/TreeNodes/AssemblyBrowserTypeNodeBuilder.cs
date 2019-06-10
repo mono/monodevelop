@@ -27,12 +27,14 @@
 using MonoDevelop.Ide.Gui.Components;
 using ICSharpCode.Decompiler.TypeSystem;
 using System;
-using Mono.Cecil;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -43,6 +45,7 @@ namespace MonoDevelop.AssemblyBrowser
 			private set; 
 		}
 		readonly static CSharpAmbience ambience = new CSharpAmbience ();
+		public static readonly Task<List<ReferenceSegment>> EmptyReferenceSegmentTask = Task.FromResult (new List<ReferenceSegment> ());
 
 		protected CSharpAmbience Ambience {
 			get {
@@ -60,24 +63,14 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as IMemberDefinition;
-				var e2 = otherNode.DataItem as IMemberDefinition;
-				
-				if (e1 == null && e2 == null)
-					return 0;
-				if (e1 == null)
-					return -1;
-				if (e2 == null)
-					return 1;
-				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (thisNode.NodeName, otherNode.NodeName, StringComparison.OrdinalIgnoreCase);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
 			}
 		}
 		
-		public AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
+		protected AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
 		{
 			this.Widget = assemblyBrowserWidget;
 		}
@@ -87,5 +80,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return treeBuilder.GetParentDataItem (typeof(AssemblyLoader), true) != null;
 		}
 
+		protected static void AddFilteredChildren<T> (ITreeBuilder builder, IReadOnlyCollection<T> collection, bool publicApiOnly) where T:IEntity
+		{
+			if (collection.Count == 0)
+				return;
+
+			var children = publicApiOnly
+				? collection.Where (x => x.IsPublic ())
+				: collection;
+
+			builder.AddChildren (collection);
+		}
 	}
 }

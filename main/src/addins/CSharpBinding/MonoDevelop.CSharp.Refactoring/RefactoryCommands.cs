@@ -63,12 +63,12 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected bool TryGetDocument (out Document analysisDocument, out Ide.Gui.Document doc)
 		{
 			doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == null) {
+			if (doc == null || doc.FileName == null || doc.Editor == null) {
 				analysisDocument = null;
 				return false;
 			}
 
-			analysisDocument = doc.AnalysisDocument;
+			analysisDocument = doc.DocumentContext?.AnalysisDocument;
 			return doc != null;
 		}
 	}
@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Refactoring
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = TryGetDocument (out var doc, out var _) && IsSortAndRemoveImportsSupported (doc);
+			info.Enabled = TryGetDocument (out var doc, out var uiDoc) && IsSortAndRemoveImportsSupported (doc, uiDoc.GetContent<Microsoft.VisualStudio.Text.ITextBuffer> ());	
 		}
 
 		protected override void Run ()
@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				SortAndRemoveUnusedImports (doc, CancellationToken.None).Ignore ();
 		}
 
-		internal static bool IsSortAndRemoveImportsSupported (Document document)
+		internal static bool IsSortAndRemoveImportsSupported (Document document, Microsoft.VisualStudio.Text.ITextBuffer textBuffer)
 		{
 			var workspace = document.Project.Solution.Workspace;
 
@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				return false;
 			}
 
-			return workspace.Services.GetService<IDocumentSupportsFeatureService> ().SupportsRefactorings (document);
+			return workspace.Services.GetService<ITextBufferSupportsFeatureService> ().SupportsRefactorings (textBuffer);
 		}
 
 		internal static async Task SortAndRemoveUnusedImports (Document originalDocument, CancellationToken cancellationToken)
@@ -137,7 +137,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancelToken);
 			if (semanticModel == null)
 				return;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor, cancelToken);
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
@@ -148,7 +148,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				}));
 			}
 
-			bool isSortAndRemoveUsingsSupported = RemoveAndSortUsingsHandler.IsSortAndRemoveImportsSupported (analysisDocument);
+			bool isSortAndRemoveUsingsSupported = RemoveAndSortUsingsHandler.IsSortAndRemoveImportsSupported (analysisDocument, doc.GetContent<Microsoft.VisualStudio.Text.ITextBuffer>());
+
 			if (isSortAndRemoveUsingsSupported) {
 				var sortAndRemoveImportsInfo = IdeApp.CommandService.GetCommandInfo (Commands.SortAndRemoveImports);
 				sortAndRemoveImportsInfo.Enabled = true;
@@ -168,7 +169,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
 					foreach (var part in type.Locations) {
 						var loc = part.GetLineSpan ();
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), loc.StartLinePosition.Line + 1), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Project)));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), loc.StartLinePosition.Line + 1), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Owner)));
 					}
 					ainfo.Add (declSet);
 				} else {
@@ -182,7 +183,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
-			if (doc.HasProject && sym != null) {
+			if (doc.DocumentContext.HasProject && sym != null) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
 
 					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {

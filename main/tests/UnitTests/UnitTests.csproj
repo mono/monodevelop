@@ -34,12 +34,21 @@
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
+    <IncludeCopyLocal Include="GuiUnit.exe" />
+    <IncludeCopyLocal Include="GuiUnit.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestSingleThreadSynchronizationContext.cs" />
     <Compile Include="ObjectReference.cs" />
+    <Compile Include="RequireServiceAttribute.cs" />
+    <Compile Include="CapturingCrashReporter.cs" />
+    <Compile Include="CapturingLogger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+     <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="..\..\build\bin\testing" SkipUnchangedFiles="true" />
+     <Copy SourceFiles="$(OutputPath)\GuiUnit.exe" DestinationFolder="..\..\build\bin\testing" SkipUnchangedFiles="true" />
+   </Target>
 </Project>

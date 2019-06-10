@@ -7,7 +7,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.FindInFiles
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 /// MD/XS extension for highlighting the usages of a symbol within the current buffer.
 type HighlightUsagesExtension() =
@@ -27,11 +27,14 @@ type HighlightUsagesExtension() =
                 LoggingService.logDebug "HighlightUsagesExtension: ResolveAsync starting on %s" (x.DocumentContext.Name |> IO.Path.GetFileName )
                 try
                     let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
-                    let currentFile = x.DocumentContext.Name
-                    let source = x.Editor.Text
-                    let projectFile = x.DocumentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
-                    let! symbolReferences = languageService.GetUsesOfSymbolAtLocationInFile (projectFile, currentFile, 0, source, line, col, lineStr)
-                    return symbolReferences
+                    let parseAndCheckResults = x.DocumentContext.TryGetAst()
+
+                    match parseAndCheckResults with
+                    | Some results ->
+                        let currentFile = x.DocumentContext.Name
+                        return! results.GetUsesOfSymbolAtLocationInFile (currentFile, line, col, lineStr)
+                    | None ->
+                        return None
                 with
                 | :? TaskCanceledException -> return None
                 | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
@@ -56,6 +59,7 @@ type HighlightUsagesExtension() =
                                             let start, finish = Symbol.trimSymbolRegion symbolUse fsSymbolName
                                             let startOffset = snapshot.LocationToOffset (start.Line, start.Column+1)
                                             let endOffset = snapshot.LocationToOffset (finish.Line, finish.Column+1)
+
                                             let referenceType =
                                                 if symbolUse.IsFromDefinition then
                                                     ReferenceUsageType.Declaration

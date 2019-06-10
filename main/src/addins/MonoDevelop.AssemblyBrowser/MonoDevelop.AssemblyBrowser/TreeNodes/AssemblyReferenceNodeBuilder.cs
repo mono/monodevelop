@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Cecil;
 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using ICSharpCode.Decompiler.Metadata;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		public override Type NodeDataType {
-			get { return typeof(AssemblyNameReference); }
+			get { return typeof(AssemblyReference); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -56,14 +56,14 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var reference = (AssemblyNameReference)dataObject;
+			var reference = (AssemblyReference)dataObject;
 			return reference.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var reference = (AssemblyNameReference)dataObject;
-			nodeInfo.Label = reference.Name;
+			var reference = (AssemblyReference)dataObject;
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (reference.Name);
 			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
 		
@@ -72,8 +72,8 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as AssemblyNameReference;
-				var e2 = otherNode.DataItem as AssemblyNameReference;
+				var e1 = thisNode.DataItem as AssemblyReference;
+				var e2 = otherNode.DataItem as AssemblyReference;
 				
 				if (e1 == null && e2 == null)
 					return 0;
@@ -82,7 +82,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return -1;
 				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare(e1.Name, e2.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -94,7 +94,7 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		public override void ActivateItem ()
 		{
-			var reference = (AssemblyNameReference)CurrentNode.DataItem;
+			var reference = (AssemblyReference)CurrentNode.DataItem;
 			if (reference == null)
 				return;
 			var loader = (AssemblyLoader)CurrentNode.GetParentDataItem (typeof(AssemblyLoader), false);

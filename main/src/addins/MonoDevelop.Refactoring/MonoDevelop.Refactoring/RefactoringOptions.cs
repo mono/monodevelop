@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RefactoringOptions.cs
 //  
 // Author:
@@ -43,7 +43,7 @@ namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		public TextEditor Editor {
+		public Ide.Editor.TextEditor Editor {
 			get;
 			private set;
 		}
@@ -66,7 +66,7 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
+				return IdeServices.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
@@ -81,11 +81,11 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 
-		public RefactoringOptions (MonoDevelop.Ide.Gui.Document doc) : this(doc.Editor, doc)
+		public RefactoringOptions (MonoDevelop.Ide.Gui.Document doc) : this(doc.Editor, doc.DocumentContext)
 		{
 		}
 
-		public RefactoringOptions (TextEditor editor, DocumentContext doc)
+		public RefactoringOptions (Ide.Editor.TextEditor editor, DocumentContext doc)
 		{
 			this.DocumentContext = doc;
 			this.Editor = editor;
@@ -98,12 +98,12 @@ namespace MonoDevelop.Refactoring
 			}*/
 		}
 
-		public TextEditor GetTextEditorData ()
+		public Ide.Editor.TextEditor GetTextEditorData ()
 		{
 			return Editor;
 		}
 		
-		public static string GetWhitespaces (TextEditor editor, int insertionOffset)
+		public static string GetWhitespaces (Ide.Editor.TextEditor editor, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
 			for (int i = insertionOffset; i < editor.Length; i++) {
@@ -117,7 +117,7 @@ namespace MonoDevelop.Refactoring
 			return result.ToString ();
 		}
 
-		public static string GetIndent (TextEditor editor, Microsoft.CodeAnalysis.SyntaxNode member)
+		public static string GetIndent (Ide.Editor.TextEditor editor, Microsoft.CodeAnalysis.SyntaxNode member)
 		{
 			return GetWhitespaces (editor, member.SpanStart);
 		}
@@ -132,7 +132,7 @@ namespace MonoDevelop.Refactoring
 			return GetUsedNamespacesAsync (Editor, DocumentContext,  Editor.LocationToOffset (Location));
 		}
 		
-		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (TextEditor editor, DocumentContext doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (Ide.Editor.TextEditor editor, DocumentContext doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (editor == null)
 				throw new System.ArgumentNullException (nameof (editor));
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 //		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 //		{
 //			IReturnType returnType = null; 
-//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (options.Document.FileName));
+//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (IdeServices.DesktopService.GetMimeTypeForUri (options.Document.FileName));
 //			
 //			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null) {
 //				if (astProvider != null) 

@@ -1,4 +1,4 @@
-// GettextTool.cs
+﻿// GettextTool.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -45,8 +45,6 @@ namespace MonoDevelop.Gettext
 		
 		public async Task<int> Run (string[] arguments)
 		{
-			DesktopService.Initialize ();
-
 			Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Gettext Update Tool"));
 			foreach (string s in arguments)
 				ReadArgument (s);

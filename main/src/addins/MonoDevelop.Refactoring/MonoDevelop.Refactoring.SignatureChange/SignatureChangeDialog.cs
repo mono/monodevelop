@@ -1,4 +1,4 @@
-﻿//
+//
 // SignatureChangeDialog.cs
 //
 // Author:
@@ -39,7 +39,7 @@ namespace MonoDevelop.Refactoring.SignatureChange
 {
 	partial class SignatureChangeDialog : Gtk.Dialog
 	{
-		TextEditor previewEditor;
+		Ide.Editor.TextEditor previewEditor;
 		ISymbol symbol;
 		ParameterConfiguration parameters;
 		ListStore store = new ListStore (typeof (IParameterSymbol));

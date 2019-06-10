@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMateCompletionTextEditorExtension.cs
 //
 // Author:
@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete]
 	class TextMateCompletionTextEditorExtension : CompletionTextEditorExtension
 	{
 		bool inactive;

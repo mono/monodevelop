@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide
 		static Window defaultRootWindow;
 		public static Window RootWindow {
 			get {
-				if (WelcomePageService.WelcomeWindowVisible)
+				if (WelcomePageService.WelcomeWindowVisible && !IdeApp.Workbench.RootWindow.Visible)
 					return WelcomePageService.WelcomeWindow;
 				return defaultRootWindow;
 			}
@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide
 			// if dialog is modal, make sure it's parented on any existing modal dialog
 			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
-				parent = DesktopService.GetParentForModalWindow ();
+				parent = IdeServices.DesktopService.GetParentForModalWindow ();
 			}
 
 			//ensure the dialog has a parent
@@ -330,11 +330,11 @@ namespace MonoDevelop.Ide
 				if (dialog.TransientFor != null)
 					parent = dialog.TransientFor;
 				else
-					parent = RootWindow;
+					parent = IdeServices.DesktopService.GetFocusedTopLevelWindow ();
 			}
 
 			//TODO: use native parenting API for native windows
-			if (parent.nativeWidget is Gtk.Window) {
+			if (parent?.nativeWidget is Gtk.Window) {
 				dialog.TransientFor = parent;
 				dialog.DestroyWithParent = true;
 			}
@@ -348,13 +348,18 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null || (parent.nativeWidget is NSWindow && dialog.Modal)) {
-					EventHandler shownHandler = null;
-					shownHandler = (s,e) => {
+				if (NSApplication.SharedApplication.ModalWindow != null || parent?.nativeWidget is NSWindow) {
+					if (dialog.Modal) {
+						EventHandler shownHandler = null;
+						shownHandler = (s, e) => {
+							ShowCustomModalDialog (dialog, parent);
+							dialog.Shown -= shownHandler;
+						};
+						dialog.Shown += shownHandler;
+					} else {
+						// If parent is a native NSWindow, run the dialog modally anyway
 						ShowCustomModalDialog (dialog, parent);
-						dialog.Shown -= shownHandler;
-					};
-					dialog.Shown += shownHandler;
+					}
 				} else {
 					PlaceDialog (dialog, parent);
 				}
@@ -368,7 +373,7 @@ namespace MonoDevelop.Ide
 				int result = GtkWorkarounds.RunDialogWithNotification (dialog);
 				// Focus parent window once the dialog is ran, as focus gets lost
 				if (parent != null) {
-					DesktopService.FocusWindow (parent);
+					IdeServices.DesktopService.FocusWindow (parent);
 				}
 
 				return result;
@@ -379,20 +384,32 @@ namespace MonoDevelop.Ide
 		}
 
 		#if MAC
+
 		static void ShowCustomModalDialog (Gtk.Window dialog, Window parent)
 		{
 			CenterWindow (dialog, parent);
 
 			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
 			// Make the GTK window modal WRT the current modal NSWindow
-			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
 
-			EventHandler unrealizer = null;
-			unrealizer = delegate {
+			NSWindow nativeParent = null;
+			try {
+				nativeParent = parent;
+				nativeParent.AddChildWindow (nsdialog, NSWindowOrderingMode.Above);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Failed to get the native parent window", ex);
+			}
+			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
+			void unrealizer (object sender, EventArgs e)
+			{
+				if (nativeParent != null) {
+					nativeParent.RemoveChildWindow (nsdialog);
+				}
 				NSApplication.SharedApplication.EndModalSession (s);
 				dialog.Unrealized -= unrealizer;
-			};
+			}
 			dialog.Unrealized += unrealizer;
+
 		}
 		#endif
 		
@@ -408,7 +425,7 @@ namespace MonoDevelop.Ide
 			if (parent == null) {
 				if (childControl.nativeWidget is Gtk.Window gtkChild) {
 					if (gtkChild.Modal)
-						parent = DesktopService.GetParentForModalWindow ();
+						parent = IdeServices.DesktopService.GetParentForModalWindow ();
 				}
 			}
 
@@ -428,8 +445,8 @@ namespace MonoDevelop.Ide
 				if (nsParent == null || !nsParent.IsVisible) {
 					nsChild.Center ();
 				} else {
-					int x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
-					int y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
+					int x = (int) (nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
+					int y = (int) (nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
 					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
 				}
 
@@ -449,13 +466,25 @@ namespace MonoDevelop.Ide
 					gtkChild.Move (x, y);
 #if MAC
 				} else if (nsParent != null) {
+					x = (int) (nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
+					y = (int) (nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
 					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
-					x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
-					y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
-					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
+					if (nsChild != null) {
+						nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
+					} else {
+						gtkChild.Move (x, y);
+					}
 #endif
 				} else {
+#if MAC
+					// There is no parent, so just center the dialog
+					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
+					if (nsChild != null) {
+						nsChild.Center ();
+					}
+#else
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
+#endif
 				}
 			}
 		}
@@ -589,7 +618,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? DesktopService.GetParentForModalWindow ()
+					TransientFor = parent ?? IdeServices.DesktopService.GetFocusedTopLevelWindow ()
 				};
 				return dialog.Run ();
 			}

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 
@@ -52,6 +53,7 @@ namespace MonoDevelop.PackageManagement
 
 			return style == ProjectStyle.PackageReference ||
 				style == ProjectStyle.ProjectJson ||
+				style == ProjectStyle.DotnetCliTool ||
 				style == ProjectStyle.PackagesConfig;
 		}
 
@@ -83,6 +85,25 @@ namespace MonoDevelop.PackageManagement
 				return packageSpec;
 			}
 			return null;
+		}
+
+		public static IReadOnlyList<PackageSpec> GetExistingProjectPackageSpecs (this DependencyGraphCacheContext context, string projectPath)
+		{
+			var mainPackageSpec = GetExistingProjectPackageSpec (context, projectPath);
+			if (mainPackageSpec == null)
+				return null;
+
+			var specs = new List<PackageSpec> ();
+			specs.Add (mainPackageSpec);
+
+			// Look for DotNetCliTools.
+			foreach (var spec in context.PackageSpecCache.Values) {
+				if (spec.IsDotNetCliToolPackageSpecForProject (projectPath)) {
+					specs.Add (spec);
+				}
+			}
+
+			return specs;
 		}
 	}
 }

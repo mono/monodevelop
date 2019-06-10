@@ -23,8 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
 using Microsoft.CodeAnalysis.Editor;
@@ -32,10 +30,8 @@ using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
 using Microsoft.CodeAnalysis.Extensions;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Shared.TestHooks;
-using Microsoft.VisualStudio.Imaging;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using Roslyn.Utilities;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
@@ -46,7 +42,8 @@ namespace MonoDevelop.Ide.RoslynServices
 		readonly IAsynchronousOperationListener _listener;
 
 		[ImportingConstructor]
-		public MonoDevelopInfoBarService (IForegroundNotificationService foregroundNotificationService, IAsynchronousOperationListenerProvider listenerProvider)
+		public MonoDevelopInfoBarService (IThreadingContext threadingContext, IForegroundNotificationService foregroundNotificationService, IAsynchronousOperationListenerProvider listenerProvider)
+			: base (threadingContext)
 		{
 			_foregroundNotificationService = foregroundNotificationService;
 			_listener = listenerProvider.GetListener (FeatureAttribute.InfoBar);
@@ -108,7 +105,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			if (activeView) {
 				// Maybe for pads also? Not sure if we should.
-				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
+				infoBarHost = IdeApp.Workbench.ActiveDocument?.GetContent<IInfoBarHost> (true);
 			}
 
 			if (infoBarHost == null)

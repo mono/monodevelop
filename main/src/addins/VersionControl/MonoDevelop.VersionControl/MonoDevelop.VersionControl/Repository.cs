@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.IO;
 using System.Text;
@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -29,7 +30,9 @@ namespace MonoDevelop.VersionControl
 			get;
 			protected set;
 		}
-		
+
+		internal FilePath RepositoryPath { get; set; }
+
 		public event EventHandler NameChanged;
 		
 		protected Repository ()
@@ -101,6 +104,10 @@ namespace MonoDevelop.VersionControl
 					directoryQueryQueue.Clear ();
 					recursiveDirectoryQueryQueue.Clear ();
 				}
+			}
+
+			lock (VersionControlService.repositoryCacheLock) {
+				VersionControlService.repositoryCache.Remove (RepositoryPath.CanonicalPath);
 			}
 
 			infoCache?.Dispose ();
@@ -274,7 +281,7 @@ namespace MonoDevelop.VersionControl
 			RecursiveDirectoryInfoQuery rq;
 			bool query = false;
 			lock (queryLock) {
-				rq = recursiveDirectoryQueryQueue.FirstOrDefault (q => q.Directory == path);
+				rq = recursiveDirectoryQueryQueue.FirstOrDefault (q => q.Directory == path || path.IsChildPathOf (q.Directory));
 				if (rq == null) {
 					query = true;
 					var mre = new ManualResetEvent (false);
@@ -330,7 +337,7 @@ namespace MonoDevelop.VersionControl
 		public void ClearCachedVersionInfo (params FilePath[] paths)
 		{
 			foreach (var p in paths)
-				infoCache.ClearCachedVersionInfo (p);
+				infoCache?.ClearCachedVersionInfo (p);
 		}
 
 		class VersionInfoQuery
@@ -489,7 +496,7 @@ namespace MonoDevelop.VersionControl
 		/// <param name='revision'>
 		/// A revision
 		/// </param>
-		public RevisionPath[] GetRevisionChanges (Revision revision)
+		public RevisionPath [] GetRevisionChanges (Revision revision)
 		{
 			using (var tracker = Instrumentation.GetRevisionChangesCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
 				try {
@@ -500,8 +507,20 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 		}
-		
-		
+
+		public Task<RevisionPath []> GetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken = default)
+		{
+			using (var tracker = Instrumentation.GetRevisionChangesCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
+				try {
+					return OnGetRevisionChangesAsync (revision, cancellationToken);
+				} catch {
+					tracker.Metadata.SetFailure ();
+					throw;
+				}
+			}
+		}
+
+
 		// Returns the content of the file in the base revision of the working copy.
 		public abstract string GetBaseText (FilePath localFile);
 		
@@ -652,8 +671,8 @@ namespace MonoDevelop.VersionControl
 			var metadata = new RevertMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse, OperationType = RevertMetadata.RevertType.LocalChanges };
 			using (var tracker = Instrumentation.RevertCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					ClearCachedVersionInfo (localPaths);
 					OnRevert (localPaths, recurse, monitor);
+					ClearCachedVersionInfo (localPaths);
 				} catch {
 					metadata.SetFailure ();
 					throw;
@@ -786,10 +805,13 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
 			var metadata = new DeleteMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Force = force, KeepLocal = keepLocal };
 			using (var tracker = Instrumentation.DeleteCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					OnDeleteFiles (localPaths, force, monitor, keepLocal);
+					foreach (var path in localPaths)
+						args.Add (new FileUpdateEventInfo (this, path, false));
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to delete file", e);
 					metadata.SetFailure ();
@@ -799,6 +821,8 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			ClearCachedVersionInfo (localPaths);
+			if (args.Any ())
+				VersionControlService.NotifyFileStatusChanged (args);
 		}
 
 		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal);
@@ -810,10 +834,13 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
 			var metadata = new DeleteMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Force = force, KeepLocal = keepLocal };
 			using (var tracker = Instrumentation.DeleteCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+					foreach (var path in localPaths)
+						args.Add (new FileUpdateEventInfo (this, path, true));
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to delete directory", e);
 					metadata.SetFailure ();
@@ -823,6 +850,8 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			ClearCachedVersionInfo (localPaths);
+			if (args.Any ())
+				VersionControlService.NotifyFileStatusChanged (args);
 		}
 
 		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal);
@@ -1012,7 +1041,12 @@ namespace MonoDevelop.VersionControl
 		/// <param name='revision'>
 		/// A revision
 		/// </param>
-		protected abstract RevisionPath[] OnGetRevisionChanges (Revision revision);
+		protected abstract RevisionPath [] OnGetRevisionChanges (Revision revision);
+
+		protected virtual Task<RevisionPath []> OnGetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken)
+		{
+			return Task.FromResult (OnGetRevisionChanges (revision));
+		}
 
 		// Ignores a file for version control operations.
 		public void Ignore (FilePath[] localPath)
@@ -1050,7 +1084,7 @@ namespace MonoDevelop.VersionControl
 
 		public virtual bool GetFileIsText (FilePath path)
 		{
-			return DesktopService.GetFileIsText (path);
+			return IdeServices.DesktopService.GetFileIsText (path);
 		}
 	}
 	

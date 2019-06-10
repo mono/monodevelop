@@ -1,4 +1,4 @@
-﻿//
+//
 // DocumentFactory.cs
 //
 // Author:
@@ -28,9 +28,11 @@ using MonoDevelop.Core.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using System;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class TextEditorFactory
 	{
 		static ITextEditorFactory currentFactory;
@@ -80,12 +82,19 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
-		static ConfigurationProperty<double> zoomLevel = ConfigurationProperty.Create ("Editor.ZoomLevel", 1.0d);
+		public static ConfigurationProperty<double> ZoomLevel = ConfigurationProperty.Create ("Editor.ZoomLevel", 1.0d);
 
 		public static TextEditor CreateNewEditor(string fileName, string mimeType, TextEditorType textEditorType = TextEditorType.Default)
 		{
 			var result = new TextEditor(currentFactory.CreateNewEditor(fileName, mimeType), textEditorType);
 			InitializeTextEditor(result);
+			return result;
+		}
+
+		public static TextEditor CreateNewEditor (TextBufferFileModel textBufferFileModel, TextEditorType textEditorType = TextEditorType.Default)
+		{
+			var result = new TextEditor (currentFactory.CreateNewEditor (textBufferFileModel), textEditorType);
+			InitializeTextEditor (result);
 			return result;
 		}
 
@@ -98,7 +107,7 @@ namespace MonoDevelop.Ide.Editor
 
 		private static void InitializeTextEditor(TextEditor textEditor)
 		{
-			textEditor.ZoomLevel = zoomLevel;
+			textEditor.ZoomLevel = ZoomLevel;
 
 			textEditor.ZoomLevelChanged += OnZoomChanged;
 		}
@@ -106,7 +115,7 @@ namespace MonoDevelop.Ide.Editor
 		static void OnZoomChanged (object sender, EventArgs args)
 		{
 			var editor = (TextEditor)sender;
-			zoomLevel.Value = editor.ZoomLevel;
+			ZoomLevel.Value = editor.ZoomLevel;
 		}
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
@@ -114,7 +123,7 @@ namespace MonoDevelop.Ide.Editor
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
 			var result = new TextEditor (currentFactory.CreateNewEditor (document, textEditorType), textEditorType) {
-				ZoomLevel = zoomLevel
+				ZoomLevel = ZoomLevel
 			};
 			result.ZoomLevelChanged += OnZoomChanged;
 			return result;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.RepresentationModel;
@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Execution;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class SyntaxHighlighting : ISyntaxHighlighting
 	{
 		readonly SyntaxHighlightingDefinition definition;
@@ -51,7 +52,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (ln >= stateCache.Count)
 					continue;
 				var line = Document.GetLineByOffset (change.NewOffset);
-				var lastState = GetState (line);
+				var lastState = await GetStateAsync (line);
 
 				var high = new Highlighter (this, lastState);
 				await high.GetColoredSegments (Document, line.Offset, line.LengthIncludingDelimiter);
@@ -60,31 +61,31 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
+		public async Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
 			if (Document == null) {
-				return DefaultSyntaxHighlighting.Instance.GetHighlightedLineAsync (line, cancellationToken);
+				return await DefaultSyntaxHighlighting.Instance.GetHighlightedLineAsync (line, cancellationToken);
 			}
 			var snapshot = Document.CreateSnapshot ();
-			var high = new Highlighter (this, GetState (line));
+			var high = new Highlighter (this, await GetStateAsync (line, cancellationToken));
 			int offset = line.Offset;
 			int length = line.Length;
 			//return Task.Run (async delegate {
-			return high.GetColoredSegments (snapshot, offset, length);
+			return await high.GetColoredSegments (snapshot, offset, length, cancellationToken);
 		 	//});
 		}
 
 		public async Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			var line = Document.GetLineByOffset (offset);
-			var state = GetState (line);
+			var state = await GetStateAsync (line, cancellationToken);
 			var lineOffset = line.Offset;
 			if (lineOffset == offset) {
 				return state.ScopeStack;
 			}
 
 			var high = new Highlighter (this, state);
-			foreach (var seg in (await high.GetColoredSegments (Document, lineOffset, line.Length)).Segments) {
+			foreach (var seg in (await high.GetColoredSegments (Document, lineOffset, line.Length, cancellationToken)).Segments) {
 				if (seg.Contains (offset - lineOffset))
 					return seg.ScopeStack;
 			}
@@ -93,7 +94,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		List<HighlightState> stateCache = new List<HighlightState> ();
 
-		HighlightState GetState (IDocumentLine line)
+		async Task<HighlightState> GetStateAsync (IDocumentLine line, CancellationToken cancellationToken = default)
 		{
 			var pl = line?.PreviousLine;
 			if (pl == null)
@@ -109,7 +110,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (cur != null && cur.Offset < line.Offset) {
 				do {
 					var high = new Highlighter (this, lastState.Clone ());
-					high.GetColoredSegments (Document, cur.Offset, cur.LengthIncludingDelimiter).Wait ();
+					await high.GetColoredSegments (Document, cur.Offset, cur.LengthIncludingDelimiter, cancellationToken);
 					stateCache.Add (lastState = high.State);
 					cur = cur.NextLine;
 				} while (cur != null && cur.Offset < line.Offset);
@@ -178,10 +179,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (500);
+			const int maxLineLength = 1 << 16;
 
-			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int startOffset, int length)
+			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int startOffset, int length, CancellationToken cancellationToken = default)
 			{
-				if (ContextStack.IsEmpty)
+				if (ContextStack.IsEmpty || length > maxLineLength)
 					return Task.FromResult (new HighlightedLine (new TextSegment (startOffset, length), new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
 				SyntaxContext currentContext = null;
 				Match match = null;
@@ -199,6 +201,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					timeoutOccursAt = Environment.TickCount + (int)matchTimeout.TotalMilliseconds;
 				}
 			restart:
+				if (cancellationToken.IsCancellationRequested)
+					return Task.FromResult (new HighlightedLine (new TextSegment (startOffset, length), new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
 				if (offset >= lineText.Length)
 					goto end;
 				lastMatch = offset;

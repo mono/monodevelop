@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Windows
 		{
 			wpfWidgetHost = new System.Windows.Forms.Integration.ElementHost
 			{
-				BackColor = System.Drawing.Color.Transparent,
+				BackColor = System.Drawing.Color.SeaGreen,
 				Child = wpfControl,
 			};
 
@@ -71,18 +71,18 @@ namespace MonoDevelop.Components.Windows
             RepositionWpfWindow (scale, scale);
         }
 
-		protected void RepositionWpfWindow (int hscale, int vscale)
+		protected void RepositionWpfWindow (double hscale, double vscale)
 		{
 			int x, y;
 			if (TranslateCoordinates (Toplevel, 0, 0, out x, out y)) {
-				wpfWidgetHost.Left = x;
-				wpfWidgetHost.Top = y;
+				wpfWidgetHost.Left = (int)(x * hscale);
+				wpfWidgetHost.Top = (int)(y * vscale);
 			} else {
 				wpfWidgetHost.Left = Allocation.Left;
 				wpfWidgetHost.Top = Allocation.Top;
 			}
-			wpfWidgetHost.Width = (Allocation.Width + 1) * hscale;
-			wpfWidgetHost.Height = (Allocation.Height + 1) * vscale;
+			wpfWidgetHost.Width = (int)((Allocation.Width + 1) * hscale);
+			wpfWidgetHost.Height = (int)((Allocation.Height + 1) * vscale);
 		}
 
 		protected override void OnRealized ()

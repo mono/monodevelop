@@ -60,8 +60,8 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in EnumerateViewsWithIncorrectEolMarkers ()) {
 				view.SourceEditorWidget.ConvertLineEndings ();
 				view.SourceEditorWidget.RemoveMessageBar ();
-				view.WorkbenchWindow.ShowNotification = false;
-				view.Save ();
+				view.DocumentController.ShowNotification = false;
+				view.DocumentController.Save ();
 			}
 		}
 
@@ -72,8 +72,8 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in EnumerateViewsWithIncorrectEolMarkers ()) {
 				view.SourceEditorWidget.UseIncorrectMarkers = true;
 				view.SourceEditorWidget.RemoveMessageBar ();
-				view.WorkbenchWindow.ShowNotification = false;
-				view.Save ();
+				view.DocumentController.ShowNotification = false;
+				view.DocumentController.Save ();
 			}
 		}
 

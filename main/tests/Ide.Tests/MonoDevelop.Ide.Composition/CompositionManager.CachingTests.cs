@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Composition
 			}
 		}
 
-		static CompositionManager.Caching GetCaching (CompositionManager.ICachingFaultInjector faultInjector = null, Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null)
+		static CompositionManager.Caching GetCaching (CompositionManager.ICachingFaultInjector faultInjector = null, Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null, CompositionManager.RuntimeCompositionExceptionHandler handler = null)
 		{
 			var mefAssemblies = CompositionManager.ReadAssembliesFromAddins ();
 			var caching = new CompositionManager.Caching (mefAssemblies, file => {
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Composition
 				}
 				Directory.CreateDirectory (tmpDir);
 				return Path.Combine (tmpDir, file);
-			}, faultInjector);
+			}, faultInjector, handler);
 
 			return caching;
 		}

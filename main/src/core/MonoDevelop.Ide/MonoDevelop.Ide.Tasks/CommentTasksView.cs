@@ -1,4 +1,4 @@
-//
+﻿//
 // CommentTasksView.cs
 //
 // Author:
@@ -70,8 +70,9 @@ namespace MonoDevelop.Ide.Tasks
 
 		Dictionary<ContextMenuItem, int> columnsActions;
 		Clipboard clipboard;
-		
+
 		TaskStore comments = new TaskStore ();
+
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 		HashSet<Solution> loadedSlns = new HashSet<Solution> ();
 
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			ReloadPriorities ();
 			
-			TaskService.CommentTasksChanged += OnCommentTasksChanged;
+			IdeServices.TaskService.CommentTasksChanged += OnCommentTasksChanged;
 			CommentTag.SpecialCommentTagsChanged += OnCommentTagsChanged;
 
 			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
@@ -147,12 +148,13 @@ namespace MonoDevelop.Ide.Tasks
 
 			view.Destroyed += delegate {
 				view.RowActivated -= OnRowActivated;
-				TaskService.CommentTasksChanged -= OnCommentTasksChanged;
+				IdeServices.TaskService.CommentTasksChanged -= OnCommentTasksChanged;
 				CommentTag.SpecialCommentTagsChanged -= OnCommentTagsChanged;
 				MonoDevelopWorkspace.LoadingFinished -= OnWorkspaceItemLoaded;
 				IdeApp.Workspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
 				comments.TasksAdded -= GeneratedTaskAdded;
 				comments.TasksRemoved -= GeneratedTaskRemoved;
+				comments.Dispose ();
 
 				IdeApp.Preferences.UserTasksHighPrioColor.Changed -= OnPropertyUpdated;
 				IdeApp.Preferences.UserTasksNormalPrioColor.Changed -= OnPropertyUpdated;
@@ -406,7 +408,7 @@ namespace MonoDevelop.Ide.Tasks
 			TaskListEntry task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
 				var doc = await IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
-				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
+				if (doc != null && doc.DocumentContext.HasProject && doc.Owner is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
 						doc.DisableAutoScroll ();

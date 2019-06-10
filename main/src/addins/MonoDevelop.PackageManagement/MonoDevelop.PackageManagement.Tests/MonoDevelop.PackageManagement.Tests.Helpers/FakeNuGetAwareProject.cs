@@ -33,6 +33,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class FakeNuGetAwareProject : DummyDotNetProject, INuGetAwareProject
 	{
+		public FakeNuGetAwareProject ()
+		{
+			Initialize (this);
+		}
+
 		public NuGetProject CreateNuGetProject ()
 		{
 			throw new NotImplementedException ();

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
+  <PropertyGroup>
+    <AssemblyTitle>MonoDevelop Text Editor</AssemblyTitle>
+    <AssemblyDescription>Integrates the Visual Studio Editor into MonoDevelop</AssemblyDescription>
+    <AddinBuildDir>DisplayBindings\TextEditor</AddinBuildDir>
+    <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
+    <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS;WIN32</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-api\src\Editor\Text\Def\Extras\Extras.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore" />
+    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj" Private="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
+    <Compile Include="..\..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" Link="Util\UIExtensionSelector.cs" />
+    <Compile Include="..\..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
+  </ItemGroup>
+</Project>

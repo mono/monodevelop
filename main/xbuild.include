@@ -1,4 +1,3 @@
-ALL_CSPROJ=$(wildcard *.csproj)
 MAIN_SLN=$(top_builddir)/Main.sln
 
 if ENABLE_MACPLATFORM
@@ -26,28 +25,16 @@ endif
 endif
 
 XBUILD=msbuild
-XBUILD_VERBOSITY ?= normal
+XBUILD_VERBOSITY ?= minimal
 XBUILD_ARGS=/verbosity:$(XBUILD_VERBOSITY) /nologo /property:CodePage=65001 /property:RestorePackages=false /property:DownloadPaket=false
 XBUILD_PROFILE=/property:Configuration=$(PROFILE_NAME)
 
 # Figure out how far we are from top_builddir
 DEPTH=$(shell echo "$(top_builddir)" | tr '/' '\n' | grep -c '..')
 
-all: csproj_build
+all:
 
-clean: csproj_clean
-
-csproj_build:
-	@if test x$(SKIP) != xy -a $(DEPTH) -gt $(MAKELEVEL); then \
-	echo Building $(ALL_CSPROJ); \
-	for p in $(ALL_CSPROJ); do $(XBUILD) $(XBUILD_ARGS) $$p; done \
-	fi
-
-csproj_clean:
-	@if test x$(SKIP) != xy -a $(DEPTH) -gt $(MAKELEVEL); then \
-	echo Cleaning $(ALL_CSPROJ); \
-	for p in $(ALL_CSPROJ); do $(XBUILD) $(XBUILD_ARGS) $$p /t:Clean; done \
-	fi
+clean:
 
 sln_build:
 	@echo Building $(MAIN_SLN)
@@ -76,6 +63,5 @@ WILDCARDED_FILES:=$(wildcard $(ALL_FILES))
 
 EXTRA_DIST = \
 	$(wildcard $(ALL_FILES))
-
 
 .PHONY: all clean csproj_build csproj_clean sln_build sln_clean

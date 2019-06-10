@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectedDocumentContext.cs
 //
 // Author:
@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
-
+	[Obsolete]
 	class ProjectedDocumentContext : DocumentContext
 	{
 		DocumentContext originalContext;
@@ -71,9 +71,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.originalContext = originalContext;
 
 			if (originalContext.Project != null) {
-				var originalProjectId = TypeSystemService.GetProjectId (originalContext.Project);
+				var originalProjectId = IdeApp.TypeSystemService.GetProjectId (originalContext.Project);
 				if (originalProjectId != null) {
-					var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
+					var originalProject = IdeApp.TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
 					if (originalProject != null) {
 						projectedDocument = originalProject.AddDocument (
 							projectedEditor.FileName,
@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 		}
 
+		[Obsolete]
 		public override void ReparseDocument ()
 		{
 			ReparseDocumentInternal ().Ignore ();
@@ -111,7 +112,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 				RoslynDocument = projectedDocument,
 				OldParsedDocument = parsedDocument
 			}; 
-			var result = await TypeSystemService.ParseFile (options, projectedEditor.MimeType).ConfigureAwait (false);
+			var result = await IdeApp.TypeSystemService.ParseFile (options, projectedEditor.MimeType).ConfigureAwait (false);
 			await Runtime.RunInMainThread (delegate {
 				parsedDocument = result;
 				base.OnDocumentParsed (EventArgs.Empty);
@@ -123,6 +124,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return originalContext.GetOptionSet ();
 		}
 
+		[Obsolete]
 		public override async Task<MonoDevelop.Ide.TypeSystem.ParsedDocument> UpdateParseDocument ()
 		{
 			await ReparseDocumentInternal ();
@@ -141,6 +143,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
+		[Obsolete]
 		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get {
 
@@ -148,6 +151,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
+		[Obsolete]
 		public override MonoDevelop.Ide.TypeSystem.ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;

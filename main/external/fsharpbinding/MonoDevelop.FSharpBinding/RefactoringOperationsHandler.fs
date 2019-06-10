@@ -11,8 +11,8 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open MonoDevelop.Refactoring
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.FindInFiles
 open ExtCore.Control
 
@@ -423,7 +423,7 @@ type CurrentRefactoringOperationsHandler() =
 
     let tryGetValidDoc() =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc = null || doc.FileName = FilePath.Null || doc.ParsedDocument = null then None
+        if doc = null || doc.FileName = FilePath.Null || doc.DocumentContext.ParsedDocument = null then None
         else Some doc
 
     override x.Run () =
@@ -443,7 +443,7 @@ type CurrentRefactoringOperationsHandler() =
         | Some doc ->
             if not (FileService.supportedFilePath doc.FileName) then ()
             else
-                match doc.TryGetAst () with
+                match doc.DocumentContext.TryGetAst () with
                 | None -> ()
                 | Some ast ->
                     match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
@@ -454,19 +454,19 @@ type CurrentRefactoringOperationsHandler() =
                         let lastIdent = Symbols.lastIdent col lineTxt
 
                         //rename refactoring
-                        let canRename = Refactoring.Operations.canRename symbolUse doc.Editor.FileName doc.Project.ParentSolution
+                        let canRename = Refactoring.Operations.canRename symbolUse doc.Editor.FileName doc.DocumentContext.Project.ParentSolution
                         if canRename then
                             let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
                             commandInfo.Enabled <- true
-                            ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (Refactoring.renameSymbol (doc.Editor, doc, lastIdent, symbolUse))))
+                            ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (Refactoring.renameSymbol (doc.Editor, doc.DocumentContext, lastIdent, symbolUse))))
 
                         // goto to declaration
-                        if Refactoring.Operations.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
+                        if Refactoring.Operations.canJump symbolUse doc.Editor.FileName doc.DocumentContext.Project.ParentSolution then
                             let locations = Symbols.getLocationFromSymbolUse symbolUse
                             let addCommand() =
                                 let commandInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration)
                                 commandInfo.Enabled <- true
-                                ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc, symbolUse) ))
+                                ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc.DocumentContext, symbolUse) ))
 
                             match locations with
                             | [] -> addCommand()
@@ -475,7 +475,7 @@ type CurrentRefactoringOperationsHandler() =
                                 let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
                                 for location in locations do
                                     let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}", formatFileName location.FileName, location.StartLine))
-                                    declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbolUse.Symbol, location)))
+                                    declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc.DocumentContext, symbolUse.Symbol, location)))
                                     |> ignore
                                 ainfo.Add (declSet)
 
@@ -506,21 +506,21 @@ type CurrentRefactoringOperationsHandler() =
                                                 else GettextCatalog.GetString ("Go to _Base Method")
                                   
                                         | _-> GettextCatalog.GetString ("Go to _Base Symbol")
-                                    ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
+                                    ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc.DocumentContext, symbol, location)))
                                     |> ignore
 
                                 | locations ->
                                     let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("Go to _Base Symbol"))
                                     for location in locations do
                                         let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                        declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
+                                        declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc.DocumentContext, symbol, location)))
                                         |> ignore
                                     ainfo.Add (declSet)
                             | _ -> ()
                         
                         let findReferences() =
                             match symbolUse with
-                            | Val _local -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)
+                            | Val _local -> Refactoring.findReferences (doc.Editor, doc.DocumentContext, symbolUse, lastIdent)
                             | _ -> RefactoringService.FindReferencesAsync(symbolUse.Symbol.XmlDocSig) |> ignore
 
                         //find references
@@ -544,17 +544,17 @@ type CurrentRefactoringOperationsHandler() =
                                         GettextCatalog.GetString ("Find Implementing Symbols")
                                     | _ -> GettextCatalog.GetString ("Find overriden Symbols")
                                 | _ -> GettextCatalog.GetString ("Find Derived Symbols")
-                            ainfo.Add (description, Action (fun () -> Refactoring.findDerivedReferences (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
+                            ainfo.Add (description, Action (fun () -> Refactoring.findDerivedReferences (doc.Editor, doc.DocumentContext, symbolUse, lastIdent))) |> ignore
 
                         //find overloads
                         if Refactoring.Operations.canGotoOverloads symbolUse then
                             let description = GettextCatalog.GetString ("Find Method Overloads")
-                            ainfo.Add (description, Action (fun () -> Refactoring.findOverloads (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
+                            ainfo.Add (description, Action (fun () -> Refactoring.findOverloads (doc.Editor, doc.DocumentContext, symbolUse, lastIdent))) |> ignore
 
                         //find type extensions
                         if symbolUse.Symbol :? FSharpEntity then
                             let extMethodDescription = GettextCatalog.GetString ("Find Type Extensions")
-                            ainfo.Add (extMethodDescription, Action (fun () -> Refactoring.findExtensionMethods (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
+                            ainfo.Add (extMethodDescription, Action (fun () -> Refactoring.findExtensionMethods (doc.Editor, doc.DocumentContext, symbolUse, lastIdent))) |> ignore
 
                         if ciset.CommandInfos.Count > 0 then
                             ainfo.Add (ciset, null)
@@ -587,11 +587,11 @@ type RenameHandler() =
         else
             if not (FileService.supportedFilePath editor.FileName) then ci.Bypass <- true
             else
-                match doc.TryGetAst() with
+                match doc.DocumentContext.TryGetAst() with
                 | Some ast ->
                     match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                     //set bypass is we cant rename
-                    | _lineinfo, Some sym when not (Refactoring.Operations.canRename sym editor.FileName doc.Project.ParentSolution) ->
+                    | _lineinfo, Some sym when not (Refactoring.Operations.canRename sym editor.FileName doc.DocumentContext.Project.ParentSolution) ->
                         ci.Bypass <- true
                     | _lineinfo, _symbol -> ()
                 //disable for no ast
@@ -603,7 +603,7 @@ type RenameHandler() =
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
         if doc <> null || doc.FileName <> FilePath.Null || not (FileService.supportedFilePath doc.FileName) then
-            x.Run (doc.Editor, doc)
+            x.Run (doc.Editor, doc.DocumentContext)
 
     member x.Run (editor:TextEditor, ctx:DocumentContext) =
         if FileService.supportedFilePath editor.FileName then
@@ -631,11 +631,11 @@ type GotoDeclarationHandler() =
         if editor = null || editor.FileName = FilePath.Null then ci.Bypass <- true
         elif not (FileService.supportedFilePath editor.FileName) then ci.Bypass <- true
         else
-            match doc.TryGetAst() with
+            match doc.DocumentContext.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //set bypass as we cant jump
-                | _lineinfo, Some sym when not (Refactoring.Operations.canJump sym editor.FileName doc.Project.ParentSolution) ->
+                | _lineinfo, Some sym when not (Refactoring.Operations.canJump sym editor.FileName doc.DocumentContext.Project.ParentSolution) ->
                     ci.Bypass <- true
                 | _lineinfo, _symbol -> ()
             //disable for no ast
@@ -644,7 +644,7 @@ type GotoDeclarationHandler() =
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
         if doc <> null || doc.FileName <> FilePath.Null || not (FileService.supportedFilePath doc.FileName) then
-            x.Run(doc.Editor, doc)
+            x.Run(doc.Editor, doc.DocumentContext)
 
     member x.Run(editor, context:DocumentContext) =
         if FileService.supportedFilePath editor.FileName then
@@ -697,7 +697,7 @@ open Microsoft.CodeAnalysis
 open Mono.Addins
 open Microsoft.CodeAnalysis.CodeFixes
 open MonoDevelop.FSharp.Editor
-open Microsoft.FSharp.Compiler.Range
+open FSharp.Compiler.Range
 open MonoDevelop.FSharp.Shared
 
 type QuickFixMenuHandler() =
@@ -726,9 +726,9 @@ type QuickFixMenuHandler() =
     let getSymbolUseForEditorCaret (editor: TextEditor) = 
         match IdeApp.Workbench.ActiveDocument with
         | null -> async { return None }
-        | doc when doc.FileName = FilePath.Null || doc.FileName <> editor.FileName || doc.ParsedDocument = null -> async { return None }
+        | doc when doc.FileName = FilePath.Null || doc.FileName <> editor.FileName || doc.DocumentContext.ParsedDocument = null -> async { return None }
         | _doc ->
-            let documentContext = _doc
+            let documentContext = _doc.DocumentContext
             async {
                 LoggingService.logDebug "HighlightUsagesExtension: ResolveAsync starting on %s" (documentContext.Name |> IO.Path.GetFileName )
                 try

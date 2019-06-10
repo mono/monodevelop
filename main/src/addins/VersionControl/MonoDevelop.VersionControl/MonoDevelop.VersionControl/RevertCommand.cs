@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl
 				if (test)
 					return items.All (i => i.VersionInfo.CanRevert);
 
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?"), 
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes made in the selected files?"), 
 				                                GettextCatalog.GetString ("All changes made to the selected files will be permanently lost."),
 				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
@@ -53,12 +53,18 @@ namespace MonoDevelop.VersionControl
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Reverting ...");
 			}
-			
+
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Revert (list.Paths, true, Monitor);
-				
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					try {
+						list [0].Repository.Revert (list.Paths, true, Monitor);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Revert operation failed", ex);
+						Monitor.ReportError (ex.Message, null);
+						return;
+					}
+				}
 				Gtk.Application.Invoke ((o, args) => {
 					foreach (VersionControlItem item in items) {
 						if (!item.IsDirectory) {

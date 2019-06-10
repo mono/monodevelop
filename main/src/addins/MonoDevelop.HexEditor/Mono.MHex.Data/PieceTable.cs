@@ -63,7 +63,7 @@ namespace Mono.MHex.Data
 				this.Length = length;
 			}
 			
-			public abstract byte[] GetBytes (HexEditorData hexEditorData, long myOffset, long offset, int count);
+			public abstract byte[] GetBytes (ByteBuffer byteBuffer, long myOffset, long offset, int count);
 			
 			public TreeNode SplitRight (long leftLength)
 			{
@@ -85,9 +85,9 @@ namespace Mono.MHex.Data
 				this.BufferOffset = bufferOffset;
 			}
 			
-			public override byte[] GetBytes (HexEditorData hexEditorData, long myOffset, long offset, int count)
+			public override byte[] GetBytes (ByteBuffer byteBuffer, long myOffset, long offset, int count)
 			{
-				return hexEditorData.buffer.GetBytes (BufferOffset + offset - myOffset, count);
+				return byteBuffer.Buffer.GetBytes (BufferOffset + offset - myOffset, count);
 			}
 			
 			protected override TreeNode InternalSplitRight (long leftLength)
@@ -120,13 +120,9 @@ namespace Mono.MHex.Data
 				this.AddBufferOffset = addBufferOffset;
 			}
 			
-			public override byte[] GetBytes (HexEditorData hexEditorData, long myOffset, long offset, int count)
+			public override byte[] GetBytes (ByteBuffer byteBuffer, long myOffset, long offset, int count)
 			{
-				byte[] result = new byte[count];
-				for (int i = 0, j = (int)(AddBufferOffset + offset - myOffset); i < result.Length; i++, j++) {
-					result[i] = hexEditorData.addBuffer [j];
-				}
-				return result;
+				return byteBuffer.AddBuffer.GetBytes (AddBufferOffset + offset - myOffset, count);
 			}
 			
 			protected override TreeNode InternalSplitRight (long leftLength)

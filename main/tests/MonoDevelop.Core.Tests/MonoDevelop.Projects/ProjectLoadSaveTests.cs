@@ -1393,6 +1393,19 @@ namespace MonoDevelop.Projects
 				Assert.That (p.LoadError, Contains.Substring ("circular dependency"));
 			}
 		}
+
+		[Test]
+		public async Task Save_SdkProject_ToolsVersionCurrent ()
+		{
+			string projectFile = Util.GetSampleProject ("tools-version-current", "netstandard.csproj");
+			using (var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject) {
+				p.DefaultNamespace = "Test";
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.IsTrue (MSBuildFileFormat.ToolsSupportMonikers ("Current"));
+				Assert.IsTrue (MSBuildFileFormat.ToolsSupportMonikers ("current"));
+			}
+		}
 	}
 
 	class CustomItem : ProjectItem

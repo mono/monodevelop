@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CodeFormattingPanelWidget.cs
 //  
 // Author:
@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		MimeTypePanelData AddPanel (string mt)
 		{
-			var chain = new List<string> (DesktopService.GetMimeTypeInheritanceChain (mt).Where (mimeTypesWithPolicies.Contains));
+			var chain = new List<string> (IdeServices.DesktopService.GetMimeTypeInheritanceChain (mt).Where (mimeTypesWithPolicies.Contains));
 			if (chain.Count == 0)
 				return null;
 			MimeTypePanelData data = new MimeTypePanelData ();
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			sec.Fill = true;
 			data.Section = sec;
 			data.MimeType = mt;
-			data.TypeDescription = DesktopService.GetMimeTypeDescription (mt);
+			data.TypeDescription = IdeServices.DesktopService.GetMimeTypeDescription (mt);
 			if (string.IsNullOrEmpty (data.TypeDescription))
 				data.TypeDescription = mt;
 			data.DataObject = DataObject;
@@ -244,8 +244,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 			else if (item is Project) {
 				foreach (ProjectFile pf in ((Project)item).Files) {
-					string mt = DesktopService.GetMimeTypeForUri (pf.FilePath);
-					foreach (string mth in DesktopService.GetMimeTypeInheritanceChain (mt))
+					string mt = IdeServices.DesktopService.GetMimeTypeForUri (pf.FilePath);
+					foreach (string mth in IdeServices.DesktopService.GetMimeTypeInheritanceChain (mt))
 						types.Add (mth);
 				}
 			}
@@ -398,7 +398,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void Fill ()
 		{
 			foreach (MimeTypePanelData mt in panel.GetMimeTypeData ()) {
-				store.AppendValues (mt, DesktopService.GetIconForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
+				store.AppendValues (mt, IdeServices.DesktopService.GetIconForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 			}
 		}
 		
@@ -422,7 +422,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			try {
 				if (MessageService.RunCustomDialog (dlg, this.Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
 					MimeTypePanelData mt = panel.AddGlobalMimeType (dlg.MimeType);
-					store.AppendValues (mt, DesktopService.GetIconForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
+					store.AppendValues (mt, IdeServices.DesktopService.GetIconForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 				}
 			} finally {
 				dlg.Destroy ();

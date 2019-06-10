@@ -32,6 +32,6 @@ namespace MonoDevelop.Debugger
 {
 	public interface IDebuggerCompletionProvider
 	{
-		Task<CompletionData> GetExpressionCompletionData (string exp, StackFrame frame, CancellationToken token);
+		Task<CompletionData> GetExpressionCompletionDataAsync (string exp, StackFrame frame, CancellationToken token);
 	}
 }

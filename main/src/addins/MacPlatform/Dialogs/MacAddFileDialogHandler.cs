@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -51,7 +51,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			using (var panel = CreatePanel (data, out NSPopUpButton popup)) {
 				if (panel.RunModal () == 0) {
-					DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
 				
@@ -61,7 +61,7 @@ namespace MonoDevelop.MacIntegration
 				if (idx >= 0)
 					data.OverrideAction = data.BuildActions[idx];
 
-				DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+				IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			}
 		}

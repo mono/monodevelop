@@ -70,9 +70,15 @@ namespace MonoDevelop.Debugger
 		{
 			tree.AddExpression (expression);
 		}
-		
+
+		public override void OnUpdateValues ()
+		{
+			base.OnUpdateValues ();
+			tree.Update ();
+		}
+
 		#region IMementoCapable implementation 
-		
+
 		public ICustomXmlSerializer Memento {
 			get {
 				return this;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -88,7 +88,7 @@ namespace MonoDevelop.ConnectedServices
 						LoggingService.LogInfo ("Adding code dependency '{0}' to '{1}'...", this, this.Service.Project.Name);
 					}
 
-					var compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+					var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
 
 					if (compilation == null) {
 						LoggingService.LogInternalError ("Could not get compilation object.", null);
@@ -128,7 +128,7 @@ namespace MonoDevelop.ConnectedServices
 						LoggingService.LogInfo ("Removing code dependency '{0}' from '{1}'...", this, this.Service.Project.Name);
 					}
 
-					var compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+					var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
 
 					if (compilation == null) {
 						LoggingService.LogInternalError ("Could not get compilation object.", null);

@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Utilities;
 	using UIElement = Xwt.Widget;
 
-	[Export(typeof(IViewElementFactory))]
+	//[Export(typeof(IViewElementFactory))]
     [Name("default ImageElement to UIElement")]
     [TypeConversion(from: typeof(ImageElement), to: typeof(UIElement))]
     [Order]

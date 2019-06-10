@@ -174,11 +174,11 @@ namespace MonoDevelop.Components.Docking
 				return null;
 			}
 		}
-		
-		new public Gtk.Widget CurrentPage {
+
+		public Widget CurrentPage {
 			get {
 				if (currentTab != -1) {
-					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
+					var t = (DockItemTitleTab) box.Children [currentTab];
 					return t.Page;
 				} else
 					return null;
@@ -187,7 +187,7 @@ namespace MonoDevelop.Components.Docking
 				if (value != null) {
 					Gtk.Widget[] tabs = box.Children;
 					for (int n = 0; n < tabs.Length; n++) {
-						DockItemTitleTab tab = (DockItemTitleTab) tabs [n];
+						var tab = (DockItemTitleTab) tabs [n];
 						if (tab.Page == value) {
 							CurrentTab = n;
 							return;

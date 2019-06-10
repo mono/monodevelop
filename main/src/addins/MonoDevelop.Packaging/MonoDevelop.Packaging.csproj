@@ -7,37 +7,13 @@
     <ProjectGuid>{443311BF-766D-4863-B5A1-AFAA7F41DBDA}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.Packaging</OutputPath>
+    <_BuildPackagingVersion>0.2.5-dev.8</_BuildPackagingVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="NuGet.Protocol">
-      <HintPath>..\..\..\packages\NuGet.Protocol.4.8.0\lib\net46\NuGet.Protocol.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Packaging">
-      <HintPath>..\..\..\packages\NuGet.Packaging.4.8.0\lib\net46\NuGet.Packaging.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Packaging.Core">
-      <HintPath>..\..\..\packages\NuGet.Packaging.Core.4.8.0\lib\net46\NuGet.Packaging.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Frameworks">
-      <HintPath>..\..\..\packages\NuGet.Frameworks.4.8.0\lib\net46\NuGet.Frameworks.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="NuGet.PackageManagement">
-      <HintPath>..\..\..\packages\NuGet.PackageManagement.4.8.0\lib\net46\NuGet.PackageManagement.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,19 +115,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Targets\NuGet.Packaging.Authoring.props">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Targets\NuGet.Packaging.Authoring.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\CrossPlatformLibrary.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\PackagingProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ExtensionContent Include="Targets\NuGet.Packaging.Authoring.props" />
+    <ExtensionContent Include="Targets\NuGet.Packaging.Authoring.targets" />
+    <ExtensionContent Include="Templates\CrossPlatformLibrary.xpt.xml" />
+    <ExtensionContent Include="Templates\PackagingProject.xpt.xml" />
+    <DownloadNupkg Include="NuGet.Build.Packaging" Version="$(_BuildPackagingVersion)" ExtensionDir="packages" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="PostBuild.proj" />
 </Project>

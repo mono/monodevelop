@@ -59,6 +59,8 @@ namespace MonoDevelop.Core
 		static SynchronizationContext defaultSynchronizationContext;
 		static RuntimePreferences preferences = new RuntimePreferences ();
 		static Thread mainThread;
+		static BasicServiceProvider mainServiceProvider = new BasicServiceProvider ();
+		static bool serviceProviderSealed = false;
 
 		public static void GetAddinRegistryLocation (out string configDir, out string addinsDir, out string databaseDir)
 		{
@@ -196,7 +198,7 @@ namespace MonoDevelop.Core
 		
 		static void SetupInstrumentation ()
 		{
-			InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
+			InstrumentationService.Enabled = IsInstrumentationServiceEnabled ();
 			if (InstrumentationService.Enabled) {
 				LoggingService.LogInfo ("Instrumentation Service started");
 				try {
@@ -206,9 +208,12 @@ namespace MonoDevelop.Core
 					LoggingService.LogError ("Instrumentation service could not be published", ex);
 				}
 			}
-			Runtime.Preferences.EnableInstrumentation.Changed += (s,e) => InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
+			Runtime.Preferences.EnableInstrumentation.Changed += (s,e) => InstrumentationService.Enabled = IsInstrumentationServiceEnabled ();
 		}
-		
+
+		static bool IsInstrumentationServiceEnabled ()
+			=> !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONO_AUTOTEST_CLIENT")) || Runtime.Preferences.EnableInstrumentation;
+
 		static void OnLoadError (object s, AddinErrorEventArgs args)
 		{
 			string msg = "Add-in error (" + args.AddinId + "): " + args.Message;
@@ -537,8 +542,75 @@ namespace MonoDevelop.Core
 
 			return Assembly.LoadFrom (asmPath);
 		}
+
+		/// <summary>
+		/// Returns the service of the provided type, creating and initializing it if necessary
+		/// </summary>
+		/// <returns>The service.</returns>
+		/// <typeparam name="T">The type of the service being requested</typeparam>
+		public static Task<T> GetService<T> () where T: class
+		{
+			return mainServiceProvider.GetService<T> ();
+		}
+
+		/// <summary>
+		/// Returns the service of the provided type if it has been initialized, null otherwise
+		/// </summary>
+		/// <returns>The service.</returns>
+		/// <typeparam name="T">The type of the service being requested</typeparam>
+		public static T PeekService<T> () where T : class
+		{
+			return mainServiceProvider.PeekService<T> ();
+		}
+
+		/// <summary>
+		/// Registers the implementation of a service
+		/// </summary>
+		/// <typeparam name="ServiceType">The service type.</typeparam>
+		/// <typeparam name="ImplementationType">The implementation type.</typeparam>
+		public static void RegisterServiceType<ServiceType,ImplementationType> () where ServiceType : class where ImplementationType : ServiceType
+		{
+			mainServiceProvider.RegisterServiceType (typeof (ServiceType), typeof (ImplementationType));
+		}
+
+		public static void RegisterService<T> (object service)
+		{
+			mainServiceProvider.RegisterService<T> (service);
+		}
+
+		public static void RegisterService (Type serviceType, object service)
+		{
+			mainServiceProvider.RegisterService (serviceType, service);
+		}
+
+		/// <summary>
+		/// Sets the service provider for this runtime
+		/// </summary>
+		/// <param name="serviceProvider">The new service provider.</param>
+		public static async Task ReplaceServiceProvider (BasicServiceProvider serviceProvider)
+		{
+			if (serviceProviderSealed)
+				throw new InvalidOperationException ("Service provider can't be replaced");
+
+			await mainServiceProvider.Dispose ();
+			mainServiceProvider = serviceProvider;
+		}
+
+		/// <summary>
+		/// Seals the main service provider, so that it can't be replaced anymore
+		/// </summary>
+		public static void SealServiceProvider ()
+		{
+			serviceProviderSealed = true;
+		}
+
+		/// <summary>
+		/// Gets the main service provider.
+		/// </summary>
+		/// <value>The service provider.</value>
+		public static ServiceProvider ServiceProvider => mainServiceProvider;
 	}
-	
+
 	internal static class Counters
 	{
 		public static TimerCounter RuntimeInitialization = InstrumentationService.CreateTimerCounter ("Runtime initialization", "Runtime", id:"Core.RuntimeInitialization");

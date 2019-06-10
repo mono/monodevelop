@@ -30,7 +30,6 @@ using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Language.Intellisense.Implementation;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Formatting;
-using Microsoft.VisualStudio.Text.Implementation;
 using MonoDevelop.Core.Text;
 using System.Threading;
 using MonoDevelop.Ide;
@@ -76,11 +75,11 @@ namespace Mono.TextEditor
 
 			public SnapshotSpan Extent => new SnapshotSpan (Snapshot, line.Offset, line.Length);
 
-			public IMappingSpan ExtentAsMappingSpan => new MappingSpan (Extent, SpanTrackingMode.EdgeInclusive, null);
+			public IMappingSpan ExtentAsMappingSpan => textEditor.BufferGraph.CreateMappingSpan (Extent, SpanTrackingMode.EdgeInclusive);
 
 			public SnapshotSpan ExtentIncludingLineBreak => new SnapshotSpan (Snapshot, line.Offset, line.LengthIncludingDelimiter);
 
-			public IMappingSpan ExtentIncludingLineBreakAsMappingSpan => new MappingSpan (ExtentIncludingLineBreak, SpanTrackingMode.EdgeInclusive, null);
+			public IMappingSpan ExtentIncludingLineBreakAsMappingSpan => textEditor.BufferGraph.CreateMappingSpan (ExtentIncludingLineBreak, SpanTrackingMode.EdgeInclusive);
 
 			public SnapshotPoint Start => new SnapshotPoint (Snapshot, line.Offset);
 
@@ -259,6 +258,37 @@ namespace Mono.TextEditor
 			{
 				return new Span (line.Offset, line.LengthIncludingDelimiter).IntersectsWith (bufferSpan);
 			}
+#if MAC
+			public void SetChange (TextViewLineChange change)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetTop (double top)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetDeltaY (double deltaY)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetSnapshot (ITextSnapshot visualSnapshot, ITextSnapshot editSnapshot)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetLineTransform (LineTransform transform)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void Dispose ()
+			{
+				throw new NotImplementedException ();
+			}
+#endif
 		}
 	}
 }

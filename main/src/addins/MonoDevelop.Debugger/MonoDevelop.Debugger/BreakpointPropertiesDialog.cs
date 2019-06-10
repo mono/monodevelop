@@ -1,4 +1,4 @@
-//
+﻿//
 // BreakpointsPropertiesDialog.cs
 //
 // Author:
@@ -624,7 +624,7 @@ namespace MonoDevelop.Debugger
 
 				var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (project != null) {
-					var roslynProj = TypeSystemService.GetProject (project);
+					var roslynProj = IdeApp.TypeSystemService.GetProject (project);
 					if (roslynProj != null) {
 						workspace = (MonoDevelopWorkspace)roslynProj.Solution.Workspace;
 						compilation = await roslynProj.GetCompilationAsync ();
@@ -632,6 +632,9 @@ namespace MonoDevelop.Debugger
 				}
 
 				if (compilation == null) {
+					// TypeSystemService.Workspace always returns a workspace,
+					// even if it might be empty.
+					workspace = workspace ?? (MonoDevelopWorkspace)IdeServices.TypeSystemService.Workspace;
 					var service = workspace.MetadataReferenceManager;
 					var corlib = service.GetOrCreateMetadataReferenceSnapshot (System.Reflection.Assembly.GetAssembly (typeof (object)).Location, MetadataReferenceProperties.Assembly);
 					var system = service.GetOrCreateMetadataReferenceSnapshot (System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location, MetadataReferenceProperties.Assembly);
@@ -863,14 +866,6 @@ namespace MonoDevelop.Debugger
 			Buttons.Add (buttonOk);
 
 			Content = vbox;
-
-			if (IdeApp.Workbench != null) {
-				Gtk.Widget parent = ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (vbox)).Parent;
-				while (parent != null && !(parent is Gtk.Window))
-					parent = parent.Parent;
-				if (parent is Gtk.Window)
-					((Gtk.Window)parent).TransientFor = IdeApp.Workbench.RootWindow;
-			}
 
 			OnUpdateControls (null, null);
 		}

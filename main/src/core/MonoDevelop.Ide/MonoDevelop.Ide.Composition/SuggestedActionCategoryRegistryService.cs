@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MonoDevelop.Ide.Composition
 {
-	[Export(typeof(ISuggestedActionCategoryRegistryService))]
+	//[Export(typeof(ISuggestedActionCategoryRegistryService))]
 	class SuggestedActionCategoryRegistryService : ISuggestedActionCategoryRegistryService
 	{
 		public IEnumerable<ISuggestedActionCategory> Categories => throw new NotImplementedException ();

@@ -35,6 +35,7 @@ namespace MonoDevelop.Components
 		TaskSeverity severity;
 		Xwt.ImageView imageView;
 		string message;
+		bool markup;
 		TooltipPopoverWindow popover;
 		PopupPosition popupPosition = PopupPosition.Top;
 
@@ -69,6 +70,14 @@ namespace MonoDevelop.Components
 				UpdatePopover ();
 
 				this.Accessible.Label = value;
+			}
+		}
+
+		public bool UseMarkup {
+			get { return markup; }
+			set {
+				markup = value;
+				UpdatePopover ();
 			}
 		}
 
@@ -127,7 +136,10 @@ namespace MonoDevelop.Components
 				popover.Destroy ();
 			popover = TooltipPopoverWindow.Create (!WorkaroundNestedDialogFlickering ());
 			popover.ShowArrow = true;
-			popover.Text = message;
+			if (markup)
+				popover.Markup = message;
+			else
+				popover.Text = message;
 			popover.Severity = severity;
 			popover.ShowPopup (this, popupPosition);
 		}

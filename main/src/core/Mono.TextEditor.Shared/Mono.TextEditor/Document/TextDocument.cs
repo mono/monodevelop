@@ -1,22 +1,22 @@
-﻿// 
+//
 // TextDocument.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
-// 
+//
 // Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 // Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,84 +28,63 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Mono.TextEditor.Highlighting;
-using Mono.TextEditor.Utils;
-using System.Linq;
-using System.ComponentModel;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using MonoDevelop.Ide.Composition;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Core;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Platform;
+using Microsoft.VisualStudio.Text.Utilities;
+using Microsoft.VisualStudio.Utilities;
+using Mono.TextEditor.Utils;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace Mono.TextEditor
 {
 	class TextDocument : ITextDocument, IDisposable
 	{
-		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; }
-		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
+		bool vsTextDocumentOwned;
 		Microsoft.VisualStudio.Text.ITextSnapshot currentSnapshot;
+		TextBufferFileModel textBufferFileModel;
 
-		bool lineEndingMismatch;
+		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; private set; }
+
+		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
 
 		//HACK ImmutableText buffer;
 		//HACK readonly ILineSplitter splitter;
 
 		ISyntaxHighlighting syntaxMode = null;
-
-		//HACK TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
-
-		bool   readOnly;
-		ReadOnlyCheckDelegate readOnlyCheckDelegate;
+		string mimeType;
 
 		public string MimeType {
 			get {
-				var snapshot = this.TextBuffer.CurrentSnapshot;
-				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
+				if (mimeType == null && TextBuffer != null) {
+					mimeType = MimeTypeCatalog.Instance.GetMimeTypeForContentType (TextBuffer.ContentType);
+				}
+				return mimeType ?? MimeTypeCatalog.TextPlain;
 			}
 			set {
-				var newContentType = value != null ? GetContentTypeFromMimeType(null, value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
-
-				if (this.TextBuffer.CurrentSnapshot.ContentType != newContentType) {
-					this.TextBuffer.ChangeContentType(newContentType, null);
+				if (mimeType == value) {
+					return;
 				}
-			}
-		}
 
-		private static IContentType GetContentTypeFromMimeType(string filePath, string mimeType)
-		{
-			if (filePath != null)
-			{
-				var fileToContentTypeService = CompositionManager.GetExportedValue<IFileToContentTypeService> ();
-				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
-				if (contentTypeFromPath != null && 
-					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
-				{
-					return contentTypeFromPath;
+				mimeType = value;
+				var newContentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (value, FileName) ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
+				if (TextBuffer != null && TextBuffer.CurrentSnapshot.ContentType != newContentType) {
+					TextBuffer.ChangeContentType (newContentType, null);
 				}
-			}
 
-			IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
-			if (contentType == null)
-			{
-				// fallback 1: see if there is a content tyhpe with the same name
-				contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType(mimeType);
-				if (contentType == null)
-				{
-					// No joy, create a content type that, by default, derives from text. This is strictly an error
-					// (there should be mappings between any mime type and any content type).
-					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType(mimeType, new string[] { "text" });
-				}
+				MimeTypeChanged?.Invoke (this, EventArgs.Empty);
 			}
-
-			return contentType;
 		}
 
 		public event EventHandler MimeTypeChanged;
@@ -161,9 +140,9 @@ namespace Mono.TextEditor
 		void SyntaxMode_HighlightingStateChanged (object sender, MonoDevelop.Ide.Editor.LineEventArgs e)
 		{
 			if (e == MonoDevelop.Ide.Editor.LineEventArgs.AllLines) {
-				CommitUpdateAll (true);
-			} else { 
-				CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber, true);
+				CommitUpdateAll (false);
+			} else {
+				CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber, false);
 			}
 		}
 
@@ -215,41 +194,58 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public bool HasLineEndingMismatchOnTextSet {
-			get {
-				return lineEndingMismatch;
-			}
-			set {
-				lineEndingMismatch = value;
+		void AttachTextBuffer (Microsoft.VisualStudio.Text.ITextDocument textDocument, bool owned)
+		{
+			DetachTextBuffer ();
+			vsTextDocumentOwned = owned;
+			this.VsTextDocument = textDocument;
+
+			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
+
+			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
+			this.TextBuffer.Changed += this.OnTextBufferChanged;
+
+			// BaseBuffer is internal so have to use Reflection
+			//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
+			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			changedImmediateEventInfo.AddMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
+			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
+			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
+		}
+
+		void DetachTextBuffer ()
+		{
+			if (VsTextDocument != null) {
+				// BaseBuffer is internal so have to use Reflection
+				//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
+				var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+				changedImmediateEventInfo.RemoveMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
+
+				this.TextBuffer.Changed -= this.OnTextBufferChanged;
+				this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
+				this.TextBuffer.Properties.RemoveProperty (typeof (ITextDocument));
+				this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
+				if (vsTextDocumentOwned) {
+					vsTextDocumentOwned = false;
+					this.VsTextDocument.Dispose ();
+				}
 			}
 		}
 
+		public bool HasLineEndingMismatchOnTextSet { get; set; }
+
 		protected void Initialize()
 		{
-			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
-
-			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
-			this.TextBuffer.Changed += this.OnTextBufferChanged;
-			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
-			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
-
-			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
-
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
 		}
 
 		public void Dispose()
 		{
-			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
-			this.TextBuffer.Changed -= this.OnTextBufferChanged;
-			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
-			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
-			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
 			SyntaxMode = null;
 
-			// Dispose this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
-			this.VsTextDocument.Dispose ();
+			// Dispose ITextDocument this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
+			DetachTextBuffer ();
 		}
 
 		private void OnTextBufferChangedImmediate (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
@@ -263,7 +259,8 @@ namespace Mono.TextEditor
 			}
 			var textChange = new TextChangeEventArgs(changes);
 
-			TextChanging?.Invoke(this, textChange);           
+			TextChanging?.Invoke (this, textChange);
+
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
 		}
@@ -324,31 +321,49 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
-		public TextDocument (string fileName, string mimeType)
+		public TextDocument (TextBufferFileModel textBufferFileModel)
 		{
-			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
-			Encoding enc;
-			var text = TextFileUtility.GetText (fileName, out enc);
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
-			                                                                                 contentType);
-			
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
-			this.VsTextDocument.Encoding = enc;
+			var doc = textBufferFileModel.TextDocument;
 
-			this.Initialize();
+			AttachTextBuffer (doc, false);
+			this.Initialize ();
+
+			this.textBufferFileModel = textBufferFileModel;
+			textBufferFileModel.TextBufferInstanceChanged += TextBufferFileModel_TextBufferInstanceChanged;
 		}
+
+		public TextDocument (string fileName, string mimeType) : this (
+			TextFileUtility.GetText (fileName, out var enc),
+			fileName,
+			mimeType
+		) { this.Encoding = enc; }
 
 		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
-			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
-																							contentType);
+			this.mimeType = mimeType;
+			var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (
+				PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (
+					text ?? string.Empty,
+					GetContentTypeFromMimeType (fileName, mimeType)
+				),
+				fileName ?? string.Empty
+			);
 
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, fileName ?? string.Empty);
-			this.VsTextDocument.Encoding = TextFileUtility.DefaultEncoding;
+			doc.Encoding = TextFileUtility.DefaultEncoding;
 
-			this.Initialize();
+			AttachTextBuffer (doc, true);
+			Initialize();
 		}
+
+		void TextBufferFileModel_TextBufferInstanceChanged (object sender, EventArgs e)
+		{
+			var doc = textBufferFileModel.TextDocument;
+			AttachTextBuffer (doc, false);
+		}
+
+		IContentType GetContentTypeFromMimeType (string fileName, string mimeType)
+			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType, fileName)
+				?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
@@ -398,7 +413,7 @@ namespace Mono.TextEditor
 		{
 			ReplaceText (offset, count, (string)null);
 		}
-		
+
 		public void RemoveText (ISegment segment)
 		{
 			RemoveText (segment.Offset, segment.Length);
@@ -456,17 +471,17 @@ namespace Mono.TextEditor
 		{
 			return GetTextBetween (LocationToOffset (start), LocationToOffset (end));
 		}
-		
+
 		public string GetTextBetween (int startLine, int startColumn, int endLine, int endColumn)
 		{
 			return GetTextBetween (LocationToOffset (startLine, startColumn), LocationToOffset (endLine, endColumn));
 		}
-		
+
 		public string GetTextAt (int offset, int count)
 		{
 			return this.currentSnapshot.GetText(offset, count);
 		}
-		
+
 		public string GetTextAt (DocumentRegion region)
 		{
 			return GetTextAt (region.GetSegment (this));
@@ -491,13 +506,13 @@ namespace Mono.TextEditor
 			var lineSegment = GetLine (line);
 			return lineSegment != null ? GetTextAt (lineSegment.Offset, lineSegment.Length) : null;
 		}
-		
+
 		public string GetLineText (int line, bool includeDelimiter)
 		{
 			var lineSegment = GetLine (line);
 			return GetTextAt (lineSegment.Offset, includeDelimiter ? lineSegment.LengthIncludingDelimiter : lineSegment.Length);
 		}
-		
+
 		public char GetCharAt (int offset)
 		{
 			return this.currentSnapshot[offset];
@@ -589,7 +604,7 @@ namespace Mono.TextEditor
 		{
 			return Text.IndexOfAny (anyOf, startIndex, count);
 		}
-		
+
 		/// <summary>
 		/// Gets the index of the first occurrence of the specified search text in this text source.
 		/// </summary>
@@ -602,7 +617,7 @@ namespace Mono.TextEditor
 		{
 			return Text.IndexOf (searchText, startIndex, count, comparisonType);
 		}
-		
+
 		/// <summary>
 		/// Gets the index of the last occurrence of the specified character in this text source.
 		/// </summary>
@@ -616,7 +631,7 @@ namespace Mono.TextEditor
 		{
 			return Text.LastIndexOf (c, startIndex, count);
 		}
-		
+
 		/// <summary>
 		/// Gets the index of the last occurrence of the specified search text in this text source.
 		/// </summary>
@@ -681,12 +696,12 @@ namespace Mono.TextEditor
 			DocumentLine documentLine = GetLine(line);
 			return System.Math.Min(Length, documentLine.Offset + System.Math.Max(0, System.Math.Min(documentLine.Length, column - 1)));
 		}
-		
+
 		public int LocationToOffset (DocumentLocation location)
 		{
 			return LocationToOffset(location.Line, location.Column);
 		}
-		
+
 		public DocumentLocation OffsetToLocation (int offset)
 		{
 			IDocumentLine line = this.GetLineByOffset(offset);
@@ -701,19 +716,19 @@ namespace Mono.TextEditor
 		{
 			return GetLineIndent (GetLine (lineNumber));
 		}
-		
+
 		public string GetLineIndent (DocumentLine segment)
 		{
 			if (segment == null)
 				return "";
 			return segment.GetIndentation (this);
 		}
-		
+
 		public DocumentLine GetLine (int lineNumber)
 		{
 			if (lineNumber < DocumentLocation.MinLine)
 				return null;
-			
+
 			return this.Get (lineNumber);
 		}
 
@@ -723,13 +738,12 @@ namespace Mono.TextEditor
 		}
 
 		DocumentLine cachedLine;
-		int cachedLineNumber = -1;
 		DocumentLine cachedLineFromLineNumber;
 
 		void ClearLineCache ()
 		{
 			cachedLine = null;
-			cachedLineNumber = -1;
+			cachedLineFromLineNumber = null;
 		}
 
 		public DocumentLine GetLineByOffset (int offset)
@@ -767,33 +781,39 @@ namespace Mono.TextEditor
 			readonly int afterVersionNumber;
 			Microsoft.VisualStudio.Text.INormalizedTextChangeCollection changes;
 
+			/// <summary>
+			/// The type itself is being used as a marker and it's internal, so have to retrieve it via Reflection
+			/// </summary>
+			readonly Type textBufferChangeUndoPrimitiveType;
+
 			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
 					return changes;
 				}
 			}
-			
+
 			public object Tag {
 				get;
 				set;
 			}
-			
+
 			protected UndoOperation()
 			{
+				// The type is in the consolidated editor implementation assembly
+				textBufferChangeUndoPrimitiveType = typeof (ITextViewRoleMetadata).Assembly.GetType ("Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive");
 			}
 
-			public UndoOperation (Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
+			public UndoOperation (Microsoft.VisualStudio.Text.TextContentChangedEventArgs args) : this()
 			{
 				this.beforeVersionNumber = args.BeforeVersion.VersionNumber;
 				this.afterVersionNumber = args.AfterVersion.VersionNumber;
-
 				this.changes = args.Changes;
 			}
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, null, textBufferChangeUndoPrimitiveType)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.NewPosition, change.NewLength, change.OldText);
 
@@ -804,11 +824,11 @@ namespace Mono.TextEditor
 				if (fireEvent)
 					OnUndoDone ();
 			}
-			
+
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, null, textBufferChangeUndoPrimitiveType)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.OldPosition, change.OldLength, change.NewText);
 
@@ -819,14 +839,14 @@ namespace Mono.TextEditor
 				if (fireEvent)
 					OnRedoDone ();
 			}
-			
+
 			protected virtual void OnUndoDone ()
 			{
 				if (UndoDone != null)
 					UndoDone (this, EventArgs.Empty);
 			}
 			public event EventHandler UndoDone;
-			
+
 			protected virtual void OnRedoDone ()
 			{
 				if (RedoDone != null)
@@ -834,7 +854,7 @@ namespace Mono.TextEditor
 			}
 			public event EventHandler RedoDone;
 		}
-		
+
 		class AtomicUndoOperation : UndoOperation
 		{
 			OperationType operationType;
@@ -845,7 +865,7 @@ namespace Mono.TextEditor
 					return operationType;
 				}
 			}
-			
+
 			public List<UndoOperation> Operations {
 				get {
 					return operations;
@@ -862,18 +882,18 @@ namespace Mono.TextEditor
 			{
 				this.operationType = operationType;
 			}
-		
+
 
 			public void Insert (int index, UndoOperation operation)
 			{
 				operations.Insert (index, operation);
 			}
-			
+
 			public void Add (UndoOperation operation)
 			{
 				operations.Add (operation);
 			}
-			
+
 			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.BeginAtomicUndo (operationType);
@@ -888,7 +908,7 @@ namespace Mono.TextEditor
 				if (fireEvent)
 					OnUndoDone ();
 			}
-			
+
 			public override void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.BeginAtomicUndo (operationType);
@@ -904,11 +924,11 @@ namespace Mono.TextEditor
 					OnRedoDone ();
 			}
 		}
-		
+
 		class KeyboardStackUndo : AtomicUndoOperation
 		{
 			bool isClosed = false;
-			
+
 			public bool IsClosed {
 				get {
 					return isClosed;
@@ -924,7 +944,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		bool isInUndo = false;
 		Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
 		Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
@@ -961,7 +981,7 @@ namespace Mono.TextEditor
 				return this.undoStack.Count > 0 || currentAtomicOperation != null;
 			}
 		}
-		
+
 		UndoOperation[] savePoint = null;
 		public bool IsDirty {
 			get {
@@ -979,7 +999,7 @@ namespace Mono.TextEditor
 				return false;
 			}
 		}
-		
+
 		public enum LineState {
 			Unchanged,
 			Dirty,
@@ -996,13 +1016,13 @@ namespace Mono.TextEditor
 				diffTracker = value;
 			}
 		}
-		
+
 		public LineState GetLineState (DocumentLine line)
 		{
 			return diffTracker.GetLineState (line);
 		}
-		
-		
+
+
 		/// <summary>
 		/// Marks the document not dirty at this point (should be called after save).
 		/// </summary>
@@ -1014,7 +1034,7 @@ namespace Mono.TextEditor
 			this.CommitUpdateAll ();
 			DiffTracker.SetBaseDocument (CreateDocumentSnapshot ());
 		}
-		
+
 		public void OptimizeTypedUndo ()
 		{
 			if (undoStack.Count == 0)
@@ -1049,12 +1069,12 @@ namespace Mono.TextEditor
 				undoStack.Push (keyUndo);
 			}
 		}
-		
+
 		public int GetCurrentUndoDepth ()
 		{
 			return undoStack.Count;
 		}
-		
+
 		public void StackUndoToDepth (int depth)
 		{
 			if (undoStack.Count == depth)
@@ -1065,7 +1085,7 @@ namespace Mono.TextEditor
 			}
 			undoStack.Push (atomicUndo);
 		}
-		
+
 		public void MergeUndoOperations (int number)
 		{
 			number = System.Math.Min (number, undoStack.Count);
@@ -1075,7 +1095,7 @@ namespace Mono.TextEditor
 			}
 			undoStack.Push (atomicUndo);
 		}
-		
+
 		public void Undo ()
 		{
 			if (undoStack.Count <= 0)
@@ -1107,7 +1127,7 @@ namespace Mono.TextEditor
 		}
 
 		public event EventHandler<UndoOperationEventArgs> Undone;
-		
+
 		internal protected virtual void OnBeforeUndoOperation (EventArgs e)
 		{
 			var handler = this.BeforeUndoOperation;
@@ -1122,7 +1142,7 @@ namespace Mono.TextEditor
 				return this.redoStack.Count > 0;
 			}
 		}
-		
+
 		public void Redo ()
 		{
 			if (redoStack.Count <= 0)
@@ -1134,16 +1154,16 @@ namespace Mono.TextEditor
 			isInUndo = false;
 			OnRedone (new UndoOperationEventArgs (operation));
 		}
-		
+
 		internal protected virtual void OnRedone (UndoOperationEventArgs e)
 		{
 			EventHandler<UndoOperationEventArgs> handler = this.Redone;
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
 		public event EventHandler<UndoOperationEventArgs> Redone;
-		 
+
 		Stack<OperationType> currentAtomicUndoOperationType =  new Stack<OperationType> ();
 		int atomicUndoLevel;
 
@@ -1158,11 +1178,11 @@ namespace Mono.TextEditor
 				return currentAtomicUndoOperationType.Count > 0 ?  currentAtomicUndoOperationType.Peek () : OperationType.Undefined;
 			}
 		}
-		
+
 		class UndoGroup : IDisposable
 		{
 			TextDocument doc;
-			
+
 			public UndoGroup (TextDocument doc, OperationType operationType)
 			{
 				if (doc == null)
@@ -1179,7 +1199,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		public IDisposable OpenUndoGroup()
 		{
 			return OpenUndoGroup(OperationType.Undefined);
@@ -1194,7 +1214,7 @@ namespace Mono.TextEditor
 		{
 			currentAtomicUndoOperationType.Push (operationType);
 			if (currentAtomicOperation == null) {
-				Debug.Assert (atomicUndoLevel == 0); 
+				Debug.Assert (atomicUndoLevel == 0);
 				currentAtomicOperation = new AtomicUndoOperation (operationType);
 				OnBeginUndo ();
 			}
@@ -1206,8 +1226,8 @@ namespace Mono.TextEditor
 			if (atomicUndoLevel <= 0)
 				throw new InvalidOperationException ("There is no atomic undo operation running.");
 			atomicUndoLevel--;
-			Debug.Assert (atomicUndoLevel >= 0); 
-			
+			Debug.Assert (atomicUndoLevel >= 0);
+
 			if (atomicUndoLevel == 0 && currentAtomicOperation != null) {
 				var cuao = currentAtomicOperation;
 				currentAtomicOperation = null;
@@ -1226,19 +1246,19 @@ namespace Mono.TextEditor
 			}
 			currentAtomicUndoOperationType.Pop ();
 		}
-		
+
 		protected virtual void OnBeginUndo ()
 		{
-			if (BeginUndo != null) 
+			if (BeginUndo != null)
 				BeginUndo (this, EventArgs.Empty);
 		}
-		
+
 		public void ClearUndoBuffer ()
 		{
 			undoStack.Clear ();
 			redoStack.Clear ();
 		}
-		
+
 		[Serializable]
 		public sealed class UndoOperationEventArgs : EventArgs
 		{
@@ -1248,41 +1268,41 @@ namespace Mono.TextEditor
 			{
 				this.Operation = operation;
 			}
-			
+
 		}
-		
+
 		protected virtual void OnEndUndo (UndoOperationEventArgs e)
 		{
 			EventHandler<UndoOperationEventArgs> handler = this.EndUndo;
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
 		public event EventHandler                         BeginUndo;
 		public event EventHandler<UndoOperationEventArgs> EndUndo;
 #endregion
-		
+
 #region Folding
-		
+
 		SegmentTree<FoldSegment> foldSegmentTree = new SegmentTree<FoldSegment> ();
-		
+
 		public bool IgnoreFoldings {
 			get;
 			set;
 		}
-		
+
 		public bool HasFoldSegments {
 			get {
 				return FoldSegments.Any ();
 			}
 		}
-		
+
 		public IEnumerable<FoldSegment> FoldSegments {
 			get {
 				return foldSegmentTree.Segments;
 			}
 		}
-		
+
 		readonly object syncObject = new object();
 
 		CancellationTokenSource foldSegmentSrc;
@@ -1328,13 +1348,13 @@ namespace Mono.TextEditor
 				}, token);
 			}
 		}
-		
+
 		void RemoveFolding (FoldSegment folding)
 		{
 			folding.isAttached = false;
 			foldSegmentTree.Remove (folding);
 		}
-		
+
 		/// <summary>
 		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
 		/// Use UpdateFoldSegments instead.
@@ -1397,7 +1417,7 @@ namespace Mono.TextEditor
 			update = foldedSegmentAdded || countChanged || foldedFoldingRemoved;
 			return newFoldedSegments;
 		}
-		
+
 		internal void InterruptFoldWorker ()
 		{
 			if (foldSegmentSrc == null)
@@ -1405,28 +1425,28 @@ namespace Mono.TextEditor
 			foldSegmentSrc.Cancel ();
 			foldSegmentSrc = null;
 		}
-		
+
 		public void ClearFoldSegments ()
 		{
 			InterruptFoldWorker ();
 			foldSegmentTree = new SegmentTree<FoldSegment> ();
-			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
+			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			foldedSegments.Clear ();
 			InformFoldTreeUpdated ();
 		}
-		
+
 		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 		{
 			if (offset < 0 || offset >= Length)
 				return new FoldSegment[0];
 			return foldSegmentTree.GetSegmentsAt (offset);
 		}
-		
+
 		public IEnumerable<FoldSegment> GetFoldingContaining (int lineNumber)
 		{
 			return GetFoldingContaining(this.GetLine (lineNumber));
 		}
-				
+
 		public IEnumerable<FoldSegment> GetFoldingContaining (DocumentLine line)
 		{
 			if (line == null)
@@ -1443,7 +1463,7 @@ namespace Mono.TextEditor
 		{
 			return GetStartFoldings (this.GetLine (lineNumber));
 		}
-		
+
 		public IEnumerable<FoldSegment> GetStartFoldings (DocumentLine line)
 		{
 			if (line == null)
@@ -1463,7 +1483,7 @@ namespace Mono.TextEditor
 		{
 			return GetStartFoldings (this.GetLine (lineNumber));
 		}
-		
+
 		public IEnumerable<FoldSegment> GetEndFoldings (DocumentLine line)
 		{
 			var lineOffset = line.Offset;
@@ -1482,7 +1502,7 @@ namespace Mono.TextEditor
 		{
 			return segment.GetEndLine (this).LineNumber - segment.GetStartLine (this).LineNumber;
 		}
-		
+
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset && offset < f.EndOffset)) {
@@ -1508,7 +1528,7 @@ namespace Mono.TextEditor
 				handler (this, EventArgs.Empty);
 		}
 		public event EventHandler FoldTreeUpdated;
-		
+
 		HashSet<FoldSegment> foldedSegments = new HashSet<FoldSegment> ();
 
 		public IEnumerable<FoldSegment> FoldedSegments {
@@ -1550,7 +1570,7 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
-		
+
 		List<TextLineMarker> extendingTextMarkers = new List<TextLineMarker> ();
 		public IEnumerable<DocumentLine> LinesWithExtendingTextMarkers {
 			get {
@@ -1558,15 +1578,15 @@ namespace Mono.TextEditor
 					var line = marker.LineSegment;
 					if (line != null)
 						yield return line;
-				} 
+				}
 			}
 		}
-		
+
 		public void AddMarker (int lineNumber, TextLineMarker marker)
 		{
 			AddMarker (this.GetLine (lineNumber), marker);
 		}
-		
+
 		public void AddMarker (DocumentLine line, TextLineMarker marker)
 		{
 			AddMarker (line, marker, true);
@@ -1630,7 +1650,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return;
 			foreach (var marker in GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ())
-				RemoveMarker (marker); 
+				RemoveMarker (marker);
 		}
 
 		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate, int idx = -1)
@@ -1649,19 +1669,19 @@ namespace Mono.TextEditor
 			if (commitUpdate)
 				this.CommitLineUpdate (line);
 		}
-		
+
 		static int CompareMarkers (TextLineMarker left, TextLineMarker right)
 		{
 			if (left.LineSegment == null || right.LineSegment == null)
 				return 0;
 			return left.LineSegment.Offset.CompareTo (right.LineSegment.Offset);
 		}
-		
+
 		public void RemoveMarker (TextLineMarker marker)
 		{
 			RemoveMarker (marker, true);
 		}
-		
+
 		public void RemoveMarker (TextLineMarker marker, bool updateLine)
 		{
 			if (marker == null)
@@ -1690,17 +1710,17 @@ namespace Mono.TextEditor
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}
-		
+
 		public void RemoveMarker (int lineNumber, Type type)
 		{
 			RemoveMarker (this.GetLine (lineNumber), type);
 		}
-		
+
 		public void RemoveMarker (DocumentLine line, Type type)
 		{
 			RemoveMarker (line, type, true);
 		}
-		
+
 		public void RemoveMarker (DocumentLine line, Type type, bool updateLine)
 		{
 			if (line == null || type == null)
@@ -1774,7 +1794,7 @@ namespace Mono.TextEditor
 			textMarkerCacheOffset = offset;
 			return textMarkerSegmentCache = textSegmentMarkerTree.GetSegmentsAt (offset).ToList ();
 		}
-		
+
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
@@ -1809,16 +1829,16 @@ namespace Mono.TextEditor
 		{
 			return new TextSegment (0, Length).Contains (offset);
 		}
-		
+
 		public bool Contains (ISegment segment)
 		{
 			return new TextSegment (0, Length).Contains (segment);
 		}
-		
-		
+
+
 #region Update logic
 		List<DocumentUpdateRequest> updateRequests = new List<DocumentUpdateRequest> ();
-		
+
 		public IEnumerable<DocumentUpdateRequest> UpdateRequests {
 			get {
 				return updateRequests;
@@ -1827,19 +1847,9 @@ namespace Mono.TextEditor
 		// Use CanEdit (int lineNumber) instead for getting a request
 		// if a part of a document can be read. ReadOnly should generally not be used
 		// for deciding, if a document is readonly or not.
-		public bool IsReadOnly {
-			get {
-				return readOnly;
-			}
-			set {
-				readOnly = value;
-			}
-		}
-		
-		public ReadOnlyCheckDelegate ReadOnlyCheckDelegate {
-			get { return readOnlyCheckDelegate; }
-			set { readOnlyCheckDelegate = value; }
-		}
+		public bool IsReadOnly { get; set; }
+
+		public ReadOnlyCheckDelegate ReadOnlyCheckDelegate { get; set; }
 
 
 		public void RequestUpdate (DocumentUpdateRequest request)
@@ -1848,7 +1858,7 @@ namespace Mono.TextEditor
 				updateRequests.Add (request);
 			}
 		}
-		
+
 		public void CommitDocumentUpdate ()
 		{
 			lock (syncObject) {
@@ -1857,13 +1867,13 @@ namespace Mono.TextEditor
 				updateRequests.Clear ();
 			}
 		}
-		
+
 		public void CommitLineUpdate (int line)
 		{
 			RequestUpdate (new LineUpdate (line));
 			CommitDocumentUpdate ();
 		}
-		
+
 		public void CommitLineUpdate (DocumentLine line)
 		{
 			CommitLineUpdate (line.LineNumber);
@@ -1901,12 +1911,12 @@ namespace Mono.TextEditor
 #region Helper functions
 		public const string openBrackets    = "([{<";
 		public const string closingBrackets = ")]}>";
-		
+
 		public static bool IsBracket (char ch)
 		{
 			return (openBrackets + closingBrackets).IndexOf (ch) >= 0;
 		}
-		
+
 		public static bool IsWordSeparator (char ch)
 		{
 			return !(char.IsLetterOrDigit (ch) || ch == '_');
@@ -1917,12 +1927,12 @@ namespace Mono.TextEditor
 			return (offset == 0 || IsWordSeparator (GetCharAt (offset - 1))) &&
 				   (offset + length == Length || IsWordSeparator (GetCharAt (offset + length)));
 		}
-		
+
 		public bool IsEmptyLine (DocumentLine line)
 		{
 			for (int i = 0; i < line.Length; i++) {
 				char ch = GetCharAt (line.Offset + i);
-				if (!Char.IsWhiteSpace (ch)) 
+				if (!Char.IsWhiteSpace (ch))
 					return false;
 			}
 			return true;
@@ -1936,7 +1946,7 @@ namespace Mono.TextEditor
 			IdentifierPart
 
 		}
-		
+
 
 		public static CharacterClass GetCharacterClass (char ch)
 
@@ -1949,7 +1959,7 @@ namespace Mono.TextEditor
 			return CharacterClass.Unknown;
 
 		}
-		
+
 		public static void RemoveTrailingWhitespaces (TextEditorData data, DocumentLine line)
 		{
 			if (line == null)
@@ -1962,7 +1972,7 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			
+
 			if (whitespaces > 0) {
 				var removeOffset = line.Offset + line.Length - whitespaces;
 				data.Remove (removeOffset, whitespaces);
@@ -1975,7 +1985,7 @@ namespace Mono.TextEditor
 				return isInUndo;
 			}
 		}
-		
+
 #region Diff
 
 
@@ -1994,7 +2004,7 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
-		
+
 		public IEnumerable<Hunk> Diff (TextDocument changedDocument, bool includeEol = true)
 		{
 			var codeDictionary = new Dictionary<string, int> ();
@@ -2004,18 +2014,18 @@ namespace Mono.TextEditor
 		}
 #endregion
 
-		
 
-#region ContentLoaded 
+
+#region ContentLoaded
 		// The problem: Action to perform on a newly opened text editor, but content didn't get loaded because autosave file exist.
 		//              At this point the document is open, but the content didn't yet have loaded - therefore the action on the conent can't be perfomed.
-		// Solution: Perform the action after the user did choose load autosave or not. 
+		// Solution: Perform the action after the user did choose load autosave or not.
 		//           This is done by the RunWhenLoaded method. Text editors should call the InformLoadComplete () when the content has successfully been loaded
 		//           at that point the outstanding actions are run.
 		bool isLoaded;
 		List<Action> loadedActions = new List<Action> ();
 		List<Action> realizedActions = new List<Action> ();
-		
+
 		/// <summary>
 		/// Gets a value indicating whether this instance is loaded.
 		/// </summary>
@@ -2030,7 +2040,7 @@ namespace Mono.TextEditor
 			get;
 			private set;
 		}
-		
+
 		/// <summary>
 		/// Informs the document when the content is loaded. All outstanding actions are executed.
 		/// </summary>
@@ -2052,7 +2062,7 @@ namespace Mono.TextEditor
 			realizedActions.ForEach (act => act ());
 			realizedActions = null;
 		}
-		
+
 		/// <summary>
 		/// Performs an action when the content is loaded.
 		/// </summary>
@@ -2155,13 +2165,13 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
-			if (cachedLineNumber == number)
-				return cachedLineFromLineNumber;
+			var lineFromLineNumber = cachedLineFromLineNumber;
+			if (lineFromLineNumber != null && lineFromLineNumber.LineNumber == number)
+				return lineFromLineNumber;
 			var snapshot = this.currentSnapshot;
 			int snapshotLineNumber = number - 1;
 			if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
 				return null;
-			cachedLineNumber = number;
 			return cachedLineFromLineNumber = new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 

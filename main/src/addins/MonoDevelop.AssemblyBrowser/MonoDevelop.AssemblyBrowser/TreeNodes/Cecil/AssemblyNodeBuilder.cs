@@ -30,8 +30,6 @@ using System;
 using System.Linq;
 using System.Text;
 
-using Mono.Cecil;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
@@ -39,6 +37,8 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.Decompiler.Metadata;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -61,54 +61,69 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			
-			nodeInfo.Label = Path.GetFileNameWithoutExtension (compilationUnit.FileName);
+
+			nodeInfo.Label = GetMarkup (compilationUnit.Assembly);
 			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
-		
+
+		static string GetMarkup (PEFile assembly)
+		{
+			var sb = StringBuilderCache.Allocate ();
+
+			var metadata = assembly.Metadata;
+			var def = metadata.GetAssemblyDefinition ();
+
+			sb.Append (Ide.TypeSystem.Ambience.EscapeText (metadata.GetString (def.Name)));
+
+			if (def.Version.Build != 0 || def.Version.Revision != 0 || def.Version.Major != 0 || def.Version.Minor != 0) {
+				sb.Append (" <small>(");
+				sb.Append (def.Version);
+				sb.Append (")</small>");
+			}
+
+			return StringBuilderCache.ReturnAndFree (sb);
+		}
+
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var compilationUnit = (AssemblyLoader)dataObject;
-			if (compilationUnit.Error != null) {
-				treeBuilder.AddChild (compilationUnit.Error);
+			var assemblyLoader = (AssemblyLoader)dataObject;
+			if (assemblyLoader.Error != null) {
+				treeBuilder.AddChild (assemblyLoader.Error);
 				return;
 			}
-			if (compilationUnit.Assembly == null)
+			if (assemblyLoader.Assembly == null)
 				return;
-			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
+			var references = new AssemblyReferenceFolder (assemblyLoader.Assembly);
 			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
 				treeBuilder.AddChild (references);
 
-			var resources = new AssemblyResourceFolder (compilationUnit.Assembly);
+			var resources = new AssemblyResourceFolder (assemblyLoader.Assembly);
 			if (resources.Resources.Any ())
 				treeBuilder.AddChild (resources);
-			
-			var namespaces = new Dictionary<string, NamespaceData> ();
-			bool publicOnly = Widget.PublicApiOnly;
-			
-			foreach (var type in compilationUnit.ModuleDefinition.Types) {
-				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
-				if (!namespaces.ContainsKey (namespaceName))
-					namespaces [namespaceName] = new NamespaceData (namespaceName);
-				
-				var ns = namespaces [namespaceName];
-				ns.Types.Add ((type.IsPublic,  type));
-			}
 
-			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.isPublic))).Select (n => n.Value));
-			if (namespaces.ContainsKey ("")) {
-				foreach (var child in namespaces [""].Types) {
-					if (((TypeDefinition)child.typeObject).Name == "<Module>")
-						continue;
-					treeBuilder.AddChild (child);
-				}
+			var mainModule = assemblyLoader.DecompilerTypeSystem.MainModule;
+			var rootData = new NamespaceData (mainModule.RootNamespace);
+			if (rootData.Types.Length > 0)
+				treeBuilder.AddChild (rootData);
+
+			var allNamespaces = new List<NamespaceData> (32);
+			CollectNamespaces (allNamespaces, mainModule.RootNamespace.ChildNamespaces);
+			treeBuilder.AddChildren (allNamespaces);
+		}
+
+		void CollectNamespaces (List<NamespaceData> accumulator, IEnumerable<INamespace> namespaces)
+		{
+			accumulator.AddRange (namespaces.Select (x => new NamespaceData(x)));
+
+			foreach (var ns in namespaces) {
+				CollectNamespaces (accumulator, ns.ChildNamespaces);
 			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			return compilationUnit.Assembly?.MainModule.HasTypes == true || compilationUnit.Error != null;
+			return compilationUnit.Assembly.Metadata.TypeDefinitions.Count > 0 || compilationUnit.Error != null;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -126,7 +141,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null || e2.Assembly == null)
 					return -1;
 				
-				return string.Compare (e1.Assembly.Name.Name, e2.Assembly.Name.Name, StringComparison.Ordinal);
+				return string.Compare (e1.Assembly.Name, e2.Assembly.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -134,46 +149,33 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-		void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
+		void PrintAssemblyHeader (StringBuilder result, PEFile assemblyDefinition)
 		{
 			result.Append ("<span style=\"comment\">");
 			result.Append ("// ");
 			result.Append (string.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
-			                              assemblyDefinition.Name.Name,
-			                              assemblyDefinition.Name.Version));
+			                              assemblyDefinition.Name,
+			                              assemblyDefinition.Metadata.MetadataVersion));
 			result.Append ("</span>");
 			result.AppendLine ();
 		}
 		
-		static string GetTypeString (ModuleKind kind)
-		{
-			switch (kind) {
-			case ModuleKind.Console:
-				return GettextCatalog.GetString ("Console application");
-			case ModuleKind.Dll:
-				return GettextCatalog.GetString ("Library");
-			case ModuleKind.Windows:
-				return GettextCatalog.GetString ("Application");
-			}
-			return GettextCatalog.GetString ("Unknown");
-		}
-		
-		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
+		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
 			var compilationUnit = assemblyLoader.Assembly;
 			if (compilationUnit == null) {
 				LoggingService.LogError ("Can't get cecil object for assembly:" + assemblyLoader.Assembly.FullName);
-				return new List<ReferenceSegment> ();
+				return Task.FromResult (new List<ReferenceSegment> ());
 			}
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.WriteAssemblyHeader (compilationUnit));
+			return MethodDefinitionNodeBuilder.DisassembleAsync (data, rd => rd.WriteAssemblyHeader (compilationUnit));
 		}
 		
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => 
+			return MethodDefinitionNodeBuilder.DecompileAsync (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => 
 				b.DecompileModuleAndAssemblyAttributes(), flags: flags);
 		}
 

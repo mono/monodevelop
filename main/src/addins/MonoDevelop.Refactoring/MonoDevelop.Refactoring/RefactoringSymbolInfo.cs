@@ -37,34 +37,31 @@ using System.Threading;
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Refactoring
 {
-
+	[Obsolete ("Old editor")]
 	class RefactoringSymbolInfo
 	{
 		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo (new SymbolInfo ());
 
 		SymbolInfo symbolInfo;
 
-		public ISymbol Symbol
-		{
-			get
-			{
+		public ISymbol Symbol {
+			get {
 				return symbolInfo.Symbol;
 			}
 		}
 
-		public ImmutableArray<ISymbol> CandidateSymbols
-		{
-			get
-			{
+		public ImmutableArray<ISymbol> CandidateSymbols {
+			get {
 				return symbolInfo.CandidateSymbols;
 			}
 		}
 
-		public ISymbol DeclaredSymbol
-		{
+		public ISymbol DeclaredSymbol {
 			get;
 			internal set;
 		}
@@ -91,11 +88,11 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		public static Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, TextEditor editor, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, Ide.Editor.TextEditor editor, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (editor.IsSomethingSelected) {
 				var selectionRange = editor.SelectionRange;
-				if (editor.GetTextAt (selectionRange).Any (ch => !char.IsLetterOrDigit (ch) && ch !='_')) {
+				if (editor.GetTextAt (selectionRange).Any (ch => !char.IsLetterOrDigit (ch) && ch != '_')) {
 					return Task.FromResult (RefactoringSymbolInfo.Empty);
 				}
 				return GetSymbolInfoAsync (document, selectionRange.Offset, cancellationToken);
@@ -125,6 +122,40 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			return RefactoringSymbolInfo.Empty;
+		}
+
+		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (ITextView textView, CancellationToken cancellationToken = default)
+		{
+			int offset = 0;
+
+			if (!(textView.Selection?.IsEmpty).GetValueOrDefault (false)) {
+				var selectionSpan = textView.Selection.SelectedSpans.FirstOrDefault ();
+				var selectedText = textView.TextBuffer.CurrentSnapshot.GetText (selectionSpan);
+				if (selectedText.Any (ch => !char.IsLetterOrDigit (ch) && ch != '_')) {
+					return Empty;
+				}
+
+				offset = selectionSpan.Start.Position;
+			}
+
+			offset = textView.Caret.Position.BufferPosition.Position;
+
+			return await GetSymbolInfoAsync (textView, offset, cancellationToken);
+		}
+
+		private static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (ITextView textView, int offset, CancellationToken cancellationToken = default)
+		{
+			var analysisDocument = textView.TextBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
+
+			if (analysisDocument == null)
+				return Empty;
+
+			if (Runtime.IsMainThread) {
+				//InternalGetSymbolInfoAsync can be CPU heavy, go to ThreadPool if we are on UI thread
+				return await Task.Run (() => InternalGetSymbolInfoAsync (analysisDocument, offset, cancellationToken));
+			}
+
+			return await InternalGetSymbolInfoAsync (analysisDocument, offset, cancellationToken);
 		}
 	}
 

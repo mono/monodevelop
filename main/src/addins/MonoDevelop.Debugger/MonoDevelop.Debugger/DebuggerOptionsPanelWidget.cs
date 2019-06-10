@@ -67,7 +67,7 @@ namespace MonoDevelop.Debugger
 
 		void Build ()
 		{
-			checkProjectCodeOnly = new CheckBox (GettextCatalog.GetString ("Debug project code only; do not step into framework code."));
+			checkProjectCodeOnly = new CheckBox (GettextCatalog.GetString ("Enable Just My Code"));
 			PackStart (checkProjectCodeOnly);
 			checkStepOverPropertiesAndOperators = new CheckBox (GettextCatalog.GetString ("Step over properties and operators"));
 			PackStart (checkStepOverPropertiesAndOperators);

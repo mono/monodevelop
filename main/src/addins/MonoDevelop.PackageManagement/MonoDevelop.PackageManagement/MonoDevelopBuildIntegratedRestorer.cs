@@ -87,16 +87,18 @@ namespace MonoDevelop.PackageManagement
 			var now = DateTime.UtcNow;
 			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
 			bool forceRestore = false;
+			bool isRestoreOriginalAction = true;
 
 			var restoreSummaries = await DependencyGraphRestoreUtility.RestoreAsync (
 				solutionManager,
+				spec,
 				context,
 				new RestoreCommandProvidersCache (),
 				cacheContextModifier,
 				sourceRepositories,
 				Guid.NewGuid (),
 				forceRestore,
-				spec,
+				isRestoreOriginalAction,
 				context.Logger,
 				cancellationToken);
 

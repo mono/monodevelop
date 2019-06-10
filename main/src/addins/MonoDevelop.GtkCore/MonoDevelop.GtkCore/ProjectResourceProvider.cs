@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectResourceProvider.cs
 //
 // Author:
@@ -48,7 +48,7 @@ namespace MonoDevelop.GtkCore
 			ArrayList list = new ArrayList ();
 			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction == BuildAction.EmbeddedResource)
-					list.Add (new Stetic.ResourceInfo (file.ResourceId, file.Name, DesktopService.GetMimeTypeForUri (file.Name)));
+					list.Add (new Stetic.ResourceInfo (file.ResourceId, file.Name, IdeServices.DesktopService.GetMimeTypeForUri (file.Name)));
 			}
 			return (Stetic.ResourceInfo[]) list.ToArray (typeof(Stetic.ResourceInfo));
 		}

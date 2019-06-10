@@ -40,126 +40,119 @@ using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Components.Docking;
 using System.Threading;
 using MonoDevelop.Ide.Gui.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ProgressMonitorManager : GuiSyncObject
+	public class IdeProgressMonitorManager : ProgressMonitorManager
 	{
 		List<Pad> searchMonitors = new List<Pad> ();
 		List<Pad> outputMonitors = new List<Pad> ();
-		
+
 		/******************************/
 
-		internal void Initialize ()
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
+			return Task.CompletedTask;
 		}
-		
-		public ProgressMonitor GetBuildProgressMonitor ()
+
+		protected override ProgressMonitor OnGetBuildProgressMonitor ()
 		{
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Building..."));
 		}
-		
-		public ProgressMonitor GetCleanProgressMonitor ()
+
+		protected override ProgressMonitor OnGetCleanProgressMonitor ()
 		{
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Cleaning..."));
 		}
-		
-		public ProgressMonitor GetRebuildProgressMonitor ()
+
+		protected override ProgressMonitor OnGetRebuildProgressMonitor ()
 		{
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Rebuilding..."));
 		}
 		
-		private ProgressMonitor GetBuildProgressMonitor (string statusText)
+		ProgressMonitor GetBuildProgressMonitor (string statusText)
 		{
-			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
-			ErrorListPad errorPad = (ErrorListPad) pad.Content;
-			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
-			mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad, true));
-			return mon;
+			return Runtime.RunInMainThread (() => {
+				Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
+				ErrorListPad errorPad = (ErrorListPad)pad.Content;
+				AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
+				mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad, true));
+				return mon;
+			}).Result;
 		}
 
-		public OutputProgressMonitor GetRunProgressMonitor ()
-		{
-			return GetRunProgressMonitor (null);
-		}
-		
-		public OutputProgressMonitor GetRunProgressMonitor (string titleSuffix)
+		protected override OutputProgressMonitor OnGetRunProgressMonitor (string titleSuffix)
 		{
 			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.PadExecute, false, true, titleSuffix);
 		}
-		
-		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
+
+		protected override OutputProgressMonitor OnGetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
 		{
 			return GetOutputProgressMonitor ("MonoDevelop.Ide.ToolOutput", GettextCatalog.GetString ("Tool Output"), Stock.PadExecute, bringToFront, true);
 		}
-		
-		public ProgressMonitor GetLoadProgressMonitor (bool lockGui)
+
+		protected override ProgressMonitor OnGetLoadProgressMonitor (bool lockGui)
 		{
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.StatusSolutionOperation, true, false, lockGui);
 		}
-		
-		public ProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)
+
+		protected override ProgressMonitor OnGetProjectLoadProgressMonitor (bool lockGui)
 		{
-			return new GtkProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
+			return Runtime.RunInMainThread (() => {
+				return new GtkProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
+			}).Result;
 		}
-		
-		public ProgressMonitor GetSaveProgressMonitor (bool lockGui)
+
+		protected override ProgressMonitor OnGetSaveProgressMonitor (bool lockGui)
 		{
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.StatusSolutionOperation, true, false, lockGui);
 		}
-		
-		public OperationConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken)
+
+		protected override OperationConsole OnCreateConsole (bool closeOnDispose, CancellationToken cancellationToken)
 		{
 			return ((OutputProgressMonitor)GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true)).Console;
 		}
 
-		CustomConsoleFactory customConsoleFactory = new CustomConsoleFactory ();
-		public OperationConsoleFactory ConsoleFactory {
-			get { return customConsoleFactory; }
+		protected override ProgressMonitor OnGetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui, Pad statusSourcePad, bool showCancelButton)
+		{
+			return Runtime.RunInMainThread (() => {
+				return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, statusSourcePad, showCancelButton);
+			}).Result;
 		}
 
-		class CustomConsoleFactory: OperationConsoleFactory
+		protected override ProgressMonitor OnGetBackgroundProgressMonitor (string title, IconId icon)
+		{
+			return Runtime.RunInMainThread (() => {
+				return new BackgroundProgressMonitor (title, icon);
+			}).Result;
+		}
+		
+		protected override OutputProgressMonitor OnGetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, string titleSuffix, bool visible)
+		{
+			return Runtime.RunInMainThread (() => {
+				if (!string.IsNullOrEmpty (titleSuffix)) {
+					title += " - " + titleSuffix;
+				}
+				Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, IdeApp.Workbench.RootWindow.Visible);
+				pad.Visible = visible;
+				return ((DefaultMonitorPad)pad.Content).BeginProgress (title);
+			}).Result;
+		}
+
+		CustomConsoleFactory customConsoleFactory = new CustomConsoleFactory ();
+
+		protected override OperationConsoleFactory OnGetConsoleFactory ()
+		{
+			return customConsoleFactory;
+		}
+
+		class CustomConsoleFactory : OperationConsoleFactory
 		{
 			protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 			{
-				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true, titleSuffix:options.Title)).Console;
+				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true, titleSuffix: options.Title)).Console;
 			}
-		}
-
-		/******************************/
-		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui, Pad statusSourcePad, bool showCancelButton)
-		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, statusSourcePad, showCancelButton);
-		}
-		
-		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle = true, bool lockGui = false, Pad statusSourcePad = null)
-		{
-			return GetStatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, statusSourcePad, showCancelButton: false);
-		}
-		
-		public ProgressMonitor GetBackgroundProgressMonitor (string title, IconId icon)
-		{
-			return new BackgroundProgressMonitor (title, icon);
-		}
-		
-		public OutputProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
-		{
-			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse, visible);
-		}
-
-		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
-		{
-			return GetOutputProgressMonitor (id, title, icon, bringToFront, allowMonitorReuse, null, visible);
-		}
-		
-		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, string titleSuffix, bool visible = true)
-		{
-			if (!string.IsNullOrEmpty (titleSuffix)) {
-				title += " - " + titleSuffix;
-			}
-			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
-			pad.Visible = visible;
-			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
 
 		/// <summary>
@@ -174,7 +167,11 @@ namespace MonoDevelop.Ide.Gui
 		/// </remarks>
 		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
-			Runtime.AssertMainThread ();
+			// In general this method should not be called from a background thread since the returned object can only be used
+			// from the UI thread. However, this method is commontly used to get the pad and provide it as argument for
+			// GetStatusProgressMonitor. To avoid crashes in existing code, we allow this to be called from a non-UI thread.
+			if (!Runtime.IsMainThread)
+				return Runtime.RunInMainThread (() => GetPadForMonitor (monitor)).Result;
 
 			foreach (Pad pad in outputMonitors) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
@@ -186,6 +183,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal Pad CreateMonitorPad (string id, string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
 		{
+			Runtime.AssertMainThread ();
+
 			Pad pad = null;
 			if (icon == null)
 				icon = Stock.OutputIcon;
@@ -280,8 +279,11 @@ namespace MonoDevelop.Ide.Gui
 			pad.Destroy ();
 		}
 		
-		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad = false, CancellationTokenSource cancellationTokenSource = null)
+		protected override SearchProgressMonitor OnGetSearchProgressMonitor (bool bringToFront, bool focusPad, CancellationTokenSource cancellationTokenSource)
 		{
+			if (!Runtime.IsMainThread)
+				return Runtime.RunInMainThread (() => GetSearchProgressMonitor (bringToFront, focusPad, cancellationTokenSource)).Result;
+
 			Pad pad = null;
 			string title = GettextCatalog.GetString ("Search Results");
 			

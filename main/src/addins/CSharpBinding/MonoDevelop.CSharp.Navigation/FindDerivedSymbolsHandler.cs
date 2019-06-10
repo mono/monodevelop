@@ -1,4 +1,4 @@
-//
+﻿//
 // FindDerivedSymbolsHandler.cs
 //
 // Author:
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (symbol == null)
 				return Task.FromResult (0);
-			var solution = IdeApp.Workbench.ActiveDocument?.AnalysisDocument?.Project?.Solution ?? TypeSystemService.Workspace.CurrentSolution;
+			var solution = IdeApp.Workbench.ActiveDocument?.DocumentContext.AnalysisDocument?.Project?.Solution ?? IdeApp.TypeSystemService.Workspace.CurrentSolution;
 			return Task.Run (async delegate {
 				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 				using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {
@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var project in currentSolution.Projects) {
 				var comp = await project.GetCompilationAsync (token).ConfigureAwait (false);
 				foreach (var i in comp.GetAllTypesInMainAssembly (token).Where (t => t.TypeKind == TypeKind.Interface)) {
-					if (i.AllInterfaces.Any (t => t.InheritsFromOrEqualsIgnoringConstruction (type)))
+					if (i.AllInterfaces.Any (t => t.InheritsFromOrImplementsOrEqualsIgnoringConstruction (type)))
 						result.Add (i);
 				}
 			}
@@ -113,9 +113,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 
-		protected override async void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
-			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
+			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument, cancelToken);
 			info.Enabled = sym != null;
 			info.Bypass = !info.Enabled;
 		}

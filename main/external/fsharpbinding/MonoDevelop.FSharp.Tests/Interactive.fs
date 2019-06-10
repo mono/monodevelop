@@ -17,6 +17,11 @@ open Mono.TextEditor
 module Interactive =
     let toTask computation : Task = Async.StartAsTask computation :> _
 
+    [<SetUp>]
+    [<AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
+
     let createSession() =
         async {
             let (/) a b = Path.Combine(a,b)
@@ -157,7 +162,6 @@ module Interactive =
         } |> toTask
 
     let getPadAndEditor() =
-        FixtureSetup.initialiseMonoDevelop()
         let ctx = FsiDocumentContext()
         let doc = TextEditorFactory.CreateNewDocument()
         do

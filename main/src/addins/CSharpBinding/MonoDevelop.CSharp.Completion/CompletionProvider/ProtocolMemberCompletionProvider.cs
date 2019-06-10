@@ -151,13 +151,14 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				var region = lastRegion == null ? null
 					: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
 
+				var inlineDescription = GettextCatalog.GetString ("Implement protocol member");
 				pDict = pDict.Add ("InsertionText", sb.ToString ());
-				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString ("Implement protocol member") + "</span>");
+				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + inlineDescription + "</span>");
 				pDict = pDict.Add ("Description", await GenerateQuickInfo (semanticModel, position, m, cancellationToken));
 				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString());
 
 				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
-				var completionData = CompletionItem.Create (m.Name, sortText: m.ToSignatureDisplayString (), properties: pDict, rules: ProtocolCompletionRules, tags: tags);
+				var completionData = CompletionItem.Create (m.Name, sortText: m.ToSignatureDisplayString (), properties: pDict, rules: ProtocolCompletionRules, tags: tags, inlineDescription: inlineDescription);
 				context.AddItem (completionData);
 			}
 		}
@@ -166,7 +167,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		{
 			if (IdeApp.Workbench?.ActiveDocument == null)
 				return "";
-			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
+			var ws = IdeApp.Workbench.ActiveDocument.DocumentContext.RoslynWorkspace;
 
 			var displayService = ws.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ISymbolDisplayService> ();
 

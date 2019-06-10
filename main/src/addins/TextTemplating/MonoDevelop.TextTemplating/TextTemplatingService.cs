@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TextTemplatingService.cs
 //  
 // Author:
@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using Mono.TextTemplating;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
 
@@ -37,12 +38,12 @@ namespace MonoDevelop.TextTemplating
 			if (errors.Count == 0)
 				return;
 			
-			TaskService.Errors.Clear ();
+			IdeServices.TaskService.Errors.Clear ();
 			foreach (CompilerError err in errors) {
-					TaskService.Errors.Add (new TaskListEntry (err.FileName, err.ErrorText, err.Column, err.Line,
+					IdeServices.TaskService.Errors.Add (new TaskListEntry (err.FileName, err.ErrorText, err.Column, err.Line,
 					                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
 			}
-			TaskService.ShowErrors ();
+			IdeServices.TaskService.ShowErrors ();
 		}
 		
 		static TemplatingAppDomainRecycler recycler;

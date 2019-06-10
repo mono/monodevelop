@@ -138,18 +138,11 @@ namespace Mono.TextEditor
 
 			public TextViewMarginAccessibilityProxy ()
 			{
-				Accessible = AccessibilityElementProxy.TextElementProxy ();
-				Accessible.Contents = GetContents;
-				Accessible.InsertionPointLineNumber = GetInsertionPointLineNumber;
-				Accessible.NumberOfCharacters = GetNumberOfCharacters;
-				Accessible.FrameForRange = GetFrameForRange;
-				Accessible.LineForIndex = GetLineForIndex;
-				Accessible.RangeForLine = GetRangeForLine;
-				Accessible.StringForRange = GetStringForRange;
-				Accessible.RangeForIndex = GetRangeForIndex;
-				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
-				Accessible.RangeForPosition = GetRangeForPosition;
-				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
+#if MAC
+				Accessible = AccessibilityElementProxy.TextElementProxy (GetContents, GetNumberOfCharacters, GetInsertionPointLineNumber, GetFrameForRange, GetLineForIndex, GetRangeForLine, GetStringForRange, GetRangeForIndex, GetStyleRangeForIndex, GetRangeForPosition, GetVisibleCharacterRange);
+#else
+				Accessible = AccessibilityElementProxy.TextElementProxy();
+#endif
 			}
 
 			public void Dispose ()
@@ -1020,7 +1013,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public bool Equals (DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
+			public bool Equals (DocumentLine line, string lineText, int length, HighlightedLine cachedLine, int selectionStart, int selectionEnd)
 			{
 				int selStart = 0, selEnd = 0;
 				if (selectionEnd >= 0) {
@@ -1029,7 +1022,17 @@ namespace Mono.TextEditor
 				}
 				if (selStart != this.SelectionStart || selEnd != this.SelectionEnd || Length != length || MarkerLength != doc.GetMarkers (line).Count ())
 					return false;
-				return doc.Version.MoveOffsetTo (version, offset) == Offset;
+
+				if (cachedLine.Segments.Count != Layout.Chunks.Count)
+					return false;
+				for (int i = 0; i < cachedLine.Segments.Count; i++) {
+					var seg1 = cachedLine.Segments [i];
+					var seg2 = Layout.Chunks [i];
+					if (seg1.Length != seg2.Length || seg1.ColorStyleKey != seg2.ColorStyleKey) {
+						return false;
+					}
+				}
+				return lineText == Layout.Text;
 			}
 
 			public override bool Equals (object obj)
@@ -1060,10 +1063,24 @@ namespace Mono.TextEditor
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
 			int lineNumber = line.LineNumber;
+			var lineOffset = line.Offset;
+
+			var cachedChunks = GetCachedChunks (Document, line, offset, length);
+			var textBuilder = StringBuilderCache.Allocate ();
+			foreach (var chunk in cachedChunks.Item1) {
+				try {
+					textBuilder.Append (Document.GetTextAt (lineOffset + chunk.Offset, chunk.Length));
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while getting chunk " + chunk, e);
+				}
+			}
+			string lineText = StringBuilderCache.ReturnAndFree (textBuilder);
+
 			if (!containsPreedit && layoutDict.TryGetValue (lineNumber, out descriptor)) {
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd) && descriptor?.Layout?.Layout != null) {
+				if (descriptor.Equals (line, lineText, length, cachedChunks.Item3, selectionStart, selectionEnd) && descriptor.Layout?.Layout != null) {
 					return descriptor.Layout;
 				}
+
 				descriptor.Dispose ();
 				layoutDict.Remove (lineNumber);
 			}
@@ -1082,9 +1099,6 @@ namespace Mono.TextEditor
 				wrapper.Layout.Wrap = Pango.WrapMode.WordChar;
 				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
 			}
-			StringBuilder textBuilder = StringBuilderCache.Allocate ();
-			var cachedChunks = GetCachedChunks (Document, line, offset, length);
-			var lineOffset = line.Offset;
 			var chunks = new List<ColoredSegment> (cachedChunks.Item1.Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack)));;
 			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in markers) {
@@ -1095,14 +1109,6 @@ namespace Mono.TextEditor
 			}
 			wrapper.HighlightedLine = cachedChunks.Item3;
 			wrapper.Chunks = chunks;
-			foreach (var chunk in chunks) {
-				try {
-					textBuilder.Append (Document.GetTextAt (chunk));
-				} catch {
-					Console.WriteLine (chunk);
-				}
-			}
-			string lineText = StringBuilderCache.ReturnAndFree (textBuilder);
 			uint preeditLength = 0;
 
 			if (containsPreedit) {
@@ -1155,8 +1161,8 @@ namespace Mono.TextEditor
 								if (textEditor.preeditOffset < end)
 									end += (int)preeditLength;
 							}
-							var si = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							var ei = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							var si = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + start - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + end - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
 							var color = (Cairo.Color)EditorTheme.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
@@ -1187,8 +1193,8 @@ namespace Mono.TextEditor
 								if (textEditor.preeditOffset < end)
 									end += (int)preeditLength;
 							}
-							var si = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							var ei = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							var si = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + start - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex + end - chunk.Offset, lineText.Length), ref curIndex, ref byteIndex);
 							var color = (Cairo.Color)EditorTheme.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
@@ -1203,8 +1209,8 @@ namespace Mono.TextEditor
 							wrapper.SelectionEndIndex = (int)ei;
 						});
 
-						var translatedStartIndex = TranslateToUTF8Index (lineText, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
-						var translatedEndIndex = TranslateToUTF8Index (lineText, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
+						var translatedStartIndex = TranslateToUTF8Index (lineText, (uint)Math.Min (startIndex, lineText.Length), ref curChunkIndex, ref byteChunkIndex);
+						var translatedEndIndex = TranslateToUTF8Index (lineText, (uint)Math.Min (endIndex, lineText.Length), ref curChunkIndex, ref byteChunkIndex);
 
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
 							atts.AddWeightAttribute ((Pango.Weight)chunkStyle.FontWeight, translatedStartIndex, translatedEndIndex);
@@ -1218,8 +1224,8 @@ namespace Mono.TextEditor
 				}
 				if (containsPreedit) {
 					var byteLength = Encoding.UTF8.GetByteCount (textEditor.preeditString);
-					var si = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + byteLength), ref curIndex, ref byteIndex);
+					var si = TranslateToUTF8Index (lineText, (uint)Math.Min (textEditor.preeditOffset - offset, lineText.Length), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineText, (uint)Math.Min (textEditor.preeditOffset - offset + byteLength, lineText.Length), ref curIndex, ref byteIndex);
 
 					if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 						uint len = (uint)textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location).Length;
@@ -1500,12 +1506,11 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException (nameof (text));
 
 			if (textIndex < 0)
-				throw new ArgumentOutOfRangeException (nameof (textIndex));
+				throw new ArgumentOutOfRangeException (nameof (textIndex), "should be >=0 it was " + textIndex);
+			if (textIndex > text.Length)
+				throw new ArgumentOutOfRangeException (nameof (textIndex), $"should be <{text.Length} it was {textIndex}");
 
 			if (textIndex < curIndex) {
-				if (textIndex > text.Length)
-					throw new ArgumentOutOfRangeException (nameof (textIndex));
-
 				unsafe {
 					fixed (char *p = text)
 						byteIndex = (uint)Encoding.UTF8.GetByteCount (p, (int)textIndex);
@@ -1567,11 +1572,13 @@ namespace Mono.TextEditor
 
 			internal HighlightedLine HighlightedLine { get; set; }
 
+			string text;
 			public string Text {
 				get {
-					return Layout.Text;
+					return text;
 				}
 				set {
+					text = value;
 					Layout.SetText (value);
 				}
 			}
@@ -1950,7 +1957,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var metrics  = new LineMetrics {
+			var metrics = new LineMetrics {
 				LineSegment = line,
 				Layout = layout,
 
@@ -1973,17 +1980,25 @@ namespace Mono.TextEditor
 				if (!marker.IsVisible)
 					continue;
 
-				if (marker.DrawBackground (textEditor, cr, metrics)) {
-					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
+				try {
+					if (marker.DrawBackground (textEditor, cr, metrics)) {
+						isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
+					}
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing backround marker " + marker, e);
 				}
 			}
 
 			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in textSegmentMarkers) {
-				if (layout.Layout != null)
+				if (layout.Layout == null)
+					continue;
+				try {
 					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing backround marker " + marker, e);
+				}
 			}
-
 
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
@@ -2168,17 +2183,24 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
-				if (!marker.IsVisible)
+			foreach (var marker in textEditor.Document.GetMarkers (line)) {
+				if (!marker.IsVisible || layout.Layout == null)
 					continue;
-
-				if (layout.Layout != null)
+				try {
 					marker.Draw (textEditor, cr, metrics);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing line marker " + marker, e);
+				}
 			}
 
 			foreach (var marker in textSegmentMarkers) {
-				if (layout.Layout != null)
+				if (layout.Layout == null)
+					continue;
+				try {
 					marker.Draw (textEditor, cr, metrics, offset, offset + length);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while drawing segment marker " + marker, e);
+				}
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 
@@ -3517,6 +3539,8 @@ namespace Mono.TextEditor
 			DocumentLine line = Document.GetLine (loc.Line);
 			if (line == null)
 				return new Cairo.Point (-1, -1);
+			if (loc.Line == 0 && loc.Column == 0) // fast Path for upper left position.
+				return new Cairo.Point (0, 0);
 			int x = (int)(ColumnToX (line, loc.Column) + this.XOffset + this.TextStartPosition);
 			int y = (int)LineToY (loc.Line);
 			return useAbsoluteCoordinates ? new Cairo.Point (x, y) : new Cairo.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);

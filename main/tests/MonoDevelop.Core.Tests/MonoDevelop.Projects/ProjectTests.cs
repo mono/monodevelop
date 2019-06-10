@@ -581,6 +581,60 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ProjectReferences_ReferenceSourceTargetAvailableFromItemDefinitionGroup ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var p = (DotNetProject)sol.FindProjectByName ("console-with-libs");
+				var lib1Project = (DotNetProject)sol.FindProjectByName ("library1");
+				var lib2Project = (DotNetProject)sol.FindProjectByName ("library2");
+
+				var projectRefs = p.References.Where (r => r.ReferenceType == ReferenceType.Project);
+				var lib1ProjectRef = projectRefs.FirstOrDefault (r => r.Reference == "library1");
+				var lib2ProjectRef = projectRefs.FirstOrDefault (r => r.Reference == "library2");
+
+				var refs = await p.GetReferences (ConfigurationSelector.Default);
+
+				var projectAssemblyRefs = refs.Where (r => r.IsProjectReference).ToList ();
+				var lib1AssemblyRef = projectAssemblyRefs.FirstOrDefault (r => r.FilePath.FileName == "library1.dll");
+				var lib2AssemblyRef = projectAssemblyRefs.FirstOrDefault (r => r.FilePath.FileName == "library2.dll");
+
+				Assert.AreEqual ("ProjectReference", lib1ProjectRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual ("ProjectReference", lib2ProjectRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual ("ProjectReference", lib1AssemblyRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual ("ProjectReference", lib2AssemblyRef.Metadata.GetValue ("ReferenceSourceTarget"));
+				Assert.AreEqual (lib1Project, lib1AssemblyRef.GetReferencedItem (sol));
+				Assert.AreEqual (lib2Project, lib2AssemblyRef.GetReferencedItem (sol));
+				Assert.IsTrue (lib1AssemblyRef.ReferenceOutputAssembly);
+				Assert.IsTrue (lib2AssemblyRef.ReferenceOutputAssembly);
+				Assert.IsTrue (lib1AssemblyRef.IsCopyLocal);
+				Assert.IsTrue (lib2AssemblyRef.IsCopyLocal);
+			}
+		}
+
+		[Test]
+		public async Task AddProjectReference_EmptyReferenceSourceTargetNotAdded ()
+		{
+			string solFile = Util.GetSampleProject ("ref-source-target", "console-project.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var p = (DotNetProject)sol.FindProjectByName ("console-project");
+				var lib2Project = (DotNetProject)sol.FindProjectByName ("library2");
+
+				var reference = ProjectReference.CreateProjectReference (lib2Project);
+				p.References.Add (reference);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string expectedProjectXml = File.ReadAllText (p.FileName + "-saved");
+				string projectXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (expectedProjectXml, projectXml);
+			}
+		}
+
+		[Test]
 		public async Task DefaultMSBuildSupport ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
@@ -877,6 +931,80 @@ namespace MonoDevelop.Projects
 				bool isXBuild = p.MSBuildProject.EvaluatedProperties.GetValue<bool> ("IsXBuild");
 				string msbuildRuntimeVersion = p.MSBuildProject.EvaluatedProperties.GetValue ("MSBuildRuntimeVersion");
 				Assert.IsFalse (isXBuild);
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.IsTrue (projectItem.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.IsTrue (projectItem.Metadata.HasProperty ("BoolProperty"));
+				Assert.AreEqual (FileCopyMode.PreserveNewest, projectItem.CopyToOutputDirectory);
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_ItemDefinedMultipleTimes ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "multiple-item-definitions-same-item.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.IsTrue (projectItem.Metadata.HasProperty ("BoolProperty"));
+				Assert.IsTrue (projectItem.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.AreEqual (FileCopyMode.Always, projectItem.CopyToOutputDirectory);
+				Assert.AreEqual ("First", projectItem.Metadata.GetValue ("FirstItemDefinitionProperty"));
+				Assert.AreEqual ("Second", projectItem.Metadata.GetValue ("SecondItemDefinitionProperty"));
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_AddFilesWithSameMetadataAsItemDefinition_MetadataNotSaved ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				var newItemFileName = projectItem.FilePath.ChangeName ("NewItem");
+				var newProjectItem = new ProjectFile (newItemFileName, projectItem.BuildAction);
+				newProjectItem.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+				newProjectItem.Metadata.SetValue ("BoolProperty", true);
+				newProjectItem.Metadata.SetValue ("OverriddenProperty", "OriginalValue");
+
+				p.Files.Add (newProjectItem);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".add-file-match-metadata");
+				var savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+			}
+		}
+
+		[Test]
+		public async Task ItemDefinitionGroup_AddFilesWithoutMetadata_MetadataUsesEmptyElements ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				var newItemFileName = projectItem.FilePath.ChangeName ("NewItem");
+				var newProjectItem = new ProjectFile (newItemFileName, projectItem.BuildAction);
+				newProjectItem.CopyToOutputDirectory = FileCopyMode.Always;
+
+				p.Files.Add (newProjectItem);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".add-file-no-metadata");
+				var savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
 			}
 		}
 

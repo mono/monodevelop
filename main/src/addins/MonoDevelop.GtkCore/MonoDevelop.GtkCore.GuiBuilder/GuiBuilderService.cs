@@ -1,4 +1,4 @@
-//
+﻿//
 // GuiBuilderService.cs
 //
 // Author:
@@ -145,12 +145,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string OnMimeResolve (string url)
 		{
-			return DesktopService.GetMimeTypeForUri (url);
+			return IdeServices.DesktopService.GetMimeTypeForUri (url);
 		}
 		
 		static void OnShowUrl (string url)
 		{
-			DesktopService.ShowUrl (url);
+			IdeServices.DesktopService.ShowUrl (url);
 		}
 		
 		internal static void StoreConfiguration ()
@@ -253,7 +253,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		internal static bool HasOpenDesigners (Project project, bool modifiedOnly)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Project == project && (!modifiedOnly || doc.IsDirty))
+				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Owner == project && (!modifiedOnly || doc.IsDirty))
 					return true;
 			}
 			return false;
@@ -377,7 +377,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			TypeSystemService.NotifyFileChange (fileName, text);
+			IdeApp.TypeSystemService.NotifyFileChange (fileName, text);
 
 			return fileName;
 		}
@@ -562,13 +562,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			content = StripHeaderAndBlankLines (content, provider);
 
-			string mt = DesktopService.GetMimeTypeForUri (file);
+			string mt = IdeServices.DesktopService.GetMimeTypeForUri (file);
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 			if (formatter != null)
 				content = formatter.FormatText (PolicyService.InvariantPolicies, content) ?? content;
 			
 			// The project policies should be taken for generated files (windows git eol problem)
-			var pol = project.Policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeForUri (file));
+			var pol = project.Policies.Get<TextStylePolicy> (IdeServices.DesktopService.GetMimeTypeForUri (file));
 			string eol = pol.GetEolMarker ();
 			if (Environment.NewLine != eol)
 				content = content.Replace (Environment.NewLine, eol);

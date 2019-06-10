@@ -1,4 +1,4 @@
-﻿//
+//
 // EditSession.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public abstract class EditSession : IDisposable
 	{
 		private TextEditor editor;
@@ -136,6 +137,7 @@ namespace MonoDevelop.Ide.Editor
 
 	}
 
+	[Obsolete]
 	abstract class PairInsertEditSession : EditSession
 	{
 		IGenericTextSegmentMarker marker;
@@ -200,6 +202,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// Reassembles the old skip char system - shouldn't be used by new features anymore.
 	/// </summary>
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	class SkipCharSession : PairInsertEditSession
 	{
 		readonly char ch;

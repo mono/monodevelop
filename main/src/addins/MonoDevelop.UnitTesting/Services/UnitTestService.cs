@@ -1,4 +1,4 @@
-//
+﻿//
 // NUnitService.cs
 //
 // Author:
@@ -50,6 +50,7 @@ namespace MonoDevelop.UnitTesting
 	{
 		static ArrayList providers = new ArrayList ();
 		static UnitTest[] rootTests = Array.Empty<UnitTest> ();
+		static bool packageEventsInitialized;
 
 		static UnitTestService ()
 		{
@@ -61,11 +62,16 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
-
-			PackageManagementServices.ProjectOperations.PackageReferenceAdded += ProjectOperations_PackageReferencesModified;
-			PackageManagementServices.ProjectOperations.PackageReferenceRemoved += ProjectOperations_PackageReferencesModified;
-			PackageManagementServices.ProjectOperations.PackagesRestored += ProjectOperations_PackageReferencesModified;
-
+			
+			IdeApp.Workspace.FirstWorkspaceItemOpened += (s,a) => {
+				if (!packageEventsInitialized) {
+					packageEventsInitialized = true;
+					PackageManagementServices.ProjectOperations.PackageReferenceAdded += ProjectOperations_PackageReferencesModified;
+					PackageManagementServices.ProjectOperations.PackageReferenceRemoved += ProjectOperations_PackageReferencesModified;
+					PackageManagementServices.ProjectOperations.PackagesRestored += ProjectOperations_PackageReferencesModified;
+				}
+			};
+			
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
 
 			RebuildTests ();
@@ -423,9 +429,9 @@ namespace MonoDevelop.UnitTesting
 
 		public static string GetTestResultsDirectory (string baseDirectory)
 		{
-			var newCache = TypeSystemService.GetCacheDirectory (baseDirectory, false);
+			var newCache = IdeApp.TypeSystemService.GetCacheDirectory (baseDirectory, false);
 			if (newCache == null) {
-				newCache = TypeSystemService.GetCacheDirectory (baseDirectory, true);
+				newCache = IdeApp.TypeSystemService.GetCacheDirectory (baseDirectory, true);
 				var oldDirectory = Path.Combine (baseDirectory, "test-results");
 				var newDirectory = Path.Combine (newCache, "test-results");
 				try {

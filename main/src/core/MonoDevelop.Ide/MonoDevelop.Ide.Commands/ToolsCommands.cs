@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (IdeApp.Workbench.RootWindow, "ExternalTools");
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (IdeServices.DesktopService.GetFocusedTopLevelWindow (), "ExternalTools");
 		}
 	}
 

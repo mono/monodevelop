@@ -40,7 +40,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = SelectedDotNetProjectHasPackages ();
+			info.Enabled = CanRestorePackagesForSelectedDotNetProject ();
 		}
 
 		public static void Run (DotNetProject project)

@@ -26,7 +26,7 @@ let mdtool args =
   result |> ignore
 
 let test() =
-  mdtool ("run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/" + config + "/MonoDevelop.FSharp.Tests.dll -labels")
+  mdtool ("run-md-tests ../../build/tests/MonoDevelop.FSharp.Tests.dll -labels")
 
 Target "Pack" (fun _ ->
   let dir = "pack/" + config
@@ -58,7 +58,7 @@ Target "GenerateFastBuildProjects" (fun _ ->
   let (/) a b = Path.Combine(a, b)
   let nsuri = "http://schemas.microsoft.com/developer/msbuild/2003"
 
-  let absoluteFromRelative projectPath relPath =
+  let absoluteFromRelative (projectPath: string) relPath =
     let projectFolder = Path.GetDirectoryName projectPath
     let full = projectFolder / relPath
     Uri(full).LocalPath |> Path.GetFullPath

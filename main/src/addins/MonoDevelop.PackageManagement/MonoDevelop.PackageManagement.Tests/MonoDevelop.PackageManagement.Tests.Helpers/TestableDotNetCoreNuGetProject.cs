@@ -39,9 +39,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool IsSaved { get; set; }
 
+		public bool CallBaseSaveProject { get; set; }
+
 		public override Task SaveProject ()
 		{
 			IsSaved = true;
+
+			if (CallBaseSaveProject)
+				return base.SaveProject ();
+
 			return Task.FromResult (0);
 		}
 

@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			Assert.IsFalse (map.Contains (docId));
 
-			map.Add (docId, null, null, null);
+			map.Add (docId, null);
 			Assert.IsTrue (map.Contains (docId));
 
 			map.Remove (docId);

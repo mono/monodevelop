@@ -95,7 +95,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var compactImage = ImageService.GetIcon (Stock.CompactDisplay, Gtk.IconSize.Menu);
 			var addImage = ImageService.GetIcon (Stock.Add, Gtk.IconSize.Menu);
 
-			horizontalStackView = NSStackViewExtensions.CreateHorizontalStackView (IconsSpacing);
+			horizontalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
 			AddArrangedSubview (horizontalStackView);
 
 			horizontalStackView.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 0).Active = true;
@@ -190,8 +190,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.ShowCategories = catToggleButton.Active = true;
 			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-
-			Refresh ();
 		}
 
 		void ToolboxService_ToolboxConsumerChanged (object sender, ToolboxConsumerChangedEventArgs e)

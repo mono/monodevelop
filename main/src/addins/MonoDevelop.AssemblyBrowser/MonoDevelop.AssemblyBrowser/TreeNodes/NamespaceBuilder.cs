@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return -1;
 				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (e1.Name, e2.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -86,12 +87,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			NamespaceData ns = (NamespaceData)dataObject;
-			bool publicOnly = Widget.PublicApiOnly;
-			foreach (var type in ns.Types) {
-				if (publicOnly && !type.isPublic)
-					continue;
-				ctx.AddChild (type.typeObject);
-			}
+
+			IEnumerable<object> result = ns.Types;
+			if (Widget.PublicApiOnly)
+				result = result.Where (x => NamespaceData.IsPublic (x));
+
+			ctx.AddChildren (result);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -101,18 +102,18 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#region IAssemblyBrowserNodeBuilder
 
-		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
+		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 		//	bool publicOnly = Widget.PublicApiOnly;
 			NamespaceData ns = (NamespaceData)navigator.DataItem;
 			
 			data.Text = "// " + ns.Name;
-			return null;
+			return EmptyReferenceSegmentTask;
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
+		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
-			return Disassemble (data, navigator);
+			return DisassembleAsync (data, navigator);
 		}
 		#endregion
 	}

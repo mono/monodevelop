@@ -1,12 +1,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
-    <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
   </PropertyGroup>
-  <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -54,29 +51,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
   <ItemGroup>
-    <Reference Include="Humanizer.Core">
-      <HintPath>..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build.Locator, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9dff12846e04bfbd, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.Build.Locator.1.1.2\lib\net46\Microsoft.Build.Locator.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.AttributedModel, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Hosting, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.Hosting.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Runtime, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.Runtime.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.TypedParts, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.TypedParts.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
@@ -99,117 +77,119 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.AppContext">
-      <HintPath>..\..\..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.5.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Console">
-      <HintPath>..\..\..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.FileVersionInfo">
-      <HintPath>..\..\..\packages\System.Diagnostics.FileVersionInfo.4.3.0\lib\net46\System.Diagnostics.FileVersionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.StackTrace">
-      <HintPath>..\..\..\packages\System.Diagnostics.StackTrace.4.3.0\lib\net46\System.Diagnostics.StackTrace.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression">
-      <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-    </Reference>
     <Reference Include="System.IO.FileSystem" />
     <Reference Include="System.IO.FileSystem.Primitives" />
     <Reference Include="System.Runtime.Remoting" />
-    <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific. Use netstandard version instead. -->
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Algorithms">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives" />
-    <Reference Include="System.Security.Cryptography.X509Certificates">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encoding.CodePages">
-      <HintPath>..\..\..\packages\System.Text.Encoding.CodePages.4.3.0\lib\net46\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions">
-      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Thread">
-      <HintPath>..\..\..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.ReaderWriter">
-      <HintPath>..\..\..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XmlDocument">
-      <HintPath>..\..\..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XPath">
-      <HintPath>..\..\..\packages\System.Xml.XPath.4.3.0\lib\net46\System.Xml.XPath.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XPath.XDocument">
-      <HintPath>..\..\..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180503.2\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers">
-      <HintPath>..\..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-      <HintPath>..\..\..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory">
-      <HintPath>..\..\..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http">
-      <HintPath>..\..\..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.2.0.3856\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="SQLitePCLRaw.core">
-      <HintPath>..\..\..\packages\SQLitePCLRaw.core.1.1.12\lib\net45\SQLitePCLRaw.core.dll</HintPath>
+    <!-- disable this for now, it's absurdly noisy
+    <PackageReference Include="ClrHeapAllocationAnalyzer" Version="1.0.0.9" />
+    -->
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
+    <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
+    <Reference Include="$(NuGetPackageRoot)microsoft.visualstudio.composition/$(NuGetVersionVSComposition)/lib/net45/Microsoft.VisualStudio.Composition.dll">
+      <NuGetPackageId>Microsoft.VisualStudio.Composition</NuGetPackageId>
+      <Private>true</Private>
     </Reference>
-    <Reference Include="SQLitePCLRaw.provider.e_sqlite3">
-      <HintPath>..\..\..\packages\SQLitePCLRaw.provider.e_sqlite3.net45.1.1.12\lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLitePCLRaw.batteries_e_sqlite3">
-      <HintPath>..\..\..\packages\SQLitePCLRaw.bundle_e_sqlite3.1.1.12\lib\net45\SQLitePCLRaw.batteries_e_sqlite3.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLitePCLRaw.batteries_v2">
-      <HintPath>..\..\..\packages\SQLitePCLRaw.bundle_e_sqlite3.1.1.12\lib\net45\SQLitePCLRaw.batteries_v2.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Mono.Cecil" Version="$(NuGetVersionCecil)" PrivateAssets="runtime" />
+    <PackageReference Include="MonoDevelopDev.Analyzers" Version="$(NuGetVersionMonoDevelopAnalyzers)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" PrivateAssets="runtime" />
+    <PackageReference Include="SharpZipLib" Version="1.1.0" PrivateAssets="runtime" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.12" PrivateAssets="runtime,build" />
+    <PackageReference Include="StreamJsonRpc" Version="1.5.43" PrivateAssets="runtime" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" PrivateAssets="runtime" />
+    <!-- remove this as it conflicts with the one in mscorlib. mono bug? -->
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" ExcludeAssets="all" />
+    <!-- update this to a version that doesn't crash -->
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0-preview4.19216.2" PrivateAssets="runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="Humanizer.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.Decompiler.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.SharpZipLib.dll" />
+    <IncludeCopyLocal Include="Microsoft.Build.Locator.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Text.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Elfie.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.InteractiveHost.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Scripting.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
+    <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtility.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.ImageCatalog.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.InteractiveWindow.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Intellisense.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.OLE.Interop.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Platform.VSEditor.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.10.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.11.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.12.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" Condition="$(Configuration.Contains('Mac'))" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Threading.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Validation.dll" />
+    <IncludeCopyLocal Include="Mono.Addins.dll" />
+    <IncludeCopyLocal Include="Mono.Addins.Setup.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.Mdb.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.Pdb.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.Rocks.dll" />
+    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.batteries_e_sqlite3.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.batteries_v2.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.core.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.provider.e_sqlite3.dll" />
+    <IncludeCopyLocal Include="StreamJsonRpc.dll" />
+    <IncludeCopyLocal Include="System.Buffers.dll" />
+    <IncludeCopyLocal Include="System.Collections.Immutable.dll" />
+    <IncludeCopyLocal Include="System.Composition.AttributedModel.dll" />
+    <IncludeCopyLocal Include="System.Composition.Convention.dll" />
+    <IncludeCopyLocal Include="System.Composition.Hosting.dll" />
+    <IncludeCopyLocal Include="System.Composition.Runtime.dll" />
+    <IncludeCopyLocal Include="System.Composition.TypedParts.dll" />
+    <IncludeCopyLocal Include="System.Memory.dll" />
+    <IncludeCopyLocal Include="System.Numerics.Vectors.dll" />
+    <IncludeCopyLocal Include="System.Reflection.Metadata.dll" />
+    <IncludeCopyLocal Include="System.Runtime.CompilerServices.Unsafe.dll" />
+    <IncludeCopyLocal Include="System.Text.Encoding.CodePages.dll" />
+    <IncludeCopyLocal Include="System.Threading.Tasks.Dataflow.dll" />
+    <IncludeCopyLocal Include="System.Threading.Tasks.Extensions.dll" />
+    <IncludeCopyLocal Include="System.ValueTuple.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -708,8 +688,6 @@
     <Compile Include="MonoDevelop.Projects\ProgressEvent.cs" />
     <Compile Include="MonoDevelop.Core.Setup\UpdateChannel.cs" />
     <Compile Include="MonoDevelop.Core\StringBuilderCache.cs" />
-    <Compile Include="MonoDevelop.Core\ObjectPool.cs" />
-    <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.cs" />
@@ -741,11 +719,22 @@
     <Compile Include="MonoDevelop.Core.Web\DefaultHttpClientHandler.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
+    <Compile Include="MonoDevelop.Core\Service.cs" />
+    <Compile Include="MonoDevelop.Core\ServiceProvider.cs" />
+    <Compile Include="MonoDevelop.Core\IService.cs" />
+    <Compile Include="MonoDevelop.Core\BasicServiceProvider.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\PlatformConditionAttribute.cs" />
+    <Compile Include="MonoDevelop.Core\CoreServices.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemDefinitionGroup.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectReader.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSdkProject.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
+    <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
-    <None Include="packages.config" />
     <None Include="MSBuild\CodeSharing.Common.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -780,10 +769,6 @@
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Utilities\" />
-    <Folder Include="MonoDevelop.Core.FeatureConfiguration\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">
     <MakeDir Directories="$(FullBuildInfo)" />
@@ -797,8 +782,4 @@
     <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
     <RemoveDir Directories="$(FullBuildInfo)" />
   </Target>
-  <Import Project="..\..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.209\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="Exists('..\..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.209\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
-  <Import Project="..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.12\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.12\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
-  <Import Project="..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.12\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.12\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
-  <Import Project="..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.12\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.12\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
 </Project>

@@ -63,10 +63,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (HasUserName () || HasPassword ()) {
 				return PackageSourceCredential.FromUserInput (
-					Source,
+					Name,
 					UserName ?? string.Empty,
 					Password ?? string.Empty,
-					storePasswordInClearText: false
+					storePasswordInClearText: false,
+					"" //FIXME
 				);
 			}
 			return null;

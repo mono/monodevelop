@@ -25,19 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
-using MonoDevelop.Core;
-using System.Xml.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
-using System.Text;
-
-using System.Runtime.InteropServices;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageFeedItem : Gtk.EventBox
+	class WelcomePageFeedItem : EventBox
 	{
 		static string linkUnderlinedFormat;
 		static string linkFormat;
@@ -255,7 +253,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 		
-		public new string Title {
+		public string Title {
 			get {
 				return text;
 			}
@@ -265,7 +263,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 		
-		public new string Subtitle {
+		public string Subtitle {
 			get {
 				return subtitle;
 			}

@@ -177,7 +177,7 @@ namespace console61
 					TriggerWordLength = 1,
 				};
 
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 
 				var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
 				IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
@@ -267,7 +267,7 @@ class FooBar : ProtocolClass
 			await TestCompletion (@"using $", (doc, list) => {
 				var item = (RoslynCompletionData)list.FirstOrDefault (d => d.CompletionText == "System");
 				KeyActions actions = KeyActions.Complete;
-				item.InsertCompletionText (doc.Editor, doc, ref actions, KeyDescriptor.Return);
+				item.InsertCompletionText (doc.Editor, doc.DocumentContext, ref actions, KeyDescriptor.Return);
 				Assert.AreEqual ("using System", doc.Editor.Text);
 			});
 		} 
@@ -303,13 +303,13 @@ namespace console61
 				var doc = testCase.Document;
 				var compExt = doc.GetContent<IDebuggerCompletionProvider> ();
 
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 				var startLine = doc.Editor.GetLineByOffset (startOfStatement);
 				var startColumn = startOfStatement - startLine.Offset;
 				var endLine = doc.Editor.GetLineByOffset (endOfStatement);
 				var endColumn = endOfStatement - endLine.Offset;
 
-				var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
+				var completionResult = await compExt.GetExpressionCompletionDataAsync ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
 				Assert.IsNotNull (completionResult);
 				Assert.Less (10, completionResult.Items.Count);//Just randomly high number
 				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));
@@ -340,19 +340,19 @@ namespace console61
 }
 ",
 								  (doc, list) => {
-									  var extEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
+									  //var extEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
 									  var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
 									  CompletionWindowManager.StartPrepareShowWindowSession ();
-									  extEditor.EditorExtension = compExt;
-									  extEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+									  //extEditor.EditorExtension = compExt;
+									  //extEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
 									  var listWindow = new CompletionListWindow ();
-									  var widget = new NamedArgumentCompletionTests.TestCompletionWidget (doc.Editor, doc);
+									  var widget = new NamedArgumentCompletionTests.TestCompletionWidget (doc.Editor, doc.DocumentContext);
 									  listWindow.CompletionWidget = widget;
 									  listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 									  var item = (RoslynCompletionData)list.FirstOrDefault (d => d.CompletionText == "MainClass");
 									  KeyActions ka = KeyActions.Process;
 									  Gdk.Key key = Gdk.Key.Tab;
-									  item.InsertCompletionText (doc.Editor, doc, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
+									  item.InsertCompletionText (doc.Editor, doc.DocumentContext, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
 									  Assert.AreEqual (@"
 namespace console61
 {

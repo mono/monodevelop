@@ -31,76 +31,34 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Components.Docking;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Components.DockNotebook;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public interface IWorkbenchWindow
+	interface IWorkbenchWindow
 	{
-		ViewContent ViewContent { get; }
-		BaseViewContent ActiveViewContent { get; set; }
-
-		IEnumerable<BaseViewContent> SubViewContents { get; }
-
 		Document Document { get; set; }
-		string DocumentType { get; set; }
-		string Title { get; set; }
+		string Title { get; }
 		bool ShowNotification { get; set; }
-		ExtensionContext ExtensionContext { get; }
+		IShellNotebook Notebook { get; }
+		bool ContentVisible { get; }
 
-		void AttachViewContent (BaseViewContent subViewContent);
-		void InsertViewContent (int index, BaseViewContent subViewContent);
-
-		void SwitchView (int index);
-		void SwitchView (BaseViewContent subViewContent);
-		int FindView <T>();
-		
-		Task<bool> CloseWindow (bool force);
 		void SelectWindow ();
 
-		/// <summary>
-		/// Returns a toolbar for the pad.
-		/// </summary>
-		DocumentToolbar GetToolbar (BaseViewContent targetView);
+		IShellDocumentViewContent CreateViewContent ();
+		IShellDocumentViewContainer CreateViewContainer ();
 
-		event EventHandler DocumentChanged;
-		event WorkbenchWindowEventHandler Closed;
-		event WorkbenchWindowAsyncEventHandler Closing;
-		event ActiveViewContentEventHandler ActiveViewContentChanged;
-		event EventHandler ViewsChanged;
+		void SetRootView (IShellDocumentViewItem view);
+
+		event EventHandler CloseRequested;
+		event EventHandler<NotebookChangeEventArgs> NotebookChanged;
 	}
 
-	public delegate Task WorkbenchWindowAsyncEventHandler (object o, WorkbenchWindowEventArgs e);
-	public delegate void WorkbenchWindowEventHandler (object o, WorkbenchWindowEventArgs e);
-	public class WorkbenchWindowEventArgs : CancelEventArgs
+	internal class NotebookChangeEventArgs : EventArgs
 	{
-		private bool forced;
-		public bool Forced {
-			get { return forced; }
-		}
-
-		private bool wasActive;
-		public bool WasActive {
-			get { return wasActive; }
-		}
-
-		public WorkbenchWindowEventArgs (bool forced, bool wasActive)
-		{
-			this.forced = forced;
-			this.wasActive = wasActive;
-		}
-	}
-
-	public delegate void ActiveViewContentEventHandler (object o, ActiveViewContentEventArgs e);
-	public class ActiveViewContentEventArgs : EventArgs
-	{
-		private BaseViewContent content = null;
-		public BaseViewContent Content {
-			get { return content; }
-		}
-
-		public ActiveViewContentEventArgs (BaseViewContent content)
-		{
-			this.content = content;
-		}
+		public IShellNotebook OldNotebook { get; set; }
+		public IShellNotebook NewNotebook { get; set; }
 	}
 }

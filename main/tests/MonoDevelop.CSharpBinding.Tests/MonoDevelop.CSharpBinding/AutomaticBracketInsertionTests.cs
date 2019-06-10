@@ -1,4 +1,4 @@
-//
+﻿//
 // AutomaticBracketInsertionTests.cs
 //
 // Author:
@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharpBinding
 			TestViewContent content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
+			content.Editor.MimeType = "text/x-csharp";
 
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
 
@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharpBinding
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
+				await IdeApp.TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 
@@ -191,7 +191,7 @@ namespace MonoDevelop.CSharpBinding
 			content.Contents.Add (compExt);
 
 			await doc.UpdateParseDocument ();
-			TypeSystemService.Unload (solution);
+			IdeApp.TypeSystemService.Unload (solution);
 			return Tuple.Create (compExt, content);
 		}
 
@@ -205,7 +205,7 @@ namespace MonoDevelop.CSharpBinding
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			var model = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+			var model = await ext.DocumentContext.AnalysisDocument.GetSemanticModelAsync ();
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 
 			var t = model.Compilation.GetTypeByMetadataName (type);

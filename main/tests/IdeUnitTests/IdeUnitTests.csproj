@@ -1,32 +1,45 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\build\tests</OutputPath>
+    <!--
+    This contains tests for many deprecated editor APIs, disable deprecation warnings for now.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="Microsoft.VisualStudio.Composition, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.Composition.15.6.36\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeTestBase.cs" />
     <Compile Include="TextEditorExtensionTestBase.cs" />
     <Compile Include="TypeSystemServiceTestExtensions.cs" />
-    <Compile Include="TestDocument.cs" />
     <Compile Include="TestViewContent.cs" />
-    <Compile Include="TestWorkbenchWindow.cs" />
     <Compile Include="RoslynTestBase.cs" />
     <Compile Include="CompositionManagerTestHelpers.cs" />
     <Compile Include="ProjectTemplateTest.cs" />
+    <Compile Include="ServiceHelper.cs" />
+    <Compile Include="MockShell.cs" />
+    <Compile Include="MockShellWindow.cs" />
+    <Compile Include="MockProgressMonitorManager.cs" />
+    <Compile Include="MockOutputProgressMonitor.cs" />
+    <Compile Include="MockOperationConsole.cs" />
+    <Compile Include="MockShellNotebook.cs" />
+    <Compile Include="MockShellDocumentViewContent.cs" />
+    <Compile Include="MockShellDocumentViewContainer.cs" />
+    <Compile Include="MockShellDocumentView.cs" />
+    <Compile Include="MockShellDocumentToolbar.cs" />
+    <Compile Include="MockViewBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -62,7 +75,12 @@
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+     <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="..\..\build\bin\testing" SkipUnchangedFiles="true" />
+     <Copy SourceFiles="$(OutputPath)\GuiUnit.exe" DestinationFolder="..\..\build\bin\testing" SkipUnchangedFiles="true" />
+   </Target>
 </Project>

@@ -40,8 +40,8 @@ using System.Diagnostics;
 using MonoDevelop.Ide;
 using Microsoft.VisualStudio.Text.Classification;
 using System.Threading;
-using Microsoft.VisualStudio.Text.Operations.Implementation;
 using Microsoft.VisualStudio.Text.Operations;
+using MonoDevelop.SourceEditor;
 
 namespace Mono.TextEditor
 {
@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 
 		ConnectionManager connectionManager;
 
-		TextEditorFactoryService factoryService;
+		TextEditorInitializationService factoryService;
 		int queuedSpaceReservationStackRefresh = 0;    //int so that it can be set via Interlocked.CompareExchange()
 
 		//		IEditorFormatMap _editorFormatMap;
@@ -109,12 +109,12 @@ namespace Mono.TextEditor
 		/// <param name="roles">Roles for this view.</param>
 		/// <param name="parentOptions">Parent options for this view.</param>
 		/// <param name="factoryService">Our handy text editor factory service.</param>
-		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
+		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorInitializationService factoryService, bool initialize = true)
 		{
 			this.roles = roles;
 			this.factoryService = factoryService;
             GuardedOperations = this.factoryService.GuardedOperations;
-            _spaceReservationStack = new SpaceReservationStack(this.factoryService.OrderedSpaceReservationManagerDefinitions, this);
+            _spaceReservationStack = new MDSpaceReservationStack(this.factoryService.OrderedSpaceReservationManagerDefinitions, this);
 
 			this.TextDataModel = textViewModel.DataModel;
 			this.TextViewModel = textViewModel;
@@ -405,8 +405,7 @@ namespace Mono.TextEditor
 		/// </remarks>
 		private void SubscribeToEvents ()
 		{
-			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
+			IdeServices.DocumentManager.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
 		}
 
 		void Workbench_ActiveDocumentChanged (object sender, EventArgs e)
@@ -416,9 +415,14 @@ namespace Mono.TextEditor
 
 		private void UnsubscribeFromEvents ()
 		{
-			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
+			IdeServices.DocumentManager.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
 		}
+
+		static readonly string[] allowedTextViewCreationListeners = {
+			"MonoDevelop.SourceEditor.Braces.BraceCompletionManagerFactory",
+			"MonoDevelop.SourceEditor.CurrentLineSpaceReservationAgent.CurrentLineSpaceReservationAgent_ViewCreationListener",
+			"Microsoft.VisualStudio.Text.AdornmentLibrary.Squiggles.Implementation.WebToolingErrorProviderFactory"
+		};
 
 		private void BindContentTypeSpecificAssets (IContentType beforeContentType, IContentType afterContentType)
 		{
@@ -440,7 +444,7 @@ namespace Mono.TextEditor
 				}
 
 				var instantiatedExtension = factoryService.GuardedOperations.InstantiateExtension (extension, extension);
-				if (instantiatedExtension != null) {
+				if (instantiatedExtension != null && allowedTextViewCreationListeners.Contains(instantiatedExtension.ToString())) {
 					factoryService.GuardedOperations.CallExtensionPoint (instantiatedExtension,
 						() => instantiatedExtension.TextViewCreated (this));
 				}
@@ -492,7 +496,7 @@ namespace Mono.TextEditor
 #endif
 
 			if (!isClosed) {
-				bool newHasAggregateFocus = ((IdeApp.Workbench.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor == this);
+				bool newHasAggregateFocus = ((IdeServices.DocumentManager.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor == this);
 				if (newHasAggregateFocus != hasAggregateFocus) {
 					hasAggregateFocus = newHasAggregateFocus;
 
@@ -529,9 +533,14 @@ namespace Mono.TextEditor
 		}
 
 		public IGuardedOperations GuardedOperations;
-		internal SpaceReservationStack _spaceReservationStack;
+		internal MDSpaceReservationStack _spaceReservationStack;
 
-		public ISpaceReservationManager GetSpaceReservationManager (string name)
+#if MAC
+		// on Mac ITextView has the extra member GetSpaceReservationManager that isn't there on Windows
+		ISpaceReservationManager ITextView.GetSpaceReservationManager (string name) => throw new NotImplementedException();
+#endif
+
+		public IMDSpaceReservationManager GetSpaceReservationManager (string name)
 		{
 			if (name == null)
 				throw new ArgumentNullException ("name");
@@ -539,7 +548,7 @@ namespace Mono.TextEditor
 			return _spaceReservationStack.GetOrCreateManager (name);
 		}
 
-		internal TextEditorFactoryService ComponentContext {
+		internal TextEditorInitializationService ComponentContext {
 			get { return factoryService; }
 		}
 
@@ -566,5 +575,45 @@ namespace Mono.TextEditor
 				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
+
+		public void QueuePostLayoutAction (Action action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool TryGetTextViewLines (out ITextViewLineCollection textViewLines)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool TryGetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition, out ITextViewLine textViewLine)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void Focus ()
+		{
+		}
+
+#if MAC
+		public IXPlatAdornmentLayer GetXPlatAdornmentLayer (string name)
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Gets or sets the Zoom level for the <see cref="ITextView3"/> between 20% to 400%
+		/// </summary>
+		public double ZoomLevel {
+			get;
+			set;
+		}
+
+		public ITextViewLineSource FormattedLineSource { get; } = null;
+
+		public bool IsKeyboardFocused => HasFocus;
+
+		public event EventHandler IsKeyboardFocusedChanged;
+#endif
 	}
 }

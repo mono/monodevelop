@@ -1,4 +1,4 @@
-﻿//
+//
 // TagCommentsTextEditorExtension.cs
 //
 // Author:
@@ -24,25 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
-using System.Threading.Tasks;
-using Gtk;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor;
-using Microsoft.CodeAnalysis.Editor.Implementation.TodoComments;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class TagCommentsTextEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
-		ITodoListProvider todoListProvider = Ide.Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
+		ITodoListProvider todoListProvider = CompositionManager.Instance.GetExportedValue<ITodoListProvider> ();
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool isDisposed;
 
@@ -79,7 +74,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (DocumentContext.AnalysisDocument == null || DocumentContext.AnalysisDocument.Id != args.DocumentId)
 				return;
 
-			var ws = (MonoDevelopWorkspace)args.Workspace;
+			var ws = args.Workspace as MonoDevelopWorkspace;
+			if (ws == null) {
+				// could be WebEditorRoslynWorkspace
+				return;
+			}
+
 			var doc = ws.GetDocument (args.DocumentId);
 			if (doc == null)
 				return;

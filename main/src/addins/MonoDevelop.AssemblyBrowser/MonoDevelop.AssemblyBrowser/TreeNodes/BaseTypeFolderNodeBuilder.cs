@@ -28,9 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-
-using Mono.Cecil;
-
+	
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
@@ -58,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var reference = dataObject as ITypeReference;
-			nodeInfo.Label = reference.ToString ();
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (reference.ToString ());
 			nodeInfo.Icon = Context.GetIcon (Stock.Class);
 		}
 		
@@ -69,9 +67,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			var r1 = thisNode.DataItem as ITypeReference;
-			var r2 = thisNode.DataItem as ITypeReference;
-			return r1.ToString ().CompareTo (r2.ToString ());
+			return string.Compare (thisNode.NodeName, otherNode.NodeName, StringComparison.Ordinal);
 		}
 	}
 	
@@ -100,9 +96,9 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var baseTypeFolder = (BaseTypeFolder)dataObject;
-			builder.AddChild (baseTypeFolder.Type.BaseType);
-			builder.AddChildren (baseTypeFolder.Type.Interfaces);
+			builder.AddChildren (baseTypeFolder.Type.DirectBaseTypes);
 		}
+
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;

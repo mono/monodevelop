@@ -53,13 +53,13 @@ namespace MonoDevelop.VersionControl
 			foreach (var item in items) {
 				if (!item.IsDirectory) {
 					Document document = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-					document.Window.SwitchView (document.Window.FindView<ILogView> ());
+					document?.GetContent<VersionControlDocumentController> ()?.ShowLogView ();
 					continue;
 				}
 
-				var info = new VersionControlDocumentInfo (null, item, item.Repository);
+				var info = new VersionControlDocumentInfo (null, null, item, item.Repository);
 				var logView = new LogView (info);
-				info.Document = IdeApp.Workbench.OpenDocument (logView, true).PrimaryView;
+				info.Document = await IdeApp.Workbench.OpenDocument (logView, true);
 				logView.Init ();
 			}
 			

@@ -4,41 +4,33 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.WebBrowser;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.Ide.GettingStarted
 {
-	public class GettingStartedViewContent : ViewContent
+	public class GettingStartedViewContent : DocumentController, IProjectPadNodeSelector
 	{
 		Control gettingStartedWidget;
-		
+
+
 		public GettingStartedViewContent (Project project, GettingStartedProvider provider)
 		{
-			Project = project;
+			Owner = project;
 			gettingStartedWidget = provider.GetGettingStartedWidget (project);
-			ContentName = GettextCatalog.GetString ("Getting Started");
+			DocumentTitle = GettextCatalog.GetString ("Getting Started");
+			IsReadOnly = true;
 		}
 
-		public override Control Control {
-			get {
-				return gettingStartedWidget;
-			}
-		}
-
-		public override bool IsViewOnly {
-			get {
-				return true;
-			}
-		}
-
-		public override bool IsFile {
-			get {
-				return false;
-			}
-		}
-
-		public override object GetDocumentObject ()
+		protected override Control OnGetViewControl (DocumentViewContent view)
 		{
-			return Project.GetGettingStartedNode ();
+			return gettingStartedWidget;
+		}
+
+		object IProjectPadNodeSelector.GetNodeObjext ()
+		{
+			return ((Project)Owner).GetGettingStartedNode ();
 		}
 	}
 }

@@ -28,12 +28,12 @@
 
 using System;
 using System.Collections.Generic;
-
-using Mono.Cecil;
+	
 using MonoDevelop.Ide;
 using System.Threading;
 using MonoDevelop.Core.Text;
 using System.Collections.Immutable;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -43,7 +43,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			readonly AssemblyBrowserWidget assemblyBrowserWidget;
 			readonly CancellationToken token;
-			readonly List<IMemberDefinition> memberList = new List<IMemberDefinition> ();
+			readonly List<IEntity> memberList = new List<IEntity> ();
 			readonly bool publicOnly;
 			readonly string pattern;
 			readonly ImmutableList<AssemblyLoader> definitions;
@@ -52,7 +52,7 @@ namespace MonoDevelop.AssemblyBrowser
 			bool fillStepFinished;
 			int currentDefinition;
 			int i = 0;
-			IEnumerator<TypeDefinition> currentTypeEnumerator;
+			IEnumerator<ITypeDefinition> currentTypeEnumerator;
 
 			public SearchIdleRunner (AssemblyBrowserWidget assemblyBrowserWidget, string pattern, CancellationToken token)
 			{
@@ -102,8 +102,9 @@ namespace MonoDevelop.AssemblyBrowser
 					return;
 				}
 				var unit = definitions [currentDefinition];
+				var typeSystem = unit.DecompilerTypeSystem;
 				if (currentTypeEnumerator == null) {
-					currentTypeEnumerator = unit.Assembly.MainModule.Types.GetEnumerator ();
+					currentTypeEnumerator = typeSystem.GetAllTypeDefinitions ().GetEnumerator ();
 					if (!currentTypeEnumerator.MoveNext ()) {
 						currentTypeEnumerator = null;
 						currentDefinition++;
@@ -121,14 +122,12 @@ namespace MonoDevelop.AssemblyBrowser
 				case SearchMode.Member:
 					if (token.IsCancellationRequested)
 						return;
-					if (!type.IsPublic && publicOnly)
+					if (!type.IsPublic () && publicOnly)
 						return;
 					foreach (var member in type.Methods) {
 						if (token.IsCancellationRequested)
 							return;
-						if (!member.IsPublic && publicOnly)
-							continue;
-						if (member.IsSpecialName || member.IsRuntimeSpecialName)
+						if (!member.IsPublic () && publicOnly)
 							continue;
 						if (matcher.IsMatch (member.Name))
 							memberList.Add (member);
@@ -136,9 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 					foreach (var member in type.Fields) {
 						if (token.IsCancellationRequested)
 							return;
-						if (!member.IsPublic && publicOnly)
-							continue;
-						if (member.IsSpecialName || member.IsRuntimeSpecialName)
+						if (!member.IsPublic () && publicOnly)
 							continue;
 						if (matcher.IsMatch (member.Name))
 							memberList.Add (member);
@@ -146,10 +143,8 @@ namespace MonoDevelop.AssemblyBrowser
 					foreach (var member in type.Properties) {
 						if (token.IsCancellationRequested)
 							return;
-						var accessor = member.GetMethod ?? member.SetMethod;
-						if (!accessor.IsPublic && publicOnly)
-							continue;
-						if (member.IsSpecialName || member.IsRuntimeSpecialName)
+						var accessor = member.Getter ?? member.Setter;
+						if (!accessor.IsPublic () && publicOnly)
 							continue;
 						if (matcher.IsMatch (member.Name))
 							memberList.Add (member);
@@ -157,19 +152,17 @@ namespace MonoDevelop.AssemblyBrowser
 					foreach (var member in type.Events) {
 						if (token.IsCancellationRequested)
 							return;
-						if (member.IsSpecialName || member.IsRuntimeSpecialName)
-							continue;
-						var accessor = member.AddMethod ?? member.RemoveMethod;
-						if (!accessor.IsPublic && publicOnly)
+						var accessor = member.AddAccessor ?? member.RemoveAccessor;
+						if (!accessor.IsPublic () && publicOnly)
 							continue;
 						if (matcher.IsMatch (member.Name))
 							memberList.Add (member);
 					}
 					break;
 				case SearchMode.Type:
-					if (!type.IsPublic && publicOnly)
+					if (!type.IsPublic () && publicOnly)
 						return;
-					if (type.IsSpecialName || type.IsRuntimeSpecialName || type.Name == "<Module>")
+					if (type.Name == "<Module>")
 						return;
 					if (matcher.IsMatch (type.FullName))
 						memberList.Add (type);
@@ -177,9 +170,9 @@ namespace MonoDevelop.AssemblyBrowser
 				case SearchMode.TypeAndMembers:
 					if (token.IsCancellationRequested)
 						return;
-					if (!type.IsPublic && publicOnly)
+					if (!type.IsPublic () && publicOnly)
 						return;
-					if (type.IsSpecialName || type.IsRuntimeSpecialName || type.Name == "<Module>")
+					if (type.Name == "<Module>")
 						return;
 					if (matcher.IsMatch (type.FullName))
 						memberList.Add (type);

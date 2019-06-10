@@ -37,20 +37,19 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		internal class OpenDocumentsData
 		{
-			readonly Dictionary<DocumentId, (SourceTextContainer Container, TextEditor Editor, DocumentContext Context)> openDocuments =
-				new Dictionary<DocumentId, (SourceTextContainer, TextEditor, DocumentContext)> ();
+			readonly HashSet<DocumentId> openDocuments = new HashSet<DocumentId> ();
 
-			internal void Add (DocumentId documentId, SourceTextContainer container, TextEditor editor, DocumentContext context)
+			internal void Add (DocumentId documentId, SourceTextContainer container)
 			{
 				lock (openDocuments) {
-					openDocuments.Add (documentId, (container, editor, context));
+					openDocuments.Add (documentId);
 				}
 			}
 
 			internal bool Contains (DocumentId documentId)
 			{
 				lock (openDocuments) {
-					return openDocuments.ContainsKey (documentId);
+					return openDocuments.Contains (documentId);
 				}
 			}
 
@@ -58,26 +57,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				lock (openDocuments) {
 					return openDocuments.Remove (documentId);
-				}
-			}
-
-			internal void CorrectDocumentIds (DotNetProject project, ProjectInfo projectInfo)
-			{
-				lock (openDocuments) {
-					foreach (var openDoc in openDocuments) {
-						if (openDoc.Value.Context.Project != project)
-							continue;
-
-						var doc = openDoc.Value.Context.AnalysisDocument;
-						if (doc == null)
-							continue;
-
-						var newDocument = projectInfo.Documents.FirstOrDefault (d => d.FilePath == doc.FilePath);
-						if (newDocument == null || newDocument.Id == doc.Id)
-							continue;
-
-						openDoc.Value.Context.UpdateDocumentId (newDocument.Id);
-					}
 				}
 			}
 		}

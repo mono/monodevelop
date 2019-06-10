@@ -27,38 +27,41 @@
 using System;
 using System.Linq;
 using System.Text;
-
-using Mono.Cecil;
-
+	
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
+using ICSharpCode.Decompiler.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyReferenceFolder
 	{
-		AssemblyDefinition definition;
+		PEFile definition;
 		
-		public IEnumerable<AssemblyNameReference> AssemblyReferences {
+		public IEnumerable<AssemblyReference> AssemblyReferences {
 			get {
-				return definition.MainModule.AssemblyReferences;
+				return definition.AssemblyReferences;
+			}
+		}
+
+		// Ass
+		
+		public IEnumerable<IModule> ModuleReferences {
+			get {
+				// TODO:
+				yield break;
+				//foreach (var reference in definition.Metadata.GetModuleReferences ())
+				//yield return definition.Metadata.GetModuleReference (reference);
 			}
 		}
 		
-		public IEnumerable<ModuleReference> ModuleReferences {
-			get {
-				return definition.MainModule.ModuleReferences;
-			}
-		}
-		
-		public AssemblyReferenceFolder (AssemblyDefinition definition)
+		public AssemblyReferenceFolder (PEFile definition)
 		{
-			if (definition == null)
-				throw new ArgumentNullException ("definition");
-			this.definition = definition;
+			this.definition = definition ?? throw new ArgumentNullException (nameof (definition));
 		}
 	}
 	

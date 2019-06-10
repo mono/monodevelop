@@ -141,7 +141,7 @@ namespace MonoDevelop.UnitTesting
 			book.Pack1 (sw, true, true);
 
 			outputView = new MonoDevelop.Ide.Gui.Components.LogView.LogTextView { Name = "testResultOutput" };
-			outputView.ModifyFont (FontService.MonospaceFont);
+			outputView.ModifyFont (IdeServices.FontService.MonospaceFont);
 			outputView.Editable = false;
 			bold = new TextTag ("bold");
 			bold.Weight = Pango.Weight.Bold;
@@ -745,7 +745,7 @@ namespace MonoDevelop.UnitTesting
 					const int maxLineLength = 255;
 					const int maxLineNumber = 255;
 					sb.Append ("<span font='");
-					sb.Append (FontService.MonospaceFontName);
+					sb.Append (IdeServices.FontService.MonospaceFontName);
 					sb.Append ("'>");
 					using (var sr = new StringReader (result.Message)) {
 						while (null != (curLineText = sr.ReadLine ())) {

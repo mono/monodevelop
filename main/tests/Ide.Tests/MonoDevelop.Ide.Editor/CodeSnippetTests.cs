@@ -62,25 +62,24 @@ namespace MonoDevelop.Ide.Editor
 			var snippet = new CodeTemplate ();
 			snippet.Code = "class Foo:Test\n{\n    $end$\n}";
 
-			var editor = await RunSnippet (snippet);
-
-			Assert.AreEqual ("class Foo : Test\n{\n\n}", editor.Text);
-			Assert.AreEqual ("class Foo : Test\n{\n".Length, editor.CaretOffset);
+			using (var testCase = await RunSnippet (snippet)) {
+				Assert.AreEqual ("class Foo : Test\n{\n\n}", testCase.Document.Editor.Text);
+				Assert.AreEqual ("class Foo : Test\n{\n".Length, testCase.Document.Editor.CaretOffset);
+			}
 		}
 
-		async Task<TextEditor> RunSnippet (CodeTemplate snippet)
+		async Task<TextEditorExtensionTestCase> RunSnippet (CodeTemplate snippet)
 		{
-			using (var testCase = await SetupTestCase ("")) {
-				var doc = testCase.Document;
-				doc.Editor.Options = new CustomEditorOptions (doc.Editor.Options) {
-					IndentStyle = IndentStyle.Smart,
-					RemoveTrailingWhitespaces = true
-				};
-				doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
-				await doc.UpdateParseDocument ();
-				snippet.Insert (doc);
-				return doc.Editor;
-			}
+			var testCase = await SetupTestCase ("");
+			var doc = testCase.Document;
+			doc.Editor.Options = new CustomEditorOptions (doc.Editor.Options) {
+				IndentStyle = IndentStyle.Smart,
+				RemoveTrailingWhitespaces = true
+			};
+			doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
+			await doc.DocumentContext.UpdateParseDocument ();
+			snippet.Insert (doc);
+			return testCase;
 		}
 
 		[Test]
@@ -90,7 +89,7 @@ namespace MonoDevelop.Ide.Editor
 				var doc = testCase.Document;
 				doc.Editor.CaretOffset = doc.Editor.Length;
 				var extensibleEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
-				Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document));
+				Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document.DocumentContext));
 			}
 		}
 

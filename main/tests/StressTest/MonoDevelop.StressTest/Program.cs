@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest
@@ -59,15 +60,28 @@ namespace MonoDevelop.StressTest
 				return;
 			}
 
+			bool success = true;
 			app = new StressTestApp (options);
-			app.Start ();
-			app.Stop ();
+
+			try {
+				app.Start ();
+			} catch {
+				success = false;
+
+				using (var p = Process.Start ("/usr/sbin/screencapture", "screenshot-failure.png")) {
+					Console.WriteLine ("Taking screenshot at point of failure");
+					p.WaitForExit ();
+				}
+				throw;
+			} finally {
+				app.Stop (success);
+			}
 		}
 
 		static void ConsoleCancelKeyPress (object sender, ConsoleCancelEventArgs e)
 		{
 			try {
-				app?.Stop ();
+				app?.Stop (false);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}

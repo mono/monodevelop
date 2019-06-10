@@ -23,6 +23,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
     [ Serializable() ]
 #endif
+	[Obsolete ("Old editor")]
     class GroupCollection : ICollection {
         internal Match _match;
 #if SILVERLIGHT
@@ -192,6 +193,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
      * This non-public enumerator lists all the captures
      * Should it be public?
      */
+	[Obsolete ("Old editor")]
     internal class GroupEnumerator : IEnumerator {
         internal GroupCollection _rgc;
         internal int _curindex;

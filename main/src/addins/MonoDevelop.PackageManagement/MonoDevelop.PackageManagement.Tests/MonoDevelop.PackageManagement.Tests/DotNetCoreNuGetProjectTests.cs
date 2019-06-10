@@ -24,17 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using NUnit.Framework;
+using NuGet.Frameworks;
+using NuGet.LibraryModel;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
+using NUnit.Framework;
 using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -81,15 +85,51 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		Task<bool> InstallPackageAsync (string packageId, string version)
 		{
-			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
-			var versionRange = new VersionRange (packageIdentity.Version);
-			return project.InstallPackageAsync (packageId, versionRange, context, null, CancellationToken.None);
+			var installationContext = CreateInstallationContext ();
+			return InstallPackageAsync (packageId, version, installationContext);
 		}
 
-		Task<PackageSpec> GetPackageSpecsAsync ()
+		Task<bool> InstallPackageAsync (string packageId, string version, BuildIntegratedInstallationContext installationContext)
 		{
-			dependencyGraphCacheContext = new DependencyGraphCacheContext ();
-			return GetPackageSpecsAsync (dependencyGraphCacheContext);
+			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
+			var versionRange = new VersionRange (packageIdentity.Version);
+
+			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
+		}
+
+		BuildIntegratedInstallationContext CreateInstallationContext (
+			LibraryIncludeFlags? includeType = null,
+			LibraryIncludeFlags? suppressParent = null)
+		{
+			var framework = NuGetFramework.Parse (project.Project.TargetFrameworkMoniker.ToString ());
+			var frameworks = new NuGetFramework [] {
+				framework
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+			originalFrameworks [framework] = framework.GetShortFolderName ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				frameworks,
+				Enumerable.Empty<NuGetFramework> (),
+				originalFrameworks);
+
+			if (includeType.HasValue)
+				installationContext.IncludeType = includeType.Value;
+
+			if (suppressParent.HasValue)
+				installationContext.SuppressParent = suppressParent.Value;
+
+			return installationContext;
+		}
+
+		Task<bool> InstallPackageAsync (string packageId, string version, LibraryIncludeFlags includeType, LibraryIncludeFlags suppressParent)
+		{
+			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
+			var versionRange = new VersionRange (packageIdentity.Version);
+
+			var installationContext = CreateInstallationContext (includeType, suppressParent);
+			return project.InstallPackageAsync (packageId, versionRange, context, installationContext, CancellationToken.None);
 		}
 
 		async Task<PackageSpec> GetPackageSpecsAsync (DependencyGraphCacheContext cacheContext)
@@ -164,14 +204,17 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			bool result = await InstallPackageAsync ("NUnit", "2.6.1");
 
-			var packageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
-				.Single ()
-				.CreatePackageReference ();
+			var projectPackageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ();
+
+			var packageReference = projectPackageReference.CreatePackageReference ();
 
 			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
 			Assert.AreEqual ("2.6.1", packageReference.PackageIdentity.Version.ToNormalizedString ());
 			Assert.IsTrue (result);
 			Assert.IsTrue (project.IsSaved);
+			Assert.IsFalse (projectPackageReference.Metadata.HasProperty ("IncludeAssets"));
+			Assert.IsFalse (projectPackageReference.Metadata.HasProperty ("PrivateAssets"));
 		}
 
 		[Test]
@@ -221,6 +264,36 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public async Task InstallPackageAsync_DevelopmentDependency_AssetInfoAddedToPackageReference ()
+		{
+			CreateNuGetProject ();
+
+			var includeType = LibraryIncludeFlags.Runtime |
+				LibraryIncludeFlags.Build |
+				LibraryIncludeFlags.Native |
+				LibraryIncludeFlags.ContentFiles |
+				LibraryIncludeFlags.Analyzers;
+
+			var suppressParent = LibraryIncludeFlags.All;
+
+			bool result = await InstallPackageAsync ("GitInfo", "2.0.20", includeType, suppressParent);
+
+			var projectPackageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ();
+
+			var packageReference = projectPackageReference.CreatePackageReference ();
+
+			Assert.AreEqual ("GitInfo", packageReference.PackageIdentity.Id);
+			Assert.AreEqual ("2.0.20", packageReference.PackageIdentity.Version.ToNormalizedString ());
+
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+			Assert.AreEqual ("runtime; build; native; contentfiles; analyzers", projectPackageReference.Metadata.GetValue ("IncludeAssets"));
+			Assert.AreEqual ("all", projectPackageReference.Metadata.GetValue ("PrivateAssets"));
+			Assert.AreEqual (ProjectStyle.PackageReference, project.ProjectStyle);
+		}
+
+		[Test]
 		public async Task GetAssetsFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
 			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
@@ -265,6 +338,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageSpec spec = await GetPackageSpecsAsync (dependencyGraphCacheContext);
 
 			Assert.AreSame (cachedSpec, spec);
+		}
+
+		[Test]
+		public async Task GetPackageSpecsAsync_DotNetCliTool_PackageSpecsIncludeDotNetCliToolReference ()
+		{
+			string projectFile = Util.GetSampleProject ("dotnet-cli-tool", "dotnet-cli-tool-netcore.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
+
+				dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+				var nugetProject = new DotNetCoreNuGetProject (project);
+				var specs = await nugetProject.GetPackageSpecsAsync (dependencyGraphCacheContext);
+				var projectSpec = specs.FirstOrDefault (s => s.RestoreMetadata.ProjectStyle == ProjectStyle.PackageReference);
+				var dotNetCliToolSpec = specs.FirstOrDefault (s => s.RestoreMetadata.ProjectStyle == ProjectStyle.DotnetCliTool);
+
+				Assert.AreEqual (2, specs.Count);
+				Assert.AreEqual (projectFile, projectSpec.FilePath);
+				Assert.AreEqual ("dotnet-cli-tool-netcore", projectSpec.Name);
+				Assert.AreEqual ("dotnet-cli-tool-netcore", projectSpec.RestoreMetadata.ProjectName);
+				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectPath);
+				Assert.AreEqual (projectFile, projectSpec.RestoreMetadata.ProjectUniqueName);
+				Assert.AreSame (projectSpec, dependencyGraphCacheContext.PackageSpecCache [projectFile]);
+				Assert.AreEqual ("bundlerminifier.core-netcoreapp2.1-[2.9.406, )", dotNetCliToolSpec.Name);
+				Assert.AreEqual (projectFile, dotNetCliToolSpec.RestoreMetadata.ProjectPath);
+				Assert.AreSame (dotNetCliToolSpec, dependencyGraphCacheContext.PackageSpecCache [dotNetCliToolSpec.Name]);
+			}
 		}
 
 		[Test]
@@ -497,6 +595,223 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsNull (dotNetCoreProject.MSBuildProject);
 			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstall_PackageReferenceAddedWithCondition ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework[] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool result = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.IsFalse (packageReference.Metadata.HasProperty ("IncludeAssets"));
+			Assert.IsFalse (packageReference.Metadata.HasProperty ("PrivateAssets"));
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstallNonStandardOriginalFramework_OriginalFrameworkUsedInCondition ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var net472Framework = NuGetFramework.Parse ("net472");
+
+			var successfulFrameworks = new NuGetFramework [] {
+				net472Framework
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+			originalFrameworks [net472Framework] = ".NETFramework4.7.2";
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool result = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == '.NETFramework4.7.2'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual (packageReference.Metadata.GetValue ("Version"), "2.6.1");
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstallPrivateAndIncludeAssets_PackageReferenceHasAssetInfo ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			installationContext.IncludeType = LibraryIncludeFlags.Runtime |
+				LibraryIncludeFlags.Build |
+				LibraryIncludeFlags.Native |
+				LibraryIncludeFlags.ContentFiles |
+				LibraryIncludeFlags.Analyzers;
+
+			installationContext.SuppressParent = LibraryIncludeFlags.All;
+
+			bool result = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.AreEqual ("runtime; build; native; contentfiles; analyzers", packageReference.Metadata.GetValue ("IncludeAssets"));
+			Assert.AreEqual ("all", packageReference.Metadata.GetValue ("PrivateAssets"));
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialInstallTwice_PackageReferenceAddedToSameItemGroup ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool firstInstallResult = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+
+			// Update.
+			bool result = await InstallPackageAsync ("AnotherTestPackage", "3.0.1", installationContext);
+
+			var secondPackageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.FirstOrDefault (item => item.Include == "AnotherTestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.IsTrue (firstInstallResult);
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", secondPackageReference.ParentGroup.Condition);
+			Assert.AreEqual ("3.0.1", secondPackageReference.Metadata.GetValue ("Version"));
+			Assert.AreEqual (packageReference.ParentGroup, secondPackageReference.ParentGroup);
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task InstallPackageAsync_MultiTargetPartialUpdate_PackageReferenceUpdated ()
+		{
+			CreateNuGetProject ();
+			FilePath projectDirectory = Util.CreateTmpDir ("MultiTargetInstallTest");
+			dotNetProject.FileName = projectDirectory.Combine ("MultiTargetTest.csproj");
+			project.CallBaseSaveProject = true;
+
+			var successfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("net472"),
+			};
+
+			var unsuccessfulFrameworks = new NuGetFramework [] {
+				NuGetFramework.Parse ("netstandard1.5")
+			};
+
+			var originalFrameworks = new Dictionary<NuGetFramework, string> ();
+
+			var installationContext = new BuildIntegratedInstallationContext (
+				successfulFrameworks,
+				unsuccessfulFrameworks,
+				originalFrameworks);
+
+			bool firstInstallResult = await InstallPackageAsync ("TestPackage", "2.6.1", installationContext);
+
+			var packageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.SingleOrDefault (item => item.Include == "TestPackage");
+			Assert.AreEqual ("2.6.1", packageReference.Metadata.GetValue ("Version"));
+
+			bool result = await InstallPackageAsync ("TestPackage", "3.0.1", installationContext);
+
+			var updatedPackageReference = dotNetProject
+				.MSBuildProject
+				.GetAllItems ()
+				.FirstOrDefault (item => item.Include == "TestPackage");
+
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", packageReference.ParentGroup.Condition);
+			Assert.AreEqual ("3.0.1", packageReference.Metadata.GetValue ("Version"));
+			Assert.IsTrue (firstInstallResult);
+			Assert.AreEqual ("'$(TargetFramework)' == 'net472'", updatedPackageReference.ParentGroup.Condition);
+			Assert.AreEqual ("3.0.1", updatedPackageReference.Metadata.GetValue ("Version"));
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
 		}
 	}
 }

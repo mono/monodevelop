@@ -1,4 +1,4 @@
-
+﻿
 //
 // EditorCompareWidgetBase.cs
 //
@@ -39,6 +39,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -233,7 +234,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.info = info;
 
-			var mimeType = DesktopService.GetMimeTypeForUri (info.Item.Path);
+			var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (info.Item.Path);
 			foreach (var editor in editors) {
 				editor.Document.IgnoreFoldings = true;
 				editor.Document.MimeType = mimeType;
@@ -606,10 +607,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void UpdateLocalText ()
 		{
-			var text = info.Document.GetContent<ITextFile> ();
+			var textBuffer = info.Controller.GetContent<ITextBuffer> ();
 			foreach (var data in dict.Values) {
 				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
-				data.Document.Text = text.Text;
+				data.Document.Text = textBuffer.CurrentSnapshot.GetText ();
 				data.Document.TextChanged += HandleDataDocumentTextReplaced;
 			}
 			CreateDiff ();
@@ -620,11 +621,11 @@ namespace MonoDevelop.VersionControl.Views
 			if (info == null)
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
 			dict[data.Document] = data;
-			
-			var editor = info.Document.ParentDocument.Editor;
+
+			var editor = info.Document.GetContent<ITextBuffer> ();
 			if (editor != null) {
-				data.Document.Text = editor.Text;
-				data.Document.IsReadOnly = editor.IsReadOnly;
+				data.Document.Text = editor.CurrentSnapshot.GetText();
+				data.Document.IsReadOnly = editor.IsReadOnly (0);
 			}
 			
 			CreateDiff ();
@@ -635,9 +636,9 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
-			var editor = info.Document.ParentDocument.Editor;
+			var editor = info.Document.GetContent<ITextBuffer> ();
 			foreach (var change in e.TextChanges.Reverse ()) {
-				editor.ReplaceText (change.Offset, change.RemovalLength, change.InsertedText);
+				editor.Replace (new Microsoft.VisualStudio.Text.Span (change.Offset, change.RemovalLength), change.InsertedText.Text);
 			}
 			localUpdate.Add (data);
 			UpdateDiff ();

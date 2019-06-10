@@ -1,7 +1,9 @@
 <ExtensionModel>
 
 	<Runtime>
+		<Import assembly="Microsoft.Extensions.ObjectPool.dll" />
 		<Import assembly="Newtonsoft.Json.dll" />
+		<Import assembly="StreamJsonRpc.dll" />
 		<Import assembly="System.Collections.Immutable.dll" />
 		<Import assembly="System.Reflection.Metadata.dll" />
 		<Import assembly="System.Memory.dll" />
@@ -217,6 +219,7 @@
 		<Class id="CompiledAssembly" class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
 		<Class id="Workspace" class = "MonoDevelop.Projects.WorkspaceSerializationExtension" />
 		<Class id="MSBuild" class = "MonoDevelop.Projects.MSBuildSerializationExtension" />
+		<Class id="SdkProject" class="MonoDevelop.Projects.SdkProjectReader" />
 		<Class id="MidStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
 		<Class id="FinalStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
 	</Extension>

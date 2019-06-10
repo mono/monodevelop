@@ -34,49 +34,49 @@ using System;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 	class OpenFileProvider : FileProvider
 	{
-		readonly TextEditor editor;
+		readonly ITextBuffer textBuffer;
+		ITextEdit textEdit;
 
-		public OpenFileProvider (TextEditor editor, Project project) : this(editor, project, -1, -1)
+		public OpenFileProvider (ITextBuffer textBuffer, Project project, string fileName) : this(textBuffer, project, fileName, - 1, -1)
 		{
 		}
 
-		public OpenFileProvider (TextEditor editor, Project project, int selectionStartPostion, int selectionEndPosition) : base (editor.FileName, project, selectionStartPostion, selectionEndPosition)
+		public OpenFileProvider (ITextBuffer textBuffer, Project project, string fileName, int selectionStartPostion, int selectionEndPosition) : base (fileName, project, selectionStartPostion, selectionEndPosition)
 		{
-			this.editor = editor;
+			this.textBuffer = textBuffer;
 		}
 
 		public override TextReader ReadString (bool readBinaryFiles)
 		{
-			return editor.CreateReader ();
+			return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader (textBuffer.CurrentSnapshot);
 		}
-		IDisposable undoGroup;
 
 		public override void BeginReplace (string content, Encoding encoding)
 		{
 			Gtk.Application.Invoke ((o, args) => {
-				undoGroup = editor.OpenUndoGroup ();
+				textEdit = textBuffer.CreateEdit ();
 			});
 		}
 
-		public override void Replace (int offset, int length, string replacement)
+		public override void Replace (int offset, int offsetWithoutDelta, int length, string replacement)
 		{
 			Gtk.Application.Invoke ((o, args) => {
-				editor.ReplaceText (offset, length, replacement);
+				textEdit.Replace (offsetWithoutDelta, length, replacement);
 			});
 		}
 
 		public override void EndReplace ()
 		{
 			Gtk.Application.Invoke ((o, args) => {
-				if (undoGroup != null) {
-					undoGroup.Dispose ();
-					undoGroup = null;
-				}
+				textEdit.Apply ();
+				textEdit = null;
 			});
 		}
 	}
@@ -133,14 +133,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (buffer != null) {
 				return new StringReader (buffer.ToString ());
 			} else {
-				Document doc = null;
-
-				var task = SearchDocument ();
-				if (task.Wait (1000)) 
-					doc = task.Result;
-
-				if (doc != null && doc.Editor != null) {
-					return doc.Editor.CreateReader ();
+				var doc = SearchDocument ();
+				var tb = doc?.GetContent<ITextBuffer> ();
+				if (tb != null) {
+					return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader (tb.CurrentSnapshot);
 				} else {
 					return GetReaderForFileName (readBinaryFiles);
 				}
@@ -163,40 +159,40 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		Task<Document> SearchDocument ()
+		Document SearchDocument ()
 		{
 			string fullPath = Path.GetFullPath (FileName);
-			return Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
+			return IdeServices.DocumentManager.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath);
 		}
 
-		Document document;
+		ITextBuffer textBuffer;
 		StringBuilder buffer = null;
 		bool somethingReplaced;
-		IDisposable undoGroup;
+		ITextEdit textEdit;
 		Encoding encoding;
 
-		public virtual async void BeginReplace (string content, Encoding encoding)
+		public virtual void BeginReplace (string content, Encoding encoding)
 		{
 			somethingReplaced = false;
 			buffer = new StringBuilder (content);
-			document = await SearchDocument ();
+			textBuffer = SearchDocument ()?.GetContent<ITextBuffer> ();
 			this.encoding = encoding; 
-			if (document != null) {
+			if (textBuffer != null) {
 				Gtk.Application.Invoke ((o, args) => {
-					undoGroup = document.Editor.OpenUndoGroup ();
+					textEdit = textBuffer.CreateEdit ();
 				});
 				return;
 			}
 		}
 		
-		public virtual void Replace (int offset, int length, string replacement)
+		public virtual void Replace (int offset, int offsetWithoutDelta, int length, string replacement)
 		{
 			somethingReplaced = true;
 			buffer.Remove (offset, length);
 			buffer.Insert (offset, replacement);
-			if (document != null) {
+			if (textBuffer != null) {
 				Gtk.Application.Invoke ((o, args) => {
-					document.Editor.ReplaceText (offset, length, replacement);
+					textEdit.Replace (offsetWithoutDelta, length, replacement);
 				});
 				return;
 			}
@@ -204,20 +200,17 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public virtual void EndReplace ()
 		{
-			if (document != null) {
+			if (textBuffer != null) {
 				Gtk.Application.Invoke ((o, args) => {
-					if (undoGroup != null) {
-						undoGroup.Dispose ();
-						undoGroup = null;
-					}
-					/*document.Editor.Document.CommitUpdateAll (); */
+					textEdit.Apply ();
+					textEdit = null;
 				});
 				return;
 			}
 			if (buffer != null && somethingReplaced) {
-				object attributes = DesktopService.GetFileAttributes (FileName);
+				object attributes = IdeServices.DesktopService.GetFileAttributes (FileName);
 				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding ?? Encoding.UTF8);
-				DesktopService.SetFileAttributes (FileName, attributes);
+				IdeServices.DesktopService.SetFileAttributes (FileName, attributes);
 			}
 			buffer = null;
 		}

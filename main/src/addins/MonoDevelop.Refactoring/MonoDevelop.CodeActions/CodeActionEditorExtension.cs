@@ -54,6 +54,7 @@ using Gdk;
 
 namespace MonoDevelop.CodeActions
 {
+	[Obsolete ("Old editor")]
 	class CodeActionEditorExtension : TextEditorExtension
 	{
 		const int menuTimeout = 150;
@@ -122,8 +123,8 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		ICodeFixService codeFixService = Ide.Composition.CompositionManager.GetExportedValue<ICodeFixService> ();
-		ICodeRefactoringService codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> ();
+		ICodeFixService codeFixService = Ide.Composition.CompositionManager.Instance.GetExportedValue<ICodeFixService> ();
+		ICodeRefactoringService codeRefactoringService = Ide.Composition.CompositionManager.Instance.GetExportedValue<ICodeRefactoringService> ();
 		internal Task<CodeActionContainer> GetCurrentFixesAsync (CancellationToken cancellationToken)
 		{
 			var loc = Editor.CaretOffset;
@@ -144,6 +145,12 @@ namespace MonoDevelop.CodeActions
 			return Task.Run (async delegate {
 				try {
 					var root = await ad.GetSyntaxRootAsync (cancellationToken);
+					if (root == null) {
+						// WebEditorRoslynWorkspace adds .json, .css, .html etc. files to the workspace
+						// but they don't support syntax trees or semantic model
+						return CodeActionContainer.Empty;
+					}
+
 					if (root.Span.End < span.End) {
 						LoggingService.LogError ($"Error in GetCurrentFixesAsync span {span.Start}/{span.Length} not inside syntax root {root.Span.End} document length {Editor.Length}.");
 						return CodeActionContainer.Empty;
@@ -185,7 +192,18 @@ namespace MonoDevelop.CodeActions
 		{
 			Runtime.AssertMainThread ();
 			var caretOffset = Editor.CaretOffset;
-			return collections.Select (c => FilterOnUIThread (c, workspace)).Where(x => x != null).OrderBy(x => GetDistance (x, caretOffset)).ToImmutableArray ();
+			var builder = ImmutableArray.CreateBuilder<CodeFixCollection> (collections.Length);
+			var ids = new HashSet<string> ();
+			foreach (var c in collections) {
+				if (!ids.Add (c.FirstDiagnostic.Id))
+					continue;
+				var filtered = FilterOnUIThread (c, workspace);
+				if (filtered == null)
+					continue;
+				builder.Add (filtered);
+			}
+			builder.Sort ((x, y) => GetDistance (x, caretOffset).CompareTo (GetDistance (y, caretOffset)));
+			return builder.ToImmutableArray ();
 		}
 
 		static int GetDistance (CodeFixCollection fixCollection, int caretOffset)
@@ -425,8 +443,10 @@ namespace MonoDevelop.CodeActions
 		[CommandHandler (RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!AnalysisOptions.EnableFancyFeatures || smartTagMarginMarker == null) {
-				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
+			if (!AnalysisOptions.EnableFancyFeatures
+				|| smartTagMarginMarker == null
+				) {
+				// Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
 
 				PopupQuickFixMenu (null, null);
 				return;

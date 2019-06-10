@@ -250,7 +250,10 @@ class Foo
 $
     }
 }")) {
-				var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+				var clipboard = Clipboard.Get (
+					default
+					//Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM
+					);
 				clipboard.Text = @"
         Console.WriteLine();";
 				testCase.Document.Editor.EditorOperations.Paste ();

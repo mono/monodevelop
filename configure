@@ -64,7 +64,7 @@ usage ()
 	echo "  add a profile, simply create a file in the 'profiles' directory."
 	echo "  The 'default' profile is used when none is specified."
 	echo ""
-	echo "  Profiles available:" $profiles 
+	echo "  Profiles available:" $profiles
 	echo ""
 }
 
@@ -97,7 +97,7 @@ select_packages ()
 	done
 	pcount=$n
 	while [[ 1 ]]
-	do 
+	do
 		echo Select the packages to include in the build for the profile \'$profile\':
 		echo
 		n=1
@@ -229,7 +229,7 @@ create_local_config ()
 		pcfile=`echo $f | sed s,.*/,, | sed s/\.in$//`
 		sed -e s,libdir=.*,libdir=$builddir, -e s/@VERSION@/$ver/g $f> local-config/$pcfile
 	done
-	
+
 	# Generate the .addins file for the package
 	addins=local-config/`echo $path | sed s,/,_,g`.addins
 	echo "<Addins>" > $addins
@@ -280,12 +280,6 @@ while test x$1 != x; do
 	esac
 	shift
 done
-
-# make the build & run use libraries already installed in $PREFIX
-if [ -d "$prefix" ]; then
-	export MONO_GAC_PREFIX=$prefix:$MONO_GAC_PREFIX
-	export PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$prefix/share/pkgconfig:$PKG_CONFIG_PATH
-fi
 
 if test `uname` = "Darwin" && test "x$profile" = "xdefault"; then
 	profile="mac"

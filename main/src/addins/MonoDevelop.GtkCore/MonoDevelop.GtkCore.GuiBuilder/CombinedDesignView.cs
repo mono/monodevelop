@@ -39,56 +39,60 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class CombinedDesignView : ViewContent
+	public class CombinedDesignView : FileDocumentController
 	{
-		ViewContent content;
-		Gtk.Widget control;
-		List<TabView> tabs = new List<TabView> ();
-		
-		public CombinedDesignView (ViewContent content)
+		DocumentController content;
+		DocumentViewContainer container;
+		Dictionary<Gtk.Widget, DocumentViewContent> pages = new Dictionary<Widget, DocumentViewContent> ();
+		FileDescriptor fileDescriptor;
+
+		public CombinedDesignView ()
 		{
-			this.content = content;
-	/* This code causes that chagnes in a version control view always select the source code view.
-				if (content is IEditableTextBuffer) {
-				((IEditableTextBuffer)content).CaretPositionSet += delegate {
-					ShowPage (0);
-				};
-			}*/
-			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
-			
-			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
-			crc.Show ();
-			control = crc;
-			
 			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 		}
-		
+
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			await base.OnInitialize (modelDescriptor, status);
+			fileDescriptor = (FileDescriptor)modelDescriptor;
+		}
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			container = new DocumentViewContainer ();
+			container.SupportedModes = DocumentViewContainerMode.Tabs | DocumentViewContainerMode.VerticalSplit;
+			container.ActiveViewChanged += Container_ActiveViewChanged;
+
+			content = await IdeServices.DocumentControllerService.CreateTextEditorController (fileDescriptor);
+			await content.Initialize (fileDescriptor);
+			content.HasUnsavedChangesChanged += OnTextDirtyChanged;
+			var sourceView = await content.GetDocumentView ();
+			sourceView.Title = GettextCatalog.GetString ("Source");
+			container.Views.Add (sourceView);
+
+			return container;
+		}
+
 		public virtual Stetic.Designer Designer {
 			get { return null; }
 		}
 		
-		public override string TabPageLabel {
-			get {
-				return GettextCatalog.GetString ("Source");
-			}
-		}
-		
 		protected void AddButton (string label, Gtk.Widget page)
 		{
-			TabView view = new TabView (label, page);
-			tabs.Add (view);
-			if (WorkbenchWindow != null) {
-				view.WorkbenchWindow = WorkbenchWindow;
-				WorkbenchWindow.AttachViewContent (view);
-			}
+			var sourceView = new DocumentViewContent (() => page) {
+				Title = label
+			};
+			container.Views.Add (sourceView);
+			pages [page] = sourceView;
 		}
 		
 		public bool HasPage (Gtk.Widget page)
 		{
-			return tabs.Any (p => p.Control.GetNativeWidget<Gtk.Widget> () == page);
+			return pages.ContainsKey (page);
 		}
 		
 		public void RemoveButton (Gtk.Widget page)
@@ -108,109 +112,53 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			cw.Destroy ();
 			ShowPage (0);*/
 		}
-		
-		protected override void OnSetProject (Projects.Project project)
-		{
-			base.OnSetProject (project);
-			content.Project = project; 
-		}
 
-		public override ProjectReloadCapability ProjectReloadCapability {
-			get {
-				return content.ProjectReloadCapability;
-			}
-		}
-		
-		protected override void OnWorkbenchWindowChanged ()
+		protected override void OnOwnerChanged ()
 		{
-			base.OnWorkbenchWindowChanged ();
+			base.OnOwnerChanged ();
 			if (content != null)
-				content.WorkbenchWindow = WorkbenchWindow;
-			if (WorkbenchWindow != null) {
-				foreach (TabView view in tabs) {
-					view.WorkbenchWindow = WorkbenchWindow;
-					WorkbenchWindow.AttachViewContent (view);
-				}
-				WorkbenchWindow.ActiveViewContentChanged += OnActiveViewContentChanged;
-			}
+				content.Owner = Owner;
 		}
 
-		void OnActiveViewContentChanged (object o, ActiveViewContentEventArgs e)
+		internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
-			if (WorkbenchWindow.ActiveViewContent == this)
-				OnPageShown (0);
-			else {
-				TabView tab = WorkbenchWindow.ActiveViewContent as TabView;
-				if (tab != null) {
-					int n = tabs.IndexOf (tab);
-					if (n != -1)
-						OnPageShown (n + 1);
-				}
-			}
+			return content.ProjectReloadCapability;
 		}
-		
+
+		void Container_ActiveViewChanged (object sender, EventArgs e)
+		{
+			if (container.ActiveView != null)
+				OnPageShown (container.Views.IndexOf (container.ActiveView));
+		}
+
 		public void ShowPage (int npage)
 		{
-			if (WorkbenchWindow != null) {
-				if (npage == 0)
-					WorkbenchWindow.SwitchView (0);
-				else {
-					var view = tabs [npage - 1];
-					WorkbenchWindow.SwitchView (view);
-				}
-			}
+			if (container != null)
+				container.ActiveView = container.Views [npage];
 		}
 		
 		protected virtual void OnPageShown (int npage)
 		{
 		}
 		
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (content == null)
 				return;
 
-			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
+			content.HasUnsavedChangesChanged -= OnTextDirtyChanged;
 			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
-			content.Dispose ();
-			
+
 			content = null;
-			control = null;
-			
-			base.Dispose ();
+
+			base.OnDispose ();
 		}
 		
-		public override Task Load (FileOpenInformation fileOpenInformation)
+		protected override Task OnSave ()
 		{
-			ContentName = fileOpenInformation.FileName;
-			return content.Load (ContentName);
+			return content.Save ();
 		}
-		
-		public override Control Control {
-			get { return control; }
-		}
-		
-		public override Task Save (FileSaveInformation fileSaveInformation)
-		{
-			return content.Save (fileSaveInformation);
-		}
-		
-		public override bool IsDirty {
-			get {
-				return content.IsDirty;
-			}
-			set {
-				content.IsDirty = value;
-			}
-		}
-		
-		public override bool IsReadOnly
-		{
-			get {
-				return content.IsReadOnly;
-			}
-		}
-		
+
 		public virtual void AddCurrentWidgetToClass ()
 		{
 		}
@@ -221,9 +169,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
-			OnDirtyChanged ();
+			OnCombinedDirtyChanged ();
 		}
-		
+
+		protected virtual bool IsDirtyCombined { get => content.HasUnsavedChanges; set => content.HasUnsavedChanges = value; }
+
+		protected void OnCombinedDirtyChanged ()
+		{
+			HasUnsavedChanges = IsDirtyCombined;
+		}
+
 		void OnActiveDocumentChanged (object s, EventArgs args)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.GetContent<CombinedDesignView>() == this)
@@ -234,57 +189,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		protected override object OnGetContent (Type type)
-		{
-//			if (type == typeof(IEditableTextBuffer)) {
-//				// Intercept the IPositionable interface, since we need to
-//				// switch to the text editor when jumping to a line
-//				if (content.GetContent (type) != null)
-//					return this;
-//				else
-//					return null;
-//			}
-//			
-			return  base.OnGetContent (type) ?? (content !=null  ? content.GetContent (type) : null);
-		}
-
 		public void JumpTo (int line, int column)
 		{
 			var ip = (TextEditor) content.GetContent (typeof(TextEditor));
 			if (ip != null) {
 				ShowPage (0);
 				ip.SetCaretLocation (line, column);
-			}
-		}
-	}
-	
-	class TabView: BaseViewContent
-	{
-		string label;
-		Gtk.Widget content;
-		
-		public TabView (string label, Gtk.Widget content)
-		{
-			this.label = label;
-			this.content = content;
-		}
-		
-		protected override object OnGetContent (Type type)
-		{
-			if (type.IsInstanceOfType (content))
-				return content;
-			return base.OnGetContent (type);
-		}
-		
-		public override Control Control {
-			get {
-				return content;
-			}
-		}
-
-		public override string TabPageLabel {
-			get {
-				return label;
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-﻿// CompletionListWindow.cs
+// CompletionListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -39,6 +39,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete]
 	class CompletionListWindowGtk : PopoverWindow, ICompletionView
 	{
 		const int declarationWindowMargin = 3;
@@ -224,7 +225,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 
 			// Note: we add back the TextOffset here in case X and X+TextOffset are on different monitors.
-			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (X + TextOffset, Y));
+			Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (X + TextOffset, Y));
 
 			previousHeight = h;
 			previousWidth = w;
@@ -323,7 +324,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void ICompletionView.Show ()
 		{
 			ShowAll ();
-			DesktopService.RemoveWindowShadow (this);
+			IdeServices.DesktopService.RemoveWindowShadow (this);
 		}
 
 		public void ShowPreviewCompletionEntry ()

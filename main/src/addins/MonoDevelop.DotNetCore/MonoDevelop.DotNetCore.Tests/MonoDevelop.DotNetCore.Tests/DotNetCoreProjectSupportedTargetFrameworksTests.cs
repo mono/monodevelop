@@ -83,7 +83,9 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		public void GetNetCoreAppTargetFrameworks_NetCore30RuntimeInstalled ()
 		{
-			DotNetCoreRuntimesInstalled ("3.0.0");
+			//NOTE: since we are now checking unsupported runtime version
+			// here we set the latest supported one
+			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5");
 
 			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
 

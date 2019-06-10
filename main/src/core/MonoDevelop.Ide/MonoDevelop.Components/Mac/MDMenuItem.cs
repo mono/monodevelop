@@ -1,4 +1,4 @@
-//
+﻿//
 // MDMenuItem.cs
 //
 // Author:
@@ -97,7 +97,7 @@ namespace MonoDevelop.Components.Mac
 		// We can justify this because safari 3.2.1 does it ("do you want to close all tabs?").
 		public static bool IsGloballyDisabled {
 			get {
-				return MonoDevelop.Ide.DesktopService.IsModalDialogRunning ();
+				return MonoDevelop.Ide.IdeServices.DesktopService.IsModalDialogRunning ();
 			}
 		}
 
@@ -205,7 +205,7 @@ namespace MonoDevelop.Components.Mac
 
 		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
 		{
-			item.SetTitleWithMnemonic (GetCleanCommandText (info, overrideLabel));
+			item.Title = GetCleanCommandText (info, overrideLabel);
 
 			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
@@ -241,9 +241,9 @@ namespace MonoDevelop.Components.Mac
 				if (!info.Icon.IsNull)
 					icon = Ide.ImageService.GetIcon (info.Icon, Gtk.IconSize.Menu);
 				if (icon == null)
-					icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+					icon = Ide.IdeServices.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
 				if (icon != null) {
-					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
+					var scale = NSApplication.SharedApplication.MainWindow?.Screen?.BackingScaleFactor ?? NSScreen.MainScreen.BackingScaleFactor;
 
 					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
 						icon = icon.WithStyles ("dark");
@@ -350,11 +350,11 @@ namespace MonoDevelop.Components.Mac
 						i += 3;
 					}
 				} else if (ch == '_') {
+					// macOS hasn't supported mnemonics since 10.6, so strip them entirely,
+					// but still preserve '__' as a literal escaped '_'
 					if (i + 1 < txt.Length && txt[i + 1] == '_') {
 						sb.Append ('_');
 						i++;
-					} else {
-						sb.Append ('&');
 					}
 				} else if (!ci.UseMarkup) {
 					sb.Append (ch);

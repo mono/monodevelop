@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (C) 2018 Microsoft Corp
 //
 // This source code is licenced under The MIT License:
@@ -23,8 +23,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -38,7 +41,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		/// </summary>
 		public static T GetContent<T> (this IToolboxConsumer consumer) where T : class
 		{
-			return (consumer as ViewContent)?.GetContent<T> ();
+			return (consumer as DocumentController)?.GetContent<T> ();
 		}
 
 		/// <summary>
@@ -46,16 +49,29 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		/// </summary>
 		public static Document GetDocument (this IToolboxConsumer consumer)
 		{
-			return (consumer as ViewContent)?.WorkbenchWindow?.Document;
+			return (consumer as DocumentController)?.Document;
 		}
 
 		/// <summary>
 		/// Returns true if the consumer is a text editor and can handle text toolbox nodes
 		/// </summary>
+		[Obsolete("Use IsTextView")]
 		public static bool IsTextEditor (this IToolboxConsumer consumer, out TextEditor editor)
 		{
 			editor = consumer.DefaultItemDomain == "Text" ? GetDocument (consumer)?.Editor : null;
 			return editor != null;
 		}
+
+		public static bool IsTextView (this IToolboxConsumer consumer, out ITextView view)
+		{
+			if (consumer.DefaultItemDomain != "Text") {
+				view = null;
+				return false;
+			}
+			view = GetDocument (consumer)?.GetContent<ITextView> (true);
+			return view != null;
+		}
+
+		public static bool IsTextView (this IToolboxConsumer consumer) => IsTextView (consumer, out _);
 	}
 }

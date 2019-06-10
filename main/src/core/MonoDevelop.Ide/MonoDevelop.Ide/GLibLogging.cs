@@ -31,6 +31,9 @@ using System;
 using MonoDevelop.Core;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Runtime.ExceptionServices;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -239,7 +242,8 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			string logDomain = GLib.Marshaller.Utf8PtrToString (logDomainPtr);
-			string message, extra = string.Empty;
+			string message;
+
 			try {
 				// Marshal message manually, because the text can contain invalid UTF-8.
 				// Specifically, with zh_CN, pango fails to render some characters and
@@ -249,11 +253,10 @@ namespace MonoDevelop.Ide.Gui
 				message = GLib.Marshaller.Utf8PtrToString (messagePtr);
 			} catch (Exception e) {
 				message = "Failed to convert message";
-				extra = "\n" + e.ToString ();
+				LoggingService.LogError (message, e);
 			}
-			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace (2, true);
-			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}{4}", 
-			    logDomain, logLevel, message, trace.ToString (), extra);
+
+			string msg = string.Format ("{0}-{1}: {2}\n{3}", logDomain, logLevel, message, GetStacktraceIfNeeded (logLevel));
 
 			switch (logLevel) {
 			case LogLevelFlags.Debug:
@@ -268,13 +271,59 @@ namespace MonoDevelop.Ide.Gui
 			case LogLevelFlags.Error:
 			case LogLevelFlags.Critical:
 			default:
-				LoggingService.LogError (msg);
+				try {
+					throw new CriticalGtkException (msg);
+				} catch (CriticalGtkException e) {
+					if (logLevel.HasFlag (LogLevelFlags.FlagFatal))
+						LoggingService.LogFatalError ($"Fatal {logDomain} error", e);
+					else
+						LoggingService.LogInternalError ($"Critical {logDomain} error", e);
+				}
 				break;
 			}
 			
 			RemainingBytes -= msg.Length;
 			if (RemainingBytes < 0)
 				LoggingService.LogError ("Disabling glib logging for the rest of the session");
+		}
+
+		static bool IsMono = Type.GetType ("Mono.Runtime") != null;
+
+		static string GetStacktraceIfNeeded (LogLevelFlags flags)
+		{
+			// If it's an Error or a Critical message, we're going to add the stacktrace via the logged exception property,
+			// we don't need to append it to the message in the log. But we are only doing so on Mono, nowhere else.
+			if (IsMono && flags.HasFlag (LogLevelFlags.Error | LogLevelFlags.Critical))
+				return string.Empty;
+
+			return "Stack trace: \n" + new StackTrace (1, true);
+		}
+
+		sealed class CriticalGtkException : Exception
+		{
+			readonly StackTrace trace = new StackTrace (1, true);
+
+			public CriticalGtkException (string message) : base (message)
+			{
+				const System.Reflection.BindingFlags flags =
+					 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetField;
+
+				// HACK: We need to somehow inject our stacktrace, and this is the only way we can
+				// This is not to transform every glib error into a managed exception
+				if (IsMono) {
+					typeof (Exception)
+						.GetField ("captured_traces", flags)
+						?.SetValue (this, new StackTrace [] { trace });
+				}
+			}
+
+			public override string StackTrace => trace.ToString ();
+
+			public override string ToString ()
+			{
+				// Matches normal exception format:
+				return GetType () + ": " + Message + Environment.NewLine + trace;
+			}
 		}
 	}
 }

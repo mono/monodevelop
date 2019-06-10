@@ -38,8 +38,10 @@ namespace MonoDevelop.UserInterfaceTesting
 		{
 			Session = new AutoTestClientSession ();
 
+			profilePath = profilePath ?? Util.CreateTmpDir ("profile");
 			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
-				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
+				{ "MONODEVELOP_PROFILE", profilePath },
+				{ "VISUALSTUDIO_PROFILE", profilePath },
 			});
 
 			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);

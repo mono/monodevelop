@@ -4,8 +4,6 @@
 // Author:
 //   Lluis Sanchez Gual
 //
-
-//
 // Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -15,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -28,12 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-using System;
-using System.Collections;
-using System.ComponentModel;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -42,22 +34,21 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A display option of a solution pad.")]
 	internal class PadOptionCodon : ExtensionNode
 	{
-		[NodeAttribute("_label", true, "Display name of the option", Localizable=true)]
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
+		[NodeAttribute ("_label", true, "Display name of the option", Localizable=true)]
 		string label = null;
 		
 		[NodeAttribute("defaultValue", "Default value of the option")]
 		bool defaultValue;
-		
-		TreePadOption option;
-		
-		public TreePadOption Option {
-			get { return option; }
-		}
-		
+
+		public TreePadOption Option { get; private set; }
+
 		protected override void Read (NodeElement elem)
 		{
 			base.Read (elem);
-			option = new TreePadOption (Id, label, defaultValue);
+			Option = new TreePadOption (Id, label, defaultValue);
 		}
 	}
 }

@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			: base (Runtime.MainSynchronizationContext)
 		{
 			if (showProgress) {
-				var parentWindow = parent ?? DesktopService.GetFocusedTopLevelWindow ();
+				var parentWindow = parent ?? IdeServices.DesktopService.GetFocusedTopLevelWindow ();
 				dialog = new ProgressDialog (parentWindow, allowCancel, showDetails);
 				dialog.Message = "";
 				MessageService.PlaceDialog (dialog, parentWindow);

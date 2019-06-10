@@ -15,47 +15,36 @@
 #include <limits.h>
 #include <libgen.h>
 
-typedef int (* mono_main) (int argc, char **argv);
-typedef void (* mono_free) (void *ptr);
-typedef char * (* mono_get_runtime_build_info) (void);
-typedef void (* gobject_tracker_init) (void *libmono);
-
 #include "monostub-utils.h"
 
-#if XM_REGISTRAR
-extern
-#if EXTERN_C
-"C"
-#endif
-int xamarin_create_classes_Xamarin_Mac ();
-#endif
+typedef int (* mono_main) (int argc, char **argv);
+typedef char * (* mono_get_runtime_build_info) (void);
+typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
+typedef void (* monoeg_g_free) (void *ptr);
+typedef void (* gobject_tracker_init) (void *libmono);
+
+static NSString *appName;
 
 #if STATIC_REGISTRAR
-extern
-#if EXTERN_C
-"C"
-#endif
-void xamarin_create_classes ();
+// We have full static registrar enabled.
+# define XM_FULL_STATIC_REGISTRAR 1
+# define XAMARIN_CREATE_CLASSES xamarin_create_classes
+#else
+// This means we only have xammac's framework registrar
+# define XAMARIN_CREATE_CLASSES xamarin_create_classes_Xamarin_Mac
 #endif
 
-void *libmono;
-#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
-void *libxammac;
-#if STATIC_REGISTRAR
-void *libvsmregistrar;
-#endif
-#endif
+extern "C" void XAMARIN_CREATE_CLASSES ();
 
 #if NOGUI
 static void
-show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
+show_alert (NSString *msg, NSString *mono_download_url)
 {
-	fprintf(stderr, "%s\n", [msg UTF8String]);
-	fprintf(stderr, "%s\n", [mono_download_url UTF8String]);
+	NSLog (@"Could not launch: %@\n%@\n%@", appName, msg, mono_download_url);
 }
 #else
 static void
-show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
+show_alert (NSString *msg, NSString *mono_download_url)
 {
 	NSAlert *alert = [[NSAlert alloc] init];
 	[alert setMessageText:[NSString stringWithFormat:@"Could not launch %@", appName]];
@@ -66,165 +55,63 @@ show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 	[alert release];
 
 	if (answer == NSAlertFirstButtonReturn) {
-		NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
-		CFURLRef url = CFURLCreateWithString (NULL, (CFStringRef) mono_download_url, NULL);
-		LSOpenCFURLRef (url, NULL);
-		CFRelease (url);
+		[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:mono_download_url]];
 	}
 }
 #endif
 
 static void
-exit_with_message (const char *reason, char *argv0)
+exit_with_message (NSString *reason)
 {
-	NSString *appName = nil;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
 		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
 	}
-	if (!appName) {
-		appName = [[NSString stringWithUTF8String: argv0] lastPathComponent];
-	}
 
-	NSString *fmt = @"%s\n\nPlease download and install the latest version of Mono.";
+	NSString *fmt = @"%@\n\nPlease download and install the latest version of Mono.";
 	NSString *msg = [NSString stringWithFormat:fmt, reason];
 	NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 
-	show_alert(msg, appName, mono_download_url);
+	show_alert(msg, mono_download_url);
 	exit (1);
 }
 
-typedef struct _ListNode {
-	struct _ListNode *next;
-	char *value;
-} ListNode;
-
-static char *
-decode_qstring (unsigned char **in, unsigned char qchar)
+static void *
+load_symbol(const char *symbol_type, void *lib, const char *framework_name)
 {
-	unsigned char *inptr = *in;
-	unsigned char *start = *in;
-	char *value, *v;
-	size_t len = 0;
-
-	while (*inptr) {
-		if (*inptr == qchar)
-			break;
-
-		if (*inptr == '\\') {
-			if (inptr[1] == '\0')
-				break;
-
-			inptr++;
-		}
-
-		inptr++;
-		len++;
+	void *symbol = dlsym (lib, symbol_type);
+	if (!symbol) {
+		NSLog (@"Could not load %s(): %s", symbol_type, dlerror ());
+		NSString *msg = [NSString stringWithFormat:@"Failed to load the %s framework.", framework_name];
+		exit_with_message (msg);
 	}
 
-	v = value = (char *) malloc (len + 1);
-	while (start < inptr) {
-		if (*start == '\\')
-			start++;
-
-		*v++ = (char) *start++;
-	}
-
-	*v = '\0';
-
-	if (*inptr)
-		inptr++;
-
-	*in = inptr;
-
-	return value;
+	return symbol;
 }
-
-static char **
-get_mono_env_options (int *count)
-{
-	const char *env = getenv ("MONO_ENV_OPTIONS");
-	ListNode *list = NULL, *node, *tail = NULL;
-	unsigned char *start, *inptr;
-	char *value, **argv;
-	int i, n = 0;
-	size_t size;
-
-	if (env == NULL) {
-		*count = 0;
-		return NULL;
-	}
-
-	inptr = (unsigned char *) env;
-
-	while (*inptr) {
-		while (isblank ((int) *inptr))
-			inptr++;
-
-		if (*inptr == '\0')
-			break;
-
-		start = inptr++;
-		switch (*start) {
-		case '\'':
-		case '"':
-			value = decode_qstring (&inptr, *start);
-			break;
-		default:
-			while (*inptr && !isblank ((int) *inptr))
-				inptr++;
-
-			// Note: Mac OS X <= 10.6.8 do not have strndup()
-			//value = strndup ((char *) start, (size_t) (inptr - start));
-			size = (size_t) (inptr - start);
-			value = (char *) malloc (size + 1);
-			memcpy (value, start, size);
-			value[size] = '\0';
-			break;
-		}
-
-		node = (ListNode *) malloc (sizeof (ListNode));
-		node->value = value;
-		node->next = NULL;
-		n++;
-
-		if (tail != NULL)
-			tail->next = node;
-		else
-			list = node;
-
-		tail = node;
-	}
-
-	*count = n;
-
-	if (n == 0)
-		return NULL;
-
-	argv = (char **) malloc (sizeof (char *) * (n + 1));
-	i = 0;
-
-	while (list != NULL) {
-		node = list->next;
-		argv[i++] = list->value;
-		free (list);
-		list = node;
-	}
-
-	argv[i] = NULL;
-
-	return argv;
-}
-
+#define LOAD_MONO_SYMBOL(symbol_type, libmono) \
+	(symbol_type)load_symbol(#symbol_type, libmono, "Mono");
 
 static void
-run_md_bundle (NSString *appDir, NSArray *arguments)
+get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono)
 {
-	NSURL *bundleURL = [NSURL fileURLWithPath: appDir];
-	pid_t myPID = getpid ();
+	const char *env = getenv ("MONO_ENV_OPTIONS");
+
+	mono_parse_options_from _mono_parse_options_from = LOAD_MONO_SYMBOL(mono_parse_options_from, libmono);
+
+	char *ret = _mono_parse_options_from (env, ref_argc, ref_argv);
+	if (ret) {
+		exit_with_message ([NSString stringWithUTF8String:ret]);
+	}
+}
+
+static void
+run_md_bundle (NSString *bundleId, NSArray<NSString *> *arguments)
+{
+	NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
+	int myPID = [[NSProcessInfo processInfo] processIdentifier];
 	NSRunningApplication *mdApp = nil;
 
-	NSArray *runningApplications = [[NSWorkspace sharedWorkspace] runningApplications];
+	NSArray<NSRunningApplication *> *runningApplications = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
 	for (NSRunningApplication *app in runningApplications) {
 		if ([[[app bundleURL] path] isEqual:[bundleURL path]] && myPID != [app processIdentifier])
 		{
@@ -242,11 +129,12 @@ run_md_bundle (NSString *appDir, NSArray *arguments)
 	}
 
 	NSError *error = nil;
-	mdApp = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:bundleURL options:NSWorkspaceLaunchAsync configuration:[NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments] error:&error];
+	NSDictionary<NSWorkspaceLaunchConfigurationKey, id> *configuration = [NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments];
+	mdApp = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:bundleURL options:NSWorkspaceLaunchAsync configuration: configuration error:&error];
 
 	if (mdApp == nil)
 	{
-		NSLog(@"Failed to start bundle %@: %@", appDir, error);
+		NSLog(@"Failed to start bundle %@: %@", [[NSBundle mainBundle] bundlePath], error);
 		exit (1);
 	}
 	exit (0);
@@ -266,223 +154,193 @@ correct_locale(void)
 
 	preferredLanguage = [preferredLanguage stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
 
-	setenv("MONODEVELOP_STUB_LANGUAGE", [preferredLanguage UTF8String], 1);
-	setenv("LANGUAGE", [preferredLanguage UTF8String], 1);
-	setenv("LC_CTYPE", [preferredLanguage UTF8String], 1);
+	const char *value = [preferredLanguage UTF8String];
+	setenv("MONODEVELOP_STUB_LANGUAGE", value, 1);
+	setenv("LANGUAGE", value, 1);
+	setenv("LC_CTYPE", value, 1);
 }
 
 static void
-try_load_gobject_tracker (void *libmono, char *entry_executable)
+try_load_gobject_tracker (void *libmono)
 {
-	void *gobject_tracker;
-	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: entry_executable];
-	NSString *binDir = [entryExecutable stringByDeletingLastPathComponent];
-	NSString *libgobjectPath = [binDir stringByAppendingPathComponent: @"libgobject-tracker.dylib"];
-	gobject_tracker = dlopen ((char *)[libgobjectPath UTF8String], RTLD_GLOBAL);
-	if (gobject_tracker) {
-		gobject_tracker_init _gobject_tracker_init = (gobject_tracker_init) dlsym (gobject_tracker, "gobject_tracker_init");
-		if (_gobject_tracker_init) {
-			_gobject_tracker_init (libmono);
-			printf ("Loaded gobject tracker\n");
-			return;
-		}
-	}
+	void *gobject_tracker = dlopen("libgobject-tracker.dylib", RTLD_LAZY);
+	if (!gobject_tracker)
+		return;
+
+	gobject_tracker_init _gobject_tracker_init = (gobject_tracker_init) dlsym (gobject_tracker, "gobject_tracker_init");
+	if (!_gobject_tracker_init)
+		return;
+
+	_gobject_tracker_init (libmono);
+	NSLog (@"Loaded gobject tracker\n");
 }
 
 static void
-run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
+run_md_bundle_if_needed(int argc, char **argv)
 {
-    // if we are running inside an app bundle and --start-app-bundle has been passed
-    // run the actual bundle and exit.
-    if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
-        NSArray *arguments = [NSArray array];
-        if (argc > 2) {
-            NSString *strings[argc-2];
-            for (int i = 0; i < argc-2; i++)
-                strings [i] = [[NSString alloc] initWithUTF8String:argv[i+2]];
-            arguments = [NSArray arrayWithObjects:strings count:argc-2];
-        }
-        run_md_bundle (appDir, arguments);
-    }
+	NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+
+	// if we are running inside an app bundle and --start-app-bundle has been passed
+	// run the actual bundle and exit.
+	if (bundleId && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
+		NSArray<NSString *> *arguments = [NSArray array];
+		if (argc > 2) {
+			int new_argc = argc - 2;
+			NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:new_argc];
+			for (int i = 2; i < new_argc; i++)
+				[array addObject:[NSString stringWithUTF8String:argv[i]]];
+			arguments = array;
+		}
+		run_md_bundle (bundleId, arguments);
+	}
 }
 
-int main (int argc, char **argv)
+static bool
+should_load_xammac_registrar()
 {
-	//clock_t start = clock();
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
-
-	// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
-	// as part of `make run` and then binDir should be '.'
-	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: argv[0]];
-	NSArray *components = [NSArray arrayWithObjects:[entryExecutable stringByDeletingLastPathComponent], @"..", @"..", binDir, nil];
-	NSString *binDirFullPath = [NSString pathWithComponents:components];
-	BOOL isDir = NO;
-	if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
-		binDir = [[NSString alloc] initWithUTF8String: "."];
-
-	NSString *appDir = [[NSBundle mainBundle] bundlePath];
-
-	run_md_bundle_if_needed(appDir, argc, argv);
-
-	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"5.18.0.244";
-
-	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
-	bool use_sgen = YES;
-	bool need64Bit = false;
-
-	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
-	if (plist) {
-		NSNumber *sgen_obj = (NSNumber *) [plist objectForKey:@"MonoUseSGen"];
-		if (sgen_obj)
-			use_sgen = [sgen_obj boolValue];
-
-		NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
-		if (version_obj && [version_obj length] > 0)
-			req_mono_version = version_obj;
-
-		NSNumber *need_64bit_obj = (NSNumber *) [plist objectForKey:@"Mono64Bit"];
-		if (need_64bit_obj) {
-			need64Bit = [need_64bit_obj boolValue];
-		}
-	}
-
-	setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
-#if HYBRID_SUSPEND_ABORT
-	setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
-#endif
-
-	// To be removed: https://github.com/mono/monodevelop/issues/6326
-	setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
-
-  NSString *exePath;
-  char **extra_argv;
-  int extra_argc;
-#if USE_SIMPLE_PATH
-  exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: SIMPLE_PATH];
-#else
-  NSString *exeName;
-	const char *basename;
-	struct rlimit limit;
-
-	if (!(basename = strrchr (argv[0], '/')))
-		basename = argv[0];
-	else
-		basename++;
-
-	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], need64Bit)) {
-		//printf ("Updated the environment.\n");
-		[pool drain];
-
-		return execv (argv[0], argv);
-	}
-
-	correct_locale();
-	//printf ("Running main app.\n");
-
-	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
-		limit.rlim_cur = MIN (limit.rlim_max, 1024);
-		setrlimit (RLIMIT_NOFILE, &limit);
-	}
-
-	exeName = [NSString stringWithFormat:@"%s.exe", basename];
-	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
-#endif
-
-	// allow the MONODEVELOP_USE_SGEN environment variable to override the plist value
-	use_sgen = env2bool ("MONODEVELOP_USE_SGEN", use_sgen);
-
-	libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
-
-	if (libmono == NULL) {
-		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
-		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]];
-		exit_with_message ((char *)[msg UTF8String], argv[0]);
-	}
-
-#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
-	libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
-	if (!libxammac) {
-		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
-		if (!libxammac) {
-			fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
-			NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
-			exit_with_message ((char *)[msg UTF8String], argv[0]);
-		}
-	}
-
-#if STATIC_REGISTRAR
+#if XM_FULL_STATIC_REGISTRAR
 	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
-	if (!registrar_toggle) {
-		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
-		if (!libvsmregistrar) {
-			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
-		}
-		if (libvsmregistrar)
-			xamarin_create_classes ();
-	}
+	if (registrar_toggle)
+		return false;
+
+	return dlopen("libvsmregistrar.dylib", RTLD_LAZY);
 #else
-	xamarin_create_classes_Xamarin_Mac ();
+	return true;
+#endif
+}
+
+static void
+load_xammac()
+{
+	void *libxammac = dlopen("libxammac.dylib", RTLD_LAZY);
+	if (!libxammac) {
+		NSLog (@"Failed to load libxammac.dylib %s", dlerror ());
+		exit_with_message (@"This application requires Xamarin.Mac native library side-by-side.");
+	}
+
+	if (should_load_xammac_registrar()) {
+		XAMARIN_CREATE_CLASSES ();
+	}
+}
+
+int
+main (int argc, char **argv)
+{
+	int new_argc;
+	char **new_argv;
+	mono_main _mono_main;
+
+	@autoreleasepool {
+		//clock_t start = clock();
+		// Check if we are running inside an actual app bundle. If we are not, then assume we're being run
+		// as part of `make run` and then binDir should be '.'
+		appName = [[NSProcessInfo processInfo] processName];
+
+		NSBundle *mainBundle = [NSBundle mainBundle];
+		NSString *binDirFullPath = [[mainBundle resourcePath] stringByAppendingPathComponent:@"lib/monodevelop/bin"];
+		BOOL isDir = NO;
+		if (![[NSFileManager defaultManager] fileExistsAtPath: binDirFullPath isDirectory: &isDir] || !isDir)
+			binDirFullPath = [[mainBundle executablePath] stringByDeletingLastPathComponent];
+
+		run_md_bundle_if_needed(argc, argv);
+
+		if (update_environment (binDirFullPath)) {
+			//printf ("Updated the environment.\n");
+
+			return execv (argv[0], argv);
+		}
+
+		correct_locale();
+		//printf ("Running main app.\n");
+
+		struct rlimit limit;
+		if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
+			limit.rlim_cur = MIN (limit.rlim_max, 1024);
+			setrlimit (RLIMIT_NOFILE, &limit);
+		}
+
+		// can be overridden with plist string MonoMinVersion
+		NSString *req_mono_version = @"5.18.1.24";
+
+		NSDictionary *plist = [mainBundle infoDictionary];
+		if (plist) {
+			NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
+			if (version_obj && [version_obj length] > 0)
+				req_mono_version = version_obj;
+		}
+
+		// Xamarin.Mac sets MONO_REGISTRY_PATH to ~/Library/Application Support/...,
+		// so in the case of the Xamarin Installer, this gets set to a non
+		// existing directory, and when VSmac is started from the installer and
+		// code that uses the registry (like Publish to Azure) is ran, it tries
+		// to access the non existing directory, resulting in an exception that
+		// prevents the code from running correctly, so unset it here.
+		// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/896438
+		unsetenv ("MONO_REGISTRY_PATH");
+
+#if HYBRID_SUSPEND_ABORT_DEBUG
+		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
 #endif
 
-#endif
+		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
 
-	try_load_gobject_tracker (libmono, argv [0]);
+		void *libmono = dlopen ("libmonosgen-2.0.dylib", RTLD_LAZY);
 
-	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
-	if (!_mono_main) {
-		fprintf (stderr, "Could not load mono_main(): %s\n", dlerror ());
-		exit_with_message ("Failed to load the Mono framework.", argv[0]);
+		if (libmono == NULL) {
+			NSLog (@"Failed to load libmonosgen-2.0.dylib: %s", dlerror ());
+			NSString *msg = [NSString stringWithFormat:@"This application requires Mono %@ or newer.", req_mono_version];
+			exit_with_message (msg);
+		}
+
+		load_xammac();
+
+		try_load_gobject_tracker (libmono);
+
+		monoeg_g_free _g_free = LOAD_MONO_SYMBOL(monoeg_g_free, libmono);
+
+		_mono_main = LOAD_MONO_SYMBOL(mono_main, libmono);
+		mono_get_runtime_build_info _mono_get_runtime_build_info = LOAD_MONO_SYMBOL(mono_get_runtime_build_info, libmono);
+
+		char *mono_version = _mono_get_runtime_build_info ();
+
+		if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
+			NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%@+) of the Mono framework.", req_mono_version];
+			exit_with_message (msg);
+		}
+
+		_g_free (mono_version);
+
+		// enable --debug so that we can get useful stack traces and add mono env options
+		int mono_argc = 1;
+		char **mono_argv = (char **) malloc (sizeof (char *) * mono_argc);
+
+		mono_argv[0] = (char *) "--debug";
+		get_mono_env_options (&mono_argc, &mono_argv, libmono);
+
+		// append original arguments
+		new_argc = mono_argc + argc + 1;
+		new_argv = (char **) malloc (sizeof (char *) * new_argc);
+		int n = 0;
+
+		new_argv[n++] = argv[0];
+		for (int i = 0; i < mono_argc; i++) {
+			new_argv[n++] = strdup (mono_argv[i]);
+			if (i > 0)
+				_g_free (mono_argv [i]);
+		}
+
+		_g_free(mono_argv);
+
+		// append old arguments
+		NSString *exePath = [NSString stringWithFormat:@"%@/%@.exe", binDirFullPath, appName];
+		new_argv[n++] = strdup ([exePath UTF8String]);
+		for (int i = 1; i < argc; i++)
+			new_argv[n++] = argv[i];
+
+		//clock_t end = clock();
+		//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
 	}
 
-	mono_free _mono_free = (mono_free) dlsym (libmono, "mono_free");
-	if (!_mono_free) {
-		fprintf (stderr, "Could not load mono_free(): %s\n", dlerror ());
-		exit_with_message ("Failed to load the Mono framework.", argv[0]);
-	}
-
-	mono_get_runtime_build_info _mono_get_runtime_build_info = (mono_get_runtime_build_info) dlsym (libmono, "mono_get_runtime_build_info");
-	if (!_mono_get_runtime_build_info) {
-		fprintf (stderr, "Could not load mono_get_runtime_build_info(): %s\n", dlerror ());
-		exit_with_message ("Failed to load the Mono framework.", argv[0]);
-	}
-
-	char *mono_version = _mono_get_runtime_build_info ();
-
-	// There is a JIT fix that is in mono 5.8.0.130 and 5.10.0.124
-	// Check mono > 5.10 first, then check > 5.8 and < 5.9. Otherwise it falls
-	// into the broken range of [5.9.0 5.10.0.123]
-	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
-		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]];
-		exit_with_message ((char *)[msg UTF8String], argv[0]);
-	}
-
-	extra_argv = get_mono_env_options (&extra_argc);
-
-	const int injected = 2; /* --debug and exe path */
-	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + injected + 1));
-	int i, n = 0;
-
-	new_argv[n++] = argv[0];
-	for (i = 0; i < extra_argc; i++)
-		new_argv[n++] = extra_argv[i];
-
-	// enable --debug so that we can get useful stack traces
-	new_argv[n++] = (char *) "--debug";
-
-	new_argv[n++] = strdup ([exePath UTF8String]);
-
-	for (i = 1; i < argc; i++)
-		new_argv[n++] = argv[i];
-	new_argv[n] = NULL;
-
-	free (extra_argv);
-	[pool drain];
-
-	//clock_t end = clock();
-	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
-
-	return _mono_main (argc + extra_argc + injected, new_argv);
+	return _mono_main (new_argc, new_argv);
 }
 

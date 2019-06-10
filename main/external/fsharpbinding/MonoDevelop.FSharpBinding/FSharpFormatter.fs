@@ -8,8 +8,9 @@ open MonoDevelop.Projects.Policies
 open MonoDevelop.Ide.CodeFormatting
 open Fantomas
 open Fantomas.FormatConfig
-open Microsoft.FSharp.Compiler
-open ExtCore.Control
+open FSharp.Compiler
+open FSharp.Compiler.Range
+//open ExtCore.Control
 open MonoDevelop.Core.Text
 
 type FormattingOption =
@@ -22,10 +23,10 @@ type FSharpFormatter()  =
     let offsetToPos (positions : _ []) offset =
         let rec searchPos start finish =
             if start >= finish then None
-            elif start + 1 = finish then Some(Range.mkPos (start + 1) (offset - positions.[start]))
+            elif start + 1 = finish then Some(mkPos (start + 1) (offset - positions.[start]))
             else
                 let mid = (start + finish) / 2
-                if offset = positions.[mid] then Some(Range.mkPos (mid + 1) 0)
+                if offset = positions.[mid] then Some(mkPos (mid + 1) 0)
                 elif offset > positions.[mid] then searchPos mid finish
                 else searchPos start mid
         searchPos 0 (positions.Length - 1)
@@ -76,7 +77,8 @@ type FSharpFormatter()  =
         | Document, Some projectOptions  ->
             let output =
                 try
-                    let formatted = CodeFormatter.FormatDocumentAsync(filename, input, config, projectOptions, languageService.Checker)
+                    let parsingOptions, _errors = languageService.Checker.GetParsingOptionsFromProjectOptions(projectOptions)
+                    let formatted = CodeFormatter.FormatDocumentAsync(filename, input, config, parsingOptions, languageService.Checker)
                                     |> Async.RunSynchronously
 
                     let result = trimIfNeeded input formatted
@@ -106,12 +108,14 @@ type FSharpFormatter()  =
                 maybe {
                     let! startPos = offsetToPos positions (max 0 fromOffset)
                     let! endPos = offsetToPos positions (min input.Length toOffset+1)
-                    let range = Range.mkRange "/tmp.fsx" startPos endPos
+                    let range = FSharp.Compiler.Range.mkRange "/tmp.fsx" startPos endPos
                     LoggingService.LogDebug("**Fantomas**: Try to format range {0}.", range)
                     let! result =
                         try
                             let selection = input.Substring(fromOffset, toOffset - fromOffset)
-                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, input, config, projectOptions, languageService.Checker)
+                            let checker = SourceCodeServices.FSharpChecker.Create()
+                            let parsingOptions, _errors = checker.GetParsingOptionsFromProjectOptions(projectOptions)
+                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, input, config, parsingOptions, languageService.Checker)
                                             |> Async.RunSynchronously
                             let result = trimIfNeeded input formatted
                             match editor with
@@ -131,6 +135,7 @@ type FSharpFormatter()  =
                 | None -> StringTextSource.Empty
             formatted :> _
         | _, None -> StringTextSource input :> _
+
     let formatText (editor : Editor.TextEditor option) (policyParent : PolicyContainer) (mimeType:string) input formattingOption =
         let textStylePolicy = policyParent.Get<TextStylePolicy>(mimeType)
         let formattingPolicy = policyParent.Get<FSharpFormattingPolicy>(mimeType)
@@ -150,7 +155,7 @@ type FSharpFormatter()  =
             | null -> PolicyService.DefaultPolicies
             | policyBag -> policyBag  :> PolicyContainer
 
-        let mimeType = DesktopService.GetMimeTypeForUri (editor.FileName.ToString())
+        let mimeType = IdeServices.DesktopService.GetMimeTypeForUri (editor.FileName.ToString())
         let input = editor.Text
         if fromOffset = 0 && toOffset = String.length input then
             formatText (Some editor) policyParent mimeType input Document

@@ -1,4 +1,4 @@
-//
+﻿//
 // SearchResultWidgetTests.cs
 //
 // Author:
@@ -29,20 +29,16 @@ using MonoDevelop.Components;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 	[TestFixture]
+	[RequireService (typeof(TextEditorService))]
 	class SearchResultWidgetTests : IdeTestBase
 	{
-		[SetUp]
-		public void SetUp ()
-		{
-			//Initialize IdeApp so IdeApp.Workspace is not null, comment tasks listen to root workspace events.
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		[Test]
 		public void TestSimple ()
 		{
@@ -60,20 +56,20 @@ namespace MonoDevelop.Ide.FindInFiles
 				File.Delete (fileName);
 			}
 		}
-
+		const int maximumMarkupLength = 475;
 		[Test]
 		public void TestCropEnd ()
 		{
 			var widget = new SearchResultWidget ();
 			var fileName = Path.GetTempFileName ();
 			var sb = new StringBuilder ();
-			sb.AppendLine (new string ('a', 5) + "test" + new string ('b', 100));
+			sb.AppendLine (new string ('a', 5) + "test" + new string ('b', maximumMarkupLength * 2));
 			File.WriteAllText (fileName, sb.ToString ());
 			try {
 				var provider = new FileProvider (fileName);
 				var sr = new SearchResult (provider, 5, "test".Length);
 				var markup = sr.GetMarkup (widget, true);
-				Assert.AreEqual ("aaaaa<span background=\"#E6EA00\">test</span>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb…", markup);
+				Assert.AreEqual ("aaaaa<span background=\"#E6EA00\">test</span>" + new string ('b', maximumMarkupLength - 5 - "test".Length) + "…", markup);
 			} finally {
 				File.Delete (fileName);
 			}
@@ -85,13 +81,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			var widget = new SearchResultWidget ();
 			var fileName = Path.GetTempFileName ();
 			var sb = new StringBuilder ();
-			sb.AppendLine (new string ('a', 100) + "test" + new string ('b', 5));
+			sb.AppendLine (new string ('a', maximumMarkupLength * 2) + "test" + new string ('b', 5));
 			File.WriteAllText (fileName, sb.ToString ());
 			try {
 				var provider = new FileProvider (fileName);
-				var sr = new SearchResult (provider, 100, "test".Length);
+				var sr = new SearchResult (provider, maximumMarkupLength * 2, "test".Length);
 				var markup = sr.GetMarkup (widget, true);
-				Assert.AreEqual ("…aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<span background=\"#E6EA00\">test</span>bbbbb", markup);
+				Assert.AreEqual ("…" + new string ('a', maximumMarkupLength - 5 - "test".Length) +  "<span background=\"#E6EA00\">test</span>bbbbb", markup);
 			} finally {
 				File.Delete (fileName);
 			}
@@ -103,13 +99,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			var widget = new SearchResultWidget ();
 			var fileName = Path.GetTempFileName ();
 			var sb = new StringBuilder ();
-			sb.AppendLine (new string ('a', 100) + "test" + new string ('b', 100));
+			sb.AppendLine (new string ('a', maximumMarkupLength * 2) + "test" + new string ('b', maximumMarkupLength * 2));
 			File.WriteAllText (fileName, sb.ToString ());
 			try {
 				var provider = new FileProvider (fileName);
-				var sr = new SearchResult (provider, 100, "test".Length);
+				var sr = new SearchResult (provider, maximumMarkupLength * 2, "test".Length);
 				var markup = sr.GetMarkup (widget, true);
-				Assert.AreEqual ("…aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<span background=\"#E6EA00\">test</span>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb…", markup);
+				Assert.AreEqual ("…" + new string ('a', (maximumMarkupLength - 5 - "test".Length) / 2 + "test".Length) + "<span background=\"#E6EA00\">test</span>" + new string ('b', (maximumMarkupLength - "test".Length) / 2 - 1) +"…", markup);
 			} finally {
 				File.Delete (fileName);
 			}

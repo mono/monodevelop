@@ -4,9 +4,8 @@ open System.Collections.Generic
 open System.IO
 open System.Text
 open System.Threading
-open MonoDevelop.FSharp.Shared
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
+open FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
 open MonoDevelop.Core
@@ -31,7 +30,7 @@ module Symbols =
 
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
-        match Parsing.findIdents column lineString SymbolLookupKind.ByLongIdent with
+        match MonoDevelop.FSharp.Shared.Parsing.findIdents column lineString MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent with
         | Some (_col, identIsland) -> Seq.last identIsland
         | None -> ""
 
@@ -50,7 +49,7 @@ module Symbols =
         MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
 
     let getEditorDataForFileName (fileName:string) =
-        match IdeApp.Workbench.GetDocument (fileName) with
+        match IdeApp.Workbench.GetDocument (FilePath fileName) with
         | null ->
             let doc = Editor.TextEditorFactory.LoadDocument (fileName)
             let editor = new TextEditorData()
@@ -396,17 +395,17 @@ module SymbolTooltips =
         | true, false -> b
         | false, false -> a + " " + b
 
-    let formatSummary (summary:XmlDoc) =
+    let formatSummary (summary:MonoDevelop.FSharp.Shared.XmlDoc) =
         match summary with
-        | Full(summary) ->
+        | MonoDevelop.FSharp.Shared.Full(summary) ->
             TooltipsXml.getTooltipSummary Styles.simpleMarkup summary
 
-        | Lookup(key, potentialFilename) ->
+        | MonoDevelop.FSharp.Shared.Lookup(key, potentialFilename) ->
             maybe { let! filename = potentialFilename
                     let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
                     let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
                     return summary } |> Option.fill ""
-        | EmptyDoc -> ""
+        | MonoDevelop.FSharp.Shared.EmptyDoc -> ""
 
     let getTooltipInformationFromTip tip =
         async {
@@ -416,9 +415,10 @@ module SymbolTooltips =
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
                 let result =
                   match xmldoc with
-                  | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-                                     toolTipInfo
-                  | Lookup(key, potentialFilename) ->
+                  | MonoDevelop.FSharp.Shared.Full(summary) ->
+                      toolTipInfo.SummaryMarkup <- summary
+                      toolTipInfo
+                  | MonoDevelop.FSharp.Shared.Lookup(key, potentialFilename) ->
                       let summary =
                         maybe { let! filename = potentialFilename
                                 let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
@@ -426,7 +426,7 @@ module SymbolTooltips =
                                 return summary }
                       summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
                       toolTipInfo
-                  | EmptyDoc -> toolTipInfo
+                  | MonoDevelop.FSharp.Shared.EmptyDoc -> toolTipInfo
                 return result
             with ex ->
                 LoggingService.LogError ("F# Tooltip error", ex)
@@ -443,13 +443,13 @@ module SymbolTooltips =
     let getTooltipInformationFromSignature summary signature parameterName =
         let summary, parameterInfo =
             match summary with
-            | Full(summary) ->
+            | MonoDevelop.FSharp.Shared.Full(summary) ->
               let parameterMarkup =
                 match TooltipsXml.getParameterTip Styles.simpleMarkup summary parameterName with
                 | Some p -> parameterName ++ ":" ++ p
                 | None -> ""
               summary, parameterMarkup
-            | Lookup(key, filename) ->
+            | MonoDevelop.FSharp.Shared.Lookup(key, filename) ->
                 let summaryAndparameterInfo =
                   maybe { let! filename = filename
                           let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
@@ -461,7 +461,7 @@ module SymbolTooltips =
                           return (summary, parameterMarkup) }
 
                 summaryAndparameterInfo |> Option.getOrElse (fun () -> "", "")
-            | EmptyDoc -> "", ""
+            | MonoDevelop.FSharp.Shared.EmptyDoc -> "", ""
         let toolTipInfo = TooltipInformation(SignatureMarkup = signature, SummaryMarkup=summary)
         if not (String.isNullOrEmpty parameterInfo) then
             toolTipInfo.AddCategory("Parameter", parameterInfo)

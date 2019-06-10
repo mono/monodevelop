@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Net.Compilers\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers\build\Microsoft.Net.Compilers.props')" Label="Paket" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
@@ -15,14 +14,12 @@
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <OutputPath>..\..\..\build\tests</OutputPath>
     <RARResolveFromOutputDirectory>true</RARResolveFromOutputDirectory>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <ConsolePause>true</ConsolePause>
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\mdtool</StartProgram>
     <StartArguments>run-md-tests $(MSBuildProjectDirectory)\bin\Debug\MonoDevelop.FSharp.Tests.dll</StartArguments>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <StartArguments>run-md-tests $(MSBuildProjectDirectory)\..\..\..\build\tests\MonoDevelop.FSharp.Tests.dll</StartArguments>
+    <EnablePrivateAssetsLocalCopyWorkaround>false</EnablePrivateAssetsLocalCopyWorkaround>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -71,6 +68,7 @@
     </Reference>
     <Reference Include="FSharp.Compiler.Interactive.Settings">
       <HintPath>..\MonoDevelop.FSharpi.Service\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
@@ -78,8 +76,6 @@
   <ItemGroup>
     <Compile Include="TestBase.fs" />
     <Compile Include="TestDocument.fs" />
-    <Compile Include="TestWorkbenchWindow.fs" />
-    <Compile Include="TestViewContent.fs" />
     <Compile Include="TestHelpers.fs" />
     <Compile Include="DebuggerExpressionResolver.fs" />
     <Compile Include="CompilerArguments.fs" />
@@ -104,28 +100,25 @@
     <Compile Include="BraceMatcher.fs" />
     <Compile Include="TagComments.fs" />
     <Compile Include="TypeSignatureHelp.fs" />
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-      <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <Compile Include="SolutionPadOrdering.fs" />
+    <None Include="..\..\..\build\AddIns\FSharpBinding\MonoDevelop.FSharpInteractive.Service.exe">
+      <Link>MonoDevelop.FSharpInteractive.Service.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.Tests\MonoDevelop.PackageManagement.Tests.csproj">
-      <Project>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</Project>
-      <Name>MonoDevelop.PackageManagement.Tests</Name>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
       <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
       <Name>MonoDevelop.FSharp</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
@@ -146,6 +139,10 @@
       <Name>MonoDevelop.PackageManagement</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.Tests\MonoDevelop.PackageManagement.Tests.csproj">
+      <Project>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</Project>
+      <Name>MonoDevelop.PackageManagement.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
@@ -156,11 +153,11 @@
       <Name>UnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Compile Include="SolutionPadOrdering.fs" />
-    <None Include="..\..\..\build\AddIns\FSharpBinding\MonoDevelop.FSharpInteractive.Service.exe">
-      <Link>MonoDevelop.FSharpInteractive.Service.exe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>
@@ -177,8 +174,19 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <IncludeCopyLocal Include="System.Reactive.dll" />
+    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
+    <IncludeCopyLocal Include="ExtCore.dll" />
+    <IncludeCopyLocal Include="Fantomas.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Service.dll" />
+    <IncludeCopyLocal Include="FSharp.Core.dll" />
+    <IncludeCopyLocal Include="MonoDevelop.FSharp.Shared.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Interactive.Settings.dll" />
+  </ItemGroup>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="ExtCore">
           <HintPath>..\packages\ExtCore\lib\net45\ExtCore.dll</HintPath>
@@ -189,19 +197,10 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
-        <Reference Include="ISymWrapper, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="FSharp.Compiler.Service">
-          <HintPath>..\packages\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+          <HintPath>..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -209,7 +208,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="FSharp.Core">
           <HintPath>..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
@@ -220,29 +219,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="Microsoft.DiaSymReader">
-          <HintPath>..\packages\Microsoft.DiaSymReader\lib\net20\Microsoft.DiaSymReader.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="Microsoft.DiaSymReader.PortablePdb">
-          <HintPath>..\packages\Microsoft.DiaSymReader.PortablePdb\lib\net45\Microsoft.DiaSymReader.PortablePdb.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Mono.Cecil">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.dll</HintPath>
@@ -268,7 +245,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -279,10 +256,10 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.Collections.Immutable">
-          <HintPath>..\packages\System.Collections.Immutable\lib\netstandard1.0\System.Collections.Immutable.dll</HintPath>
+          <HintPath>..\packages\System.Collections.Immutable\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -290,10 +267,10 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.Reflection.Metadata">
-          <HintPath>..\packages\System.Reflection.Metadata\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
+          <HintPath>..\packages\System.Reflection.Metadata\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -301,16 +278,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.ComponentModel.Composition">
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\packages\System.ValueTuple\lib\net47\System.ValueTuple.dll</HintPath>

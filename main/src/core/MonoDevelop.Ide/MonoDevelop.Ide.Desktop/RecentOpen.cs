@@ -1,4 +1,4 @@
-//
+﻿//
 // RecentOpen.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using System.Linq;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -84,7 +85,7 @@ namespace MonoDevelop.Ide.Desktop
 		IList<RecentFile> Get (string grp)
 		{
 			var gp = recentFiles.GetItemsInGroup (grp);
-			return gp.Select (i => new RecentFile (i.LocalPath, i.Private, i.Timestamp)).ToList ();
+			return gp.Select (i => new RecentFile (this, i.LocalPath, i.Private, i.Timestamp)).ToList ();
 		}
 		
 		public override void ClearProjects ()
@@ -163,6 +164,8 @@ namespace MonoDevelop.Ide.Desktop
 			favoriteFiles = PropertyService.Get (FavoritesConfigKey, new List<string> ());
 		}
 
+		internal DesktopService DesktopService { get; set; }
+
 		public IList<RecentFile> GetProjects ()
 		{
 			var projects = OnGetProjects ();
@@ -172,7 +175,7 @@ namespace MonoDevelop.Ide.Desktop
 				if (entry != null)
 					result.Add (entry);
 				else
-					result.Add (new RecentFile (f, Path.GetFileNameWithoutExtension (f), DateTime.Now));
+					result.Add (new RecentFile (this, f, Path.GetFileNameWithoutExtension (f), DateTime.UtcNow));
 			}
 			foreach (var e in projects)
 				if (!result.Contains (e))
@@ -202,7 +205,7 @@ namespace MonoDevelop.Ide.Desktop
 		protected abstract IList<RecentFile> OnGetProjects ();
 		protected abstract IList<RecentFile> OnGetFiles ();
 
-		public void AddFile (string fileName, MonoDevelop.Projects.Project project)
+		public void AddFile (string fileName, WorkspaceObject project)
 		{
 			var projectName = project != null? project.Name : null;
 			var displayName = projectName != null?
@@ -234,9 +237,11 @@ namespace MonoDevelop.Ide.Desktop
 	{
 		string displayName, fileName;
 		DateTime timestamp;
+		RecentFiles recenFiles;
 
-		public RecentFile (string fileName, string displayName, DateTime timestamp)
+		public RecentFile (RecentFiles recenFiles, string fileName, string displayName, DateTime timestamp)
 		{
+			this.recenFiles = recenFiles;
 			this.fileName = fileName;
 			this.displayName = displayName;
 			this.timestamp = timestamp;
@@ -244,10 +249,10 @@ namespace MonoDevelop.Ide.Desktop
 
 		public bool IsFavorite {
 			get {
-				return DesktopService.RecentFiles.IsFavoriteFile (fileName);
+				return recenFiles.IsFavoriteFile (fileName);
 			}
 			set {
-				DesktopService.RecentFiles.SetFavoriteFile (fileName, value);
+				recenFiles.SetFavoriteFile (fileName, value);
 			}
 		}
 

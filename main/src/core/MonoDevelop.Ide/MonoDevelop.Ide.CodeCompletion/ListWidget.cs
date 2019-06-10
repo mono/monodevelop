@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ListWidget.cs
 //  
 // Author:
@@ -44,6 +44,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CategorizedCompletionItems
 	{
 		public CompletionCategory CompletionCategory {
@@ -60,6 +61,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal IListDataProvider DataProvider { get; set; }
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionListFilterInput
 	{
 		public ICompletionDataList DataList { get; }
@@ -76,6 +78,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionListFilterResult 
 	{
 		public readonly List<CategorizedCompletionItems> CategorizedItems;
@@ -93,6 +96,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
+	[Obsolete]
 	class ListWidget : Gtk.DrawingArea
 	{
 		const int minSize = 400;
@@ -154,9 +158,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (noMatchFont != null)
 				noMatchFont.Dispose ();
 
-			itemFont = FontService.MonospaceFont.Copy ();
-			categoryFont = FontService.SansFont.CopyModified (Styles.FontScale11);
-			noMatchFont = FontService.SansFont.CopyModified (Styles.FontScale11);
+			itemFont = IdeServices.FontService.MonospaceFont.Copy ();
+			categoryFont = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11);
+			noMatchFont = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11);
 
 			var newItemFontSize = itemFont.Size;
 			var newCategoryFontSize = categoryFont.Size;

@@ -1,4 +1,4 @@
-﻿//
+//
 // ICompletionKeyHandler.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public interface ICompletionDataKeyHandler
 	{
 		/// <summary>

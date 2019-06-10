@@ -1,4 +1,4 @@
-//
+﻿//
 // TabStrip.cs
 //
 // Author:
@@ -1222,7 +1222,7 @@ namespace MonoDevelop.Components.DockNotebook
 		Pango.Layout CreateSizedLayout (bool active)
 		{
 			var la = new Pango.Layout (PangoContext);
-			la.FontDescription = Ide.Fonts.FontService.SansFont.Copy ();
+			la.FontDescription = IdeServices.FontService.SansFont.Copy ();
 			if (!Core.Platform.IsWindows)
 				la.FontDescription.Weight = Pango.Weight.Bold;
 			la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);

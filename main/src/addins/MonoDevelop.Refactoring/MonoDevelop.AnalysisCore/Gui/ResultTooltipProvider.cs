@@ -1,4 +1,4 @@
-
+﻿
 // 
 // ResultTooltipProvider.cs
 //  
@@ -45,13 +45,15 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using System.Reflection;
 using MonoDevelop.CodeActions;
 using System.Windows.Input;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+	[Obsolete ("Old editor")]
 	partial class ResultTooltipProvider : TooltipProvider
 	{
 		#region ITooltipProvider implementation 
-		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
+		public override async Task<TooltipItem> GetItem (Ide.Editor.TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
 		{
 			var results = new List<Result> ();
 			int markerOffset = -1, markerEndOffset = -1;
@@ -73,7 +75,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return null;
 			var sb = StringBuilderCache.Allocate ();
 			sb.Append ("<span font='");
-			sb.Append (FontService.SansFontName);
+			sb.Append (IdeServices.FontService.SansFontName);
 			sb.Append ("' size='small'>");
 			int minOffset = int.MaxValue;
 			int maxOffset = -1;
@@ -122,10 +124,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (root.Span.End < offset) {
 					LoggingService.LogError ($"Error in ResultTooltipProvider.GetItem offset {offset} not inside syntax root {root.Span.End} document length {editor.Length}.");
 				} else {
-					var codeFixService = Ide.Composition.CompositionManager.GetExportedValue<ICodeFixService> ();
+					var codeFixService = Ide.Composition.CompositionManager.Instance.GetExportedValue<ICodeFixService> ();
 					var span = new TextSpan (offset, 0);
 					var fixes = await codeFixService.GetFixesAsync (ad, span, true, token);
-					var codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.CodeRefactorings.ICodeRefactoringService> ();
+					var codeRefactoringService = Ide.Composition.CompositionManager.Instance.GetExportedValue<Microsoft.CodeAnalysis.CodeRefactorings.ICodeRefactoringService> ();
 					var refactorings = await codeRefactoringService.GetRefactoringsAsync (ad, span, token);
 					tag = new CodeActions.CodeActionContainer (fixes, refactorings) {
 						Span = new TextSpan (minOffset, Math.Max (0,  maxOffset - minOffset)),
@@ -148,7 +150,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return new TooltipItem (tooltipInfo, markerOffset, markerEndOffset - markerOffset);
 		}
 
-		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Window CreateTooltipWindow (Ide.Editor.TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = item.Item as TooltipInformation;
 			if (result == null)
@@ -164,9 +166,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return window;
 		}
 
-		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (Ide.Editor.TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			var win = (LanguageItemWindow) tipWindow;
+			var win = (LanguageItemWindow)tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
 			xalign = 0.5;
 		}
@@ -175,7 +177,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		const int xPadding = 4;
 		const int windowSize = 36;
 
-		protected override Xwt.Point CalculateWindowLocation (TextEditor editor, TooltipItem item, Xwt.WindowFrame xwtWindow, int mouseX, int mouseY, Xwt.Point origin)
+		protected override Xwt.Point CalculateWindowLocation (Ide.Editor.TextEditor editor, TooltipItem item, Xwt.WindowFrame xwtWindow, int mouseX, int mouseY, Xwt.Point origin)
 		{
 			int w;
 			double xalign;
@@ -211,7 +213,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return new Xwt.Point (x, y);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Components.Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (Ide.Editor.TextEditor editor, Components.Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			base.ShowTooltipWindow (editor, tipWindow, item, modifierState, mouseX, mouseY);
 			var info = (TaggedTooltipInformation<CodeActions.CodeActionContainer>)item.Item;

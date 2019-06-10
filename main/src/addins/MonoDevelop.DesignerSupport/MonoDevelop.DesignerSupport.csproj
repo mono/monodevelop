@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,6 +31,8 @@
         <Project>{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}</Project>
         <Name>Xamarin.PropertyEditing</Name>
       </ProjectReference>
+      <IncludeCopyLocal Include="Xamarin.PropertyEditing.Mac.dll"/>
+      <IncludeCopyLocal Include="Xamarin.PropertyEditing.dll"/>
   </ItemGroup>
    <ItemGroup>
     <Reference Include="System" />
@@ -39,34 +42,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -103,7 +78,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxItemToolboxLoader.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\UnknownToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TypeToolboxNode.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\WrapperDesignView.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ToolboxService.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\BindingService.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MemberExistsException.cs" />
@@ -169,6 +143,8 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DirectoryPathPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\IPropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FlagDescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadItem.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\MonoDevelopHostResourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
@@ -201,15 +177,6 @@
     <EmbeddedResource Include="icons\pad-document-outline-16~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-document-outline-16~dark~sel.png" />
     <EmbeddedResource Include="icons\pad-document-outline-16~dark~sel%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
-    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
-    <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\" />
-    <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

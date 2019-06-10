@@ -213,5 +213,53 @@ namespace MonoDevelop.Projects
 
 			project.Dispose ();
 		}
+
+		/// <summary>
+		/// Bug 705785: [Feedback] Search result tab has temporary files
+		/// </summary>
+		[Test ()]
+		public async Task GetSourceFilesFromProjectWithDesignerfiles_VSTS705785 ()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "project-with-design-files.csproj");
+			using (var project = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
+
+				var sourceFiles = await project.GetSourceFilesAsync (project.Configurations [0].Selector);
+				var activityFile = sourceFiles.FirstOrDefault (f => f.Name.EndsWith("MainActivity.cs", StringComparison.Ordinal));
+				Assert.AreEqual (Subtype.Code, activityFile.Subtype);
+
+				var file2 = sourceFiles.FirstOrDefault (f => f.Name.EndsWith("GeneratedFile.g.cs", StringComparison.Ordinal));
+				Assert.AreEqual (Subtype.Designer, file2.Subtype);
+			}
+		}
+
+		/// <summary>
+		/// Ensures GetSourceFilesAsync does not include the old filename.
+		/// </summary>
+		[Test]
+		public async Task FileRenamedInProject ()
+		{
+			var solutionFile = Util.GetSampleProject ("csharp-console", "csharp-console.sln");
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFile)) {
+				var project = solution.FindProjectByName ("csharp-console");
+				var config = ConfigurationSelector.Default;
+				var sourceFiles = await project.GetSourceFilesAsync (config);
+
+				Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "Program.cs"));
+				Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "RenamedProgram.cs"));
+
+				// Rename Program.cs
+				var projectFile = project.Files.FirstOrDefault (f => f.FilePath.FileName == "Program.cs");
+				var newFileName = projectFile.FilePath.ParentDirectory.Combine ("RenamedProgram.cs");
+				FileService.RenameFile (projectFile.FilePath, newFileName);
+				projectFile.Name = newFileName;
+				await project.SaveAsync (Util.GetMonitor ());
+
+				// Check that source files is correct.
+				sourceFiles = await project.GetSourceFilesAsync (config);
+
+				Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "RenamedProgram.cs"));
+				Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "Program.cs"));
+			}
+		}
 	}
 }

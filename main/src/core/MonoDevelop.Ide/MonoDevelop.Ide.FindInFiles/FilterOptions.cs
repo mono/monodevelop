@@ -67,7 +67,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
-		
+
+		public bool IncludeCodeBehind {
+			get;
+			set;
+		}
+
 		public bool NameMatches (string name)
 		{
 			if (string.IsNullOrEmpty (FileMask) || FileMask == "*" || split_file_masks == null)
@@ -144,9 +149,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (pc >= compiledPattern.Count && offset >= text.Length)
 				return true;
-			if (pc >= compiledPattern.Count || offset >= text.Length)
+			if (pc >= compiledPattern.Count)
 				return false;
-			Instruction cur = compiledPattern[pc];
+			var cur = compiledPattern[pc];
+			if (offset >= text.Length)
+				return cur.Command == Command.ZeroOrMoreChars && compiledPattern.Count == pc + 1;
 			switch (cur.Command) {
 			case Command.AnyChar:
 				return Match (text, pc + 1, offset + 1);

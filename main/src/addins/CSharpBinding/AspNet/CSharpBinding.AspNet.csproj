@@ -9,6 +9,10 @@
     <AssemblyName>MonoDevelop.CSharpBinding.AspNet</AssemblyName>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\AddIns\CSharpBinding</OutputPath>
+    <!--
+    This needs to be ported to the new editor, and currently makes use of many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -20,7 +24,6 @@
     <Compile Include="AspLanguageBuilder.cs" />
     <Compile Include="ASPNetReferenceFinder.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="RazorCSharpCompletionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

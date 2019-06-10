@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public Task SaveAsync (string filename, bool atomic = false, bool binary = false)
 		{
-			return Task.Factory.StartNew (() => Save (filename, atomic, binary));
+			return Task.Run (() => Save (filename, atomic, binary));
 		}
 
 		public void Save (string filename, bool atomic = false, bool binary = false)
@@ -675,7 +675,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static Task<PDictionary> FromFileAsync (string fileName)
 		{
-			return Task<PDictionary>.Factory.StartNew (() => {
+			return Task.Run (() => {
 				bool isBinary;
 				return FromFile (fileName, out isBinary);
 			});

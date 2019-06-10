@@ -35,7 +35,7 @@ namespace MonoDevelop.StressTest
 		const string MonoDevelopBinPathArgument = "--mdbinpath:";
 		const string UseInstalledAppArgument = "--useinstalledapp";
 		const string ProfilerArgument = "--profiler:";
-
+		const string ProviderArgument = "--provider:";
 		public void Parse (string[] args)
 		{
 			foreach (string arg in args) {
@@ -47,6 +47,8 @@ namespace MonoDevelop.StressTest
 					ParseProfilerOptions (arg);
 				} else if (arg == UseInstalledAppArgument) {
 					UseInstalledApplication = true;
+				} else if (arg.StartsWith(ProviderArgument)) {
+					ParseProvider (arg);
 				} else {
 					Help = true;
 					break;
@@ -54,33 +56,12 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		public class ProfilerOptions
-		{
-			public enum ProfilerType
-			{
-				Disabled,
-				HeapOnly,
-				All,
-				Custom
-			}
-			[Flags]
-			public enum PrintReport
-			{
-				ObjectsDiff = 1 << 0,
-				ObjectsTotal = 1 << 1,
-			}
-			public ProfilerType Type { get; set; } = ProfilerType.Disabled;
-			public PrintReport PrintReportTypes { get; set; }
-			public int MaxFrames { get; set; }
-			public string MlpdOutputPath { get; set; }
-			public string CustomProfilerArguments { get; set; }
-		}
-
 		public bool Help { get; set; }
 		public int Iterations { get; set; } = 1;
 		public string MonoDevelopBinPath { get; set; }
 		public bool UseInstalledApplication { get; set; }
 		public ProfilerOptions Profiler { get; } = new ProfilerOptions ();
+		public ITestScenarioProvider Provider { get; private set; } = new DefaultScenarioProvider ();
 
 		public void ShowHelp ()
 		{
@@ -91,6 +72,7 @@ namespace MonoDevelop.StressTest
 			Console.WriteLine ("  --mdbinpath:path        Path to MonoDevelop.exe or VisualStudio.exe");
 			Console.WriteLine ("  --useinstalledapp       Use installed Visual Studio.app");
 			Console.WriteLine ("  --profiler:             Use profiler to make more detailed leak reporting");
+			Console.WriteLine ("  --provider:             Use the provider specified instead of the default");
 		}
 
 		void ParseIterations (string arg)
@@ -109,6 +91,12 @@ namespace MonoDevelop.StressTest
 			MonoDevelopBinPath = arg.Substring (MonoDevelopBinPathArgument.Length);
 		}
 
+		void ParseProvider(string arg)
+		{
+			var providerType = GetType ().Assembly.GetType (arg);
+			Provider = (ITestScenarioProvider)Activator.CreateInstance (providerType);
+		}
+
 		void ParseProfilerOptions (string arg)
 		{
 			var options = arg.Substring (ProfilerArgument.Length).Split (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -116,8 +104,6 @@ namespace MonoDevelop.StressTest
 				var nameValuePair = o.Split (new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
 				switch (nameValuePair[0]) {
 					case "type":
-						if (Profiler.Type != ProfilerOptions.ProfilerType.Disabled)
-							throw new Exception ("--profiler:type= can be defined only once.");
 						switch (nameValuePair[1]) {
 							case "heaponly":
 								Profiler.Type = ProfilerOptions.ProfilerType.HeapOnly;
@@ -146,6 +132,11 @@ namespace MonoDevelop.StressTest
 								break;
 						}
 						break;
+					case "objectnames":
+						foreach (var name in nameValuePair[1].Split(';')) {
+							Profiler.PrintReportObjectNames.Add (name);
+						}
+						break;
 					case "output":
 						Profiler.MlpdOutputPath = nameValuePair[1];
 						break;
@@ -160,8 +151,6 @@ namespace MonoDevelop.StressTest
 						break;
 				}
 			}
-			if (Profiler.Type == ProfilerOptions.ProfilerType.Disabled)
-				Profiler.Type = ProfilerOptions.ProfilerType.HeapOnly;//Default value
 		}
 
 		void PrintProfilerHelpAndExit (string reason = null)

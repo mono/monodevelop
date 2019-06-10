@@ -32,6 +32,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete]
 	class TextMateDocumentIndentEngine : IDocumentIndentEngine
 	{
 		readonly TextEditor editor;

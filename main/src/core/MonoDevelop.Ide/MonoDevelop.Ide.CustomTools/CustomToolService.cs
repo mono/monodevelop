@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CustomToolService.cs
 //  
 // Author:
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.CustomTools
 				return;
 			}
 
-			TaskService.Errors.ClearByOwner (file);
+			IdeServices.TaskService.Errors.ClearByOwner (file);
 
 			var result = new SingleFileCustomToolResult ();
 			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
@@ -275,7 +275,7 @@ namespace MonoDevelop.Ide.CustomTools
 				return;
 			}
 			
-			TaskService.Errors.ClearByOwner (file);
+			IdeServices.TaskService.Errors.ClearByOwner (file);
 			
 			TaskInfo runningTask;
 			TaskCompletionSource<bool> newTask = new TaskCompletionSource<bool> ();
@@ -423,7 +423,7 @@ namespace MonoDevelop.Ide.CustomTools
 				if (result.Errors.Count > 0) {
 					Runtime.RunInMainThread (delegate {
 						foreach (CompilerError err in result.Errors)
-							TaskService.Errors.Add (new TaskListEntry (file.FilePath, err.ErrorText, err.Column, err.Line,
+							IdeServices.TaskService.Errors.Add (new TaskListEntry (file.FilePath, err.ErrorText, err.Column, err.Line,
 								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
 								TaskPriority.Normal, file.Project.ParentSolution, file));
 					});

@@ -1,4 +1,4 @@
-﻿//
+//
 // InsertionPointService.cs
 //
 // Author:
@@ -37,27 +37,9 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
+	[Obsolete ("Not supported in new editor")]
 	public static class InsertionPointService
 	{
-		[Obsolete ("Use overload that takes a SemanticModel")]
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, int position)
-		{
-			if (data == null)
-				throw new ArgumentNullException (nameof (data));
-			if (parsedDocument == null)
-				throw new ArgumentNullException (nameof (parsedDocument));
-			if (type == null)
-				throw new ArgumentNullException (nameof (type));
-			if (!type.IsDefinedInSource ())
-				throw new ArgumentException ("The given type needs to be defined in source code.", nameof (type));
-
-			// update type from parsed document, since this is always newer.
-			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
-			//var realStartLocation = data.OffsetToLocation (offset);
-			var model = parsedDocument.GetAst<SemanticModel> ();
-			return GetInsertionPoints (data, model, type, position);
-		}
-
 		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, SemanticModel model, ITypeSymbol type, Location location)
 		{
 			return GetInsertionPoints (data, model, type, location.SourceSpan.Start);
@@ -151,12 +133,6 @@ namespace MonoDevelop.Refactoring
 			//foreach (var res in result)
 			//	Console.WriteLine (res);
 			return result;
-		}
-
-		[Obsolete ("Use overload that takes a SemanticModel")]
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location location)
-		{
-			return GetInsertionPoints (data, parsedDocument, type, location.SourceSpan.Start);
 		}
 
 		static void CheckEndPoint (IReadonlyTextDocument doc, InsertionPoint point, bool isStartPoint)

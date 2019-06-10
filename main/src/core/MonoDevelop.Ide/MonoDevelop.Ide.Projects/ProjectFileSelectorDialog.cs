@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectFileSelectorDialog.cs
 //  
 // Author:
@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.Projects
 					continue;
 				
 				if (regex.IsMatch (pf.FilePath.FileName))
-					fileStore.AppendValues (pf, DesktopService.GetIconForFile (pf.FilePath, Gtk.IconSize.Menu));
+					fileStore.AppendValues (pf, IdeServices.DesktopService.GetIconForFile (pf.FilePath, Gtk.IconSize.Menu));
 			}
 			
 			TreeIter root;

@@ -212,17 +212,6 @@ namespace MonoDevelop.PackageManagement
 			return File.Exists (assetsFile);
 		}
 
-		public static bool DotNetCoreNuGetMSBuildFilesExist (this DotNetProject project)
-		{
-			var baseDirectory = project.BaseIntermediateOutputPath;
-			string projectFileName = project.FileName.FileName;
-			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
-			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
-
-			return File.Exists (propsFileName) &&
-				File.Exists (targetsFileName);
-		}
-
 		/// <summary>
 		/// If a NuGet package is installed into a .NET Core project then all .NET Core projects that
 		/// reference this project need to have their reference information updated. This allows the
@@ -322,6 +311,17 @@ namespace MonoDevelop.PackageManagement
 				return nugetAwareProject.HasPackages ();
 
 			return HasPackages (project.BaseDirectory, project.Name) || project.Items.OfType<ProjectPackageReference> ().Any ();
+		}
+
+		public static bool CanRestorePackages (this DotNetProject project)
+		{
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null)
+				return nugetAwareProject.HasPackages ();
+
+			return HasPackages (project.BaseDirectory, project.Name) ||
+				DotNetCoreNuGetProject.CanCreate (project) ||
+				PackageReferenceNuGetProject.CanCreate (project);
 		}
 	}
 }

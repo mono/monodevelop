@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			ci.Enabled = doc.AnalysisDocument != null;
+			ci.Enabled = doc.DocumentContext.AnalysisDocument != null;
 		}
 
 		internal static bool CanRename (ISymbol symbol)
@@ -79,10 +79,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			await Run (doc.Editor, doc);
+			await Run (doc.Editor, doc.DocumentContext);
 		}
 
-		internal async Task Run (TextEditor editor, DocumentContext ctx)
+		internal async Task Run (Ide.Editor.TextEditor editor, DocumentContext ctx)
 		{
 			var cts = new CancellationTokenSource ();
 			var getSymbolTask = RenameLocations.ReferenceProcessing.GetRenamableSymbolAsync (ctx.AnalysisDocument, editor.CaretOffset, cts.Token);

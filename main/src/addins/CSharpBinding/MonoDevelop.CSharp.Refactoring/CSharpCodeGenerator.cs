@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCodeGenerator.cs
 //  
 // Author:
@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		//		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 		//			get {
 		//				if (policy == null) {
-		//					var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+		//					var types = MonoDevelop.Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 		//					if (PolicyParent != null)
 		//						policy = PolicyParent.Get<CSharpFormattingPolicy> (types);
 		//					if (policy == null) {
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		//			}
 		//			set {
 		//				base.PolicyParent = value;
-		//				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+		//				var types = MonoDevelop.Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 		//				policy = value.Get<CSharpFormattingPolicy> (types);
 		//			}
 		//		}
@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			public ITypeSymbol ImplementingType { get; set; }
 			public Location Part { get; set; }
 
-			public TextEditor Editor { get; set; }
+			public Ide.Editor.TextEditor Editor { get; set; }
 			public DocumentContext DocumentContext { get; set; }
 
 			public bool CreateProtocolMember { get; set; }
@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		//			throw new NotSupportedException ("member " +  member + " is not supported.");
 		//		}
 
-		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation(DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
+		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation(DocumentContext document, Ide.Editor.TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
 		{
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			throw new NotSupportedException("member " + member + " is not supported.");
 		}
 
-		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation(DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
+		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation(DocumentContext document, Ide.Editor.TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
 		{
 			//			SetIndentTo (part);
 			var options = new CodeGenerationOptions {
@@ -234,7 +234,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			throw new NotSupportedException("member " + member + " is not supported.");
 		}
 
-		public static CodeGeneratorMemberResult CreatePartialMemberImplementation(DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
+		public static CodeGeneratorMemberResult CreatePartialMemberImplementation(DocumentContext document, Ide.Editor.TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
 		{
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
@@ -1000,7 +1000,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public override async void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
 		{
-			var fixer = new ConstructFixer (doc.GetFormattingOptions ());
+			var fixer = new ConstructFixer (doc.DocumentContext.GetFormattingOptions ());
 			int newOffset = await fixer.TryFix (doc, doc.Editor.CaretOffset, default(CancellationToken));
 			if (newOffset != -1) {
 				doc.Editor.CaretOffset = newOffset;
@@ -1054,12 +1054,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			return new CodeGeneratorMemberResult(Core.StringBuilderCache.ReturnAndFree (result), bodyStartOffset, bodyEndOffset);
 		}
 
-		public override void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName)
+		public override void AddGlobalNamespaceImport (Ide.Editor.TextEditor editor, DocumentContext context, string nsName)
 		{
 			// not used anymore
 		}
 
-		public override void AddLocalNamespaceImport (TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation)
+		public override void AddLocalNamespaceImport (Ide.Editor.TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation)
 		{
 			// not used anymore
 		}

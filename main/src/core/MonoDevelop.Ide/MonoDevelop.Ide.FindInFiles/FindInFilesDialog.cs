@@ -36,6 +36,8 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using System.Threading.Tasks;
 using MonoDevelop.Components.AtkCocoaHelper;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -205,9 +207,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				toggleFindInFiles.Toggle ();
 
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				var view = IdeApp.Workbench.ActiveDocument.Editor;
+				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextView>(true);
 				if (view != null) {
-					string selectedText = FormatPatternToSelectionOption (view.SelectedText, properties.Get ("RegexSearch", false));
+					string selectedText = FormatPatternToSelectionOption (view.Selection.SelectedSpans.FirstOrDefault ().GetText(), properties.Get ("RegexSearch", false));
 					if (!string.IsNullOrEmpty (selectedText)) {
 						if (selectedText.Any (c => c == '\n' || c == '\r')) {
 //							comboboxScope.Active = ScopeSelection; 

@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowDialog ()
 		{
-			MessageService.ShowCustomDialog (this, DesktopService.GetFocusedTopLevelWindow ());
+			MessageService.ShowCustomDialog (this, IdeServices.DesktopService.GetFocusedTopLevelWindow ());
 		}
 
 		public void CloseDialog ()
@@ -179,7 +179,9 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			}
 
-			if (languageCellRenderer.IsLanguageButtonPressed (args.Event)) {
+			// Only display the popup menu on a single press, ignore anything else
+			// Fixes a crash when triple clicking. VSTS #849556
+			if (args.Event.Type == Gdk.EventType.ButtonPress && languageCellRenderer.IsLanguageButtonPressed (args.Event)) {
 				HandlePopup (template, args.Event.Time);
 			}
 		}
@@ -573,7 +575,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		async Task MoveToNextPage ()
+		public async Task MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
 				try {
@@ -612,7 +614,7 @@ namespace MonoDevelop.Ide.Projects
 			controller.MoveToPreviousPage ();
 
 			Widget widget = GetWidgetToDisplay ();
-			widget.ShowAll ();
+			widget.Show ();
 
 			centreVBox.Remove (centreVBox.Children [0]);
 			centreVBox.PackStart (widget, true, true, 0);

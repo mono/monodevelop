@@ -41,7 +41,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	[EditorBrowsable(EditorBrowsableState.Never)]
 #endif
 #if !SILVERLIGHT
-    abstract class RegexRunner {
+	[Obsolete ("Old editor")]
+    abstract class RegexRunner
+	{
 #else
     abstract internal class RegexRunner {
 #endif

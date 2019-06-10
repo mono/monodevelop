@@ -1,4 +1,7 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+// this conflicts with the new editor, but it's internal and will be removed
+#pragma warning disable CS0436 // Type conflicts with imported type
+
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
     using System.Collections.Generic;
@@ -9,7 +12,7 @@
     using Microsoft.VisualStudio.Threading;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(IViewElementFactoryService))]
+    //[Export(typeof(IViewElementFactoryService))]
     internal sealed class ViewElementFactoryService : IViewElementFactoryService
     {
         private readonly IEnumerable<Lazy<IViewElementFactory, IViewElementFactoryMetadata>> unorderedViewFactories;

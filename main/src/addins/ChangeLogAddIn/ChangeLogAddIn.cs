@@ -82,7 +82,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		static void InsertEntry(Document document)
 		{
-			var textBuffer = document.GetContent<TextEditor>();					
+			var textBuffer = document.GetContent<TextEditor>(true);					
 			if (textBuffer == null) return;
 
 			string changeLogFileName = document.FileName;
@@ -112,7 +112,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			var textBuffer = document.Editor;					
 			if (textBuffer == null) return false;
 			
-			AuthorInformation userInfo = document.Project != null ? document.Project.AuthorInformation : AuthorInformation.Default;
+			AuthorInformation userInfo = document.Owner is SolutionFolderItem item ? item.AuthorInformation : AuthorInformation.Default;
 			
 			if (!userInfo.IsValid) {
 				string title = GettextCatalog.GetString ("ChangeLog entries can't be generated");
@@ -163,7 +163,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (File.Exists (clog))
 				return await IdeApp.Workbench.OpenDocument (clog, (Project) null, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			
-			Document document = IdeApp.Workbench.NewDocument (clog, "text/plain", "");
+			Document document = await IdeApp.Workbench.NewDocument (clog, "text/plain", "");
 			//it doesn't need to be saved to start using it
 			document.Save().Ignore ();
 			return document;				

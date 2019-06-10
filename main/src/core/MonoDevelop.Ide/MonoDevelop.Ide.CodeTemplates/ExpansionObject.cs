@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ExpansionObject.cs
 //  
 // Author:
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return empty;
 			//var result = new List<CodeTemplateVariableValue> ();
 			//var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
-			//var analysisProject = TypeSystemService.GetCodeAnalysisProject (CurrentContext.DocumentContext.Project);
+			//var analysisProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (CurrentContext.DocumentContext.Project);
 			//var compilation = analysisProject != null ? analysisProject.GetCompilationAsync ().Result : null;
 
 			//if (ext != null) {

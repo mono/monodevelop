@@ -593,6 +593,9 @@ namespace MonoDevelop.Projects
 				evaluatedSourceFilesConfiguration = null;
 				evaluatedSourceFilesTask = null;
 			}
+
+			compileEvaluator.ResetCachedCompileItems ();
+
 			return base.OnClearCachedData ();
 		}
 
@@ -719,7 +722,6 @@ namespace MonoDevelop.Projects
 			{
 				lock (evaluatedCompileItemsLock) {
 					evaluatedCompileItemsConfiguration = null;
-					reevaluateCoreCompileDependsOn = false;
 				}
 			}
 
@@ -727,13 +729,22 @@ namespace MonoDevelop.Projects
 			{
 				var analyzerList = new List<FilePath> ();
 				var sourceFilesList = new List<ProjectFile> ();
-
 				foreach (var item in items) {
 					var msbuildPath = MSBuildProjectService.FromMSBuildPath (project.sourceProject.BaseDirectory, item.Include);
 
-					if (item.Name == "Compile")
-						sourceFilesList.Add (new ProjectFile (msbuildPath, item.Name) { Project = project });
-					else if (item.Name == "Analyzer")
+					if (item.Name == "Compile") {
+						var subtype = Subtype.Code;
+
+						const string subtypeKey = "SubType";
+						if (item.Metadata.HasProperty (subtypeKey)) {
+							var property = item.Metadata.GetProperty (subtypeKey);
+							if (property.Value == "Designer")
+								subtype = Subtype.Designer;
+						}
+
+						var projectFile = new ProjectFile (msbuildPath, item.Name, subtype) { Project = project };
+						sourceFilesList.Add (projectFile);
+					} else if (item.Name == "Analyzer")
 						analyzerList.Add (msbuildPath);
 				}
 
@@ -1363,7 +1374,7 @@ namespace MonoDevelop.Projects
 			string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 			string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-			var globalProperties = CreateGlobalProperties ();
+			var globalProperties = CreateGlobalProperties (target);
 			if (context != null) {
 				var md = (ProjectItemMetadata)context.GlobalProperties;
 				md.SetProject (sourceProject);
@@ -1558,11 +1569,15 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		internal Dictionary<string, string> CreateGlobalProperties ()
+		/// <summary>
+		/// Sets a global TargetFramework property for multi-target projects so MSBuild targets work.
+		/// For Build and Clean the TargetFramework property is not set so all frameworks are built.
+		/// </summary>
+		internal Dictionary<string, string> CreateGlobalProperties (string target)
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
-			if (framework != null)
+			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
 				properties ["TargetFramework"] = framework;
 			return properties;
 		}
@@ -2736,6 +2751,10 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			// Read available item types
+			// Read this first in case the OnGetSupportsImportedItem needs this information.
+			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
+
 			timer.Trace ("Read project items");
 			LoadProjectItems (msproject, ProjectItemFlags.None, usedMSBuildItems);
 			loadedProjectItems = new HashSet<ProjectItem> (Items);
@@ -2768,10 +2787,6 @@ namespace MonoDevelop.Projects
 			timer.Trace ("Read extended properties");
 
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
-
-			// Read available item types
-
-			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
 
 			// Ensure buildActions are refreshed if loadedAvailableItemNames have been updated.
 			buildActions = null;
@@ -3775,7 +3790,15 @@ namespace MonoDevelop.Projects
 						// Globbing magic can only be done if there is no metadata (for now)
 						if (globItem.Metadata.GetProperties ().Count () == 0 && !updateGlobItems.Any ()) {
 							var it = new MSBuildItem (item.ItemName);
-							item.Write (this, it);
+							var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (it.Name);
+							if (itemDefinitionProps != null) {
+								var propertiesAlreadySet = new HashSet<string> ();
+								item.Write (this, it);
+								AddEmptyItemDefinitionProperties (it, itemDefinitionProps);
+								PurgeItemDefinitionProperties (it, itemDefinitionProps, propertiesAlreadySet);
+							} else {
+								item.Write (this, it);
+							}
 							if (it.Metadata.GetProperties ().Count () == 0)
 								buildItem = globItem;
 
@@ -3849,11 +3872,24 @@ namespace MonoDevelop.Projects
 
 			if (!buildItem.IsWildcardItem) {
 				if (buildItem.IsUpdate) {
+					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
 					var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
 					item.Write (this, buildItem);
+					if (itemDefinitionProps != null) {
+						AddEmptyItemDefinitionProperties (buildItem, itemDefinitionProps);
+						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
+					}
 					PurgeUpdatePropertiesSetInSourceItems (buildItem, item.BackingEvalItem.SourceItems, propertiesAlreadySet);
 				} else {
-					item.Write (this, buildItem);
+					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
+					if (itemDefinitionProps != null) {
+						var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
+						item.Write (this, buildItem);
+						AddEmptyItemDefinitionProperties (buildItem, itemDefinitionProps);
+						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
+					} else {
+						item.Write (this, buildItem);
+					}
 					if (buildItem.Include != include)
 						buildItem.Include = include;
 				}
@@ -3900,6 +3936,40 @@ namespace MonoDevelop.Projects
 							propsToRemove.Add (p.Name);
 						}
 						break;
+					}
+				}
+			}
+			if (propsToRemove != null) {
+				foreach (var name in propsToRemove)
+					buildItem.Metadata.RemoveProperty (name);
+			}
+		}
+
+		/// <summary>
+		/// If the MSBuildItem does not define the property defined by its ItemDefinition then we need to set an empty
+		/// string for the metadata property value. Otherwise the property information for a new file will be incorrect
+		/// in the IDE.
+		/// </summary>
+		void AddEmptyItemDefinitionProperties (MSBuildItem buildItem, IMSBuildPropertyGroupEvaluated itemDefinitionProps)
+		{
+			foreach (var p in itemDefinitionProps.GetProperties ()) {
+				if (!buildItem.Metadata.HasProperty (p.Name))
+					buildItem.Metadata.SetValue (p.Name, string.Empty);
+			}
+		}
+
+		void PurgeItemDefinitionProperties (MSBuildItem buildItem, IMSBuildPropertyGroupEvaluated itemDefinitionProps, HashSet<string> propertiesAlreadySet)
+		{
+			List<string> propsToRemove = null;
+
+			foreach (var p in buildItem.Metadata.GetProperties ().Where (pr => !propertiesAlreadySet.Contains (pr.Name))) {
+				var prop = itemDefinitionProps.GetProperty (p.Name);
+				if (prop != null) {
+					if (p.ValueType.Equals (p.Value, prop.Value)) {
+						// This item definition defines the same metadata, so that metadata does not need to be set in the MSBuild item
+						if (propsToRemove == null)
+							propsToRemove = new List<string> ();
+						propsToRemove.Add (p.Name);
 					}
 				}
 			}

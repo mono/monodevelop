@@ -4,7 +4,9 @@ open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
 
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 module ``Highlight unused opens`` =
@@ -23,6 +25,10 @@ module ``Highlight unused opens`` =
             |> Async.RunSynchronously
         let opens = res.Value |> List.map(fun range -> textFromRange doc.Editor range)
         Assert.AreEqual(expected, opens, sprintf "%A" opens)
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     [<Test>]
     let Simple() =

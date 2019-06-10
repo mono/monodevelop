@@ -1,4 +1,4 @@
-//
+﻿//
 // WelcomePageTipOfTheDaySection.cs
 //
 // Author:
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			label.Xalign = 0;
 			label.Wrap = true;
 			label.WidthRequest = 200;
-			label.ModifyFont (FontService.SansFont.CopyModified (Gui.Styles.FontScale11));
+			label.ModifyFont (IdeServices.FontService.SansFont.CopyModified (Gui.Styles.FontScale11));
 			label.SetPadding (0, 10);
 
 			label.Text = currentTip != -1 ? tips[currentTip] : "";

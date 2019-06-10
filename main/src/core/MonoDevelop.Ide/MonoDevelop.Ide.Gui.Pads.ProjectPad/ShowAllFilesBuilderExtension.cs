@@ -264,31 +264,34 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void OnSystemFileDeleted (object sender, FileEventArgs args)
 		{
 			foreach (FileEventInfo e in args) {
-				Project project = GetProjectForFile (e.FileName);
+				try {
+					Project project = GetProjectForFile (e.FileName);
 
-				ITreeBuilder tb = Context.GetTreeBuilder ();
-				
-				if (e.IsDirectory) {
-					if (tb.MoveToObject (new ProjectFolder (e.FileName, project))) {
-						if (tb.Options ["ShowAllFiles"] && (project == null || !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName))) {
+					ITreeBuilder tb = Context.GetTreeBuilder ();
+
+					if (e.IsDirectory) {
+						if (tb.MoveToObject (new ProjectFolder (e.FileName, project))) {
+							if (tb.Options ["ShowAllFiles"] && (project == null || !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName))) {
+								tb.Remove ();
+								return;
+							}
+						}
+					} else {
+						if (tb.MoveToObject (new SystemFile (e.FileName, project))) {
 							tb.Remove ();
 							return;
 						}
 					}
-				}
-				else {
-					if (tb.MoveToObject (new SystemFile (e.FileName, project))) {
-						tb.Remove ();
-						return;
+
+					// Find the parent folder, and update it's children count
+
+					string parentPath = Path.GetDirectoryName (e.FileName);
+					if (tb.MoveToObject (new ProjectFolder (parentPath, project))) {
+						if (tb.Options ["ShowAllFiles"] && Directory.Exists (parentPath))
+							tb.UpdateChildren ();
 					}
-				}
-				
-				// Find the parent folder, and update it's children count
-				
-				string parentPath = Path.GetDirectoryName (e.FileName);
-				if (tb.MoveToObject (new ProjectFolder (parentPath, project))) {
-					if (tb.Options ["ShowAllFiles"] && Directory.Exists (parentPath))
-						tb.UpdateChildren ();
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ($"Error while updating project tree in OnSystemFileDeleted : {string.Join (", ", args.Select (x => x.FileName))}.", ex);
 				}
 			}
 		}

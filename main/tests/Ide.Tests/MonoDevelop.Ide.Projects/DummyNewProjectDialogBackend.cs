@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -45,6 +46,11 @@ namespace MonoDevelop.Ide.Projects
 		public void ShowDialog ()
 		{
 			OnShowDialogCalled ();
+		}
+
+		public Task MoveToNextPage ()
+		{
+			return Task.Delay (0);
 		}
 	}
 }

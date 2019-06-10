@@ -914,11 +914,11 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
-			List<AssemblyReference> result = new List<AssemblyReference> ();
+			var result = new List<AssemblyReference> ();
 			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration));
+					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration).ConfigureAwait (false));
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
@@ -979,7 +979,7 @@ namespace MonoDevelop.Projects
 						} else {
 							fullPath = Path.GetFullPath (refFilename.FilePath);
 						}
-						if (await SystemAssemblyService.RequiresFacadeAssembliesAsync (fullPath)) {
+						if (await SystemAssemblyService.RequiresFacadeAssembliesAsync (fullPath).ConfigureAwait (false)) {
 							addFacadeAssemblies = true;
 							break;
 						}
@@ -987,7 +987,7 @@ namespace MonoDevelop.Projects
 				}
 
 				if (addFacadeAssemblies) {
-					var facades = await ProjectExtension.OnGetFacadeAssemblies ();
+					var facades = await ProjectExtension.OnGetFacadeAssemblies ().ConfigureAwait (false);
 					if (facades != null) {
 						foreach (var facade in facades) {
 							if (!result.Contains (facade))
@@ -1022,15 +1022,11 @@ namespace MonoDevelop.Projects
 			var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
 			sharedProperties.SetProperty (property.Name, property);
 
-			List<AssemblyReference> result = null;
 			var runtime = TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime;
 			var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
-			foreach (var facade in facades) {
-				if (!File.Exists (facade))
-					continue;
-				if (result == null)
-					result = new List<AssemblyReference> ();
+			var result = facades is ICollection<string> collection ? new List<AssemblyReference> (collection.Count) : new List<AssemblyReference> ();
 
+			foreach (var facade in facades) {
 				var ar = new AssemblyReference (facade, sharedProperties);
 				result.Add (ar);
 			}
@@ -1199,7 +1195,7 @@ namespace MonoDevelop.Projects
 			SetProperty (metadata, "Project", reference.ProjectGuid);
 			SetProperty (metadata, "MSBuildSourceProjectFile", GetProjectFileName (reference));
 			SetProperty (metadata, "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString ());
-			SetProperty (metadata, "ReferenceSourceTarget", "ProjectReference");
+			SetProperty (metadata, "ReferenceSourceTarget", reference.ReferenceSourceTarget);
 
 			return new AssemblyReference (path, metadata);
 		}

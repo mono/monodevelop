@@ -1,5 +1,5 @@
-﻿//
-// TypeSystemService.cs
+//
+// IdeApp.TypeSystemService.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
@@ -36,29 +37,37 @@ using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public static partial class TypeSystemService
+	public partial class TypeSystemService
 	{
 		//Internal for unit test
-		internal static readonly MonoDevelopWorkspace emptyWorkspace;
+		internal MonoDevelopWorkspace emptyWorkspace;
 
-		static object workspaceLock = new object();
-		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
-		static ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> workspaceRequests = new ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> ();
+		object workspaceLock = new object();
+		ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
+		ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> workspaceRequests = new ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> ();
 
-		public static ImmutableArray<Microsoft.CodeAnalysis.Workspace> AllWorkspaces {
+		public ImmutableArray<Microsoft.CodeAnalysis.Workspace> AllWorkspaces {
 			get {
 				return workspaces.ToImmutableArray<Microsoft.CodeAnalysis.Workspace> ();
 			}
 		}
 
 
-		public static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
+		public MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
-				throw new ArgumentNullException (nameof(solution));
+				throw new ArgumentNullException (nameof (solution));
+			return (MonoDevelopWorkspace) GetWorkspaceInternal (solution);
+		}
+
+		public Microsoft.CodeAnalysis.Workspace GetWorkspaceInternal (MonoDevelop.Projects.Solution solution)
+		{
+			if (solution == null)
+				return miscellaneousFilesWorkspace;
 			foreach (var ws in workspaces) {
 				if (ws.MonoDevelopSolution == solution)
 					return ws;
@@ -66,7 +75,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return emptyWorkspace;
 		}
 
-		public static async Task<MonoDevelopWorkspace> GetWorkspaceAsync (MonoDevelop.Projects.Solution solution, CancellationToken cancellationToken = default (CancellationToken))
+		public async Task<MonoDevelopWorkspace> GetWorkspaceAsync (MonoDevelop.Projects.Solution solution, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var workspace = GetWorkspace (solution);
 			if (workspace != emptyWorkspace)
@@ -85,7 +94,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return workspace;
 		}
 
-		internal static MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
+		internal MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
 		{
 			foreach (var ws in workspaces) {
 				if (ws.Id.Equals (id))
@@ -94,9 +103,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			return emptyWorkspace;
 		}
 
-		public static Microsoft.CodeAnalysis.Workspace Workspace {
+		public Microsoft.CodeAnalysis.Workspace Workspace {
 			get {
-				var solution = IdeApp.ProjectOperations?.CurrentSelectedSolution;
+				var solution = rootWorkspace?.CurrentSelectedSolution;
 				if (solution == null)
 					return emptyWorkspace;
 				return GetWorkspace (solution);
@@ -104,7 +113,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		public static void NotifyFileChange (string fileName, string text)
+		public void NotifyFileChange (string fileName, string text)
 		{
 			try {
 				foreach (var ws in workspaces)
@@ -114,43 +123,39 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
+		internal async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				var wsList = CreateWorkspaces (item).ToList();
+				var wsList = new List<MonoDevelopWorkspace> ();
+				await CreateWorkspaces (item, wsList).ConfigureAwait (false);
 				//If we want BeginTiming to work correctly we need to `await`
-				await InternalLoad (wsList, progressMonitor, cancellationToken, showStatusIcon).ConfigureAwait (false);
-				return wsList.ToList ();
+				await InternalLoad (wsList, progressMonitor, cancellationToken).ConfigureAwait (false);
+				return wsList;
 			}
 		}
 
-		static IEnumerable<MonoDevelopWorkspace> CreateWorkspaces (WorkspaceItem item)
+		async Task CreateWorkspaces (WorkspaceItem item, List<MonoDevelopWorkspace> result)
 		{
 			if (item is MonoDevelop.Projects.Workspace ws) {
-				foreach (var wsItem in ws.Items) {
-					foreach (var mdWorkspace in CreateWorkspaces (wsItem)) {
-						yield return mdWorkspace;
-					}
-				}
+				foreach (var wsItem in ws.Items)
+					await CreateWorkspaces (wsItem, result).ConfigureAwait (false);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is MonoDevelop.Projects.Solution solution) {
-				var workspace = new MonoDevelopWorkspace (solution);
+				var workspace = new MonoDevelopWorkspace (compositionManager.HostServices, solution, this);
+				await workspace.Initialize ().ConfigureAwait (false);
 				lock (workspaceLock)
 					workspaces = workspaces.Add (workspace);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
-				yield return workspace;
+				result.Add (workspace);
 			}
 		}
 
-		static async Task InternalLoad (List<MonoDevelopWorkspace> mdWorkspaces, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
+		async Task InternalLoad (List<MonoDevelopWorkspace> mdWorkspaces, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			foreach (var workspace in mdWorkspaces) {
-				if (showStatusIcon)
-					workspace.ShowStatusIcon ();
-
-				var (solution, solutionInfo) = await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
+				var (solution, solutionInfo) = await workspace.LoadSolution (cancellationToken).ConfigureAwait (false);
 
 				if (workspaceRequests.TryGetValue (solution, out var request)) {
 					if (solutionInfo == null) {
@@ -161,14 +166,10 @@ namespace MonoDevelop.Ide.TypeSystem
 						request.TrySetResult (workspace);
 					}
 				}
-
-				if (showStatusIcon)
-					workspace.HideStatusIcon ();
-
 			}
 		}
 
-		internal static void Unload (MonoDevelop.Projects.WorkspaceItem item)
+		internal void Unload (MonoDevelop.Projects.WorkspaceItem item)
 		{
 			var ws = item as MonoDevelop.Projects.Workspace;
 			if (ws != null) {
@@ -199,13 +200,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static DocumentId GetDocumentId (MonoDevelop.Projects.Project project, string fileName)
+		public DocumentId GetDocumentId (MonoDevelop.Projects.Project project, string fileName)
 		{
-			if (project == null)
-				throw new ArgumentNullException (nameof(project));
 			if (fileName == null)
-				throw new ArgumentNullException (nameof(fileName));
+				throw new ArgumentNullException (nameof (fileName));
+
 			fileName = FileService.GetFullPath (fileName);
+
+			if (project == null)
+				return miscellaneousFilesWorkspace.GetDocumentId (fileName);
+
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)
@@ -214,7 +218,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static DocumentId GetDocumentId (Microsoft.CodeAnalysis.Workspace workspace, MonoDevelop.Projects.Project project, string fileName)
+		public DocumentId GetDocumentId (Microsoft.CodeAnalysis.Workspace workspace, MonoDevelop.Projects.Project project, string fileName)
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
@@ -231,7 +235,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		public static DocumentId GetDocumentId (ProjectId projectId, string fileName)
+		public DocumentId GetDocumentId (ProjectId projectId, string fileName)
 		{
 			if (projectId == null)
 				throw new ArgumentNullException (nameof(projectId));
@@ -244,7 +248,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static IEnumerable<DocumentId> GetDocuments (string fileName)
+		public IEnumerable<DocumentId> GetDocuments (string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException (nameof(fileName));
@@ -258,10 +262,162 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
+		Dictionary<FilePath, OpenDocumentReference> openDocuments = new Dictionary<FilePath, OpenDocumentReference> ();
+
+		class OpenDocumentReference
 		{
+			public int ReferenceCount { get; set; }
+			public FilePath FilePath { get; set; }
+			public ITextBuffer TextBuffer { get; set; }
+			public WorkspaceObject Owner { get; set; }
+			public bool HandleMiscNamespace { get; set; }
+		}
+
+		class DocumentRegistration : IDisposable
+		{
+			public OpenDocumentReference OpenDocument { get; set; }
+
+			public void Dispose ()
+			{
+				IdeServices.TypeSystemService.UnregisterOpenDocument (OpenDocument);
+			}
+		}
+
+		public IDisposable RegisterOpenDocument (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer, bool handleMiscNamespace = true)
+		{
+			Runtime.AssertMainThread ();
+
+			var path = filePath.IsAbsolute ? filePath.CanonicalPath : filePath;
+			if (openDocuments.TryGetValue (path, out var reference)) {
+				reference.ReferenceCount++;
+				if (reference.Owner == null)
+					reference.Owner = owner;
+				return new DocumentRegistration { OpenDocument = reference };
+			}
+			reference = new OpenDocumentReference {
+				ReferenceCount = 1,
+				FilePath = path,
+				TextBuffer = textBuffer,
+				Owner = owner,
+				HandleMiscNamespace = handleMiscNamespace
+			};
+			openDocuments.Add (path, reference);
+
+			TryRegisterOpenDocument (reference);
+
+			return new DocumentRegistration { OpenDocument = reference };
+		}
+
+		void TryRegisterOpenDocument (OpenDocumentReference reference)
+		{
+			// First offer the document to the primary workspace and see if it's owned by it.
+			// This is the common case, so avoid adding the document to the miscellaneous workspace
+			// unnecessarily, as it will be immediately removed anyway.
+			TryOpenDocumentInWorkspace (reference.Owner, reference.FilePath, reference.TextBuffer);
+
+			// Only use misc workspace with the new editor; old editor has its own
+			if (reference.HandleMiscNamespace) {
+				// If the primary workspace didn't claim the document notify the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentOpened (reference.FilePath, reference.TextBuffer);
+			}
+		}
+
+		bool TryOpenDocumentInWorkspace (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer)
+		{
+			var project = owner as MonoDevelop.Projects.Project;
+			if (project == null || !project.IsCompileable (filePath) || project.ParentSolution == null) {
+				return false;
+			}
+
+			var workspace = GetWorkspace (project.ParentSolution);
+			if (workspace == emptyWorkspace) {
+				return false;
+			}
+
+			var projectId = workspace.GetProjectId (project);
+
+			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+			var bestDoc = documentIds.FirstOrDefault ();
+			if (documentIds.Length > 1) {
+				foreach (var documentId in documentIds) {
+					// projectId == null, when opening document from Solution pad, for file in shared project
+					if (projectId == null) {
+						var p = workspace.GetMonoProject (documentId.ProjectId);
+						if (p == null)
+							continue;
+						var solConf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+						if (solConf == null || !solConf.BuildEnabledForItem (p))
+							continue;
+						if (p == p.ParentSolution.StartupItem) {
+							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+							return true;
+						}
+						bestDoc = documentId;
+					} else if (documentId.ProjectId == projectId) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+						return true;
+					}
+				}
+			}
+
+			if (bestDoc != null) {
+				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer ());
+				return true;
+			}
+			return false;
+		}
+
+		void UnregisterOpenDocument (OpenDocumentReference reference)
+		{
+			Runtime.AssertMainThread ();
+
+			if (--reference.ReferenceCount > 0)
+				return;
+
+			openDocuments.Remove (reference.FilePath);
+
+			// Only use misc workspace with the new editor; old editor has its own
+			if (reference.HandleMiscNamespace) {
+				// In the common case the primary workspace will own the document, so shut down
+				// miscellaneous workspace first to avoid adding and then immediately removing
+				// the document to the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentClosed (reference.FilePath, reference.TextBuffer);
+			}
+
+			var solution = (reference.Owner as SolutionItem)?.ParentSolution;
+			if (solution != null)
+				TryCloseDocumentInWorkspace (reference.FilePath, reference.TextBuffer.AsTextContainer (), solution);
+		}
+
+		private void TryCloseDocumentInWorkspace (FilePath filePath, SourceTextContainer container, MonoDevelop.Projects.Solution solution)
+		{
+			var workspace = GetWorkspace (solution);
+			if (workspace == emptyWorkspace) {
+				return;
+			}
+
+			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+			foreach (var documentId in documentIds) {
+				workspace.InformDocumentClose (documentId, container);
+			}
+		}
+
+		internal void UpdateRegisteredOpenDocuments ()
+		{
+			Runtime.AssertMainThread ();
+
+			// Try to register open documents in the loaded workspaces
+
+			foreach (var reference in openDocuments.Values)
+				TryRegisterOpenDocument (reference);
+		}
+
+		public Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
+		{
+			// If there is no project, the file is in the miscellaneous namespace
 			if (project == null)
-				throw new ArgumentNullException (nameof(project));
+				return miscellaneousFilesWorkspace.CurrentSolution.GetProject (miscellaneousFilesWorkspace.DefaultProjectId);
+
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)
@@ -270,7 +426,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static async Task<Microsoft.CodeAnalysis.Project> GetCodeAnalysisProjectAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default (CancellationToken))
+		public async Task<Microsoft.CodeAnalysis.Project> GetCodeAnalysisProjectAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parentSolution = project.ParentSolution;
 			var workspace = await GetWorkspaceAsync (parentSolution, cancellationToken);
@@ -283,14 +439,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			//We assume that since we have projectId and project is not found in solution
 			//project is being loaded(waiting MSBuild to return list of source files)
 			var taskSource = new TaskCompletionSource<Microsoft.CodeAnalysis.Project> ();
+			var registration = cancellationToken.Register (() => taskSource.TrySetCanceled ());
 			EventHandler<WorkspaceChangeEventArgs> del = (s, e) => {
 				if (e.Kind == WorkspaceChangeKind.SolutionAdded || e.Kind == WorkspaceChangeKind.SolutionReloaded) {
 					proj = workspace.CurrentSolution.GetProject (projectId);
-					if (proj != null)
-						taskSource.SetResult (proj);
+					if (proj != null) {
+						registration.Dispose ();
+						taskSource.TrySetResult (proj);
+					}
 				}
 			};
-			cancellationToken.Register (taskSource.SetCanceled);
 			workspace.WorkspaceChanged += del;
 			try {
 				proj = await taskSource.Task;
@@ -300,7 +458,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return proj;
 		}
 
-		public static Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
@@ -311,7 +469,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.FromResult (default(Compilation));
 		}
 
-		internal static Microsoft.CodeAnalysis.Project GetProject (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default (CancellationToken))
+		internal Microsoft.CodeAnalysis.Project GetProject (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
@@ -325,17 +483,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
+		void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			TypeSystemService.Load (args.Item, null).Ignore ();
+			Load (args.Item, null).Ignore ();
 		}
 
-		static void OnWorkspaceItemRemoved (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
+		void OnWorkspaceItemRemoved (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			Unload (args.Item);
 		}
 
-		static async void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		async void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
 			try {
 				var project = args.SolutionItem as MonoDevelop.Projects.Project;
@@ -355,19 +513,21 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject);
 					if (oldProject != null) {
+						projectInfo = ws.AddVirtualDocuments (projectInfo);
 						ws.OnProjectReloaded (projectInfo);
 					}
 					else {
 						ws.OnProjectAdded (projectInfo);
 					}
 					ws.ReloadModifiedProject (project);
+					Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("OnSolutionItemAdded failed", ex);
 			}
 		}
 
-		static void OnSolutionItemRemoved (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		void OnSolutionItemRemoved (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
 			if (args.Reloading) {
 				return;
@@ -382,37 +542,46 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Tracked project handling
-		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
+		readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
 
-		static void IntitializeTrackedProjectHandling ()
+		void IntitializeTrackedProjectHandling ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					AddOutputTrackingNode (node);
-					break;
-				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (node);
-					break;
-				}
-			});
-			if (IdeApp.ProjectOperations != null)
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", OutputTrackingExtensionChanged);
+			IdeApp.Initialized += (sender, e) => {
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
-			if (IdeApp.Workspace != null)
-				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			};
+		}
+
+		void FinalizeTrackedProjectHandling ()
+		{
+			AddinManager.RemoveExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", OutputTrackingExtensionChanged);
+			if (IdeApp.IsInitialized)
+				IdeApp.ProjectOperations.EndBuild -= HandleEndBuild;
+		}
+
+		void OutputTrackingExtensionChanged (object sender, ExtensionNodeEventArgs args)
+		{
+			var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
+			switch (args.Change) {
+			case ExtensionChange.Add:
+				AddOutputTrackingNode (node);
+				break;
+			case ExtensionChange.Remove:
+				outputTrackedProjects.Remove (node);
+				break;
+			}
 		}
 
 		/// <summary>
 		/// Adds an output tracking node for unit testing purposes.
 		/// </summary>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal static void AddOutputTrackingNode (TypeSystemOutputTrackingNode node)
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		internal void AddOutputTrackingNode (TypeSystemOutputTrackingNode node)
 		{
 			outputTrackedProjects.Add (node);
 		}
 
-		static void HandleEndBuild (object sender, BuildEventArgs args)
+		void HandleEndBuild (object sender, BuildEventArgs args)
 		{
 			var project = args.SolutionItem as DotNetProject;
 			if (project == null)
@@ -420,10 +589,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			CheckProjectOutput (project, true);
 		}
 
-		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-				foreach (var pr in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+			if (rootWorkspace?.CurrentSelectedSolution != null) {
+				foreach (var pr in rootWorkspace.CurrentSelectedSolution.GetAllProjects ()) {
 					var project = pr as DotNetProject;
 					if (project != null)
 						CheckProjectOutput (project, true);
@@ -431,23 +600,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static bool IsOutputTrackedProject (DotNetProject project)
+		internal bool IsOutputTrackedProject (DotNetProject project)
 		{
 			if (project == null)
-				throw new ArgumentNullException (nameof(project));
+				throw new ArgumentNullException  (nameof(project));
 			return outputTrackedProjects.Any (otp => string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase)) ||
 				project.GetTypeTags().Any (tag => outputTrackedProjects.Any (otp => string.Equals (otp.ProjectType, tag, StringComparison.OrdinalIgnoreCase)));
 		}
 
-		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
+		void CheckProjectOutput (DotNetProject project, bool autoUpdate)
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
 			if (IsOutputTrackedProject (project)) {
 				if (autoUpdate) {
 					// update documents
-					foreach (var openDocument in IdeApp.Workbench.Documents) {
-						openDocument.ReparseDocument ();
+					if (documentManager != null) {
+						foreach (var openDocument in documentManager.Documents)
+							openDocument.DocumentContext?.ReparseDocument ();
 					}
 				}
 			}

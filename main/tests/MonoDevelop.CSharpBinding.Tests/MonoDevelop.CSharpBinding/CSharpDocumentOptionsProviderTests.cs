@@ -61,8 +61,8 @@ namespace MonoDevelop.CSharpBinding
 				var doc = testCase.Document;
 				var policy = new CSharpFormattingPolicy ();
 				policy.SpaceAfterMethodCallName = true;
-				doc.Project.Policies.Set (policy, "text/x-csharp");
-				var option = await doc.AnalysisDocument.GetOptionsAsync ();
+				((Project)doc.Owner).Policies.Set (policy, "text/x-csharp");
+				var option = await doc.DocumentContext.AnalysisDocument.GetOptionsAsync ();
 				var spaceAfterMethodCall = option.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterMethodCallName);
 				Assert.IsTrue (spaceAfterMethodCall);
 			}

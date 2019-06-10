@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
-using System.Collections.Generic;
+using MonoDevelop.Ide;
 using System.IO;
 
 namespace MonoDevelop.VersionControl.Git
@@ -33,6 +33,7 @@ namespace MonoDevelop.VersionControl.Git
 	abstract class GitVersionControl : VersionControlSystem
 	{
 		string version = null;
+		bool failedToInitialize;
 
 		const string GitExtension = ".git";
 
@@ -54,6 +55,17 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		static GitVersionControl ()
+		{
+			// soft settings migration for 8.0 without slowing down Ide initialization
+			// should work fine for most users using git on regular basis
+			if (Ide.IdeApp.IsInitialRunAfterUpgrade && Ide.IdeApp.UpgradedFromVersion < new System.Version (8, 0, 1, 2800)) {
+				GitService.StashUnstashWhenSwitchingBranches.Set (false);
+				GitService.StashUnstashWhenUpdating.Set (false);
+				PropertyService.SaveProperties ();
+			}
+		}
+
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
 			return new GitRepository (this, path, null);
@@ -71,7 +83,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
 		{
-			string repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			if (failedToInitialize)
+				return null;
+			string repo = string.Empty;
+			try {
+				repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			} catch (System.DllNotFoundException ex) {
+				failedToInitialize = true;
+				LoggingService.LogInternalError ("Error when loading the libgit libraries", ex);
+				MessageService.ShowError (GettextCatalog.GetString ("Error initializing Version Control"), ex);
+			}
 			if (!string.IsNullOrEmpty (repo)) {
 				repo = repo.TrimEnd ('\\', '/');
 				if (repo.EndsWith (GitExtension, System.StringComparison.OrdinalIgnoreCase))

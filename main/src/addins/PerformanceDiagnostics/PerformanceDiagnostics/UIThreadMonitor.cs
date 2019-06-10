@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	public class UIThreadMonitor
+	public class UIThreadMonitor : MonoDevelop.Utilities.SampleProfiler
 	{
 		public static UIThreadMonitor Instance { get; } = new UIThreadMonitor ();
 
-		UIThreadMonitor ()
+		UIThreadMonitor () : base (Options.OutputPath)
 		{
 			IdeApp.Exited += IdeAppExited;
 		}
@@ -28,7 +28,7 @@ namespace PerformanceDiagnosticsAddIn
 		void IdeAppExited (object sender, EventArgs e)
 		{
 			try {
-				Instance.Stop ();
+				Stop ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("UIThreadMonitor stop error.", ex);
 			}
@@ -69,44 +69,6 @@ namespace PerformanceDiagnosticsAddIn
 			}
 		}
 
-		TimeSpan forceProfileTime = TimeSpan.Zero;
-
-		public bool ToggleProfilingChecked => sampleProcessPid != -1;
-
-		int sampleProcessPid = -1;
-		public void ToggleProfiling ()
-		{
-			if (sampleProcessPid != -1) {
-				Mono.Unix.Native.Syscall.kill (sampleProcessPid, Mono.Unix.Native.Signum.SIGINT);
-				sampleProcessPid = -1;
-				return;
-			}
-
-			var outputFilePath = Path.GetTempFileName ();
-			var startInfo = new ProcessStartInfo ("sample");
-			startInfo.UseShellExecute = false;
-			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} 10000 -file {outputFilePath}";
-			var sampleProcess = Process.Start (startInfo);
-			sampleProcess.EnableRaisingEvents = true;
-			sampleProcess.Exited += delegate {
-				ConvertJITAddressesToMethodNames (outputFilePath, "Profile");
-			};
-			sampleProcessPid = sampleProcess.Id;
-		}
-
-		public void Profile (int seconds)
-		{
-			var outputFilePath = Path.GetTempFileName ();
-			var startInfo = new ProcessStartInfo ("sample");
-			startInfo.UseShellExecute = false;
-			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} {seconds} -file {outputFilePath}";
-			var sampleProcess = Process.Start (startInfo);
-			sampleProcess.EnableRaisingEvents = true;
-			sampleProcess.Exited += delegate {
-				ConvertJITAddressesToMethodNames (outputFilePath, "Profile");
-			};
-		}
-
 		public bool IsListening { get; private set; }
 		public bool IsSampling { get; private set; }
 		public string HangFileName { get; set; }
@@ -120,8 +82,8 @@ namespace PerformanceDiagnosticsAddIn
 			}
 			if (sample) {
 				if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
-					MessageService.ShowWarning ("Set environment variable",
-												$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
+					var msg = $@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.";
+					MessageService.ShowWarning ("Set environment variable", msg);
 				}
 			}
 			IsListening = true;
@@ -190,7 +152,7 @@ namespace PerformanceDiagnosticsAddIn
 			var process = (Process)param;
 			while (!process.HasExited) {
 				var fileName = process.StandardOutput.ReadLine ();
-				ConvertJITAddressesToMethodNames (fileName, "UIThreadHang");
+				ConvertJITAddressesToMethodNames (Options.OutputPath, fileName, "UIThreadHang");
 			}
 		}
 
@@ -208,32 +170,91 @@ namespace PerformanceDiagnosticsAddIn
 			listener = null;
 		}
 
-		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
+		static class PmipParser
 		{
-			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
-			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
-				Directory.CreateDirectory (Options.OutputPath);
-				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
+			// pmip output:
+			// (wrapper managed-to-native) Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]  (0x122577d50 0x122577f28) [0x7f9682702c90 - MonoDevelop.exe]
+			// MonoDevelop.Startup.MonoDevelopMain:Main (string[]) [{0x7faef5700948} + 0x93] [/Users/therzok/Work/md/monodevelop/main/src/core/MonoDevelop.Startup/MonoDevelop.Startup/MonoDevelopMain.cs :: 39u] (0x10e7609c0 0x10e760aa8) [0x7faef7002d80 - MonoDevelop.exe]
 
-				using (var sr = new StreamReader (fileName))
-				using (var sw = new StreamWriter (outputFilename)) {
-					string line;
-					while ((line = sr.ReadLine ()) != null) {
-						if (rx.IsMatch (line)) {
-							var match = rx.Match (line);
-							var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
-							string pmipMethodName;
-							if (!methodsCache.TryGetValue (offset, out pmipMethodName)) {
-								pmipMethodName = mono_pmip (offset)?.TrimStart ();
-								methodsCache.Add (offset, pmipMethodName);
-							}
-							if (pmipMethodName != null) {
-								line = line.Remove (match.Index, match.Length);
-								line = line.Insert (match.Index, pmipMethodName);
-							}
-						}
-						sw.WriteLine (line);
+			// sample symbolified line:
+			// start  (in libdyld.dylib) + 1  [0x7fff79c7ded9]
+			// mono_hit_runtime_invoke  (in mono64) + 1619  [0x102f90083]  mini-runtime.c:3148
+			public static string ToSample (string initialInput, long offset)
+			{
+				try {
+					var input = initialInput.AsSpan ();
+					var sb = new StringBuilder ();
+					string filename = null;
+
+					// Cut off wrapper part.
+					if (input.StartsWith ("(wrapper".AsSpan ())) {
+						input = input.Slice (input.IndexOf (')') + 1).TrimStart ();
 					}
+
+					// If it starts with <Module>:, trim it.
+					if (input.StartsWith ("<Module>:".AsSpan ())) {
+						input = input.Slice ("<Module>:".Length);
+					}
+
+					// Usually a generic trampoline marker, don't bother parsing.
+					if (input[0] == '<')
+						return input.ToString ();
+
+					// Decode method signature
+					// Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]
+					var endMethodSignature = input.IndexOf ('{');
+					var methodSignature = input.Slice (0, endMethodSignature - 2); // " ["
+					input = input.Slice (endMethodSignature + 1).TrimStart ();
+
+					// Append chars, escaping what might be unreadable by instruments.
+					for (int i = 0; i < methodSignature.Length; ++i) {
+						var ch = methodSignature [i];
+						if (ch == ' ')
+							continue;
+
+						if (ch == ':') {
+							sb.Append ("::");
+							continue;
+						}
+
+						if (ch == '.') {
+							sb.Append ("_");
+							continue;
+						}
+
+						if (ch == '[' && methodSignature [i + 1] == ']') {
+							sb.Append ("*");
+							i++;
+							continue;
+						}
+
+						sb.Append (ch);
+					}
+
+					// Add some data to match format, + 0 is because it doesn't matter, we're not looking at native code.
+					sb.Append ("  (in MonoDevelop.exe) + 0  [");
+					sb.AppendFormat ("0x{0:x}", offset);
+					sb.Append ("]");
+
+					// Skip the rest of the block(s) after the method signature until we get a path.
+					input = input.Slice (input.IndexOf ('[') + 1).TrimStart ();
+
+					if (input[0] == '/') {
+						// We have a filename
+						var end = input.IndexOf (']');
+						var filepath = input.Slice (0, end - 1).Trim (); // trim u
+						filename = filepath.ToString ();
+					}
+
+					if (filename != null) {
+						sb.Append ("  ");
+						sb.Append (filename);
+					}
+
+					return sb.ToString ();
+				} catch (Exception e) {
+					LoggingService.LogInternalError ($"Failed to parse line '{initialInput}'", e);
+					return initialInput;
 				}
 			}
 		}

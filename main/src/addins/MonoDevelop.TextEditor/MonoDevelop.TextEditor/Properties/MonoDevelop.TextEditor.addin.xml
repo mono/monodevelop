@@ -1,0 +1,313 @@
+﻿<ExtensionModel>
+	<!-- Extension points -->
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/Editor" name = "Editor context menu">
+		<Description>Context menu for the editor.</Description>;
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
+			<Description>Type of the file being edited.</Description>
+		</ConditionType>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/CommandMapping" name = "Maps MonoDevelop commands to Visual Studio EditorCommandArgs types">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNode name="Map" type="MonoDevelop.TextEditor.CommandMappingExtensionNode" />
+	</ExtensionPoint>
+<!--
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/NavigationBar" name = "Navigation bar context menu">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/Scrollbar" name = "Scroll bar context menu">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/IconContextMenu/Editor" name = "Editor context menu">
+		<Description>Context menu for the editor's icon margin.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
+			<Description>Type of the file being edited.</Description>
+		</ConditionType>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/EditActions" name = "Custom edit actions">
+		<Description>Custom edit actions for the editor.</Description>
+		<ExtensionNode name="EditAction" type="MonoDevelop.SourceEditor.Codons.EditActionCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/Formatters" name = "Formatters">
+		<Description>Custom edit actions for the editor.</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	--><!-- Extensions -->
+
+  	<Extension path="/MonoDevelop/Ide/Composition">
+		<!--
+		<Assembly file="../../../bin/Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll"/>
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
+		-->
+		<Assembly file="MonoDevelop.TextEditor.dll"/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Category _name="Text Editor" id="TextEditor">
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret"
+					_label="Insert next matching caret"
+					shortcut="Shift+Alt+."
+					macShortcut="Shift+Alt+."/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets"
+					_label="Insert carets at all matching"
+					shortcut="Shift+Alt+;"
+					macShortcut="Shift+Alt+;"/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret"
+					_label="Remove last caret"
+					shortcut="Shift+Alt+,"
+					macShortcut="Shift+Alt+,"/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown"
+					_label="Move last caret down"
+					shortcut="Shift+Alt+/"
+					macShortcut="Shift+Alt+/"/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext"
+					_label="Rotate primary caret down"
+					shortcut=""
+					macShortcut=""/>
+			<Command id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
+					_label="Rotate primary caret up"
+					shortcut=""
+					macShortcut=""/>
+		</Category>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertAllMatchingCarets" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertAllMatchingCaretsCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNextMatchingCaret" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertNextMatchingCaretCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveLastSecondaryCaret" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RemoveLastSecondaryCaretCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveLastCaretDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveLastCaretDownCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretNext" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RotatePrimaryCaretNextCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RotatePrimaryCaretPreviousCommandArgs"/>
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Copy" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CopyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Cut" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CutCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Paste" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PasteCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Rename" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RenameCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Undo" argsType="@MonoDevelop.TextEditor.CommandArgsFactories.CreateUndoCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Redo" argsType="@MonoDevelop.TextEditor.CommandArgsFactories.CreateRedoCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.SelectAll" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SelectAllCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommentSelectionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UncommentSelectionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleLineCommentCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertTab" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.TabKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveTab" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackTabKeyCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LineEndCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LineStartCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LeftKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RightKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UpKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DownKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.PageUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PageUpKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PageDownKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentStartCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentEndCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesUpCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesDownCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Delete" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeSignatureHelpCommandArgs" />
+
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickFixCommandArgs" />
+
+		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
+		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
+		
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertSnippetCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SurroundWithCommandArgs" />
+
+	</Extension>
+
+	<!--
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
+		<Provider id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
+		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
+		         _label = "MarkerOperations"
+		         type = "array"/>
+		<Category _name = "Code Navigation" id = "CodeNavigation">
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue"
+						_label = "Next Issue in File"
+						shortcut = "Alt|Page_Down"
+						macShortcut = "Alt|Page_Down"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue"
+						_label = "Previous Issue in File"
+						shortcut = "Alt|Page_Up"
+						macShortcut = "Alt|Page_Up"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError"
+						_label = "Next Error"
+						shortcut = "Alt|Shift|Page_Down"
+						macShortcut = "Alt|Shift|Page_Down Shift|Meta|F12"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError"
+						_label = "Previous Error"
+						shortcut = "Alt|Shift|Page_Up"
+						macShortcut = "Alt|Shift|Page_Up"
+			/>
+		</Category>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top"
+				_label = "_Top"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom"
+				_label = "_Bottom"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgUp"
+				_label = "_Page Up"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown"
+				_label = "P_age Down"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap"
+				_label = "Show _Minimap"
+				type = "check"/>
+	</Extension>
+-->
+	<!-- this is the old menu -->
+	<!--
+	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+		<SeparatorItem id = "Separator4" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" _label = "Surround With..." />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" _label = "Insert Template..."  />
+		<SeparatorItem id = "Separator5" />
+	</Extension>
+-->
+
+	<!-- temporary, need to align with old menu -->
+	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<CommandItem id = "MonoDevelop.CSharp.Refactoring.Commands.SortAndRemoveImports" />
+		<SeparatorItem id = "Separator0" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation" />
+		<CommandItem id = "MonoDevelop.Refactoring.Navigate.GotoBaseMember" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" _label = "Surround With..." />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" _label = "Insert Template..."  />
+		<SeparatorItem id = "Separator4" />
+	</Extension>
+<!--
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgUp" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar">
+		<CommandItem id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpointProperties" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
+		<Section id="General" insertbefore="Formatting" _label="General" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" icon="md-prefs-text-editor-general" />
+		<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" icon="md-prefs-markers-rulers" />
+		<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" icon="md-prefs-text-editor-behavior" />
+		<Section id="CodeCompletion" _label="IntelliSense" icon="md-prefs-completion">
+			<Panel id="CompletionBehavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion" />
+			--><!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel" /> --><!--
+			<Panel id="CompletionAppearance" _label="Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion" />
+		</Section>
+		<Section id="SyntaxHighlighting" _label="Color Theme" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
+		<ItemSet id = "Inspect" _label = "Inspect" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" insertbefore="Separator3">
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" />
+			<SeparatorItem id = "InspectIssueSeparator" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" />
+		</ItemSet>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Editor/EditorFactory">
+		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
+		<Handler id = "Default" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		--><!-- 2.4 --><!--
+		<Migration sourceVersion="2.4" kind="UserData" path="syntaxmodes" targetPath="HighlightingSchemes" isDirectory="true" />
+		--><!-- 2.6+ --><!--
+		<Migration sourceVersion="2.6+" kind="UserData" path="HighlightingSchemes" isDirectory="true" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-prefs-markers-rulers" resource="prefs-markers-rulers-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-syntax-highlighting" resource="prefs-syntax-highlighting-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-text-editor-general" resource="prefs-text-editor-general-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-text-editor-behavior" resource="prefs-text-editor-behavior-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-completion" resource="prefs-completion-16.png" size="Menu" />
+	</Extension>
+
+-->
+</ExtensionModel>

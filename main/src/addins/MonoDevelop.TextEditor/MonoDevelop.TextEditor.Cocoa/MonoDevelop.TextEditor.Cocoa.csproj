@@ -1,0 +1,138 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(RootDirectory)\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
+  <PropertyGroup>
+    <AssemblyTitle>MonoDevelop Cocoa Text Editor</AssemblyTitle>
+    <AssemblyDescription>Integrates the Cocoa version of the Visual Studio Editor into MonoDevelop</AssemblyDescription>
+    <AddinBuildDir>DisplayBindings\TextEditor.Cocoa</AddinBuildDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <ExternalConsole>false</ExternalConsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="Xamarin.Mac" HintPath="$(RootDirectory)\external\Xamarin.Mac.dll" Private="False" />
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>$(RootDirectory)\build\bin\MonoDevelop.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>$(RootDirectory)\build\bin\MonoDevelop.Ide.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Addins.Setup">
+      <HintPath>$(RootDirectory)\build\bin\Mono.Addins.Setup.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Addins">
+      <HintPath>$(RootDirectory)\build\bin\Mono.Addins.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor">
+      <HintPath>$(RootDirectory)\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>$(RootDirectory)\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.TextEditor">
+      <HintPath>$(RootDirectory)\build\AddIns\DisplayBindings\TextEditor\MonoDevelop.TextEditor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <ProjectReference Include="$(MdAddinsDirectory)Xamarin.Designer\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Roslyn\EditorFeatures\Cocoa\Microsoft.CodeAnalysis.EditorFeatures.Cocoa.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\CocoaControls\CocoaControls.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\Find\Find.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Language\Impl\StandardClassification\StandardClassificationImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ClassificationFormat\ClassificationFormatMapImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\CurrentLineHighlighter\CurrentLineHighlighterImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\NavigationProviders\NavigationProvidersImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\RTF\RtfBuilderServiceImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\TextAndAdornmentSequencer\TextAndAdornmentSequencerImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\VisibleWhitespace\VisibleWhitespaceImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\GlyphMargin\GlyphMarginImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\Structure\StructureImpl.csproj" Private="true" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\UrlTagger\UrlTagger.csproj" Private="true" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DragDrop\DragDropImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ChangeTagger\ChangeTagger.csproj" Private="True" />
+    <Reference Include="MonoDevelop.DesignerSupport">
+      <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.UrlTagger.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="icons\vs-find-replace-close-16.png" />
+    <None Remove="icons\vs-find-replace-close-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
+    <None Remove="icons\vs-find-replace-search-16.png" />
+    <None Remove="icons\vs-find-replace-search-16%402x.png" />
+    <None Remove="icons\go-up-16.png" />
+    <None Remove="icons\go-up-16%402x.png" />
+    <None Remove="icons\go-down-16.png" />
+    <None Remove="icons\go-down-16%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-close-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-search-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-search-16%402x.png" />
+    <EmbeddedResource Include="icons\go-up-16.png" />
+    <EmbeddedResource Include="icons\go-up-16%402x.png" />
+    <EmbeddedResource Include="icons\go-down-16.png" />
+    <EmbeddedResource Include="icons\go-down-16%402x.png" />
+  </ItemGroup>
+</Project>

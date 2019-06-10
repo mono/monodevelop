@@ -35,20 +35,17 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using Microsoft.VisualStudio.Text;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class TestViewContent : ViewContent
+	public class TestViewContent : FileDocumentController
 	{
 		TextEditor data;
 		
-		public override Control Control {
-			get {
-				return null;
-			}
-		}
-		
-		public TextEditor Data {
+		public TextEditor Editor {
 			get {
 				return this.data;
 			}
@@ -56,23 +53,32 @@ namespace MonoDevelop.Ide.Gui
 		public TestViewContent ()
 		{
 			data = TextEditorFactory.CreateNewEditor ();
-			Contents.Add (data);;
+			AddContent (data);
 			Name = "";
 		}
 
 		public TestViewContent (IReadonlyTextDocument doc)
 		{
 			data = TextEditorFactory.CreateNewEditor (doc);
-			Contents.Add (data);
+			AddContent (data);
 			Name = "";
 		}
 
-		protected override void OnContentNameChanged ()
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
-			base.OnContentNameChanged ();
-			Name = ContentName;
+			if (modelDescriptor is FileDescriptor file && !file.FilePath.IsNullOrEmpty)
+				data.FileName = file.FilePath;
+			return base.OnInitialize (modelDescriptor, status);
 		}
-		
+
+		protected override void OnDispose ()
+		{
+			base.OnDispose ();
+			foreach (var c in contents.OfType<TextEditorExtension> ())
+				c.Dispose ();
+			data.Dispose ();
+		}
+
 		FilePath name;
 		public FilePath Name { 
 			get { return name; }
@@ -203,11 +209,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public List<object> Contents = new List<object> ();
+		List<object> contents = new List<object> ();
+
+		public void AddContent (object content)
+		{
+			contents.Add (content);
+			NotifyContentChanged ();
+		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.OnGetContents (type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
+			if (type == typeof (ITextBuffer)) {
+				yield return data.TextView.TextBuffer;
+				yield break;
+			}
+
+			foreach (var c in data.GetContents (type))
+				yield return c;
+
+			foreach (var content in base.OnGetContents (type))
+				yield return content;
+
+			foreach (var content in contents)
+				if (type.IsInstanceOfType (content))
+					yield return content;
 		}
 
 		public IDisposable OpenUndoGroup ()

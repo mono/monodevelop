@@ -32,7 +32,7 @@
 	url = git://github.com/mono/mono-tools.git
 [submodule "main/external/nrefactory"]
 	path = main/external/nrefactory
-	url = git://github.com/icsharpcode/NRefactory.git
+	url = git://github.com/xamarin/NRefactory.git
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
 	url = git://github.com/mono/nuget-binary.git
@@ -40,7 +40,7 @@
 [submodule "main/external/RefactoringEssentials"]
 	path = main/external/RefactoringEssentials
 	url = git://github.com/mono/RefactoringEssentials.git
-	branch = monodevelop2
+	branch = roslyn-3
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
 	url = git://github.com/mono/sharpsvn-binary.git
@@ -51,5 +51,8 @@
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
 	url = https://github.com/xamarin/Xamarin.PropertyEditing
-	branch = monodevelop
-	
+	branch = master
+[submodule "main/external/vs-editor-api"]
+	path = main/external/vs-editor-api
+	url = https://github.com/KirillOsenkov/vs-editor-api.git
+	branch = monodevelop/master

@@ -1,7 +1,6 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
-  <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,6 +10,10 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--
+    This contains the C# language service for the old editor, which makes use of many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -65,6 +68,11 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
+      <Project>{3F5B5BDA-69D5-441A-8142-AA25C998A997}</Project>
+      <Name>MonoDevelop.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
@@ -82,39 +90,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
-    <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.1.0.3652\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Composition">
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml" />
@@ -152,6 +136,8 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtension.DataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtensionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
@@ -252,7 +238,6 @@
     <Compile Include="Util\PortingExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\FormatItemCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpSnippetInfoService.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\DelegateCompletionProvider.cs" />
@@ -300,10 +285,16 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.TextPasteUtils.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormattingPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.OptionProvider\StyleViewModel.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynExperimentationService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Debugger\RoslynDebugInfoProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CommandArgsFactories.cs" />
+    <Compile Include="MonoDevelop.CSharp.Debugger\DebuggerCompletionController.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtensionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Debugger\CSharpBreakpointSpanResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
@@ -320,6 +311,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\" />
+    <Folder Include="MonoDevelop.CSharp.Debugger\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
- </Project>
+</Project>

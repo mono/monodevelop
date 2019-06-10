@@ -33,34 +33,11 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
-		static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore{0}";
-
-		//FIXME: aka.ms is not available yet for netcore30 (https://dotnet.microsoft.com/download/dotnet-core/3.0)
-		public static string GetDotNetCoreDownloadUrl (string version = "")
-		{
-			if (string.IsNullOrEmpty (version))
-				return string.Format (DotNetCoreDownloadUrl, string.Empty);
-
-			//special case for 2.0, 3.0, ..
-			if (version.EndsWith (".0", StringComparison.InvariantCulture))
-				version = version.Replace (".0", string.Empty);
-
-			return string.Format (DotNetCoreDownloadUrl, version.Replace (".", string.Empty));
-		}
-
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
-		static readonly string unsupportedMessage = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
-		public static string GetDotNetCoreMessage (string version = "")
-		{
-			if (string.IsNullOrEmpty (version))
-				return unsupportedMessage;
-
-			return GettextCatalog.GetString (".NET Core {0} SDK is not installed. This is required to build and run .NET Core {0} projects.", version);
-		}
 
 		GenericMessage message;
 		AlertButton downloadButton;
-		string downloadUrl = DotNetCoreDownloadUrl;
+		string downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl ();
 
 		public DotNetCoreNotInstalledDialog ()
 		{
@@ -85,7 +62,7 @@ namespace MonoDevelop.DotNetCore
 		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
 		{
 			if (e.Button == downloadButton)
-				DesktopService.ShowUrl (downloadUrl);
+				IdeServices.DesktopService.ShowUrl (downloadUrl);
 		}
 
 		public void Dispose ()
@@ -96,10 +73,10 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
-				Message = GetDotNetCoreMessage ();
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage ();
 			else {
-				Message = GetDotNetCoreMessage (RequiredDotNetCoreVersion.OriginalString);
-				downloadUrl = GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion.OriginalString);
+				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (RequiredDotNetCoreVersion.OriginalString);
+				downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
 			}
 
 			MessageService.GenericAlert (message);
@@ -113,5 +90,6 @@ namespace MonoDevelop.DotNetCore
 		public bool IsUnsupportedVersion { get; set; }
 		public bool IsNetStandard { get; set; }
 		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
+		public string CurrentDotNetCorePath { get; set; }
 	}
 }

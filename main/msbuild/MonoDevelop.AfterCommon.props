@@ -5,8 +5,22 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<_IsSdkStyleProject>false</_IsSdkStyleProject>
+		<_IsSdkStyleProject Condition="'$(Configurations)' != '' and '$(Platforms)' != ''">true</_IsSdkStyleProject>
 		<!-- target framework for the core and addins -->
-		<MDFrameworkVersion>v4.7.1</MDFrameworkVersion>
+		<MDFrameworkVersion>v4.7.2</MDFrameworkVersion>
+		<MDTargetFramework>net472</MDTargetFramework>
+		<!--
+		for sdk-style projects we can set the value directly.
+		old-style projects need to set it themselves or some IDE stuff breaks.
+		-->
+		<TargetFramework Condition="'$(_IsSdkStyleProject)'=='true'">$(MDTargetFramework)</TargetFramework>
+	</PropertyGroup>
+
+	<!-- set some common AssemblyInfo values so SDK-style projects don't have to set them -->
+	<PropertyGroup>
+		<AssemblyVersion>2.6.0</AssemblyVersion>
+		<AssemblyProduct>MonoDevelop</AssemblyProduct>
 	</PropertyGroup>
 
 	<!--
@@ -19,7 +33,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<MDBuildTasks>$(MSBuildThisFileDirectory)</MDBuildTasks>
+		<DownloadNupkgDirectory>$(MSBuildThisFileDirectory)..\packages\</DownloadNupkgDirectory>
 	</PropertyGroup>
 
 	<!-- set a bunch of default value the project can override -->
@@ -44,10 +58,30 @@
 	</ItemGroup>
 
 	<PropertyGroup>
+		<XamarinMacAnalyzerMinimumOSVersion>10.11</XamarinMacAnalyzerMinimumOSVersion>
 		<MonoDevelopDevAnalyzer>$(PackagesDirectory)\MonoDevelopDev.Analyzers.$(NugetVersionMonoDevelopAnalyzers)\analyzers\dotnet\cs\MonoDevelop.Analyzers.dll</MonoDevelopDevAnalyzer>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Analyzer Include="$(MonoDevelopDevAnalyzer)" Condition="Exists('$(MonoDevelopDevAnalyzer)')" />
 	</ItemGroup>
+
+	<!-- hide these items from VS -->
+	<ItemDefinitionGroup>
+		<IncludeCopyLocal>
+			<Visible>False</Visible>
+		</IncludeCopyLocal>
+		<SuppressCopyLocal>
+			<Visible>False</Visible>
+		</SuppressCopyLocal>
+		<DownloadNupkg>
+			<Visible>False</Visible>
+		</DownloadNupkg>
+	</ItemDefinitionGroup>
+
+	<!-- default items -->
+	<ItemGroup Condition="'$(EnableDefaultItems)' == 'true'">
+		<EmbeddedResource Include="**\*.addin.xml" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+	</ItemGroup>
+
 </Project>

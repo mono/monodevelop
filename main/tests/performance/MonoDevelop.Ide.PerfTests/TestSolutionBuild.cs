@@ -35,7 +35,6 @@ using MonoDevelop.Core.Instrumentation;
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture ()]
-	[Benchmark (Tolerance = 0.1)]
 	public class TestSolutionBuild : UITestBase
 	{
 		public override void SetUp ()
@@ -45,22 +44,23 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test ()]
+		[Benchmark (Tolerance = 0.3)]
 		public void TestBuild ()
 		{
 			OpenApplicationAndWait ();
 
 			OpenExampleSolutionAndWait (out var waitForPackages);
 
-			if (waitForPackages) {
-				// The package system emits signals on the Solution object, but we don't have access to that,
-				// so we watch the statusbar for notification that packages are updated.
-				UserInterfaceTesting.Ide.WaitForStatusMessage (new [] {"Packages successfully restored."});
-			}
+			//if (waitForPackages) {
+			//	// The package system emits signals on the Solution object, but we don't have access to that,
+			//	// so we watch the statusbar for notification that packages are updated.
+			//	UserInterfaceTesting.Ide.WaitForStatusMessage (new [] {"Packages successfully restored."});
+			//}
 			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (Commands.ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt", 60000);
 
 			var t = Session.GetTimerDuration ("Ide.Shell.ProjectBuilt");
 
-			Benchmark.SetTime ((double)t.TotalMilliseconds / 1000d);
+			Benchmark.SetTime (t.TotalSeconds);
 		}
 	}
 }

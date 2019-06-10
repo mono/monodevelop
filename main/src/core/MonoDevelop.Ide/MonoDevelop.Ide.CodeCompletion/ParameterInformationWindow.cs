@@ -1,4 +1,4 @@
-// ParameterInformationWindow.cs
+﻿// ParameterInformationWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete]
 	class ParameterInformationWindow : XwtThemedPopup
 	{
 		CompletionTextEditorExtension ext;
@@ -94,7 +95,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 
 			vb2.ShowAll ();
-			//DesktopService.RemoveWindowShadow (this);
+			//IdeServices.DesktopService.RemoveWindowShadow (this);
 			Content.BoundsChanged += Content_BoundsChanged;
 		}
 
@@ -160,12 +161,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				scheme = SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			
 			Theme.SetSchemeColors (scheme);
-			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
+			Theme.Font = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
 			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 
 			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
+			headlabel.FontDescription = IdeServices.FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
 
 			//if (this.Visible)
 			//	QueueDraw ();

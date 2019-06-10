@@ -90,10 +90,6 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/Razor/CompletionBuilders">
-		<ExtensionNode name="Class" />
-	</ExtensionPoint>
-
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id   = "MonoDevelop.AspNet.EmptyProject"
 		                 file = "Templates/Projects/EmptyProject.xpt.xml" />

@@ -72,12 +72,12 @@ namespace MonoDevelop.Ide.Projects
 
 		public string GetValidProjectName ()
 		{
-			return GetValidDir (ProjectName);
+			return GenerateValidProjectName (ProjectName);
 		}
 
 		public string GetValidSolutionName ()
 		{
-			return GetValidDir (SolutionName);
+			return GenerateValidProjectName (SolutionName);
 		}
 
 		public bool CreateProjectDirectoryInsideSolutionDirectory { get; set; }
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		static string GetValidDir (string name)
+		static string GetValidDir (string name, Func<char, bool> include = null)
 		{
 			name = name.Trim ();
 			var sb = new StringBuilder ();
@@ -124,6 +124,8 @@ namespace MonoDevelop.Ide.Projects
 				if (Array.IndexOf (FilePath.GetInvalidPathChars (), c) != -1)
 					continue;
 				if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar || c == Path.VolumeSeparatorChar)
+					continue;
+				if (include != null && !include (c))
 					continue;
 				sb.Append (c);
 			}
@@ -178,8 +180,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public static bool IsValidProjectName (string name)
 		{
-			return IsValidSolutionName (name) &&
-				name.IndexOf (' ') < 0;
+			return IsValidSolutionName (name);
 		}
 
 		public static bool IsValidSolutionName (string name)
@@ -218,8 +219,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public static string GenerateValidProjectName (string name)
 		{
-			string validName = GetValidDir (name);
-			return validName.Replace (" ", String.Empty);
+			return GetValidDir (name, IsValidProjectNameCharacter);
 		}
 	}
 }

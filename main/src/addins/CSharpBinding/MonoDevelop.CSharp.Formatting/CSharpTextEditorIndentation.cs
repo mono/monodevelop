@@ -1,4 +1,4 @@
-//
+﻿//
 // CSharpTextEditorIndentation.cs
 //
 // Author:
@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal ICSharpCode.NRefactory6.CSharp.CacheIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;
 
-		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+		readonly static IEnumerable<string> types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
 		char lastCharInserted;
 
@@ -745,7 +745,7 @@ namespace MonoDevelop.CSharp.Formatting
 		OptionSet optionSet;
 		bool completionWindowWasVisible;
 
-		public bool FixLineStart (TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
+		public bool FixLineStart (Ide.Editor.TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
 		{
 			if (lineNumber > 1) {
 				var line = textEditorData.GetLine (lineNumber);
@@ -842,7 +842,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public void FormatBuffer ()
 		{
 			Console.WriteLine ("format buffer!");
-			ITypeResolveContext dom = TypeSystemService.GetProjectDom (Document.Project);
+			ITypeResolveContext dom = IdeApp.TypeSystemService.GetProjectDom (Document.Project);
 			OnTheFlyFormatter.Format (this.textEditorData, dom);
 		}*/
 	}

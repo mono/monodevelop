@@ -11,7 +11,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Gui.Content
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
 /// Resolves locations to NRefactory symbols and ResolveResult objects.
@@ -31,7 +31,7 @@ type FSharpResolverProvider() =
                 let curVersion = doc.Editor.Version
                 let isObsolete =
                     (fun () ->
-                    let doc = IdeApp.Workbench.GetDocument(filename)
+                    let doc = IdeApp.Workbench.GetDocument(FilePath filename)
                     let newVersion = doc.Editor.Version
 
                     if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
@@ -43,7 +43,7 @@ type FSharpResolverProvider() =
 
                 let results =
                     asyncMaybe {
-                        let projectFile = doc.Project |> function null -> filename | project -> project.FileName.ToString()
+                        let projectFile = doc.Owner :?> MonoDevelop.Projects.Project |> function null -> filename | project -> project.FileName.ToString()
                         let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, obsoleteCheck=isObsolete)
                         LoggingService.LogDebug "ResolverProvider: Getting declaration location"
                         // Get the declaration location from the language service

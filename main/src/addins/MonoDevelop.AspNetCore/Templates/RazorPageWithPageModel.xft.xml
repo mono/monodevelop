@@ -14,7 +14,10 @@
 	</TemplateConfiguration>
 
 	<Conditions>
-		<AspNetCore minVersion="2.0" />
+		<Or>
+			<AspNetCore minVersion="2.0"/>
+			<ProjectCapability Name="DotNetCoreRazor"/>
+		</Or>
 	</Conditions>
 	
 	<!-- Template Content -->

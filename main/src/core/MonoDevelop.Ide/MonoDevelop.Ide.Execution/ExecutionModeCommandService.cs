@@ -519,7 +519,7 @@ namespace MonoDevelop.Ide.Execution
 				}
 				else if ((string)data == "custom") {
 					using (var dlg = new RunWithCustomParametersDialog ((Project)item)) {
-						var cmd = dlg.Run ();
+						var cmd = dlg.Run (IdeServices.DesktopService.GetFocusedTopLevelWindow ());
 						if (cmd?.Id == "run") {
 							// Run the configuration
 							IdeApp.ProjectOperations.Execute (item, dlg.SelectedExecutionMode.ExecutionHandler, IdeApp.Workspace.ActiveConfiguration, dlg.SelectedConfiguration);
@@ -602,12 +602,12 @@ namespace MonoDevelop.Ide.Execution
 	
 	class ExecutionCommandCustomizer: TypeExtensionNode, IExecutionCommandCustomizer
 	{
+		[NodeAttribute ("_name", Localizable = true)]
+		public string Name { get; private set; }
+
 		IExecutionCommandCustomizer customizer;
 		
-		[NodeAttribute ("_name", Localizable=true)]
-		string name;
-		
-		protected override void Read (Mono.Addins.NodeElement elem)
+		protected override void Read (NodeElement elem)
 		{
 			base.Read (elem);
 			customizer = (IExecutionCommandCustomizer) GetInstance (typeof(IExecutionCommandCustomizer));
@@ -626,12 +626,6 @@ namespace MonoDevelop.Ide.Execution
 		public IExecutionConfigurationEditor CreateEditor ()
 		{
 			return customizer.CreateEditor ();
-		}
-		
-		public string Name {
-			get {
-				return name;
-			}
 		}
 	}
 	

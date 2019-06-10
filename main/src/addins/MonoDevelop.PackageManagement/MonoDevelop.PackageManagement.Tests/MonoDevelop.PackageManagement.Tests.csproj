@@ -18,67 +18,18 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Web.XmlTransform">
-      <HintPath>..\..\..\..\packages\Microsoft.Web.Xdt.2.1.2\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Frameworks">
-      <HintPath>..\..\..\..\packages\NuGet.Frameworks.4.8.0\lib\net46\NuGet.Frameworks.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Packaging.Core">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.4.8.0\lib\net46\NuGet.Packaging.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.IO.Compression">
-      <HintPath>..\..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Packaging">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.4.8.0\lib\net46\NuGet.Packaging.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Configuration">
-      <HintPath>..\..\..\..\packages\NuGet.Configuration.4.8.0\lib\net46\NuGet.Configuration.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Security" />
-    <Reference Include="NuGet.PackageManagement">
-      <HintPath>..\..\..\..\packages\NuGet.PackageManagement.4.8.0\lib\net46\NuGet.PackageManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Protocol">
-      <HintPath>..\..\..\..\packages\NuGet.Protocol.4.8.0\lib\net46\NuGet.Protocol.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Common">
-      <HintPath>..\..\..\..\packages\NuGet.Common.4.8.0\lib\net46\NuGet.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Resolver">
-      <HintPath>..\..\..\..\packages\NuGet.Resolver.4.8.0\lib\net46\NuGet.Resolver.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.ProjectModel">
-      <HintPath>..\..\..\..\packages\NuGet.ProjectModel.4.8.0\lib\net46\NuGet.ProjectModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.LibraryModel">
-      <HintPath>..\..\..\..\packages\NuGet.LibraryModel.4.8.0\lib\net46\NuGet.LibraryModel.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Commands">
-      <HintPath>..\..\..\..\packages\NuGet.Commands.4.8.0\lib\net46\NuGet.Commands.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Core">
-      <HintPath>..\..\..\..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="Moq">
-      <HintPath>..\..\..\..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NuGet.PackageManagement" Version="5.1.0" PrivateAssets="runtime" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" PrivateAssets="runtime" />
+    <PackageReference Include="Moq" Version="4.7.145" PrivateAssets="runtime" />
+    <!-- Ensure .NET 4.7.2's System.Net.Http is used not the one from this NuGet package -->
+    <PackageReference Include="System.Net.Http" Version="4.3.3" ExcludeAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -200,6 +151,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\FullyQualifiedReferencePathTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildPackageSpecCreatorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\InstallPackageWithAvailableItemNameTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesCommandHandlerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesInProjectHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -215,6 +169,7 @@
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
@@ -231,9 +186,10 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,6 +5,8 @@ open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
 open FsUnit
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 type SemanticHighlighting() =
@@ -34,6 +36,10 @@ type SemanticHighlighting() =
         match segment with
         | Some(s) -> s.ColorStyleKey
         | _ -> "segment not found"
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     [<Test>]
     member x.Undefined_IfDef() =

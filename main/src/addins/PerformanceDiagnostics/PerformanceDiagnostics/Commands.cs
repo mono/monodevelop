@@ -25,6 +25,12 @@ namespace PerformanceDiagnosticsAddIn
 
 	public class ProfileFor5SecondsHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.DisableOnShellLock = false;
+			base.Update (info);
+		}
+
 		protected override void Run ()
 		{
 			UIThreadMonitor.Instance.Profile (5);
@@ -37,7 +43,7 @@ namespace PerformanceDiagnosticsAddIn
 		{
 			var dialog = new OpenFileDialog (GettextCatalog.GetString ("Sample file output"), MonoDevelop.Components.FileChooserAction.Open);
 			if (dialog.Run ())
-				UIThreadMonitor.ConvertJITAddressesToMethodNames (dialog.SelectedFile, "External");
+				MonoDevelop.Utilities.SampleProfiler.ConvertJITAddressesToMethodNames (Options.OutputPath, dialog.SelectedFile, "External");
 		}
 	}
 
@@ -46,6 +52,7 @@ namespace PerformanceDiagnosticsAddIn
 		protected override void Update(CommandInfo info)
 		{
 			info.Checked = UIThreadMonitor.Instance.ToggleProfilingChecked;
+			info.DisableOnShellLock = false;
 			base.Update(info);
 		}
 

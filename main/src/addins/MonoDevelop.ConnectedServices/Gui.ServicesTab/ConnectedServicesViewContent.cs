@@ -6,20 +6,21 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using Xwt;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
 	/// <summary>
 	/// ViewContent host for the services gallery and service details widgets
 	/// </summary>
-	class ConnectedServicesViewContent : AbstractXwtViewContent
+	class ConnectedServicesViewContent : DocumentController, IProjectPadNodeSelector
 	{
 		ConnectedServicesWidget widget;
 
 		public ConnectedServicesViewContent (DotNetProject project)
 		{
-			this.Project = project;
-			this.ContentName = string.Format ("{0} \u2013 {1}", ConnectedServices.SolutionTreeNodeName, project.Name);
+			DocumentTitle = string.Format ("{0} \u2013 {1}", ConnectedServices.SolutionTreeNodeName, project.Name);
 
 			widget = new ConnectedServicesWidget ();
 			widget.GalleryShown += (sender, e) => {
@@ -30,19 +31,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			};
 		}
 
-		public override Widget Widget {
-			get {
-				return widget;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this ViewContent represents a file or not.
-		/// </summary>
-		public override bool IsFile {
-			get {
-				return false;
-			}
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			return new XwtControl (widget);
 		}
 
 		/// <summary>
@@ -50,7 +41,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void UpdateContent(string serviceId)
 		{
-			var binding = ((DotNetProject)this.Project).GetConnectedServicesBinding ();
+			var binding = ((DotNetProject)this.Owner).GetConnectedServicesBinding ();
 			if (!string.IsNullOrEmpty (serviceId)) {
 				var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
 				if (service != null) {
@@ -61,7 +52,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 
 			var services = binding.SupportedServices;
-			this.widget.ShowGallery (services, Project);
+			this.widget.ShowGallery (services, (Project)Owner);
 		}
 
 		object currentNodeObject;
@@ -72,7 +63,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		internal Task UpdateCurrentNode ()
 		{
 			return Runtime.RunInMainThread (() => {
-				var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
+				var node = ((DotNetProject)this.Owner).GetConnectedServicesBinding ()?.ServicesNode;
 				if (node != null && widget.ShowingService != null) {
 					var serviceNode = node.GetServiceNode (widget.ShowingService);
 					if (serviceNode != null) {
@@ -87,20 +78,20 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 		}
 
-		public override object GetDocumentObject ()
-		{
-			if (currentNodeObject == null)
-				UpdateCurrentNode ().Wait ();
-			return currentNodeObject;
-		}
-
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (widget != null) {
 				widget.Dispose ();
 				widget = null;
 			}
-			base.Dispose ();
+			base.OnDispose ();
+		}
+
+		public object GetNodeObjext ()
+		{
+			if (currentNodeObject == null)
+				UpdateCurrentNode ().Wait ();
+			return currentNodeObject;
 		}
 	}
 }

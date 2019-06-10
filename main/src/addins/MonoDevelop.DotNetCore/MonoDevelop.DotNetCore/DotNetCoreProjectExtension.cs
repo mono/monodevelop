@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,63 +36,69 @@ using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide;
-using System.Collections.Immutable;
 
 namespace MonoDevelop.DotNetCore
 {
 	[ExportProjectModelExtension]
-	public class DotNetCoreProjectExtension: DotNetProjectExtension
+	public class DotNetCoreProjectExtension: SdkProjectExtension
 	{
 		const string ShownDotNetCoreSdkInstalledExtendedPropertyName = "DotNetCore.ShownDotNetCoreSdkNotInstalledDialog";
 		const string GlobalJsonPathExtendedPropertyName = "DotNetCore.GlobalJsonPath";
 
-		DotNetCoreMSBuildProject dotNetCoreMSBuildProject = new DotNetCoreMSBuildProject ();
 		DotNetCoreSdkPaths sdkPaths;
 
 		public DotNetCoreProjectExtension ()
 		{
-			DotNetCoreProjectReloadMonitor.Initialize ();
+			try {
+				DotNetCoreSdk.EnsureInitialized ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("DotNetCoreProjectExtension sdk initialization failed", ex);
+			}
 		}
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
 		{
-			var globalJson = e.FirstOrDefault (x => x.FileName.FileName.IndexOf ("global.json", StringComparison.OrdinalIgnoreCase) == 0 && !x.FileName.IsDirectory);
-			if (globalJson == null)
-				return;
+			foreach (var arg in e) {
+				if (arg.IsDirectory || !arg.FileName.HasExtension (".json"))
+					continue;
 
-			// make sure the global.json file that has been changed is the one we got when loading the project
-			if (Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPath 
-				&& globalJsonPath.IndexOf (globalJson.FileName, StringComparison.OrdinalIgnoreCase) == 0) {
-				DetectSDK (restore: true);
+				// avoid allocation caused by not querying .FileName
+				string fileName = arg.FileName;
+				// make sure the global.json file that has been changed is the one we got when loading the project
+				if (Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPath
+					&& globalJsonPath.Equals (fileName, StringComparison.OrdinalIgnoreCase)) {
+					DetectSDK (restore: true);
+				}
 			}
+
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return DotNetCoreSupportsObject(item) && !IsWebProject ((DotNetProject)item);
+			return DotNetCoreSupportsObject (item) && !IsWebProject ((DotNetProject)item);
 		}
 
 		protected bool DotNetCoreSupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
+			return base.SupportsObject (item) && HasSupportedFramework ((DotNetProject)item);
+		}
+
+		/// <summary>
+		/// Cannot check TargetFramework property since it may not be set.
+		/// Currently support .NET Core and .NET Standard.
+		/// </summary>
+		bool HasSupportedFramework (DotNetProject project)
+		{
+			string framework = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetFrameworkIdentifier");
+			if (framework != null)
+				return framework == ".NETCoreApp" || framework == ".NETStandard";
+
+			return false;
 		}
 
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
-			// Allow all SDK style projects to be loaded even if the framework is unknown.
-			// A PackageReference may define the target framework with an imported MSBuild file.
-			return true;
-		}
-
-		/// <summary>
-		/// Currently this project extension is enabled for all SDK style projects and
-		/// not just for .NET Core and .NET Standard projects. SDK project support
-		/// should be separated out from this extension so it can be enabled only for
-		/// .NET Core and .NET Standard projects.
-		/// </summary>
-		bool IsSdkProject (DotNetProject project)
-		{
-			return project.MSBuildProject.GetReferencedSDKs ().Length > 0;
+			return framework.IsNetCoreApp () || framework.IsNetStandard ();
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
@@ -116,38 +121,6 @@ namespace MonoDevelop.DotNetCore
 				return false;
 
 			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
-		}
-
-		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			// Do not read the project header when re-evaluating to prevent the
-			// ToolsVersion that was initially read from the project being changed.
-			if (!Project.IsReevaluating)
-				dotNetCoreMSBuildProject.ReadProjectHeader (msproject);
-			base.OnReadProjectHeader (monitor, msproject);
-		}
-
-		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			dotNetCoreMSBuildProject.AddKnownItemAttributes (Project.MSBuildProject);
-
-			base.OnReadProject (monitor, msproject);
-
-			dotNetCoreMSBuildProject.ReadProject (msproject, Project.TargetFramework.Id);
-
-			if (!dotNetCoreMSBuildProject.IsOutputTypeDefined)
-				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
-
-			Project.UseAdvancedGlobSupport = true;
-			Project.UseDefaultMetadataForExcludedExpandedItems = true;
-			Project.UseFileWatcher = true;
-		}
-
-		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnWriteProject (monitor, msproject);
-
-			dotNetCoreMSBuildProject.WriteProject (msproject, Project.TargetFramework.Id);
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -177,18 +150,13 @@ namespace MonoDevelop.DotNetCore
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
-#pragma warning disable CS0618 // Type or member is obsolete
-				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
-				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
-				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
-#pragma warning restore CS0618 // Type or member is obsolete
 				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
 
 		FilePath GetOutputDirectory (DotNetProjectConfiguration configuration)
 		{
-			string targetFramework = dotNetCoreMSBuildProject.TargetFrameworks.FirstOrDefault ();
+			string targetFramework = TargetFrameworks.FirstOrDefault ();
 			FilePath outputDirectory = configuration.OutputDirectory;
 
 			if (outputDirectory.IsAbsolute)
@@ -211,7 +179,6 @@ namespace MonoDevelop.DotNetCore
 		protected FilePath GetOutputFileName (DotNetProjectConfiguration configuration)
 		{
 			FilePath outputDirectory = GetOutputDirectory (configuration);
-			string assemblyName = Project.Name;
 			return outputDirectory.Combine (configuration.OutputAssembly + ".dll");
 		}
 
@@ -245,6 +212,7 @@ namespace MonoDevelop.DotNetCore
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.IsUnsupportedVersion = unsupportedSdkVersion;
 					dialog.RequiredDotNetCoreVersion = DotNetCoreVersion.Parse (Project.TargetFramework.Id.Version);
+					dialog.CurrentDotNetCorePath = sdkPaths.MSBuildSDKsPath;
 					dialog.IsNetStandard = Project.TargetFramework.Id.IsNetStandard ();
 					dialog.Show ();
 				}
@@ -291,30 +259,13 @@ namespace MonoDevelop.DotNetCore
 			}
 		}
 
-		/// <summary>
-		/// Cannot use SolutionItemExtension.OnModified. It does not seem to be called.
-		/// </summary>
-		protected void OnProjectModified (object sender, SolutionItemModifiedEventArgs args)
-		{
-			if (Project.Loading)
-				return;
-
-			var fileNameChange = args.LastOrDefault (arg => arg.Hint == "FileName");
-			if (fileNameChange != null) {
-				DotNetCoreProjectFileRenamedHandler.OnProjectFileRenamed (Project);
-			}
-		}
-
 		protected override void OnItemReady ()
 		{
 			base.OnItemReady ();
-			Project.Modified += OnProjectModified;
 			FileService.FileChanged += FileService_FileChanged;
-			 
+
 			if (!IdeApp.IsInitialized)
 				return;
-
-			PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 
 			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
@@ -363,29 +314,9 @@ namespace MonoDevelop.DotNetCore
 
 		public override void Dispose ()
 		{
-			Project.Modified -= OnProjectModified;
 			FileService.FileChanged -= FileService_FileChanged;
 
-			if (IdeApp.IsInitialized)
-				PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged -= ProjectTargetFrameworkChanged;
-
 			base.Dispose ();
-		}
-
-		/// <summary>
-		/// This event is fired after the project is saved. Runs a restore if the project was
-		/// not reloaded.
-		/// </summary>
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
-		{
-			if (e.IsReload) {
-				// Ignore. A restore will occur on reload elsewhere.
-				return;
-			}
-
-			// Need to re-evaluate before restoring to ensure the implicit package references are correct after
-			// the target framework has changed.
-			DetectSDK (true);
 		}
 
 		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
@@ -408,10 +339,6 @@ namespace MonoDevelop.DotNetCore
 
 		BuildResult CheckCanRunCleanOrBuild ()
 		{
-			if (ProjectNeedsRestore ()) {
-				return CreateNuGetRestoreRequiredBuildResult ();
-			}
-
 			if (!Project.TargetFramework.Id.IsNetStandardOrNetCoreApp ()) {
 				return null;
 			}
@@ -420,21 +347,6 @@ namespace MonoDevelop.DotNetCore
 				return CreateDotNetCoreSdkRequiredBuildResult ();
 			}
 			return null;
-		}
-
-		bool ProjectNeedsRestore ()
-		{
-			if (Project.NuGetAssetsFileExists () &&
-				(HasSdk || Project.DotNetCoreNuGetMSBuildFilesExist ())) {
-				return false;
-			}
-
-			return true;
-		}
-
-		BuildResult CreateNuGetRestoreRequiredBuildResult ()
-		{
-			return CreateBuildError (GettextCatalog.GetString ("NuGet packages need to be restored before building. NuGet MSBuild targets are missing and are needed for building. The NuGet MSBuild targets are generated when the NuGet packages are restored."));
 		}
 
 		BuildResult CreateBuildError (string message)
@@ -460,22 +372,14 @@ namespace MonoDevelop.DotNetCore
 		string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion, TargetFramework targetFramework)
 		{
 			string message;
-			string downloadUrl;
 
 			if (isUnsupportedVersion) {
-				message = DotNetCoreNotInstalledDialog.GetDotNetCoreMessage ();
-				downloadUrl = DotNetCoreNotInstalledDialog.GetDotNetCoreDownloadUrl ();
+				message = DotNetCoreSdk.GetNotSupportedVersionMessage ();
 			} else {
-				message = DotNetCoreNotInstalledDialog.GetDotNetCoreMessage (targetFramework.Id.Version);
-				downloadUrl = DotNetCoreNotInstalledDialog.GetDotNetCoreDownloadUrl (targetFramework.Id.Version);
+				message = DotNetCoreSdk.GetNotSupportedVersionMessage (targetFramework.Id.Version);
 			}
 
-			return $"{message} {downloadUrl}";
-		}
-
-		protected override void OnBeginLoad ()
-		{
-			base.OnBeginLoad ();
+			return message;
 		}
 
 		public bool HasSdk => Project.MSBuildProject.GetReferencedSDKs ().Length > 0;
@@ -498,103 +402,6 @@ namespace MonoDevelop.DotNetCore
 
 			var referencedSdks = project.GetReferencedSDKs ();
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (referencedSdks);
-			dotNetCoreMSBuildProject.HasSdk = referencedSdks.Length > 0;
-		}
-		protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
-
-			return AddMissingProjectFiles (sourceFiles, configuration);
-		}
-
-		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files, ConfigurationSelector configuration)
-		{
-			ImmutableArray<ProjectFile>.Builder missingFiles = null;
-			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
-				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
-					if (missingFiles == null)
-						missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
-					missingFiles.Add (existingFile);
-				}
-			}
-
-			// Ensure generated assembly info file is available to type system. It is created in the obj
-			// directory and is excluded from the project with a wildcard exclude but the type system needs it to
-			// ensure the project's assembly information is correct to prevent diagnostic errors.
-			var generatedAssemblyInfoFile = GetGeneratedAssemblyInfoFile (configuration);
-			if (generatedAssemblyInfoFile != null) {
-				if (missingFiles == null)
-					missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
-				missingFiles.Add (generatedAssemblyInfoFile);
-			}
-
-			if (missingFiles == null)
-				return files;
-
-			missingFiles.Capacity = missingFiles.Count + files.Length;
-			missingFiles.AddRange (files);
-			return missingFiles.MoveToImmutable ();
-		}
-
-		ProjectFile GetGeneratedAssemblyInfoFile (ConfigurationSelector configuration)
-		{
-			var projectConfig = configuration.GetConfiguration (Project) as ProjectConfiguration;
-			if (projectConfig == null)
-				return null;
-
-			bool generateAssemblyInfo = projectConfig.Properties.GetValue ("GenerateAssemblyInfo", true);
-			FilePath assemblyInfoFile = projectConfig.Properties.GetPathValue ("GeneratedAssemblyInfoFile");
-
-			if (generateAssemblyInfo && assemblyInfoFile.IsNotNull)
-				return new ProjectFile (assemblyInfoFile, BuildAction.Compile);
-			return null;
-		}
-
-		protected override void OnSetFormat (MSBuildFileFormat format)
-		{
-			// Do not call base class since the solution's FileFormat will be used which is
-			// VS 2012 and this will set the ToolsVersion to "4.0" which we are preventing.
-			// Setting the ToolsVersion to "4.0" can cause the MSBuild tasks such as
-			// ResolveAssemblyReferences to fail for .NET Core projects when the project
-			// xml is generated in memory for the project builder at the same time as the
-			// project file is being saved.
-		}
-
-		/// <summary>
-		/// Shared projects can trigger a reference change during re-evaluation so do not
-		/// restore if the project is being re-evaluated. Otherwise this could cause the
-		/// restore to be run repeatedly.
-		/// </summary>
-		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
-		{
-			base.OnReferenceAddedToProject (e);
-
-			if (!IsLoadingOrReevaluating ())
-				RestoreNuGetPackages ();
-		}
-
-		/// <summary>
-		/// Shared projects can trigger a reference change during re-evaluation so do not
-		/// restore if the project is being re-evaluated. Otherwise this could cause the
-		/// restore to be run repeatedly.
-		/// </summary>
-		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
-		{
-			base.OnReferenceRemovedFromProject (e);
-
-			if (!IsLoadingOrReevaluating ())
-				RestoreNuGetPackages ();
-		}
-
-		bool IsLoadingOrReevaluating ()
-		{
-			return Project.Loading || Project.IsReevaluating;
-		}
-
-		void RestoreNuGetPackages ()
-		{
-			Runtime.AssertMainThread ();
-			RestorePackagesInProjectHandler.Run (Project);
 		}
 
 		public bool IsDotNetCoreSdkInstalled ()
@@ -611,186 +418,9 @@ namespace MonoDevelop.DotNetCore
 			return false;
 		}
 
-		bool IsFSharpSdkProject ()
-		{
-			if (HasSdk) {
-				var sdks = Project.MSBuildProject.GetReferencedSDKs ();
-				for (var i = 0; i < sdks.Length; i++) {
-					if (sdks [i].Contains ("FSharp"))
-						return true;
-				}
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Handle a new project being created and added to a new solution. In this case
-		/// the NuGet packages should be restored. Need to avoid running a restore when
-		/// a solution is being opened so check that project's parent solution is open in
-		/// the IDE.
-		/// </summary>
-		protected override void OnBoundToSolution ()
-		{
-			base.OnBoundToSolution ();
-
-			if (Project.Loading)
-				return;
-
-			if (IdeApp.ProjectOperations == null)
-				return;
-
-			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)
-				return;
-
-			if (ProjectNeedsRestore ())
-				RestorePackagesInProjectHandler.Run (Project);
-		}
-
-		protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
-		{
-			if (!BuildAction.DotNetActions.Contains (buildItem.Name))
-				return false;
-
-			if (IsFSharpSdkProject ()) {
-				// Ignore imported F# files. F# files are defined in the main project.
-				// This prevents duplicate F# files when a new project is first created.
-				if (buildItem.Include.EndsWith (".fs", StringComparison.OrdinalIgnoreCase))
-					return false;
-			}
-
-			if (IsFromSharedProject (buildItem))
-				return false;
-
-			// HACK: Remove any imported items that are not in the EvaluatedItems
-			// This may happen if a condition excludes the item. All items passed to the
-			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
-			return Project.MSBuildProject.EvaluatedItems
-				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
-		}
-
-		/// <summary>
-		/// Checks that the project has the HasSharedItems property set to true and the SharedGUID
-		/// property in its global property group. Otherwise it is not considered to be a shared project.
-		/// </summary>
-		bool IsFromSharedProject (IMSBuildItemEvaluated buildItem)
-		{
-			var globalGroup = buildItem?.SourceItem?.ParentProject?.GetGlobalPropertyGroup ();
-			return globalGroup?.GetValue<bool> ("HasSharedItems") == true &&
-				globalGroup?.HasProperty ("SharedGUID") == true;
-		}
-
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return new DotNetCoreRunConfiguration (name, IsWeb);
-		}
-
-		/// <summary>
-		/// HACK: Hide certain files that are currently being added to the Solution window.
-		/// </summary>
-		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			if (Project.Loading) {
-				UpdateHiddenFiles (objs.OfType<ProjectFile> ());
-			}
-			base.OnItemsAdded (objs);
-		}
-
-		void UpdateHiddenFiles (IEnumerable<ProjectFile> files)
-		{
-			foreach (var file in files) {
-				if (file.FilePath.ShouldBeHidden ())
-					file.Flags = ProjectItemFlags.Hidden;
-			}
-		}
-
-		protected override async Task OnReevaluateProject (ProgressMonitor monitor)
-		{
-			await base.OnReevaluateProject (monitor);
-			UpdateHiddenFiles (Project.Files);
-		}
-
-		/// <summary>
-		/// Returns all transitive references.
-		/// </summary>
-		protected override async Task<List<AssemblyReference>> OnGetReferences (
-			ConfigurationSelector configuration,
-			System.Threading.CancellationToken token)
-		{
-			var references = new List<AssemblyReference> ();
-
-			var traversedProjects = new HashSet<string> ();
-			traversedProjects.Add (Project.ItemId);
-
-			await GetTransitiveAssemblyReferences (traversedProjects, references, configuration, true, token);
-
-			return references;
-		}
-
-		/// <summary>
-		/// Recursively gets all transitive project references for .NET Core projects
-		/// and if includeNonProjectReferences is true also returns non project
-		/// assembly references.
-		/// 
-		/// Calling base.OnGetReferences returns the directly referenced projects and
-		/// also all transitive references which are not project references.
-		/// 
-		/// includeNonProjectReferences should be set to false when getting the
-		/// assembly references for referenced projects since the assembly references
-		/// from OnGetReferences already contains any transitive references which are
-		/// not projects.
-		/// </summary>
-		async Task GetTransitiveAssemblyReferences (
-			HashSet<string> traversedProjects,
-			List<AssemblyReference> references,
-			ConfigurationSelector configuration,
-			bool includeNonProjectReferences,
-			System.Threading.CancellationToken token)
-		{
-			foreach (var reference in await base.OnGetReferences (configuration, token)) {
-				if (!reference.IsProjectReference) {
-					if (includeNonProjectReferences) {
-						references.Add (reference);
-					}
-					continue;
-				}
-
-				// Project references with ReferenceOutputAssembly false should be
-				// added but there is no need to check any further since there will not
-				// any transitive project references.
-				if (!reference.ReferenceOutputAssembly) {
-					references.Add (reference);
-					continue;
-				}
-
-				var project = reference.GetReferencedItem (Project.ParentSolution) as DotNetProject;
-				if (project == null)
-					continue;
-
-				if (traversedProjects.Contains (project.ItemId))
-					continue;
-
-				references.Add (reference);
-				traversedProjects.Add (project.ItemId);
-
-				var extension = project.AsFlavor<DotNetCoreProjectExtension> ();
-				if (extension != null)
-					await extension.GetTransitiveAssemblyReferences (traversedProjects, references, configuration, false, token);
-			}
-		}
-
-		/// <summary>
-		/// ASP.NET Core projects have different build actions if the file is in the wwwroot folder.
-		/// It also uses Content build actions for *.json, *.config and *.cshtml files. To support
-		/// this the default file globs for the file are found and the MSBuild item name is returned.
-		/// </summary>
-		protected override string OnGetDefaultBuildAction (string fileName)
-		{
-			string include = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, fileName);
-			var globItems = Project.MSBuildProject.FindGlobItemsIncludingFile (include).ToList ();
-			if (globItems.Count == 1)
-				return globItems [0].Name;
-
-			return base.OnGetDefaultBuildAction (fileName);
 		}
 	}
 }

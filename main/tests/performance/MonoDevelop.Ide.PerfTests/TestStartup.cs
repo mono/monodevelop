@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.PerfTests
 			OpenApplicationAndWait ();
 
 			var t = Session.GetCounterMetadataValue<long> ("Ide.Startup", "CorrectedStartupTime");
-			Benchmark.SetTime ((double)t / 1000d);
+			Benchmark.SetTime (t);
 		}
 
 		[Test]
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.PerfTests
 			OpenExampleSolutionAndWait (out _);
 
 			var t = Session.GetCounterMetadataValue<long>("Ide.TimeToCode", "CorrectedDuration");
-			Benchmark.SetTime ((double)t / 1000d);
+			Benchmark.SetTime (t);
 		}
 	}
 }

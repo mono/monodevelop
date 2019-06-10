@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NuGet.Common;
 
@@ -45,6 +46,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
 			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
 			FileService.FileChanged += FileChanged;
+			TypeSystemService.FreezeLoad = GetPackageRestoreTask;
 		}
 
 		void SolutionLoaded (object sender, SolutionEventArgs e)
@@ -138,6 +140,11 @@ namespace MonoDevelop.PackageManagement.Commands
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error on unloading workspace item.", ex);
 			}
+		}
+
+		static Task GetPackageRestoreTask ()
+		{
+			return PackageManagementMSBuildExtension.PackageRestoreTask ?? Task.CompletedTask;
 		}
 
 		//auto-restore project.json files when they're saved

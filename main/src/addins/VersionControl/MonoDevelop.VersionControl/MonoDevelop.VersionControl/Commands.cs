@@ -1,4 +1,4 @@
-
+﻿
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl
 			if (doc == null || !doc.IsFile)
 				return null;
 			
-			Project project = doc.Project ?? IdeApp.ProjectOperations.CurrentSelectedProject;
+			var project = doc.Owner ?? IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (project == null)
 				return null;
 			
@@ -243,28 +243,47 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler
+	abstract class CurrentFileViewHandler<T> : FileVersionControlCommandHandler
 	{
+		protected bool CanRunCommand { get => IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> () != null; }
+
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
-			if (test)
-				return true;
-
-			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<T> ());
-			return true;
+			return CanRunCommand;
 		}
 	}
 
 	class CurrentFileDiffHandler : CurrentFileViewHandler<IDiffView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (test)
+				return CanRunCommand;
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
+			return true;
+		}
 	}
-	
+
 	class CurrentFileBlameHandler : CurrentFileViewHandler<IBlameView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (test)
+				return CanRunCommand;
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowBlameView ();
+			return true;
+		}
+
 	}
-	
+
 	class CurrentFileLogHandler : CurrentFileViewHandler<ILogView>
 	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			if (test)
+				return CanRunCommand;
+			IdeApp.Workbench.ActiveDocument?.GetContent<VersionControlDocumentController> ()?.ShowLogView ();
+			return true;
+		}
 	}
 }

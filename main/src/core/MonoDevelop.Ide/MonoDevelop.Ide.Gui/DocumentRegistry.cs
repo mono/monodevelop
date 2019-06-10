@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static bool SkipView (Document view)
 		{
-			return !view.IsFile || view.IsUntitled ;
+			return !view.IsFile || view.IsNewDocument ;
 		}
 
 		static void CommitViewChange (List<DocumentInfo> changedDocuments)

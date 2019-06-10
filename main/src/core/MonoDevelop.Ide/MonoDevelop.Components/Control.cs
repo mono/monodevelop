@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
+using System.Runtime.CompilerServices;
 
 #if MAC
 using AppKit;
@@ -36,19 +37,17 @@ namespace MonoDevelop.Components
 {
 	public class Control : IDisposable, ICommandRouter
 	{
-		internal static Dictionary<object, WeakReference<Control>> cache = new Dictionary<object, WeakReference<Control>> ();
-		internal object nativeWidget;
+		internal static ConditionalWeakTable<object, Control> cache = new ConditionalWeakTable<object, Control> ();
+		internal object nativeWidget; // TODO: This should be a weak reference, not a strong reference, if we're not passing ownership
 
 		protected Control ()
 		{
 		}
 
-		Control (object widget)
+		protected Control (object widget)
 		{
-			if (widget == null)
-				throw new ArgumentNullException (nameof (widget));
-			this.nativeWidget = widget;
-			cache.Add (nativeWidget, new WeakReference<Control> (this));
+			nativeWidget = widget ?? throw new ArgumentNullException (nameof (widget));
+			cache.Add (nativeWidget, this);
 		}
 
 		protected virtual object CreateNativeWidget<T> ()
@@ -80,16 +79,14 @@ namespace MonoDevelop.Components
 				} else {
 					nativeWidget = w;
 				}
-				WeakReference<Control> cached;
-				Control target;
-				if (cache.TryGetValue (nativeWidget, out cached) && cached.TryGetTarget (out target)) {
+				if (cache.TryGetValue (nativeWidget, out Control target)) {
 					if (target != toCache)
-						throw new Exception ();
+						throw new InvalidOperationException ($"Widget {nativeWidget.GetType ()} has been mapped to multiple controls");
 				} else
-					cache.Add (nativeWidget, new WeakReference<Control> (toCache));
+					cache.Add (nativeWidget, toCache);
 			}
-			if (nativeWidget is T)
-				return (T)nativeWidget;
+			if (nativeWidget is T resultWidget)
+				return resultWidget;
 			else
 				throw new NotSupportedException ();
 		}
@@ -173,22 +170,13 @@ namespace MonoDevelop.Components
 
 		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
 		{
-			WeakReference<Control> cached;
-			Control target;
-
-			if (cache.TryGetValue (native, out cached)) {
-				if (cached.TryGetTarget (out target)) {
-					var ret = target as T;
-					if (ret != null)
-						return ret;
-				}
-
-				cache.Remove (native);
+			if (cache.TryGetValue (native, out Control target) && target is T ret) {
+				return ret;
 			}
 			return null;
 		}
 
-		public void GrabFocus ()
+		public virtual void GrabFocus ()
 		{
 			if (nativeWidget is Gtk.Widget)
 				((Gtk.Widget)nativeWidget).GrabFocus ();
@@ -196,7 +184,7 @@ namespace MonoDevelop.Components
 		}
 
 
-		public bool HasFocus {
+		public virtual bool HasFocus {
 			get
 			{
 				// TODO

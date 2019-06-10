@@ -1,4 +1,4 @@
-﻿//
+//
 // AutoInsertBracketTextEditorExtension.cs
 //
 // Author:
@@ -32,12 +32,14 @@ using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class AutoInsertBracketHandler
 	{
 		public virtual bool CanHandle (TextEditor editor) => true;
 		public abstract bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor);
 	}
 
+	[Obsolete]
 	class AutoInsertBracketTextEditorExtension : TextEditorExtension
 	{
 		const string extensionPoint = "/MonoDevelop/Ide/AutoInsertBracketHandler";
@@ -125,7 +127,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 
 			//check mimetypes, from most to least specific
-			var mimeChain = DesktopService.GetMimeTypeInheritanceChain (editor.MimeType);
+			var mimeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (editor.MimeType);
 			foreach (var mime in mimeChain) {
 				foreach (var node in nodes) {
 					if (!returned.Contains (node) && MatchAny (mime, node.MimeTypes)) {

@@ -26,15 +26,21 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreVersion : IEquatable<DotNetCoreVersion>, IComparable, IComparable<DotNetCoreVersion>
 	{
-		public static readonly DotNetCoreVersion MinimumSupportedVersion = new DotNetCoreVersion (1, 0, 0);
+		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion = new DotNetCoreVersion (2, 1, 602);
+		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion22 = new DotNetCoreVersion (2, 2, 202);
+		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion30 = new DotNetCoreVersion (3, 0, 100) {
+			ReleaseLabel = "preview3-010431",
+			IsPrerelease = true
+		};
 
-		DotNetCoreVersion (int major, int minor, int patch)
+		internal DotNetCoreVersion (int major, int minor, int patch)
 			: this (new Version (major, minor, patch))
 		{
 		}
@@ -46,21 +52,16 @@ namespace MonoDevelop.DotNetCore
 
 		public Version Version { get; private set; }
 
-		public int Major {
-			get { return Version.Major; }
-		}
+		public int Major => Version.Major;
 
-		public int Minor {
-			get { return Version.Minor; }
-		}
+		public int Minor => Version.Minor;
 
-		public int Patch {
-			get { return Version.Build; }
-		}
+		public int Patch => Version.Build;
 
 		public string OriginalString { get; private set; }
 
 		public bool IsPrerelease { get; private set; }
+
 		public string ReleaseLabel { get; private set; }
 
 		public override string ToString ()
@@ -80,8 +81,7 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (input))
 				throw new ArgumentException (".NET Core version cannot be null or an empty string.", nameof (input));
 
-			DotNetCoreVersion version = null;
-			if (TryParse (input, out version))
+			if (TryParse (input, out var version))
 				return version;
 
 			throw new FormatException (string.Format ("Invalid .NET Core version: '{0}'", input));
@@ -103,8 +103,7 @@ namespace MonoDevelop.DotNetCore
 				releaseLabel = input.Substring (prereleaseLabelStart + 1);
 			}
 
-			Version version = null;
-			if (!Version.TryParse (versionString, out version))
+			if (!Version.TryParse (versionString, out var version))
 				return false;
 
 			result = new DotNetCoreVersion (version) {
@@ -202,12 +201,32 @@ namespace MonoDevelop.DotNetCore
 		public static DotNetCoreVersion GetDotNetCoreVersionFromDirectory (string directory)
 		{
 			string directoryName = Path.GetFileName (directory);
-			DotNetCoreVersion version = null;
-			if (TryParse (directoryName, out version))
+			if (TryParse (directoryName, out var version))
 				return version;
 
 			LoggingService.LogInfo ("Unable to parse version from directory. '{0}'", directory);
 			return null;
+		}
+
+		// from 8.1 on, we are only supporting .NET Core SDK based on Nuget 5.0
+		// Minimum SDKs:
+		//			- 2.1.6XX
+		//			- 2.2.2XX
+		//			- 3.0 Preview 3
+		public static bool IsSdkSupported (DotNetCoreVersion version)
+		{
+			if (version.Major == 2) {
+				if (version.Minor == 1)
+					return version >= MinimumSupportedSdkVersion;
+
+				return version >= MinimumSupportedSdkVersion22;
+			}
+
+			if (version.Major == 3) {
+				return version >= MinimumSupportedSdkVersion30;
+			}
+
+			return false;
 		}
 	}
 }

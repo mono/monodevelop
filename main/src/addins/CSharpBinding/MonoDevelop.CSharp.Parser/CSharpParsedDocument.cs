@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -42,7 +43,11 @@ namespace MonoDevelop.CSharp.Parser
 	{
 		static string[] tagComments;
 
-		internal SyntaxTree Unit {
+		internal DocumentId DocumentId {
+			get;
+			set;
+		}
+		internal SyntaxTree ParsedUnit {
 			get;
 			set;
 		}
@@ -71,27 +76,44 @@ namespace MonoDevelop.CSharp.Parser
 		#region implemented abstract members of ParsedDocument
 
 		IReadOnlyList<Comment> comments;
-		object commentLock = new object ();
+		SemaphoreSlim commentLock = new SemaphoreSlim (1, 1);
 
 		public override Task<IReadOnlyList<Comment>> GetCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (comments == null) {
-				return Task.Run (delegate {
-					lock (commentLock) {
+				return Task.Run (async delegate {
+					bool locked = await commentLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
+					await commentLock.WaitAsync ();
+					try {
 						if (comments == null) {
 							var visitor = new CommentVisitor (cancellationToken);
-							if (Unit != null)
+							var unit = await GetParsedSyntaxTreeAsync (cancellationToken);
+							if (unit != null) {
 								try {
-									visitor.Visit (Unit.GetRoot (cancellationToken));
+									var syntaxRoot = await unit.GetRootAsync (cancellationToken);
+									visitor.Visit (syntaxRoot);
 								} catch (OperationCanceledException) {
 								}
+							}
 							comments = visitor.Comments;
 						}
+					} finally {
+						if (locked)
+							commentLock.Release ();
 					}
 					return comments;
 				});
 			}
 			return Task.FromResult (comments);
+
+			async Task<SyntaxTree> GetParsedSyntaxTreeAsync (CancellationToken token)
+			{
+				if (ParsedUnit == null && DocumentId != null) {
+					var document = IdeServices.TypeSystemService.GetCodeAnalysisDocument (DocumentId, token);
+					ParsedUnit = await document.GetSyntaxTreeAsync (token);
+				}
+				return ParsedUnit;
+			}
 		}
 
 
@@ -328,16 +350,12 @@ namespace MonoDevelop.CSharp.Parser
 		static readonly IReadOnlyList<Error> emptyErrors = Array.Empty<Error> ();
 		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (Ide.IdeApp.Preferences.EnableSourceAnalysis)
+			if (Ide.IdeApp.Preferences.EnableSourceAnalysis || DocumentId is null)
 				return emptyErrors;
 
 			// FIXME: remove this fallback, error squiggles should always be handled via the source analysis mechanism
-			#pragma warning disable 618
-			var model = GetAst<SemanticModel> ();
-			#pragma warning disable 618
-
-			if (model == null)
-				return emptyErrors;
+			var document = IdeServices.TypeSystemService.GetCodeAnalysisDocument (DocumentId, cancellationToken);
+			var model = await document.GetSemanticModelAsync (cancellationToken);
 
 			bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
 			IReadOnlyList<Error> errors;

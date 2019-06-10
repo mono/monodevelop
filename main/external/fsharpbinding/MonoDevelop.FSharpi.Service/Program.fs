@@ -5,7 +5,7 @@ open System.Drawing
 open System.IO
 open System.Reflection
 open Newtonsoft.Json
-open Microsoft.FSharp.Compiler.Interactive.Shell
+open FSharp.Compiler.Interactive.Shell
 open MonoDevelop.FSharp.Shared
 /// Wrapper for fsi with support for returning completions
 module CompletionServer =
@@ -22,8 +22,7 @@ module CompletionServer =
         // Make System.ValueTuple available to FSI
         let executingFolder = Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName
         let valueTuplePath = Path.Combine(executingFolder, "System.ValueTuple.dll")
-        let valueTupleArg = sprintf "-r:%s" valueTuplePath
-        let argv = [| "--readline-"; fsiServerArg; valueTupleArg |]
+        let argv = [| "--readline-"; fsiServerArg |]
 
         let serializer = JsonSerializer.Create()
 

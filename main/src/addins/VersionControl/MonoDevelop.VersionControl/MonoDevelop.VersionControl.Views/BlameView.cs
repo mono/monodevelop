@@ -1,4 +1,4 @@
-//
+﻿//
 // BlameView.cs
 //
 // Author:
@@ -27,8 +27,13 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui.Documents;
 using System;
 using System.Linq;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -36,115 +41,97 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	internal class BlameView : BaseView, IBlameView, IClipboardHandler
+	internal class BlameView : DocumentController, IBlameView
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
-		
-		public override Control Control { 
-			get {
-				if (widget == null)
-					widget = new BlameWidget (info);
-				return widget;
-			}
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			if (widget == null)
+				widget = new BlameWidget (info);
+			return widget;
 		}
-		
-		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"))
+
+		public BlameView (VersionControlDocumentInfo info)
 		{
 			this.info = info;
 		}
-		
+
 		#region IAttachableViewContent implementation
-		protected override void OnSelected ()
+		protected override void OnFocused ()
 		{
 			info.Start ();
-			BlameWidget blameWidget = Control.GetNativeWidget<BlameWidget> ();
-			blameWidget.Reset ();
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
-			if (buffer != null) {
-				if (!(buffer.TextView is MonoTextEditor)) {
-					//compatibility for other not MonoTextEditor editors
-					var loc = buffer.CaretLocation;
-					int line = loc.Line < 1 ? 1 : loc.Line;
-					int column = loc.Column < 1 ? 1 : loc.Column;
-					blameWidget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
-				}
+			widget.Reset ();
+
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				var (line, column) = textView.Caret.Position.BufferPosition.GetLineAndColumn1Based ();
+				widget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
+			}
+
+			if (widget.Allocation.Height == 1 && widget.Allocation.Width == 1) {
+				widget.SizeAllocated += HandleComparisonWidgetSizeAllocated;
+			} else {
+				HandleComparisonWidgetSizeAllocated (null, new Gtk.SizeAllocatedArgs ());
 			}
 		}
 
-		protected override void OnDeselected ()
+		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> () ;
-			if (buffer != null) {
-				var blameWidget = Control.GetNativeWidget<BlameWidget> ();
-
-				if (buffer.TextView is MonoTextEditor exEditor) {
-					if (blameWidget.Revision == null)
-						exEditor.Document.UpdateFoldSegments (blameWidget.Editor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
-					exEditor.SetCaretTo (blameWidget.Editor.Caret.Line, blameWidget.Editor.Caret.Column);
-					exEditor.VAdjustment.Value = blameWidget.Editor.VAdjustment.Value;
-				} else {
-					//compatibility for other not MonoTextEditor editors
-					buffer.ScrollTo (new Ide.Editor.DocumentLocation (blameWidget.Editor.YToLine (blameWidget.Editor.VAdjustment.Value), 1));
-					buffer.SetCaretLocation (blameWidget.Editor.Caret.Line, blameWidget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
-				}
+			widget.Editor.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				int firstLineNumber = textView.TextViewLines.FirstVisibleLine.Start.GetContainingLine ().LineNumber;
+				widget.Editor.VAdjustment.Value = widget.Editor.LineToY (firstLineNumber + 1);
+				widget.Editor.GrabFocus ();
 			}
+		}
+
+		protected override void OnUnfocused ()
+		{
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				var pos = widget.Editor.Caret.Offset;
+				var snapshot = textView.TextSnapshot;
+				var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
+				textView.Caret.MoveTo (point);
+
+				int line = GetLineInCenter (widget.Editor);
+				line = Math.Min (line, snapshot.LineCount);
+				var middleLine = snapshot.GetLineFromLineNumber (line);
+				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
+			}
+		}
+
+		int GetLineInCenter (MonoTextEditor editor)
+		{
+			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
+			return editor.YToLine (midY);
 		}
 
 		#endregion
 
 		#region IClipboardHandler implementation
-		void IClipboardHandler.Cut ()
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo info)
 		{
+			info.Enabled = this.widget.Editor.IsSomethingSelected;
 		}
 
-		void IClipboardHandler.Copy ()
+		[CommandHandler (EditCommands.Copy)]
+		protected void Copy ()
 		{
 			this.widget.Editor.RunAction (ClipboardActions.Copy);
 		}
 
-		void IClipboardHandler.Paste ()
-		{
-		}
-
-		void IClipboardHandler.Delete ()
-		{
-		}
-
-		void IClipboardHandler.SelectAll ()
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void SelectAll ()
 		{
 			this.widget.Editor.RunAction (SelectionActions.SelectAll);
 		}
 
-		bool IClipboardHandler.EnableCut {
-			get {
-				return false;
-			}
-		}
-
-		bool IClipboardHandler.EnableCopy {
-			get {
-				return this.widget.Editor.IsSomethingSelected;
-			}
-		}
-
-		bool IClipboardHandler.EnablePaste {
-			get {
-				return false;
-			}
-		}
-
-		bool IClipboardHandler.EnableDelete {
-			get {
-				return false;
-			}
-		}
-
-		bool IClipboardHandler.EnableSelectAll {
-			get {
-				return true;
-			}
-		}
 		#endregion
 	}
 }

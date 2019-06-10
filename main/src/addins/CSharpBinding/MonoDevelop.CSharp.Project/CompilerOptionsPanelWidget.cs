@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CompilerOptionsPanelWidget.cs
 // 
 // Author:
@@ -28,6 +28,9 @@
 //
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Gtk;
 
 using MonoDevelop.Components;
@@ -49,7 +52,12 @@ namespace MonoDevelop.CSharp.Project
 		DotNetProject project;
 		ListStore classListStore;
 		bool classListFilled;
-		
+		LanguageVersion[] unsupportedLanguageVersions = {
+			LanguageVersion.CSharp8,
+			LanguageVersion.LatestMajor,
+			LanguageVersion.Preview
+		};
+
 		public CompilerOptionsPanelWidget (DotNetProject project)
 		{
 			this.Build();
@@ -92,22 +100,51 @@ namespace MonoDevelop.CSharp.Project
 			iconEntry.DefaultPath = project.BaseDirectory;
 			allowUnsafeCodeCheckButton.Active = compilerParameters.UnsafeCode;
 			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
+			langVersionWarningIcon.Visible = false;
 
-			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
-			foreach (var (text, version) in CSharpLanguageVersionHelper.GetKnownLanguageVersions ()) {
-				langVerStore.AppendValues (text, version);
+			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion), typeof (bool));
+			var langVersions = CSharpLanguageVersionHelper.GetKnownLanguageVersions ();
+			string badVersion = null;
+			LanguageVersion? langVersion = null;
+
+			try {
+				langVersion = compilerParameters.LangVersion;
+			} catch (Exception) {
+				badVersion = configuration.Properties.GetProperty ("LangVersion").Value;
 			}
+
+			foreach (var (text, version) in langVersions) {
+				if (unsupportedLanguageVersions.Contains (version)) {
+					if (langVersion == version) {
+						if (badVersion == null)
+							badVersion = text;
+					} else {
+						// Otherwise if it's an unsupported language but it's not the current project's
+						// version then it must be an unsupported version of Mono. Let's not add that to
+						// the list store.
+					}
+				} else {
+					langVerStore.AppendValues (text, version, false);
+				}
+			}
+
 			langVerCombo.Model = langVerStore;
 
-			TreeIter iter;
-			if (langVerStore.GetIterFirst (out iter)) {
-				do {
-					var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
-					if (val == compilerParameters.LangVersion) {
-						langVerCombo.SetActiveIter (iter);
-						break;
-					}
-				} while (langVerStore.IterNext (ref iter));
+			if (badVersion != null) {
+				var badIter = langVerStore.AppendValues (GettextCatalog.GetString ("{0} (Unknown Version)", badVersion), LanguageVersion.Default, true);
+				langVerCombo.SetActiveIter (badIter);
+				langVersionWarningIcon.Visible = true;
+			} else {
+				TreeIter iter;
+				if (langVerStore.GetIterFirst (out iter)) {
+					do {
+						var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
+						if (val == compilerParameters.LangVersion) {
+							langVerCombo.SetActiveIter (iter);
+							break;
+						}
+					} while (langVerStore.IterNext (ref iter));
+				}
 			}
 
 			SetupAccessibility ();
@@ -165,11 +202,13 @@ namespace MonoDevelop.CSharp.Project
 		public void Store (ItemConfigurationCollection<ItemConfiguration> configs)
 		{
 			int codePage;
+			bool isBadVersion = false;
 
 			var langVersion = LanguageVersion.Default;
 			TreeIter iter;
 			if (langVerCombo.GetActiveIter (out iter)) {
 				langVersion = (LanguageVersion)langVerCombo.Model.GetValue (iter, 1);
+				isBadVersion = (bool)langVerCombo.Model.GetValue (iter, 2);
 			}
 
 			if (codepageEntry.Entry.Text.Length > 0) {
@@ -208,7 +247,8 @@ namespace MonoDevelop.CSharp.Project
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
 				compilerParameters.NoStdLib = noStdLibCheckButton.Active;
-				compilerParameters.LangVersion = langVersion;
+				if (!isBadVersion)
+					compilerParameters.LangVersion = langVersion;
 			}
 		}
 		
@@ -231,7 +271,7 @@ namespace MonoDevelop.CSharp.Project
 		void FillClasses ()
 		{
 			try {
-				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
+				var ctx = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
 				if (ctx == null)
 					// Project not found in parser database
 					return;

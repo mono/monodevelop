@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TooltipWindow.cs
 // 
 // Author:
@@ -116,7 +116,7 @@ namespace MonoDevelop.Components
 //					LimitWidth (fittedWidth);
 //				}
 				
-				Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
 				int left = (int)geometry.Left;
 				int top = (int)geometry.Top;
 				int width = (int)geometry.Width;

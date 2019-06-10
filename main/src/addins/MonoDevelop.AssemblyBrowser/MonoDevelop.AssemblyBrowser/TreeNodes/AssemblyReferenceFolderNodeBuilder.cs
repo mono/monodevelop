@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.Cecil;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 using System.IO;
+
+using ICSharpCode.Decompiler.Metadata;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -60,7 +61,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var referenceFolder = (AssemblyReferenceFolder)dataObject;
 			var wrapper = (AssemblyLoader)ctx.GetParentDataItem (typeof (AssemblyLoader), false);
 			
-			foreach (AssemblyNameReference assemblyNameReference in referenceFolder.AssemblyReferences) {
+			foreach (var assemblyNameReference in referenceFolder.AssemblyReferences) {
 				try {
 					string assemblyFile = wrapper.LookupAssembly (assemblyNameReference.FullName);
 					if (assemblyFile != null && System.IO.File.Exists (assemblyFile)) {

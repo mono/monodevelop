@@ -105,7 +105,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult CheckType (Type desiredType)
 		{
-			if (ResultObject.GetType () == desiredType || ResultObject.GetType ().IsSubclassOf (desiredType)) {
+			if (desiredType.IsInstanceOfType (ResultObject)) {
 				return this;
 			}
 

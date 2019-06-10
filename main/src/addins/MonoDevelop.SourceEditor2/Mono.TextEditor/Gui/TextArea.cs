@@ -529,12 +529,13 @@ namespace Mono.TextEditor
 					this.textEditorData.Document.CommitLineUpdate (preeditLine);
 				}
 			} else {
-				if (preeditOffset < 0)
-					return;
-				preeditOffset = -1;
 				preeditString = null;
 				preeditAttrs = null;
 				preeditCursorCharIndex = 0;
+				if (preeditOffset < 0) {
+					return;
+				}
+				preeditOffset = -1;
 				if (UpdatePreeditLineHeight ()) {
 					QueueDraw ();
 				} else {

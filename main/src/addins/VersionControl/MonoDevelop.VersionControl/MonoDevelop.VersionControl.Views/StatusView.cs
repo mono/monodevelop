@@ -12,8 +12,10 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using System.Text;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -289,14 +291,8 @@ namespace MonoDevelop.VersionControl.Views
 			Init ();
 		}
 
-		protected override void OnWorkbenchWindowChanged ()
+		void SetupToolbar (DocumentToolbar toolbar)
 		{
-			base.OnWorkbenchWindowChanged ();
-			if (WorkbenchWindow == null)
-				return;
-
-			var toolbar = WorkbenchWindow.GetToolbar (this);
-
 			buttonCommit.Clicked += new EventHandler (OnCommitClicked);
 			toolbar.Add (buttonCommit);
 
@@ -383,7 +379,7 @@ namespace MonoDevelop.VersionControl.Views
 			return ((IComparable)o1).CompareTo (o2);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			disposed = true;
 			if (colCommit != null) {
@@ -424,13 +420,13 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			localDiff.Clear ();
 			remoteDiff.Clear ();
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
-		public override Control Control {
-			get {
-				return widget;
-			}
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			SetupToolbar (view.GetToolbar ());
+			return widget;
 		}
 		object updateLock = new object ();
 
@@ -448,29 +444,50 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
 
-			ThreadPool.QueueUserWorkItem (delegate {
-				lock (updateLock) {
-					if (fileList != null) {
-						var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
-						foreach (var item in group) {
-							// Is directory.
-							if (item.Key) {
-								foreach (var directory in item)
-									changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
-							} else
-								changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
-						}
-						changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
-						fileList = null;
+			lock (updateLock) {
+				if (!cancelUpdate.IsCancellationRequested)
+					cancelUpdate.Cancel ();
+				cancelUpdate = new CancellationTokenSource ();
+				var token = cancelUpdate.Token;
+				updateTask = updateTask.ContinueWith (t => RunUpdate (token), token, TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
+			}
+		}
+
+		CancellationTokenSource cancelUpdate = new CancellationTokenSource ();
+		Task updateTask = Task.FromResult (true);
+
+		void RunUpdate (CancellationToken cancel)
+		{
+			try {
+				cancel.ThrowIfCancellationRequested ();
+				if (fileList != null) {
+					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
+					foreach (var item in group) {
+						// Is directory.
+						if (item.Key) {
+							foreach (var directory in item)
+								changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+						} else
+							changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
 					}
-					List<VersionInfo> newList = new List<VersionInfo> ();
-					newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
-					Runtime.RunInMainThread (delegate {
-						if (!disposed)
-							LoadStatus (newList);
-					});
+					fileList = null;
 				}
-			});
+
+				cancel.ThrowIfCancellationRequested ();
+				var newList = new List<VersionInfo> ();
+				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
+
+				cancel.ThrowIfCancellationRequested ();
+				Runtime.RunInMainThread (delegate {
+					// skip status reloading if another update is queued
+					if (!cancel.IsCancellationRequested && !disposed)
+						LoadStatus (newList);
+				}).Ignore ();
+			} catch (Exception ex) {
+				if (!(ex is OperationCanceledException))
+					LoggingService.LogError ("VCS StatusView update failed", ex);
+				throw;
+			}
 		}
 
 		void LoadStatus (List<VersionInfo> newList)
@@ -594,7 +611,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (n.IsDirectory)
 				fileIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
+				fileIcon = IdeServices.DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
 
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
@@ -757,7 +774,7 @@ namespace MonoDevelop.VersionControl.Views
 			StartUpdate ();
 		}
 
-		void OnCommitClicked (object src, EventArgs args)
+		async void OnCommitClicked (object src, EventArgs args)
 		{
 			// Nothing to commit
 			if (changeSet.IsEmpty)
@@ -772,7 +789,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 			}
 
-			CommitCommand.Commit (vc, changeSet.Clone ());
+			await CommitCommand.CommitAsync (vc, changeSet.Clone ());
 		}
 
 

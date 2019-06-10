@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.Cecil;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.TypeSystem;
 using System.Threading.Tasks;
@@ -32,10 +31,15 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using ICSharpCode.Decompiler.Metadata;
+using System.Reflection.Metadata;
+using System.Linq;
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.CSharp.Transforms;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyLoader : IAssemblyResolver, IDisposable
+	class AssemblyLoader : IDisposable
 	{
 		readonly CancellationTokenSource src = new CancellationTokenSource ();
 		readonly AssemblyBrowserWidget widget;
@@ -45,10 +49,10 @@ namespace MonoDevelop.AssemblyBrowser
 			private set;
 		}
 
-		Task<AssemblyDefinition> assemblyLoaderTask;
-		TaskCompletionSource<AssemblyDefinition> assemblyDefinitionTaskSource;
+		Task<PEFile> assemblyLoaderTask;
+		TaskCompletionSource<PEFile> assemblyDefinitionTaskSource;
 
-		public Task<AssemblyDefinition> LoadingTask {
+		public Task<PEFile> LoadingTask {
 			get {
 				return assemblyLoaderTask;
 			}
@@ -57,21 +61,16 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		public AssemblyDefinition Assembly => AssemblyTask.Result;
-		public Task<AssemblyDefinition> AssemblyTask => assemblyDefinitionTaskSource.Task;
-
-		public ModuleDefinition ModuleDefinition {
-			get {
-				return assemblyLoaderTask.Result.MainModule;
-			}
-		}
+		public PEFile Assembly => AssemblyTask.Result;
+		public Task<PEFile> AssemblyTask => assemblyDefinitionTaskSource.Task;
 
 		CSharpDecompiler csharpDecompiler;
 
 		public CSharpDecompiler CSharpDecompiler {
 			get {
 				if (csharpDecompiler == null) {
-					csharpDecompiler = new CSharpDecompiler (DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings ());
+					csharpDecompiler = new CSharpDecompiler (DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings (LanguageVersion.Latest));
+					csharpDecompiler.AstTransforms.Add (new EscapeInvalidIdentifiers ());
 				}
 
 				return csharpDecompiler;
@@ -80,16 +79,17 @@ namespace MonoDevelop.AssemblyBrowser
 
 		DecompilerTypeSystem decompilerTypeSystem;
 		public DecompilerTypeSystem DecompilerTypeSystem { 
-			get { 
+			get {
 				if (decompilerTypeSystem == null) {
-					decompilerTypeSystem = new DecompilerTypeSystem (Assembly.MainModule);
-
+					decompilerTypeSystem = new DecompilerTypeSystem (Assembly, new AssemblyResolver (Assembly, widget));
 				}
-				return decompilerTypeSystem; 
+				return decompilerTypeSystem;
 			}
 		}
 
 		public Error Error { get; internal set; }
+
+		public bool IsLoaded { get; private set; }
 
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
@@ -102,22 +102,58 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
 
-			assemblyDefinitionTaskSource = new TaskCompletionSource<AssemblyDefinition> ();
+			assemblyDefinitionTaskSource = new TaskCompletionSource<PEFile> ();
 
 			assemblyLoaderTask = Task.Run (() => {
 				try {
-					var assemblyDefinition = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
-						AssemblyResolver = this
-					});
-					assemblyDefinitionTaskSource.SetResult (assemblyDefinition);
-					return assemblyDefinition;
+					var peFile = new PEFile (FileName, System.Reflection.PortableExecutable.PEStreamOptions.PrefetchEntireImage);
+					assemblyDefinitionTaskSource.SetResult (peFile);
+					return peFile;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					Error = new Error(e.Message);
 					assemblyDefinitionTaskSource.SetResult (null);
 					return null;
+				} finally { IsLoaded = true; }
+			}, src.Token);
+		}
+
+		class MyUniversalAssemblyResolver : UniversalAssemblyResolver
+		{
+			public MyUniversalAssemblyResolver (string mainAssemblyFileName, bool throwOnError, string targetFramework) : base (mainAssemblyFileName, throwOnError, targetFramework)
+			{
+			}
+		}
+		class AssemblyResolver : IAssemblyResolver
+		{
+			readonly PEFile assembly;
+			readonly AssemblyBrowserWidget widget;
+
+			public AssemblyResolver (PEFile assembly, AssemblyBrowserWidget widget)
+			{
+				this.assembly = assembly;
+				this.widget = widget;
+			}
+
+			public PEFile Resolve (IAssemblyReference reference)
+			{
+				try {
+					var targetFramework = assembly.Reader.DetectTargetFrameworkId () ?? "";
+					var resolver = new MyUniversalAssemblyResolver (assembly.FileName, false, targetFramework);
+					var fileName = resolver.FindAssemblyFile (reference);
+					if (fileName != null && File.Exists (fileName))
+						return widget.AddReferenceByFileName (fileName)?.Assembly;
+				} catch (Exception e) {
+					LoggingService.LogInternalError ($"Error while resolving assembly {reference.FullName} for {assembly.FileName}.", e);
 				}
-			});
+
+				return widget.AddReferenceByAssemblyName (reference.FullName)?.Assembly;
+			}
+
+			public PEFile ResolveModule (PEFile mainModule, string moduleName)
+			{
+				return widget.AddReferenceByFileName (mainModule.FileName)?.Assembly;
+			}
 		}
 
 		class FastNonInterningProvider : InterningProvider
@@ -151,20 +187,6 @@ namespace MonoDevelop.AssemblyBrowser
 				return obj;
 			}
 		}
-
-		#region IAssemblyResolver implementation
-		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name)
-		{
-			var loader = widget.AddReferenceByAssemblyName (name);
-			return loader != null ? loader.Assembly : null;
-		}
-
-		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name, ReaderParameters parameters)
-		{
-			var loader = widget.AddReferenceByAssemblyName (name);
-			return loader != null ? loader.Assembly : null;
-		}
-		#endregion
 
 		public string LookupAssembly (string fullAssemblyName)
 		{

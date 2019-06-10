@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CodeGenerationOptions.cs
 //  
 // Author:
@@ -48,7 +48,7 @@ namespace MonoDevelop.CodeGeneration
 	{
 		readonly int offset;
 
-		public TextEditor Editor
+		public Ide.Editor.TextEditor Editor
 		{
 			get;
 			private set;
@@ -88,7 +88,7 @@ namespace MonoDevelop.CodeGeneration
 		{
 			get
 			{
-				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
+				return IdeServices.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace MonoDevelop.CodeGeneration
 			private set;
 		}
 
-		internal CodeGenerationOptions (TextEditor editor, DocumentContext ctx)
+		internal CodeGenerationOptions (Ide.Editor.TextEditor editor, DocumentContext ctx)
 		{
 			Editor = editor;
 			DocumentContext = ctx;
@@ -127,7 +127,7 @@ namespace MonoDevelop.CodeGeneration
 			return CSharp.CSharpAmbience.SafeMinimalDisplayString (fullType, CurrentState, offset);
 		}
 
-		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)
+		public static CodeGenerationOptions CreateCodeGenerationOptions (Ide.Editor.TextEditor document, DocumentContext ctx)
 		{
 			return new CodeGenerationOptions (document, ctx);
 		}
@@ -135,7 +135,7 @@ namespace MonoDevelop.CodeGeneration
 		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var options = await DocumentContext.GetOptionsAsync (cancellationToken);
-			node = Formatter.Format (node, TypeSystemService.Workspace, options, cancellationToken);
+			node = Formatter.Format (node, IdeApp.TypeSystemService.Workspace, options, cancellationToken);
 
 			var text = Editor.Text;
 			string nodeText = node.ToString ();

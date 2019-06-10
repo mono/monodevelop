@@ -1,4 +1,4 @@
-﻿// 
+// 
 // RoslynSearchCategory.cs
 //  
 // Author:
@@ -160,8 +160,11 @@ namespace MonoDevelop.Components.MainToolbar
 			return Task.Run (async delegate {
 				try {
 					var kinds = GetTagKinds (searchPattern.Tag);
+
+					// TODO: Fill this right.
+					var priorityDocuments = ImmutableArray.Create<Document> ();
 					// Maybe use language services instead of AbstractNavigateToSearchService
-					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
+					var aggregatedResults = await Task.WhenAll (IdeApp.TypeSystemService.AllWorkspaces
 										.Select (ws => ws.CurrentSolution)
 										.SelectMany (sol => sol.Projects)
 										.Select (async proj => {
@@ -169,7 +172,7 @@ namespace MonoDevelop.Components.MainToolbar
 												var searchService = TryGetNavigateToSearchService (proj);
 												if (searchService == null)
 													return ImmutableArray<INavigateToSearchResult>.Empty;
-												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, kinds ?? searchService.KindsProvided, token).ConfigureAwait (false);
+												return await searchService.SearchProjectAsync (proj, priorityDocuments, searchPattern.Pattern, kinds ?? searchService.KindsProvided, token).ConfigureAwait (false);
 											}
 										})
 					).ConfigureAwait (false);

@@ -1,4 +1,4 @@
-//
+﻿//
 // TooltipPopoverWindow.cs
 //
 // Author:
@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
@@ -58,7 +59,7 @@ namespace MonoDevelop.Components
 		public TooltipPopoverWindow () : base (PopupType.Tooltip)
 		{
 			Theme.SetBackgroundColor (Styles.PopoverWindow.DefaultBackgroundColor);
-			Theme.Font = Xwt.Drawing.Font.FromName (FontService.SansFontName).WithScaledSize (Styles.FontScale11);
+			Theme.Font = Xwt.Drawing.Font.FromName (IdeServices.FontService.SansFontName).WithScaledSize (Styles.FontScale11);
 			ShowArrow = true;
 		}
 

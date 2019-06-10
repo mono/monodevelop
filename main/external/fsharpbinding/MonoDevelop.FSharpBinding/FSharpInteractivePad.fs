@@ -64,7 +64,7 @@ type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
 
 type FsiDocumentContext() =
     inherit DocumentContext()
-    let name = "__FSI__.fsx"
+    static let name = "__FSI__.fs"
     let pd = new FSharpParsedDocument(name, None, None) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
@@ -79,11 +79,12 @@ type FsiDocumentContext() =
     override x.ParsedDocument = pd
     override x.AttachToProject(_) = ()
     override x.ReparseDocument() = ()
-    override x.GetOptionSet() = TypeSystemService.Workspace.Options
+    override x.GetOptionSet() = IdeApp.TypeSystemService.Workspace.Options
     override x.Project = project :> Project
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
+    static member DocumentName = name
     member x.CompletionWidget 
         with set (value) = 
             completionWidget <- value
@@ -598,7 +599,7 @@ type FSharpFsiEditorCompletion() =
       inherit CommandHandler()
       override x.Run() =
           async {
-              let project = IdeApp.Workbench.ActiveDocument.Project :?> FSharpProject
+              let project = IdeApp.Workbench.ActiveDocument.Owner :?> FSharpProject
               FSharpInteractivePad.Fsi
               |> Option.iter (fun fsi -> fsi.LoadReferences(project)
                                          FSharpInteractivePad.BringToFront(false))

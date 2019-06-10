@@ -58,6 +58,7 @@ namespace MonoDevelop.Debugger
 	{
 		TaskCompletionSource<int> taskSource;
 		DebuggerSession session;
+		CancellationTokenRegistration registration;
 
 		public DebugAsyncOperation (DebuggerSession session)
 		{
@@ -65,7 +66,7 @@ namespace MonoDevelop.Debugger
 			taskSource = new TaskCompletionSource<int> ();
 			DebuggingService.StoppedEvent += OnStopDebug;
 			CancellationTokenSource = new CancellationTokenSource ();
-			CancellationTokenSource.Token.Register (DebuggingService.Stop);
+			registration = CancellationTokenSource.Token.Register (DebuggingService.Stop);
 			Task = taskSource.Task;
 			session.TargetReady += TargetReady;
 		}
@@ -82,6 +83,7 @@ namespace MonoDevelop.Debugger
 				taskSource.SetResult (0);
 				taskSource = null;
 			}
+			registration.Dispose ();
 			DebuggingService.StoppedEvent -= OnStopDebug;
 			session = null;
 		}

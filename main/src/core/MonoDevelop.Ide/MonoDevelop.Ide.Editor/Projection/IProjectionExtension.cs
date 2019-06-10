@@ -1,4 +1,4 @@
-﻿//
+//
 // IProjectionExtension.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
+	[Obsolete]
 	interface IProjectionExtension
 	{
 		IReadOnlyList<Projection> Projections {

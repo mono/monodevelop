@@ -49,13 +49,6 @@
 		<FileTemplate id = "PartialActionGroupFileTemplate" resource = "ActionGroupPartial.xft.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding insertbefore = "DefaultDisplayBinding"
-		       class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderDisplayBinding" />
-		<DisplayBinding 
-		       class = "MonoDevelop.GtkCore.GuiBuilder.ActionGroupDisplayBinding" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Designer (Gtk#)" id = "GtkCore">
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog"

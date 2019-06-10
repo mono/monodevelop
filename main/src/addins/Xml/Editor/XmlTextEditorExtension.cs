@@ -1,4 +1,4 @@
-// 
+﻿// 
 // XmlTextEditorExtension.cs
 // 
 // Authors:
@@ -90,12 +90,13 @@ namespace MonoDevelop.Xml.Editor
 		public override void Dispose()
 		{
 			if (!disposed) {
-				disposed = false;
+				disposed = true;
 				XmlEditorOptions.XmlFileAssociationChanged -= HandleXmlFileAssociationChanged;
 				XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
 
 				XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
-				TaskService.Errors.ClearByOwner (this);
+				if (IdeApp.IsInitialized)
+					IdeServices.TaskService.Errors.ClearByOwner (this);
 				base.Dispose ();
 			}
 		}
@@ -547,7 +548,7 @@ namespace MonoDevelop.Xml.Editor
 			if (string.IsNullOrEmpty (fileName))
 				return false;
 
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
+			string mimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 			if (IsMimeTypeHandled (mimeType))
 				return true;
 			
@@ -556,7 +557,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		static bool IsMimeTypeHandled (string mimeType)
 		{
-			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+			foreach (var m in IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
 					return true;
 			}
@@ -627,7 +628,7 @@ namespace MonoDevelop.Xml.Editor
 		public void CreateSchemaCommand ()
 		{
 			try {
-				TaskService.Errors.Clear ();
+				IdeServices.TaskService.Errors.Clear ();
 
 				string xml = Editor.Text;
 				using (ProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
@@ -703,7 +704,7 @@ namespace MonoDevelop.Xml.Editor
 		[CommandHandler (XmlCommands.Validate)]
 		public async void ValidateCommand ()
 		{
-			TaskService.Errors.Clear ();
+			IdeServices.TaskService.Errors.Clear ();
 			using (var monitor = XmlEditorService.GetMonitor ()) {
 				monitor.BeginTask (GettextCatalog.GetString ("Validating {0}...", FileName.FileName), 0);
 
@@ -724,16 +725,16 @@ namespace MonoDevelop.Xml.Editor
 
 		void UpdateErrors (List<Projects.BuildError> errors)
 		{
-			TaskService.Errors.ClearByOwner (this);
+			IdeServices.TaskService.Errors.ClearByOwner (this);
 			if (errors.Count == 0)
 				return;
 			foreach (var error in errors) {
-				TaskService.Errors.Add (new TaskListEntry (error) {
+				IdeServices.TaskService.Errors.Add (new TaskListEntry (error) {
 					WorkspaceObject = DocumentContext.Project,
 					Owner = this
 				});
 			}
-			TaskService.ShowErrors ();
+			IdeServices.TaskService.ShowErrors ();
 		}
 		
 		[CommandHandler (XmlCommands.AssignStylesheet)]

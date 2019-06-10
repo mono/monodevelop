@@ -29,26 +29,40 @@
 using System;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	
+
 	public class CodeTemplateToolboxProvider : IToolboxDynamicProvider
 	{
-		static string category = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
+		static string category = GettextCatalog.GetString ("Text Snippets");
 
-		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		readonly FilePath filePath;
+
+		public CodeTemplateToolboxProvider ()
 		{
-			var content = consumer as ViewContent;
-			if (content == null || !content.IsFile)
-				yield break;
-			// Hack: Ensure that this category is only filled if the current page is a text editor.
-			if (!(content is ITextEditorResolver))
-				yield break;
-			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.ContentName)) {
+		}
+
+		public CodeTemplateToolboxProvider (FilePath filePath)
+		{
+			this.filePath = filePath;
+		}
+
+		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		{
+			var file = filePath;
+
+			if (file.IsNullOrEmpty) {
+				if (!(consumer is FileDocumentController content) || !consumer.IsTextEditor (out var _)) {
+					yield break;
+				}
+				file = content.FilePath;
+			}
+
+			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (file)) {
 				if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 					continue;
 				yield return new TemplateToolboxNode (ct) {

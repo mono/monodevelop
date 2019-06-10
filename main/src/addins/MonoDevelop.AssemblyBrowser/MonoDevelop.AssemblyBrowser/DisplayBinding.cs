@@ -32,46 +32,29 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserDisplayBinding : IViewDisplayBinding
+	[ExportDocumentControllerFactory (Id = "AssemblyBrowser", FileExtension = "*")]
+	class AssemblyBrowserDisplayBinding : DocumentControllerFactory
 	{
-		public string Name {
-			get {
-				return GettextCatalog.GetString ("Assembly Browser");
-			}
-		}
-		
-		public bool CanUseAsDefault {
-			get { return true; }
-		}
-		
-		AssemblyBrowserViewContent viewContent = null;
-		
-		internal AssemblyBrowserViewContent GetViewContent ()
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
 		{
-			if (viewContent == null || viewContent.IsDisposed) {
-				viewContent = new AssemblyBrowserViewContent ();
-				viewContent.Disposed += HandleDestroyed;
-			}
-			return viewContent;
+			if (modelDescriptor is AssemblyBrowserDescriptor || (modelDescriptor is FileDescriptor file && (file.FilePath.HasExtension (".dll") || file.FilePath.HasExtension (".exe"))))
+				yield return new DocumentControllerDescription (GettextCatalog.GetString ("Assembly Browser"), true, DocumentControllerRole.Tool);
 		}
 
-		void HandleDestroyed (object sender, EventArgs e)
+		public override Task<DocumentController> CreateController (ModelDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
 		{
-			((AssemblyBrowserViewContent)sender).Disposed -= HandleDestroyed;
-			this.viewContent = null;
+			return Task.FromResult<DocumentController> (new AssemblyBrowserViewContent ());
 		}
-		
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
-		{
-			return fileName.HasExtension (".dll") || fileName.HasExtension (".exe");
-		}
-		
-		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
-		{
-			return GetViewContent ();
-		}
+	}
+
+	class AssemblyBrowserDescriptor : ModelDescriptor
+	{
+		public static readonly AssemblyBrowserDescriptor Instance = new AssemblyBrowserDescriptor ();
 	}
 }

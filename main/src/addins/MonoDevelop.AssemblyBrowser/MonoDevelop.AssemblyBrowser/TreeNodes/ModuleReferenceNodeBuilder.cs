@@ -27,30 +27,31 @@
 //
 
 using System;
-using Mono.Cecil;
 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using System.Reflection.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class ModuleReferenceNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(ModuleReference); }
+			get { return typeof(IModule); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var reference = (ModuleReference)dataObject;
+			var reference = (IModule)dataObject;
 			return reference.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var reference = (ModuleReference)dataObject;
-			nodeInfo.Label = reference.Name;
+			var reference = (IModule)dataObject;
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (reference.Name);
 			nodeInfo.Icon = Context.GetIcon (Stock.GenericFile);
 		}
 		
@@ -59,8 +60,8 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as ModuleReference;
-				var e2 = otherNode.DataItem as ModuleReference;
+				var e1 = thisNode.DataItem as IModule;
+				var e2 = otherNode.DataItem as IModule;
 				
 				if (e1 == null && e2 == null)
 					return 0;
@@ -69,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return 1;
 				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (e1.Name, e2.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;

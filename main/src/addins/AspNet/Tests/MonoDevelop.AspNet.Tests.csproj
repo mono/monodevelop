@@ -1,7 +1,6 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
-  <Import Project="$(ReferencesRoslyn)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,19 +9,15 @@
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <!--
+    This needs to be ported to the new editor, and currently makes use of many, many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Razor\Dom\RazorCodeBlockParsingTests.cs" />
@@ -33,11 +28,9 @@
     <Compile Include="Razor\Dom\RazorImplicitExpressionsParsingTests.cs" />
     <Compile Include="Razor\Dom\RazorParsingTests.cs" />
     <Compile Include="Razor\Dom\RazorStatementsParsingTests.cs" />
-    <Compile Include="Razor\RazorCompletionTesting.cs" />
     <Compile Include="WebForms\WebFormsTesting.cs" />
     <Compile Include="WebForms\WebFormsParsingTests.cs" />
     <Compile Include="WebForms\WebFormsCompletionTests.cs" />
-    <Compile Include="Razor\RazorCompletionTests.cs" />
     <Compile Include="Html\HtmlParsingTests.cs" />
     <Compile Include="Html\HtmlImplicitClosingTests.cs" />
     <Compile Include="Razor\Dom\RazorDocumentTrackerTests.cs" />
@@ -88,6 +81,7 @@
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>

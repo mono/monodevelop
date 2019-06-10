@@ -69,7 +69,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		static void Rollback (TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
+		static void Rollback (Ide.Editor.TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
 		{
 			for (int i = textChanges.Count - 1; i >= 0; i--) {
 				for (int j = 0; j < textChanges [i].TextChanges.Count; ++j) {
@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public async Task Rename (ISymbol symbol)
 		{
-			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
+			var ws = IdeApp.Workbench.ActiveDocument.DocumentContext.RoslynWorkspace;
 			if (!symbol.IsDefinedInSource ())
 				return;
 			foreach (var location in symbol.Locations)
@@ -147,7 +147,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var links = new List<TextLink> ();
 			var link = new TextLink ("name");
 
-			var documents = ImmutableHashSet.Create (doc.AnalysisDocument);
+			var documents = ImmutableHashSet.Create (doc.DocumentContext.AnalysisDocument);
 
 			foreach (var loc in symbol.Locations) {
 				if (loc.IsInSource && FilePath.PathComparer.Equals (loc.SourceTree.FilePath, doc.FileName)) {
@@ -155,7 +155,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.AnalysisDocument.Project.Solution, documents, default (CancellationToken))) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.DocumentContext.AnalysisDocument.Project.Solution, documents, default (CancellationToken))) {
 				foreach (var loc in mref.Locations) {
 					var span = loc.Location.SourceSpan;
 					var segment = new TextSegment (span.Start, span.Length);
@@ -190,7 +190,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
-			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
+			var ws = IdeApp.Workbench.ActiveDocument.DocumentContext.RoslynWorkspace;
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var documents = new List<Microsoft.CodeAnalysis.Document> ();
 			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {

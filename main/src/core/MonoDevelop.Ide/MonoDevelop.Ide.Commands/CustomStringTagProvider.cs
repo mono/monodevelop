@@ -27,11 +27,11 @@
 
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using System.IO;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -85,30 +85,43 @@ namespace MonoDevelop.Ide.Commands
 						return !wb.ActiveDocument.IsFile ? String.Empty : wb.ActiveDocument.FileName.Extension;
 					return null;
 					
-				case "CURLINE":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.CaretLocation.Line;
+				case "CURLINE": {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
+						var pos = view.Caret.Position.BufferPosition;
+						return pos.Snapshot.GetLineNumberFromPosition (pos.Position) + 1;
+					}
 					return null;
+				}
 					
-				case "CURCOLUMN":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.CaretLocation.Column;
+				case "CURCOLUMN": {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
+						var pos = view.Caret.Position.BufferPosition;
+						var line = pos.Snapshot.GetLineFromPosition (pos.Position);
+						return pos.Position - line.Start.Position + 1;
+					}
 					return null;
+				}
 					
-				case "CUROFFSET":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.CaretOffset;
+				case "CUROFFSET": {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
+						return view.Caret.Position.BufferPosition.Position;
+					}
 					return null;
+				}
 					
-				case "CURTEXT":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.SelectedText;
+				case "CURTEXT": {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
+						return view.Selection.IsEmpty? "" : view.Selection.SelectedSpans[0].GetText ();
+					}
 					return null;
+				}
 					
-				case "EDITORTEXT":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.Text;
+				case "EDITORTEXT": {
+					if (wb.ActiveDocument?.GetContent<ITextView> (true) is ITextView view) {
+						return view.TextBuffer.CurrentSnapshot.GetText ();
+					}
 					return null;
+				}
 					
 				case "STARTUPPATH":
 					return AppDomain.CurrentDomain.BaseDirectory;

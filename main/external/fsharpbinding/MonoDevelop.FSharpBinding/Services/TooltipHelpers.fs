@@ -10,6 +10,7 @@ open System.Xml
 open System.Xml.Linq
 open MonoDevelop.Core
 open ExtCore.Control
+open FSharp.Compiler.SourceCodeServices
 
 [<RequireQualifiedAccess>]
 type Style =
@@ -173,7 +174,7 @@ module TooltipXmlDoc =
     ///check helpxml exist
     let tryGetDoc key =
         try
-            let helpTree = MonoDevelop.Projects.HelpService.HelpTree
+            let helpTree = CoreServices.HelpService.HelpTree
             if helpTree = null then None else
             let helpxml = helpTree.GetHelpXml(key)
             if helpxml = null then None else Some(helpxml)
@@ -273,7 +274,7 @@ module TooltipXmlDoc =
 
 /// Formatting of TooltipElement information displayed in tooltips and autocompletion
 module TooltipFormatting =
-  open Microsoft.FSharp.Compiler.SourceCodeServices
+  open FSharp.Compiler.SourceCodeServices
 
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt =

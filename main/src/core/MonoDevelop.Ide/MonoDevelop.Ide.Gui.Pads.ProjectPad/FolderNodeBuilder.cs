@@ -432,7 +432,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			CurrentNode.Expanded = true;
 			if (IdeApp.Workbench.ActiveDocument != null)
-				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();
+				IdeApp.Workbench.ActiveDocument.Select ();
 		}
 		
 		void OnFileInserted (ITreeNavigator nav)

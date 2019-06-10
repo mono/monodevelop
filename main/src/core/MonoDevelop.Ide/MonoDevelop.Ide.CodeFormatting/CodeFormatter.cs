@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Formatter.cs
 //  
 // Author:
@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class CodeFormatter
 	{
 		readonly AbstractCodeFormatter formatter;
@@ -117,7 +118,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		[Obsolete("Use OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment) instead. This function is going to be removed.")]
 		public void OnTheFlyFormat (Document ideDocument, int startOffset, int endOffset)
 		{
-			formatter.OnTheFlyFormat (ideDocument.Editor, ideDocument, startOffset, endOffset - startOffset);
+			formatter.OnTheFlyFormat (ideDocument.Editor, ideDocument.DocumentContext, startOffset, endOffset - startOffset);
 		}
 
 		public bool SupportsCorrectingIndent { get { return formatter.SupportsCorrectingIndent; } }

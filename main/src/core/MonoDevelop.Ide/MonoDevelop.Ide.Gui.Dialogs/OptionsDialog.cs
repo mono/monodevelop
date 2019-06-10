@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Instead, give this some awareness of the mime system.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
 			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
-				var pix = DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize);
+				var pix = IdeServices.DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize);
 				if (pix != null) {
 					crp.Image = pix;
 				} else {
@@ -529,13 +529,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return false;
 		}
 		
-		internal void ShowPage (OptionsDialogSection section)
+		internal void ShowPage (OptionsDialogSection section, bool forceExpand = false)
 		{
 			if (!IsRealized) {
 				// Defer this until the dialog is realized due to the sizing logic in CreatePageWidget.
 				EventHandler deferredShowPage = null;
 				deferredShowPage = delegate {
-					ShowPage (section);
+					ShowPage (section, true);
 					Realized -= deferredShowPage;
 				};
 				Realized += deferredShowPage;
@@ -555,7 +555,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 				}
 			}
-			
 			foreach (Gtk.Widget w in pageFrame.Children) {
 				Container cc = w as Gtk.Container;
 				if (cc != null) {
@@ -595,7 +594,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					((Notebook)c).Page = 0;
 			}
 
-			if (!DesktopService.AccessibilityInUse && !DesktopService.AccessibilityKeyboardFocusInUse) {
+			if (!IdeServices.DesktopService.AccessibilityInUse && !IdeServices.DesktopService.AccessibilityKeyboardFocusInUse || forceExpand) {
 				// Don't automatically expand trees if using accessibility
 				// as it can be confusing with screen readers
 				tree.ExpandToPath (store.GetPath (page.Iter));

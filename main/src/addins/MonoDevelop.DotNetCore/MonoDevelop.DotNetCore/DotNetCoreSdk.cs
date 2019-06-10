@@ -55,9 +55,6 @@ namespace MonoDevelop.DotNetCore
 
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core SDK not found.");
-
-			if (IsInstalled)
-				SetFSharpShims ();
 		}
 
 		static void RegisterProjectImportSearchPath (string oldPath, string newPath)
@@ -160,27 +157,6 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		/// <summary>
-		/// This is a workaround to allow F# .NET Core 2.0 projects to be evaluated properly and compile
-		/// without any errors. The better solution would be to ship the new Microsoft.FSharp.NetSdk.props
-		/// and .targets files with Mono so this workaround can be removed. Setting the FSharpPropsShim
-		/// and FSharpTargetsShim as environment variables allows the correct MSBuild imports to be used
-		/// when building and evaluating. Just setting a global MSBuild property would fix the Build target
-		/// not being found but the MSBuild project evaluation would not add the FSharp.Core PackageReference
-		/// to the project.assets.json file, also all .fs files were treated as None items instead of
-		/// Compile items.
-		/// </summary>
-		static void SetFSharpShims ()
-		{
-			var latestVersion = Versions.FirstOrDefault ();
-			if (latestVersion != null && latestVersion.Major == 2) {
-				FilePath directory = FilePath.Build (MSBuildSDKsPath, "..", "FSharp");
-
-				Environment.SetEnvironmentVariable ("FSharpPropsShim", directory.Combine ("Microsoft.FSharp.NetSdk.props").FullPath);
-				Environment.SetEnvironmentVariable ("FSharpTargetsShim", directory.Combine ("Microsoft.FSharp.NetSdk.targets").FullPath);
-			}
-		}
-
-		/// <summary>
 		/// Used by unit tests to fake having different .NET Core sdks installed.
 		/// </summary>
 		internal static void SetVersions (IEnumerable<DotNetCoreVersion> versions)
@@ -202,6 +178,27 @@ namespace MonoDevelop.DotNetCore
 		internal static void SetSdkRootPath (string path)
 		{
 			SdkRootPath = path;
+		}
+
+		internal static string GetNotSupportedVersionMessage (string version = "")
+		{
+			string GetMessage (DotNetCoreVersion currentVersion)
+			{
+				return GettextCatalog.GetString ("NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} SDK by visiting {3}.", currentVersion.Major, currentVersion.Minor, currentVersion.ToString (), DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (currentVersion));
+			}
+
+			var installedVersion = Versions.OrderByDescending (x => x).FirstOrDefault ();
+			if (installedVersion != null) {
+				if (installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion) {
+					return GetMessage (installedVersion);
+				} else if (installedVersion.Major == 2 && installedVersion.Minor == 2 && installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion22) {
+					return GetMessage (installedVersion);
+				} else if (installedVersion.Major == 3 && installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion30) {
+					return GetMessage (installedVersion);
+				}
+			}
+
+			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core {0} SDK by visiting {1}.", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
 		}
 	}
 }

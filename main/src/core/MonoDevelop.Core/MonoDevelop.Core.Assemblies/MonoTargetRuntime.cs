@@ -179,6 +179,16 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
+			if (toolsVersion != "Current") {
+				var path = GetMSBuildBinPathInternal ("Current");
+				if (path != null)
+					return path;
+			}
+			return GetMSBuildBinPathInternal (toolsVersion);
+		}
+
+		string GetMSBuildBinPathInternal (string toolsVersion)
+		{
 			var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
 			if (File.Exists (Path.Combine (path, "MSBuild.exe")) ||
 			    File.Exists (Path.Combine (path, "MSBuild.dll"))) {

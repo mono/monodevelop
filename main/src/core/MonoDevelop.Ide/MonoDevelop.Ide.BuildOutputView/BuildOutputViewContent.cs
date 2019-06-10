@@ -1,4 +1,4 @@
-//
+﻿//
 // BuildOutputView.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using Xwt;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -43,87 +44,82 @@ namespace MonoDevelop.Ide.BuildOutputView
 		JumpTo
 	}
 
-	class BuildOutputViewContent : AbstractXwtViewContent
+	[ExportFileDocumentController (Name = "Build Output", FileExtension = ".binlog", CanUseAsDefault = true, Role = DocumentControllerRole.Preview)]
+	class BuildOutputViewContent : FileDocumentController
 	{
-		FilePath filename;
 		BuildOutputWidget control;
+		XwtControl xwtControl;
 		BuildOutput buildOutput;
+		bool loadedFromFile;
 
-		public BuildOutputViewContent (FilePath filename)
+		public BuildOutputViewContent ()
 		{
-			this.filename = filename;
-			this.ContentName = filename;
-			Counters.OpenedFromFile++;
 		}
 
-		public BuildOutputViewContent (BuildOutput buildOutput)
+		public BuildOutputViewContent (BuildOutput buildOutput) : this ()
 		{
 			this.buildOutput = buildOutput;
-			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
+			DocumentTitle = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
 			Counters.OpenedFromIDE++;
 		}
 
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			await base.OnInitialize (modelDescriptor, status);
+
+			if (modelDescriptor is FileDescriptor file) {
+				FilePath = file.FilePath;
+				loadedFromFile = true;
+				Counters.OpenedFromFile++;
+			}
+		}
+
+		protected override bool ControllerIsViewOnly => !loadedFromFile;
+
 		void FileNameChanged (object sender, string file)
 		{
-			ContentName = file;
+			FilePath = file;
+			DocumentTitle = control.ViewContentName;
+			if (System.IO.File.Exists (file))
+				loadedFromFile = true;
 		}
 
-		public override Widget Widget {
-			get {
-				if (control != null)
-					return control;
-				var toolbar = WorkbenchWindow.GetToolbar (this);
-				// TODO: enable native backend by default without checking NATIVE_BUILD_OUTPUT env
-				var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_BUILD_OUTPUT")?.ToLower () == "true";
-				// native mode on Mac only, until we support Wpf embedding
-				var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac && nativeEnabled ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
-				engine.Invoke (() => {
-					if (buildOutput != null)
-						control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
-					else
-						control = new BuildOutputWidget (filename, toolbar);
-					control.FileNameChanged += FileNameChanged;
-				});
-				return control;
-			}
-		}
-
-		public override bool IsReadOnly {
-			get {
-				return true;
-			}
-		}
-
-		public override bool IsFile {
-			get {
-				return true;
-			}
-		}
-
-		public override bool IsViewOnly {
-			get {
-				return true;
-			}
-		}
-
-		public override string TabPageLabel {
-			get {
-				return filename.FileName ?? GettextCatalog.GetString ("Build Output");
-			}
-		}
-
-		bool disposed = false;
-
-		public override void Dispose ()
+		protected override Control OnGetViewControl (DocumentViewContent view)
 		{
-			if (!disposed) {
+			if (xwtControl == null)
+				xwtControl = new XwtControl (CreateWidget (view));
+			return (Control)xwtControl;
+		}
+
+		Widget CreateWidget (DocumentViewContent view)
+		{
+			if (control != null)
+				return control;
+			var toolbar = view.GetToolbar ();
+			// TODO: enable native backend by default without checking NATIVE_BUILD_OUTPUT env
+			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_BUILD_OUTPUT")?.ToLower () == "true";
+			// native mode on Mac only, until we support Wpf embedding
+			var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac && nativeEnabled ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+			engine.Invoke (() => {
+				if (buildOutput != null)
+					control = new BuildOutputWidget (buildOutput, DocumentTitle, toolbar);
+				else
+					control = new BuildOutputWidget (FilePath, toolbar);
+				control.FileNameChanged += FileNameChanged;
+			});
+			return control;
+		}
+
+
+		protected override void OnDispose ()
+		{
+			if (!IsDisposed) {
 				if (control != null) {
 					control.FileNameChanged -= FileNameChanged;
 					control.Dispose ();
 				}
-				disposed = true;
 			}
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
 		internal Task GoToError (string description, string project)
@@ -208,7 +204,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		[CommandHandler (FileCommands.Save)]
-		public override Task Save ()
+		protected override Task OnSave ()
 		{
 			Counters.SavedToFile++;
 			return control.SaveAs ();

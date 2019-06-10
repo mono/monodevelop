@@ -52,6 +52,7 @@ namespace MonoDevelop.Ide
 		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads loaded", "IDE");
 		internal static TimerCounter CommandTargetScanTime = InstrumentationService.CreateTimerCounter ("Command target scan", "Timing", 0.3, false);
 		internal static TimerCounter<OpenWorkspaceItemMetadata> OpenWorkspaceItemTimer = InstrumentationService.CreateTimerCounter<OpenWorkspaceItemMetadata> ("Solution opened in the IDE", "IDE", id:"Ide.Shell.SolutionOpened");
+		internal static TimerCounter<WorkspaceLoadMetadata> OpenWorkspaceWithIntellisenseItemTimer = InstrumentationService.CreateTimerCounter<WorkspaceLoadMetadata> ("Solution fully opened in the IDE", "IDE", id: "Ide.Perf.SolutionFullyLoaded");
 		internal static TimerCounter<OpenDocumentMetadata> OpenDocumentTimer = InstrumentationService.CreateTimerCounter<OpenDocumentMetadata> ("Open document", "IDE", id:"Ide.Shell.OpenDocument");
 		internal static TimerCounter DocumentOpened = InstrumentationService.CreateTimerCounter ("Document opened", "IDE", id:"Ide.Shell.DocumentOpened");
 		internal static Counter AutoSavedFiles = InstrumentationService.CreateCounter ("Autosaved Files", "Text Editor");
@@ -66,6 +67,7 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
 		internal static Counter<CompletionStatisticsMetadata> CodeCompletionStats = InstrumentationService.CreateCounter<CompletionStatisticsMetadata> ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
 		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
+		internal static Counter<TimeToCodeMetadata> TimeToIntellisense = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Intellisense", "IDE", id: "Ide.TimeToIntellisense"); 
 		internal static bool TrackingBuildAndDeploy;
 		internal static TimerCounter<BuildAndDeployMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<BuildAndDeployMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 		internal static Counter<PlatformMemoryMetadata> MemoryPressure = InstrumentationService.CreateCounter<PlatformMemoryMetadata> ("Memory Pressure", "IDE", id: "Ide.MemoryPressure");
@@ -79,6 +81,9 @@ namespace MonoDevelop.Ide
 			public static TimerCounter WorkspaceItemLoaded = InstrumentationService.CreateTimerCounter ("Workspace item loaded", "Parser Service");
 			public static Counter ProjectsLoaded = InstrumentationService.CreateTimerCounter ("Projects loaded", "Parser Service");
 		}
+
+		public static Counter NewEditorEnabled = InstrumentationService.CreateCounter ("New Editor Enabled", "Text Editor", id: "NewTextEditor.Enabled");
+		public static Counter NewEditorDisabled = InstrumentationService.CreateCounter ("New Editor Disabled", "Text Editor", id: "NewTextEditor.Disabled");
 
 		public static string[] CounterReport ()
 		{
@@ -176,6 +181,11 @@ namespace MonoDevelop.Ide
 		}
 
 		public long SolutionLoadTime {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public long IntellisenseLoadTime {
 			get => GetProperty<long> ();
 			set => SetProperty (value);
 		}

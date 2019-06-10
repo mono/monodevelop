@@ -35,6 +35,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -171,6 +172,11 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.ViewCommands.NewLayout
 	public class NewLayoutHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = IdeApp.Workbench.Visible;
+		}
+
 		protected override void Run ()
 		{
 			string newLayoutName = null;
@@ -192,6 +198,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
+			if (!IdeApp.Workbench.Visible) {
+				info.Visible = false;
+				return;
+			}
 			info.Enabled = !String.Equals ("Solution", IdeApp.Workbench.CurrentLayout, StringComparison.OrdinalIgnoreCase);
 			string itemName;
 			if (!LayoutListHandler.NameMapping.TryGetValue (IdeApp.Workbench.CurrentLayout, out itemName))
@@ -281,14 +291,14 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workbench.ActiveDocument == null)
 				info.Enabled = false;
 			else {
-				IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
+				IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> (true);
 				info.Enabled = zoom != null && zoom.EnableZoomIn;
 			}
 		}
 
 		protected override void Run ()
 		{
-			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> (true);
 			zoom.ZoomIn ();
 		}
 	}
@@ -300,14 +310,14 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workbench.ActiveDocument == null)
 				info.Enabled = false;
 			else {
-				IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
+				IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> (true);
 				info.Enabled = zoom != null && zoom.EnableZoomOut;
 			}
 		}
 
 		protected override void Run ()
 		{
-			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> (true);
 			zoom.ZoomOut ();
 		}
 	}
@@ -319,14 +329,14 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workbench.ActiveDocument == null)
 				info.Enabled = false;
 			else {
-				IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
+				IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> (true);
 				info.Enabled = zoom != null && zoom.EnableZoomReset;
 			}
 		}
 
 		protected override void Run ()
 		{
-			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> (true);
 			zoom.ZoomReset ();
 		}
 	}

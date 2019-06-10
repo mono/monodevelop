@@ -40,6 +40,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FilePath BaseIntermediateOutputPath { get; set; }
 		public ISolution ParentSolution { get; set; }
 		public IDictionary ExtendedProperties { get; set; }
+		public bool IsReevaluating { get; set; }
 
 		List<string> flavorGuids;
 

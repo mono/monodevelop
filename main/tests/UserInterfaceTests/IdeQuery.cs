@@ -31,14 +31,6 @@ namespace UserInterfaceTests
 {
 	public static class IdeQuery
 	{
-		readonly static Func<AppQuery, AppQuery> _defaultWorkbench = c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench");
-		readonly static Func<AppQuery, AppQuery> _newFileDialog = c => c.Window ().Marked ("MonoDevelop.Ide.Projects.NewFileDialog");
-		readonly static Func<AppQuery, AppQuery> _gitConfigurationDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog");
-		readonly static Func<AppQuery, AppQuery> _editRemoteDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog");
-		readonly static Func<AppQuery, AppQuery> _editBranchDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog");
-		readonly static Func<AppQuery, AppQuery> _textArea = c => c.Window ().Children ().Marked ("Mono.TextEditor.TextArea");
-		readonly static Func<AppQuery, AppQuery> _xamarinUpdate = c => c.Marked ("Visual Studio Update");
-
 		readonly static Func<AppQuery, AppQuery> _macRunButton = c => c.Marked ("MonoDevelop.MacIntegration.MainToolbar.RunButton");
 
 		public static Func<AppQuery, AppQuery> RunButton
@@ -50,54 +42,22 @@ namespace UserInterfaceTests
 			}
 		}
 
-		public static Func<AppQuery, AppQuery> DefaultWorkbench
-		{
-			get {
-				return _defaultWorkbench;
-			}
-		}
+		public static Func<AppQuery, AppQuery> DefaultWorkbench { get; } = c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench");
 
-		public static Func<AppQuery, AppQuery> NewFileDialog
-		{
-			get {
-				return _newFileDialog;
-			}
-		}
+		public static Func<AppQuery, AppQuery> NewFileDialog { get; } = c => c.Window ().Marked ("MonoDevelop.Ide.Projects.NewFileDialog");
 
-		public static Func<AppQuery, AppQuery> GitConfigurationDialog
-		{
-			get {
-				return _gitConfigurationDialog;
-			}
-		}
+		public static Func<AppQuery, AppQuery> GitConfigurationDialog { get; } = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog");
 
-		public static Func<AppQuery, AppQuery> EditRemoteDialog
-		{
-			get {
-				return _editRemoteDialog;
-			}
-		}
+		public static Func<AppQuery, AppQuery> EditRemoteDialog { get; } = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog");
 
-		public static Func<AppQuery, AppQuery> EditBranchDialog
-		{
-			get {
-				return _editBranchDialog;
-			}
-		}
+		public static Func<AppQuery, AppQuery> EditBranchDialog { get; } = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog");
 
-		public static Func<AppQuery, AppQuery> TextArea
-		{
-			get {
-				return _textArea;
-			}
-		}
+		// TODO: Implement this for the cocoa editor, as we aren't going through a TextArea.
+		public static Func<AppQuery, AppQuery> TextArea { get; } = c => c.Window ().Children ().Marked ("Mono.TextEditor.TextArea");
 
-		public static Func<AppQuery, AppQuery> XamarinUpdate
-		{
-			get {
-				return _xamarinUpdate;
-			}
-		}
+		public static Func<AppQuery, AppQuery> TextAreaForFile (string fileName) => c => TextArea (c).Property ("FileName", fileName);
+
+		public static Func<AppQuery, AppQuery> XamarinUpdate { get; } = c => c.Marked ("Visual Studio Update");
 	}
 }
 

@@ -11,6 +11,7 @@
     using Microsoft.VisualStudio.Text.Editor;
     using MonoDevelop.Components;
     using Xwt;
+    using Point = Xwt.Point;
 
     internal abstract class BaseWpfToolTipPresenter : IToolTipPresenter, IObscuringTip
     {
@@ -18,7 +19,7 @@
         protected readonly IObscuringTipManager obscuringTipManager;
         protected readonly ITextView textView;
         protected readonly ToolTipParameters parameters;
-        protected readonly ToolTipPresenterStyle presenterStyle;
+        protected readonly ToolTipPresenterStyle2 presenterStyle;
 
         protected readonly MonoDevelop.Components.XwtPopup popup = new MonoDevelop.Components.XwtPopup (Xwt.PopupWindow.PopupType.Tooltip);
         protected ITrackingSpan applicableToSpan;
@@ -29,7 +30,7 @@
             IObscuringTipManager obscuringTipManager,
             ITextView textView,
             ToolTipParameters parameters,
-            ToolTipPresenterStyle presenterStyle)
+            ToolTipPresenterStyle2 presenterStyle)
         {
             this.viewElementFactoryService = viewElementFactoryService
                 ?? throw new ArgumentNullException(nameof(viewElementFactoryService));
@@ -152,6 +153,8 @@
         }
 
         protected IMdTextView WpfTextView => this.textView as IMdTextView;
+
+        public bool IsMouseOverAggregated => false;
 
         protected Point GetScreenPointFromTextXY(double x, double y)
         {

@@ -23,10 +23,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-using System.IO;
 using System;
-using System.Xml;
-
+using System.IO;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
@@ -34,11 +32,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	[ExtensionNode (Description="A template for color and syntax shemes.")]
 	class TemplateCodon : ExtensionNode, IStreamProvider
 	{
-		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
+		[NodeAttribute ("resource", "Name of the resource where the template is stored.")]
 		string resource;
 		
 		[NodeAttribute("file", "Name of the file where the template is stored.")]
 		string file;
+
+		#pragma warning restore 649
 
 		public string Name { get { return file ?? resource; } }
 

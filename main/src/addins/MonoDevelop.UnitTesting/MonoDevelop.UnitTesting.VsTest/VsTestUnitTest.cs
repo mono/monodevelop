@@ -33,12 +33,13 @@ using MonoDevelop.UnitTesting;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using System.Linq;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.UnitTesting.VsTest
 {
 	class VsTestUnitTest : UnitTest, IVsTestTestProvider
 	{
-		public Project Project { get; private set; }
+		public MonoDevelop.Projects.Project Project { get; private set; }
 		TestCase test;
 		IVsTestTestRunner testRunner;
 		string name;
@@ -47,7 +48,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 		protected VsTestUnitTest(string displayName) : base (displayName)
 		{ }
 
-		public VsTestUnitTest (IVsTestTestRunner testRunner, TestCase test, Project project)
+		public VsTestUnitTest (IVsTestTestRunner testRunner, TestCase test, MonoDevelop.Projects.Project project)
 			: base (test.DisplayName)
 		{
 			this.Project = project;
@@ -64,7 +65,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			if (!string.IsNullOrEmpty (test.CodeFilePath))
 				sourceCodeLocation = new SourceCodeLocation (test.CodeFilePath, test.LineNumber, 0);
 			else {
-				TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+				IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
 					var dotIndex = test.FullyQualifiedName.LastIndexOf (".", StringComparison.Ordinal);
 					var className = test.FullyQualifiedName.Remove (dotIndex);
 					var methodName = test.FullyQualifiedName.Substring (dotIndex + 1);

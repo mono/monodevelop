@@ -52,12 +52,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.HelpOperations.ShowHelp ("root:");
+			IdeServices.HelpOperations.ShowHelp ("root:");
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			if (!IdeApp.HelpOperations.CanShowHelp ("root:"))
+			if (!IdeServices.HelpOperations.CanShowHelp ("root:"))
 				info.Visible = false;
 		}
 	}
@@ -65,6 +65,12 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory
 	public class OpenLogDirectoryHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.DisableOnShellLock = false;
+			info.Enabled = true;
+		}
+
 		protected override void Run ()
 		{
 			try {

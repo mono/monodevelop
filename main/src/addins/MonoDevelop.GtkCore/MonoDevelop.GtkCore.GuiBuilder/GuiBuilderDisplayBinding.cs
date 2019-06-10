@@ -1,4 +1,4 @@
-//
+﻿//
 // GuiBuilderDisplayBinding.cs
 //
 // Author:
@@ -35,14 +35,16 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 using ICSharpCode.NRefactory6.CSharp;
-
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderDisplayBinding : IViewDisplayBinding
+	[ExportDocumentControllerFactory (FileExtension = ".cs", InsertBefore = "DefaultDisplayBinding")]
+	public class GuiBuilderDisplayBinding : FileDocumentControllerFactory
 	{
-		bool excludeThis = false;
-		
 		public string Name {
 			get { return MonoDevelop.Core.GettextCatalog.GetString ("Window Designer"); }
 		}
@@ -50,35 +52,36 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public bool CanUseAsDefault {
 			get { return true; }
 		}
-		
-		public bool CanHandle (MonoDevelop.Core.FilePath fileName, string mimeType, Project ownerProject)
+
+		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor file)
 		{
-			if (excludeThis)
-				return false;
-			
-			if (fileName.IsNullOrEmpty)
-				return false;
-			
-			if (GetWindow (fileName, ownerProject) == null)
-				return false;
-			
-			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
-			excludeThis = false;
-			return db != null;
+			var list = ImmutableList<DocumentControllerDescription>.Empty;
+
+			if (file.FilePath.IsNullOrEmpty || !(file.Owner is DotNetProject))
+				return list;
+
+			if (!IdeApp.Workspace.IsOpen)
+				return list;
+
+			if (GetWindow (file.FilePath, (DotNetProject)file.Owner) == null)
+				return list;
+
+			list = list.Add (
+				new DocumentControllerDescription {
+					CanUseAsDefault = true,
+					Role = DocumentControllerRole.VisualDesign,
+					Name = MonoDevelop.Core.GettextCatalog.GetString ("Window Designer")
+				});
+
+			return list;
 		}
-		
-		public ViewContent CreateContent (MonoDevelop.Core.FilePath fileName, string mimeType, Project ownerProject)
+
+		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
-			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
-			var content = db.CreateContent (fileName, mimeType, ownerProject);
-			content.Binding = db;
-			var window = GetWindow (fileName, ownerProject);
+			var window = GetWindow (file.FilePath, (Project)file.Owner);
 			if (window == null)
 				throw new InvalidOperationException ("GetWindow == null");
-			GuiBuilderView view = new GuiBuilderView (content, window);
-			excludeThis = false;
+			var view = new GuiBuilderView (window);
 			return view;
 		}
 		
@@ -91,10 +94,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
-			var docId = TypeSystemService.GetDocumentId (project, file);
+			var docId = IdeApp.TypeSystemService.GetDocumentId (project, file);
 			if (docId == null)
 				return null;
-			var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
+			var doc = IdeApp.TypeSystemService.GetCodeAnalysisDocument (docId);
 			if (doc == null)
 				return null;
 			Microsoft.CodeAnalysis.SemanticModel semanticModel;

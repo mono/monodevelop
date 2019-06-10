@@ -33,13 +33,8 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		internal protected Window (object window)
+		internal protected Window (object window) : base (window)
 		{
-			if (window == null)
-				throw new ArgumentNullException (nameof (window));
-			
-			this.nativeWidget = window;
-			cache.Add (window, new WeakReference<Control> (this));
 		}
 
 		public static implicit operator Gtk.Window (Window d)

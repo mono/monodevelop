@@ -30,29 +30,31 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Editor.Implementation.TodoComments;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	static partial class CommentTasksProvider
+	partial class CommentTasksProvider
 	{
-		internal static void Initialize ()
-		{
-			var todoListProvider = Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
-			todoListProvider.TodoListUpdated += OnTodoListUpdated;
-		}
+		TaskService taskService;
 
-		static CommentTasksProvider()
+		public static void Initialize ()
 		{
-			IdeApp.Initialized += (sender, args) => {
-				IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
-				IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
+			Runtime.ServiceProvider.WhenServiceInitialized<CompositionManager> (compositionManager => {
+				var todoListProvider = compositionManager.GetExportedValue<ITodoListProvider> ();
+				todoListProvider.TodoListUpdated += OnTodoListUpdated;
+			});
 
+			Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (workspace => {
+				workspace.SolutionLoaded += OnSolutionLoaded;
+				workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 				Legacy.Initialize ();
-			};
-
+			});
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 		}
 
@@ -85,15 +87,15 @@ namespace MonoDevelop.Ide.Tasks
 					return;
 
 				if (triggerLoad == null || triggerLoad.Invoke (cachedUntilViewCreated.Count)) {
-					var changes = cachedUntilViewCreated.Values.Select (x => x.ToCommentTaskChange ()).Where (x => x != null).ToList ();
-					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
+					var changes = cachedUntilViewCreated.Values.Select (x => ToCommentTaskChange (x)).Where (x => x != null).ToList ();
+					IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
 					cachedUntilViewCreated = null;
 					triggerLoad = null;
 				}
 			}
 		}
 
-		public static CommentTaskChange ToCommentTaskChange (this TodoItemsUpdatedArgs args)
+		public static CommentTaskChange ToCommentTaskChange (TodoItemsUpdatedArgs args)
 		{
 			if (!TryGetDocument (args, out var doc, out var project))
 				return null;
@@ -149,19 +151,19 @@ namespace MonoDevelop.Ide.Tasks
 
 			var change = ToCommentTaskChange (args);
 			if (change != null)
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (new [] { change }));
+				IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (new [] { change }));
 		}
 
 		static async void OnSolutionLoaded (object sender, SolutionEventArgs args)
 		{
-			var ws = await TypeSystemService.GetWorkspaceAsync (args.Solution);
+			var ws = await IdeApp.TypeSystemService.GetWorkspaceAsync (args.Solution);
 			UpdateWorkspaceOptions (ws);
 		}
 
 		static void OnWorkspaceItemClosed (object sender, WorkspaceItemEventArgs args)
 		{
 			if (args.Item is MonoDevelop.Projects.Solution sol) {
-				var ws = TypeSystemService.GetWorkspace (sol);
+				var ws = IdeApp.TypeSystemService.GetWorkspace (sol);
 
 				lock (lockObject) {
 					if (cachedUntilViewCreated == null)
@@ -180,7 +182,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		static void OnSpecialTagsChanged (object sender, EventArgs args)
 		{
-			foreach (var ws in TypeSystemService.AllWorkspaces)
+			foreach (var ws in IdeApp.TypeSystemService.AllWorkspaces)
 				UpdateWorkspaceOptions (ws);
 		}
 	}

@@ -345,7 +345,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (dlg.Run ()) {
 				defaultPath = dlg.SelectedFile;
 				VersionControlDefaultPath.Value = defaultPath;
-				AppendRelativePath ();
+				entryFolder.Text = defaultPath;
 			}
 		}
 
@@ -402,7 +402,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 
 			var vcs = systems [repCombo.Active];
-			entryFolder.Text = defaultPath + vcs.GetRelativeCheckoutPathForRemote (edit.RelativePath);
+			var projectNameFolder = System.IO.Path.DirectorySeparatorChar + System.IO.Path.GetFileName (edit.RelativePath);
+			entryFolder.Text = defaultPath + vcs.GetRelativeCheckoutPathForRemote (projectNameFolder);
 		}
 	}
 }

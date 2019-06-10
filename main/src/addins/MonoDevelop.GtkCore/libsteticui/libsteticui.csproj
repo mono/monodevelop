@@ -16,22 +16,11 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <PackageReference Include="Mono.Cecil" Version="0.10.1" />
+    <SuppressCopyLocal Include="Mono.Cecil.Mdb.dll" />
+    <SuppressCopyLocal Include="Mono.Cecil.Pdb.dll" />
+    <SuppressCopyLocal Include="Mono.Cecil.Rocks.dll" />
+    <SuppressCopyLocal Include="Mono.Cecil.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libstetic\libstetic.csproj">
@@ -108,7 +97,6 @@
     <None Include="libsteticui.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

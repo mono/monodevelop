@@ -1,4 +1,4 @@
-//
+﻿//
 // BlameWidget.cs
 //
 // Author:
@@ -37,6 +37,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -99,7 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public Ide.Gui.Document Document {
 			get {
-				return info.Document.ParentDocument;
+				return info.Document;
 			}
 		}
 		public VersionControlItem VersionControlItem {
@@ -113,35 +115,23 @@ namespace MonoDevelop.VersionControl.Views
 			GtkWorkarounds.FixContainerLeak (this);
 			
 			this.info = info;
-			var sourceEditor = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			
-			vAdjustment = new Adjustment (
-				sourceEditor.TextEditor.VAdjustment.Value, 
-				sourceEditor.TextEditor.VAdjustment.Lower, 
-				sourceEditor.TextEditor.VAdjustment.Upper, 
-				sourceEditor.TextEditor.VAdjustment.StepIncrement, 
-				sourceEditor.TextEditor.VAdjustment.PageIncrement, 
-				sourceEditor.TextEditor.VAdjustment.PageSize);
+			var textView = info.Controller.GetContent<ITextView> ();
+
+			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
-			
+
 			vScrollBar = new VScrollbar (vAdjustment);
 			AddChild (vScrollBar);
-			
-			hAdjustment = new Adjustment (
-				sourceEditor.TextEditor.HAdjustment.Value, 
-				sourceEditor.TextEditor.HAdjustment.Lower, 
-				sourceEditor.TextEditor.HAdjustment.Upper, 
-				sourceEditor.TextEditor.HAdjustment.StepIncrement, 
-				sourceEditor.TextEditor.HAdjustment.PageIncrement, 
-				sourceEditor.TextEditor.HAdjustment.PageSize);
+
+			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			hAdjustment.Changed += HandleAdjustmentChanged;
 
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 
-			var doc = new TextDocument (sourceEditor.TextEditor.Document.Text) {
+			var doc = new TextDocument (textView.TextSnapshot.GetText()) {
 				IsReadOnly = true,
-				MimeType = sourceEditor.TextEditor.Document.MimeType,
+				MimeType = IdeServices.DesktopService.GetMimeTypeForContentType (textView.TextBuffer.ContentType)
 			};
 			var options = new CustomEditorOptions (DefaultSourceEditorOptions.Instance);
 			options.TabsToSpaces = false;
@@ -393,7 +383,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void OptionsChanged ()
 			{
-				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+				layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 				UpdateWidth ();
 			}
 			
@@ -490,42 +480,26 @@ namespace MonoDevelop.VersionControl.Views
 			[CommandHandler (BlameCommands.ShowDiff)]
 			protected void OnShowDiff ()
 			{
-				if (menuAnnotation == null)
+				if (menuAnnotation?.Revision == null)
 					return;
-				foreach (var view in widget.info.Document.ParentDocument.Views) {
-					DiffView diffView = view.GetContent<DiffView> ();
-					if (diffView != null) {
-						view.Select ();
-						if (menuAnnotation.Revision == null)
-							return;
-						var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
-						if (rev == null)
-							return;
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev.GetPrevious ());
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, rev);
-						break;
-					}
-				}
+
+				var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
+				if (rev == null)
+					return;
+
+				widget.info.VersionControlExtension.ShowDiffView (rev, rev.GetPrevious ());
 			}
-		
+
 			[CommandHandler (BlameCommands.ShowLog)]
 			protected void OnShowLog ()
 			{
-				if (menuAnnotation == null)
+				if (menuAnnotation?.Revision == null)
 					return;
-				foreach (var view in widget.info.Document.ParentDocument.Views) {
-					LogView logView = view.GetContent<LogView> ();
-					if (logView != null) {
-						view.Select ();
-						if (menuAnnotation.Revision == null)
-							return;
-						var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
-						if (rev == null)
-							return;
-						logView.LogWidget.SelectedRevision = rev;
-						break;
-					}
-				}
+				var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
+				if (rev == null)
+					return;
+
+				widget.info.VersionControlExtension.ShowLogView (rev);
 			}
 
 			[CommandHandler (BlameCommands.ShowBlameBefore)]
@@ -583,32 +557,33 @@ namespace MonoDevelop.VersionControl.Views
 				ThreadPool.QueueUserWorkItem (delegate {
 				try {
 						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName, widget.revision));
-						
-//						for (int i = 0; i < annotations.Count; i++) {
-//							Annotation varname = annotations[i];
-//							System.Console.WriteLine (i + ":" + varname);
-//						}
+
+						//						for (int i = 0; i < annotations.Count; i++) {
+						//							Annotation varname = annotations[i];
+						//							System.Console.WriteLine (i + ":" + varname);
+						//						}
 						minDate = annotations.Min (a => a.Date);
 						maxDate = annotations.Max (a => a.Date);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
-					
+
 					Runtime.RunInMainThread (delegate {
-						var location = widget.Editor.Caret.Location;
-						var adj = widget.editor.VAdjustment.Value;
 						if (widget.revision != null) {
+							var location = widget.Editor.Caret.Location;
+							var adj = widget.editor.VAdjustment.Value;
 							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
+							widget.editor.Caret.Location = location;
+							widget.editor.VAdjustment.Value = adj;
 						} else {
-							document.Text = widget.Document.Editor.Text;
-							if (widget.Document.Editor.TextView is MonoTextEditor exEditor) {
-								document.UpdateFoldSegments (exEditor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
-								widget.Editor.SetCaretTo (exEditor.Caret.Line, exEditor.Caret.Column);
-								widget.Editor.VAdjustment.Value = exEditor.VAdjustment.Value;
+							if (widget.Document.GetContent<ITextView> () is ITextView textView) {
+								document.Text = textView.TextSnapshot.GetText ();
+								var (line, column) = textView.Caret.Position.BufferPosition.GetLineAndColumn1Based ();
+								widget.Editor.SetCaretTo (line, column);
+								int firstLineNumber = textView.TextViewLines.FirstVisibleLine.Start.GetContainingLine ().LineNumber;
+								widget.Editor.VAdjustment.Value = widget.Editor.LineToY (firstLineNumber + 1);
 							}
 						}
-						widget.editor.Caret.Location = location;
-						widget.editor.VAdjustment.Value = adj;
 
 						ctx.AutoPulse = false;
 						ctx.Dispose ();
@@ -750,7 +725,7 @@ namespace MonoDevelop.VersionControl.Views
 							}
 
 							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
-								authorLayout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+								authorLayout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 								authorLayout.SetText (ann.Author);
 								authorLayout.GetPixelSize (out authorWidth, out h);
 

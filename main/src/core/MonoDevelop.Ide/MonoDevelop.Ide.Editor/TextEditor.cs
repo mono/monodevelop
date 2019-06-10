@@ -1,4 +1,4 @@
-//
+﻿//
 // ITextEditor.cs
 //
 // Author:
@@ -44,9 +44,12 @@ using Xwt;
 using System.Collections.Immutable;
 using MonoDevelop.Components.Commands;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
@@ -958,6 +961,8 @@ namespace MonoDevelop.Ide.Editor
 
 		bool isDisposed;
 
+        internal bool IsDirty { get => textEditorImpl.IsDirty; set => textEditorImpl.IsDirty = false; }
+
 		internal bool IsDisposed {
 			get {
 				return isDisposed;
@@ -1054,7 +1059,7 @@ namespace MonoDevelop.Ide.Editor
 
 			TextEditor_MimeTypeChanged (null, null);
 
-			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this);
+			this.TextView = CompositionManager.Instance.GetExportedValue<ITextEditorInitializationService> ().CreateTextView (this);
 		}
 
 		void TextEditor_ZoomLevelChanged (object sender, EventArgs e)
@@ -1082,19 +1087,17 @@ namespace MonoDevelop.Ide.Editor
 		{
 			textEditorImpl.ClearTooltipProviders ();
 			foreach (var extensionNode in allProviders) {
-				if (extensionNode.IsValidFor (MimeType))
-					textEditorImpl.AddTooltipProvider ((TooltipProvider)extensionNode.CreateInstance ());
+				if (extensionNode.IsValidFor (MimeType)) {
+					TooltipProvider provider;
+					try {
+						provider = (TooltipProvider)extensionNode.CreateInstance ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Error while creating tooltip provider " + extensionNode.Id, ex);
+						continue;
+					}
+					textEditorImpl.AddTooltipProvider (provider);
+				}
 			}
-		}
-
-		TextEditorViewContent viewContent;
-		internal ViewContent GetViewContent ()
-		{
-			if (viewContent == null) {
-				viewContent = new TextEditorViewContent (this, textEditorImpl);
-			}
-
-			return viewContent;
 		}
 
 		internal IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false)
@@ -1169,7 +1172,7 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+			var mimetypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			var newExtensions = new List<TextEditorExtension> ();
 
 			foreach (TextEditorExtensionNode extNode in extensions) {
@@ -1606,6 +1609,11 @@ namespace MonoDevelop.Ide.Editor
 
 		public new bool HasFocus {
 			get { return this.textEditorImpl.HasFocus; }
+		}
+
+		internal void SetNotDirtyState ()
+		{
+			textEditorImpl.SetNotDirtyState ();
 		}
 	}
 }

@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.DotNetCore.Gui;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.Templating
 {
@@ -104,7 +105,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			var framework = targetFrameworks [selectedTargetFrameworkIndex];
 
-			wizard.Parameters ["Framework"] = framework.Id.GetShortFrameworkName ();
+			wizard.Parameters ["Framework"] = framework.Id.ShortName;
 
 			foreach (var param in parameters) {
 				wizard.Parameters [param] = "false";

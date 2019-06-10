@@ -41,11 +41,8 @@ namespace MonoDevelop.VersionControl
 				return list.All (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted);
 
 			foreach (var item in list.Where (s => (s.VersionInfo.Status & VersionStatus.Conflicted) == VersionStatus.Conflicted)) {
-				Document doc = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
-				foreach (var view in doc.Views) {
-					if (view.GetContent <MergeView> () != null)
-						view.Select ();
-				}
+				var doc = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, true);
+				doc?.GetContent<VersionControlDocumentController> ()?.ShowMergeView ();
 			}
 			return true;
 		}

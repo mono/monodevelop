@@ -1,4 +1,4 @@
-//
+﻿//
 // AssemblyBrowserView.cs
 //
 // Author:
@@ -39,29 +39,23 @@ using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserViewContent : ViewContent, IOpenNamedElementHandler, INavigable
+	class AssemblyBrowserViewContent : DocumentController, IOpenNamedElementHandler, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;
-		
-		protected override void OnWorkbenchWindowChanged ()
+		CancellationTokenSource cts = new CancellationTokenSource ();
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
 		{
-			base.OnWorkbenchWindowChanged ();
-			if (WorkbenchWindow != null) {
-				var toolbar = WorkbenchWindow.GetToolbar (this);
-				widget.SetToolbar (toolbar);
-			}
+			widget.SetToolbar (view.GetToolbar ());
+			return widget;
 		}
 
-		public override Control Control {
-			get {
-				return widget;
-			}
-		}
-		
 		internal AssemblyBrowserWidget Widget {
 			get {
 				return widget;
@@ -70,21 +64,42 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public AssemblyBrowserViewContent()
 		{
-			ContentName = GettextCatalog.GetString ("Assembly Browser");
+			DocumentTitle = GettextCatalog.GetString ("Assembly Browser");
 			widget = new AssemblyBrowserWidget ();
-			IsDisposed = false;
+			FillWidget ();
 		}
-		
-		public override Task Load (FileOpenInformation fileOpenInformation)
+
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
-			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			var loader = widget.AddReferenceByFileName (fileOpenInformation.FileName);
-			if (loader == null)
-				return Task.FromResult (true);
-			loader.LoadingTask.ContinueWith (delegate {
-				widget.SelectAssembly (loader);
-			});
-			return Task.FromResult (true);
+			if (modelDescriptor is FileDescriptor fileDescriptor) {
+				Load (fileDescriptor.FilePath);
+			}
+
+			return Task.CompletedTask;
+		}
+
+		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
+		{
+			// This descriptor is provided when using the Tools menu command to open the assembly browser
+			if (modelDescriptor is AssemblyBrowserDescriptor)
+				return true;
+
+			// Opening an assembly, the assembly browser can handle it
+			if (modelDescriptor is FileDescriptor file && (file.FilePath.HasExtension (".dll") || file.FilePath.HasExtension (".exe"))) {
+				Load (file.FilePath);
+				return true;
+			}
+			return base.OnTryReuseDocument (modelDescriptor);
+		}
+
+		public void Load (FilePath filePath)
+		{
+			var loader = widget.AddReferenceByFileName (filePath);
+			if (loader != null) {
+				loader.LoadingTask
+					.ContinueWith (t => widget.SelectAssembly (t.Result), Runtime.MainTaskScheduler)
+					.Ignore ();
+			}
 		}
 
 		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> definitions)
@@ -92,27 +107,17 @@ namespace MonoDevelop.AssemblyBrowser
 			widget.EnsureDefinitionsLoaded (definitions);
 		}
 
-		public override bool IsFile {
-			get {
-				return false;
+		protected override void OnDispose ()
+		{
+			if (cts != null) {
+				cts.Cancel ();
+				cts.Dispose ();
+				cts = null;
 			}
-		}
-		
-		public bool IsDisposed {
-			get;
-			private set;
-		}
-		
-		public override void Dispose ()
-		{ 
-			IsDisposed = true;
-			base.Dispose ();
-			if (currentWs != null) 
-				currentWs.WorkspaceLoaded -= Handle_WorkspaceLoaded;
 
 			widget = null;
-			if (Disposed != null)
-				Disposed (this, EventArgs.Empty);
+			Disposed?.Invoke (this, EventArgs.Empty);
+			base.OnDispose ();
 		}
 
 		internal event EventHandler Disposed;
@@ -163,51 +168,29 @@ namespace MonoDevelop.AssemblyBrowser
 			//FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 
-		void Handle_WorkspaceLoaded (object sender, EventArgs e)
-		{
-			foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-				var nav = Widget.TreeView.GetNodeAtObject (project);
-				if (nav != null)
-					Widget.TreeView.RefreshNode (nav);
-			}
-		}
-
-		Ide.TypeSystem.MonoDevelopWorkspace currentWs;
-		public async void FillWidget ()
+		public void FillWidget ()
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
 				foreach (var assembly in defaultAssemblies) {
-					Widget.AddReferenceByAssemblyName (assembly); 
+					Widget.AddReferenceByAssemblyName (assembly);
 				}
 			} else {
-				var alreadyAdded = new HashSet<string> ();
-				currentWs = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetWorkspace (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution);
-				if (currentWs != null)
-					currentWs.WorkspaceLoaded += Handle_WorkspaceLoaded;
-				var allTasks = new List<Task> ();
-				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-					try {
-						Widget.AddProject (project, false);
-						var netProject = project as DotNetProject;
-						if (netProject == null)
-							continue;
-						foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-							if (!System.IO.File.Exists (file.FilePath))
-								continue;
-							if (!alreadyAdded.Add (file.FilePath))
-								continue;
-							var loader = Widget.AddReferenceByFileName (file.FilePath);
-							allTasks.Add (loader.LoadingTask);
+				var token = cts.Token;
+
+				var workspace = IdeApp.TypeSystemService.GetWorkspaceAsync (IdeApp.ProjectOperations.CurrentSelectedSolution)
+					.ContinueWith (t => {
+						if (token.IsCancellationRequested)
+							return;
+
+						foreach (var project in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+							try {
+								Widget.AddProject (project, false);
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while adding project " + project.Name + " to the tree.", e);
+							}
 						}
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while adding project " + project.Name + " to the tree.", e);
-					}
-				}
-				await Task.WhenAll (allTasks).ContinueWith (delegate {
-					Runtime.RunInMainThread (delegate {
 						widget.StartSearch ();
-					});
-				});
+					}, token, TaskContinuationOptions.DenyChildAttach, Runtime.MainTaskScheduler);
 			}
 		}
 	}

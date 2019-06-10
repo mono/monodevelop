@@ -1,4 +1,4 @@
-﻿// IdePreferences.cs
+// IdePreferences.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Linq;
 using MonoDevelop.Ide.RoslynServices.Options;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide
 {
@@ -74,11 +75,15 @@ namespace MonoDevelop.Ide
 
 	public class IdePreferences
 	{
-		internal RoslynPreferences Roslyn { get; }
+		readonly Lazy<EditorPreferences> editor;
+		internal EditorPreferences Editor { get => editor.Value; }
+
 		internal IdePreferences ()
 		{
-			Roslyn = new RoslynPreferences ();
+			editor = new Lazy<EditorPreferences> (() => new EditorPreferences ());
 		}
+
+		internal RoslynPreferences Roslyn => TypeSystemService.Preferences;
 
 		public readonly ConfigurationProperty<bool> EnableInstrumentation = Runtime.Preferences.EnableInstrumentation;
 		public readonly ConfigurationProperty<bool> EnableAutomatedTesting = Runtime.Preferences.EnableAutomatedTesting;
@@ -96,39 +101,14 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> DefaultHideMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultHideMessageBubbles", false);
 		public readonly ConfigurationProperty<ShowMessageBubbles> ShowMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.NewShowMessageBubbles", MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings);
 
-		public readonly ConfigurationProperty<TargetRuntime> DefaultTargetRuntime = new DefaultTargetRuntimeProperty ();
-
-		class DefaultTargetRuntimeProperty: ConfigurationProperty<TargetRuntime>
-		{
-			ConfigurationProperty<string> defaultTargetRuntimeText = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultTargetRuntime", "__current");
-
-			public DefaultTargetRuntimeProperty ()
-			{
-				defaultTargetRuntimeText.Changed += (s,e) => OnChanged ();
-			}
-
-			protected override TargetRuntime OnGetValue ()
-			{
-				string id = defaultTargetRuntimeText.Value;
-				if (id == "__current")
-					return Runtime.SystemAssemblyService.CurrentRuntime;
-				TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (id);
-				return tr ?? Runtime.SystemAssemblyService.CurrentRuntime;
-			}
-
-			protected override bool OnSetValue (TargetRuntime value)
-			{
-				defaultTargetRuntimeText.Value = value.IsRunning ? "__current" : value.Id;
-				return true;
-			}
-		}
+		public ConfigurationProperty<TargetRuntime> DefaultTargetRuntime => RootWorkspace.DefaultTargetRuntime;
 
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
 		public readonly ConfigurationProperty<string> UserInterfaceThemeName = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
 		public readonly ConfigurationProperty<OnStartupBehaviour> StartupBehaviour = ConfigurationProperty.Create ("MonoDevelop.Ide.StartupBehaviour", OnStartupBehaviour.ShowStartWindow);
 		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
-		public readonly ConfigurationProperty<bool> LoadDocumentUserProperties = ConfigurationProperty.Create ("SharpDevelop.LoadDocumentProperties", true);
+		public ConfigurationProperty<bool> LoadDocumentUserProperties => IdeApp.Workbench.DocumentManager.Preferences.LoadDocumentUserProperties;
 		public readonly ConfigurationProperty<bool> EnableDocumentSwitchDialog = ConfigurationProperty.Create ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 		public readonly ConfigurationProperty<bool> ShowTipsAtStartup = ConfigurationProperty.Create ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
 
@@ -137,12 +117,14 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Font to use for treeview pads. Returns null if no custom font is set.
 		/// </summary>
-		public readonly ConfigurationProperty<Pango.FontDescription> CustomPadFont = FontService.GetFontProperty ("Pad");
+		public ConfigurationProperty<Pango.FontDescription> CustomPadFont => customPadFont.Value;
+		readonly Lazy<ConfigurationProperty<Pango.FontDescription>> customPadFont = new Lazy<ConfigurationProperty<Pango.FontDescription>> (() => IdeServices.FontService.GetFontProperty ("Pad"));
 
 		/// <summary>
 		/// Font to use for output pads. Returns null if no custom font is set.
 		/// </summary>
-		public readonly ConfigurationProperty<Pango.FontDescription> CustomOutputPadFont = FontService.GetFontProperty ("OutputPad");
+		public ConfigurationProperty<Pango.FontDescription> CustomOutputPadFont => customOutputPadFont.Value;
+		readonly Lazy<ConfigurationProperty<Pango.FontDescription>> customOutputPadFont = new Lazy<ConfigurationProperty<Pango.FontDescription>> (() => IdeServices.FontService.GetFontProperty ("OutputPad"));
 
 		public readonly ConfigurationProperty<bool> EnableCompletionCategoryMode = ConfigurationProperty.Create ("EnableCompletionCategoryMode", false);
 		public readonly ConfigurationProperty<bool> ForceSuggestionMode = ConfigurationProperty.Create ("ForceCompletionSuggestionMode", false);
@@ -150,11 +132,6 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> AddImportedItemsToCompletionList = ConfigurationProperty.Create ("AddImportedItemsToCompletionList", false);
 		public readonly ConfigurationProperty<bool> IncludeKeywordsInCompletionList = ConfigurationProperty.Create ("IncludeKeywordsInCompletionList", true);
 		public readonly ConfigurationProperty<bool> IncludeCodeSnippetsInCompletionList = ConfigurationProperty.Create ("IncludeCodeSnippetsInCompletionList", true);
-
-		[Obsolete ("Unused use CompletionOptionsHideAdvancedMembers")]
-		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
-		[Obsolete ("Unused use CompletionOptionsHideAdvancedMembers")]
-		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
 
 		public readonly ConfigurationProperty<bool> CompletionOptionsHideAdvancedMembers = ConfigurationProperty.Create ("CompletionOptionsHideAdvancedMembers", true);
 
@@ -165,7 +142,7 @@ namespace MonoDevelop.Ide
 		internal static readonly string DefaultLightColorScheme = "Light";
 		internal static readonly string DefaultDarkColorScheme = "Dark";
 
-		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled_V2", true);
+		public ConfigurationProperty<bool> EnableSourceAnalysis => TypeSystemService.EnableSourceAnalysis;
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
 		public readonly SchemeConfigurationProperty ColorScheme = new SchemeConfigurationProperty ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
@@ -238,7 +215,32 @@ namespace MonoDevelop.Ide
 			}
 		}
 	}
-	
+
+	class DefaultTargetRuntimeProperty : ConfigurationProperty<TargetRuntime>
+	{
+		ConfigurationProperty<string> defaultTargetRuntimeText = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultTargetRuntime", "__current");
+
+		public DefaultTargetRuntimeProperty ()
+		{
+			defaultTargetRuntimeText.Changed += (s, e) => OnChanged ();
+		}
+
+		protected override TargetRuntime OnGetValue ()
+		{
+			string id = defaultTargetRuntimeText.Value;
+			if (id == "__current")
+				return Runtime.SystemAssemblyService.CurrentRuntime;
+			TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (id);
+			return tr ?? Runtime.SystemAssemblyService.CurrentRuntime;
+		}
+
+		protected override bool OnSetValue (TargetRuntime value)
+		{
+			defaultTargetRuntimeText.Value = value.IsRunning ? "__current" : value.Id;
+			return true;
+		}
+	}
+
 	public enum BeforeCompileAction {
 		Nothing,
 		SaveAllFiles,

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FileOperationsBuilderExtension.cs
 //  
 // Author:
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			foreach (var folder in paths) {
-				DesktopService.OpenFolder (folder.Key, folder.Value.Select ((f) => (FilePath)f).ToArray ());
+				IdeServices.DesktopService.OpenFolder (folder.Key, folder.Value.Select ((f) => (FilePath)f).ToArray ());
 			}
 		}
 		
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnUpdateOpenInTerminal (CommandInfo info)
 		{
-			info.Visible = DesktopService.CanOpenTerminal && GetCurrentDirectories ().Any ();
+			info.Visible = IdeServices.DesktopService.CanOpenTerminal && GetCurrentDirectories ().Any ();
 		}
 		
 		[CommandHandler (FileCommands.OpenInTerminal)]
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnOpenInTerminal ()
 		{
 			foreach (var dir in GetCurrentDirectories ())
-				DesktopService.OpenTerminal (dir);
+				IdeServices.DesktopService.OpenTerminal (dir);
 		}
 		
 		IEnumerable<String> GetCurrentDirectories ()

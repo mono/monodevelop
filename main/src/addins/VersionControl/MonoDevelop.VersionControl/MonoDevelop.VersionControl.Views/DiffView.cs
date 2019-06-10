@@ -1,4 +1,4 @@
-// 
+﻿// 
 // VersionControlView.cs
 //  
 // Author:
@@ -29,7 +29,12 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -37,33 +42,35 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
+	class DiffView : DocumentController, IDiffView, IUndoHandler
 	{
 		DiffWidget widget;
 
-		public override Control Control { 
-			get {
-				if (widget == null) {
-					widget = new DiffWidget (info);
+		void CreateWiget ()
+		{
+			if (widget == null) {
+				widget = new DiffWidget (info);
 
-					try {
-						ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
-					} catch (Exception ex) {
-						var msg = GettextCatalog.GetString ("Error fetching text from repository");
-						MessageService.ShowError (msg, ex);
-						LoggingService.LogInternalError (ex);
-					}
-
-					ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
-					widget.ShowAll ();
-					widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
+				try {
+					ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Error fetching text from repository ", ex);
 				}
-				return widget;
+				ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
+				widget.ShowAll ();
 			}
 		}
-		
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			CreateWiget ();
+			widget.SetToolbar (view.GetToolbar ());
+			return widget;
+		}
+
 		public ComparisonWidget ComparisonWidget {
 			get {
+				CreateWiget ();
 				return this.widget.ComparisonWidget;
 			}
 		}
@@ -75,19 +82,9 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		VersionControlDocumentInfo info;
-		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"))
+		public DiffView (VersionControlDocumentInfo info)
 		{
 			this.info = info;
-		}
-		
-		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base (GettextCatalog.GetString ("Changes"))
-		{
-			this.info = info;
-			widget = new DiffWidget (info);
-			ComparisonWidget.SetRevision (ComparisonWidget.DiffEditor, baseRev);
-			ComparisonWidget.SetRevision (ComparisonWidget.OriginalEditor, toRev);
-			
-			widget.ShowAll ();
 		}
 		
 		#region IAttachableViewContent implementation
@@ -98,15 +95,14 @@ namespace MonoDevelop.VersionControl.Views
 			return editor.YToLine (midY);
 		}
 		
-		protected override void OnSelected ()
+		protected override void OnFocused ()
 		{
 			info.Start ();
-			ComparisonWidget.UpdateLocalText ();
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
-			if (buffer != null) {
-				var loc = buffer.CaretLocation;
-				int line = loc.Line < 1 ? 1 : loc.Line;
-				int column = loc.Column < 1 ? 1 : loc.Column;
+			if (ComparisonWidget.originalComboBox.Text == GettextCatalog.GetString ("Local"))
+				ComparisonWidget.UpdateLocalText ();
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				var (line,column) = textView.Caret.Position.BufferPosition.GetLineAndColumn1Based();
 				ComparisonWidget.OriginalEditor.SetCaretTo (line, column);
 			}
 			
@@ -122,23 +118,27 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
 			ComparisonWidget.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
-			var sourceEditorView = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (sourceEditorView != null) {
-				int line = GetLineInCenter (sourceEditorView.TextEditor);
-				ComparisonWidget.OriginalEditor.CenterTo (line, 1);
+			var textView = info.Controller.GetContent<ITextView> ();
+			if (textView != null) {
+				int firstLineNumber = textView.TextViewLines.FirstVisibleLine.Start.GetContainingLine ().LineNumber;
+				ComparisonWidget.OriginalEditor.VAdjustment.Value = ComparisonWidget.OriginalEditor.LineToY (firstLineNumber + 1);
 				ComparisonWidget.OriginalEditor.GrabFocus ();
 			}
 		}
 		
-		protected override void OnDeselected ()
+		protected override void OnUnfocused ()
 		{
-			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (sourceEditor != null) {
-				sourceEditor.TextEditor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
-				
+			var textView = info.Controller.GetContent <ITextView> ();
+			if (textView != null) {
+				var pos = ComparisonWidget.OriginalEditor.Caret.Offset;
+				var snapshot = textView.TextSnapshot;
+				var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
+				textView.Caret.MoveTo (point);
+
 				int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
-				if (Math.Abs (GetLineInCenter (sourceEditor.TextEditor) - line) > 2)
-					sourceEditor.TextEditor.CenterTo (line, 1);
+				line = Math.Min (line, snapshot.LineCount);
+				var middleLine = snapshot.GetLineFromLineNumber (line);
+				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
 			}
 		}
 
@@ -174,7 +174,8 @@ namespace MonoDevelop.VersionControl.Views
 		#endregion
 
 		#region IClipboardHandler implementation
-		void IClipboardHandler.Cut ()
+		[CommandHandler (EditCommands.Cut)]
+		protected void Cut ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -182,7 +183,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.ClipboardActions.Cut);
 		}
 
-		void IClipboardHandler.Copy ()
+		[CommandHandler (EditCommands.Copy)]
+		protected void Copy ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -190,7 +192,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.ClipboardActions.Copy);
 		}
 
-		void IClipboardHandler.Paste ()
+		[CommandHandler (EditCommands.Paste)]
+		protected void Paste ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -198,7 +201,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.ClipboardActions.Paste);
 		}
 
-		void IClipboardHandler.Delete ()
+		[CommandHandler (EditCommands.Delete)]
+		protected void Delete ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -210,7 +214,8 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		void IClipboardHandler.SelectAll ()
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void SelectAll ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -218,47 +223,28 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.SelectionActions.SelectAll);
 		}
 
-		bool IClipboardHandler.EnableCut {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return editor.IsSomethingSelected && !editor.Document.IsReadOnly;
-			}
+		[CommandUpdateHandler (EditCommands.Cut)]
+		protected void OnUpdateCut (CommandInfo info)
+		{
+			var editor = this.widget.FocusedEditor;
+			info.Enabled = editor != null && editor.IsSomethingSelected && !editor.Document.IsReadOnly;
 		}
 
-		bool IClipboardHandler.EnableCopy {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return editor.IsSomethingSelected;
-			}
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo info)
+		{
+			var editor = this.widget.FocusedEditor;
+			info.Enabled = editor != null && editor.IsSomethingSelected;
 		}
 
-		bool IClipboardHandler.EnablePaste {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return !editor.Document.IsReadOnly;
-			}
+		[CommandUpdateHandler (EditCommands.Paste)]
+		[CommandUpdateHandler (EditCommands.Delete)]
+		protected void OnUpdatePasteDelete (CommandInfo info)
+		{
+			var editor = this.widget.FocusedEditor;
+			info.Enabled = editor != null && !editor.Document.IsReadOnly;
 		}
 
-		bool IClipboardHandler.EnableDelete {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return !editor.Document.IsReadOnly;
-			}
-		}
-
-		bool IClipboardHandler.EnableSelectAll {
-			get {
-				return true;
-			}
-		}
 		#endregion
 	}
 }

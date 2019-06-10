@@ -60,19 +60,23 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			}
 		}
 
+		/// <summary>
+		/// Get package sources.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		public IEnumerable<KeyValuePair<string, string>> GetSources (bool includeUnOfficial, bool includeDisabled)
 		{
-			return Runtime.RunInMainThread (() => {
-				var result = new List<KeyValuePair<string, string>> ();
+			var result = new List<KeyValuePair<string, string>> ();
 
-				foreach (var repository in GetSourceRepositories ().ToList ()) {
-					result.Add (new KeyValuePair<string, string> (
-						repository.PackageSource.Name,
-						repository.PackageSource.Source
-					));
-				}
-				return result;
-			}).WaitAndGetResult (default (CancellationToken));
+			foreach (var repository in GetSourceRepositories ().ToList ()) {
+				result.Add (new KeyValuePair<string, string> (
+					repository.PackageSource.Name,
+					repository.PackageSource.Source
+				));
+			}
+			return result;
 		}
 
 		public void InstallLatestPackage (string source, Project project, string packageId, bool includePrerelease, bool ignoreDependencies)
@@ -128,13 +132,19 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			});
 		}
 
-		public async Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
+		/// <summary>
+		/// Find packages for a given assembly name.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
+		public Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
 		{
 			var result = new List<(string PackageName, string Version, int Rank)> ();
-			if (assemblyName == "System.ValueTuple" && await IsOfficialNuGetPackageSource (source).ConfigureAwait (false)) {
+			if (assemblyName == "System.ValueTuple" && IsOfficialNuGetPackageSource (source)) {
 				result.Add (("System.ValueTuple", "4.3.0", 1)); 
 			}
-			return result;
+			return Task.FromResult<IEnumerable<(string PackageName, string Version, int Rank)>> (result);
 		}
 
 		public Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, ImmutableArray<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken)
@@ -149,14 +159,22 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			return Task.FromResult ((IEnumerable<(string AssemblyName, string TypeName, ImmutableArray<string> ContainingNamespaceNames)>)result);
 		}
 
+
+		/// <summary>
+		/// Get the installed versions of a given package.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		public ImmutableArray<string> GetInstalledVersions (string packageName)
 		{
-			return Runtime.RunInMainThread (async delegate {
+			// The UI thread may already be blocking when this is called, so defer to threadpool instead of UI thread.
+			return Task.Run (async () => {
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				var versions = await solutionManager.GetInstalledVersions (packageName).ConfigureAwait (false);
 				var versionStrings = versions.Select (version => version.ToFullString ()).ToArray ();
 				return ImmutableArray.Create (versionStrings);
-			}).WaitAndGetResult (default (CancellationToken));
+			}).WaitAndGetResult ();
 		}
 
 		public IEnumerable<Project> GetProjectsWithInstalledPackage (Solution solution, string packageName, string version)
@@ -171,7 +189,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 		public void ShowManagePackagesDialog (string packageName)
 		{
  			Runtime.RunInMainThread (delegate {
-				var project = IdeApp.Workbench.ActiveDocument?.Project as DotNetProject;
+				var project = IdeApp.Workbench.ActiveDocument?.Owner as DotNetProject;
 				if (project != null) {
 					var runner = new AddPackagesDialogRunner ();
 					runner.Run (project, packageName);
@@ -179,6 +197,12 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			});
 		}
 
+		/// <summary>
+		/// Get package source repositories.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		IEnumerable<SourceRepository> GetSourceRepositories ()
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
@@ -188,19 +212,23 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			return provider.GetRepositories ();
 		}
 
-		Task<bool> IsOfficialNuGetPackageSource (string source)
+		/// <summary>
+		/// Determine if a given source is the official nuget.org package source.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
+		bool IsOfficialNuGetPackageSource (string source)
 		{
-			return Runtime.RunInMainThread (() => {
-				var matchedRepository = GetSourceRepositories ()
-					.FirstOrDefault (repository => repository.PackageSource.Name == source);
+			var matchedRepository = GetSourceRepositories ()
+				.FirstOrDefault (repository => repository.PackageSource.Name == source);
 
-				if (matchedRepository != null) {
-					string host = matchedRepository.PackageSource.SourceUri.Host;
-					return host.EndsWith ("nuget.org", StringComparison.OrdinalIgnoreCase);
-				}
+			if (matchedRepository != null) {
+				string host = matchedRepository.PackageSource.SourceUri.Host;
+				return host.EndsWith ("nuget.org", StringComparison.OrdinalIgnoreCase);
+			}
 
-				return false;
-			});
+			return false;
 		}
 	}
 }

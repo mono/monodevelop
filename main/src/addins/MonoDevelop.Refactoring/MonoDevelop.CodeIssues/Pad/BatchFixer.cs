@@ -1,4 +1,4 @@
-//
+﻿//
 // BatchFixer.cs
 //
 // Author:
@@ -102,13 +102,13 @@ namespace MonoDevelop.CodeIssues
 		{
 			var issues = new List<CodeIssue> ();
 //			
-//			var document = TypeSystemService.ParseFile (file.Project, data);
+//			var document = IdeApp.TypeSystemService.ParseFile (file.Project, data);
 //			if (document == null) {
 				refactoringContext = null;
 //				return issues;
 //			}
 //
-//			var content = TypeSystemService.GetProjectContext (file.Project);
+//			var content = IdeApp.TypeSystemService.GetProjectContext (file.Project);
 //			var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
 //			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
 //			

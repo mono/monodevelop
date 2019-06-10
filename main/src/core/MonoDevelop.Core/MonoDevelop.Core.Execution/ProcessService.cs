@@ -82,7 +82,7 @@ namespace MonoDevelop.Core.Execution
 		
 		public void SetExternalConsoleHandler (ExternalConsoleHandler handler)
 		{
-			if (externalConsoleHandler != null)
+			if (handler != null && externalConsoleHandler != null)
 				throw new InvalidOperationException ("External console handler already set");
 			externalConsoleHandler = handler;
 		}
@@ -410,7 +410,7 @@ namespace MonoDevelop.Core.Execution
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
-			operation.Task.ContinueWith (t => OnOperationCompleted ());
+			operation.Task.ContinueWith (t => OnOperationCompleted (), console.CancellationToken);
 			cancelRegistration = console.CancellationToken.Register (operation.Cancel);
 		}
 		

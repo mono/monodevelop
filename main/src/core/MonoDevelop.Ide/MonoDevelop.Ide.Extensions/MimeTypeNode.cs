@@ -27,24 +27,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Mono.Addins;
 using MonoDevelop.Core;
-using System.Linq;
-
 
 namespace MonoDevelop.Ide.Extensions
 {
 	[ExtensionNodeChild (typeof(MimeTypeFileNode), "File")]
 	class MimeTypeNode: ExtensionNode
 	{
+		[NodeAttribute ("_description", Localizable=true)]
+		public string Description { get; private set; }
+
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string icon;
-		
-		[NodeAttribute ("_description", Localizable=true)]
-		string description;
 		
 		[NodeAttribute (Required=false)]
 		string baseType;
@@ -52,26 +52,24 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute (Required=false)]
 		protected bool isText;
 
-		IFileNameEvaluator regex;
+		#pragma warning restore 649
+
+		/// <summary>
+		/// The name used by Roslyn to identify this language.
+		/// </summary>
+		[NodeAttribute ("roslynName", "The name used by Roslyn to identify this language", Required=false)]
+		public string RoslynName { get; private set; }
+
+		[NodeAttribute ("contentType", "The content type name used by the Visual Studio editor to identify this language", Required = false)]
+		public string ContentType { get; private set; }
+
+		FileNameEvalutor regex;
 		
 		public IconId Icon {
-			get {
-				return icon;
-			}
-			set {
-				icon = value;
-			}
+			get => icon;
+			set => icon = value;
 		}
 
-		public string Description {
-			get {
-				return description;
-			}
-			set {
-				description = value;
-			}
-		}
-		
 		public string BaseType {
 			get {
 				if (string.IsNullOrEmpty (baseType))
@@ -81,101 +79,33 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 
-		/// <summary>
-		/// The name used by Roslyn to identify this language.
-		/// </summary>
-		[NodeAttribute ("roslynName", "The name used by Roslyn to identify this language", Required=false)]
-		public string RoslynName { get; private set; }
-		
-		interface IFileNameEvaluator
+		string overrideId;
+		public new string Id => overrideId ?? (overrideId = base.Id);
+
+		//deserialization
+		public MimeTypeNode () { }
+
+		public MimeTypeNode (string id, string baseType, string description, string icon, bool isText, string contentType)
 		{
-			bool SupportsFile (string fileName);
-		}
-		
-		class RegexFileNameEvaluator : IFileNameEvaluator
-		{
-			Regex regex;
-			
-			public RegexFileNameEvaluator (MimeTypeNode node)
-			{
-				regex = CreateRegex (node);
-			}
-			
-			Regex CreateRegex (MimeTypeNode node)
-			{
-				var globalPattern = StringBuilderCache.Allocate ();
-				
-				foreach (MimeTypeFileNode file in node.ChildNodes) {
-					string pattern = Regex.Escape (file.Pattern);
-					pattern = pattern.Replace ("\\*",".*");
-					pattern = pattern.Replace ("\\?",".");
-					pattern = pattern.Replace ("\\|","$|^");
-					pattern = "^" + pattern + "$";
-					if (globalPattern.Length > 0)
-						globalPattern.Append ('|');
-					globalPattern.Append (pattern);
-				}
-				return new Regex (StringBuilderCache.ReturnAndFree (globalPattern), RegexOptions.IgnoreCase);
-			}
-			public bool SupportsFile (string fileName)
-			{
-				return regex.IsMatch (fileName);
-			}
-		}
-		
-		class EndsWithFileNameEvaluator : IFileNameEvaluator
-		{
-			string[] endings;
-			
-			public EndsWithFileNameEvaluator (MimeTypeNode node)
-			{
-				endings = ExtractEndings (node);
-			}
-			
-			string[] ExtractEndings (MimeTypeNode node)
-			{
-				var result = new List<string> ();
-				foreach (MimeTypeFileNode file in node.ChildNodes) {
-					foreach (string pattern in file.Pattern.Split ('|')) {
-						result.Add (pattern.StartsWith ("*.", StringComparison.Ordinal) ? pattern.Substring (1) : pattern);
-					}
-				}
-				return result.ToArray ();
-			}
-			
-			public bool SupportsFile (string fileName)
-			{
-				foreach (var ending in endings)
-					if (fileName.EndsWith (ending, StringComparison.OrdinalIgnoreCase))
-						return true;
-				return false;
-			}
-			
-			internal static bool IsCompatible (MimeTypeNode node)
-			{
-				foreach (MimeTypeFileNode file in node.ChildNodes) {
-					foreach (string pattern in file.Pattern.Split ('|')) {
-						var pat = pattern.StartsWith ("*.", StringComparison.Ordinal) ? pattern.Substring (1) : pattern;
-						if (pat.Any (p => p == '*' || p == '?'))
-							return false;
-					}
-				}
-				return true;
-			}
-		}
-		
-		IFileNameEvaluator CreateFileNameEvaluator ()
-		{
-			if (EndsWithFileNameEvaluator.IsCompatible (this))
-				return new EndsWithFileNameEvaluator (this);
-			return new RegexFileNameEvaluator (this);
+			overrideId = id;
+			this.baseType = baseType;
+			Description = description;
+			this.icon = icon;
+			this.isText = isText;
+			ContentType = contentType;
 		}
 
 		public bool SupportsFile (string fileName)
 		{
 			if (regex == null)
-				regex = CreateFileNameEvaluator ();
+				regex = FileNameEvalutor.CreateFileNameEvaluator (GetPatterns ());
 			return regex.SupportsFile (fileName);
+		}
+
+		IEnumerable<string> GetPatterns ()
+		{
+			foreach (MimeTypeFileNode node in ChildNodes)
+				yield return node.Pattern;
 		}
 		
 		protected override void OnChildNodeAdded (ExtensionNode node)
@@ -193,6 +123,9 @@ namespace MonoDevelop.Ide.Extensions
 	
 	class MimeTypeFileNode: ExtensionNode
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string pattern;
 		

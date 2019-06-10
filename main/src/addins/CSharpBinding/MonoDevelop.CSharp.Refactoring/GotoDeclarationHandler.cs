@@ -62,22 +62,22 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.Editor == null)
 				return;
 			Run (doc);
 		}
 
 		public static void Run (MonoDevelop.Ide.Gui.Document doc)
 		{
-			GoToDefinitionService.TryGoToDefinition (doc.AnalysisDocument, doc.Editor.CaretOffset, default(CancellationToken));
+			GoToDefinitionService.TryGoToDefinition (doc.DocumentContext.AnalysisDocument, doc.Editor.CaretOffset, default(CancellationToken));
 		}
 		
 		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)
 		{
 			if (info.Symbol != null)
-				RefactoringService.RoslynJumpToDeclaration (info.Symbol, doc.Project);
+				RefactoringService.RoslynJumpToDeclaration (info.Symbol, doc.Owner as Projects.Project);
 			if (info.CandidateSymbols.Length > 0)
-				RefactoringService.RoslynJumpToDeclaration (info.CandidateSymbols[0], doc.Project);
+				RefactoringService.RoslynJumpToDeclaration (info.CandidateSymbols[0], doc.Owner as Projects.Project);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 				if (!inDocumentation) {
 					if (part.ClassificationType.Classification == ClassificationTypeNames.Text) {
 						inDocumentation = true;
-						markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+						markup.Append ("<span font='" + IdeServices.FontService.SansFontName + "' size='small'>");
 						markup.AppendLine ();
 					}
 					else {
@@ -83,7 +84,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
 			if (currentParameter != null) {
 				if (!string.IsNullOrEmpty(currentParameter.Documentation)) {
-					markup.Append ("<span font='" + FontService.SansFontName + "'");
+					markup.Append ("<span font='" + IdeServices.FontService.SansFontName + "'");
 					//markup.Append ("foreground ='" + GetThemeColor (theme, "source.cs") + "'");
 					markup.Append (" size='small'>");
 					markup.AppendLine ();

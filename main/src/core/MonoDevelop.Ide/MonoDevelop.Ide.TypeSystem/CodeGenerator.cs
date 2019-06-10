@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete("Use Roslyn APIs")]
 	public abstract class CodeGenerator
 	{
 		static Dictionary<string, MimeTypeExtensionNode> generators = new Dictionary<string, MimeTypeExtensionNode> ();
@@ -84,7 +85,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
 		{
-			return CreateGenerator (doc.Editor, doc);
+			return CreateGenerator (doc.Editor, doc.DocumentContext);
 		}
 
 		public static CodeGenerator CreateGenerator (ITextDocument editor, ICompilation compilation)
@@ -173,14 +174,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			AddGlobalNamespaceImport (doc.Editor, doc, nsName);
+			AddGlobalNamespaceImport (doc.Editor, doc.DocumentContext, nsName);
 		}
 
 		public void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			AddLocalNamespaceImport (doc.Editor, doc, nsName, caretLocation);
+			AddLocalNamespaceImport (doc.Editor, doc.DocumentContext, nsName, caretLocation);
 		}
 
 
