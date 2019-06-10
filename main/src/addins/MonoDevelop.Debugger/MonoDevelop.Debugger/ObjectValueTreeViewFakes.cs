@@ -42,9 +42,28 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => true;
 
 		public override string Value => "none";
-		public override string TypeName => "No Type";
+		public override string TypeName => this.GetType ().ToString ();
 		public override string DisplayValue => "dummy";
 	}
+
+	/// <summary>
+	/// An IObjectValueNode used for debugging
+	/// </summary>
+	sealed class FakeIndexedObjectValueNode : DebugObjectValueNode
+	{
+		int index;
+
+		public FakeIndexedObjectValueNode (string parentPath, int index) : base (parentPath, $"indexed[{index}]")
+		{
+			this.Value = $"indexed[{index}]";
+			this.DisplayValue = $"indexed[{index}]";
+		}
+
+		public override bool HasChildren => false;
+
+		public override string Value { get; }
+		public override string DisplayValue { get; }
+}
 
 	/// <summary>
 	/// An IObjectValueNode used for debugging
@@ -58,7 +77,6 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => true;
 
 		public override string Value => "none";
-		public override string TypeName => "No Type";
 		public override string DisplayValue => "dummy";
 
 
@@ -67,6 +85,46 @@ namespace MonoDevelop.Debugger
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
 			return new [] { new FakeObjectValueNode (this.Path) };
+		}
+	}
+
+	/// <summary>
+	/// An IObjectValueNode used for debugging
+	/// </summary>
+	sealed class FakeEnumerableObjectValueNode : DebugObjectValueNode
+	{
+		int maxItems;
+		public FakeEnumerableObjectValueNode (string parentPath, int count) : base (parentPath, $"enumerable {count}")
+		{
+			this.maxItems = count;
+		}
+
+		public override bool HasChildren => true;
+		public override bool IsEnumerable => true;
+		public override string Value => $"Enumerable{this.maxItems}";
+		public override string DisplayValue => $"Enumerable{this.maxItems}";
+
+		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		{
+			await Task.Delay (1000);
+			var result = new List<IObjectValueNode> ();
+			for (int i = 0; i < maxItems; i++) {
+				result.Add (new FakeIndexedObjectValueNode (this.Path, i));
+			}
+
+			return result;
+		}
+
+		protected override async Task<Tuple<IEnumerable<IObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		{
+			await Task.Delay (1000);
+			var max = Math.Min (maxItems, index+count);
+			var result = new List<IObjectValueNode> ();
+			for (int i = index; i < maxItems; i++) {
+				result.Add (new FakeIndexedObjectValueNode (this.Path, i));
+			}
+
+			return Tuple.Create<IEnumerable<IObjectValueNode>, bool> (result, result.Count < count);
 		}
 	}
 
@@ -87,7 +145,7 @@ namespace MonoDevelop.Debugger
 		public override bool IsEvaluating => isEvaluating;
 
 		public override string Value => "none";
-		public override string TypeName => "No Type";
+		public override string TypeName => this.GetType().ToString();
 		public override string DisplayValue => "dummy";
 
 

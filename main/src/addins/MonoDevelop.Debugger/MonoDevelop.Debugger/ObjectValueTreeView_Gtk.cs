@@ -773,7 +773,9 @@ public StackFrame Frame {
 				if (node is ShowMoreValuesObjectValueNode moreNode) {
 					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, cancellationTokenSource.Token).Ignore ();
 				} else {
-					controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore ();
+					// use ExpandRow to expand so we see the loading message
+					var treePath = GetTreePathForNodePath (node.Path);
+					this.ExpandRow (treePath, false);
 				}
 			} else {
 				//TODO: RefreshRow (it, val);
