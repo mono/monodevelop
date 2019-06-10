@@ -51,6 +51,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		IReadOnlyList<IObjectValueNode> Children { get; }
 
+		/// <summary>
+		/// Gets the name of the object
+		/// </summary>
+		string Name { get; }
+
 		// TODO: make the setter private and get the node to do the expansion
 		/// <summary>
 		/// Gets or sets a value indicating whether the node is expanded
@@ -73,8 +78,9 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		bool IsEnumerable { get; }
 
-
-		string Name { get; }
+		/// <summary>
+		/// Gets a value indicating whether the debugger is still evaluating the object
+		/// </summary>
 		bool IsEvaluating { get; }
 
 
@@ -84,7 +90,6 @@ namespace MonoDevelop.Debugger
 		bool IsNotSupported { get; }
 		string Value { get; }
 		bool IsImplicitNotSupported { get; }
-		bool IsEvaluatingGroup { get; }
 		ObjectValueFlags Flags { get; }
 		bool IsNull { get; }
 		bool IsPrimitive { get; }
@@ -112,6 +117,21 @@ namespace MonoDevelop.Debugger
 		Task<int> LoadChildrenAsync (int count, CancellationToken cancellationToken);
 	}
 
+	interface IEvaluatingGroupObjectValueNode
+	{
+		/// <summary>
+		/// Gets a value indicating whether this object that was evaulating was evaluating a group
+		/// of objects, such as locals, and whether we should replace the node with a set of new
+		/// nodes once evaulation has completed
+		/// </summary>
+		bool IsEvaluatingGroup { get; }
+
+		/// <summary>
+		/// Get an array of new objectvalue nodes that should replace the current node in the tree
+		/// </summary>
+		IObjectValueNode [] GetEvaluationGroupReplacementNodes ();
+	}
+
 	/// <summary>
 	/// Base class for IObjectValueNode implementations
 	/// </summary>
@@ -137,20 +157,19 @@ namespace MonoDevelop.Debugger
 		public virtual bool HasChildren => false;
 		public bool ChildrenLoaded => allChildrenLoaded;
 		public virtual bool IsEnumerable => false;
+		public virtual bool IsEvaluating => false;
 
 
 
 		public virtual string DisplayValue => string.Empty;
 
 
-		public virtual bool IsEvaluating => false;
 		public virtual bool IsUnknown => false;
 		public virtual bool IsReadOnly => false;
 		public virtual bool IsError => false;
 		public virtual bool IsNotSupported => false;
 		public virtual string Value => string.Empty;
 		public virtual bool IsImplicitNotSupported => false;
-		public virtual bool IsEvaluatingGroup => false;
 		public virtual ObjectValueFlags Flags => ObjectValueFlags.None;
 		public virtual bool IsNull => false;
 		public virtual bool IsPrimitive => false;
@@ -221,10 +240,13 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// Represents a node in a tree structure that holds ObjectValue from the debugger.
 	/// </summary>
-	public sealed class ObjectValueNode : AbstractObjectValueNode
+	public sealed class ObjectValueNode : AbstractObjectValueNode, IEvaluatingGroupObjectValueNode
 	{
+		readonly string parentPath;
+
 		public ObjectValueNode (ObjectValue value, string parentPath) : base (parentPath, value.Name)
 		{
+			this.parentPath = parentPath;
 			this.DebuggerObject = value;
 
 			value.ValueChanged += OnDebuggerValueChanged;
@@ -236,10 +258,9 @@ namespace MonoDevelop.Debugger
 
 		public override bool HasChildren => this.DebuggerObject.HasChildren;
 		public override bool IsEnumerable => this.DebuggerObject.Flags.HasFlag (ObjectValueFlags.IEnumerable);
-
-
-
 		public override bool IsEvaluating => this.DebuggerObject.IsEvaluating;
+		public bool IsEvaluatingGroup => this.DebuggerObject.IsEvaluatingGroup;
+
 
 		public override bool IsUnknown => this.DebuggerObject.IsUnknown;
 		public override bool IsReadOnly => this.DebuggerObject.IsReadOnly;
@@ -247,7 +268,6 @@ namespace MonoDevelop.Debugger
 		public override bool IsNotSupported => this.DebuggerObject.IsNotSupported;
 		public override string Value => this.DebuggerObject.Value;
 		public override bool IsImplicitNotSupported => this.DebuggerObject.IsImplicitNotSupported;
-		public override bool IsEvaluatingGroup => this.DebuggerObject.IsEvaluatingGroup;
 		public override ObjectValueFlags Flags => this.DebuggerObject.Flags;
 		public override bool IsNull => this.DebuggerObject.IsNull;
 		public override bool IsPrimitive => this.DebuggerObject.IsPrimitive;
@@ -255,6 +275,16 @@ namespace MonoDevelop.Debugger
 		public override string DisplayValue => this.DebuggerObject.DisplayValue;
 		public override bool CanRefresh => true;//this.DebuggerObject.CanRefresh;
 		public override bool HasFlag (ObjectValueFlags flag) => this.DebuggerObject.HasFlag (flag);
+
+		public IObjectValueNode [] GetEvaluationGroupReplacementNodes ()
+		{
+			var result = new IObjectValueNode [this.DebuggerObject.ArrayCount];
+			for (int i = 0; i < result.Length; i++) {
+				result [i] = new ObjectValueNode (this.DebuggerObject.GetArrayItem (i), this.parentPath);
+			}
+
+			return result;
+		}
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
@@ -384,9 +414,18 @@ namespace MonoDevelop.Debugger
 
 	public sealed class NodeEvaluationCompletedEventArgs : NodeEventArgs
 	{
-		public NodeEvaluationCompletedEventArgs (IObjectValueNode node) : base (node)
+		public NodeEvaluationCompletedEventArgs (IObjectValueNode node, IObjectValueNode[] replacementNodes) : base (node)
 		{
+			this.ReplacementNodes = replacementNodes;
 		}
+
+		/// <summary>
+		/// Gets an array of nodes that should be used to replace the node that finished evaluating.
+		/// Some sets of values, like local variables, frame locals and the like are fetched asynchronously
+		/// and may take some time to fetch. In this case, a single object is returned that is a place holder
+		/// for 0 or more values that should be expanded in the place of the evaluating node.
+		/// </summary>
+		public IObjectValueNode [] ReplacementNodes { get; }
 	}
 
 	/// <summary>

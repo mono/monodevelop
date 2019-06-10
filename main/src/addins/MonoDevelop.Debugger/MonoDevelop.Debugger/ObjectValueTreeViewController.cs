@@ -97,6 +97,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public event EventHandler<NodeExpandedEventArgs> NodeExpanded;
 
+		/// <summary>
+		/// EvaluationCompleted is fired when the debugger informs us that a node that
+		/// was IsEvaluating has finished evaluating and the values of the node can
+		/// be displaved
+		/// </summary>
 		public event EventHandler<NodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
 		public object GetControl()
@@ -391,19 +396,36 @@ namespace MonoDevelop.Debugger
 		{
 			if (sender is IObjectValueNode node) {
 				this.UnregisterForEvaluationCompletion (node);
+
+				if (sender is IEvaluatingGroupObjectValueNode evalGroupNode) {
+					if (evalGroupNode.IsEvaluatingGroup) {
+						var replacementNodes = evalGroupNode.GetEvaluationGroupReplacementNodes();
+
+						foreach (var newNode in replacementNodes) {
+							this.RegisterForEvaluationCompletion (newNode);
+						}
+
+						this.OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
+					} else {
+						this.OnEvaluationCompleted (sender as IObjectValueNode);
+					}
+				} else {
+					this.OnEvaluationCompleted (sender as IObjectValueNode);
+				}
 			}
-
-			this.OnEvaluationCompleted (sender as IObjectValueNode);
-
-			// TODO: if is evaluating group, fetch the children and notify...
 		}
 
 		void OnEvaluationCompleted (IObjectValueNode node)
 		{
-			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node));
+			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, new IObjectValueNode [1] { node }));
 		}
 
-		void OnNodeExpanded(IObjectValueNode node)
+		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode[] replacementNodes)
+		{
+			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, replacementNodes));
+		}
+
+		void OnNodeExpanded (IObjectValueNode node)
 		{
 			NodeExpanded?.Invoke (this, new NodeExpandedEventArgs (node));
 		}
@@ -457,6 +479,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			return null;
+		}
+
+		public static bool GetIsEvaluatingGroup (this IObjectValueNode node)
+		{
+			return (node is IEvaluatingGroupObjectValueNode evg && evg.IsEvaluatingGroup);
 		}
 	}
 	#endregion

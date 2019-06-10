@@ -55,7 +55,14 @@ namespace MonoDevelop.Debugger
 				controller.AddValues (locals);
 
 				var xx = new System.Collections.Generic.List<IObjectValueNode> ();
-				xx.Add (new FakeObjectValueNode (controller.Root.Path));
+
+
+				xx.Add (new FakeObjectValueNode (controller.Root.Path, "f1"));
+
+				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 1));
+				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 0));
+				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 5));
+
 				xx.Add (new FakeEvaluatingObjectValueNode (controller.Root.Path));
 				xx.Add (new FakeEnumerableObjectValueNode (controller.Root.Path, 10));
 				xx.Add (new FakeEnumerableObjectValueNode (controller.Root.Path, 20));

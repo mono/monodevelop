@@ -63,15 +63,17 @@ namespace MonoDevelop.Debugger
 
 		public override string Value { get; }
 		public override string DisplayValue { get; }
-}
+	}
 
 	/// <summary>
 	/// An IObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeObjectValueNode : DebugObjectValueNode
 	{
-		public FakeObjectValueNode (string parentPath) : base (parentPath, "fake")
+		bool hasChildren;
+		public FakeObjectValueNode (string parentPath, string name, bool children = true) : base (parentPath, name)
 		{
+			this.hasChildren = children;
 		}
 
 		public override bool HasChildren => true;
@@ -84,7 +86,7 @@ namespace MonoDevelop.Debugger
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
-			return new [] { new FakeObjectValueNode (this.Path) };
+			return new [] { new FakeObjectValueNode (this.Path, $"child of {this.Name}") };
 		}
 	}
 
@@ -145,7 +147,6 @@ namespace MonoDevelop.Debugger
 		public override bool IsEvaluating => isEvaluating;
 
 		public override string Value => "none";
-		public override string TypeName => this.GetType().ToString();
 		public override string DisplayValue => "dummy";
 
 
@@ -154,7 +155,7 @@ namespace MonoDevelop.Debugger
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
 
-			return new [] { new FakeObjectValueNode (this.Path) };
+			return new [] { new FakeObjectValueNode (this.Path, $"child of {this.Name}", true) };
 		}
 
 		async void DoTest ()
@@ -162,6 +163,48 @@ namespace MonoDevelop.Debugger
 			await Task.Delay (3000);
 			this.isEvaluating = false;
 			this.hasChildren = true;
+			this.OnValueChanged (EventArgs.Empty);
+		}
+	}
+
+	/// <summary>
+	/// An IObjectValueNode used for debugging
+	/// </summary>
+	sealed class FakeEvaluatingGroupObjectValueNode : DebugObjectValueNode, IEvaluatingGroupObjectValueNode
+	{
+		string parentPath;
+		int evalNodes;
+		bool isEvaluating;
+		public FakeEvaluatingGroupObjectValueNode (string parentPath, int nodes) : base (parentPath, $"eval group {nodes}")
+		{
+			this.parentPath = parentPath;
+			this.evalNodes = nodes;
+			this.isEvaluating = true;
+			DoTest ();
+		}
+
+		public override bool IsEvaluating => isEvaluating;
+
+		public override string Value => "none";
+		public override string DisplayValue => $"evg {evalNodes}";
+
+		public bool IsEvaluatingGroup => true;
+
+		public IObjectValueNode [] GetEvaluationGroupReplacementNodes ()
+		{
+			var result = new IObjectValueNode [evalNodes];
+
+			for (int i = 0; i < evalNodes; i++) {
+				result [i] = new FakeObjectValueNode (parentPath, $"child of {this.Name}", false);
+			}
+
+			return result;
+		}
+
+		async void DoTest ()
+		{
+			await Task.Delay (5000);
+			this.isEvaluating = false;
 			this.OnValueChanged (EventArgs.Empty);
 		}
 	}

@@ -43,6 +43,10 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
+	// TODO: when we remove from store, remove from allNodes
+
+
+
 	[System.ComponentModel.ToolboxItem (true)]
 	public class GtkObjectValueTreeView : TreeView, ICompletionWidget
 	{
@@ -358,7 +362,7 @@ public StackFrame Frame {
 		void Controller_EvaluationCompleted (object sender, NodeEvaluationCompletedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
-				OnEvaluationCompleted (e.Node);
+				OnEvaluationCompleted (e.Node, e.ReplacementNodes);
 			}).Ignore ();
 		}
 
@@ -450,27 +454,16 @@ public StackFrame Frame {
 			}
 		}
 
-		void OnEvaluationCompleted (IObjectValueNode node)
+		/// <summary>
+		/// Updates or replaces the node with the given replacement nodes when the debugger notifies
+		/// that the node has completed evaulation
+		/// </summary>
+		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode[] replacementNodes)
 		{
 			if (disposed)
 				return;
 
 			if (GetNodeIterFromNodePath (node.Path, out TreeIter iter, out TreeIter parent)) {
-				/*
-				 * the debugger finished evaluating the node. we can now set the values of the node
-				 * in the tree.
-				 * If the node was an evaulating group, we may need to update the children of the node
-				 * we should trigger this in the controller, so that when the children are updated, we
-				 * simply sync the changes here
-				 * 
-				 */
-
-
-
-
-
-				//var val = node.GetDebuggerObjectValue();
-
 				// TODO we can use an expression node here
 				// Keep the expression name entered by the user
 				//if (store.IterDepth (iter) == 0)
@@ -478,28 +471,18 @@ public StackFrame Frame {
 
 				RemoveChildren (iter);
 
-				if (node.IsEvaluatingGroup) {
-					// TODO: does this happen automatically, we should do this in the controller and just watch for children changed
-
-					//// If it was an evaluating group, replace the node with the new nodes
-					//if (val.ArrayCount == 0) {
-					//	store.Remove (ref iter);
-					//} else {
-					//	SetValues (parent, iter, null, val.GetArrayItem (0));
-					//	RegisterValue (val, iter);
-					//	for (int n = 1; n < val.ArrayCount; n++) {
-					//		iter = store.InsertNodeAfter (iter);
-					//		ObjectValue cval = val.GetArrayItem (n);
-					//		SetValues (parent, iter, null, cval);
-					//		RegisterValue (cval, iter);
-					//	}
-					//}
-				} else {
+				if (replacementNodes.Length == 0) {
+					// we can remove the node altogether, eg there are no local variables to show
+					store.Remove (ref iter);
+				} else if (replacementNodes.Length > 0) {
+					node = replacementNodes [0];
 					SetValues (parent, iter, node.Name, node);
-				}
 
-				// TODO: maybe do this instead?
-				//OnChildrenChanged (node, false);
+					for (int n = 1; n < replacementNodes.Length; n++) {
+						iter = store.InsertNodeAfter (iter);
+						SetValues (parent, iter, null, replacementNodes[n]);
+					}
+				}
 			}
 
 			if (compact) {
@@ -1230,7 +1213,7 @@ public StackFrame Frame {
 				evaluateStatusIcon = "md-spinner-16";
 
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
-				if (val.IsEvaluatingGroup) {
+				if (val.GetIsEvaluatingGroup ()) {
 					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 					name = val.Name;
 				}
