@@ -270,35 +270,38 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public void RedrawItems (bool invalidates, bool reloads)
 		{
-			NSIndexPath selected = null;
-			if (SelectionIndexPaths.Count > 0) {
-				selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
-			}
-			if (IsListMode) {
-				flowLayout.ItemSize = new CGSize (Frame.Width - IconMargin, LabelCollectionViewItem.ItemHeight);
-			} else {
-				flowLayout.ItemSize = new CGSize (ImageCollectionViewItem.Size.Width, ImageCollectionViewItem.Size.Height);
-			}
-			if (ShowCategories) {
-				collectionViewDelegate.Width = Frame.Width - IconMargin;
-				collectionViewDelegate.Height = HeaderCollectionViewItem.SectionHeight;
-			} else {
-				collectionViewDelegate.Width = 0;
-				collectionViewDelegate.Height = 0;
-			}
+			try {
+				NSIndexPath selected = null;
+				if (SelectionIndexPaths.Count > 0) {
+					selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
+				}
+				if (IsListMode) {
+					flowLayout.ItemSize = new CGSize (Math.Max (Frame.Width - IconMargin, 1), LabelCollectionViewItem.ItemHeight);
+				} else {
+					flowLayout.ItemSize = new CGSize (ImageCollectionViewItem.Size.Width, ImageCollectionViewItem.Size.Height);
+				}
+				if (ShowCategories) {
+					collectionViewDelegate.Width = Frame.Width - IconMargin;
+					collectionViewDelegate.Height = HeaderCollectionViewItem.SectionHeight;
+				} else {
+					collectionViewDelegate.Width = 0;
+					collectionViewDelegate.Height = 0;
+				}
 
-			if (invalidates) {
-				CollectionViewLayout.InvalidateLayout ();
-			}
-			if (reloads) {
-				ReloadData ();
-			}
+				if (invalidates) {
+					CollectionViewLayout.InvalidateLayout ();
+				}
+				if (reloads) {
+					ReloadData ();
+				}
 
-			if (selected != null) {
-				SelectionIndexPaths = new NSSet (selected);
+				if (selected != null) {
+					SelectionIndexPaths = new NSSet (selected);
+				}
+			} catch (Exception ex) {
+				Core.LoggingService.LogInternalError (ex);
 			}
 		}
-
 
 		public override void RightMouseUp (NSEvent theEvent)
 		{
