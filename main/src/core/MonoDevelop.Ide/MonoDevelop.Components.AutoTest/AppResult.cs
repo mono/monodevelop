@@ -67,6 +67,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 		public abstract void Flash ();
+		public abstract object GetProperty (string propertyName);
 		public abstract void SetProperty (string propertyName, object value);
 
 		// More specific actions for complicated widgets
@@ -107,6 +108,11 @@ namespace MonoDevelop.Components.AutoTest
 			AddChildrenToList (children, FirstChild, recursive);
 
 			return children;
+		}
+
+		public object GetProperty (object o, string propertyName)
+		{
+			return null;
 		}
 
 		public void SetProperty (object o, string propertyName, object value)

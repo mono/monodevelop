@@ -128,6 +128,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			
 		}
 
+		public override object GetProperty (string propertyName)
+		{
+			return base.GetProperty (this.value, propertyName);
+		}
+
 		public override void SetProperty (string propertyName, object newValue)
 		{
 			SetProperty (value, propertyName, newValue);

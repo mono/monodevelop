@@ -526,6 +526,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			});
 		}
 
+		public override object GetProperty(string propertyName)
+		{
+			return base.GetProperty (resultWidget, propertyName);
+		}
+
 		public override void SetProperty (string propertyName, object value)
 		{
 			base.SetProperty (resultWidget, propertyName, value);
