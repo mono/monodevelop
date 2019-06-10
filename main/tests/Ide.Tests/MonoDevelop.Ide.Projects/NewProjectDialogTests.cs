@@ -244,9 +244,11 @@ namespace MonoDevelop.Ide.Projects
 
 			controller.Show ();
 
+			bool gitIgnoreExists = controller.FinalConfiguration.GitIgnoreExists;
+
 			Assert.AreEqual (useGit, controller.FinalConfiguration.UseGit);
 			Assert.AreEqual (createGitIgnore, controller.FinalConfiguration.CreateGitIgnoreFile);
-			Assert.AreEqual (useGit, controller.FinalConfiguration.IsGitIgnoreEnabled);
+			Assert.AreEqual (!gitIgnoreExists, controller.FinalConfiguration.IsGitIgnoreEnabled);
 			Assert.IsTrue (controller.FinalConfiguration.IsUseGitEnabled);
 		}
 

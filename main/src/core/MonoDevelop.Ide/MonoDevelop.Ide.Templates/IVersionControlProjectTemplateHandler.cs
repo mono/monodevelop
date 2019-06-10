@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	public interface IVersionControlProjectTemplateHandler
 	{
+		bool CanCreateRepository (FilePath filePath);
 		void Run (NewProjectConfiguration config);
 	}
 }

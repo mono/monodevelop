@@ -25,6 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Templates;
 using ProjectCreateParameters = MonoDevelop.Projects.ProjectCreateParameters;
@@ -87,6 +90,7 @@ namespace MonoDevelop.Ide.Projects
 			set {
 				config.Location = value;
 				CheckIsValid ();
+				OnParentFolderChanged ();
 			}
 		}
 
@@ -179,10 +183,14 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsGitIgnoreEnabled {
-			get { return config.UseGit && IsUseGitEnabled && gitIgnoreEnabled; }
+			get { return !GitIgnoreFileExistsInSolutionFolder (); }
 		}
 
 		public bool IsUseGitEnabled { get; set; }
+
+		public bool GitIgnoreExists {
+			get { return GitIgnoreFileExistsInSolutionFolder () && GitIgnoreFileExistsInParentFolder (); }
+		}
 
 		public bool IsNewSolution {
 			get { return config.CreateSolution; }
@@ -232,14 +240,18 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public event EventHandler IsValidChanged;
+		public event EventHandler ParentFolderChanged;
 
 		void OnIsValidChanged ()
 		{
-			if (IsValidChanged != null) {
-				IsValidChanged (this, new EventArgs ());
-			}
+			IsValidChanged?.Invoke (this, new EventArgs ());
 		}
 
+		void OnParentFolderChanged ()
+		{
+			ParentFolderChanged?.Invoke (this, new EventArgs ());
+		}
+	
 		public void UpdateFromParameters ()
 		{
 			ProjectName = Parameters ["ProjectName"];
@@ -259,6 +271,44 @@ namespace MonoDevelop.Ide.Projects
 				return Parameters.GetBoolValue (name);
 			}
 			return null;
+		}
+
+		public bool GitIgnoreFileExistsInSolutionFolder ()
+		{
+			FilePath solutionPath = config.SolutionLocation;
+			if (Location == solutionPath) {
+				FilePath gitIgnoreFilePath = solutionPath.Combine (".gitignore");
+				return File.Exists (gitIgnoreFilePath);
+			}
+			return false;
+		}
+
+		public bool GitIgnoreFileExistsInParentFolder ()
+		{
+			IEnumerable<DirectoryInfo> di = GetAllParentDirectories (new DirectoryInfo(config.SolutionLocation));
+			foreach (var directory in di) {
+				FilePath solutionPath = directory.FullName;
+				FilePath gitIgnoreFilePath = solutionPath.Combine (".gitignore");
+				if (File.Exists (gitIgnoreFilePath))
+					return true;
+			}
+			return false;
+		}
+
+		IEnumerable<DirectoryInfo> GetAllParentDirectories (DirectoryInfo directoryToScan)
+		{
+			Stack<DirectoryInfo> ret = new Stack<DirectoryInfo> ();
+			GetAllParentDirectories (directoryToScan, ref ret);
+			return ret;
+		}
+
+		void GetAllParentDirectories (DirectoryInfo directoryToScan, ref Stack<DirectoryInfo> directories)
+		{
+			if (directoryToScan == null || directoryToScan.Name == directoryToScan.Root.Name)
+				return;
+
+			directories.Push (directoryToScan);
+			GetAllParentDirectories (directoryToScan.Parent, ref directories);
 		}
 	}
 }
