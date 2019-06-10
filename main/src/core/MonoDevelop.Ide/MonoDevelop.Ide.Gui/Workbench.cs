@@ -134,27 +134,22 @@ namespace MonoDevelop.Ide.Gui
 			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
 
-			Counters.Initialization.Trace ("Loading memento");
-			var memento = IdeApp.Preferences.WorkbenchMemento.Value;
-			Counters.Initialization.Trace ("Setting memento");
-			workbench.Memento = memento;
-
 			Counters.Initialization.Trace ("Initializing monitors");
 		}
 
+		[Obsolete ("Use Present () instead")]
 		internal void Show ()
 		{
-			EnsureLayout ();
 			Present ();
 		}
 
 		internal void EnsureLayout ()
 		{
 			if (!hasEverBeenShown) {
-
 				Realize ();
 				workbench.InitializeWorkspace ();
 				workbench.InitializeLayout ();
+
 				statusBar.Attach (workbench.StatusBar);
 
 				workbench.CurrentLayout = "Solution";
@@ -162,6 +157,11 @@ namespace MonoDevelop.Ide.Gui
 				// now we have an layout set notify it
 				if (LayoutChanged != null)
 					LayoutChanged (this, EventArgs.Empty);
+
+				Counters.Initialization.Trace ("Loading memento");
+				var memento = IdeApp.Preferences.WorkbenchMemento.Value;
+				Counters.Initialization.Trace ("Setting memento");
+				workbench.Memento = memento;
 
 				hasEverBeenShown = true;
 			} else if (!RootWindow.Visible) {
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void EnsureShown ()
 		{
 			if (!RootWindow.Visible)
-				Show ();
+				Present ();
 		}
 
 		internal void Hide ()
@@ -348,7 +348,7 @@ namespace MonoDevelop.Ide.Gui
 		public void GrabDesktopFocus ()
 		{
 			if (!Visible)
-				Show ();
+				Present ();
 			else
 				IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
 		}

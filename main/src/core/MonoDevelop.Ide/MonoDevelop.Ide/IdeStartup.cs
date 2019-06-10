@@ -438,9 +438,9 @@ namespace MonoDevelop.Ide
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 			}
 
 			return false;
