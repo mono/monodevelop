@@ -1050,9 +1050,15 @@ namespace MonoDevelop.Projects
 			FilePath solFile = Util.GetSampleProject ("expand-facades", "ExpandFacadesTest.sln");
 			CreateNuGetConfigFile (solFile.ParentDirectory);
 
-			var process = Process.Start ("nuget", $"restore -DisableParallelProcessing \"{solFile}\"");
+			var process = Process.Start (new ProcessStartInfo {
+				FileName = "nuget",
+				Arguments = $"restore -DisableParallelProcessing \"{solFile}\"",
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				UseShellExecute = false
+			});
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Assert.AreEqual (0, process.ExitCode, await process.StandardError.ReadToEndAsync ());
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var expandFalseProject = (DotNetProject)sol.FindProjectByName ("ExpandFacadesFalse");
