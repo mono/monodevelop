@@ -1,5 +1,5 @@
 //
-// ObjectValueTreeView_Gtk.cs
+// GtkObjectValueTreeView.cs
 //
 // Author:
 //       gregm <gregm@microsoft.com>
@@ -125,7 +125,7 @@ namespace MonoDevelop.Debugger
 		const int EvaluateStatusIconColumn = 14;
 		const int EvaluateStatusIconVisibleColumn = 15;
 		const int ValueButtonTextColumn = 16;
-		public const int ObjectNodeColumn = 17;
+		const int ObjectNodeColumn = 17;
 
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;

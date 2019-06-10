@@ -82,8 +82,8 @@ namespace MonoDevelop.Debugger
 
 		public bool CanQueryDebugger {
 			get {
-				this.EnsureDebuggerService ();
-				return this.Debugger.IsConnected && this.Debugger.IsPaused;
+				EnsureDebuggerService ();
+				return Debugger.IsConnected && Debugger.IsPaused;
 			}
 		}
 
@@ -114,8 +114,8 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearValues()
 		{
-			this.Root = this.OnCreateRoot ();
-			this.OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
+			Root = OnCreateRoot ();
+			OnChildrenLoaded (Root, 0, Root.Children.Count);
 		}
 
 		/// <summary>
@@ -123,19 +123,19 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValues(IEnumerable<IObjectValueNode> values)
 		{
-			if (this.Root == null) {
-				this.Root = this.OnCreateRoot ();
+			if (Root == null) {
+				Root = OnCreateRoot ();
 			}
 
 			var allNodes = values.ToList ();
-			((RootObjectValueNode)this.Root).AddValues (allNodes);
+			((RootObjectValueNode)Root).AddValues (allNodes);
 
 			// TODO: we want to enumerate just the once
 			foreach (var x in allNodes) {
-				this.RegisterForEvaluationCompletion (x);
+				RegisterForEvaluationCompletion (x);
 			}
 
-			this.OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
+			OnChildrenLoaded (Root, 0, Root.Children.Count);
 		}
 
 		public void ChangeCheckpoint ()
@@ -150,8 +150,8 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearAll ()
 		{
-			this.ClearEvaluationCompletionRegistrations ();
-			this.ClearValues ();
+			ClearEvaluationCompletionRegistrations ();
+			ClearValues ();
 		}
 
 		#region Fetching and loading children
@@ -171,10 +171,10 @@ namespace MonoDevelop.Debugger
 				// if we already have some loaded, don't load more - that is a specific user gesture
 				if (node.Children.Count == 0) {
 					// page the children in, instead of loading them all at once
-					loadedCount = await this.FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationToken);
+					loadedCount = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationToken);
 				}
 			} else {
-				loadedCount = await this.FetchChildrenAsync (node, 0, cancellationToken);
+				loadedCount = await FetchChildrenAsync (node, 0, cancellationToken);
 			}
 
 			if (loadedCount > 0) {
@@ -211,7 +211,7 @@ namespace MonoDevelop.Debugger
 						// a completion event so that we can tell the UI
 						for (int i = oldCount; i < oldCount + result; i++) {
 							var c = node.Children [i];
-							this.RegisterForEvaluationCompletion (c);
+							RegisterForEvaluationCompletion (c);
 						}
 
 						// always send the event so that the UI can determine if the node has finished loading.
@@ -254,7 +254,7 @@ namespace MonoDevelop.Debugger
 							// a completion event so that we can tell the UI
 							for (int i = oldCount; i < oldCount + result; i++) {
 								var c = node.Children [i];
-								this.RegisterForEvaluationCompletion (c);
+								RegisterForEvaluationCompletion (c);
 							}
 						} else {
 							result = await node.LoadChildrenAsync (cancellationToken);
@@ -262,7 +262,7 @@ namespace MonoDevelop.Debugger
 							// if any of them are still evaluating register for
 							// a completion event so that we can tell the UI
 							foreach (var c in node.Children) {
-								this.RegisterForEvaluationCompletion (c);
+								RegisterForEvaluationCompletion (c);
 							}
 						}
 
@@ -332,7 +332,7 @@ namespace MonoDevelop.Debugger
 		void RegisterForEvaluationCompletion (IObjectValueNode node)
 		{
 			if (node != null && node.IsEvaluating) {
-				this.evaluationWatches [node] = null;
+				evaluationWatches [node] = null;
 				node.ValueChanged += OnEvaluatingNodeValueChanged;
 			}
 		}
@@ -344,7 +344,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (node != null) {
 				node.ValueChanged -= OnEvaluatingNodeValueChanged;
-				this.evaluationWatches.Remove (node);
+				evaluationWatches.Remove (node);
 			}
 		}
 
@@ -353,11 +353,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		void ClearEvaluationCompletionRegistrations()
 		{
-			foreach (var node in this.evaluationWatches.Keys) {
+			foreach (var node in evaluationWatches.Keys) {
 				node.ValueChanged -= OnEvaluatingNodeValueChanged;
 			}
 
-			this.evaluationWatches.Clear ();
+			evaluationWatches.Clear ();
 		}
 
 		#endregion
@@ -378,8 +378,8 @@ namespace MonoDevelop.Debugger
 
 		void EnsureDebuggerService()
 		{
-			if (this.Debugger == null) {
-				this.Debugger = this.OnGetDebuggerService ();
+			if (Debugger == null) {
+				Debugger = OnGetDebuggerService ();
 			}
 		}
 
@@ -395,22 +395,22 @@ namespace MonoDevelop.Debugger
 		void OnEvaluatingNodeValueChanged (object sender, EventArgs e)
 		{
 			if (sender is IObjectValueNode node) {
-				this.UnregisterForEvaluationCompletion (node);
+				UnregisterForEvaluationCompletion (node);
 
 				if (sender is IEvaluatingGroupObjectValueNode evalGroupNode) {
 					if (evalGroupNode.IsEvaluatingGroup) {
 						var replacementNodes = evalGroupNode.GetEvaluationGroupReplacementNodes();
 
 						foreach (var newNode in replacementNodes) {
-							this.RegisterForEvaluationCompletion (newNode);
+							RegisterForEvaluationCompletion (newNode);
 						}
 
-						this.OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
+						OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
 					} else {
-						this.OnEvaluationCompleted (sender as IObjectValueNode);
+						OnEvaluationCompleted (sender as IObjectValueNode);
 					}
 				} else {
-					this.OnEvaluationCompleted (sender as IObjectValueNode);
+					OnEvaluationCompleted (sender as IObjectValueNode);
 				}
 			}
 		}
