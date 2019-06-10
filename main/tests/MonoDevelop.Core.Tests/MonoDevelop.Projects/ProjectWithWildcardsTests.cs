@@ -190,8 +190,24 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			mp = (Project)p;
 
-			Assert.Null (mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Data1.cs"));
-			Assert.NotNull (mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt" && pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest));
+			bool processedItemGroup = false;
+			foreach (var ig in mp.MSBuildProject.ItemGroups) {
+				if (ig.Items.Any (i => i.Include == "Program.cs")) {
+					Assert.Null (ig.Items.FirstOrDefault (pf => pf.Include == "Data1.cs"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "*.txt"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\Data\\*.txt"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\Data3.cs"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\Data\\Data2.cs"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\text1-1.txt"));
+					Assert.NotNull (mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt" && pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\text1-2.txt"));
+
+					processedItemGroup = true;
+					break;
+				}
+			}
+
+			Assert.True (processedItemGroup);
 
 			p.Dispose ();
 		}
