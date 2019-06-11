@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
@@ -39,11 +40,11 @@ namespace MonoDevelop.Debugger
 		{
 		}
 
-		public override bool HasChildren => true;
-
 		public override string Value => "none";
-		public override string TypeName => GetType ().ToString ();
 		public override string DisplayValue => "dummy";
+		public override string TypeName => GetType ().ToString ();
+
+		public override bool HasChildren => true;
 	}
 
 	/// <summary>
@@ -57,10 +58,38 @@ namespace MonoDevelop.Debugger
 			DisplayValue = $"indexed[{index}]";
 		}
 
-		public override bool HasChildren => false;
-
 		public override string Value { get; }
 		public override string DisplayValue { get; }
+
+		public override bool HasChildren => false;
+	}
+
+	/// <summary>
+	/// An IObjectValueNode used for debugging
+	/// </summary>
+	sealed class FakeIsImplicitNotSupportedObjectValueNode : DebugObjectValueNode
+	{
+		string value;
+		bool isImplicitNotSupported;
+		public FakeIsImplicitNotSupportedObjectValueNode (string parentPath) : base (parentPath, $"implicit")
+		{
+			value = $"implicit";
+			isImplicitNotSupported = true;
+		}
+
+		public override string Value => value;
+		public override string DisplayValue => value;
+
+		public override bool HasChildren => false;
+		public override bool IsImplicitNotSupported => isImplicitNotSupported;
+		public override bool CanRefresh => true;
+
+		public override void Refresh (EvaluationOptions options)
+		{
+			value = "refreshed";
+			//IsImplicitNotSupported should be false once we forcibly refresh the node
+			isImplicitNotSupported = false;
+		}
 	}
 
 	/// <summary>
@@ -74,11 +103,10 @@ namespace MonoDevelop.Debugger
 			this.hasChildren = children;
 		}
 
-		public override bool HasChildren => true;
-
 		public override string Value => "none";
 		public override string DisplayValue => "dummy";
 
+		public override bool HasChildren => true;
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
@@ -100,10 +128,11 @@ namespace MonoDevelop.Debugger
 			maxItems = count;
 		}
 
-		public override bool HasChildren => true;
-		public override bool IsEnumerable => true;
 		public override string Value => $"Enumerable{maxItems}";
 		public override string DisplayValue => $"Enumerable{maxItems}";
+
+		public override bool HasChildren => true;
+		public override bool IsEnumerable => true;
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
@@ -143,12 +172,11 @@ namespace MonoDevelop.Debugger
 			DoTest ();
 		}
 
-		public override bool HasChildren => hasChildren;
-		public override bool IsEvaluating => isEvaluating;
-
 		public override string Value => "none";
 		public override string DisplayValue => "dummy";
 
+		public override bool HasChildren => hasChildren;
+		public override bool IsEvaluating => isEvaluating;
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
@@ -183,10 +211,10 @@ namespace MonoDevelop.Debugger
 			DoTest ();
 		}
 
-		public override bool IsEvaluating => isEvaluating;
-
 		public override string Value => "none";
 		public override string DisplayValue => $"evg {evalNodes}";
+
+		public override bool IsEvaluating => isEvaluating;
 
 		public bool IsEvaluatingGroup => true;
 

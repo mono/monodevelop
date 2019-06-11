@@ -124,6 +124,11 @@ namespace MonoDevelop.Debugger
 		void Refresh ();
 
 		/// <summary>
+		/// Tells the object to refresh its values from the debugger
+		/// </summary>
+		void Refresh (EvaluationOptions options);
+
+		/// <summary>
 		/// Asynchronously loads all children for the node into Children.
 		/// The task will complete immediately if all the children have previously been loaded and
 		/// the debugger will not be re-queried
@@ -211,6 +216,10 @@ namespace MonoDevelop.Debugger
 		}
 
 		public virtual void Refresh ()
+		{
+		}
+
+		public virtual void Refresh (EvaluationOptions options)
 		{
 		}
 
@@ -307,7 +316,7 @@ namespace MonoDevelop.Debugger
 		public override bool IsPrimitive => DebuggerObject.IsPrimitive;
 		public override string TypeName => DebuggerObject.TypeName;
 		public override string DisplayValue => DebuggerObject.DisplayValue;
-		public override bool CanRefresh => true;//DebuggerObject.CanRefresh;
+		public override bool CanRefresh => DebuggerObject.CanRefresh;
 		public override bool HasFlag (ObjectValueFlags flag) => DebuggerObject.HasFlag (flag);
 
 		public IObjectValueNode [] GetEvaluationGroupReplacementNodes ()
@@ -322,12 +331,17 @@ namespace MonoDevelop.Debugger
 
 		public override void SetValue (string newValue)
 		{
-			this.DebuggerObject.Value = newValue;
+			DebuggerObject.Value = newValue;
 		}
 
 		public override void Refresh ()
 		{
-			this.DebuggerObject.Refresh ();
+			DebuggerObject.Refresh ();
+		}
+
+		public override void Refresh (EvaluationOptions options)
+		{
+			DebuggerObject.Refresh (options);
 		}
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
@@ -449,7 +463,7 @@ namespace MonoDevelop.Debugger
 
 	public interface IStackFrame
 	{
-
+		EvaluationOptions CloneSessionEvaluationOpions ();
 	}
 
 	sealed class ProxyDebuggerService : IDebuggerService
@@ -473,6 +487,11 @@ namespace MonoDevelop.Debugger
 
 		public StackFrame StackFrame {
 			get; private set;
+		}
+
+		public EvaluationOptions CloneSessionEvaluationOpions ()
+		{
+			return StackFrame.DebuggerSession.Options.EvaluationOptions.Clone ();
 		}
 	}
 	#endregion

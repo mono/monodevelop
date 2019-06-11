@@ -746,13 +746,19 @@ public StackFrame Frame {
 				if (node is ShowMoreValuesObjectValueNode moreNode) {
 					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, cancellationTokenSource.Token).Ignore ();
 				} else {
-					// use ExpandRow to expand so we see the loading message
+					// use ExpandRow to expand so we see the loading message, expanding the node will trigger a fetch of the children
 					var treePath = GetTreePathForNodePath (node.Path);
 					this.ExpandRow (treePath, false);
 				}
 			} else {
-				//TODO: RefreshRow (it, val);
-
+				// this is likely to support IsImplicitNotSupported 
+				controller.RefreshNode (node);
+				// update the tree
+				if (store.IterParent (out TreeIter parentIter, it)) {
+					SetValues (parentIter, it, null, node);
+				} else {
+					SetValues (TreeIter.Zero, it, null, node);
+				}
 			}
 		}
 
@@ -1052,6 +1058,7 @@ public StackFrame Frame {
 			}
 		}
 
+		// TODO: refactor this so that we can update a node without needing to know the parent iter all the time
 		void SetValues (TreeIter parent, TreeIter it, string name, IObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path

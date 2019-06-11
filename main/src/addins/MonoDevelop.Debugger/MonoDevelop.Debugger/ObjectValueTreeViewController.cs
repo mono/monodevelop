@@ -304,6 +304,32 @@ namespace MonoDevelop.Debugger
 		}
 		#endregion
 
+		public void RefreshNode(IObjectValueNode node)
+		{
+			if (node == null)
+				return;
+
+			if (CanQueryDebugger && Frame != null) {
+				UnregisterForEvaluationCompletion (node);
+
+				var options = Frame.CloneSessionEvaluationOpions ();
+				options.AllowMethodEvaluation = true;
+				options.AllowToStringCalls = true;
+				options.AllowTargetInvoke = true;
+				options.EllipsizeStrings = false;
+
+				//string oldName = val.Name;
+				node.Refresh (options);
+
+				// TODO: this is for watched expressions
+				// Don't update the name for the values entered by the user
+				//if (store.IterDepth (iter) == 0)
+				//	val.Name = oldName;
+
+				RegisterForEvaluationCompletion (node);
+			}
+		}
+
 		#region Fetching and loading children
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched

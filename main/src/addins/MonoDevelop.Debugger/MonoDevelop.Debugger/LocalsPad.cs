@@ -58,6 +58,7 @@ namespace MonoDevelop.Debugger
 
 
 				xx.Add (new FakeObjectValueNode (controller.Root.Path, "f1"));
+				xx.Add (new FakeIsImplicitNotSupportedObjectValueNode (controller.Root.Path));
 
 				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 1));
 				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 0));
