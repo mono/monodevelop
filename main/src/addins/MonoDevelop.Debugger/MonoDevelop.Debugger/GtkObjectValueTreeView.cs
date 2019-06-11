@@ -527,17 +527,6 @@ public StackFrame Frame {
 			}
 		}
 
-		bool allowEditing;
-		public bool AllowEditing {
-			get {
-				return allowEditing;
-			}
-			set {
-				allowEditing = value;
-				Refresh (false);
-			}
-		}
-
 		public bool AllowPinning {
 			get { return pinCol.Visible; }
 			set { pinCol.Visible = value; }
@@ -764,77 +753,11 @@ public StackFrame Frame {
 				//TODO: RefreshRow (it, val);
 
 			}
-
-			return;
-			var val = node?.GetDebuggerObjectValue ();
-			if (val == null) {
-				//TODO: remove this
-				val = GetDebuggerObjectValueAtIter (it);
-			}
-
-			if (val.Flags.HasFlag (ObjectValueFlags.IEnumerable)) {
-				if (val.Name == "") {
-					LoadIEnumerableChildren (it);
-				} else {
-					ExpandRow (store.GetPath (it), false);
-				}
-			} else {
-				RefreshRow (it, val);
-			}
 		}
 
 		void HideValueButton(TreeIter iter)
 		{
 			store.SetValue (iter, ValueButtonTextColumn, string.Empty);
-		}
-
-		void LoadIEnumerableChildren (TreeIter iter)
-		{
-			var value = GetDebuggerObjectValueAtIter (iter);
-			if (enumerableLoading.Contains (value))
-				return;
-			enumerableLoading.Add (value);
-
-			// this is the equivalent of hiding the more values button
-			store.SetValue (iter, ValueButtonTextColumn, "");
-
-			// this is to find the enumerable parent since the more button is a child of that node
-			if (value.Name == "") {
-				store.IterParent (out iter, iter);
-				value = GetDebuggerObjectValueAtIter (iter);
-			}
-
-			// this is the bulk of the work
-			int numberOfChildren = store.IterNChildren (iter);
-			Task.Factory.StartNew<ObjectValue []> (delegate (object arg) {
-				try {
-					return ((ObjectValue)arg).GetRangeOfChildren (numberOfChildren - 1, 20);
-				} catch (Exception ex) {
-					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
-					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
-					return new ObjectValue [0];
-				}
-			}, value, cancellationTokenSource.Token).ContinueWith (t => {
-				TreeIter it;
-				if (disposed)
-					return;
-				store.IterNthChild (out it, iter, numberOfChildren - 1);
-				foreach (var child in t.Result) {
-					SetValues (iter, it, null, child);
-					RegisterValue (child, it);
-					it = store.InsertNodeAfter (it);
-				}
-				ScrollToCell (store.GetPath (it), expCol, true, 0f, 0f);
-				if (t.Result.Length == 20) {//If we get back 20 elements it means there is probably more...
-					SetValues (iter, it, null, ObjectValue.CreateNullObject (null, "", "", ObjectValueFlags.IEnumerable));
-				} else {
-					store.Remove (ref it);
-				}
-
-				if (compact)
-					RecalculateWidth ();
-				enumerableLoading.Remove (value);
-			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
 		}
 
 		void RefreshRow (TreeIter iter, ObjectValue val)
@@ -941,34 +864,6 @@ public StackFrame Frame {
 			return store.GetIter (out it, row.Path);
 		}
 
-		public void ResetChangeTracking ()
-		{
-			oldValues.Clear ();
-		}
-
-		public void ChangeCheckpoint ()
-		{
-			oldValues.Clear ();
-
-			TreeIter it;
-			if (!store.GetIterFirst (out it))
-				return;
-
-			ChangeCheckpoint (it, "/");
-		}
-
-		void ChangeCheckpoint (TreeIter it, string path)
-		{
-			do {
-				string name = (string)store.GetValue (it, NameColumn);
-				string val = (string)store.GetValue (it, ValueColumn);
-				oldValues [path + name] = val;
-				TreeIter cit;
-				if (GetRowExpanded (store.GetPath (it)) && store.IterChildren (out cit, it))
-					ChangeCheckpoint (cit, path + name + "/");
-			} while (store.IterNext (ref it));
-		}
-
 		void AppendNodeToTreeModel (TreeIter parent, string name, IObjectValueNode valueNode)
 		{
 			TreeIter iter;
@@ -1024,6 +919,7 @@ public StackFrame Frame {
 		// TODO: remove
 		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValue val, bool updateJustValue = false)
 		{
+			return;
 			string strval;
 			bool canEdit;
 			string nameColor = null;
@@ -1118,7 +1014,7 @@ public StackFrame Frame {
 			store.SetValue (it, ObjectColumn, val);
 			store.SetValue (it, ObjectNodeColumn, null);
 			store.SetValue (it, NameEditableColumn, !hasParent && AllowAdding);
-			store.SetValue (it, ValueEditableColumn, canEdit && AllowEditing);
+			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
@@ -1162,7 +1058,6 @@ public StackFrame Frame {
 
 
 			string strval;
-			bool canEdit;
 			string nameColor = null;
 			string valueColor = null;
 			string valueButton = null;
@@ -1187,9 +1082,7 @@ public StackFrame Frame {
 				if (frame != null) {
 					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
 					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
-					canEdit = false;
 				} else {
-					canEdit = !val.IsReadOnly;
 					strval = string.Empty;
 				}
 				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
@@ -1200,13 +1093,11 @@ public StackFrame Frame {
 				if (i != -1)
 					strval = strval.Substring (0, i);
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueErrorText);
-				canEdit = false;
 			} else if (val.IsImplicitNotSupported) {
 				strval = "";//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				if (val.CanRefresh)
 					valueButton = GettextCatalog.GetString ("Show Value");
-				canEdit = false;
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 
@@ -1217,7 +1108,6 @@ public StackFrame Frame {
 					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 					name = val.Name;
 				}
-				canEdit = false;
 			} else if (val.IsEnumerable) {
 				if (val.Name == "") {
 					valueButton = GettextCatalog.GetString ("Show More");
@@ -1225,7 +1115,6 @@ public StackFrame Frame {
 					valueButton = GettextCatalog.GetString ("Show Values");
 				}
 				strval = "";
-				canEdit = false;
 			} else if (val.IsEnumerable) {
 				if (val is ShowMoreValuesObjectValueNode) {
 					valueButton = GettextCatalog.GetString ("Show More");
@@ -1233,8 +1122,12 @@ public StackFrame Frame {
 					valueButton = GettextCatalog.GetString ("Show Values");
 				}
 				strval = "";
-				canEdit = false;
 			} else {
+
+				// temp code
+				strval = val.GetDisplayValue ();
+
+
 				// TODO: DebuggingService.HasInlineVisualizer
 				//showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				//canEdit = val.IsPrimitive && !val.IsReadOnly;
@@ -1247,13 +1140,10 @@ public StackFrame Frame {
 				//} else {
 				//	strval = GetDisplayValue (val);
 				//}
-				//if (oldValue != null && strval != oldValue)
-				//	nameColor = valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
 
-
-				// temp code
-				canEdit = false;
-				strval = val.GetDisplayValue ();
+				if (controller.GetNodeHasChangedSinceLastCheckpoint(val)) {
+					nameColor = valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
+				}
 			}
 
 			strval = strval.Replace ("\r\n", " ").Replace ("\n", " ");
@@ -1262,13 +1152,14 @@ public StackFrame Frame {
 			if (updateJustValue)
 				return;
 
+			bool canEdit = controller.CanEditObject (val);
 			bool hasChildren = val.HasChildren;
 			string icon = ObjectValueTreeView.GetIcon (val.Flags);
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectNodeColumn, val);
 			store.SetValue (it, NameEditableColumn, !hasParent && AllowAdding);
-			store.SetValue (it, ValueEditableColumn, canEdit && AllowEditing);
+			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
@@ -1293,14 +1184,12 @@ public StackFrame Frame {
 			if (hasChildren) {
 				// Add dummy node, we need this or the expander isn't shown
 				store.AppendValues (it, GettextCatalog.GetString ("Loading\u2026"), "", "", null, false);
-				if (!ShowExpanders)
+				if (!ShowExpanders) {
 					ShowExpanders = true;
-				valPath += "/";
-				foreach (var oldPath in oldValues.Keys) {
-					if (oldPath.StartsWith (valPath, StringComparison.Ordinal)) {
-						ExpandRow (store.GetPath (it), false);
-						break;
-					}
+				}
+
+				if (controller.GetNodeWasExpandedAtLastCheckpoint (val)) {
+					ExpandRow (store.GetPath (it), false);
 				}
 			}
 		}
@@ -1465,26 +1354,15 @@ public StackFrame Frame {
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 
-			var val = GetDebuggerObjectValueAtIter (it);
+			// get the node that we just edited
+			var val = GetNodeAtIter (it);
+			controller.EditNodeValue (val, args.NewText);
 
-			if (val == null)
-				return;
-
-			try {
-				string newVal = args.NewText;
-
-				if (val.Value == newVal)
-					return;
-
-				val.Value = newVal;
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
-				return;
-			}
-
-			store.SetValue (it, ValueColumn, val.DisplayValue);
-
-			// Update the color
+			// update the store
+			//store.SetValue (it, ValueColumn, val.GetDisplayValue());
+			SetValues (TreeIter.Zero, it, null, val);
+			return;
+			// Update the color - keep a track of items that have changed
 
 			string newColor = null;
 
@@ -1499,7 +1377,8 @@ public StackFrame Frame {
 			store.SetValue (it, ValueColorColumn, newColor);
 			UpdateParentValue (it);
 
-			DebuggingService.NotifyVariableChanged ();
+			// tell the controller....
+			//DebuggingService.NotifyVariableChanged ();
 		}
 
 		private void UpdateParentValue (TreeIter it)
@@ -1759,7 +1638,7 @@ public StackFrame Frame {
 				ObjectValue val;
 				TreeIter iter;
 
-				if (!AllowEditing || !AllowAdding)
+				if (!controller.AllowEditing || !AllowAdding)
 					return base.OnKeyPressEvent (evnt);
 
 				// Note: since we'll be modifying the tree, we need to make changes from bottom to top

@@ -47,6 +47,11 @@ namespace MonoDevelop.Debugger
 		string Path { get; }
 
 		/// <summary>
+		/// Gets the path of the parent of node from the root.
+		/// </summary>
+		string ParentPath { get; }
+
+		/// <summary>
 		/// Gets the collection of children that have been loaded from the debugger
 		/// </summary>
 		IReadOnlyList<IObjectValueNode> Children { get; }
@@ -83,6 +88,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		bool IsEvaluating { get; }
 
+		/// <summary>
+		/// Gets a value indicating whether the value can be edited by the user or not
+		/// </summary>
+		bool CanEdit { get; }
+
 
 		bool IsUnknown { get; }
 		bool IsReadOnly { get; }
@@ -98,7 +108,20 @@ namespace MonoDevelop.Debugger
 		bool CanRefresh { get; }
 		bool HasFlag (ObjectValueFlags flag);
 
+		/// <summary>
+		/// Fired when the value of the object has changed
+		/// </summary>
 		event EventHandler ValueChanged;
+
+		/// <summary>
+		/// Attempts to set the value of the node to newValue
+		/// </summary>
+		void SetValue (string newValue);
+
+		/// <summary>
+		/// Tells the object to refresh its values from the debugger
+		/// </summary>
+		void Refresh ();
 
 		/// <summary>
 		/// Asynchronously loads all children for the node into Children.
@@ -142,7 +165,8 @@ namespace MonoDevelop.Debugger
 
 		protected AbstractObjectValueNode (string parentPath, string name)
 		{
-			Name = name;
+			this.Name = name;
+			this.ParentPath = parentPath;
 			if (parentPath.EndsWith ("/", StringComparison.OrdinalIgnoreCase)) {
 				Path = parentPath + name;
 			} else {
@@ -151,6 +175,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		public string Path { get; }
+		public string ParentPath { get; }
 		public string Name { get; }
 		public IReadOnlyList<IObjectValueNode> Children => children;
 		public virtual bool IsExpanded { get; set; }
@@ -158,6 +183,7 @@ namespace MonoDevelop.Debugger
 		public bool ChildrenLoaded => allChildrenLoaded;
 		public virtual bool IsEnumerable => false;
 		public virtual bool IsEvaluating => false;
+		public virtual bool CanEdit => false;
 
 
 
@@ -180,10 +206,12 @@ namespace MonoDevelop.Debugger
 
 		public event EventHandler ValueChanged;
 
-
-		protected void AddValues (IEnumerable<IObjectValueNode> values)
+		public virtual void SetValue (string newValue)
 		{
-			children.AddRange (values);
+		}
+
+		public virtual void Refresh ()
+		{
 		}
 
 		public async Task<int> LoadChildrenAsync (CancellationToken cancellationToken)
@@ -210,6 +238,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			return 0;
+		}
+
+		protected void AddValues (IEnumerable<IObjectValueNode> values)
+		{
+			this.children.AddRange (values);
 		}
 
 		protected void ClearChildren ()
@@ -260,6 +293,8 @@ namespace MonoDevelop.Debugger
 		public override bool IsEnumerable => DebuggerObject.Flags.HasFlag (ObjectValueFlags.IEnumerable);
 		public override bool IsEvaluating => DebuggerObject.IsEvaluating;
 		public bool IsEvaluatingGroup => DebuggerObject.IsEvaluatingGroup;
+		public override bool CanEdit => GetCanEdit();
+
 
 		public override bool IsUnknown => DebuggerObject.IsUnknown;
 		public override bool IsReadOnly => DebuggerObject.IsReadOnly;
@@ -283,6 +318,16 @@ namespace MonoDevelop.Debugger
 			}
 
 			return result;
+		}
+
+		public override void SetValue (string newValue)
+		{
+			this.DebuggerObject.Value = newValue;
+		}
+
+		public override void Refresh ()
+		{
+			this.DebuggerObject.Refresh ();
 		}
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
@@ -332,6 +377,32 @@ namespace MonoDevelop.Debugger
 		{
 			OnValueChanged (e);
 		}
+
+		bool GetCanEdit()
+		{
+			bool canEdit;
+			var val = this.DebuggerObject;
+
+			if (val.IsUnknown) {
+				//if (frame != null) {
+				//	canEdit = false;
+				//} else {
+					canEdit = !val.IsReadOnly;
+				//}
+			} else if (val.IsError || val.IsNotSupported) {
+				canEdit = false;
+			} else if (val.IsImplicitNotSupported) {
+				canEdit = false;
+			} else if (val.IsEvaluating) {
+				canEdit = false;
+			} else if (val.Flags.HasFlag (ObjectValueFlags.IEnumerable)) {
+				canEdit = false;
+			} else {
+				canEdit = val.IsPrimitive && !val.IsReadOnly;
+			}
+
+			return canEdit;
+		}
 	}
 
 	/// <summary>
@@ -341,6 +412,7 @@ namespace MonoDevelop.Debugger
 	{
 		public RootObjectValueNode () : base (string.Empty, string.Empty)
 		{
+			this.IsExpanded = true;
 		}
 
 		public override bool HasChildren => true;
@@ -371,6 +443,7 @@ namespace MonoDevelop.Debugger
 	{
 		bool IsConnected { get; }
 		bool IsPaused { get; }
+		void NotifyVariableChanged ();
 	}
 
 
@@ -384,6 +457,11 @@ namespace MonoDevelop.Debugger
 		public bool IsConnected => DebuggingService.IsConnected;
 
 		public bool IsPaused => DebuggingService.IsPaused;
+
+		public void NotifyVariableChanged()
+		{
+			DebuggingService.NotifyVariableChanged ();
+		}
 	}
 
 	sealed class ProxyStackFrame : IStackFrame

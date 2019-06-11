@@ -49,12 +49,16 @@ namespace MonoDevelop.Debugger
 	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
 	 * refreshing a node (which may replace it's children nodes)
 	 *
-	 */ 
+	 */
 
 
 	public class ObjectValueTreeViewController
 	{
 		public static int MaxEnumerableChildrenToFetch = 20;
+		bool allowEditing;
+
+		// index of a node's path to a node
+		readonly Dictionary<string, IObjectValueNode> nodeIndex = new Dictionary<string, IObjectValueNode> ();
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
@@ -68,6 +72,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<IObjectValueNode, object> evaluationWatches = new Dictionary<IObjectValueNode, object> ();
 
+		/// <summary>
+		/// Holds a dictionary of node paths and the values. Used to show values that have changed from one frame to the next.
+		/// </summary>
+		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
+
 		public ObjectValueTreeViewController ()
 		{
 		}
@@ -76,7 +85,18 @@ namespace MonoDevelop.Debugger
 		public IObjectValueNode Root { get; private set; }
 
 		public IStackFrame Frame { get; set; }
-		public bool AllowEditing { get; set; }
+
+		public bool AllowEditing {
+			get => allowEditing;
+			set {
+				allowEditing = value;
+				// trigger a refresh
+				if (this.Root != null) {
+					this.OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
+				}
+			}
+		}
+
 		public bool AllowAdding { get; set; }
 
 
@@ -104,7 +124,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public event EventHandler<NodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
-		public object GetControl()
+		public object GetControl ()
 		{
 			return new GtkObjectValueTreeView (this);
 		}
@@ -112,16 +132,17 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Clears the controller of nodes and resets the root to a new empty node
 		/// </summary>
-		public void ClearValues()
+		public void ClearValues ()
 		{
-			Root = OnCreateRoot ();
-			OnChildrenLoaded (Root, 0, Root.Children.Count);
+			nodeIndex.Clear ();
+			Root = this.OnCreateRoot ();
+			OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
 		}
 
 		/// <summary>
 		/// Adds values to the root node, eg locals or watch expressions
 		/// </summary>
-		public void AddValues(IEnumerable<IObjectValueNode> values)
+		public void AddValues (IEnumerable<IObjectValueNode> values)
 		{
 			if (Root == null) {
 				Root = OnCreateRoot ();
@@ -132,33 +153,159 @@ namespace MonoDevelop.Debugger
 
 			// TODO: we want to enumerate just the once
 			foreach (var x in allNodes) {
-				RegisterForEvaluationCompletion (x);
+				RegisterNode (x);
 			}
 
 			OnChildrenLoaded (Root, 0, Root.Children.Count);
 		}
-
-		public void ChangeCheckpoint ()
-		{
-		}
-
-
-		public void ResetChangeTracking () { }
 
 		/// <summary>
 		/// Clear everything
 		/// </summary>
 		public void ClearAll ()
 		{
-			ClearEvaluationCompletionRegistrations ();
-			ClearValues ();
+			this.ClearEvaluationCompletionRegistrations ();
+			this.ClearValues ();
 		}
+
+		/// <summary>
+		/// Finds a node in the index from the given path
+		/// </summary>
+		public IObjectValueNode FindNode(string path)
+		{
+			if (nodeIndex.TryGetValue(path, out IObjectValueNode node)) {
+				return node;
+			}
+
+			return null;
+		}
+
+		#region Checkpoints
+		public void ChangeCheckpoint ()
+		{
+			// clear old values,
+			// iterate over all the nodes and store the values so we can compare
+			// on the next update
+			oldValues.Clear ();
+			if (this.Root != null) {
+				ChangeCheckpoint (this.Root);
+			}
+		}
+
+		public void ResetChangeTracking ()
+		{
+			oldValues.Clear ();
+		}
+
+		/// <summary>
+		/// Returns true if the value of the node is different from it's last value
+		/// at the last checkpoint. Returns false if the node was not scanned at the
+		/// last checkpoint
+		/// </summary>
+		public bool GetNodeHasChangedSinceLastCheckpoint(IObjectValueNode node)
+		{
+			if (oldValues.TryGetValue(node.Path, out CheckpointState checkpointState)) {
+				return node.Value != checkpointState.Value;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Returns true if the node was expanded when the last checkpoint was made
+		/// </summary>
+		public bool GetNodeWasExpandedAtLastCheckpoint(IObjectValueNode node)
+		{
+			if (oldValues.TryGetValue (node.Path, out CheckpointState checkpointState)) {
+				return checkpointState.Expanded;
+			}
+
+			return false;
+		}
+		#endregion
+
+		#region Editing
+		/// <summary>
+		/// Returns true if the node can be edited
+		/// </summary>
+		public bool CanEditObject (IObjectValueNode node)
+		{
+			if (AllowEditing) {
+				// TODO: clean up
+				if (node.IsUnknown) {
+					if (Frame != null) {
+						return false;
+					}
+				}
+
+				return node.CanEdit;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Edits the value of the node and returns a value indicating whether the node's value changed from
+		/// when the node was initially loaded from the debugger
+		/// </summary>
+		public bool EditNodeValue(IObjectValueNode node, string newValue)
+		{
+			if (node == null || !this.AllowEditing)
+				return false;
+
+			try {
+				if (node.Value == newValue)
+					return false;
+
+				// make sure we set an old value for this node so we can show that it has changed
+				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
+					oldValues [node.Path] = new CheckpointState (node);
+				}
+
+				// ensure the parent and node are in the checkpoint and expanded
+				// so that the tree expands the node we just edited when refreshed
+				EnsureNodeIsExpandedInCheckpoint (node);
+
+				node.SetValue(newValue);
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Could not set value for object '{node.Name}'", ex);
+				return false;
+			}
+
+			// now, refresh the parent
+			var parentNode = FindNode (node.ParentPath);
+			if (parentNode != null) {
+				parentNode.Refresh ();
+				RegisterForEvaluationCompletion (parentNode, true);
+			}
+
+			// the locals pad, for example, will reload all the values once this is fired
+			// prior to reloading, a new checkpoint will be made
+			this.Debugger.NotifyVariableChanged ();
+
+			return true;
+		}
+
+		void EnsureNodeIsExpandedInCheckpoint(IObjectValueNode node)
+		{
+			var parentNode = FindNode (node.ParentPath);
+			while (parentNode != null && parentNode != Root) {
+				if (oldValues.TryGetValue(parentNode.Path, out CheckpointState state)) {
+					state.Expanded = true;
+				} else {
+					this.oldValues [parentNode.Path] = new CheckpointState (node);
+				}
+
+				parentNode = FindNode (parentNode.ParentPath);
+			}
+		}
+		#endregion
 
 		#region Fetching and loading children
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
 		/// </summary>
-		public async Task ExpandNodeAsync(IObjectValueNode node, CancellationToken cancellationToken)
+		public async Task ExpandNodeAsync (IObjectValueNode node, CancellationToken cancellationToken)
 		{
 			// if we think the node is expanded already, no need to trigger this again
 			if (node.IsExpanded)
@@ -187,7 +334,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Marks a node as not expanded
 		/// </summary>
-		public void CollapseNode(IObjectValueNode node)
+		public void CollapseNode (IObjectValueNode node)
 		{
 			node.IsExpanded = false;
 		}
@@ -211,7 +358,7 @@ namespace MonoDevelop.Debugger
 						// a completion event so that we can tell the UI
 						for (int i = oldCount; i < oldCount + result; i++) {
 							var c = node.Children [i];
-							RegisterForEvaluationCompletion (c);
+							RegisterNode (c);
 						}
 
 						// always send the event so that the UI can determine if the node has finished loading.
@@ -233,7 +380,7 @@ namespace MonoDevelop.Debugger
 		/// Fetches the child nodes and returns the count of new children that were loaded.
 		/// The children will be in node.Children.
 		/// </summary>
-		async Task<int> FetchChildrenAsync(IObjectValueNode node, int count, CancellationToken cancellationToken)
+		async Task<int> FetchChildrenAsync (IObjectValueNode node, int count, CancellationToken cancellationToken)
 		{
 			if (node.ChildrenLoaded) {
 				return 0;
@@ -254,7 +401,7 @@ namespace MonoDevelop.Debugger
 							// a completion event so that we can tell the UI
 							for (int i = oldCount; i < oldCount + result; i++) {
 								var c = node.Children [i];
-								RegisterForEvaluationCompletion (c);
+								RegisterNode (c);
 							}
 						} else {
 							result = await node.LoadChildrenAsync (cancellationToken);
@@ -262,7 +409,7 @@ namespace MonoDevelop.Debugger
 							// if any of them are still evaluating register for
 							// a completion event so that we can tell the UI
 							foreach (var c in node.Children) {
-								RegisterForEvaluationCompletion (c);
+								RegisterNode (c);
 							}
 						}
 
@@ -277,63 +424,20 @@ namespace MonoDevelop.Debugger
 
 			return 0;
 		}
-		/*
-		async Task LoadIEnumerableChildrenAsync (IObjectValueNode node, CancellationToken cancellationToken)
-		{
-			var value = GetDebuggerObjectValueAtIter (iter);
-			if (enumerableLoading.Contains (value))
-				return;
-			enumerableLoading.Add (value);
-			store.SetValue (iter, ValueButtonTextColumn, "");
-			if (value.Name == "") {
-				store.IterParent (out iter, iter);
-				value = GetDebuggerObjectValueAtIter (iter);
-			}
-
-			int numberOfChildren = store.IterNChildren (iter);
-			Task.Factory.StartNew<ObjectValue []> (delegate (object arg) {
-				try {
-					return ((ObjectValue)arg).GetRangeOfChildren (numberOfChildren - 1, 20);
-				} catch (Exception ex) {
-					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
-					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
-					return new ObjectValue [0];
-				}
-			}, value, cancellationTokenSource.Token).ContinueWith (t => {
-				TreeIter it;
-				if (disposed)
-					return;
-				store.IterNthChild (out it, iter, numberOfChildren - 1);
-				foreach (var child in t.Result) {
-					SetValues (iter, it, null, child);
-					RegisterValue (child, it);
-					it = store.InsertNodeAfter (it);
-				}
-				ScrollToCell (store.GetPath (it), expCol, true, 0f, 0f);
-				if (t.Result.Length == 20) {//If we get back 20 elements it means there is probably more...
-					SetValues (iter, it, null, ObjectValue.CreateNullObject (null, "", "", ObjectValueFlags.IEnumerable));
-				} else {
-					store.Remove (ref it);
-				}
-
-				if (compact)
-					RecalculateWidth ();
-				enumerableLoading.Remove (value);
-			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
-		}
-		*/
 		#endregion
 
 		#region Evaluation watches
-
 		/// <summary>
-		/// Registers the ValueChanged event for a node where IsEvaluating is true
+		/// Registers the ValueChanged event for a node where IsEvaluating is true. If the node is not evaluating, and
+		/// sendImmediatelyIfNotEvaulating is true, then fire OnEvaluatingNodeValueChanged immediately 
 		/// </summary>
-		void RegisterForEvaluationCompletion (IObjectValueNode node)
+		void RegisterForEvaluationCompletion (IObjectValueNode node, bool sendImmediatelyIfNotEvaulating = false)
 		{
-			if (node != null && node.IsEvaluating) {
+			if (node.IsEvaluating) {
 				evaluationWatches [node] = null;
 				node.ValueChanged += OnEvaluatingNodeValueChanged;
+			} else if (sendImmediatelyIfNotEvaulating) {
+				OnEvaluatingNodeValueChanged (node, EventArgs.Empty);
 			}
 		}
 
@@ -351,7 +455,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Removes all ValueChanged handlers for evaluating nodes
 		/// </summary>
-		void ClearEvaluationCompletionRegistrations()
+		void ClearEvaluationCompletionRegistrations ()
 		{
 			foreach (var node in evaluationWatches.Keys) {
 				node.ValueChanged -= OnEvaluatingNodeValueChanged;
@@ -371,15 +475,39 @@ namespace MonoDevelop.Debugger
 			return new RootObjectValueNode ();
 		}
 
-		protected virtual IDebuggerService OnGetDebuggerService()
+		protected virtual IDebuggerService OnGetDebuggerService ()
 		{
 			return new ProxyDebuggerService ();
 		}
 
-		void EnsureDebuggerService()
+		void EnsureDebuggerService ()
 		{
 			if (Debugger == null) {
 				Debugger = OnGetDebuggerService ();
+			}
+		}
+
+		/// <summary>
+		/// Registers the node in the index and sets a watch for evaluating nodes
+		/// </summary>
+		void RegisterNode (IObjectValueNode node)
+		{
+			if (node != null) {
+				nodeIndex [node.Path] = node;
+				RegisterForEvaluationCompletion (node);
+			}
+		}
+
+		/// <summary>
+		/// Creates a checkpoint of the value of the node and any children that are expanded
+		/// </summary>
+		void ChangeCheckpoint (IObjectValueNode node)
+		{
+			oldValues [node.Path] = new CheckpointState (node);
+			if (node.IsExpanded) {
+				foreach (var child in node.Children) {
+					ChangeCheckpoint (child);
+				}
 			}
 		}
 
@@ -399,10 +527,10 @@ namespace MonoDevelop.Debugger
 
 				if (sender is IEvaluatingGroupObjectValueNode evalGroupNode) {
 					if (evalGroupNode.IsEvaluatingGroup) {
-						var replacementNodes = evalGroupNode.GetEvaluationGroupReplacementNodes();
+						var replacementNodes = evalGroupNode.GetEvaluationGroupReplacementNodes ();
 
 						foreach (var newNode in replacementNodes) {
-							RegisterForEvaluationCompletion (newNode);
+							RegisterNode (newNode);
 						}
 
 						OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
@@ -420,7 +548,7 @@ namespace MonoDevelop.Debugger
 			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, new IObjectValueNode [1] { node }));
 		}
 
-		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode[] replacementNodes)
+		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode [] replacementNodes)
 		{
 			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, replacementNodes));
 		}
@@ -430,6 +558,18 @@ namespace MonoDevelop.Debugger
 			NodeExpanded?.Invoke (this, new NodeExpandedEventArgs (node));
 		}
 		#endregion
+
+		class CheckpointState
+		{
+			public CheckpointState (IObjectValueNode node)
+			{
+				this.Expanded = node.IsExpanded;
+				this.Value = node.Value;
+			}
+
+			public bool Expanded { get; set; }
+			public string Value { get; set; }
+		}
 	}
 
 	#region Extension methods and helpers
