@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.Assemblies
 	/// Unique identifier for a target framework.
 	/// </summary>
 	[Serializable]
-	public class TargetFrameworkMoniker : IEquatable<TargetFrameworkMoniker>
+	public class TargetFrameworkMoniker : IEquatable<TargetFrameworkMoniker>, IComparable<TargetFrameworkMoniker>
 	{
 		string identifier, version, profile, shortName;
 		
@@ -264,6 +264,25 @@ namespace MonoDevelop.Core.Assemblies
 		static bool IsNetFramework (TargetFrameworkMoniker framework)
 		{
 			return framework.Identifier == ".NETFramework";
+		}
+
+		public int CompareTo (TargetFrameworkMoniker other)
+		{
+			int result = string.Compare (Identifier, other.Identifier, StringComparison.OrdinalIgnoreCase);
+			if (result != 0)
+				return result;
+
+			if (System.Version.TryParse (version, out Version v1) && System.Version.TryParse (other.Version, out Version v2)) {
+				result = v1.CompareTo (v2);
+				if (result != 0)
+					return result;
+			} else {
+				result = string.Compare (Version, other.Version, StringComparison.OrdinalIgnoreCase);
+				if (result != 0)
+					return result;
+			}
+
+			return string.Compare (profile ?? string.Empty, other.Profile ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static TargetFrameworkMoniker Default {

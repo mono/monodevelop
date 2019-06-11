@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.Assemblies
 	public sealed class SystemAssemblyService
 	{
 		object frameworkWriteLock = new object ();
-		Dictionary<TargetFrameworkMoniker,TargetFramework> frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();
+		SortedDictionary<TargetFrameworkMoniker,TargetFramework> frameworks = new SortedDictionary<TargetFrameworkMoniker, TargetFramework> ();
 		List<TargetRuntime> runtimes;
 		TargetRuntime defaultRuntime;
 
@@ -88,7 +88,7 @@ namespace MonoDevelop.Core.Assemblies
 		void UpdateFrameworks (IEnumerable<TargetFramework> toAdd)
 		{
 			lock (frameworkWriteLock) {
-				var newFxList = new Dictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
+				var newFxList = new SortedDictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
 				bool changed = false;
 				foreach (var fx in toAdd) {
 					TargetFramework existing;
@@ -339,13 +339,13 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		//warning: this may mutate `frameworks` and any newly-added TargetFrameworks in it
-		static void BuildFrameworkRelations (Dictionary<TargetFrameworkMoniker, TargetFramework> frameworks)
+		static void BuildFrameworkRelations (SortedDictionary<TargetFrameworkMoniker, TargetFramework> frameworks)
 		{
 			foreach (TargetFramework fx in frameworks.Values)
 				BuildFrameworkRelations (fx, frameworks);
 		}
 
-		static void BuildFrameworkRelations (TargetFramework fx, Dictionary<TargetFrameworkMoniker, TargetFramework> frameworks)
+		static void BuildFrameworkRelations (TargetFramework fx, SortedDictionary<TargetFrameworkMoniker, TargetFramework> frameworks)
 		{
 			if (fx.RelationsBuilt)
 				return;
