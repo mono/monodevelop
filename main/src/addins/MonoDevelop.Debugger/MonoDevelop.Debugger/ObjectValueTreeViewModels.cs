@@ -468,6 +468,9 @@ namespace MonoDevelop.Debugger
 		bool IsConnected { get; }
 		bool IsPaused { get; }
 		void NotifyVariableChanged ();
+		bool HasValueVisualizers (IObjectValueNode node);
+		bool HasInlineVisualizer (IObjectValueNode node);
+		bool ShowValueVisualizer (IObjectValueNode node);
 	}
 
 
@@ -485,6 +488,36 @@ namespace MonoDevelop.Debugger
 		public void NotifyVariableChanged()
 		{
 			DebuggingService.NotifyVariableChanged ();
+		}
+
+		public bool HasValueVisualizers (IObjectValueNode node)
+		{
+			var val = node.GetDebuggerObjectValue ();
+			if (val != null) {
+				return DebuggingService.HasValueVisualizers (val);
+			}
+
+			return false;
+		}
+
+		public bool HasInlineVisualizer (IObjectValueNode node)
+		{
+			var val = node.GetDebuggerObjectValue ();
+			if (val != null) {
+				return DebuggingService.HasInlineVisualizer (val);
+			}
+
+			return false;
+		}
+
+		public bool ShowValueVisualizer (IObjectValueNode node)
+		{
+			var val = node.GetDebuggerObjectValue ();
+			if (val != null) {
+				return DebuggingService.ShowValueVisualizer (val);
+			}
+
+			return false;
 		}
 	}
 

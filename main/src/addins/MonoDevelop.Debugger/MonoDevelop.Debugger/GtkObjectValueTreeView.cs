@@ -1133,23 +1133,7 @@ public StackFrame Frame {
 				}
 				strval = "";
 			} else {
-
-				// temp code
-				strval = val.GetDisplayValue ();
-
-
-				// TODO: DebuggingService.HasInlineVisualizer
-				//showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
-				//canEdit = val.IsPrimitive && !val.IsReadOnly;
-				//if (!val.IsNull && DebuggingService.HasInlineVisualizer (val)) {
-				//	try {
-				//		strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
-				//	} catch (Exception) {
-				//		strval = GetDisplayValue (val);
-				//	}
-				//} else {
-				//	strval = GetDisplayValue (val);
-				//}
+				strval = controller.GetDisplayValueWithVisualisers (val, out showViewerButton);
 
 				if (controller.GetNodeHasChangedSinceLastCheckpoint(val)) {
 					nameColor = valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueModifiedText);
@@ -1165,6 +1149,7 @@ public StackFrame Frame {
 			bool canEdit = controller.CanEditObject (val);
 			bool hasChildren = val.HasChildren;
 			string icon = ObjectValueTreeView.GetIcon (val.Flags);
+
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectNodeColumn, val);
@@ -1178,6 +1163,8 @@ public StackFrame Frame {
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
 			store.SetValue (it, ValueButtonTextColumn, valueButton);
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
+
+
 			if (ValidObjectForPreviewIcon (it))
 				store.SetValue (it, PreviewIconColumn, "md-empty");
 
@@ -1366,12 +1353,14 @@ public StackFrame Frame {
 
 			// get the node that we just edited
 			var val = GetNodeAtIter (it);
-			controller.EditNodeValue (val, args.NewText);
+			if (controller.EditNodeValue (val, args.NewText)) {
+				// update the store
+				//store.SetValue (it, ValueColumn, val.GetDisplayValue());
+				SetValues (TreeIter.Zero, it, null, val);
+			}
 
-			// update the store
-			//store.SetValue (it, ValueColumn, val.GetDisplayValue());
-			SetValues (TreeIter.Zero, it, null, val);
 			return;
+
 			// Update the color - keep a track of items that have changed
 
 			string newColor = null;
@@ -1706,10 +1695,9 @@ public StackFrame Frame {
 			if (this.controller.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					clickProcessed = true;
-					var val = GetDebuggerObjectValueAtIter (it);
-					if (DebuggingService.ShowValueVisualizer (val)) {
-						UpdateParentValue (it);
-						RefreshRow (it, val);
+					var node = GetNodeAtIter (it);
+					if (controller.ShowNodeValueVisualizer (node)) {
+						SetValues (TreeIter.Zero, it, null, node);
 					}
 				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {
 					var val = GetDebuggerObjectValueAtIter (it);

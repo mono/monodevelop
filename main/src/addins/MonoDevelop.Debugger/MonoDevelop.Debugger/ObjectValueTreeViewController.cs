@@ -55,6 +55,7 @@ namespace MonoDevelop.Debugger
 	public class ObjectValueTreeViewController
 	{
 		public const int MaxEnumerableChildrenToFetch = 20;
+		IDebuggerService debuggerService;
 		bool allowEditing;
 		bool allowAdding;
 
@@ -82,7 +83,16 @@ namespace MonoDevelop.Debugger
 		{
 		}
 
-		public IDebuggerService Debugger { get; private set; }
+		public IDebuggerService Debugger {
+			get {
+				if (debuggerService == null) {
+					debuggerService = OnGetDebuggerService ();
+				}
+
+				return debuggerService;
+			}
+		}
+
 		public IObjectValueNode Root { get; private set; }
 
 		public IStackFrame Frame { get; set; }
@@ -115,7 +125,6 @@ namespace MonoDevelop.Debugger
 
 		public bool CanQueryDebugger {
 			get {
-				EnsureDebuggerService ();
 				return Debugger.IsConnected && Debugger.IsPaused;
 			}
 		}
@@ -214,6 +223,29 @@ namespace MonoDevelop.Debugger
 			}
 
 			return null;
+		}
+
+		// TODO: can we improve this
+		public string GetDisplayValueWithVisualisers(IObjectValueNode node, out bool showViewerButton)
+		{
+			showViewerButton = false;
+			if (node == null)
+				return null;
+
+			string result;
+			showViewerButton = !node.IsNull && Debugger.HasValueVisualizers (node);
+
+			if (!node.IsNull && Debugger.HasInlineVisualizer (node)) {
+				try {
+					result = node.GetInlineVisualisation ();
+				} catch (Exception) {
+					result = node.GetDisplayValue ();
+				}
+			} else {
+				result = node.GetDisplayValue ();
+			}
+
+			return result;
 		}
 
 		#region Checkpoints
@@ -322,6 +354,34 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
+		public bool ShowNodeValueVisualizer (IObjectValueNode node)
+		{
+			if (node != null) {
+
+				// make sure we set an old value for this node so we can show that it has changed
+				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
+					oldValues [node.Path] = new CheckpointState (node);
+				}
+
+				// ensure the parent and node are in the checkpoint and expanded
+				// so that the tree expands the node we just edited when refreshed
+				EnsureNodeIsExpandedInCheckpoint (node);
+
+				if (Debugger.ShowValueVisualizer (node)) {
+					// the value of the node changed so now refresh the parent
+					var parentNode = FindNode (node.ParentPath);
+					if (parentNode != null) {
+						parentNode.Refresh ();
+						RegisterForEvaluationCompletion (parentNode, true);
+					}
+
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		void EnsureNodeIsExpandedInCheckpoint(IObjectValueNode node)
 		{
 			var parentNode = FindNode (node.ParentPath);
@@ -329,7 +389,7 @@ namespace MonoDevelop.Debugger
 				if (oldValues.TryGetValue(parentNode.Path, out CheckpointState state)) {
 					state.Expanded = true;
 				} else {
-					oldValues [parentNode.Path] = new CheckpointState (node);
+					oldValues [parentNode.Path] = new CheckpointState (parentNode) { Expanded = true };
 				}
 
 				parentNode = FindNode (parentNode.ParentPath);
@@ -542,13 +602,6 @@ namespace MonoDevelop.Debugger
 			return new ProxyDebuggerService ();
 		}
 
-		void EnsureDebuggerService ()
-		{
-			if (Debugger == null) {
-				Debugger = OnGetDebuggerService ();
-			}
-		}
-
 		/// <summary>
 		/// Registers the node in the index and sets a watch for evaluating nodes
 		/// </summary>
@@ -677,7 +730,7 @@ namespace MonoDevelop.Debugger
 
 		public static ObjectValue GetDebuggerObjectValue(this IObjectValueNode node)
 		{
-			if (node is ObjectValueNode val) {
+			if (node != null && node is ObjectValueNode val) {
 				return val.DebuggerObject;
 			}
 
@@ -687,6 +740,16 @@ namespace MonoDevelop.Debugger
 		public static bool GetIsEvaluatingGroup (this IObjectValueNode node)
 		{
 			return (node is IEvaluatingGroupObjectValueNode evg && evg.IsEvaluatingGroup);
+		}
+
+		public static string GetInlineVisualisation(this IObjectValueNode node)
+		{
+			// TODO: this is not possible to mock as it is
+			if (node is ObjectValueNode val) {
+				return DebuggingService.GetInlineVisualizer (val.DebuggerObject).InlineVisualize (val.DebuggerObject);
+			}
+
+			return node.GetDisplayValue ();
 		}
 	}
 	#endregion
