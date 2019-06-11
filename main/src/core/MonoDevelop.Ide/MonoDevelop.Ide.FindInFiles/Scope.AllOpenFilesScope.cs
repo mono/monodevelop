@@ -49,6 +49,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (textBuffer != null) {
 						results.Add (new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName));
 					} else {
+						if (!document.IsFile)
+							continue;
 						results.Add (new FileProvider (document.FileName, document.Owner as Project));
 					}
 				}
