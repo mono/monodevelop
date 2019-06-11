@@ -15,7 +15,7 @@ if !RELEASE_BUILDS
 HYBRID_SUSPEND_ABORT_DEBUG=-DHYBRID_SUSPEND_ABORT_DEBUG
 endif
 
-#SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
+SDK_PATH=$(shell xcrun --sdk macosx10.13 --show-sdk-path)
 
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
 BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
@@ -42,17 +42,17 @@ monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup -isysroot $(SDK_PATH)
 	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup -isysroot $(SDK_PATH)
 	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCEFILES)
-	gcc -g -Wall -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
+	gcc -g -Wall -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit -isysroot $(SDK_PATH)
 	./monostub-test
 
 clean-local:
