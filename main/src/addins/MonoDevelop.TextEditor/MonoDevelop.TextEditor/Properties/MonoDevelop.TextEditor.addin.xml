@@ -130,7 +130,8 @@
 		
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertSnippetCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SurroundWithCommandArgs" />
-
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToMatchingBraceCommandArgs" />
+		
 	</Extension>
 
 	<!--
