@@ -53,8 +53,6 @@ namespace MonoDevelop.CSharp.Project
 		ListStore classListStore;
 		bool classListFilled;
 		LanguageVersion[] unsupportedLanguageVersions = {
-			LanguageVersion.CSharp8,
-			LanguageVersion.LatestMajor,
 			LanguageVersion.Preview
 		};
 
