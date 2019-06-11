@@ -517,17 +517,6 @@ public StackFrame Frame {
 			restoringState = false;
 		}
 
-		bool allowAdding;
-		public bool AllowAdding {
-			get {
-				return allowAdding;
-			}
-			set {
-				allowAdding = value;
-				Refresh (false);
-			}
-		}
-
 		public bool AllowPinning {
 			get { return pinCol.Visible; }
 			set { pinCol.Visible = value; }
@@ -693,7 +682,7 @@ public StackFrame Frame {
 			CleanPinIcon ();
 			store.Clear ();
 
-			bool showExpanders = AllowAdding;
+			bool showExpanders = controller.AllowAdding;
 
 			/*
 			foreach (var val in values) {
@@ -724,7 +713,7 @@ public StackFrame Frame {
 			if (showExpanders)
 				ShowExpanders = true;
 
-			if (AllowAdding)
+			if (controller.AllowAdding)
 				store.AppendValues (createMsg, "", "", null, true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
 
 			LoadState ();
@@ -1022,7 +1011,7 @@ public StackFrame Frame {
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectColumn, val);
 			store.SetValue (it, ObjectNodeColumn, null);
-			store.SetValue (it, NameEditableColumn, !hasParent && AllowAdding);
+			store.SetValue (it, NameEditableColumn, !hasParent && controller.AllowAdding);
 			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
@@ -1153,7 +1142,7 @@ public StackFrame Frame {
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectNodeColumn, val);
-			store.SetValue (it, NameEditableColumn, !hasParent && AllowAdding);
+			store.SetValue (it, NameEditableColumn, !hasParent && controller.AllowAdding);
 			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
@@ -1641,7 +1630,7 @@ public StackFrame Frame {
 				ObjectValue val;
 				TreeIter iter;
 
-				if (!controller.AllowEditing || !AllowAdding)
+				if (!controller.AllowEditing || !controller.AllowAdding)
 					return base.OnKeyPressEvent (evnt);
 
 				// Note: since we'll be modifying the tree, we need to make changes from bottom to top
@@ -1907,7 +1896,7 @@ public StackFrame Frame {
 				return;
 			}
 
-			if (!AllowAdding) {
+			if (!controller.AllowAdding) {
 				cinfo.Visible = false;
 				return;
 			}
@@ -1963,7 +1952,7 @@ public StackFrame Frame {
 		[CommandUpdateHandler (EditCommands.Rename)]
 		protected void OnUpdateRename (CommandInfo cinfo)
 		{
-			cinfo.Visible = AllowAdding;
+			cinfo.Visible = controller.AllowAdding;
 			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 

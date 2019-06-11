@@ -112,13 +112,17 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to add values to the tree
+		/// </summary>
 		public bool AllowAdding {
 			get => allowAdding;
 			set {
 				allowAdding = value;
 
-				if (control is GtkObjectValueTreeView gtk) {
-					gtk.AllowAdding = value;
+				// trigger a refresh
+				if (Root != null) {
+					OnChildrenLoaded (Root, 0, Root.Children.Count);
 				}
 			}
 		}
