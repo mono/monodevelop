@@ -180,6 +180,24 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		public enum LaunchType
+		{
+			Unknown,
+			Normal,
+			LaunchedFromFileManager
+		}
+
+		static LaunchType launchType = LaunchType.Unknown;
+		public static LaunchType LaunchReason {
+			get => launchType;
+			set {
+				launchType = value;
+				LaunchCompletionSource.SetResult (value);
+			}
+		}
+
+		internal static TaskCompletionSource<LaunchType> LaunchCompletionSource { get; } = new TaskCompletionSource<LaunchType>();
+
 		public static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage = false)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
