@@ -58,7 +58,7 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValuePad (bool useNewTreeView = false)
 		{
-			this.UseNewTreeView = useNewTreeView;
+			UseNewTreeView = useNewTreeView;
 
 			scrolled = new ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
@@ -72,28 +72,15 @@ namespace MonoDevelop.Debugger
 				var treeView = controller.GetControl () as GtkObjectValueTreeView;
 				fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
 
-				treeView.HeadersVisible = true;
-				treeView.RulesHint = true;
-
 				scrolled.Add (treeView);
-
-				//newTree.AllowEditing = true;
-				//newTree.AllowAdding = false;
-				//newTree.HeadersVisible = true;
-				//newTree.RulesHint = true;
-				//scrolled.Add (newTree);
-
 			} else {
 				tree = new ObjectValueTreeView ();
+				tree.AllowEditing = true;
+				tree.AllowAdding = false;
 
 				fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
 
-				tree.AllowEditing = true;
-				tree.AllowAdding = false;
-				tree.HeadersVisible = true;
-				tree.RulesHint = true;
 				scrolled.Add (tree);
-
 			}
 
 			scrolled.ShowAll ();

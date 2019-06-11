@@ -103,7 +103,6 @@ namespace MonoDevelop.Debugger
 
 		public bool AllowAdding { get; set; }
 
-
 		public bool CanQueryDebugger {
 			get {
 				EnsureDebuggerService ();
