@@ -86,13 +86,17 @@ namespace MonoDevelop.Debugger
 
 		public IStackFrame Frame { get; set; }
 
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to edit values in the tree
+		/// </summary>
 		public bool AllowEditing {
 			get => allowEditing;
 			set {
 				allowEditing = value;
+
 				// trigger a refresh
-				if (this.Root != null) {
-					this.OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
+				if (Root != null) {
+					OnChildrenLoaded (Root, 0, Root.Children.Count);
 				}
 			}
 		}
