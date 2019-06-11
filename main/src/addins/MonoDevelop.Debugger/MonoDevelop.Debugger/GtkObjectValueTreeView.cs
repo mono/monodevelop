@@ -702,11 +702,13 @@ public StackFrame Frame {
 					showExpanders = true;
 			}
 			*/
-			foreach (var val in controller.Root.Children) {
-				// append value calls setvalues which adds a dummy row for new children.
-				AppendNodeToTreeModel (TreeIter.Zero, null, val);
-				if (val.HasChildren)
-					showExpanders = true;
+			if (controller.Root != null) {
+				foreach (var val in controller.Root.Children) {
+					// append value calls setvalues which adds a dummy row for new children.
+					AppendNodeToTreeModel (TreeIter.Zero, null, val);
+					if (val.HasChildren)
+						showExpanders = true;
+				}
 			}
 
 			// these are expressions
@@ -1545,7 +1547,11 @@ public StackFrame Frame {
 						using (var layout = new Pango.Layout (PangoContext)) {
 							layout.FontDescription = crtExp.FontDesc.Copy ();
 							layout.FontDescription.Family = crtExp.Family;
-							layout.SetText ((string)store.GetValue (it, NameColumn));
+
+							var name = (string) store.GetValue (it, NameColumn);
+							if (!string.IsNullOrEmpty (name))
+								layout.SetText (name);
+
 							int w, h;
 							layout.GetPixelSize (out w, out h);
 							var cellArea = GetCellRendererArea (path, col, cr);

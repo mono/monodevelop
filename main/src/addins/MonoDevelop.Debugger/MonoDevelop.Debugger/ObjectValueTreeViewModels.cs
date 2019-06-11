@@ -227,7 +227,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!allChildrenLoaded) {
 				var loadedChildren = await OnLoadChildrenAsync (cancellationToken);
-				AddValues (loadedChildren);
+				AddChildren (loadedChildren);
 
 				allChildrenLoaded = true;
 				return loadedChildren.Count ();
@@ -240,7 +240,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!allChildrenLoaded) {
 				var loadedChildren = await OnLoadChildrenAsync (children.Count, count, cancellationToken);
-				AddValues (loadedChildren.Item1);
+				AddChildren (loadedChildren.Item1);
 
 				allChildrenLoaded = loadedChildren.Item2;
 				return loadedChildren.Item1.Count ();
@@ -249,9 +249,14 @@ namespace MonoDevelop.Debugger
 			return 0;
 		}
 
-		protected void AddValues (IEnumerable<IObjectValueNode> values)
+		protected void AddChild (IObjectValueNode value)
 		{
-			this.children.AddRange (values);
+			children.Add (value);
+		}
+
+		protected void AddChildren (IEnumerable<IObjectValueNode> values)
+		{
+			children.AddRange (values);
 		}
 
 		protected void ClearChildren ()
@@ -394,8 +399,8 @@ namespace MonoDevelop.Debugger
 
 		bool GetCanEdit()
 		{
+			var val = DebuggerObject;
 			bool canEdit;
-			var val = this.DebuggerObject;
 
 			if (val.IsUnknown) {
 				//if (frame != null) {
@@ -426,14 +431,19 @@ namespace MonoDevelop.Debugger
 	{
 		public RootObjectValueNode () : base (string.Empty, string.Empty)
 		{
-			this.IsExpanded = true;
+			IsExpanded = true;
 		}
 
 		public override bool HasChildren => true;
 
-		public new void AddValues (IEnumerable<IObjectValueNode> values)
+		public void AddValue (IObjectValueNode value)
 		{
-			base.AddValues (values);
+			AddChild (value);
+		}
+
+		public void AddValues (IEnumerable<IObjectValueNode> values)
+		{
+			AddChildren (values);
 		}
 	}
 

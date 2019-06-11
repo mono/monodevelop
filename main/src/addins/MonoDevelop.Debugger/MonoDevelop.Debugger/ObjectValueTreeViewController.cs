@@ -56,6 +56,7 @@ namespace MonoDevelop.Debugger
 	{
 		public const int MaxEnumerableChildrenToFetch = 20;
 		bool allowEditing;
+		bool allowAdding;
 
 		// index of a node's path to a node
 		readonly Dictionary<string, IObjectValueNode> nodeIndex = new Dictionary<string, IObjectValueNode> ();
@@ -101,7 +102,16 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public bool AllowAdding { get; set; }
+		public bool AllowAdding {
+			get => allowAdding;
+			set {
+				allowAdding = value;
+
+				if (control is GtkObjectValueTreeView gtk) {
+					gtk.AllowAdding = value;
+				}
+			}
+		}
 
 		public bool CanQueryDebugger {
 			get {
@@ -127,9 +137,17 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public event EventHandler<NodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
+		object control;
+
 		public object GetControl ()
 		{
-			return new GtkObjectValueTreeView (this);
+			if (control == null) {
+				control = new GtkObjectValueTreeView (this) {
+					AllowAdding = allowAdding
+				};
+			}
+
+			return control;
 		}
 
 		/// <summary>
@@ -145,18 +163,33 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Adds values to the root node, eg locals or watch expressions
 		/// </summary>
+		public void AddValue (IObjectValueNode value)
+		{
+			if (Root == null) {
+				Root = OnCreateRoot ();
+			}
+
+			((RootObjectValueNode) Root).AddValue (value);
+			RegisterNode (value);
+
+			OnChildrenLoaded (Root, 0, Root.Children.Count);
+		}
+
+		/// <summary>
+		/// Adds values to the root node, eg locals or watch expressions
+		/// </summary>
 		public void AddValues (IEnumerable<IObjectValueNode> values)
 		{
 			if (Root == null) {
 				Root = OnCreateRoot ();
 			}
 
-			var allNodes = values.ToList ();
-			((RootObjectValueNode)Root).AddValues (allNodes);
+			var nodes = values.ToList ();
+			((RootObjectValueNode) Root).AddValues (nodes);
 
 			// TODO: we want to enumerate just the once
-			foreach (var x in allNodes) {
-				RegisterNode (x);
+			foreach (var node in nodes) {
+				RegisterNode (node);
 			}
 
 			OnChildrenLoaded (Root, 0, Root.Children.Count);

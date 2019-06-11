@@ -28,10 +28,12 @@
 
 using System;
 using System.Xml;
+using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
@@ -40,13 +42,19 @@ namespace MonoDevelop.Debugger
 		static readonly Gtk.TargetEntry[] DropTargets = {
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
-		List<string> storedVars;
+		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
+		readonly List<string> expressions = new List<string> ();
 		
-		public WatchPad ()
+		public WatchPad () : base (true)
 		{
-			tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
-			tree.DragDataReceived += HandleDragDataReceived;
-			tree.AllowAdding = true;
+			if (UseNewTreeView) {
+				controller.AllowAdding = true;
+				// TODO: drag & drop
+			} else {
+				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
+				tree.DragDataReceived += HandleDragDataReceived;
+				tree.AllowAdding = true;
+			}
 		}
 
 		void HandleDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
@@ -65,16 +73,82 @@ namespace MonoDevelop.Debugger
 				AddWatch (expr.Trim ());
 			}
 		}
-		
+
+		ObjectValue GetExpressionValue (string expression)
+		{
+			var frame = ((ProxyStackFrame) controller.Frame).StackFrame;
+			ObjectValue value;
+
+			if (cachedValues.TryGetValue (expression, out value))
+				return value;
+
+			if (frame != null)
+				value = frame.GetExpressionValue (expression, true);
+			else
+				value = ObjectValue.CreateUnknown (expression);
+
+			cachedValues[expression] = value;
+
+			return value;
+		}
+
+		ObjectValue[] GetExpressionValues ()
+		{
+			var frame = ((ProxyStackFrame) controller.Frame).StackFrame;
+			var values = new ObjectValue[expressions.Count];
+			var unknown = new List<string> ();
+
+			for (int i = 0; i < expressions.Count; i++) {
+				ObjectValue value;
+
+				if (cachedValues.TryGetValue (expressions[i], out value))
+					values[i] = value;
+				else
+					unknown.Add (expressions[i]);
+			}
+
+			ObjectValue[] qvalues;
+
+			if (frame != null) {
+				qvalues = frame.GetExpressionValues (unknown.ToArray (), true);
+			} else {
+				qvalues = new ObjectValue[unknown.Count];
+				for (int i = 0; i < qvalues.Length; i++)
+					qvalues[i] = ObjectValue.CreateUnknown (unknown[i]);
+			}
+
+			int n = 0;
+			for (int i = 0; i < values.Length; i++) {
+				if (values[i] == null) {
+					values[i] = qvalues[n++];
+					cachedValues[expressions[i]] = values[i];
+				}
+			}
+
+			return values;
+		}
+
 		public void AddWatch (string expression)
 		{
-			tree.AddExpression (expression);
+			if (UseNewTreeView) {
+				var value = GetExpressionValue (expression);
+				expressions.Add (expression);
+
+				controller.AddValue (new ObjectValueNode (value, string.Empty));
+			} else {
+				tree.AddExpression (expression);
+			}
 		}
 
 		public override void OnUpdateValues ()
 		{
 			base.OnUpdateValues ();
-			tree.Update ();
+
+			if (UseNewTreeView) {
+				//controller.Update ();
+			} else {
+				tree.Update ();
+			}
 		}
 
 		#region IMementoCapable implementation 
@@ -84,27 +158,46 @@ namespace MonoDevelop.Debugger
 				return this;
 			}
 			set {
-				if (tree != null) {
-					tree.ClearExpressions ();
-					if (storedVars != null)
-						tree.AddExpressions (storedVars);
+				if (UseNewTreeView) {
+					if (controller != null) {
+						var values = GetExpressionValues ();
+
+						controller.ClearValues ();
+						controller.AddValues (values.Select (v => new ObjectValueNode (v, string.Empty)));
+					}
+				} else {
+					if (tree != null) {
+						tree.ClearExpressions ();
+						if (expressions != null)
+							tree.AddExpressions (expressions);
+					}
 				}
 			}
 		}
 		
 		void ICustomXmlSerializer.WriteTo (XmlWriter writer)
 		{
-			if (tree != null) {
-				writer.WriteStartElement ("Values");
-				foreach (string name in tree.Expressions)
-					writer.WriteElementString ("Value", name);
-				writer.WriteEndElement ();
+			if (UseNewTreeView) {
+				if (controller != null) {
+					writer.WriteStartElement ("Values");
+					foreach (string expression in expressions)
+						writer.WriteElementString ("Value", expression);
+					writer.WriteEndElement ();
+				}
+			} else {
+				if (tree != null) {
+					writer.WriteStartElement ("Values");
+					foreach (string name in tree.Expressions)
+						writer.WriteElementString ("Value", name);
+					writer.WriteEndElement ();
+				}
 			}
 		}
 		
 		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (XmlReader reader)
 		{
-			storedVars = new List<string> ();
+			cachedValues.Clear ();
+			expressions.Clear ();
 			
 			reader.MoveToContent ();
 			if (reader.IsEmptyElement) {
@@ -115,9 +208,10 @@ namespace MonoDevelop.Debugger
 			reader.MoveToContent ();
 			while (reader.NodeType != XmlNodeType.EndElement) {
 				if (reader.NodeType == XmlNodeType.Element) {
-					storedVars.Add (reader.ReadElementString ());
-				} else
+					expressions.Add (reader.ReadElementString ());
+				} else {
 					reader.Skip ();
+				}
 			}
 			reader.ReadEndElement ();
 			return null;
