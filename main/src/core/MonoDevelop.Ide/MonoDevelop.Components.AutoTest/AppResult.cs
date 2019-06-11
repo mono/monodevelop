@@ -116,7 +116,9 @@ namespace MonoDevelop.Components.AutoTest
 			LoggingService.LogDebug ($"[AppResult.Invoke] Trying to invoke method '{methodName}' on '{o.GetType ().FullName}' with arguments: {string.Join(",", args)}");
 			var methodInfo = o.GetType ().GetMethod (methodName);
 			if(methodInfo != null) {
+				LoggingService.LogDebug ($"[AppResult.Invoke] Found method '{methodInfo.ToString()}'");
 				var resultObject = methodInfo.Invoke (o, args);
+				LoggingService.LogDebug ($"[AppResult.Invoke] Value from method invoke '{resultObject?.ToString ()}' of type '{resultObject?.GetType().FullName}'");
 				return GetAppResultFromObject (resultObject);
 			}
 			throw new MissingMethodException ($"Method '{methodName}' on '{o.GetType()}' does not exist");
@@ -227,6 +229,7 @@ namespace MonoDevelop.Components.AutoTest
 #endif
 			if (result == null)
 				result = new ObjectResult (value);
+			LoggingService.LogDebug ($"[AppResult.GetAppResultFromObject] result is of type {result.GetType().FullName}");
 			return result;
 		}
 
