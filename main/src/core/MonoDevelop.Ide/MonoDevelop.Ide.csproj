@@ -4247,6 +4247,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopErrorLoggerService.cs" />
     <Compile Include="MonoDevelop.Components.Commands\IdeCommandManager.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchStatusBar.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NativeToolkitHelper.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

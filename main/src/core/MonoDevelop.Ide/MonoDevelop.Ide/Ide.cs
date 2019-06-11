@@ -180,6 +180,18 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		public enum LaunchType
+		{
+			Normal,
+			LaunchedFromFileManager
+		}
+
+		static LaunchType launchReason = LaunchType.Normal;
+		public static LaunchType LaunchReason {
+			get => launchReason;
+			set => launchReason = value;
+		}
+
 		public static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage = false)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.

@@ -117,6 +117,11 @@ namespace MonoDevelop.Ide
 			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
 
 			startupInfo = new StartupInfo (options, args);
+			if (startupInfo.HasFiles) {
+				// If files are present, consider started from the commandline as being the same as file manager.
+				// On macOS, we need to wait until the DidFinishLaunching notification to find out we were launched from the Finder
+				IdeApp.LaunchReason = IdeApp.LaunchType.LaunchedFromFileManager;
+			}
 
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			try {
