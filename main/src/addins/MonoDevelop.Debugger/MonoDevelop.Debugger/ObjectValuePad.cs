@@ -26,7 +26,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 
 using Gtk;
 using MonoDevelop.Ide.Gui;
@@ -40,7 +39,6 @@ namespace MonoDevelop.Debugger
 		protected bool UseNewTreeView = false;
 
 		protected ObjectValueTreeViewController controller;
-		//protected ObjectValueTreeViewFake newTree;
 		protected ObjectValueTreeView tree;
 
 		readonly ScrolledWindow scrolled;
@@ -115,9 +113,9 @@ namespace MonoDevelop.Debugger
 			base.Dispose ();
 		}
 
-		protected override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow window)
 		{
-			container.PadContentShown += delegate {
+			window.PadContentShown += delegate {
 				if (needsUpdateFrame)
 					OnUpdateFrame ();
 				else if (needsUpdateValues)
@@ -132,7 +130,6 @@ namespace MonoDevelop.Debugger
 
 			if (DebuggingService.CurrentFrame != lastFrame) {
 				if (UseNewTreeView) {
-					//newTree.Frame = DebuggingService.CurrentFrame;
 					controller.SetStackFrame (DebuggingService.CurrentFrame);
 				} else {
 					tree.Frame = DebuggingService.CurrentFrame;
@@ -174,11 +171,9 @@ namespace MonoDevelop.Debugger
 		{
 			if (UseNewTreeView) {
 				if (!initialResume) {
-					//newTree.ChangeCheckpoint ();
 					controller.ChangeCheckpoint ();
 				}
 
-				//newTree.ClearValues ();
 				controller.ClearValues ();
 			} else {
 				if (!initialResume) {
@@ -197,8 +192,6 @@ namespace MonoDevelop.Debugger
 				return;
 
 			if (UseNewTreeView) {
-				//newTree.ResetChangeTracking ();
-				//newTree.ClearAll ();
 				controller.ResetChangeTracking ();
 				controller.ClearAll ();
 			} else {

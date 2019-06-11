@@ -166,7 +166,7 @@ namespace MonoDevelop.Debugger
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
 
-			Pango.FontDescription newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+			var newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
 			liveIcon = ImageService.GetIcon ("md-live", IconSize.Menu);
 			noLiveIcon = liveIcon.WithAlpha (0.5);

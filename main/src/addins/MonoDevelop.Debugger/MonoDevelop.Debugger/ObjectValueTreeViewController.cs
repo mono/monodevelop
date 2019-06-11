@@ -54,7 +54,7 @@ namespace MonoDevelop.Debugger
 
 	public class ObjectValueTreeViewController
 	{
-		public static int MaxEnumerableChildrenToFetch = 20;
+		public const int MaxEnumerableChildrenToFetch = 20;
 		bool allowEditing;
 
 		// index of a node's path to a node
@@ -138,8 +138,8 @@ namespace MonoDevelop.Debugger
 		public void ClearValues ()
 		{
 			nodeIndex.Clear ();
-			Root = this.OnCreateRoot ();
-			OnChildrenLoaded (this.Root, 0, this.Root.Children.Count);
+			Root = OnCreateRoot ();
+			OnChildrenLoaded (Root, 0, Root.Children.Count);
 		}
 
 		/// <summary>
@@ -167,8 +167,8 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearAll ()
 		{
-			this.ClearEvaluationCompletionRegistrations ();
-			this.ClearValues ();
+			ClearEvaluationCompletionRegistrations ();
+			ClearValues ();
 		}
 
 		/// <summary>
@@ -190,8 +190,8 @@ namespace MonoDevelop.Debugger
 			// iterate over all the nodes and store the values so we can compare
 			// on the next update
 			oldValues.Clear ();
-			if (this.Root != null) {
-				ChangeCheckpoint (this.Root);
+			if (Root != null) {
+				ChangeCheckpoint (Root);
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public bool EditNodeValue(IObjectValueNode node, string newValue)
 		{
-			if (node == null || !this.AllowEditing)
+			if (node == null || !AllowEditing)
 				return false;
 
 			try {
@@ -284,7 +284,7 @@ namespace MonoDevelop.Debugger
 
 			// the locals pad, for example, will reload all the values once this is fired
 			// prior to reloading, a new checkpoint will be made
-			this.Debugger.NotifyVariableChanged ();
+			Debugger.NotifyVariableChanged ();
 
 			return true;
 		}
@@ -296,7 +296,7 @@ namespace MonoDevelop.Debugger
 				if (oldValues.TryGetValue(parentNode.Path, out CheckpointState state)) {
 					state.Expanded = true;
 				} else {
-					this.oldValues [parentNode.Path] = new CheckpointState (node);
+					oldValues [parentNode.Path] = new CheckpointState (node);
 				}
 
 				parentNode = FindNode (parentNode.ParentPath);
@@ -566,8 +566,8 @@ namespace MonoDevelop.Debugger
 		{
 			public CheckpointState (IObjectValueNode node)
 			{
-				this.Expanded = node.IsExpanded;
-				this.Value = node.Value;
+				Expanded = node.IsExpanded;
+				Value = node.Value;
 			}
 
 			public bool Expanded { get; set; }
@@ -606,11 +606,12 @@ namespace MonoDevelop.Debugger
 			if (node.DisplayValue == null)
 				return "(null)";
 
-			if (node.DisplayValue.Length > 1000)
+			if (node.DisplayValue.Length > 1000) {
 				// Truncate the string to stop the UI from hanging
 				// when calculating the size for very large amounts
 				// of text.
 				return node.DisplayValue.Substring (0, 1000) + "…";
+			}
 
 			return node.DisplayValue;
 		}
