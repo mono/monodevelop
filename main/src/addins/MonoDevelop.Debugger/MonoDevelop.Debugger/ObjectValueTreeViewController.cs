@@ -150,17 +150,9 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public event EventHandler<NodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
-		object control;
-
 		public object GetControl ()
 		{
-			if (control == null) {
-				control = new GtkObjectValueTreeView (this) {
-					AllowAdding = allowAdding
-				};
-			}
-
-			return control;
+			return new GtkObjectValueTreeView (this);
 		}
 
 		/// <summary>
