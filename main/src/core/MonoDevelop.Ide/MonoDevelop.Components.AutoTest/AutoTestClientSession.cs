@@ -390,6 +390,12 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public AppResult Invoke (Func<AppQuery, AppQuery> query, string methodName, params string [] args)
+		{
+			AppResult [] results = Query (query);
+			return session.Invoke (results [0], methodName, args);
+		}
+
 		public bool SetActiveConfiguration (Func<AppQuery, AppQuery> query, string configuration)
 		{
 			AppResult[] results = Query (query);

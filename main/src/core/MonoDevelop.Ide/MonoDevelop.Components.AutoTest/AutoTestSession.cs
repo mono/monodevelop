@@ -697,6 +697,19 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public AppResult Invoke (AppResult result, string methodName, params string [] args)
+		{
+			AppResult objectResult = null;
+			try {
+				ExecuteOnIdle (() => {
+					objectResult = result.Invoke (methodName, args);
+				}, wait: true);
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Invoke", result.SourceQuery, result, e);
+			}
+			return objectResult;
+		}
+
 		public bool SetActiveConfiguration (AppResult result, string configuration)
 		{
 			bool success = false;
