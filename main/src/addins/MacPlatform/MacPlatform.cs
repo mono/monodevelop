@@ -286,11 +286,7 @@ namespace MonoDevelop.MacIntegration
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
-			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
-
-			// Also calls NSApplication.Init();
-			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+			var loaded = NativeToolkitHelper.LoadCocoa ();
 
 			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
 			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
