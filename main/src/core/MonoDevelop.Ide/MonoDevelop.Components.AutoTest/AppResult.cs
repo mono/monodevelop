@@ -67,7 +67,6 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 		public abstract void Flash ();
-		public abstract AppResult GetProperty (string propertyName);
 		public abstract void SetProperty (string propertyName, object value);
 
 		// More specific actions for complicated widgets
@@ -87,6 +86,7 @@ namespace MonoDevelop.Components.AutoTest
 		// Inspection Operations
 		public abstract ObjectProperties Properties ();
 		public abstract string GetResultType  ();
+		public abstract AppResult GetProperty (string propertyName);
 
 		public string SourceQuery { get; set; }
 
