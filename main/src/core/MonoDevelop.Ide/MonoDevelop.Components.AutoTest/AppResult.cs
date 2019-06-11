@@ -110,10 +110,21 @@ namespace MonoDevelop.Components.AutoTest
 			return children;
 		}
 
+		public AppResult Invoke(object o, string methodName, params string [] args)
+		{
+			LoggingService.LogDebug ($"[AppResult.Invoke] Trying to invoke method '{methodName}' on '{o.GetType ().FullName}' with arguments: {string.Join(",", args)}");
+			var methodInfo = o.GetType ().GetMethod (methodName);
+			if(methodInfo != null) {
+				var resultObject = methodInfo.Invoke (o, args);
+				return GetAppResultFromObject (resultObject);
+			}
+			throw new MissingMethodException ($"Method '{methodName}' on '{o.GetType()}' does not exist");
+		}
+
 		public AppResult GetProperty (object o, string propertyName)
 		{
 			LoggingService.LogDebug ($"[AppResult.GetProperty] Trying to fetch property '{propertyName}' on '{o.GetType().FullName}'");
-			return GetPropertyAppResultFromObject (o, propertyName);
+			return GetAppResultFromPropertyName (o, propertyName);
 		}
 
 		public void SetProperty (object o, string propertyName, object value)
@@ -178,7 +189,7 @@ namespace MonoDevelop.Components.AutoTest
 					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 				foreach (var property in properties) {
 					try {
-						var result = GetPropertyAppResultFromObject (resultObject, property.Name);
+						var result = GetAppResultFromPropertyName (resultObject, property.Name);
 						propertiesObject.Add (property.Name, result, property);
 					} catch (Exception e) {
 						MonoDevelop.Core.LoggingService.LogInfo ("Failed to fetch property '{0}' on '{1}' with Exception: {2}", property, resultObject, e.Message);
@@ -189,9 +200,14 @@ namespace MonoDevelop.Components.AutoTest
 			return propertiesObject;
 		}
 
-		AppResult GetPropertyAppResultFromObject (object resultObject, string propertyName)
+		AppResult GetAppResultFromPropertyName (object resultObject, string propertyName)
 		{
 			var value = GetPropertyValue (propertyName, resultObject);
+			return GetAppResultFromObject (value);
+		}
+
+		AppResult GetAppResultFromObject (object value)
+		{
 			AppResult result = null;
 
 			var gtkNotebookValue = value as Gtk.Notebook;
