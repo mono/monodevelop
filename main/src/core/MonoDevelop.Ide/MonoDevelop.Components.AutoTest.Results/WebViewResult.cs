@@ -156,6 +156,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			node.SetAttribute (propertyName, value.ToString ());
 		}
 
+		public override AppResult Invoke (string methodName, params string [] args)
+		{
+			return base.Invoke (this.node, methodName, args);
+		}
+
 		public override AppResult Text (string text, bool exact)
 		{
 			return CheckText (node, text, exact)

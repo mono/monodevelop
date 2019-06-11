@@ -324,7 +324,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SetProperty (ResultObject, propertyName, value);
 		}
 
-#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		public override AppResult Invoke (string methodName, params string [] args)
+		{
+			return base.Invoke (ResultObject, methodName, args);
+		}
+
+		#region MacPlatform.MacIntegration.MainToolbar.SelectorView
 		public override bool SetActiveConfiguration (string configurationName)
 		{
 			Type type = ResultObject.GetType ();

@@ -138,6 +138,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SetProperty (value, propertyName, newValue);
 		}
 
+		public override AppResult Invoke (string methodName, params string [] args)
+		{
+			return base.Invoke (value, methodName, args);
+		}
+
 		protected override void Dispose (bool disposing)
 		{
 			value = null;

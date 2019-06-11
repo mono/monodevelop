@@ -68,6 +68,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool Toggle (bool active);
 		public abstract void Flash ();
 		public abstract void SetProperty (string propertyName, object value);
+		public abstract AppResult Invoke (string methodName, params string [] args);
 
 		// More specific actions for complicated widgets
 
