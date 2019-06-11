@@ -526,7 +526,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			});
 		}
 
-		public override ObjectProperties GetProperty(string propertyName)
+		public override AppResult GetProperty(string propertyName)
 		{
 			return base.GetProperty (resultWidget, propertyName);
 		}

@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 		public abstract void Flash ();
-		public abstract ObjectProperties GetProperty (string propertyName);
+		public abstract AppResult GetProperty (string propertyName);
 		public abstract void SetProperty (string propertyName, object value);
 
 		// More specific actions for complicated widgets
@@ -110,13 +110,10 @@ namespace MonoDevelop.Components.AutoTest
 			return children;
 		}
 
-		public ObjectProperties GetProperty (object o, string propertyName)
+		public AppResult GetProperty (object o, string propertyName)
 		{
 			LoggingService.LogDebug ($"[AppResult.GetProperty] Trying to fetch property '{propertyName}' on '{o.GetType().FullName}'");
-			var propertiesObject = new ObjectProperties ();
-			var result = GetPropertyAppResultFromObject (o, propertyName);
-			propertiesObject.Add (propertyName, result, null);
-			return propertiesObject;
+			return GetPropertyAppResultFromObject (o, propertyName);
 		}
 
 		public void SetProperty (object o, string propertyName, object value)
