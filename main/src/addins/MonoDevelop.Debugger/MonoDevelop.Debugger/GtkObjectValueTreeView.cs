@@ -1044,21 +1044,6 @@ public StackFrame Frame {
 			}
 		}
 
-		private void UpdateObjectValue (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-
-				// TODO: implement this in the controller
-
-				//var val = (ObjectValue)sender;
-				//val.ValueChanged -= UpdateObjectValue;
-				//if (!FindValue (val, out var it))
-				//	return;
-				//nodes.Remove (val);
-				//SetValues (TreeIter.Zero, it, null, val, true);
-			});
-		}
-
 		void OnEditingCancelled (object s, EventArgs args)
 		{
 			OnEndEditing ();
