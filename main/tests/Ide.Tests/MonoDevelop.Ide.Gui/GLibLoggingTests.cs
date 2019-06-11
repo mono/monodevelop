@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui
 		static void AssertGLibStackTrace(string stacktrace)
 		{
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
-			Assert.That (stacktrace, Contains.Substring ("at GLib.Log.g_logv"));
+			Assert.That (stacktrace, Contains.Substring ("at GLib.Log.g_log"));
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLogging.LoggerMethod"));
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.Ide.Gui.GLibLoggingTests"));
 		}
