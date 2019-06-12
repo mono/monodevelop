@@ -153,7 +153,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		string GetUpdatedVersionLabelText ()
 		{
-			return GettextCatalog.GetString ("({0} available)", updatedVersion);
+			if (string.IsNullOrEmpty (version))
+				return GettextCatalog.GetString ("({0} available)", updatedVersion);
+
+			return GettextCatalog.GetString ("({0} · {1} available)", version, updatedVersion);
 		}
 
 		public IconId GetIconId ()
@@ -200,9 +203,12 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return dependency?.HasChildDiagnostic == true; }
 		}
 
-		public string GetShowVersionLabel ()
+		public string GetUpdateLabel ()
 		{
-			return GettextCatalog.GetString ("Version {0}", Version);
+			if (!CanBeRemoved || updatedVersion == null)
+				return GettextCatalog.GetString ("Update");
+
+			return GettextCatalog.GetString ("Update to {0}", updatedVersion);
 		}
 
 		public bool IsReleaseVersion ()

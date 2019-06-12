@@ -98,6 +98,13 @@ namespace MonoDevelop.PackageManagement.Commands
 			return !MultipleSelectedNodes;
 		}
 
+		[CommandUpdateHandler (PackageReferenceNodeCommands.UpdatePackage)]
+		void CheckCanUpdatePackage (CommandInfo info)
+		{
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			info.Text = packageReferenceNode.GetUpdateLabel ();
+		}
+
 		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
 		public void UpdatePackage ()
 		{

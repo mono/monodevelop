@@ -102,7 +102,11 @@ namespace MonoDevelop.DotNetCore.Commands
 		void CheckCanUpdatePackage (CommandInfo info)
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
-			info.Visible = node.CanBeRemoved;
+			if (node.CanBeRemoved) {
+				info.Text = node.GetUpdateLabel ();
+			} else {
+				info.Visible = false;
+			}
 		}
 
 		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
@@ -115,14 +119,6 @@ namespace MonoDevelop.DotNetCore.Commands
 				project,
 				node.Name,
 				!node.IsReleaseVersion ());
-		}
-
-		[CommandUpdateHandler (PackageReferenceNodeCommands.ShowPackageVersion)]
-		public void UpdateShowPackageVersionItem (CommandInfo info)
-		{
-			var node = (PackageDependencyNode)CurrentNode.DataItem;
-			info.Enabled = false;
-			info.Text = node.GetShowVersionLabel ();
 		}
 	}
 }

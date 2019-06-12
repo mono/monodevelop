@@ -183,6 +183,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return !ParentNode.IsNuGetIntegratedProject () &&
 				!ParentNode.IsPackageInstalled (PackageReference);
 		}
+
+		public string GetUpdateLabel ()
+		{
+			if (UpdatedVersion != null)
+				return GettextCatalog.GetString ("Update to {0}", UpdatedVersion);
+
+			return GettextCatalog.GetString ("Update");
+		}
 	}
 }
 
