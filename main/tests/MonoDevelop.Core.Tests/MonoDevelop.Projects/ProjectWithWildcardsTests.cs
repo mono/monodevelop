@@ -184,8 +184,30 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 
 			await p.SaveAsync (Util.GetMonitor ());
+			p.Dispose ();
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			mp = (Project)p;
+
+			bool processedItemGroup = false;
+			foreach (var ig in mp.MSBuildProject.ItemGroups) {
+				if (ig.Items.Any (i => i.Include == "Program.cs")) {
+					Assert.Null (ig.Items.FirstOrDefault (pf => pf.Include == "Data1.cs"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "*.txt"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\Data\\*.txt"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\Data3.cs"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\Data\\Data2.cs"));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\text1-1.txt"));
+					Assert.NotNull (mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt" && pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest));
+					Assert.NotNull (ig.Items.FirstOrDefault (pf => pf.Include == "Content\\text1-2.txt"));
+
+					processedItemGroup = true;
+					break;
+				}
+			}
+
+			Assert.True (processedItemGroup);
 
 			p.Dispose ();
 		}
