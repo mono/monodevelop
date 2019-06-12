@@ -72,8 +72,13 @@ namespace MonoDevelop.MacIntegration
 					else
 						alert.Icon = img.ToNSImage ();
 				} else {
-					//for some reason the NSAlert doesn't pick up the app icon by default
-					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
+					try {
+						//for some reason the NSAlert doesn't pick up the app icon by default
+						//this call could fail in cases of cocoa not fully initialized (resources not available)
+						alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
 				}
 
 				alert.MessageText = data.Message.Text;
