@@ -1040,6 +1040,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			case ApplyChangesKind.RemoveMetadataReference:
 			case ApplyChangesKind.AddProjectReference:
 			case ApplyChangesKind.RemoveProjectReference:
+			case ApplyChangesKind.ChangeDocumentInfo:
 				return true;
 			default:
 				return false;
@@ -1294,6 +1295,88 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
+
+		protected override void ApplyDocumentInfoChanged (DocumentId id, DocumentInfo info)
+		{
+			var document = CurrentSolution.GetDocument (id);
+			FailIfDocumentInfoChangesNotSupported (document, info);
+
+			// abort if the name is the same, as there's nothing to do
+			if (document.Name == info.Name || string.IsNullOrEmpty(info.Name))
+				return;
+
+			MonoDevelop.Projects.Project mdProject = null;
+
+			if (id.ProjectId != null) {
+				var project = CurrentSolution.GetProject (id.ProjectId);
+				mdProject = GetMonoProject (project);
+				if (mdProject == null) {
+					LoggingService.LogWarning ("Couldn't find project for newly file file {0} (Project {1}).",
+						info.Name, info.Id.ProjectId);
+
+					return;
+				}
+			}
+
+			var guiDoc = documentManager.Documents.FirstOrDefault (d => d.IsFile && d.Name == document.Name);
+
+			// This method can be called by Roslyn or the editor in a context which is not the GTK UI context
+			// that MonoDevelop uses. In that case, before starting async an operation that may queue
+			// task continuations into the current context, we switch to the GTK context, so that
+			// whatever is queued will be dispatched when we run RunPendingEvents.
+			// See: https://github.com/mono/monodevelop/pull/7823
+			var oldContext = SynchronizationContext.Current;
+			try {
+				SynchronizationContext.SetSynchronizationContext (Runtime.MainSynchronizationContext);
+				Task task = guiDoc.IsDirty ? guiDoc.Save () : null;
+				// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
+				while (task != null && !task.IsCompleted) {
+					DispatchService.RunPendingEvents (30);
+				}
+			} finally {
+				SynchronizationContext.SetSynchronizationContext (oldContext);
+			}
+
+			// TODO: the Visual Studio Windows implementation of this also adds an undo unit to the
+			// global undo manager which we don't currently support.
+
+			var newName = NameGenerator.GenerateUniqueName (
+				Path.GetFileNameWithoutExtension (info.Name),
+				Path.GetExtension (info.Name),
+				nx => !mdProject.Files.Any (p => string.Equals(p.Name, nx, FilePath.PathComparison)));
+
+			FileService.RenameFile (guiDoc.FilePath, newName);
+		}
+
+
+		void FailIfDocumentInfoChangesNotSupported (Document document, DocumentInfo updatedInfo)
+		{
+			if (document.SourceCodeKind != updatedInfo.SourceCodeKind) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.SourceCodeKind)}.");
+			}
+
+			if (document.FilePath != updatedInfo.FilePath) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.FilePath)}.");
+			}
+
+			if (document.Id != updatedInfo.Id) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.Id)}.");
+			}
+
+			if (document.Folders != updatedInfo.Folders) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.Folders)}.");
+			}
+
+			if (document.State.Attributes.IsGenerated != updatedInfo.IsGenerated) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.State.Attributes.IsGenerated)} state.");
+			}
+		}
+
 
 		#endregion
 
