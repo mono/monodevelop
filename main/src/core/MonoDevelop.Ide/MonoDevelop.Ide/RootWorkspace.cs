@@ -624,7 +624,7 @@ namespace MonoDevelop.Ide
 		internal async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences, OpenWorkspaceItemMetadata metadata)
 		{
 			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 
 			lock (loadLock) {
 				if (++loadOperationsCount == 1)
@@ -661,7 +661,7 @@ namespace MonoDevelop.Ide
 		internal async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, OpenWorkspaceItemMetadata metadata, ProgressMonitor loadMonitor)
 		{
 			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				CurrentSelectedWorkspaceItem = item;

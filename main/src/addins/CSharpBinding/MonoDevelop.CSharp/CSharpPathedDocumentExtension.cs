@@ -549,7 +549,7 @@ namespace MonoDevelop.CSharp
 					while (type != null) {
 						if (!(type is BaseTypeDeclarationSyntax))
 							break;
-						var tag = (object)type.Ancestors ().FirstOrDefault (IsType) ?? root;
+						var tag = (object)type.Ancestors ().FirstOrDefault (IsType) ?? root.SyntaxTree;
 						result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = tag });
 						type = type.Parent;
 					}
@@ -571,7 +571,7 @@ namespace MonoDevelop.CSharp
 
 				PathEntry noSelection = null;
 				if (curType == null) {
-					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = root };
+					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = root.SyntaxTree };
 				} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) {
 					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
 				}
