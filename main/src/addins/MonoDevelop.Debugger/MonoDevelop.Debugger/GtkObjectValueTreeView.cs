@@ -371,14 +371,14 @@ public StackFrame Frame {
 			} else {
 				// the children of a specific node changed
 				// remove the children for that node, then reload the children
-				if (GetNodeIterFromNodePath (node.Path, out TreeIter iter, out TreeIter parent)) {
+				if (GetNodeIterFromNodePath (node.Id, out TreeIter iter, out TreeIter parent)) {
 					// rather than simply replacing the children of this node we will merge
 					// them in so that the tree does not collapse the row when the last child is removed
 					MergeChildrenIntoTree (node, iter, index, count);
 
 					// if we did not load all the children, add a More node
 					if (!node.ChildrenLoaded) {
-						this.AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
+						AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
 					}
 				}
 
@@ -396,10 +396,10 @@ public StackFrame Frame {
 
 			if (node.IsExpanded) {
 				// if the node is _still_ expanded then adjust UI and scroll
-				var path = GetTreePathForNodePath (node.Path);
+				var path = GetTreePathForNodePath (node.Id);
 
-				if (!this.GetRowExpanded (path)) {
-					this.ExpandRow (path, false);
+				if (!GetRowExpanded (path)) {
+					ExpandRow (path, false);
 				}
 
 				if (compact)
@@ -456,7 +456,7 @@ public StackFrame Frame {
 			if (disposed)
 				return;
 
-			if (GetNodeIterFromNodePath (node.Path, out TreeIter iter, out TreeIter parent)) {
+			if (GetNodeIterFromNodePath (node.Id, out TreeIter iter, out TreeIter parent)) {
 				// TODO we can use an expression node here
 				// Keep the expression name entered by the user
 				//if (store.IterDepth (iter) == 0)
@@ -487,8 +487,8 @@ public StackFrame Frame {
 		{
 			var node = GetNodeAtIter (iter);
 
-			if (node != null && allNodes.TryGetValue (node.Path, out TreeRowReference row)) {
-				allNodes.Remove (node.Path);
+			if (node != null && allNodes.TryGetValue (node.Id, out TreeRowReference row)) {
+				allNodes.Remove (node.Id);
 				row.Dispose ();
 			}
 
@@ -738,8 +738,8 @@ public StackFrame Frame {
 					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, cancellationTokenSource.Token).Ignore ();
 				} else {
 					// use ExpandRow to expand so we see the loading message, expanding the node will trigger a fetch of the children
-					var treePath = GetTreePathForNodePath (node.Path);
-					this.ExpandRow (treePath, false);
+					var treePath = GetTreePathForNodePath (node.Id);
+					ExpandRow (treePath, false);
 				}
 			} else {
 				// this is likely to support IsImplicitNotSupported 
@@ -774,7 +774,7 @@ public StackFrame Frame {
 		void SetValues (TreeIter parent, TreeIter it, string name, IObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path
-			allNodes [val.Path] = new TreeRowReference (store, store.GetPath (it));
+			allNodes[val.Id] = new TreeRowReference (store, store.GetPath (it));
 
 
 			string strval;
@@ -989,8 +989,8 @@ public StackFrame Frame {
 					return;
 
 				if (args.NewText.Length != 0) {
-					if (allNodes.TryGetValue (node.Path, out TreeRowReference row)) {
-						allNodes.Remove (node.Path);
+					if (allNodes.TryGetValue (node.Id, out TreeRowReference row)) {
+						allNodes.Remove (node.Id);
 						row.Dispose ();
 					}
 

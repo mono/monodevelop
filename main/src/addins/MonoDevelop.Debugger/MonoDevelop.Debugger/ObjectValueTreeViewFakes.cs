@@ -36,7 +36,7 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	abstract class DebugObjectValueNode : AbstractObjectValueNode
 	{
-		protected DebugObjectValueNode (string parentPath, string name) : base (parentPath, name)
+		protected DebugObjectValueNode (string name) : base (name)
 		{
 		}
 
@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	sealed class FakeIndexedObjectValueNode : DebugObjectValueNode
 	{
-		public FakeIndexedObjectValueNode (string parentPath, int index) : base (parentPath, $"indexed[{index}]")
+		public FakeIndexedObjectValueNode (int index) : base ($"indexed[{index}]")
 		{
 			Value = $"indexed[{index}]";
 			DisplayValue = $"indexed[{index}]";
@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger
 	{
 		string value;
 		bool isImplicitNotSupported;
-		public FakeIsImplicitNotSupportedObjectValueNode (string parentPath) : base (parentPath, $"implicit")
+		public FakeIsImplicitNotSupportedObjectValueNode () : base ($"implicit")
 		{
 			value = $"implicit";
 			isImplicitNotSupported = true;
@@ -98,9 +98,10 @@ namespace MonoDevelop.Debugger
 	sealed class FakeObjectValueNode : DebugObjectValueNode
 	{
 		bool hasChildren;
-		public FakeObjectValueNode (string parentPath, string name, bool children = true) : base (parentPath, name)
+
+		public FakeObjectValueNode (string name, bool children = true) : base (name)
 		{
-			this.hasChildren = children;
+			hasChildren = children;
 		}
 
 		public override string Value => "none";
@@ -112,7 +113,7 @@ namespace MonoDevelop.Debugger
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
-			return new [] { new FakeObjectValueNode (Path, $"child of {Name}") };
+			return new [] { new FakeObjectValueNode ($"child of {Name}") };
 		}
 	}
 
@@ -123,7 +124,7 @@ namespace MonoDevelop.Debugger
 	{
 		readonly int maxItems;
 
-		public FakeEnumerableObjectValueNode (string parentPath, int count) : base (parentPath, $"enumerable {count}")
+		public FakeEnumerableObjectValueNode (int count) : base ($"enumerable {count}")
 		{
 			maxItems = count;
 		}
@@ -139,7 +140,7 @@ namespace MonoDevelop.Debugger
 			await Task.Delay (1000);
 			var result = new List<IObjectValueNode> ();
 			for (int i = 0; i < maxItems; i++) {
-				result.Add (new FakeIndexedObjectValueNode (Path, i));
+				result.Add (new FakeIndexedObjectValueNode (i));
 			}
 
 			return result;
@@ -151,7 +152,7 @@ namespace MonoDevelop.Debugger
 			var max = Math.Min (maxItems, index+count);
 			var result = new List<IObjectValueNode> ();
 			for (int i = index; i < max; i++) {
-				result.Add (new FakeIndexedObjectValueNode (Path, i));
+				result.Add (new FakeIndexedObjectValueNode (i));
 			}
 
 			return Tuple.Create<IEnumerable<IObjectValueNode>, bool> (result, result.Count < count);
@@ -166,7 +167,7 @@ namespace MonoDevelop.Debugger
 		bool isEvaluating;
 		bool hasChildren;
 
-		public FakeEvaluatingObjectValueNode (string parentPath) : base (parentPath, "evaluating")
+		public FakeEvaluatingObjectValueNode () : base ("evaluating")
 		{
 			isEvaluating = true;
 			DoTest ();
@@ -183,7 +184,7 @@ namespace MonoDevelop.Debugger
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
 
-			return new [] { new FakeObjectValueNode (Path, $"child of {Name}", true) };
+			return new [] { new FakeObjectValueNode ($"child of {Name}", true) };
 		}
 
 		async void DoTest ()
@@ -200,14 +201,13 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	sealed class FakeEvaluatingGroupObjectValueNode : DebugObjectValueNode, IEvaluatingGroupObjectValueNode
 	{
-		string parentPath;
-		int evalNodes;
 		bool isEvaluating;
-		public FakeEvaluatingGroupObjectValueNode (string parentPath, int nodes) : base (parentPath, $"eval group {nodes}")
+		int evalNodes;
+
+		public FakeEvaluatingGroupObjectValueNode (int nodes) : base ($"eval group {nodes}")
 		{
-			this.parentPath = parentPath;
-			this.evalNodes = nodes;
-			this.isEvaluating = true;
+			isEvaluating = true;
+			evalNodes = nodes;
 			DoTest ();
 		}
 
@@ -218,22 +218,24 @@ namespace MonoDevelop.Debugger
 
 		public bool IsEvaluatingGroup => true;
 
-		public IObjectValueNode [] GetEvaluationGroupReplacementNodes ()
+		public IObjectValueNode[] GetEvaluationGroupReplacementNodes ()
 		{
-			var result = new IObjectValueNode [evalNodes];
+			var replacementNodes = new IObjectValueNode[evalNodes];
 
 			for (int i = 0; i < evalNodes; i++) {
-				result [i] = new FakeObjectValueNode (parentPath, $"child of {Name}", false);
+				replacementNodes[i] = new FakeObjectValueNode ($"child of {Name}", false) {
+					Parent = Parent
+				};
 			}
 
-			return result;
+			return replacementNodes;
 		}
 
 		async void DoTest ()
 		{
 			await Task.Delay (5000);
-			this.isEvaluating = false;
-			this.OnValueChanged (EventArgs.Empty);
+			isEvaluating = false;
+			OnValueChanged (EventArgs.Empty);
 		}
 	}
 }

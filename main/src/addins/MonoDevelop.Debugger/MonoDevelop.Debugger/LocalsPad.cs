@@ -56,17 +56,17 @@ namespace MonoDevelop.Debugger
 				var xx = new System.Collections.Generic.List<IObjectValueNode> ();
 
 
-				xx.Add (new FakeObjectValueNode (controller.Root.Path, "f1"));
-				xx.Add (new FakeIsImplicitNotSupportedObjectValueNode (controller.Root.Path));
+				xx.Add (new FakeObjectValueNode ("f1"));
+				xx.Add (new FakeIsImplicitNotSupportedObjectValueNode ());
 
-				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 1));
-				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 0));
-				xx.Add (new FakeEvaluatingGroupObjectValueNode (controller.Root.Path, 5));
+				xx.Add (new FakeEvaluatingGroupObjectValueNode (1));
+				xx.Add (new FakeEvaluatingGroupObjectValueNode (0));
+				xx.Add (new FakeEvaluatingGroupObjectValueNode (5));
 
-				xx.Add (new FakeEvaluatingObjectValueNode (controller.Root.Path));
-				xx.Add (new FakeEnumerableObjectValueNode (controller.Root.Path, 10));
-				xx.Add (new FakeEnumerableObjectValueNode (controller.Root.Path, 20));
-				xx.Add (new FakeEnumerableObjectValueNode (controller.Root.Path, 23));
+				xx.Add (new FakeEvaluatingObjectValueNode ());
+				xx.Add (new FakeEnumerableObjectValueNode (10));
+				xx.Add (new FakeEnumerableObjectValueNode (20));
+				xx.Add (new FakeEnumerableObjectValueNode (23));
 
 				controller.AddValues (xx);
 			} else {
