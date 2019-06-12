@@ -151,10 +151,9 @@ namespace MonoDevelop.VersionControl.Git
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var t = Task.Run (delegate {
 				try {
-					int stashCount = repo.GetStashes ().Count ();
 					var res = repo.ApplyStash (monitor, s);
-					ReportStashResult (repo, res, stashCount);
-					return true;
+					ReportStashResult (repo, res, null);
+					return res == StashApplyStatus.Applied;
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
 					monitor.ReportError (msg, ex);
@@ -167,7 +166,7 @@ namespace MonoDevelop.VersionControl.Git
 			return t;
 		}
 
-		public static void ReportStashResult (Repository repo, StashApplyStatus status, int stashCount)
+		public static void ReportStashResult (Repository repo, StashApplyStatus status, int? stashCount)
 		{
 			string msg;
 			StashResultType stashResultType;
@@ -177,19 +176,18 @@ namespace MonoDevelop.VersionControl.Git
 				bool stashApplied = false;
 				msg = GettextCatalog.GetString ("A conflicting change has been detected in the index. ");
 				// Include conflicts in the msg
-				if (repo is GitRepository gitRepo) {
+				if (stashCount != null && repo is GitRepository gitRepo) {
 					int actualStashCount = gitRepo.GetStashes ().Count ();
-					stashApplied = actualStashCount == stashCount;
-					if (!stashApplied) {
+					stashApplied = actualStashCount != stashCount;
+					if (stashApplied) {
 						msg += GettextCatalog.GetString ("The following conflicts have been found:") + Environment.NewLine;
 						foreach (var conflictFile in gitRepo.RootRepository.Index.Conflicts) {
 							msg += conflictFile.Ancestor.Path + Environment.NewLine;
 						}
 					} else
 						msg += GettextCatalog.GetString ("Stash not applied.");
-
 				}
-				stashResultType = !stashApplied ? StashResultType.Warning : StashResultType.Error;
+				stashResultType = !stashApplied ? StashResultType.Error : StashResultType.Warning;
 				break;
 			case StashApplyStatus.UncommittedChanges:
 				msg = GettextCatalog.GetString ("The stash application was aborted due to uncommitted changes in the index.");
