@@ -35,7 +35,6 @@ namespace MonoDevelop.Debugger
 		{
 			if (UseNewTreeView) {
 				controller.AllowEditing = true;
-				controller.AllowAdding = false;
 			} else {
 				tree.AllowEditing = true;
 				tree.AllowAdding = false;

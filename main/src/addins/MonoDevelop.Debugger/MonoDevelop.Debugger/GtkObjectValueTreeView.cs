@@ -23,14 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Gtk;
+
 using Mono.Debugging.Client;
+
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -38,14 +42,11 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Linq;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
 	// TODO: when we remove from store, remove from allNodes
-
-
 
 	[System.ComponentModel.ToolboxItem (true)]
 	public class GtkObjectValueTreeView : TreeView, ICompletionWidget
@@ -55,7 +56,6 @@ namespace MonoDevelop.Debugger
 		readonly Dictionary<string, TreeRowReference> allNodes = new Dictionary<string, TreeRowReference> ();
 
 		// move this lot to the controller...
-		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
 		readonly List<ObjectValue> enumerableLoading = new List<ObjectValue> ();
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 
@@ -64,7 +64,6 @@ namespace MonoDevelop.Debugger
 		readonly Dictionary<string, string> oldValues = new Dictionary<string, string> ();
 
 		readonly List<ObjectValue> values = new List<ObjectValue> ();
-		readonly List<string> valueNames = new List<string> ();
 
 
 // keep this lot....
@@ -107,24 +106,20 @@ namespace MonoDevelop.Debugger
 		const int NameColumn = 0;
 		const int ValueColumn = 1;
 		const int TypeColumn = 2;
-
-		// TODO: remove this..
-		public const int ObjectColumn = 3;
-
-		const int NameEditableColumn = 4;
-		const int ValueEditableColumn = 5;
-		const int IconColumn = 6;
-		const int NameColorColumn = 7;
-		const int ValueColorColumn = 8;
-		const int ValueButtonVisibleColumn = 9;
-		const int PinIconColumn = 10;
-		const int LiveUpdateIconColumn = 11;
-		const int ViewerButtonVisibleColumn = 12;
-		const int PreviewIconColumn = 13;
-		const int EvaluateStatusIconColumn = 14;
-		const int EvaluateStatusIconVisibleColumn = 15;
-		const int ValueButtonTextColumn = 16;
-		const int ObjectNodeColumn = 17;
+		const int NameEditableColumn = 3;
+		const int ValueEditableColumn = 4;
+		const int IconColumn = 5;
+		const int NameColorColumn = 6;
+		const int ValueColorColumn = 7;
+		const int ValueButtonVisibleColumn = 8;
+		const int PinIconColumn = 9;
+		const int LiveUpdateIconColumn = 10;
+		const int ViewerButtonVisibleColumn = 11;
+		const int PreviewIconColumn = 12;
+		const int EvaluateStatusIconColumn = 13;
+		const int EvaluateStatusIconVisibleColumn = 14;
+		const int ValueButtonTextColumn = 15;
+		const int ObjectNodeColumn = 16;
 
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -154,7 +149,7 @@ namespace MonoDevelop.Debugger
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 			this.controller.NodeExpanded += Controller_NodeExpanded;
 
-			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (ObjectValue), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (IObjectValueNode));
+			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (IObjectValueNode));
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
@@ -245,8 +240,8 @@ namespace MonoDevelop.Debugger
 
 			state = new TreeViewState (this, NameColumn);
 
-			crtExp.Edited += OnExpEdited;
-			crtExp.EditingStarted += OnExpEditing;
+			crtExp.Edited += OnExpressionEdited;
+			crtExp.EditingStarted += OnExpressionStartedEditing;
 			crtExp.EditingCanceled += OnEditingCancelled;
 			crtValue.EditingStarted += OnValueEditing;
 			crtValue.Edited += OnValueEdited;
@@ -269,8 +264,8 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed -= HandlePreviewWindowClosed;
 			PreviewWindowManager.DestroyWindow ();
-			crtExp.Edited -= OnExpEdited;
-			crtExp.EditingStarted -= OnExpEditing;
+			crtExp.Edited -= OnExpressionEdited;
+			crtExp.EditingStarted -= OnExpressionStartedEditing;
 			crtExp.EditingCanceled -= OnEditingCancelled;
 			crtValue.EditingStarted -= OnValueEditing;
 			crtValue.Edited -= OnValueEdited;
@@ -288,12 +283,11 @@ namespace MonoDevelop.Debugger
 				oldVadjustment = null;
 			}
 
-			this.controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
-			this.controller.EvaluationCompleted -= Controller_EvaluationCompleted;
-			this.controller.NodeExpanded -= Controller_NodeExpanded;
+			controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
+			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
+			controller.NodeExpanded -= Controller_NodeExpanded;
 
 			values.Clear ();
-			valueNames.Clear ();
 			Frame = null;
 
 			disposed = true;
@@ -448,9 +442,8 @@ public StackFrame Frame {
 
 			if (ix < visibleChildrenCount) {
 				// remove extra nodes we don't need anymore
-				while (store.IterNthChild (out TreeIter childIter, nodeIter, ix)) {
-					store.Remove (ref childIter);
-				}
+				while (store.IterNthChild (out TreeIter childIter, nodeIter, ix))
+					Remove (ref childIter);
 			}
 		}
 
@@ -473,7 +466,7 @@ public StackFrame Frame {
 
 				if (replacementNodes.Length == 0) {
 					// we can remove the node altogether, eg there are no local variables to show
-					store.Remove (ref iter);
+					Remove (ref iter);
 				} else if (replacementNodes.Length > 0) {
 					node = replacementNodes [0];
 					SetValues (parent, iter, node.Name, node);
@@ -490,14 +483,23 @@ public StackFrame Frame {
 			}
 		}
 
+		bool Remove (ref TreeIter iter)
+		{
+			var node = GetNodeAtIter (iter);
+
+			if (node != null && allNodes.TryGetValue (node.Path, out TreeRowReference row)) {
+				allNodes.Remove (node.Path);
+				row.Dispose ();
+			}
+
+			return store.Remove (ref iter);
+		}
+
 		void RemoveChildren (TreeIter iter)
 		{
-			TreeIter citer;
-
-			while (store.IterChildren (out citer, iter)) {
-				var val = GetDebuggerObjectValueAtIter (citer);
-				RemoveChildren (citer);
-				store.Remove (ref citer);
+			while (store.IterChildren (out TreeIter child, iter)) {
+				RemoveChildren (child);
+				Remove (ref child);
 			}
 		}
 
@@ -578,24 +580,24 @@ public StackFrame Frame {
 			}
 		}
 
-		public void AddExpression (string exp)
-		{
-			valueNames.Add (exp);
-			Refresh (false);
-		}
+		//public void AddExpression (string exp)
+		//{
+		//	expressions.Add (exp);
+		//	Refresh (false);
+		//}
 
-		public void AddExpressions (IEnumerable<string> exps)
-		{
-			valueNames.AddRange (exps);
-			Refresh (false);
-		}
+		//public void AddExpressions (IEnumerable<string> exps)
+		//{
+		//	expressions.AddRange (exps);
+		//	Refresh (false);
+		//}
 
-		public void RemoveExpression (string exp)
-		{
-			cachedValues.Remove (exp);
-			valueNames.Remove (exp);
-			Refresh (true);
-		}
+		//public void RemoveExpression (string exp)
+		//{
+		//	cachedValues.Remove (exp);
+		//	expressions.Remove (exp);
+		//	Refresh (true);
+		//}
 
 		public void AddValue (ObjectValue value)
 		{
@@ -607,7 +609,7 @@ public StackFrame Frame {
 
 		public void AddValues (IEnumerable<ObjectValue> newValues)
 		{
-			foreach (ObjectValue val in newValues)
+			foreach (var val in newValues)
 				values.Add (val);
 			Refresh (false);
 			if (compact)
@@ -637,7 +639,7 @@ public StackFrame Frame {
 		public void ClearAll ()
 		{
 			values.Clear ();
-			cachedValues.Clear ();
+			//cachedValues.Clear ();
 			frame = null;
 			Refresh (true);
 		}
@@ -648,19 +650,19 @@ public StackFrame Frame {
 			Refresh (true);
 		}
 
-		public void ClearExpressions ()
-		{
-			valueNames.Clear ();
-			Update ();
-		}
+		//public void ClearExpressions ()
+		//{
+		//	expressions.Clear ();
+		//	Update ();
+		//}
 
-		public IEnumerable<string> Expressions {
-			get { return valueNames; }
-		}
+		//public IEnumerable<string> Expressions {
+		//	get { return expressions; }
+		//}
 
 		public void Update ()
 		{
-			cachedValues.Clear ();
+			//cachedValues.Clear ();
 			Refresh (true);
 		}
 
@@ -680,7 +682,7 @@ public StackFrame Frame {
 			CleanPinIcon ();
 			store.Clear ();
 
-			bool showExpanders = controller.AllowAdding;
+			bool showExpanders = controller.AllowWatchExpressions;
 
 			/*
 			foreach (var val in values) {
@@ -699,10 +701,10 @@ public StackFrame Frame {
 			}
 
 			// these are expressions
-			//if (valueNames.Count > 0) {
-			//	ObjectValue [] expValues = GetValues (valueNames.ToArray ());
+			//if (expressions.Count > 0) {
+			//	ObjectValue [] expValues = GetValues (expressions.ToArray ());
 			//	for (int n = 0; n < expValues.Length; n++) {
-			//		// TODO: AppendValue (TreeIter.Zero, valueNames [n], expValues [n]);
+			//		// TODO: AppendValue (TreeIter.Zero, expressions[n], expValues [n]);
 			//		if (expValues [n].HasChildren)
 			//			showExpanders = true;
 			//	}
@@ -711,8 +713,8 @@ public StackFrame Frame {
 			if (showExpanders)
 				ShowExpanders = true;
 
-			if (controller.AllowAdding)
-				store.AppendValues (createMsg, "", "", null, true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
+			if (controller.AllowWatchExpressions)
+				store.AppendValues (createMsg, "", "", true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
 
 			LoadState ();
 		}
@@ -861,7 +863,7 @@ public StackFrame Frame {
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectNodeColumn, val);
-			store.SetValue (it, NameEditableColumn, !hasParent && controller.AllowAdding);
+			store.SetValue (it, NameEditableColumn, !hasParent && controller.AllowWatchExpressions);
 			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
@@ -888,7 +890,7 @@ public StackFrame Frame {
 
 			if (hasChildren) {
 				// Add dummy node, we need this or the expander isn't shown
-				store.AppendValues (it, GettextCatalog.GetString ("Loading\u2026"), "", "", null, false);
+				store.AppendValues (it, GettextCatalog.GetString ("Loading\u2026"), "", "", false);
 				if (!ShowExpanders) {
 					ShowExpanders = true;
 				}
@@ -953,49 +955,60 @@ public StackFrame Frame {
 			return path.ToString ();
 		}
 
-		void OnExpEditing (object s, EditingStartedArgs args)
+		void OnExpressionStartedEditing (object s, EditingStartedArgs args)
 		{
-			TreeIter iter;
-
-			if (!store.GetIterFromString (out iter, args.Path))
+			if (!store.GetIterFromString (out TreeIter iter, args.Path))
 				return;
 
-			var entry = (Entry)args.Editable;
+			var entry = (Entry) args.Editable;
 			if (entry.Text == createMsg)
 				entry.Text = string.Empty;
 
 			OnStartEditing (args);
 		}
 
-		void OnExpEdited (object s, EditedArgs args)
+		void OnExpressionEdited (object s, EditedArgs args)
 		{
 			OnEndEditing ();
 
-			TreeIter iter;
-			if (!store.GetIterFromString (out iter, args.Path))
+			if (!store.GetIterFromString (out TreeIter iter, args.Path))
 				return;
 
-			if (GetDebuggerObjectValueAtIter (iter) == null) {
-				if (args.NewText.Length > 0) {
-					valueNames.Add (args.NewText);
-					Refresh (false);
-				}
+			var node = GetNodeAtIter (iter);
+
+			if (node == null) {
+				if (args.NewText.Length > 0)
+					controller.AddExpression (args.NewText);
 			} else {
-				string exp = (string)store.GetValue (iter, NameColumn);
-				if (args.NewText == exp)
+				var expression = (string) store.GetValue (iter, NameColumn);
+				if (args.NewText == expression)
 					return;
 
-				int i = valueNames.IndexOf (exp);
-				if (i == -1)
+				int index = controller.Expressions.IndexOf (expression);
+				if (index == -1)
 					return;
 
-				if (args.NewText.Length != 0)
-					valueNames [i] = args.NewText;
-				else
-					valueNames.RemoveAt (i);
+				if (args.NewText.Length != 0) {
+					if (allNodes.TryGetValue (node.Path, out TreeRowReference row)) {
+						allNodes.Remove (node.Path);
+						row.Dispose ();
+					}
 
-				cachedValues.Remove (exp);
-				Refresh (true);
+					node = controller.ReplaceExpressionAt (index, args.NewText);
+
+					if (!store.IterParent (out TreeIter parent, iter))
+						parent = TreeIter.Zero;
+
+					RemoveChildren (iter);
+
+					SetValues (parent, iter, args.NewText, node);
+				} else {
+					controller.RemoveExpressionAt (index);
+					Remove (ref iter);
+				}
+
+				//cachedValues.Remove (expression);
+				//Refresh (true);
 			}
 		}
 
@@ -1105,6 +1118,7 @@ public StackFrame Frame {
 		{
 			return char.IsLetter (c) || c == '_' || c == '.';
 		}
+
 		CancellationTokenSource cts = new CancellationTokenSource ();
 		async void PopupCompletion (Entry entry)
 		{
@@ -1114,9 +1128,9 @@ public StackFrame Frame {
 					string expr = entry.Text.Substring (0, entry.CursorPosition);
 					cts.Cancel ();
 					cts = new CancellationTokenSource ();
-					currentCompletionData = await GetCompletionData (expr, cts.Token);
+					currentCompletionData = await GetCompletionDataAsync (expr, cts.Token);
 					if (currentCompletionData != null) {
-						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+						var dataList = new DebugCompletionDataList (currentCompletionData);
 						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
 						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
 					}
@@ -1279,7 +1293,7 @@ public StackFrame Frame {
 				ObjectValue val;
 				TreeIter iter;
 
-				if (!controller.AllowEditing || !controller.AllowAdding)
+				if (!controller.AllowEditing || !controller.AllowWatchExpressions)
 					return base.OnKeyPressEvent (evnt);
 
 				// Note: since we'll be modifying the tree, we need to make changes from bottom to top
@@ -1292,12 +1306,13 @@ public StackFrame Frame {
 					val = GetDebuggerObjectValueAtIter (iter);
 					expression = GetFullExpression (iter);
 
+					// FIXME: expressions use ObjectValues now, so this logic probably needs to change...
+
 					// Lookup and remove
 					if (val != null && values.Contains (val)) {
 						RemoveValue (val);
 						changed = true;
-					} else if (!string.IsNullOrEmpty (expression) && valueNames.Contains (expression)) {
-						RemoveExpression (expression);
+					} else if (!string.IsNullOrEmpty (expression) && controller.RemoveExpression (expression)) {
 						changed = true;
 					}
 				}
@@ -1525,15 +1540,15 @@ public StackFrame Frame {
 		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDelete ()
 		{
-			foreach (TreePath tp in Selection.GetSelectedRows ()) {
-				TreeIter it;
-				if (store.GetIter (out it, tp)) {
-					string exp = (string)store.GetValue (it, NameColumn);
-					cachedValues.Remove (exp);
-					valueNames.Remove (exp);
-				}
+			foreach (var path in Selection.GetSelectedRows ()) {
+				if (!store.GetIter (out TreeIter iter, path))
+					continue;
+
+				var expression = (string) store.GetValue (iter, NameColumn);
+
+				if (controller.RemoveExpression (expression))
+					Remove (ref iter);
 			}
-			Refresh (true);
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -1545,7 +1560,7 @@ public StackFrame Frame {
 				return;
 			}
 
-			if (!controller.AllowAdding) {
+			if (!controller.AllowWatchExpressions) {
 				cinfo.Visible = false;
 				return;
 			}
@@ -1569,7 +1584,7 @@ public StackFrame Frame {
 		{
 			var expressions = new List<string> ();
 
-			foreach (TreePath tp in Selection.GetSelectedRows ()) {
+			foreach (var tp in Selection.GetSelectedRows ()) {
 				TreeIter it;
 
 				if (store.GetIter (out it, tp)) {
@@ -1580,8 +1595,8 @@ public StackFrame Frame {
 				}
 			}
 
-			foreach (string expr in expressions)
-				DebuggingService.AddWatch (expr);
+			foreach (var expression in expressions)
+				DebuggingService.AddWatch (expression);
 		}
 
 		[CommandUpdateHandler (DebugCommands.AddWatch)]
@@ -1601,7 +1616,7 @@ public StackFrame Frame {
 		[CommandUpdateHandler (EditCommands.Rename)]
 		protected void OnUpdateRename (CommandInfo cinfo)
 		{
-			cinfo.Visible = controller.AllowAdding;
+			cinfo.Visible = controller.AllowWatchExpressions;
 			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 
@@ -1837,43 +1852,10 @@ public StackFrame Frame {
 
 		#endregion
 
-		ObjectValue [] GetValues (string [] names)
+		async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
 		{
-			var values = new ObjectValue [names.Length];
-			var list = new List<string> ();
-
-			for (int n = 0; n < names.Length; n++) {
-				ObjectValue val;
-				if (cachedValues.TryGetValue (names [n], out val))
-					values [n] = val;
-				else
-					list.Add (names [n]);
-			}
-
-			ObjectValue [] qvalues;
-			if (frame != null)
-				qvalues = frame.GetExpressionValues (list.ToArray (), true);
-			else {
-				qvalues = new ObjectValue [list.Count];
-				for (int n = 0; n < qvalues.Length; n++)
-					qvalues [n] = ObjectValue.CreateUnknown (list [n]);
-			}
-
-			int kv = 0;
-			for (int n = 0; n < values.Length; n++) {
-				if (values [n] == null) {
-					values [n] = qvalues [kv++];
-					cachedValues [names [n]] = values [n];
-				}
-			}
-
-			return values;
-		}
-
-		async Task<Mono.Debugging.Client.CompletionData> GetCompletionData (string exp, CancellationToken token)
-		{
-			if (this.controller.CanQueryDebugger && frame != null)
-				return await DebuggingService.GetCompletionDataAsync (frame, exp, token);
+			if (controller.CanQueryDebugger && frame != null)
+				return await DebuggingService.GetCompletionDataAsync (frame, expression, token);
 
 			return null;
 		}
@@ -2359,10 +2341,8 @@ public StackFrame Frame {
 		{
 			// TODO: clean up, maybe even remove this method
 			var node = GetNodeAtIter (iter, model);
-			if (node != null)
-				return node.GetDebuggerObjectValue ();
 
-			return model.GetValue (iter, ObjectColumn) as ObjectValue;
+			return node?.GetDebuggerObjectValue ();
 		}
 
 		IObjectValueNode GetNodeAtIter (TreeIter iter)

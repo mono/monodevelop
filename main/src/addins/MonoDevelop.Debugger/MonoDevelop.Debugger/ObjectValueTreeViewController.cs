@@ -25,21 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Mono.Debugging.Client;
-using MonoDevelop.Components;
+
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -49,6 +42,10 @@ namespace MonoDevelop.Debugger
 	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
 	 * refreshing a node (which may replace it's children nodes)
 	 *
+	 * - Expressions should perhaps have their own IObjectValueNode type. This class should also not use the expression as
+	 * the leaf-node component of the Path because a user could add the same expression to the WatchPad multiple times which
+	 * would break the uniqueness of the IObjectValueNode.Path assumption.
+	 *
 	 */
 
 
@@ -56,8 +53,8 @@ namespace MonoDevelop.Debugger
 	{
 		public const int MaxEnumerableChildrenToFetch = 20;
 		IDebuggerService debuggerService;
+		bool allowWatchExpressions;
 		bool allowEditing;
-		bool allowAdding;
 
 		// index of a node's path to a node
 		readonly Dictionary<string, IObjectValueNode> nodeIndex = new Dictionary<string, IObjectValueNode> ();
@@ -78,6 +75,13 @@ namespace MonoDevelop.Debugger
 		/// Holds a dictionary of node paths and the values. Used to show values that have changed from one frame to the next.
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
+
+		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
+
+		/// <summary>
+		/// Holds a list of watch expressions.
+		/// </summary>
+		readonly List<string> expressions = new List<string> ();
 
 		public ObjectValueTreeViewController ()
 		{
@@ -113,12 +117,12 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the user should be able to add values to the tree
+		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
-		public bool AllowAdding {
-			get => allowAdding;
+		public bool AllowWatchExpressions {
+			get => allowWatchExpressions;
 			set {
-				allowAdding = value;
+				allowWatchExpressions = value;
 
 				// trigger a refresh
 				if (Root != null) {
@@ -133,7 +137,9 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-
+		public IReadOnlyList<string> Expressions {
+			get { return expressions; }
+		}
 
 		public event EventHandler<ChildrenChangedEventArgs> ChildrenLoaded;
 
@@ -160,8 +166,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearValues ()
 		{
+			cachedValues.Clear ();
 			nodeIndex.Clear ();
+
 			Root = OnCreateRoot ();
+
 			OnChildrenLoaded (Root, 0, Root.Children.Count);
 		}
 
@@ -286,6 +295,154 @@ namespace MonoDevelop.Debugger
 
 			return false;
 		}
+		#endregion
+
+		#region Expressions
+
+		ObjectValue GetExpressionValue (string expression)
+		{
+			var frame = (Frame as ProxyStackFrame)?.StackFrame;
+
+			if (cachedValues.TryGetValue (expression, out ObjectValue value))
+				return value;
+
+			if (frame != null)
+				value = frame.GetExpressionValue (expression, true);
+			else
+				value = ObjectValue.CreateUnknown (expression);
+
+			cachedValues[expression] = value;
+
+			return value;
+		}
+
+		ObjectValue[] GetExpressionValues (IList<string> items)
+		{
+			var frame = (Frame as ProxyStackFrame)?.StackFrame;
+			var values = new ObjectValue[items.Count];
+			var unknown = new List<string> ();
+
+			for (int i = 0; i < items.Count; i++) {
+				if (!cachedValues.TryGetValue (items[i], out ObjectValue value))
+					unknown.Add (items[i]);
+				else
+					values[i] = value;
+			}
+
+			ObjectValue[] qvalues;
+
+			if (frame != null) {
+				qvalues = frame.GetExpressionValues (unknown.ToArray (), true);
+			} else {
+				qvalues = new ObjectValue[unknown.Count];
+				for (int i = 0; i < qvalues.Length; i++)
+					qvalues[i] = ObjectValue.CreateUnknown (unknown[i]);
+			}
+
+			for (int i = 0, v = 0; i < values.Length; i++) {
+				if (values[i] == null) {
+					var value = qvalues[v++];
+
+					cachedValues[items[i]] = value;
+					values[i] = value;
+				}
+			}
+
+			return values;
+		}
+
+		public void AddExpression (string expression)
+		{
+			if (!AllowWatchExpressions)
+				return;
+
+			var value = GetExpressionValue (expression);
+
+			expressions.Add (expression);
+			AddValue (new ObjectValueNode (value, string.Empty));
+		}
+
+		public void AddExpressions (IList<string> expressions)
+		{
+			if (!AllowWatchExpressions)
+				return;
+
+			var values = new List<ObjectValueNode> ();
+
+			foreach (var value in GetExpressionValues (expressions))
+				values.Add (new ObjectValueNode (value, string.Empty));
+
+			this.expressions.AddRange (expressions);
+			AddValues (values);
+		}
+
+		public void ClearExpressions ()
+		{
+			if (!AllowWatchExpressions)
+				return;
+
+			expressions.Clear ();
+			ClearAll ();
+		}
+
+		public bool RemoveExpression (string expression)
+		{
+			if (!AllowWatchExpressions)
+				return false;
+
+			int index = expressions.IndexOf (expression);
+
+			if (index == -1)
+				return false;
+
+			cachedValues.Remove (expression);
+			expressions.RemoveAt (index);
+
+			var root = (RootObjectValueNode) Root;
+			var node = root.Children[index];
+			root.RemoveValueAt (index);
+			UnregisterNode (node);
+
+			return true;
+		}
+
+		public void RemoveExpressionAt (int index)
+		{
+			if (!AllowWatchExpressions)
+				return;
+
+			var expression = expressions[index];
+			cachedValues.Remove (expression);
+			expressions.RemoveAt (index);
+
+			var root = (RootObjectValueNode) Root;
+			var node = root.Children[index];
+			root.RemoveValueAt (index);
+			UnregisterNode (node);
+		}
+
+		public IObjectValueNode ReplaceExpressionAt (int index, string newExpression)
+		{
+			if (!AllowWatchExpressions)
+				return null;
+
+			var oldExpression = expressions[index];
+			cachedValues.Remove (oldExpression);
+
+			var value = GetExpressionValue (newExpression);
+			expressions[index] = newExpression;
+
+			var root = (RootObjectValueNode) Root;
+			var node = root.Children[index];
+			UnregisterNode (node);
+
+			node = new ObjectValueNode (value, string.Empty);
+			root.ReplaceValueAt (index, node);
+			RegisterNode (node);
+
+			return node;
+		}
+
 		#endregion
 
 		#region Editing
@@ -606,6 +763,14 @@ namespace MonoDevelop.Debugger
 			if (node != null) {
 				nodeIndex [node.Path] = node;
 				RegisterForEvaluationCompletion (node);
+			}
+		}
+
+		void UnregisterNode (IObjectValueNode node)
+		{
+			if (node != null) {
+				nodeIndex.Remove (node.Path);
+				UnregisterForEvaluationCompletion (node);
 			}
 		}
 

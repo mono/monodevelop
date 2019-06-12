@@ -23,15 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Mono.Debugging.Client;
-using MonoDevelop.Components;
+
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
@@ -170,9 +170,10 @@ namespace MonoDevelop.Debugger
 
 		protected AbstractObjectValueNode (string parentPath, string name)
 		{
-			this.Name = name;
-			this.ParentPath = parentPath;
-			if (parentPath.EndsWith ("/", StringComparison.OrdinalIgnoreCase)) {
+			ParentPath = parentPath;
+			Name = name;
+
+			if (parentPath.Length > 0 && parentPath[parentPath.Length - 1] == '/') {
 				Path = parentPath + name;
 			} else {
 				Path = parentPath + "/" + name;
@@ -259,6 +260,16 @@ namespace MonoDevelop.Debugger
 			children.AddRange (values);
 		}
 
+		protected void RemoveChildAt (int index)
+		{
+			children.RemoveAt (index);
+		}
+
+		protected void ReplaceChildAt (int index, IObjectValueNode value)
+		{
+			children[index] = value;
+		}
+
 		protected void ClearChildren ()
 		{
 			children.Clear ();
@@ -287,13 +298,10 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// Represents a node in a tree structure that holds ObjectValue from the debugger.
 	/// </summary>
-	public sealed class ObjectValueNode : AbstractObjectValueNode, IEvaluatingGroupObjectValueNode
+	public class ObjectValueNode : AbstractObjectValueNode, IEvaluatingGroupObjectValueNode
 	{
-		readonly string parentPath;
-
 		public ObjectValueNode (ObjectValue value, string parentPath) : base (parentPath, value.Name)
 		{
-			this.parentPath = parentPath;
 			DebuggerObject = value;
 
 			value.ValueChanged += OnDebuggerValueChanged;
@@ -328,7 +336,7 @@ namespace MonoDevelop.Debugger
 		{
 			var result = new IObjectValueNode [DebuggerObject.ArrayCount];
 			for (int i = 0; i < result.Length; i++) {
-				result [i] = new ObjectValueNode (DebuggerObject.GetArrayItem (i), parentPath);
+				result [i] = new ObjectValueNode (DebuggerObject.GetArrayItem (i), ParentPath);
 			}
 
 			return result;
@@ -445,6 +453,16 @@ namespace MonoDevelop.Debugger
 		{
 			AddChildren (values);
 		}
+
+		public void RemoveValueAt (int index)
+		{
+			RemoveChildAt (index);
+		}
+
+		public void ReplaceValueAt (int index, IObjectValueNode value)
+		{
+			ReplaceChildAt (index, value);
+		}
 	}
 
 	/// <summary>
@@ -556,7 +574,7 @@ namespace MonoDevelop.Debugger
 	{
 		public NodeEvaluationCompletedEventArgs (IObjectValueNode node, IObjectValueNode[] replacementNodes) : base (node)
 		{
-			this.ReplacementNodes = replacementNodes;
+			ReplacementNodes = replacementNodes;
 		}
 
 		/// <summary>

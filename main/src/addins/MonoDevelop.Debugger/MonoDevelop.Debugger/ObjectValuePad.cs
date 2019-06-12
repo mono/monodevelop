@@ -65,7 +65,6 @@ namespace MonoDevelop.Debugger
 			if (UseNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.AllowEditing = true;
-				controller.AllowAdding = false;
 
 				var treeView = controller.GetControl () as GtkObjectValueTreeView;
 				fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
