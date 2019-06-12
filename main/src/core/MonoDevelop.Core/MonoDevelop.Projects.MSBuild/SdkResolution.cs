@@ -8,7 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using Microsoft.Build.Framework;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.MSBuild
@@ -79,6 +81,8 @@ namespace MonoDevelop.Projects.MSBuild
 				throw;
 			}
 
+			StringBuilder errorMessage = null;
+
 			foreach (var result in results) {
 				LogWarnings (logger, buildEventContext, projectFile, result);
 
@@ -86,9 +90,16 @@ namespace MonoDevelop.Projects.MSBuild
 					foreach (var error in result.Errors) {
 						logger.LogErrorFromText (buildEventContext, subcategoryResourceName: null, errorCode: null,
 							helpKeyword: null, file: projectFile, message: error);
+
+						if (errorMessage == null)
+							errorMessage = StringBuilderCache.Allocate ();
+						errorMessage.AppendLine (error);
 					}
 				}
 			}
+
+			if (errorMessage != null)
+				throw new SdkNotFoundException (sdk, StringBuilderCache.ReturnAndFree (errorMessage));
 
 			return null;
 		}
