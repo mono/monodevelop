@@ -241,17 +241,34 @@ namespace MonoDevelop.Ide.Composition
 
 		sealed class IdeRuntimeCompositionExceptionHandler : RuntimeCompositionExceptionHandler
 		{
+			static class Strings
+			{
+				public static string Quit = GettextCatalog.GetString ("Quit");
+				public static string Restart = GettextCatalog.GetString ("Restart");
+			}
+
 			public override void HandleException (string message, Exception e)
 			{
 				base.HandleException (message, e);
 
-				if (e is InvalidRuntimeCompositionException) {
+				if (!(e is IOException)) {
 					// TODO: Fix text.
-					var text = GettextCatalog.GetString ("Some extensions failed to initialize, requiring a restart of {0}", BrandingService.ApplicationName);
-					var restartLabel = GettextCatalog.GetString ("Restart");
+					var text = GettextCatalog.GetString ("There was a problem loading one or more extensions and {0} needs to be restarted.", BrandingService.ApplicationName);
+					var quitButton = new AlertButton (Strings.Quit);
+					var restartButton = new AlertButton (Strings.Restart);
 
-					MessageService.GenericAlert (IdeServices.DesktopService.GetFocusedTopLevelWindow (), Gui.Stock.Error, text, secondaryText: null, new AlertButton (restartLabel));
-					IdeApp.Restart (false).Ignore ();
+					var result = MessageService.GenericAlert (
+						IdeServices.DesktopService.GetFocusedTopLevelWindow (),
+						Gui.Stock.Error,
+						text,
+						secondaryText: null,
+						quitButton,
+						restartButton
+					);
+					if (result == restartButton)
+						IdeApp.Restart (false).Ignore ();
+					else
+						IdeApp.Exit ().Ignore ();
 				}
 			}
 		}
