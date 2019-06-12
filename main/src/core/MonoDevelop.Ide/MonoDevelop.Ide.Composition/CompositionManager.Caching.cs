@@ -193,6 +193,8 @@ namespace MonoDevelop.Ide.Composition
 							cachingFaultInjector?.FaultWritingComposition ();
 							await WriteMefCache (runtimeComposition, catalog, cacheManager);
 						} catch (Exception ex) {
+							DeleteFiles ();
+
 							Runtime.RunInMainThread (() => {
 								exceptionHandler.HandleException ("Failed to write MEF cache", ex);
 							}).Ignore ();
