@@ -54,7 +54,11 @@ namespace MonoDevelop.Core
 			var sdkReference = new SdkReference ("MonoDevelop.Unknown.Test.Sdk", "InvalidVersion", null);
 			var logger = new TestLoggingService ();
 			var context = new MSBuildContext ();
-			var result = resolution.GetSdkPath (sdkReference, logger, context, null, null);
+
+			string result = null;
+			Assert.Throws<SdkNotFoundException> (() => {
+				result = resolution.GetSdkPath (sdkReference, logger, context, null, null);
+			});
 
 			var error = logger.FatalBuildErrors.FirstOrDefault ();
 			Assert.AreEqual (0, logger.FatalBuildErrors.Count, "First error: " + error);

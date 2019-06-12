@@ -685,6 +685,18 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task LoadProject_UnknownNuGetSDKPackage_SDKResolutionErrorsReported ()
+		{
+			FilePath solFile = Util.GetSampleProject ("unknown-nuget-sdk", "UnknownNuGetSdk.sln");
+
+			using (var item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = item.Items [0] as UnknownSolutionItem;
+				Assert.That (p.LoadError, Contains.Substring ("SDK not found")); //  MonoDevelop.Projects.MSBuild.Resolver
+				Assert.That (p.LoadError, Contains.Substring ("Check that a recent enough .NET Core SDK is installed")); // .NET Core SDK resolver
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);
