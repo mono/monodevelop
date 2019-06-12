@@ -262,6 +262,7 @@ namespace MonoDevelop.Ide.Composition
 						Gui.Stock.Error,
 						text,
 						secondaryText: null,
+						defaultButton: 1,
 						quitButton,
 						restartButton
 					);
