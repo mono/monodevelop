@@ -76,6 +76,9 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
 
+		/// <summary>
+		/// Holds a dictionary of expressions and their values.
+		/// </summary>
 		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
 
 		/// <summary>
