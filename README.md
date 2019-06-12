@@ -40,7 +40,7 @@ There are two variables you can set when running `configure`:
   * To install with the rest of the assemblies, use:
   `--prefix="pkg-config --variable=prefix mono"`
 
-* The build profile: `--profile=profile-name`
+* The build profile: `--profile=profile-name` 
 
   * `stable`: builds the MonoDevelop core and some stable extra add-ins.
   * `core`: builds the MonoDevelop core only.
