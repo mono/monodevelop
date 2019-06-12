@@ -59,32 +59,31 @@ namespace PerfTool
 			var inputTestSuite = new TestSuiteResult ();
 			inputTestSuite.Read (inputFile);
 
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out List<TestCase> regressions, out List<TestCase> improvements);
+			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out var regressions, out var improvements, out var newTests);
 			inputTestSuite.Write (resultsFile);
 
-			if (regressions.Count > 0) {
-				Console.WriteLine ("Performance Regressions:");
-				for (int n = 0; n < regressions.Count; n++) {
-					var reg = regressions [n];
-					var number = (n+1) + ") ";
-					Console.WriteLine (number + reg.Name);
-					Console.WriteLine (new string (' ', number.Length) + reg.Failure.Message);
-				}
-				Console.WriteLine ();
-			}
-
-			if (improvements.Count > 0) {
-				Console.WriteLine ("Performance Improvements:");
-				for (int n = 0; n < improvements.Count; n++) {
-					var imp = improvements [n];
-					var number = (n+1) + ") ";
-					Console.WriteLine (number + imp.Name);
-					Console.WriteLine (new string (' ', number.Length) + imp.Improvement.Message);
-				}
-				Console.WriteLine ();
-			}
+			PrintTestCases ("Performance Regressions:", regressions);
+			PrintTestCases ("Performance Improvements:", improvements);
+			PrintTestCases ("New Performance Tests:", newTests);
 
 			return inputTestSuite.HasErrors ? 1 : 0;
+		}
+
+		static void PrintTestCases (string header, List<TestCase> testCases)
+		{
+			if (testCases.Count <= 0)
+				return;
+
+			Console.WriteLine (header);
+			for (int n = 0; n < testCases.Count; n++) {
+				var imp = testCases [n];
+				var number = (n + 1) + ") ";
+				var messageToWrite = imp.Improvement?.Message ?? imp.Failure.Message;
+
+				Console.WriteLine (number + imp.Name);
+				Console.WriteLine (new string (' ', number.Length) + messageToWrite);
+			}
+			Console.WriteLine ();
 		}
 
 		static int UpdateBaseLine (string baseFile, string inputFile, string outputFile, string resultName)
@@ -95,9 +94,9 @@ namespace PerfTool
 			var inputTestSuite = new TestSuiteResult ();
 			inputTestSuite.Read (inputFile);
 
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out List<TestCase> regressions, out List<TestCase> improvements);
+			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out var regressions, out var improvements, out var newTests);
 
-			List<Tuple <TestCase, TestCase>> resultsToUpdate = new List<Tuple<TestCase, TestCase>> ();;
+			var resultsToUpdate = new List<Tuple<TestCase, TestCase>> ();
 			if (!string.IsNullOrEmpty (resultName)) {
 				var updateResult = inputTestSuite.ResultByTestId (resultName);
 				if (updateResult.Improvement == null) {
@@ -114,6 +113,11 @@ namespace PerfTool
 			} else {
 				foreach (var updateResult in improvements) {
 					var result = baseTestSuite.ResultByTestId (updateResult.Name);
+					resultsToUpdate.Add (new Tuple<TestCase, TestCase> (result, updateResult));
+				}
+
+				foreach (var updateResult in newTests) {
+					var result = inputTestSuite.ResultByTestId (updateResult.Name);
 					resultsToUpdate.Add (new Tuple<TestCase, TestCase> (result, updateResult));
 				}
 			}

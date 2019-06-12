@@ -322,6 +322,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 #region MacPlatform.MacIntegration.MainToolbar.SelectorView
 		public override bool SetActiveConfiguration (string configurationName)
 		{
+			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
 			Type type = ResultObject.GetType ();
 			PropertyInfo pinfo = type.GetProperty ("ConfigurationModel");
 			if (pinfo == null) {
@@ -329,7 +330,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			IEnumerable<IConfigurationModel> model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
-			var configuration = model.FirstOrDefault (c => c.DisplayString == configurationName);
+			LoggingService.LogDebug (string.Format ("Found configurations: {0}",
+				string.Join(", ", model.Select(m => $"['{m.OriginalId}' '{m.DisplayString}']"))));
+			var configuration = model.FirstOrDefault (
+				c => c.DisplayString.Contains(configurationName) || c.OriginalId.Contains(configurationName));
 			if (configuration == null) {
 				return false;
 			}
@@ -339,12 +343,21 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
+			LoggingService.LogDebug ($"Setting the active configuration as: '{configuration.OriginalId}' '{configuration.DisplayString}'");
 			pinfo.SetValue (ResultObject, configuration);
+
+			var activeConfiguration = (IConfigurationModel)pinfo.GetValue (ResultObject);
+			if (activeConfiguration != null) {
+				LoggingService.LogDebug ($"Checking active configuration is actually set: '{configuration.OriginalId}' '{configuration.DisplayString}'");
+				if (configuration.OriginalId == activeConfiguration.OriginalId)
+					return true;
+			}
 			return true;
 		}
 
 		public override bool SetActiveRuntime (string runtimeName)
 		{
+			LoggingService.LogDebug ($"Set Active runtime with name/ID as '{runtimeName}'");
 			Type type = ResultObject.GetType ();
 			PropertyInfo pinfo = type.GetProperty ("RuntimeModel");
 			if (pinfo == null) {
@@ -353,8 +366,27 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			IEnumerable<IRuntimeModel> model = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
 
-			var runtime = model.FirstOrDefault (r => r.GetMutableModel ().FullDisplayString == runtimeName);
+			var runtime = model.FirstOrDefault (r => {
+				var mutableModel = r.GetMutableModel ();
+				LoggingService.LogDebug ($"[IRuntimeModel.IRuntimeMutableModel] FullDisplayString: '{mutableModel.FullDisplayString}' | DisplayString: '{mutableModel.DisplayString}'");
+				if (mutableModel.FullDisplayString.Contains (runtimeName))
+					return true;
+				if (mutableModel.DisplayString.Contains (runtimeName))
+					return true;
+				var execTargetPInfo = r.GetType().GetProperty ("ExecutionTarget");
+				if(execTargetPInfo != null) {
+					if (execTargetPInfo.GetValue (r) is Core.Execution.ExecutionTarget execTarget) {
+						LoggingService.LogDebug ($"[IRuntimeModel.ExecutionTarget] Id: '{execTarget.Id}' | FullName: '{execTarget.FullName}'");
+						if (execTarget.Id != null && execTarget.Id.Contains (runtimeName))
+							return true;
+						if (execTarget.FullName != null && execTarget.FullName.Contains (runtimeName))
+							return true;
+					}
+				}
+				return false;
+			});
 			if (runtime == null) {
+				LoggingService.LogDebug ($"Did not find an IRuntimeModel for '{runtimeName}'");
 				return false;
 			}
 
@@ -363,8 +395,17 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
+			LoggingService.LogDebug ($"Setting ActiveRuntime: Id: '{runtime.GetMutableModel ().FullDisplayString}'");
 			pinfo.SetValue (ResultObject, runtime);
-			return true;
+
+			// Now we need to make sure that the ActiveRuntime is actually set
+			var activeRuntime = (IRuntimeModel)pinfo.GetValue (ResultObject);
+			if(activeRuntime != null) {
+				LoggingService.LogDebug ($"Checking ActiveRuntime: Id: '{activeRuntime.GetMutableModel().FullDisplayString}'");
+				if (activeRuntime.GetMutableModel ().DisplayString == runtime.GetMutableModel ().DisplayString)
+					return true;
+			}
+			return false;
 		}
 		#endregion
 

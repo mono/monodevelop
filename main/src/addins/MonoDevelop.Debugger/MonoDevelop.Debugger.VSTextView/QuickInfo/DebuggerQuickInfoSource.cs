@@ -87,56 +87,70 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			var triggerPoint = session.GetTriggerPoint (textBuffer);
 			var point = triggerPoint.GetPoint (snapshot);
 
+			if (!view.Selection.IsEmpty) {
+				foreach (var span in view.Selection.SelectedSpans) {
+					if(span.Contains(point)) {
+						await EvaluateAndShowTooltipAsync (session, view, point, new DataTipInfo (snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeInclusive), snapshot.GetText (span)), cancellationToken);
+						return null;
+					}
+				}
+			}
+
 			foreach (var debugInfoProvider in provider.debugInfoProviders) {
 				var debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (point, cancellationToken);
 				if (debugInfo.Text == null) {
 					continue;
 				}
 
-				var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-				options.AllowMethodEvaluation = true;
-				options.AllowTargetInvoke = true;
-
-				var val = DebuggingService.CurrentFrame.GetExpressionValue (debugInfo.Text, options);
-
-				if (val.IsEvaluating)
-					await WaitOneAsync (val.WaitHandle, cancellationToken);
-				if (cancellationToken.IsCancellationRequested)
-					return null;
-				if (val == null || val.IsUnknown || val.IsNotSupported || val.IsError)
-					return null;
-
-				if (!view.Properties.TryGetProperty (typeof (Gtk.Widget), out Gtk.Widget gtkParent))
-					return null;
-				provider.textDocumentFactoryService.TryGetTextDocument (textBuffer, out var textDocument);
-
-				// This is a bit hacky, since AsyncQuickInfo is designed to display multiple elements if multiple sources
-				// return value, we don't want that for debugger value hovering, hence we dismiss AsyncQuickInfo
-				// and do our own thing, notice VS does same thing
-				await session.DismissAsync ();
-				await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
-				this.lastView = view;
-				val.Name = debugInfo.Text;
-				window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
-				Ide.IdeApp.CommandService.RegisterTopWindow (window);
-				var bounds = view.TextViewLines.GetCharacterBounds (point);
-				view.LayoutChanged += LayoutChanged;
-#if CLOSE_ON_FOCUS_LOST
-				view.LostAggregateFocus += View_LostAggregateFocus;
-#endif
-				RegisterForHiddenAsync (view).Ignore ();
-				window.LeaveNotifyEvent += LeaveNotifyEvent;
-#if MAC
-				var cocoaView = ((ICocoaTextView)view);
-				var cgPoint = cocoaView.VisualElement.ConvertPointToView (new CoreGraphics.CGPoint (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop), cocoaView.VisualElement.Superview);
-				cgPoint.Y = cocoaView.VisualElement.Superview.Frame.Height - cgPoint.Y;
-				window.ShowPopup (gtkParent, new Gdk.Rectangle ((int)cgPoint.X, (int)cgPoint.Y, (int)bounds.Width, (int)bounds.Height), Components.PopupPosition.TopLeft);
-#else
-				throw new NotImplementedException ();
-#endif
+				await EvaluateAndShowTooltipAsync (session, view, point, debugInfo, cancellationToken);
 				return null;
 			}
 			return null;
+		}
+
+		private async Task EvaluateAndShowTooltipAsync (IAsyncQuickInfoSession session, ITextView view, SnapshotPoint point, DataTipInfo debugInfo, CancellationToken cancellationToken)
+		{
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowMethodEvaluation = true;
+			options.AllowTargetInvoke = true;
+
+			var val = DebuggingService.CurrentFrame.GetExpressionValue (debugInfo.Text, options);
+
+			if (val.IsEvaluating)
+				await WaitOneAsync (val.WaitHandle, cancellationToken);
+			if (cancellationToken.IsCancellationRequested)
+				return;
+			if (val == null || val.IsUnknown || val.IsNotSupported)
+				return;
+
+			if (!view.Properties.TryGetProperty (typeof (Gtk.Widget), out Gtk.Widget gtkParent))
+				return;
+			provider.textDocumentFactoryService.TryGetTextDocument (textBuffer, out var textDocument);
+
+			// This is a bit hacky, since AsyncQuickInfo is designed to display multiple elements if multiple sources
+			// return value, we don't want that for debugger value hovering, hence we dismiss AsyncQuickInfo
+			// and do our own thing, notice VS does same thing
+			await session.DismissAsync ();
+			await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
+			this.lastView = view;
+			val.Name = debugInfo.Text;
+			window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
+			Ide.IdeApp.CommandService.RegisterTopWindow (window);
+			var bounds = view.TextViewLines.GetCharacterBounds (point);
+			view.LayoutChanged += LayoutChanged;
+#if CLOSE_ON_FOCUS_LOST
+				view.LostAggregateFocus += View_LostAggregateFocus;
+#endif
+			RegisterForHiddenAsync (view).Ignore ();
+			window.LeaveNotifyEvent += LeaveNotifyEvent;
+#if MAC
+			var cocoaView = ((ICocoaTextView)view);
+			var cgPoint = cocoaView.VisualElement.ConvertPointToView (new CoreGraphics.CGPoint (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop), cocoaView.VisualElement.Superview);
+			cgPoint.Y = cocoaView.VisualElement.Superview.Frame.Height - cgPoint.Y;
+			window.ShowPopup (gtkParent, new Gdk.Rectangle ((int)cgPoint.X, (int)cgPoint.Y, (int)bounds.Width, (int)bounds.Height), Components.PopupPosition.TopLeft);
+#else
+				throw new NotImplementedException ();
+#endif
 		}
 
 		private async Task RegisterForHiddenAsync (ITextView view)
