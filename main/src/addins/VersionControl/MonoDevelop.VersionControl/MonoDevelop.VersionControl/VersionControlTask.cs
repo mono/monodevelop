@@ -52,13 +52,14 @@ namespace MonoDevelop.VersionControl
 					if (exception is DllNotFoundException) {
 						var msg = GettextCatalog.GetString ("The operation could not be completed because a shared library is missing: ");
 						tracker.ReportError (msg + exception.Message, null);
+						MessageService.ShowError (exception.Message);
 						LoggingService.LogError ("Version Control command failed: ", exception);
 					} else if (exception is VersionControlException) {
 						var msg = GettextCatalog.GetString ("Version control operation failed: ");
-						tracker.ReportError (msg + exception.Message, exception);
+						ReportError (msg + exception.Message, exception);
 					} else {
 						var msg = GettextCatalog.GetString ("Version control operation failed: ");
-						tracker.ReportError (msg, exception);
+						ReportError (msg + exception.Message, exception);
 					}
 				}
 				Wakeup ();
@@ -68,8 +69,7 @@ namespace MonoDevelop.VersionControl
 		public void Wakeup() {
 			try {
 				tracker.EndTask();
-				if(IdeApp.Workbench.RootWindow?.Visible == true)
-					tracker.Dispose ();
+				tracker.Dispose ();
 			} finally {
 				Finished();
 			}
@@ -81,6 +81,13 @@ namespace MonoDevelop.VersionControl
 		
 		protected void Warn(string logtext) {
 			tracker.ReportWarning(logtext);
+		}
+
+		void ReportError (string message, Exception exception)
+		{
+			tracker.ReportError (message, exception);
+			if (IdeApp.Workbench.RootWindow?.Visible == false && exception != null)
+				MessageService.ShowError (exception.Message);
 		}
 	}
 }
