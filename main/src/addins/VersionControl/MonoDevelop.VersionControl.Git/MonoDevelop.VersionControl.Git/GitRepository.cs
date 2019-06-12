@@ -1,4 +1,4 @@
-//
+﻿//
 // GitRepository.cs
 //
 // Author:
@@ -38,6 +38,7 @@ using LibGit2Sharp;
 using System.Threading.Tasks;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -2042,33 +2043,36 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
+		object blameLock = new object ();
+
 		public override Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			return RunOperation (repositoryPath, repository => {
 				Commit hc = GetHeadCommit (repository);
 				Commit sinceCommit = since != null ? ((GitRevision)since).GetCommit (repository) : null;
 				if (hc == null)
-					return new Annotation [0];
+					return Array.Empty<Annotation> ();
 
 				var list = new List<Annotation> ();
 
-				var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
-				var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
-
-				repositoryPath = repository.ToGitPath (repositoryPath);
-				var status = repository.RetrieveStatus (repositoryPath);
+				var gitPath = repository.ToGitPath (repositoryPath);
+				var status = repository.RetrieveStatus (gitPath);
 				if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-					foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, StartingAt = sinceCommit })) {
-						var commit = hunk.FinalCommit;
-						var author = hunk.FinalSignature;
-						var working = new Annotation (new GitRevision (this, repositoryPath, commit), author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
-						for (int i = 0; i < hunk.LineCount; ++i)
-							list.Add (working);
+					lock (blameLock) {
+						foreach (var hunk in repository.Blame (gitPath, new BlameOptions { FindExactRenames = true, StartingAt = sinceCommit })) {
+							var commit = hunk.FinalCommit;
+							var author = hunk.FinalSignature;
+							var working = new Annotation (new GitRevision (this, gitPath, commit), author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+							for (int i = 0; i < hunk.LineCount; ++i)
+								list.Add (working);
+						}
 					}
 				}
 
 				if (sinceCommit == null) {
-					Annotation nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+					var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
+					var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
+					var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
 					foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
 						list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
 						for (int i = 0; i < hunk.Inserted; ++i) {
