@@ -151,8 +151,9 @@ namespace MonoDevelop.VersionControl.Git
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var t = Task.Run (delegate {
 				try {
+					int stashCount = repo.GetStashes ().Count ();
 					var res = repo.ApplyStash (monitor, s);
-					ReportStashResult (repo, res);
+					ReportStashResult (repo, res, stashCount);
 					return true;
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
@@ -166,25 +167,29 @@ namespace MonoDevelop.VersionControl.Git
 			return t;
 		}
 
-		public static void ReportStashResult (Repository repo, StashApplyStatus status)
+		public static void ReportStashResult (Repository repo, StashApplyStatus status, int stashCount)
 		{
 			string msg;
 			StashResultType stashResultType;
 
 			switch (status) {
 			case StashApplyStatus.Conflicts:
-				msg = GettextCatalog.GetString ("A conflicting change has been detected in the index.");
-
+				bool stashApplied = false;
+				msg = GettextCatalog.GetString ("A conflicting change has been detected in the index. ");
 				// Include conflicts in the msg
 				if (repo is GitRepository gitRepo) {
-					if (!gitRepo.RootRepository.Index.IsFullyMerged) {
+					int actualStashCount = gitRepo.GetStashes ().Count ();
+					stashApplied = actualStashCount == stashCount;
+					if (!stashApplied) {
 						msg += GettextCatalog.GetString ("The following conflicts have been found:") + Environment.NewLine;
 						foreach (var conflictFile in gitRepo.RootRepository.Index.Conflicts) {
 							msg += conflictFile.Ancestor.Path + Environment.NewLine;
 						}
-					}
+					} else
+						msg += GettextCatalog.GetString ("Stash not applied.");
+
 				}
-				stashResultType = StashResultType.Warning;
+				stashResultType = !stashApplied ? StashResultType.Warning : StashResultType.Error;
 				break;
 			case StashApplyStatus.UncommittedChanges:
 				msg = GettextCatalog.GetString ("The stash application was aborted due to uncommitted changes in the index.");
