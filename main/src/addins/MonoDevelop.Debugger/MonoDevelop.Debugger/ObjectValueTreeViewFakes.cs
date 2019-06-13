@@ -216,20 +216,22 @@ namespace MonoDevelop.Debugger
 
 		public override bool IsEvaluating => isEvaluating;
 
-		public bool IsEvaluatingGroup => true;
+		#region IEvaluatingGroupObjectValueNode
+		bool IEvaluatingGroupObjectValueNode.IsEvaluatingGroup => true;
 
-		public IObjectValueNode[] GetEvaluationGroupReplacementNodes ()
+		IObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
 		{
-			var replacementNodes = new IObjectValueNode[evalNodes];
+			var replacementNodes = new IObjectValueNode [evalNodes];
 
 			for (int i = 0; i < evalNodes; i++) {
-				replacementNodes[i] = new FakeObjectValueNode ($"child of {Name}", false) {
+				replacementNodes [i] = new FakeObjectValueNode ($"child of {Name}", false) {
 					Parent = Parent
 				};
 			}
 
 			return replacementNodes;
 		}
+		#endregion
 
 		async void DoTest ()
 		{

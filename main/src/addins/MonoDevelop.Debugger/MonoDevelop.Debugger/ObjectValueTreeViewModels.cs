@@ -144,6 +144,10 @@ namespace MonoDevelop.Debugger
 		Task<int> LoadChildrenAsync (int count, CancellationToken cancellationToken);
 	}
 
+	/// <summary>
+	/// Internal interface to support the notion that the debugging service might return a placeholder
+	/// object for all locals for instance. 
+	/// </summary>
 	interface IEvaluatingGroupObjectValueNode
 	{
 		/// <summary>
@@ -157,6 +161,18 @@ namespace MonoDevelop.Debugger
 		/// Get an array of new objectvalue nodes that should replace the current node in the tree
 		/// </summary>
 		IObjectValueNode[] GetEvaluationGroupReplacementNodes ();
+	}
+
+	/// <summary>
+	/// Internal interface to support the notion that the debugging service might return a placeholder
+	/// object for all locals for instance. 
+	/// </summary>
+	interface ISupportChildObjectValueNodeReplacement
+	{
+		/// <summary>
+		/// Replaces the given child node with a new set of nodes
+		/// </summary>
+		void ReplaceChildNode (IObjectValueNode node, IObjectValueNode [] newNodes);
 	}
 
 	/// <summary>
@@ -278,6 +294,12 @@ namespace MonoDevelop.Debugger
 			child.Parent = null;
 		}
 
+		protected void InsertChildAt (int index, IObjectValueNode value)
+		{
+			children.Insert (index, value);
+			value.Parent = this;
+		}
+
 		protected void ClearChildren ()
 		{
 			foreach (var child in children)
@@ -326,7 +348,6 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => DebuggerObject.HasChildren;
 		public override bool IsEnumerable => DebuggerObject.Flags.HasFlag (ObjectValueFlags.IEnumerable);
 		public override bool IsEvaluating => DebuggerObject.IsEvaluating;
-		public bool IsEvaluatingGroup => DebuggerObject.IsEvaluatingGroup;
 		public override bool CanEdit => GetCanEdit();
 
 
@@ -344,19 +365,6 @@ namespace MonoDevelop.Debugger
 		public override bool CanRefresh => DebuggerObject.CanRefresh;
 		public override bool HasFlag (ObjectValueFlags flag) => DebuggerObject.HasFlag (flag);
 
-		public IObjectValueNode[] GetEvaluationGroupReplacementNodes ()
-		{
-			var replacementNodes = new IObjectValueNode[DebuggerObject.ArrayCount];
-
-			for (int i = 0; i < replacementNodes.Length; i++) {
-				replacementNodes[i] = new ObjectValueNode (DebuggerObject.GetArrayItem (i)) {
-					Parent = Parent
-				};
-			}
-
-			return replacementNodes;
-		}
-
 		public override void SetValue (string newValue)
 		{
 			DebuggerObject.Value = newValue;
@@ -371,6 +379,23 @@ namespace MonoDevelop.Debugger
 		{
 			DebuggerObject.Refresh (options);
 		}
+
+		#region IEvaluatingGroupObjectValueNode
+		bool IEvaluatingGroupObjectValueNode.IsEvaluatingGroup => DebuggerObject.IsEvaluatingGroup;
+
+		IObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
+		{
+			var replacementNodes = new IObjectValueNode [DebuggerObject.ArrayCount];
+
+			for (int i = 0; i < replacementNodes.Length; i++) {
+				replacementNodes [i] = new ObjectValueNode (DebuggerObject.GetArrayItem (i)) {
+					Parent = Parent
+				};
+			}
+
+			return replacementNodes;
+		}
+		#endregion
 
 		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
@@ -450,7 +475,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// Special node used as the root of the treeview. 
 	/// </summary>
-	sealed class RootObjectValueNode : AbstractObjectValueNode
+	sealed class RootObjectValueNode : AbstractObjectValueNode, ISupportChildObjectValueNodeReplacement
 	{
 		public RootObjectValueNode () : base (string.Empty)
 		{
@@ -477,6 +502,23 @@ namespace MonoDevelop.Debugger
 		public void ReplaceValueAt (int index, IObjectValueNode value)
 		{
 			ReplaceChildAt (index, value);
+		}
+
+		void ISupportChildObjectValueNodeReplacement.ReplaceChildNode (IObjectValueNode node, IObjectValueNode [] newNodes)
+		{
+			var ix = Children.IndexOf (node);
+			System.Diagnostics.Debug.Assert (ix >= 0, "The node being replaced should be a child of this node");
+			if (newNodes.Length == 0) {
+				RemoveChildAt (ix);
+				return;
+			}
+
+			ReplaceChildAt (ix, newNodes [0]);
+
+			for (int i = 1; i < newNodes.Length; i++) {
+				ix++;
+				InsertChildAt (ix, newNodes [i]);
+			}
 		}
 	}
 

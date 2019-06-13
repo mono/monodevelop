@@ -794,6 +794,14 @@ namespace MonoDevelop.Debugger
 							RegisterNode (newNode);
 						}
 
+						// `node` returns us a set of new nodes that need to be replaced into the children
+						// of node.parent. This should only be applicable to direct children of the root since
+						// this construct is to support placehold values for "locals" etc
+						if (node.Parent is ISupportChildObjectValueNodeReplacement replacerParent) {
+							replacerParent.ReplaceChildNode (node, replacementNodes);
+						}
+
+						// TODO: we could improve how we notify this and pass child indexes as well
 						OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
 					} else {
 						OnEvaluationCompleted (sender as IObjectValueNode);
