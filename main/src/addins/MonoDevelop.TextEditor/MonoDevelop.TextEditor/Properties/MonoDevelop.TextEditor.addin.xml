@@ -13,6 +13,11 @@
 		<Description>Context menu for the navigation bar.</Description>
 		<ExtensionNode name="Map" type="MonoDevelop.TextEditor.CommandMappingExtensionNode" />
 	</ExtensionPoint>
+
+	<ExtensionPoint path="/MonoDevelop/TextEditor/SupportedFileTypes" name="Opts in file types to be opened in the new editor">
+		<ExtensionNode name="SupportedFileType" type="MonoDevelop.TextEditor.SupportedFileTypeExtensionNode" />
+	</ExtensionPoint>
+
 <!--
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/NavigationBar" name = "Navigation bar context menu">
 		<Description>Context menu for the navigation bar.</Description>
@@ -42,7 +47,9 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	--><!-- Extensions -->
+	-->
+
+	<!-- Extensions -->
 
   	<Extension path="/MonoDevelop/Ide/Composition">
 		<!--
@@ -50,6 +57,12 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		-->
 		<Assembly file="MonoDevelop.TextEditor.dll"/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
+		<SupportedFileType id="csharp" extensions=".cs,.csx" />
+		<SupportedFileType id="xaml" extensions=".xaml" FeatureSwitch="DesignersNewEditor" />
+		<SupportedFileType id="androidxml" extensions=".xml,.axml" BuildAction="AndroidResource" FeatureSwitch="DesignersNewEditor" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
