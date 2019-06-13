@@ -42,11 +42,6 @@ namespace MonoDevelop.Debugger
 	public interface IObjectValueNode
 	{
 		/// <summary>
-		/// Gets the ID of the node (usful as a key with dictionary lookups).
-		/// </summary>
-		string Id { get; }
-
-		/// <summary>
 		/// Gets the parent node.
 		/// </summary>
 		IObjectValueNode Parent { get; set; }
@@ -55,6 +50,11 @@ namespace MonoDevelop.Debugger
 		/// Gets the collection of children that have been loaded from the debugger
 		/// </summary>
 		IReadOnlyList<IObjectValueNode> Children { get; }
+
+		/// <summary>
+		/// Gets the "path" of the object ("root object/parent object/variable name").
+		/// </summary>
+		string Path { get; }
 
 		/// <summary>
 		/// Gets the name of the object
@@ -92,7 +92,6 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether the value can be edited by the user or not
 		/// </summary>
 		bool CanEdit { get; }
-
 
 		bool IsUnknown { get; }
 		bool IsReadOnly { get; }
@@ -170,13 +169,21 @@ namespace MonoDevelop.Debugger
 
 		protected AbstractObjectValueNode (string name)
 		{
-			Id = Guid.NewGuid ().ToString ();
 			Name = name;
 		}
 
-		public string Id { get; }
 		public IObjectValueNode Parent { get; set; }
 		public string Name { get; }
+
+		public string Path {
+			get {
+				if (Parent != null)
+					return Parent.Path + "/" + Name;
+
+				return "/" + Name;
+			}
+		}
+
 		public IReadOnlyList<IObjectValueNode> Children => children;
 		public virtual bool IsExpanded { get; set; }
 		public virtual bool HasChildren => false;

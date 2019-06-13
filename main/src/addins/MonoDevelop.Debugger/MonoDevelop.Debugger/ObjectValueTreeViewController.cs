@@ -42,9 +42,7 @@ namespace MonoDevelop.Debugger
 	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
 	 * refreshing a node (which may replace it's children nodes)
 	 *
-	 * - Expressions should perhaps have their own IObjectValueNode type. This class should also not use the expression as
-	 * the leaf-node component of the Path because a user could add the same expression to the WatchPad multiple times which
-	 * would break the uniqueness of the IObjectValueNode.Path assumption.
+	 * - Expressions should perhaps have their own IObjectValueNode type.
 	 *
 	 */
 
@@ -55,9 +53,6 @@ namespace MonoDevelop.Debugger
 		IDebuggerService debuggerService;
 		bool allowWatchExpressions;
 		bool allowEditing;
-
-		// index of a node's path to a node
-		readonly Dictionary<string, IObjectValueNode> nodeIndex = new Dictionary<string, IObjectValueNode> ();
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
@@ -170,7 +165,6 @@ namespace MonoDevelop.Debugger
 		public void ClearValues ()
 		{
 			cachedValues.Clear ();
-			nodeIndex.Clear ();
 
 			Root = OnCreateRoot ();
 
@@ -221,18 +215,6 @@ namespace MonoDevelop.Debugger
 			ClearValues ();
 		}
 
-		/// <summary>
-		/// Finds a node in the index from the given path
-		/// </summary>
-		public IObjectValueNode FindNode(string path)
-		{
-			if (nodeIndex.TryGetValue(path, out IObjectValueNode node)) {
-				return node;
-			}
-
-			return null;
-		}
-
 		// TODO: can we improve this
 		public string GetDisplayValueWithVisualisers(IObjectValueNode node, out bool showViewerButton)
 		{
@@ -280,7 +262,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public bool GetNodeHasChangedSinceLastCheckpoint (IObjectValueNode node)
 		{
-			if (oldValues.TryGetValue (node.Id, out CheckpointState checkpointState)) {
+			if (oldValues.TryGetValue (node.Path, out CheckpointState checkpointState)) {
 				return node.Value != checkpointState.Value;
 			}
 
@@ -292,7 +274,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public bool GetNodeWasExpandedAtLastCheckpoint (IObjectValueNode node)
 		{
-			if (oldValues.TryGetValue (node.Id, out CheckpointState checkpointState)) {
+			if (oldValues.TryGetValue (node.Path, out CheckpointState checkpointState)) {
 				return checkpointState.Expanded;
 			}
 
@@ -482,8 +464,8 @@ namespace MonoDevelop.Debugger
 					return false;
 
 				// make sure we set an old value for this node so we can show that it has changed
-				if (!oldValues.TryGetValue (node.Id, out CheckpointState state)) {
-					oldValues[node.Id] = new CheckpointState (node);
+				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
+					oldValues[node.Path] = new CheckpointState (node);
 				}
 
 				// ensure the parent and node are in the checkpoint and expanded
@@ -515,8 +497,8 @@ namespace MonoDevelop.Debugger
 			if (node != null) {
 
 				// make sure we set an old value for this node so we can show that it has changed
-				if (!oldValues.TryGetValue (node.Id, out CheckpointState state)) {
-					oldValues[node.Id] = new CheckpointState (node);
+				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
+					oldValues[node.Path] = new CheckpointState (node);
 				}
 
 				// ensure the parent and node are in the checkpoint and expanded
@@ -543,10 +525,10 @@ namespace MonoDevelop.Debugger
 			var parent = node.Parent; /*FindNode (node.ParentId);*/
 
 			while (parent != null && parent != Root) {
-				if (oldValues.TryGetValue (parent.Id, out CheckpointState state)) {
+				if (oldValues.TryGetValue (parent.Path, out CheckpointState state)) {
 					state.Expanded = true;
 				} else {
-					oldValues[parent.Id] = new CheckpointState (parent) { Expanded = true };
+					oldValues[parent.Path] = new CheckpointState (parent) { Expanded = true };
 				}
 
 				parent = parent.Parent; /*FindNode (parent.ParentId);*/
@@ -765,7 +747,6 @@ namespace MonoDevelop.Debugger
 		void RegisterNode (IObjectValueNode node)
 		{
 			if (node != null) {
-				nodeIndex[node.Id] = node;
 				RegisterForEvaluationCompletion (node);
 			}
 		}
@@ -773,7 +754,6 @@ namespace MonoDevelop.Debugger
 		void UnregisterNode (IObjectValueNode node)
 		{
 			if (node != null) {
-				nodeIndex.Remove (node.Id);
 				UnregisterForEvaluationCompletion (node);
 			}
 		}
@@ -783,7 +763,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		void ChangeCheckpoint (IObjectValueNode node)
 		{
-			oldValues[node.Id] = new CheckpointState (node);
+			oldValues[node.Path] = new CheckpointState (node);
 
 			if (node.IsExpanded) {
 				foreach (var child in node.Children) {
