@@ -67,12 +67,18 @@ namespace Gtk
 		NSView view;
 		NSView superview;
 		bool sizeAllocated;
+		NSWindowOrderingMode? zOrder;
 
 		public GtkNSViewHost (NSView view)
 		{
 			this.view = view ?? throw new ArgumentNullException (nameof (view));
 
 			WidgetFlags |= WidgetFlags.NoWindow;
+		}
+
+		public GtkNSViewHost (NSView view, NSWindowOrderingMode position) : this (view)
+		{
+			zOrder = position;
 		}
 
 		void UpdateViewFrame ()
@@ -153,8 +159,12 @@ namespace Gtk
 						superview = Runtime.GetNSObject<NSView> (superviewHandle);
 				}
 
-				if (superview != null && view != null)
-					superview.AddSubview (view);
+				if (superview != null && view != null) {
+					if (zOrder.HasValue)
+						superview.AddSubview (view, zOrder.Value, null);
+					else
+						superview.AddSubview (view);
+				}
 
 				base.OnRealized ();
 

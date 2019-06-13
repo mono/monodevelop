@@ -426,14 +426,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void Dispose ()
 		{
-			if (!disposed) {
+			if (disposed)
+				return;
+			try {
+				linkedController?.Dispose ();
+				OnDispose ();
+				extensionChain?.Dispose ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError ($"Error while disposing document controller {this}", e);
+			} finally {
 				disposedTokenSource.Cancel ();
 				disposedTokenSource.Dispose ();
 				disposedTokenSource = null;
-				linkedController?.Dispose ();
 				disposed = true;
-				OnDispose ();
-				extensionChain?.Dispose ();
 			}
 		}
 

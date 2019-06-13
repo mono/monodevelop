@@ -76,6 +76,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			fileDescriptor = modelDescriptor as FileDescriptor;
 			await base.OnInitialize (modelDescriptor, status);
+			Encoding = fileDescriptor.Encoding;
 		}
 
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
@@ -87,6 +88,7 @@ namespace MonoDevelop.Ide.Editor
 
 				await Init (editor, impl);
 				HasUnsavedChanges = impl.IsDirty;
+				await UpdateStyleParent (Owner, editor.MimeType, token);
 
 				// Editor extensions can provide additional content
 				NotifyContentChanged ();
