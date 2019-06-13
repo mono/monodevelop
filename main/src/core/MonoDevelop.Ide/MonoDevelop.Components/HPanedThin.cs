@@ -108,6 +108,7 @@ namespace MonoDevelop.Components
 
 		public CustomMacPanedHandle (Gtk.Paned parent)
 		{
+			VisibleWindow = false;
 			this.parent = parent;
 			HPanedThin.InitStyle (parent, 1);
 			horizontal = parent is HPanedThin;
