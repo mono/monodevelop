@@ -331,7 +331,7 @@ namespace MonoDevelop.Projects
 					var oldLink = link;
 					link = value;
 
-					OnVirtualPathChanged (oldLink, link);
+					VirtualPathChanged?.Invoke (this, new ProjectFileVirtualPathChangedEventArgs (this, oldLink, link));
 					OnChanged ("Link");
 				}
 			}
@@ -479,7 +479,7 @@ namespace MonoDevelop.Projects
 			base.OnProjectSet ();
 			if (Project != null) {
 				base.Include = Include;
-				OnVirtualPathChanged (FilePath.Null, ProjectVirtualPath);
+				VirtualPathChanged?.Invoke (this, new ProjectFileVirtualPathChangedEventArgs (this, FilePath.Null, ProjectVirtualPath));
 			}
 		}
 
@@ -506,14 +506,6 @@ namespace MonoDevelop.Projects
 		}
 
 		internal event EventHandler<ProjectFileVirtualPathChangedEventArgs> VirtualPathChanged;
-
-		void OnVirtualPathChanged (FilePath oldVirtualPath, FilePath newVirtualPath)
-		{
-			var handler = VirtualPathChanged;
-
-			if (handler != null)
-				handler (this, new ProjectFileVirtualPathChangedEventArgs (this, oldVirtualPath, newVirtualPath));
-		}
 
 		internal event EventHandler<ProjectFilePathChangedEventArgs> PathChanged;
 
