@@ -1,4 +1,4 @@
-﻿//
+//
 // UserInterfaceTest.cs
 //
 // Author:
@@ -143,7 +143,12 @@ namespace MonoDevelop.UserInterfaceTesting
 
 		public string OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
-			var sln = UnitTests.Util.GetSampleProject ("performance", "sdk-library", "sdk-library.sln");
+			return OpenSolutionAndWait (out waitForPackages, "performance", "sdk-library", "sdk-library.sln");
+		}
+
+		public string OpenSolutionAndWait (out bool waitForPackages, params string[] projectName)
+		{
+			FilePath sln = UnitTests.Util.GetSampleProject (projectName);
 
 			if (!File.Exists (sln)) {
 				throw new FileNotFoundException ("Could not find test solution", sln);
@@ -151,7 +156,7 @@ namespace MonoDevelop.UserInterfaceTesting
 
 			// Tell the app to track time to code
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer", null);
-			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)sln), "Ide.Shell.SolutionOpened", 60000);
+			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", sln), "Ide.Shell.SolutionOpened", 60000);
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeStartupTracker.StartupTracker.TrackTimeToCode", MonoDevelop.Ide.TimeToCodeMetadata.DocumentType.Solution);
 
 			// Currently we only have one solution which needs packages waited for.
