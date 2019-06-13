@@ -345,7 +345,6 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".aspx, .ascx, .master" class = "MonoDevelop.AspNet.WebForms.WebFormsEditorExtension" />
 		<Class mimeTypes="text/html,application/x-spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
-		<Class mimeTypes="text/x-cshtml" class = "MonoDevelop.AspNet.Razor.RazorCSharpEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Html/DocTypes">
