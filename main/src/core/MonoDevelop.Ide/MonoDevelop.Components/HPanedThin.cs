@@ -204,6 +204,22 @@ namespace MonoDevelop.Components
 				owner.Position = newpos >= 10 ? newpos : 10;
 			}
 		}
+
+		public override void UpdateTrackingAreas ()
+		{
+			base.UpdateTrackingAreas ();
+			// this will be called after layout changes, let's make sure that we're still the topmost view
+			EnsureViewIsTopmost ();
+		}
+
+		void EnsureViewIsTopmost ()
+		{
+			if (Superview?.Subviews?.Length > 1 && Superview.Subviews [Superview.Subviews.Length - 1] != this) {
+				var superview = Superview;
+				RemoveFromSuperview ();
+				superview.AddSubview (this, NSWindowOrderingMode.Above, null);
+			}
+		}
 	}
 
 #endif
