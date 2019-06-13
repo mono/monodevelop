@@ -80,23 +80,25 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		protected override void OnDebuggerPaused (object s, EventArgs a)
+		void ReloadValues ()
 		{
-			if (UseNewTreeView) {
-				// clone the list of expressions
-				expressions.Clear ();
-				expressions.AddRange (controller.Expressions);
+			// clone the list of expressions
+			expressions.Clear ();
+			expressions.AddRange (controller.Expressions);
 
-				// remove the expressions because we're going to rebuild them
-				controller.ClearExpressions ();
-			}
+			// remove the expressions because we're going to rebuild them
+			controller.ClearExpressions ();
 
-			base.OnDebuggerPaused (s, a);
+			// re-add the expressions which will reevaluate the expressions and repopulate the treeview
+			controller.AddExpressions (expressions);
+		}
 
-			if (UseNewTreeView) {
-				// re-add the expressions which will reevaluate the expressions and repopulate the treeview
-				controller.AddExpressions (expressions);
-			}
+		public override void OnUpdateFrame ()
+		{
+			base.OnUpdateFrame ();
+
+			if (UseNewTreeView)
+				ReloadValues ();
 		}
 
 		public override void OnUpdateValues ()
@@ -104,15 +106,7 @@ namespace MonoDevelop.Debugger
 			base.OnUpdateValues ();
 
 			if (UseNewTreeView) {
-				// clone the list of expressions
-				expressions.Clear ();
-				expressions.AddRange (controller.Expressions);
-
-				// remove the expressions because we're going to rebuild them
-				controller.ClearExpressions ();
-
-				// re-add the expressions which will reevaluate the expressions and repopulate the treeview
-				controller.AddExpressions (expressions);
+				ReloadValues ();
 			} else {
 				tree.Update ();
 			}
