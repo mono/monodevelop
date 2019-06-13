@@ -31,6 +31,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Gdk;
 using Gtk;
 
 using Mono.Debugging.Client;
@@ -51,6 +52,10 @@ namespace MonoDevelop.Debugger
 	[System.ComponentModel.ToolboxItem (true)]
 	public class GtkObjectValueTreeView : TreeView, ICompletionWidget
 	{
+		static readonly Gtk.TargetEntry [] DropTargets = {
+			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
+		};
+
 		readonly ObjectValueTreeViewController controller;
 
 		// mapping of a node to the node's location in the tree view
@@ -160,6 +165,9 @@ namespace MonoDevelop.Debugger
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
+
+			EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
+			DragDataReceived += OnDragDataReceived;
 
 			var newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
@@ -327,6 +335,26 @@ public StackFrame Frame {
 		{
 			base.OnRealized ();
 			AdjustColumnSizes ();
+		}
+
+		void OnDragDataReceived (object o, DragDataReceivedArgs args)
+		{
+			if (!controller.AllowWatchExpressions)
+				return;
+
+			var text = args.SelectionData.Text;
+
+			args.RetVal = true;
+
+			if (string.IsNullOrEmpty (text))
+				return;
+
+			foreach (var expression in text.Split (new [] { '\n' })) {
+				if (string.IsNullOrWhiteSpace (expression))
+					continue;
+
+				controller.AddExpression (expression.Trim ());
+			}
 		}
 
 		/// <summary>

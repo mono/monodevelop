@@ -37,6 +37,7 @@ namespace MonoDevelop.Debugger
 {
 	public class WatchPad : ObjectValuePad, IMementoCapable, ICustomXmlSerializer
 	{
+		// Note: This can be removed once we make the switch to UseNewTreeView
 		static readonly Gtk.TargetEntry[] DropTargets = {
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
@@ -46,7 +47,6 @@ namespace MonoDevelop.Debugger
 		{
 			if (UseNewTreeView) {
 				controller.AllowWatchExpressions = true;
-				// TODO: drag & drop
 			} else {
 				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
 				tree.DragDataReceived += HandleDragDataReceived;
@@ -54,6 +54,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		// Note: This can be removed once we make the switch to UseNewTreeView
 		void HandleDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
 		{
 			var text = args.SelectionData.Text;
