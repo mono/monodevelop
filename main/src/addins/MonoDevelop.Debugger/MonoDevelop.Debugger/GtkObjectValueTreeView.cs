@@ -80,7 +80,6 @@ namespace MonoDevelop.Debugger
 		readonly TreeStore store;
 		readonly string createMsg;
 		bool restoringState;
-		bool compact;
 		StackFrame frame;
 		bool disposed;
 
@@ -151,6 +150,10 @@ namespace MonoDevelop.Debugger
 		public GtkObjectValueTreeView (ObjectValueTreeViewController controller)
 		{
 			this.controller = controller;
+			this.controller.AllowPinningChanged += Controller_AllowPinningChanged;
+			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
+			this.controller.CompactViewChanged += Controller_CompactViewChanged;
+			this.controller.HeadersVisibleChanged += Controller_HeadersVisibleChanged;
 			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 			this.controller.NodeExpanded += Controller_NodeExpanded;
@@ -159,7 +162,7 @@ namespace MonoDevelop.Debugger
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
-			HeadersVisible = true;
+			HeadersVisible = controller.HeadersVisible;
 			EnableSearch = false;
 			AllowPopupMenu = true;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
@@ -241,7 +244,7 @@ namespace MonoDevelop.Debugger
 			pinCol.PackStart (crpLiveUpdate, false);
 			pinCol.AddAttribute (crpLiveUpdate, "image", LiveUpdateIconColumn);
 			pinCol.Resizable = false;
-			pinCol.Visible = false;
+			pinCol.Visible = controller.AllowPinning;
 			pinCol.Expand = false;
 			pinCol.Sizing = TreeViewColumnSizing.Fixed;
 			pinCol.FixedWidth = 16;
@@ -292,6 +295,10 @@ namespace MonoDevelop.Debugger
 				oldVadjustment = null;
 			}
 
+			controller.AllowPinningChanged -= Controller_AllowPinningChanged;
+			controller.PinnedWatchChanged -= Controller_PinnedWatchChanged;
+			controller.CompactViewChanged -= Controller_CompactViewChanged;
+			controller.HeadersVisibleChanged -= Controller_HeadersVisibleChanged;
 			controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
 			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
 			controller.NodeExpanded -= Controller_NodeExpanded;
@@ -327,7 +334,7 @@ public StackFrame Frame {
 		{
 			base.OnShown ();
 			AdjustColumnSizes ();
-			if (compact)
+			if (controller.CompactView)
 				RecalculateWidth ();
 		}
 
@@ -355,6 +362,56 @@ public StackFrame Frame {
 
 				controller.AddExpression (expression.Trim ());
 			}
+		}
+
+		void Controller_AllowPinningChanged (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				pinCol.Visible = controller.AllowPinning;
+			}).Ignore ();
+		}
+
+		void Controller_PinnedWatchChanged (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				if (controller.PinnedWatch == null) {
+					pinCol.FixedWidth = 16;
+				} else {
+					pinCol.FixedWidth = 38;
+				}
+			}).Ignore ();
+		}
+
+		void Controller_CompactViewChanged (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				Pango.FontDescription newFont;
+
+				if (controller.CompactView) {
+					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+					valueCol.MaxWidth = 800;
+					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12, 12);
+				} else {
+					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
+					valueCol.MaxWidth = int.MaxValue;
+				}
+
+				crtValue.Compact = controller.CompactView;
+				typeCol.Visible = !controller.CompactView;
+				crtExp.FontDesc = newFont;
+				crtValue.FontDesc = newFont;
+				crtType.FontDesc = newFont;
+				crpButton.FontDesc = newFont;
+				ResetColumnSizes ();
+				AdjustColumnSizes ();
+			}).Ignore ();
+		}
+
+		void Controller_HeadersVisibleChanged (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				HeadersVisible = controller.HeadersVisible;
+			}).Ignore ();
 		}
 
 		/// <summary>
@@ -411,7 +468,7 @@ public StackFrame Frame {
 					}
 				}
 
-				if (compact) {
+				if (controller.CompactView) {
 					RecalculateWidth ();
 				}
 			}
@@ -431,7 +488,7 @@ public StackFrame Frame {
 					ExpandRow (path, false);
 				}
 
-				if (compact)
+				if (controller.CompactView)
 					RecalculateWidth ();
 
 				// TODO: all this scrolling kind of seems awkward
@@ -507,7 +564,7 @@ public StackFrame Frame {
 				}
 			}
 
-			if (compact) {
+			if (controller.CompactView) {
 				RecalculateWidth ();
 			}
 		}
@@ -532,7 +589,6 @@ public StackFrame Frame {
 			}
 		}
 
-
 		// NOT SURE
 		public void SaveState ()
 		{
@@ -544,11 +600,6 @@ public StackFrame Frame {
 			restoringState = true;
 			state.Load ();
 			restoringState = false;
-		}
-
-		public bool AllowPinning {
-			get { return pinCol.Visible; }
-			set { pinCol.Visible = value; }
 		}
 
 		public bool RootPinAlwaysVisible { get; set; }
@@ -563,76 +614,11 @@ public StackFrame Frame {
 			get; set;
 		}
 
-		PinnedWatch pinnedWatch = null;
-		public PinnedWatch PinnedWatch {
-			get {
-				return pinnedWatch;
-			}
-			set {
-				if (pinnedWatch == value)
-					return;
-				pinnedWatch = value;
-				if (value == null) {
-					pinCol.FixedWidth = 16;
-				} else {
-					pinCol.FixedWidth = 38;
-				}
-			}
-		}
-
-		public string PinnedWatchFile { get; set; }
-		public int PinnedWatchLine { get; set; }
-
-		public bool CompactView {
-			get {
-				return compact;
-			}
-			set {
-				compact = value;
-				Pango.FontDescription newFont;
-				if (compact) {
-					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
-					valueCol.MaxWidth = 800;
-					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12, 12);
-				} else {
-					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
-					valueCol.MaxWidth = int.MaxValue;
-				}
-				crtValue.Compact = compact;
-				typeCol.Visible = !compact;
-				crtExp.FontDesc = newFont;
-				crtValue.FontDesc = newFont;
-				crtType.FontDesc = newFont;
-				crpButton.FontDesc = newFont;
-				ResetColumnSizes ();
-				AdjustColumnSizes ();
-			}
-		}
-
-		//public void AddExpression (string exp)
-		//{
-		//	expressions.Add (exp);
-		//	Refresh (false);
-		//}
-
-		//public void AddExpressions (IEnumerable<string> exps)
-		//{
-		//	expressions.AddRange (exps);
-		//	Refresh (false);
-		//}
-
-		//public void RemoveExpression (string exp)
-		//{
-		//	cachedValues.Remove (exp);
-		//	expressions.Remove (exp);
-		//	Refresh (true);
-		//}
-
 		public void AddValue (ObjectValue value)
 		{
 			values.Add (value);
 			Refresh (false);
-			if (compact)
+			if (controller.CompactView)
 				RecalculateWidth ();
 		}
 
@@ -641,7 +627,7 @@ public StackFrame Frame {
 			foreach (var val in newValues)
 				values.Add (val);
 			Refresh (false);
-			if (compact)
+			if (controller.CompactView)
 				RecalculateWidth ();
 		}
 
@@ -649,7 +635,7 @@ public StackFrame Frame {
 		{
 			values.Remove (value);
 			Refresh (true);
-			if (compact)
+			if (controller.CompactView)
 				RecalculateWidth ();
 		}
 
@@ -661,7 +647,7 @@ public StackFrame Frame {
 
 			values [idx] = @new;
 			Refresh (false);
-			if (compact)
+			if (controller.CompactView)
 				RecalculateWidth ();
 		}
 
@@ -907,14 +893,14 @@ public StackFrame Frame {
 			if (ValidObjectForPreviewIcon (it))
 				store.SetValue (it, PreviewIconColumn, "md-empty");
 
-			if (!hasParent && PinnedWatch != null) {
+			if (!hasParent && controller.PinnedWatch != null) {
 				store.SetValue (it, PinIconColumn, "md-pin-down");
-				if (PinnedWatch.LiveUpdate)
+				if (controller.PinnedWatch.LiveUpdate)
 					store.SetValue (it, LiveUpdateIconColumn, liveIcon);
 				else
 					store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
 			}
-			if (RootPinAlwaysVisible && (!hasParent && PinnedWatch == null && AllowPinning))
+			if (RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && controller.AllowPinning))
 				store.SetValue (it, PinIconColumn, "md-pin-up");
 
 			if (hasChildren) {
@@ -965,7 +951,7 @@ public StackFrame Frame {
 
 			base.OnRowCollapsed (iter, path);
 
-			if (compact)
+			if (controller.CompactView)
 				RecalculateWidth ();
 
 			// TODO: all this scrolling kind of seems awkward
@@ -1237,8 +1223,8 @@ public StackFrame Frame {
 						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
 					}
 
-					if (AllowPinning) {
-						if (path.Depth > 1 || PinnedWatch == null) {
+					if (controller.AllowPinning) {
+						if (path.Depth > 1 || controller.PinnedWatch == null) {
 							if (!it.Equals (lastPinIter)) {
 								store.SetValue (it, PinIconColumn, "md-pin-up");
 								CleanPinIcon ();
@@ -1401,7 +1387,7 @@ public StackFrame Frame {
 					if (startPreviewCaret.X < evnt.X &&
 						startPreviewCaret.X + 16 > evnt.X) {
 						clickProcessed = true;
-						if (CompactView) {
+						if (controller.CompactView) {
 							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 						} else {
 							SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
@@ -1436,16 +1422,16 @@ public StackFrame Frame {
 					} else if (cr == crpPin) {
 						clickProcessed = true;
 						TreeIter pi;
-						if (PinnedWatch != null && !store.IterParent (out pi, it))
+						if (controller.PinnedWatch != null && !store.IterParent (out pi, it))
 							RemovePinnedWatch (it);
 						else
 							CreatePinnedWatch (it);
 					} else if (cr == crpLiveUpdate) {
 						clickProcessed = true;
 						TreeIter pi;
-						if (PinnedWatch != null && !store.IterParent (out pi, it)) {
-							DebuggingService.SetLiveUpdateMode (PinnedWatch, !PinnedWatch.LiveUpdate);
-							if (PinnedWatch.LiveUpdate)
+						if (controller.PinnedWatch != null && !store.IterParent (out pi, it)) {
+							DebuggingService.SetLiveUpdateMode (controller.PinnedWatch, !controller.PinnedWatch.LiveUpdate);
+							if (controller.PinnedWatch.LiveUpdate)
 								store.SetValue (it, LiveUpdateIconColumn, liveIcon);
 							else
 								store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
@@ -1734,15 +1720,15 @@ public StackFrame Frame {
 
 			var watch = new PinnedWatch ();
 
-			if (PinnedWatch != null) {
+			if (controller.PinnedWatch != null) {
 				CollapseAll ();
-				watch.File = PinnedWatch.File;
-				watch.Line = PinnedWatch.Line;
-				watch.OffsetX = PinnedWatch.OffsetX;
-				watch.OffsetY = PinnedWatch.OffsetY + SizeRequest ().Height + 5;
+				watch.File = controller.PinnedWatch.File;
+				watch.Line = controller.PinnedWatch.Line;
+				watch.OffsetX = controller.PinnedWatch.OffsetX;
+				watch.OffsetY = controller.PinnedWatch.OffsetY + SizeRequest ().Height + 5;
 			} else {
-				watch.File = PinnedWatchFile;
-				watch.Line = PinnedWatchLine;
+				watch.File = controller.PinnedWatchFile;
+				watch.Line = controller.PinnedWatchLine;
 				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
 				watch.OffsetY = -1;
 			}
@@ -1756,7 +1742,7 @@ public StackFrame Frame {
 
 		public void RemovePinnedWatch (TreeIter it)
 		{
-			DebuggingService.PinnedWatches.Remove (PinnedWatch);
+			DebuggingService.PinnedWatches.Remove (controller.PinnedWatch);
 			if (PinStatusChanged != null)
 				PinStatusChanged (this, EventArgs.Empty);
 		}
@@ -2100,7 +2086,7 @@ public StackFrame Frame {
 										this.VisibleRect.Height);
 			if (treeViewRectangle.Contains (new Gdk.Point (
 					newCaret.X + newCaret.Width / 2,
-					newCaret.Y + newCaret.Height / 2 - (CompactView ? 0 : 30)))) {
+					newCaret.Y + newCaret.Height / 2 - (controller.CompactView ? 0 : 30)))) {
 				PreviewWindowManager.RepositionWindow (newCaret);
 			} else {
 				PreviewWindowManager.DestroyWindow ();
@@ -2126,7 +2112,7 @@ public StackFrame Frame {
 
 		void AdjustColumnSizes ()
 		{
-			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || compact)
+			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || controller.CompactView)
 				return;
 
 			columnSizesUpdating = true;
@@ -2158,7 +2144,7 @@ public StackFrame Frame {
 
 		void StoreColumnSizes ()
 		{
-			if (!IsRealized || !Visible || !columnsAdjusted || compact)
+			if (!IsRealized || !Visible || !columnsAdjusted || controller.CompactView)
 				return;
 
 			double width = (double)Allocation.Width;
@@ -2326,7 +2312,7 @@ public StackFrame Frame {
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
-						if (((GtkObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
+						if (((GtkObjectValueTreeView)widget).controller.CompactView && !Platform.IsWindows)
 							YOffset += 1;
 						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
 						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,

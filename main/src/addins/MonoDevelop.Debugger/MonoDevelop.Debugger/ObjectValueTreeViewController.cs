@@ -51,8 +51,12 @@ namespace MonoDevelop.Debugger
 	{
 		public const int MaxEnumerableChildrenToFetch = 20;
 		IDebuggerService debuggerService;
+		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
+		bool headersVisible = true;
 		bool allowEditing;
+		bool allowPinning;
+		bool compactView;
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
@@ -128,6 +132,83 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
+
+		#region Pinned Watches
+
+		public event EventHandler AllowPinningChanged;
+
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to pin the value to the text editor.
+		/// </summary>
+		public bool AllowPinning {
+			get { return allowPinning; }
+			set {
+				if (allowPinning == value)
+					return;
+
+				allowPinning = value;
+
+				AllowPinningChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
+		public event EventHandler PinnedWatchChanged;
+
+		public PinnedWatch PinnedWatch {
+			get { return pinnedWatch; }
+			set {
+				if (pinnedWatch == value)
+					return;
+
+				pinnedWatch = value;
+
+				PinnedWatchChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
+		public string PinnedWatchFile { get; set; }
+		public int PinnedWatchLine { get; set; }
+
+		#endregion
+
+		#region CompactView
+
+		public event EventHandler CompactViewChanged;
+
+		/// <summary>
+		/// Gets a value indicating whether or not the TreeView should compact the view.
+		/// </summary>
+		public bool CompactView {
+			get { return compactView; }
+			set {
+				if (compactView == value)
+					return;
+
+				compactView = value;
+
+				CompactViewChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
+		#endregion
+
+		#region HeadersVisible
+
+		public event EventHandler HeadersVisibleChanged;
+
+		public bool HeadersVisible {
+			get { return headersVisible; }
+			set {
+				if (headersVisible == value)
+					return;
+
+				headersVisible = value;
+
+				HeadersVisibleChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
+		#endregion
 
 		public bool CanQueryDebugger {
 			get {
