@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		private void OnAnalyzerLoadError (object sender, AnalyzerLoadFailureEventArgs e)
 		{
-			var data = AnalyzerHelper.CreateAnalyzerLoadFailureDiagnostic (_workspace, _projectId, _language, FullPath, e);
+			var data = AnalyzerHelper.CreateAnalyzerLoadFailureDiagnostic (_projectId, _language, FullPath, e);
 
 			lock (_gate) {
 				_analyzerLoadErrors = _analyzerLoadErrors.Add (data);
