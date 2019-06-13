@@ -1319,23 +1319,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var guiDoc = documentManager.Documents.FirstOrDefault (d => d.IsFile && d.Name == document.Name);
-
-			// This method can be called by Roslyn or the editor in a context which is not the GTK UI context
-			// that MonoDevelop uses. In that case, before starting async an operation that may queue
-			// task continuations into the current context, we switch to the GTK context, so that
-			// whatever is queued will be dispatched when we run RunPendingEvents.
-			// See: https://github.com/mono/monodevelop/pull/7823
-			var oldContext = SynchronizationContext.Current;
-			try {
-				SynchronizationContext.SetSynchronizationContext (Runtime.MainSynchronizationContext);
-				Task task = guiDoc.IsDirty ? guiDoc.Save () : null;
-				// Can't wait for the task to finish synchronously since doing so would deadlock the UI thread.
-				while (task != null && !task.IsCompleted) {
-					DispatchService.RunPendingEvents (30);
-				}
-			} finally {
-				SynchronizationContext.SetSynchronizationContext (oldContext);
-			}
+			DispatchService.PumpingWait (() => guiDoc.IsDirty ? guiDoc.Save () : null);
 
 			// TODO: the Visual Studio Windows implementation of this also adds an undo unit to the
 			// global undo manager which we don't currently support.
@@ -1345,9 +1329,45 @@ namespace MonoDevelop.Ide.TypeSystem
 				Path.GetExtension (info.Name),
 				nx => !mdProject.Files.Any (p => string.Equals(p.Name, nx, FilePath.PathComparison)));
 
+			var mdFile = mdProject.GetProjectFile (document.Name);
+
 			FileService.RenameFile (guiDoc.FilePath, newName);
+
+			var childrenToRename = GetDependentFilesToRename (mdFile, newName);
+			if (childrenToRename != null) {
+				// we also need to rename children!
+				foreach (var child in childrenToRename) {
+					FileService.RenameFile (child.File.FilePath, child.NewName);
+				}
+			}
+
+			DispatchService.PumpingWait (() => mdProject.SaveAsync (new ProgressMonitor ()));
+
+			base.ApplyDocumentInfoChanged (id, info);
 		}
 
+		static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (
+			MonoDevelop.Projects.ProjectFile file,
+			string newName)
+		{
+			if (!file.HasChildren)
+				return null;
+
+			List<(MonoDevelop.Projects.ProjectFile File, string NewName)> files = null;
+
+			string oldName = file.FilePath.FileName;
+			foreach (MonoDevelop.Projects.ProjectFile child in file.DependentChildren) {
+				string oldChildName = child.FilePath.FileName;
+				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
+					string childNewName = newName + oldChildName.Substring (oldName.Length);
+
+					if (files == null)
+						files = new List<(MonoDevelop.Projects.ProjectFile projectFile, string name)> ();
+					files.Add ((child, childNewName));
+				}
+			}
+			return files;
+		}
 
 		void FailIfDocumentInfoChangesNotSupported (Document document, DocumentInfo updatedInfo)
 		{
