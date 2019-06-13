@@ -115,6 +115,7 @@ namespace MonoDevelop.UserInterfaceTesting
 
 		public void PreStart ()
 		{
+			UnitTests.Util.ClearTmpDir ();
 			SetupTestResultFolder ();
 			SetupTestLogger ();
 			SetupScreenshotsFolder ();
