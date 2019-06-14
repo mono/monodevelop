@@ -331,7 +331,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		sealed class ProviderSearchResult : SearchResult
 		{
-			SearchCategory searchCategory;
+			readonly SearchCategory searchCategory;
 			public override bool CanActivate {
 				get {
 					return false;
