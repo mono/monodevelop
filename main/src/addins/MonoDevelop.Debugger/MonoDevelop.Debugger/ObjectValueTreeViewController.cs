@@ -44,6 +44,14 @@ namespace MonoDevelop.Debugger
 	 *
 	 * - Expressions should perhaps have their own IObjectValueNode type.
 	 *
+	 * - watchpad. add an object that has children, expand it, add it again
+	 *		=> the tree is refreshed, and expanded but says "loading"
+	 *		   if we remove our optimisation to not fetch children again if all loaded by returning the childcount
+	 *				then collapsing and expanding the node reloads the tree
+	 *				part of the issue is that loading and saving "state" messes up with whether we think the node is
+	 *				expanded or not.
+	 *
+	 *
 	 */
 
 
@@ -609,7 +617,7 @@ namespace MonoDevelop.Debugger
 		async Task<int> FetchChildrenAsync (IObjectValueNode node, int count, CancellationToken cancellationToken)
 		{
 			if (node.ChildrenLoaded) {
-				return 0;
+				return node.Children.Count;
 			}
 
 			try {
