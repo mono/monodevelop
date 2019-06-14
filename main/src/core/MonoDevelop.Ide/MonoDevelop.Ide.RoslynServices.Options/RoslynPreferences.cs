@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			public readonly ConfigurationProperty<bool> FormatOnPaste;
 			public readonly ConfigurationProperty<bool> PlaceSystemNamespaceFirst;
 			public readonly ConfigurationProperty<bool> SeparateImportDirectiveGroups;
+			public readonly ConfigurationProperty<bool?> ShowItemsFromUnimportedNamespaces;
 			public readonly ConfigurationProperty<bool> SuggestForTypesInNuGetPackages;
 			public readonly ConfigurationProperty<bool> SolutionCrawlerClosedFileDiagnostic;
 
@@ -112,6 +113,12 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				SeparateImportDirectiveGroups = preferences.Wrap<bool> (
 					new OptionKey (Microsoft.CodeAnalysis.Editing.GenerationOptions.SeparateImportDirectiveGroups, language),
 					language + ".SeparateImportDirectiveGroups"
+				);
+
+				ShowItemsFromUnimportedNamespaces = preferences.Wrap<bool?> (
+					new OptionKey (CompletionOptions.ShowItemsFromUnimportedNamespaces, language),
+					IdeApp.Preferences.AddImportedItemsToCompletionList.Value,
+					language + ".ShowItemsFromUnimportedNamespaces"
 				);
 
 				SuggestForTypesInNuGetPackages = preferences.Wrap (
