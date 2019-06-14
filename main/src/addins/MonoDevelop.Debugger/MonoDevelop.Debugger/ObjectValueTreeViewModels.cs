@@ -552,6 +552,8 @@ namespace MonoDevelop.Debugger
 	public interface IStackFrame
 	{
 		EvaluationOptions CloneSessionEvaluationOpions ();
+		IObjectValueNode EvaluateExpression (string expression);
+		IObjectValueNode [] EvaluateExpressions (IList<string> expressions);
 	}
 
 	sealed class ProxyDebuggerService : IDebuggerService
@@ -598,6 +600,8 @@ namespace MonoDevelop.Debugger
 
 	sealed class ProxyStackFrame : IStackFrame
 	{
+		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
+
 		public ProxyStackFrame (StackFrame frame)
 		{
 			StackFrame = frame;
@@ -611,6 +615,57 @@ namespace MonoDevelop.Debugger
 		{
 			return StackFrame.DebuggerSession.Options.EvaluationOptions.Clone ();
 		}
+
+		public IObjectValueNode EvaluateExpression (string expression)
+		{
+			ObjectValue value;
+			if (cachedValues.TryGetValue (expression, out value))
+				return new ObjectValueNode(value);
+
+			if (StackFrame != null)
+				value = StackFrame.GetExpressionValue (expression, true);
+			else
+				value = ObjectValue.CreateUnknown (expression);
+
+			cachedValues [expression] = value;
+
+			return new ObjectValueNode (value);
+		}
+
+		public IObjectValueNode [] EvaluateExpressions (IList<string> expressions)
+		{
+			var values = new ObjectValue [expressions.Count];
+			var unknown = new List<string> ();
+
+			for (int i = 0; i < expressions.Count; i++) {
+				if (!cachedValues.TryGetValue (expressions [i], out ObjectValue value))
+					unknown.Add (expressions [i]);
+				else
+					values [i] = value;
+			}
+
+			ObjectValue [] qvalues;
+
+			if (StackFrame != null) {
+				qvalues = StackFrame.GetExpressionValues (unknown.ToArray (), true);
+			} else {
+				qvalues = new ObjectValue [unknown.Count];
+				for (int i = 0; i < qvalues.Length; i++)
+					qvalues [i] = ObjectValue.CreateUnknown (unknown [i]);
+			}
+
+			for (int i = 0, v = 0; i < values.Length; i++) {
+				if (values [i] == null) {
+					var value = qvalues [v++];
+
+					cachedValues [expressions [i]] = value;
+					values [i] = value;
+				}
+			}
+
+			return values.Select(v => new ObjectValueNode(v)).ToArray();
+		}
+
 	}
 	#endregion
 

@@ -84,11 +84,11 @@ namespace MonoDevelop.Debugger
 		void ReloadValues ()
 		{
 			// clone the list of expressions
-			expressions.Clear ();
-			expressions.AddRange (controller.Expressions);
+//			expressions.Clear ();
+//			expressions.AddRange (controller.GetExpressions());
 
 			// remove the expressions because we're going to rebuild them
-			controller.ClearExpressions ();
+			controller.ClearAll ();
 
 			// re-add the expressions which will reevaluate the expressions and repopulate the treeview
 			controller.AddExpressions (expressions);
@@ -113,6 +113,19 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		protected override void OnDebuggerResumed (object s, EventArgs a)
+		{
+			// base will clear the controller, which removes all values and expressions
+
+			if (UseNewTreeView) {
+				expressions.Clear ();
+				expressions.AddRange (controller.GetExpressions ());
+
+			}
+
+			base.OnDebuggerResumed (s, a);
+		}
+
 		#region IMementoCapable implementation 
 
 		public ICustomXmlSerializer Memento {
@@ -122,7 +135,7 @@ namespace MonoDevelop.Debugger
 			set {
 				if (UseNewTreeView) {
 					if (controller != null) {
-						controller.ClearExpressions ();
+						controller.ClearAll ();
 						controller.AddExpressions (expressions);
 					}
 				} else {
@@ -139,7 +152,7 @@ namespace MonoDevelop.Debugger
 			if (UseNewTreeView) {
 				if (controller != null) {
 					writer.WriteStartElement ("Values");
-					foreach (var expression in controller.Expressions)
+					foreach (var expression in controller.GetExpressions())
 						writer.WriteElementString ("Value", expression);
 					writer.WriteEndElement ();
 				}

@@ -75,16 +75,6 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
 
-		/// <summary>
-		/// Holds a dictionary of expressions and their values.
-		/// </summary>
-		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
-
-		/// <summary>
-		/// Holds a list of watch expressions.
-		/// </summary>
-		readonly List<string> expressions = new List<string> ();
-
 		public ObjectValueTreeViewController ()
 		{
 		}
@@ -216,10 +206,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public IReadOnlyList<string> Expressions {
-			get { return expressions; }
-		}
-
 		public event EventHandler<ChildrenChangedEventArgs> ChildrenLoaded;
 
 		/// <summary>
@@ -245,8 +231,6 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearValues ()
 		{
-			cachedValues.Clear ();
-
 			Root = OnCreateRoot ();
 
 			OnChildrenLoaded (Root, 0, Root.Children.Count);
@@ -285,6 +269,14 @@ namespace MonoDevelop.Debugger
 			}
 
 			OnChildrenLoaded (Root, 0, Root.Children.Count);
+		}
+
+		public bool RemoveValue (IObjectValueNode node)
+		{
+			UnregisterNode (node);
+			OnEvaluationCompleted (node, new IObjectValueNode [0]);
+
+			return true;
 		}
 
 		/// <summary>
@@ -365,67 +357,13 @@ namespace MonoDevelop.Debugger
 
 		#region Expressions
 
-		ObjectValue GetExpressionValue (string expression)
-		{
-			var frame = (Frame as ProxyStackFrame)?.StackFrame;
-
-			if (cachedValues.TryGetValue (expression, out ObjectValue value))
-				return value;
-
-			if (frame != null)
-				value = frame.GetExpressionValue (expression, true);
-			else
-				value = ObjectValue.CreateUnknown (expression);
-
-			cachedValues[expression] = value;
-
-			return value;
-		}
-
-		ObjectValue[] GetExpressionValues (IList<string> items)
-		{
-			var frame = (Frame as ProxyStackFrame)?.StackFrame;
-			var values = new ObjectValue[items.Count];
-			var unknown = new List<string> ();
-
-			for (int i = 0; i < items.Count; i++) {
-				if (!cachedValues.TryGetValue (items[i], out ObjectValue value))
-					unknown.Add (items[i]);
-				else
-					values[i] = value;
-			}
-
-			ObjectValue[] qvalues;
-
-			if (frame != null) {
-				qvalues = frame.GetExpressionValues (unknown.ToArray (), true);
-			} else {
-				qvalues = new ObjectValue[unknown.Count];
-				for (int i = 0; i < qvalues.Length; i++)
-					qvalues[i] = ObjectValue.CreateUnknown (unknown[i]);
-			}
-
-			for (int i = 0, v = 0; i < values.Length; i++) {
-				if (values[i] == null) {
-					var value = qvalues[v++];
-
-					cachedValues[items[i]] = value;
-					values[i] = value;
-				}
-			}
-
-			return values;
-		}
-
 		public void AddExpression (string expression)
 		{
 			if (!AllowWatchExpressions)
 				return;
 
-			var value = GetExpressionValue (expression);
-
-			expressions.Add (expression);
-			AddValue (new ObjectValueNode (value));
+			var node = Frame.EvaluateExpression (expression);
+			AddValue (node);
 		}
 
 		public void AddExpressions (IList<string> expressions)
@@ -433,82 +371,28 @@ namespace MonoDevelop.Debugger
 			if (!AllowWatchExpressions)
 				return;
 
-			var values = new List<ObjectValueNode> ();
-
-			foreach (var value in GetExpressionValues (expressions))
-				values.Add (new ObjectValueNode (value));
-
-			this.expressions.AddRange (expressions);
-			AddValues (values);
+			var nodes = Frame.EvaluateExpressions (expressions);
+			AddValues (nodes);
 		}
 
-		public void ClearExpressions ()
+		public bool EditExpression(IObjectValueNode node, string newExpression)
 		{
-			if (!AllowWatchExpressions)
-				return;
-
-			expressions.Clear ();
-			ClearAll ();
-		}
-
-		public bool RemoveExpression (string expression)
-		{
-			if (!AllowWatchExpressions)
+			if (node.Name == newExpression)
 				return false;
 
-			int index = expressions.IndexOf (expression);
-
-			if (index == -1)
-				return false;
-
-			cachedValues.Remove (expression);
-			expressions.RemoveAt (index);
-
-			var root = (RootObjectValueNode) Root;
-			var node = root.Children[index];
-			root.RemoveValueAt (index);
 			UnregisterNode (node);
+			if (string.IsNullOrEmpty(newExpression)) {
+				// we want the expression removed from the tree
+				OnEvaluationCompleted (node, new IObjectValueNode [0]);
+				return true;
+			}
+
+			var expressionNode = Frame.EvaluateExpression(newExpression);
+			RegisterNode (expressionNode);
+			OnEvaluationCompleted (node, new IObjectValueNode [1] { expressionNode });
 
 			return true;
 		}
-
-		public void RemoveExpressionAt (int index)
-		{
-			if (!AllowWatchExpressions)
-				return;
-
-			var expression = expressions[index];
-			cachedValues.Remove (expression);
-			expressions.RemoveAt (index);
-
-			var root = (RootObjectValueNode) Root;
-			var node = root.Children[index];
-			root.RemoveValueAt (index);
-			UnregisterNode (node);
-		}
-
-		public IObjectValueNode ReplaceExpressionAt (int index, string newExpression)
-		{
-			if (!AllowWatchExpressions)
-				return null;
-
-			var oldExpression = expressions[index];
-			cachedValues.Remove (oldExpression);
-
-			var value = GetExpressionValue (newExpression);
-			expressions[index] = newExpression;
-
-			var root = (RootObjectValueNode) Root;
-			var node = root.Children[index];
-			UnregisterNode (node);
-
-			node = new ObjectValueNode (value);
-			root.ReplaceValueAt (index, node);
-			RegisterNode (node);
-
-			return node;
-		}
-
 		#endregion
 
 		#region Editing
@@ -875,13 +759,6 @@ namespace MonoDevelop.Debugger
 							RegisterNode (newNode);
 						}
 
-						// `node` returns us a set of new nodes that need to be replaced into the children
-						// of node.parent. This should only be applicable to direct children of the root since
-						// this construct is to support placehold values for "locals" etc
-						if (node.Parent is ISupportChildObjectValueNodeReplacement replacerParent) {
-							replacerParent.ReplaceChildNode (node, replacementNodes);
-						}
-
 						// TODO: we could improve how we notify this and pass child indexes as well
 						OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
 					} else {
@@ -900,6 +777,13 @@ namespace MonoDevelop.Debugger
 
 		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode [] replacementNodes)
 		{
+			// `node` returns us a set of new nodes that need to be replaced into the children
+			// of node.parent. This should only be applicable to direct children of the root since
+			// this construct is to support placehold values for "locals" etc
+			if (node.Parent is ISupportChildObjectValueNodeReplacement replacerParent) {
+				replacerParent.ReplaceChildNode (node, replacementNodes);
+			}
+
 			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, replacementNodes));
 		}
 
@@ -938,12 +822,21 @@ namespace MonoDevelop.Debugger
 			return (controller.Frame as ProxyStackFrame)?.StackFrame;
 		}
 
-
 		public static void AddValues (this ObjectValueTreeViewController controller, IEnumerable<ObjectValue> values)
 		{
 			controller.AddValues (values.Select (value => new ObjectValueNode (value)));
 		}
 
+		public static string[] GetExpressions(this ObjectValueTreeViewController controller)
+		{
+			// given that expressions are only supported by themselves (ie not mixed with locals for example)
+			// and they are all children of the root, we can mimic a list of expressions by just grabbing the
+			// name property of the root children
+			if (controller.Root == null)
+				return new string [0];
+
+			return controller.Root.Children.Select (c => c.Name).ToArray ();
+		}
 	}
 
 	public static class ObjectValueNodeExtensions

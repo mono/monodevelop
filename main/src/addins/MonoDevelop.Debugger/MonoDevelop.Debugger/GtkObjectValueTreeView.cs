@@ -789,7 +789,13 @@ public StackFrame Frame {
 		void SetValues (TreeIter parent, TreeIter it, string name, IObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path
-			allNodes[val] = new TreeRowReference (store, store.GetPath (it));
+
+			// TODO: test if the link to the node we have is the same as the link we want to set or remove the invalid link
+			//if (allNodes.TryGetValue (val, out TreeRowReference row)) {
+			//	allNodes.Remove (val);
+			//	row.Dispose ();
+			//}
+			allNodes [val] = new TreeRowReference (store, store.GetPath (it));
 
 
 			string strval;
@@ -995,35 +1001,7 @@ public StackFrame Frame {
 				if (args.NewText.Length > 0)
 					controller.AddExpression (args.NewText);
 			} else {
-				var expression = (string) store.GetValue (iter, NameColumn);
-				if (args.NewText == expression)
-					return;
-
-				int index = controller.Expressions.IndexOf (expression);
-				if (index == -1)
-					return;
-
-				if (args.NewText.Length != 0) {
-					if (allNodes.TryGetValue (node, out TreeRowReference row)) {
-						allNodes.Remove (node);
-						row.Dispose ();
-					}
-
-					node = controller.ReplaceExpressionAt (index, args.NewText);
-
-					if (!store.IterParent (out TreeIter parent, iter))
-						parent = TreeIter.Zero;
-
-					RemoveChildren (iter);
-
-					SetValues (parent, iter, args.NewText, node);
-				} else {
-					controller.RemoveExpressionAt (index);
-					Remove (ref iter);
-				}
-
-				//cachedValues.Remove (expression);
-				//Refresh (true);
+				controller.EditExpression (node, args.NewText);
 			}
 		}
 
@@ -1318,18 +1296,22 @@ public StackFrame Frame {
 					if (!Model.GetIter (out iter, path))
 						continue;
 
-					val = GetDebuggerObjectValueAtIter (iter);
-					expression = GetFullExpression (iter);
-
-					// FIXME: expressions use ObjectValues now, so this logic probably needs to change...
-
-					// Lookup and remove
-					if (val != null && values.Contains (val)) {
-						RemoveValue (val);
+					var node = GetNodeAtIter (iter);
+					if (controller.RemoveValue (node))
 						changed = true;
-					} else if (!string.IsNullOrEmpty (expression) && controller.RemoveExpression (expression)) {
-						changed = true;
-					}
+
+					//val = GetDebuggerObjectValueAtIter (iter);
+					//expression = GetFullExpression (iter);
+
+					//// FIXME: expressions use ObjectValues now, so this logic probably needs to change...
+
+					//// Lookup and remove
+					//if (val != null && values.Contains (val)) {
+					//	RemoveValue (val);
+					//	changed = true;
+					//} else if (!string.IsNullOrEmpty (expression) && controller.RemoveExpression (expression)) {
+					//	changed = true;
+					//}
 				}
 				break;
 			}
@@ -1555,15 +1537,18 @@ public StackFrame Frame {
 		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDelete ()
 		{
+			// TODO: remove all nodes at once
+			var nodesToDelete = new List<IObjectValueNode> ();
 			foreach (var path in Selection.GetSelectedRows ()) {
 				if (!store.GetIter (out TreeIter iter, path))
 					continue;
 
-				var expression = (string) store.GetValue (iter, NameColumn);
-
-				if (controller.RemoveExpression (expression))
-					Remove (ref iter);
+				var node = GetNodeAtIter (iter);
+				nodesToDelete.Add (node);
 			}
+
+			foreach (var node in nodesToDelete) 
+				controller.RemoveValue (node);
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
