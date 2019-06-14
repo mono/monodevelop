@@ -683,11 +683,6 @@ public StackFrame Frame {
 
 		void Refresh (bool resetScrollPosition)
 		{
-			// TODO: controller.clear or unregister evaluation watches
-			//foreach (var val in new List<ObjectValue> (nodes.Keys))
-			//	UnregisterValue (val);
-			//nodes.Clear ();
-
 			// Note: this is a hack that ideally we could get rid of...
 			if (IsRealized && resetScrollPosition)
 				ScrollToPoint (0, 0);
@@ -699,31 +694,11 @@ public StackFrame Frame {
 
 			bool showExpanders = controller.AllowWatchExpressions;
 
-			/*
-			foreach (var val in values) {
-				AppendValue (TreeIter.Zero, null, val);
-				if (val.HasChildren)
-					showExpanders = true;
-			}
-			*/
 			if (controller.Root != null) {
-				foreach (var val in controller.Root.Children) {
-					// append value calls setvalues which adds a dummy row for new children.
-					AppendNodeToTreeModel (TreeIter.Zero, null, val);
-					if (val.HasChildren)
-						showExpanders = true;
+				if (LoadNode (controller.Root, TreeIter.Zero)) {
+					showExpanders = true;
 				}
 			}
-
-			// these are expressions
-			//if (expressions.Count > 0) {
-			//	ObjectValue [] expValues = GetValues (expressions.ToArray ());
-			//	for (int n = 0; n < expValues.Length; n++) {
-			//		// TODO: AppendValue (TreeIter.Zero, expressions[n], expValues [n]);
-			//		if (expValues [n].HasChildren)
-			//			showExpanders = true;
-			//	}
-			//}
 
 			if (showExpanders)
 				ShowExpanders = true;
@@ -732,6 +707,30 @@ public StackFrame Frame {
 				store.AppendValues (createMsg, "", "", true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
 
 			LoadState ();
+		}
+
+		bool LoadNode(IObjectValueNode node, TreeIter parent)
+		{
+			var result = false;
+			foreach (var val in node.Children) {
+				// append value calls setvalues which adds a dummy row for new and unloaded children.
+				var iter = AppendNodeToTreeModel (parent, null, val);
+				if (val.HasChildren) {
+					result = true;
+					if (val.ChildrenLoaded || val.Children.Count > 0) {
+						// if any children for the node have already been loaded then add
+						// these to the tree immediately instead of adding a dummy loading node
+						LoadNode (val, iter);
+
+						// make sure the load more button is enabled for enumerable nodes that are not fully loaded
+						if (!val.ChildrenLoaded) {
+							AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
+						}
+					}
+				}
+			}
+
+			return result;
 		}
 
 		public void Refresh ()
@@ -773,7 +772,7 @@ public StackFrame Frame {
 			store.SetValue (iter, ValueButtonTextColumn, string.Empty);
 		}
 
-		void AppendNodeToTreeModel (TreeIter parent, string name, IObjectValueNode valueNode)
+		TreeIter AppendNodeToTreeModel (TreeIter parent, string name, IObjectValueNode valueNode)
 		{
 			TreeIter iter;
 
@@ -783,6 +782,7 @@ public StackFrame Frame {
 				iter = store.AppendNode (parent);
 
 			SetValues (parent, iter, name, valueNode);
+			return iter;
 		}
 
 		// TODO: refactor this so that we can update a node without needing to know the parent iter all the time
@@ -850,13 +850,6 @@ public StackFrame Frame {
 					name = val.Name;
 				}
 			} else if (val.IsEnumerable) {
-				if (val.Name == "") {
-					valueButton = GettextCatalog.GetString ("Show More");
-				} else {
-					valueButton = GettextCatalog.GetString ("Show Values");
-				}
-				strval = "";
-			} else if (val.IsEnumerable) {
 				if (val is ShowMoreValuesObjectValueNode) {
 					valueButton = GettextCatalog.GetString ("Show More");
 				} else {
@@ -878,7 +871,6 @@ public StackFrame Frame {
 				return;
 
 			bool canEdit = controller.CanEditObject (val);
-			bool hasChildren = val.HasChildren;
 			string icon = ObjectValueTreeView.GetIcon (val.Flags);
 
 			store.SetValue (it, NameColumn, name);
@@ -909,8 +901,9 @@ public StackFrame Frame {
 			if (RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && controller.AllowPinning))
 				store.SetValue (it, PinIconColumn, "md-pin-up");
 
-			if (hasChildren) {
-				// Add dummy node, we need this or the expander isn't shown
+			if (val.HasChildren && val.Children.Count == 0) {
+				// Add dummy node, we need this or the expander isn't shown, but only if the children are not
+				// already loaded
 				store.AppendValues (it, GettextCatalog.GetString ("Loading\u2026"), "", "", false);
 				if (!ShowExpanders) {
 					ShowExpanders = true;
