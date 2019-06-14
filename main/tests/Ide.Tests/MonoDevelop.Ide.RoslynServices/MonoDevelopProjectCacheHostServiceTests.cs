@@ -33,7 +33,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host;
 using NUnit.Framework;
 using UnitTests;
-
 namespace MonoDevelop.Ide.RoslynServices
 {
 	[TestFixture]
@@ -48,7 +47,6 @@ namespace MonoDevelop.Ide.RoslynServices
 				// Avoid tail calls
 				int* values = stackalloc int [20];
 				aptr = new IntPtr (values);
-
 				if (depth <= 0) {
 					//
 					// When the action is called, this new thread might have not allocated
@@ -74,80 +72,111 @@ namespace MonoDevelop.Ide.RoslynServices
 			}
 		}
 
-		// Copied tests from roslyn
-		void Test (Action<IProjectCacheHostService, ProjectId, ICachedObjectOwner, ObjectReference<object>> action)
+		void InitTestArgs (out IProjectCacheHostService cacheService, out ProjectId projectId, out ICachedObjectOwner owner, out ObjectReference<object> instance)
 		{
-			// Putting cacheService.CreateStrongReference in a using statement
-			// creates a temporary local that isn't collected in Debug builds
-			// Wrapping it in a lambda allows it to get collected.
-			var cacheService = new ProjectCacheService (null, int.MaxValue);
-			var projectId = ProjectId.CreateNewId ();
-			var owner = new Owner ();
-			var instance = ObjectReference.CreateFromFactory (() => new object ());
-
-			action (cacheService, projectId, owner, instance);
+			cacheService = new ProjectCacheService (null, int.MaxValue);
+			projectId = ProjectId.CreateNewId ();
+			owner = new Owner ();
+			instance = ObjectReference.CreateFromFactory (() => new object ());
 		}
 
 		[Test]
-		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestCacheKeepsObjectAlive1 ()
 		{
-			Test ((cacheService, projectId, owner, instance) => {
+			IProjectCacheHostService cacheService = null;
+			ProjectId projectId = null;
+			ICachedObjectOwner owner = null;
+			ObjectReference<object> instance = null;
+
+			FinalizerHelpers.PerformNoPinAction (() => {
+				InitTestArgs (out cacheService, out projectId, out owner, out instance);
 				using (cacheService.EnableCaching (projectId)) {
 					instance.UseReference (i => cacheService.CacheObjectIfCachingEnabledForKey (projectId, (object)owner, i));
-
-					instance.AssertHeld ();
+					instance.Release ();
+					GC.Collect ();
+					GC.WaitForPendingFinalizers ();
+					instance.AssertAlive ();
 				}
-
-				instance.AssertReleased ();
-
-				GC.KeepAlive (owner);
 			});
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
+
+			instance.AssertDead ();
+			GC.KeepAlive (owner);
 		}
 
 		[Test]
-		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestCacheKeepsObjectAlive2 ()
 		{
-			Test ((cacheService, projectId, owner, instance) => {
+			IProjectCacheHostService cacheService = null;
+			ProjectId projectId = null;
+			ICachedObjectOwner owner = null;
+			ObjectReference<object> instance = null;
+
+			FinalizerHelpers.PerformNoPinAction (() => {
+				InitTestArgs (out cacheService, out projectId, out owner, out instance);
 				using (cacheService.EnableCaching (projectId)) {
 					instance.UseReference (i => cacheService.CacheObjectIfCachingEnabledForKey (projectId, owner, i));
-
-					instance.AssertHeld ();
+					instance.Release ();
+					GC.Collect ();
+					GC.WaitForPendingFinalizers ();
+					instance.AssertAlive ();
 				}
-
-				instance.AssertReleased ();
-
-				GC.KeepAlive (owner);
 			});
+
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
+
+			instance.AssertDead ();
+			GC.KeepAlive (owner);
 		}
 
 		[Test]
-		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestCacheDoesNotKeepObjectsAliveAfterOwnerIsCollected1 ()
 		{
-			Test ((cacheService, projectId, owner, instance) => {
-				using (cacheService.EnableCaching (projectId)) {
+			IProjectCacheHostService cacheService;
+			ProjectId projectId;
+			ICachedObjectOwner owner;
+			ObjectReference<object> instance;
+
+			InitTestArgs (out cacheService, out projectId, out owner, out instance);
+			using (cacheService.EnableCaching (projectId)) {
+				FinalizerHelpers.PerformNoPinAction (() => {
+					// If we want to be sure that owner dies, we need to allocate it here
+					owner = new Owner ();
 					cacheService.CacheObjectIfCachingEnabledForKey (projectId, (object)owner, instance);
 					owner = null;
+					instance.Release ();
+				});
+				GC.Collect ();
+				GC.WaitForPendingFinalizers ();
 
-					instance.AssertReleased ();
-				}
-			});
+				instance.AssertDead ();
+			}
 		}
 
 		[Test]
-		[Ignore ("Disabled for now")]
 		public void TestCacheDoesNotKeepObjectsAliveAfterOwnerIsCollected2 ()
 		{
-			Test ((cacheService, projectId, owner, instance) => {
-				using (cacheService.EnableCaching (projectId)) {
+			IProjectCacheHostService cacheService;
+			ProjectId projectId;
+			ICachedObjectOwner owner;
+			ObjectReference<object> instance;
+
+			InitTestArgs (out cacheService, out projectId, out owner, out instance);
+			using (cacheService.EnableCaching (projectId)) {
+				FinalizerHelpers.PerformNoPinAction (() => {
+					// If we want to be sure that owner dies, we need to allocate it here
+					owner = new Owner ();
 					cacheService.CacheObjectIfCachingEnabledForKey (projectId, owner, instance);
 					owner = null;
+					instance.Release ();
+				});
+				GC.Collect ();
+				GC.WaitForPendingFinalizers ();
 
-					instance.AssertReleased ();
-				}
-			});
+				instance.AssertDead ();
+			}
 		}
 
 		[Test]
@@ -157,8 +186,12 @@ namespace MonoDevelop.Ide.RoslynServices
 			var cacheService = new ProjectCacheService (workspace, int.MaxValue);
 			var reference = ObjectReference.CreateFromFactory (() => new object ());
 			reference.UseReference (r => cacheService.CacheObjectIfCachingEnabledForKey (ProjectId.CreateNewId (), (object)null, r));
-			reference.AssertHeld ();
+			reference.Release ();
 
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
+
+			reference.AssertAlive ();
 			GC.KeepAlive (cacheService);
 		}
 
@@ -172,7 +205,6 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
-		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestP2PReference ()
 		{
 			var workspace = new AdhocWorkspace ();
@@ -180,26 +212,27 @@ namespace MonoDevelop.Ide.RoslynServices
 			var project1 = ProjectInfo.Create (ProjectId.CreateNewId (), VersionStamp.Default, "proj1", "proj1", LanguageNames.CSharp);
 			var project2 = ProjectInfo.Create (ProjectId.CreateNewId (), VersionStamp.Default, "proj2", "proj2", LanguageNames.CSharp, projectReferences: new List<ProjectReference> { new ProjectReference (project1.Id) });
 			var solutionInfo = SolutionInfo.Create (SolutionId.CreateNewId (), VersionStamp.Default, projects: new ProjectInfo [] { project1, project2 });
-
-			var solution = workspace.AddSolution (solutionInfo);
-
 			var instanceTracker = ObjectReference.CreateFromFactory (() => new object ());
-
 			var cacheService = new ProjectCacheService (workspace, int.MaxValue);
-			using (var cache = cacheService.EnableCaching (project2.Id)) {
-				instanceTracker.UseReference (r => cacheService.CacheObjectIfCachingEnabledForKey (project1.Id, (object)null, r));
-				solution = null;
+			FinalizerHelpers.PerformNoPinAction (() => {
+				using (var cache = cacheService.EnableCaching (project2.Id)) {
+					var solution = workspace.AddSolution (solutionInfo);
+					instanceTracker.UseReference (r => cacheService.CacheObjectIfCachingEnabledForKey (project1.Id, (object)null, r));
+					solution = null;
+					workspace.OnProjectRemoved (project1.Id);
+					workspace.OnProjectRemoved (project2.Id);
+					instanceTracker.Release ();
+				}
+			});
 
-				workspace.OnProjectRemoved (project1.Id);
-				workspace.OnProjectRemoved (project2.Id);
-			}
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
 
 			// make sure p2p reference doesn't go to implicit cache
-			instanceTracker.AssertReleased ();
+			instanceTracker.AssertDead ();
 		}
 
 		[Test]
-		[Ignore ("Mono GC issue, the tests assert that the roslyn cache is properly emptied")]
 		public void TestEjectFromImplicitCache ()
 		{
 			ProjectCacheService cache = null;
@@ -220,10 +253,15 @@ namespace MonoDevelop.Ide.RoslynServices
 				for (int i = 0; i < total; i++) {
 					cache.CacheObjectIfCachingEnabledForKey (ProjectId.CreateNewId (), (object)null, compilations [i]);
 				}
+				weakFirst.Release ();
+				weakLast.Release ();
 			});
 
-			weakFirst.AssertReleased ();
-			weakLast.AssertHeld ();
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
+
+			weakFirst.AssertDead ();
+			weakLast.AssertAlive ();
 
 			GC.KeepAlive (cache);
 		}
@@ -252,10 +290,16 @@ namespace MonoDevelop.Ide.RoslynServices
 
 				// When we cache 3 again, 1 should stay in the cache
 				cache.CacheObjectIfCachingEnabledForKey (key, owner, comp3);
+
+				weak3.Release ();
+				weak1.Release ();
 			});
 
-			weak3.AssertHeld ();
-			weak1.AssertHeld ();
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
+
+			weak3.AssertAlive ();
+			weak1.AssertAlive ();
 
 			GC.KeepAlive (cache);
 		}
