@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Xwt;
 using Gtk;
+using MonoDevelop.DesignerSupport.Toolbox;
 #if MAC
 using MonoDevelop.Components.Mac;
 #endif
@@ -41,6 +42,7 @@ namespace MonoDevelop.DesignerSupport
 {
 	public class ToolboxPad : PadContent
 	{
+		public const string ToolBoxDragDropFormat = "MonoDevelopToolBox";
 		Gtk.Widget widget;
 
 #if MAC
@@ -59,6 +61,7 @@ namespace MonoDevelop.DesignerSupport
 			widget.KeyPressEvent += toolbox.OnKeyPressed;
 			widget.KeyReleaseEvent += toolbox.KeyReleased;
 
+			widget.DragDataGet += Widget_DragDataGet;
 			widget.DragBegin += Widget_DragBegin;
 			widget.DragEnd += Widget_DragEnd;
 			widget.Focused += Widget_Focused;
@@ -104,8 +107,17 @@ namespace MonoDevelop.DesignerSupport
 
 		void Toolbox_DragSourceSet (object sender, Gtk.TargetEntry [] e)
 		{
-			targets = new Gtk.TargetList ();
+			targets = CreateDefaultTargeList ();
 			targets.AddTable (e);
+		}
+
+		void Widget_DragDataGet (object o, DragDataGetArgs args)
+		{
+			if (toolbox.SelectedNode is IDragDataToolboxNode node) {
+				foreach (var format in node.Formats) {
+					args.SelectionData.Set (Gdk.Atom.Intern (format, false), 8, node.GetData (format));
+				}
+			}
 		}
 
 		void Toolbox_ContentFocused (object sender, EventArgs args)
@@ -124,7 +136,11 @@ namespace MonoDevelop.DesignerSupport
 				DesignerSupport.Service.ToolboxService.SelectItem (selectedNode);
 
 				Gtk.Drag.SourceUnset (widget);
-
+				if (selectedNode is IDragDataToolboxNode node) {
+					foreach (var format in node.Formats) {
+						targets.Add (format, 0, 0);
+					}
+				}
 				// Gtk.Application.CurrentEvent and other copied gdk_events seem to have a problem
 				// when used as they use gdk_event_copy which seems to crash on de-allocating the private slice.
 				IntPtr currentEvent = GtkWorkarounds.GetCurrentEventHandle ();
@@ -135,7 +151,11 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		Gtk.TargetList targets = new Gtk.TargetList ();
+		Gtk.TargetList targets = CreateDefaultTargeList ();
+
+		private static TargetList CreateDefaultTargeList () =>
+			new Gtk.TargetList (new TargetEntry [] { new TargetEntry (ToolBoxDragDropFormat, TargetFlags.OtherWidget, 0) });
+
 		bool isDragging;
 
 		public override void Dispose ()
@@ -147,6 +167,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 
 			if (widget != null) {
+				widget.DragDataGet -= Widget_DragDataGet;
 				widget.DragBegin -= Widget_DragBegin;
 				widget.DragEnd -= Widget_DragEnd;
 				widget.Focused -= Widget_Focused;
