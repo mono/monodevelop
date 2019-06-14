@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl
 	{
 		public bool CanHandle (VersionControlItem item, DocumentController controller)
 		{
-			return (controller is FileDocumentController) && item.Repository.GetFileIsText (item.Path);
+			return (controller is FileDocumentController || controller == null) && item.Repository.GetFileIsText (item.Path);
 		}
 
 		public DocumentController CreateView (VersionControlDocumentInfo info)
