@@ -150,10 +150,7 @@ namespace MonoDevelop.Debugger
 		public GtkObjectValueTreeView (ObjectValueTreeViewController controller)
 		{
 			this.controller = controller;
-			this.controller.AllowPinningChanged += Controller_AllowPinningChanged;
 			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
-			this.controller.CompactViewChanged += Controller_CompactViewChanged;
-			this.controller.HeadersVisibleChanged += Controller_HeadersVisibleChanged;
 			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 			this.controller.NodeExpanded += Controller_NodeExpanded;
@@ -172,7 +169,13 @@ namespace MonoDevelop.Debugger
 			EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
 			DragDataReceived += OnDragDataReceived;
 
-			var newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+			Pango.FontDescription newFont;
+
+			if (controller.CompactView) {
+				newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+			} else {
+				newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
+			}
 
 			liveIcon = ImageService.GetIcon ("md-live", IconSize.Menu);
 			noLiveIcon = liveIcon.WithAlpha (0.5);
@@ -183,6 +186,7 @@ namespace MonoDevelop.Debugger
 			expCol.PackStart (crp, false);
 			expCol.AddAttribute (crp, "stock_id", IconColumn);
 			crtExp = new CellRendererTextWithIcon ();
+			crtExp.FontDesc = newFont;
 			expCol.PackStart (crtExp, true);
 			expCol.AddAttribute (crtExp, "text", NameColumn);
 			expCol.AddAttribute (crtExp, "editable", NameEditableColumn);
@@ -196,6 +200,7 @@ namespace MonoDevelop.Debugger
 
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
+			valueCol.MaxWidth = controller.CompactView ? 800 : int.MaxValue;
 			evaluateStatusCell = new CellRendererImage ();
 			valueCol.PackStart (evaluateStatusCell, false);
 			valueCol.AddAttribute (evaluateStatusCell, "visible", EvaluateStatusIconVisibleColumn);
@@ -204,15 +209,21 @@ namespace MonoDevelop.Debugger
 			valueCol.PackStart (crColorPreview, false);
 			valueCol.SetCellDataFunc (crColorPreview, ValueDataFunc);
 			crpButton = new CellRendererRoundedButton ();
+			crpButton.FontDesc = newFont;
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
 			valueCol.AddAttribute (crpButton, "text", ValueButtonTextColumn);
 			crpViewer = new CellRendererImage ();
-			crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
+			if (controller.CompactView)
+				crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12, 12);
+			else
+				crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
 			crtValue = new ValueCellRenderer ();
 			crtValue.Ellipsize = Pango.EllipsizeMode.End;
+			crtValue.Compact = controller.CompactView;
+			crtValue.FontDesc = newFont;
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "texturl", ValueColumn);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableColumn);
@@ -226,7 +237,9 @@ namespace MonoDevelop.Debugger
 
 			typeCol = new TreeViewColumn ();
 			typeCol.Title = GettextCatalog.GetString ("Type");
+			typeCol.Visible = !controller.CompactView;
 			crtType = new CellRendererText ();
+			crtType.FontDesc = newFont;
 			typeCol.PackStart (crtType, true);
 			typeCol.AddAttribute (crtType, "text", TypeColumn);
 			typeCol.Resizable = true;
@@ -264,11 +277,12 @@ namespace MonoDevelop.Debugger
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
 
+			expanderSize = (int) StyleGetProperty ("expander-size") + 4; //+4 is hardcoded in gtk.c code
+			horizontal_separator = (int) StyleGetProperty ("horizontal-separator");
+			grid_line_width = (int) StyleGetProperty ("grid-line-width");
+			focus_line_width = (int) StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
 
-			expanderSize = (int)this.StyleGetProperty ("expander-size") + 4;//+4 is hardcoded in gtk.c code
-			horizontal_separator = (int)this.StyleGetProperty ("horizontal-separator");
-			grid_line_width = (int)this.StyleGetProperty ("grid-line-width");
-			focus_line_width = (int)this.StyleGetProperty ("focus-line-width") * 2;//we just use *2 version in GetMaxWidth
+			AdjustColumnSizes ();
 		}
 
 		protected override void OnDestroyed ()
@@ -295,10 +309,7 @@ namespace MonoDevelop.Debugger
 				oldVadjustment = null;
 			}
 
-			controller.AllowPinningChanged -= Controller_AllowPinningChanged;
 			controller.PinnedWatchChanged -= Controller_PinnedWatchChanged;
-			controller.CompactViewChanged -= Controller_CompactViewChanged;
-			controller.HeadersVisibleChanged -= Controller_HeadersVisibleChanged;
 			controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
 			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
 			controller.NodeExpanded -= Controller_NodeExpanded;
@@ -364,13 +375,6 @@ public StackFrame Frame {
 			}
 		}
 
-		void Controller_AllowPinningChanged (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				pinCol.Visible = controller.AllowPinning;
-			}).Ignore ();
-		}
-
 		void Controller_PinnedWatchChanged (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
@@ -379,38 +383,6 @@ public StackFrame Frame {
 				} else {
 					pinCol.FixedWidth = 38;
 				}
-			}).Ignore ();
-		}
-
-		void Controller_CompactViewChanged (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				Pango.FontDescription newFont;
-
-				if (controller.CompactView) {
-					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
-					valueCol.MaxWidth = 800;
-					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12, 12);
-				} else {
-					newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
-					valueCol.MaxWidth = int.MaxValue;
-				}
-
-				crtValue.Compact = controller.CompactView;
-				typeCol.Visible = !controller.CompactView;
-				crtExp.FontDesc = newFont;
-				crtValue.FontDesc = newFont;
-				crtType.FontDesc = newFont;
-				crpButton.FontDesc = newFont;
-				ResetColumnSizes ();
-				AdjustColumnSizes ();
-			}).Ignore ();
-		}
-
-		void Controller_HeadersVisibleChanged (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				HeadersVisible = controller.HeadersVisible;
 			}).Ignore ();
 		}
 

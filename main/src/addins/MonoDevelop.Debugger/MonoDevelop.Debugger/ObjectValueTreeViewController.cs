@@ -41,10 +41,7 @@ namespace MonoDevelop.Debugger
 	 *
 	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
 	 * refreshing a node (which may replace it's children nodes)
-	 *
-	 * - Expressions should perhaps have their own IObjectValueNode type.
-	 *
-	 *
+	 * 
 	 */
 
 
@@ -54,10 +51,7 @@ namespace MonoDevelop.Debugger
 		IDebuggerService debuggerService;
 		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
-		bool headersVisible = true;
 		bool allowEditing;
-		bool allowPinning;
-		bool compactView;
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
@@ -78,6 +72,7 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeViewController ()
 		{
+			HeadersVisible = true;
 		}
 
 		public IDebuggerService Debugger {
@@ -126,21 +121,11 @@ namespace MonoDevelop.Debugger
 
 		#region Pinned Watches
 
-		public event EventHandler AllowPinningChanged;
-
 		/// <summary>
 		/// Gets a value indicating whether the user should be able to pin the value to the text editor.
 		/// </summary>
 		public bool AllowPinning {
-			get { return allowPinning; }
-			set {
-				if (allowPinning == value)
-					return;
-
-				allowPinning = value;
-
-				AllowPinningChanged?.Invoke (this, EventArgs.Empty);
-			}
+			get; set;
 		}
 
 		public event EventHandler PinnedWatchChanged;
@@ -162,44 +147,16 @@ namespace MonoDevelop.Debugger
 
 		#endregion
 
-		#region CompactView
-
-		public event EventHandler CompactViewChanged;
-
 		/// <summary>
 		/// Gets a value indicating whether or not the TreeView should compact the view.
 		/// </summary>
 		public bool CompactView {
-			get { return compactView; }
-			set {
-				if (compactView == value)
-					return;
-
-				compactView = value;
-
-				CompactViewChanged?.Invoke (this, EventArgs.Empty);
-			}
+			get; set;
 		}
-
-		#endregion
-
-		#region HeadersVisible
-
-		public event EventHandler HeadersVisibleChanged;
 
 		public bool HeadersVisible {
-			get { return headersVisible; }
-			set {
-				if (headersVisible == value)
-					return;
-
-				headersVisible = value;
-
-				HeadersVisibleChanged?.Invoke (this, EventArgs.Empty);
-			}
+			get; set;
 		}
-
-		#endregion
 
 		public bool CanQueryDebugger {
 			get {
