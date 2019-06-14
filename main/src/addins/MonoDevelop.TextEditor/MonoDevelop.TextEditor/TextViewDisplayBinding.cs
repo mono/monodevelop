@@ -25,10 +25,10 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.FeatureConfiguration;
+using System.Linq;
 
 namespace MonoDevelop.TextEditor
 {
@@ -45,56 +45,48 @@ namespace MonoDevelop.TextEditor
 				yield break;
 			}
 
-			if (modelDescriptor.FilePath == null || !(IsSupportedFileExtension (modelDescriptor.FilePath) || IsSupportedDesignerFileName (modelDescriptor.FilePath, modelDescriptor.Owner))) {
-				yield break;
+			var nodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
+
+			bool supported =
+				(
+					modelDescriptor.FilePath.IsNotNull
+					&& IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType)
+					&& nodes.Any (n => ExtensionMatch (n) && BuildActionAndFeatureFlagMatch (n))
+				) || (
+					!string.IsNullOrEmpty (modelDescriptor.MimeType)
+					&& IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType)
+					&& nodes.Any (n => MimeMatch (n) && BuildActionAndFeatureFlagMatch (n))
+				);
+
+			if (supported) {
+				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Source Code Editor"), true, DocumentControllerRole.Source);
 			}
 
-			bool supported = false;
+			bool ExtensionMatch (SupportedFileTypeExtensionNode node) =>
+				node.Extensions != null
+				&& node.Extensions.Any (ext => modelDescriptor.FilePath.HasExtension (ext));
 
-			if (modelDescriptor.FilePath != null)
-				supported = IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType);
+			bool MimeMatch (SupportedFileTypeExtensionNode node) =>
+				node.MimeTypes != null
+				&& node.MimeTypes.Any (
+					mime => string.Equals (modelDescriptor.MimeType, mime, StringComparison.OrdinalIgnoreCase)
+				);
 
-			if (!supported && !string.IsNullOrEmpty (modelDescriptor.MimeType))
-				supported = IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType);
-
-			if (supported)
-				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Source Code Editor"), true, DocumentControllerRole.Source);
-		}
-
-		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
-			".cs",
-			".csx"
-			//".cshtml",
-			//".css",
-			//".html",
-			//".js",
-			//".json",
-			//".ts"
-		};
-
-		bool IsSupportedFileExtension (FilePath fileName)
-		{
-			return supportedFileExtensions.Contains (fileName.Extension);
-		}
-
-		bool IsSupportedDesignerFileName (FilePath fileName, WorkspaceObject ownerProject)
-		{
-			if (!FeatureSwitchService.IsFeatureEnabled ("DesignersNewEditor").GetValueOrDefault ())
-				return false;
-
-			return fileName.HasExtension (".xaml")
-				|| IsSupportedAndroidFileName (fileName, ownerProject);
-		}
-
-		bool IsSupportedAndroidFileName (FilePath fileName, WorkspaceObject ownerProject)
-		{
-			// We only care about .xml and .axml files that are marked as AndroidResource
-			if (!(fileName.HasExtension (".xml") || fileName.HasExtension (".axml")))
-				return false;
-
-			const string AndroidResourceBuildAction = "AndroidResource";
-			var buildAction = (ownerProject as Project)?.GetProjectFile (fileName)?.BuildAction;
-			return string.Equals (buildAction, AndroidResourceBuildAction, StringComparison.Ordinal);
+			bool BuildActionAndFeatureFlagMatch (SupportedFileTypeExtensionNode node)
+			{
+				if (!string.IsNullOrEmpty (node.FeatureFlag)) {
+					if (!(FeatureSwitchService.IsFeatureEnabled (node.FeatureFlag) ?? node.FeatureFlagDefault)) {
+						return false;
+					}
+				}
+				if (!string.IsNullOrEmpty (node.BuildAction)) {
+					var buildAction = (modelDescriptor.Owner as Project)?.GetProjectFile (modelDescriptor.FilePath)?.BuildAction;
+					if (!string.Equals (buildAction, node.BuildAction, StringComparison.OrdinalIgnoreCase)) {
+						return false;
+					}
+				}
+				return true;
+			}
 		}
 
 		public override Task<DocumentController> CreateController (FileDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)

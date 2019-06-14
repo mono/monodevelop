@@ -59,31 +59,32 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 		{
 			await threadingContext.JoinableTaskFactory.SwitchToMainThreadAsync ();
 
-			var dialog = new ExtractInterfaceDialog ();
+			using (var dialog = new ExtractInterfaceDialog ()) {
 
-			dialog.Init (
-				syntaxFactsService,
-				notificationService,
-				extractableMembers,
-				defaultInterfaceName,
-				conflictingTypeNames,
-				defaultNamespace,
-				generatedNameTypeParameterSuffix,
-				languageName);
+				dialog.Init (
+					syntaxFactsService,
+					notificationService,
+					extractableMembers,
+					defaultInterfaceName,
+					conflictingTypeNames,
+					defaultNamespace,
+					generatedNameTypeParameterSuffix,
+					languageName);
 
-			bool performChange = dialog.Run () == Xwt.Command.Ok;
-			if (!performChange)
-				return ExtractInterfaceOptionsResult.Cancelled;
+				bool performChange = dialog.Run () == Xwt.Command.Ok;
+				if (!performChange)
+					return ExtractInterfaceOptionsResult.Cancelled;
 
-			return new ExtractInterfaceOptionsResult (
-				false,
-				dialog.IncludedMembers.AsImmutable (),
-				dialog.InterfaceName,
-				dialog.FileName,
-				dialog.UseSameFile
-					? ExtractInterfaceOptionsResult.ExtractLocation.SameFile
-					: ExtractInterfaceOptionsResult.ExtractLocation.NewFile
-			);
+				return new ExtractInterfaceOptionsResult (
+					false,
+					dialog.IncludedMembers.AsImmutable (),
+					dialog.InterfaceName,
+					dialog.FileName,
+					dialog.UseSameFile
+						? ExtractInterfaceOptionsResult.ExtractLocation.SameFile
+						: ExtractInterfaceOptionsResult.ExtractLocation.NewFile
+				);
+			}
 		}
 	}
 }

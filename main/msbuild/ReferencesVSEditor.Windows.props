@@ -15,17 +15,17 @@
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="$(NuGetVersionRoslyn)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
     <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
     <PackageReference Include="Microsoft.VisualStudio.InteractiveWindow" Version="2.0.0-rc3-61304-01" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.InteractiveHost" Version="3.1.0-beta3-19222-02" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.InteractiveHost" Version="$(NuGetVersionRoslyn)" ExcludeAssets="all" />
   </ItemGroup>
 
   <!-- The consolidated package is authored in a way to avoid adding it to the C# compiler (ref\net46 is empty).
-       However we do reference quite a few of the types from the package on Windows, so we need to be able to 
+       However we do reference quite a few of the types from the package on Windows, so we need to be able to
        reference it. Currently it gets added to ReferenceCopyLocalPaths but not to _ReferencesFromNuGetPackages.-->
   <ItemGroup>
     <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net472\Microsoft.VisualStudio.Platform.VSEditor.dll">
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(NuGetPackageRoot)Microsoft.CodeAnalysis.InteractiveHost\3.1.0-beta3-19222-02\Microsoft.CodeAnalysis.InteractiveHost.dll">
+    <Reference Include="$(NuGetPackageRoot)Microsoft.CodeAnalysis.InteractiveHost\$(NuGetVersionRoslyn)\Microsoft.CodeAnalysis.InteractiveHost.dll">
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>
