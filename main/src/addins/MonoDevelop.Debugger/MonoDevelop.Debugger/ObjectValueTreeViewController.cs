@@ -359,8 +359,10 @@ namespace MonoDevelop.Debugger
 			if (!AllowWatchExpressions)
 				return;
 
-			var nodes = Frame.EvaluateExpressions (expressions);
-			AddValues (nodes);
+			if (Frame != null) {
+				var nodes = Frame.EvaluateExpressions (expressions);
+				AddValues (nodes);
+			}
 		}
 
 		public bool EditExpression(IObjectValueNode node, string newExpression)
@@ -808,6 +810,11 @@ namespace MonoDevelop.Debugger
 		public static StackFrame GetStackFrame (this ObjectValueTreeViewController controller)
 		{
 			return (controller.Frame as ProxyStackFrame)?.StackFrame;
+		}
+
+		public static void AddValue (this ObjectValueTreeViewController controller, ObjectValue value)
+		{
+			controller.AddValue (new ObjectValueNode (value));
 		}
 
 		public static void AddValues (this ObjectValueTreeViewController controller, IEnumerable<ObjectValue> values)

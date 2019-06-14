@@ -438,10 +438,10 @@ public StackFrame Frame {
 						AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
 					}
 				}
+			}
 
-				if (controller.CompactView) {
-					RecalculateWidth ();
-				}
+			if (controller.CompactView) {
+				RecalculateWidth ();
 			}
 		}
 
@@ -572,67 +572,6 @@ public StackFrame Frame {
 			state.Load ();
 			restoringState = false;
 		}
-
-		public void AddValue (ObjectValue value)
-		{
-			values.Add (value);
-			Refresh (false);
-			if (controller.CompactView)
-				RecalculateWidth ();
-		}
-
-		public void AddValues (IEnumerable<ObjectValue> newValues)
-		{
-			foreach (var val in newValues)
-				values.Add (val);
-			Refresh (false);
-			if (controller.CompactView)
-				RecalculateWidth ();
-		}
-
-		public void RemoveValue (ObjectValue value)
-		{
-			values.Remove (value);
-			Refresh (true);
-			if (controller.CompactView)
-				RecalculateWidth ();
-		}
-
-		public void ReplaceValue (ObjectValue old, ObjectValue @new)
-		{
-			int idx = values.IndexOf (old);
-			if (idx == -1)
-				return;
-
-			values [idx] = @new;
-			Refresh (false);
-			if (controller.CompactView)
-				RecalculateWidth ();
-		}
-
-		public void ClearAll ()
-		{
-			values.Clear ();
-			//cachedValues.Clear ();
-			frame = null;
-			Refresh (true);
-		}
-
-		public void ClearValues ()
-		{
-			values.Clear ();
-			Refresh (true);
-		}
-
-		//public void ClearExpressions ()
-		//{
-		//	expressions.Clear ();
-		//	Update ();
-		//}
-
-		//public IEnumerable<string> Expressions {
-		//	get { return expressions; }
-		//}
 
 		public void Update ()
 		{
@@ -896,10 +835,14 @@ public StackFrame Frame {
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
 			var node = GetNodeAtIter (iter);
+
 			base.OnRowExpanded (iter, path);
 
+			if (controller.CompactView)
+				RecalculateWidth ();
+
 			HideValueButton (iter);
-			this.controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore();
+			controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore();
 		}
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
@@ -1576,7 +1519,7 @@ public StackFrame Frame {
 		{
 			base.OnRowActivated (path, column);
 
-			if (!this.controller.CanQueryDebugger)
+			if (!controller.CanQueryDebugger)
 				return;
 
 			TreePath [] selected = Selection.GetSelectedRows ();
@@ -1599,7 +1542,7 @@ public StackFrame Frame {
 			if (GetPathAtPos (x, y, out path, out col)) {
 				var cellArea = GetCellArea (path, col);
 				x -= cellArea.X;
-				foreach (CellRenderer cr in col.CellRenderers) {
+				foreach (var cr in col.CellRenderers) {
 					int xo, w;
 					col.CellGetPosition (cr, out xo, out w);
 					var visible = cr.Visible;
@@ -1628,7 +1571,7 @@ public StackFrame Frame {
 
 		string GetFullExpression (TreeIter it)
 		{
-			TreePath path = store.GetPath (it);
+			var path = store.GetPath (it);
 			string name, expression = "";
 
 			while (path.Depth != 1) {
@@ -1894,9 +1837,9 @@ public StackFrame Frame {
 
 		void RecalculateWidth ()
 		{
-			TreeIter iter;
-			if (!this.Model.GetIterFirst (out iter))
+			if (!Model.GetIterFirst (out TreeIter iter))
 				return;
+
 			foreach (var column in new [] { expCol, valueCol }) {//No need to calculate for Type and PinIcon columns
 																 // +1 is here because apperently when we calculate MaxWidth and set to FixedWidth
 																 // later GTK when cacluate needed width for Label it doesn't have enough space

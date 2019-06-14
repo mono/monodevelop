@@ -120,7 +120,6 @@ namespace MonoDevelop.Debugger
 			if (UseNewTreeView) {
 				expressions.Clear ();
 				expressions.AddRange (controller.GetExpressions ());
-
 			}
 
 			base.OnDebuggerResumed (s, a);
