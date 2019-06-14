@@ -72,6 +72,7 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeViewController ()
 		{
+			AllowPopupMenu = true;
 			HeadersVisible = true;
 		}
 
@@ -95,6 +96,9 @@ namespace MonoDevelop.Debugger
 		public bool AllowEditing {
 			get => allowEditing;
 			set {
+				if (allowEditing == value)
+					return;
+
 				allowEditing = value;
 
 				// trigger a refresh
@@ -105,11 +109,21 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
+		/// </summary>
+		public bool AllowExpanding {
+			get; set;
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
 		public bool AllowWatchExpressions {
 			get => allowWatchExpressions;
 			set {
+				if (allowWatchExpressions == value)
+					return;
+
 				allowWatchExpressions = value;
 
 				// trigger a refresh
@@ -117,6 +131,24 @@ namespace MonoDevelop.Debugger
 					OnChildrenLoaded (Root, 0, Root.Children.Count);
 				}
 			}
+		}
+
+		public bool AllowPopupMenu {
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether or not the TreeView should compact the view.
+		/// </summary>
+		public bool CompactView {
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether or not the table columns should be visible.
+		/// </summary>
+		public bool HeadersVisible {
+			get; set;
 		}
 
 		#region Pinned Watches
@@ -142,21 +174,19 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public string PinnedWatchFile { get; set; }
-		public int PinnedWatchLine { get; set; }
+		public string PinnedWatchFile {
+			get; set;
+		}
+
+		public int PinnedWatchLine {
+			get; set;
+		}
+
+		public bool RootPinAlwaysVisible {
+			get; set;
+		}
 
 		#endregion
-
-		/// <summary>
-		/// Gets a value indicating whether or not the TreeView should compact the view.
-		/// </summary>
-		public bool CompactView {
-			get; set;
-		}
-
-		public bool HeadersVisible {
-			get; set;
-		}
 
 		public bool CanQueryDebugger {
 			get {

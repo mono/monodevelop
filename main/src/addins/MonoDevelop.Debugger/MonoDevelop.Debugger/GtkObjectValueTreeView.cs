@@ -161,7 +161,6 @@ namespace MonoDevelop.Debugger
 			RulesHint = true;
 			HeadersVisible = controller.HeadersVisible;
 			EnableSearch = false;
-			AllowPopupMenu = true;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
@@ -574,18 +573,6 @@ public StackFrame Frame {
 			restoringState = false;
 		}
 
-		public bool RootPinAlwaysVisible { get; set; }
-
-		bool allowExpanding = true;
-		public bool AllowExpanding {
-			get { return allowExpanding; }
-			set { allowExpanding = value; }
-		}
-
-		public bool AllowPopupMenu {
-			get; set;
-		}
-
 		public void AddValue (ObjectValue value)
 		{
 			values.Add (value);
@@ -870,7 +857,7 @@ public StackFrame Frame {
 				else
 					store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
 			}
-			if (RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && controller.AllowPinning))
+			if (controller.RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && controller.AllowPinning))
 				store.SetValue (it, PinIconColumn, "md-pin-up");
 
 			if (val.HasChildren && val.Children.Count == 0) {
@@ -890,7 +877,7 @@ public StackFrame Frame {
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
 		{
 			if (!restoringState) {
-				if (!allowExpanding)
+				if (!controller.AllowExpanding)
 					return true;
 
 				if (GetRowExpanded (path))
@@ -1171,7 +1158,7 @@ public StackFrame Frame {
 							if (!it.Equals (lastPinIter)) {
 								store.SetValue (it, PinIconColumn, "md-pin-up");
 								CleanPinIcon ();
-								if (path.Depth > 1 || !RootPinAlwaysVisible)
+								if (path.Depth > 1 || !controller.RootPinAlwaysVisible)
 									lastPinIter = it;
 							}
 						}
@@ -1429,7 +1416,7 @@ public StackFrame Frame {
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			if (AllowPopupMenu)
+			if (controller.AllowPopupMenu)
 				this.ShowContextMenu (evt, menuSet, this);
 		}
 
