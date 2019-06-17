@@ -268,6 +268,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (textBuffer != null) {
 					yield return new OpenFileProvider (textBuffer, document.Owner as Project, document.FileName);
 				} else {
+					if (!document.IsFile)
+						continue;
 					yield return new FileProvider (document.FileName, document.Owner as Project);
 				}
 			}
