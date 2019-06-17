@@ -34,7 +34,7 @@ namespace MonoDevelop.AspNetCore
 	{
 		public AspNetCoreNestingRulesProvider ()
 		{
-			SourceFile = AddinManager.CurrentAddin.GetFilePath ("Resources/AspNetCore.filenesting.json");
+			SourceFile = AddinManager.CurrentAddin.GetFilePath (Path.Combine ("Resources", "AspNetCore.filenesting.json"));
 		}
 	}
 }
