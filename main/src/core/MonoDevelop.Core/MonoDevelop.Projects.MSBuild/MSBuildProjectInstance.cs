@@ -109,6 +109,9 @@ namespace MonoDevelop.Projects.MSBuild
 				engine.Evaluate (projectInstance, OnlyEvaluateProperties);
 
 				SyncBuildProject (info.ItemMap, info.Engine, projectInstance);
+			} catch (UserException ex) {
+				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
+				throw;
 			} catch (Exception ex) {
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
