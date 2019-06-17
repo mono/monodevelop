@@ -58,6 +58,11 @@ namespace MonoDevelop.Projects
 			string parentFile = FileNestingService.GetParentFile (inputFileDestination);
 			Assert.That (parentFile, Is.EqualTo (parentFileDestination), $"Was expecting parent file {parentFileDestination} for {inputFileDestination} but got {parentFile}");
 
+			// Now check we get nothing when parent file doesn't exist
+			File.Delete (parentFileDestination);
+			parentFile = FileNestingService.GetParentFile (inputFileDestination);
+			Assert.Null (parentFile, $"Was expecting no parent file for {inputFileDestination} but got {parentFile}");
+
 			Directory.Delete (folder, true);
 		}
 	}
