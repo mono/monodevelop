@@ -1379,6 +1379,7 @@ namespace MonoDevelop.Projects
 
 				// Project xml should be unchanged.
 				var projectXml = File.ReadAllText (p.FileName);
+				Console.WriteLine ($"Comparing expected {expectedProjectXml} to {projectXml}");
 				Assert.AreEqual (expectedProjectXml, projectXml);
 
 				p.Dispose ();
