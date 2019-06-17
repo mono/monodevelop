@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.FileNesting
 		public NestingRule (NestingRuleKind kind, string appliesTo, IEnumerable<string> patterns)
 		{
 			Kind = kind;
-			AppliesTo = appliesTo ?? ".*";
+			AppliesTo = appliesTo ?? AllFilesWildcard;
 			this.patterns = patterns?.ToList ();
 		}
 
