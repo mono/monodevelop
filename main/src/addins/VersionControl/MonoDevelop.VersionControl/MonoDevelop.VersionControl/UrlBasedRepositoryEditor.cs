@@ -54,12 +54,7 @@ namespace MonoDevelop.VersionControl
 			if (string.IsNullOrEmpty (repositoryUrlEntry.Text))
 				return false;
 
-			Uri.TryCreate (repositoryUrlEntry.Text, UriKind.RelativeOrAbsolute, out Uri serverUri);
-
-			if (serverUri == null)
-				return false;
-
-			return true;
+			return Uri.TryCreate (repositoryUrlEntry.Text, UriKind.RelativeOrAbsolute, out Uri serverUri);
 		}
 
 		public string RelativePath {
