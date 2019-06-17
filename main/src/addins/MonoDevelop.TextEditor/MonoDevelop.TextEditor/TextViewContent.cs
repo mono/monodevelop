@@ -309,7 +309,6 @@ namespace MonoDevelop.TextEditor
 				AutoSave.RemoveAutoSaveFile (FilePath);
 
 			UnsubscribeFromEvents ();
-			TextDocument?.Dispose ();
 
 			if (policyContainer != null)
 				policyContainer.PolicyChanged -= PolicyChanged;
