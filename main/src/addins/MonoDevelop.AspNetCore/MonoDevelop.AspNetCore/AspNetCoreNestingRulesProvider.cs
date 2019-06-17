@@ -30,7 +30,7 @@ using MonoDevelop.Projects.FileNesting;
 namespace MonoDevelop.AspNetCore
 {
 	[Extension]
-	class AspNetCoreNestingRulesProvider : NestingRulesProvider
+	sealed class AspNetCoreNestingRulesProvider : NestingRulesProvider
 	{
 		public AspNetCoreNestingRulesProvider ()
 		{
