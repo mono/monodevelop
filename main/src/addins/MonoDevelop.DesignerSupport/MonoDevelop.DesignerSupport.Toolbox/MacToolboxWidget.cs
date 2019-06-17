@@ -275,12 +275,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
 			}
 			if (IsListMode) {
-				flowLayout.ItemSize = new CGSize (Frame.Width - IconMargin, LabelCollectionViewItem.ItemHeight);
+				flowLayout.ItemSize = new CGSize (Math.Max (Frame.Width - IconMargin, 1), LabelCollectionViewItem.ItemHeight);
 			} else {
 				flowLayout.ItemSize = new CGSize (ImageCollectionViewItem.Size.Width, ImageCollectionViewItem.Size.Height);
 			}
 			if (ShowCategories) {
-				collectionViewDelegate.Width = Frame.Width - IconMargin;
+				collectionViewDelegate.Width = (nfloat) Math.Max (Frame.Width - IconMargin, 1);
 				collectionViewDelegate.Height = HeaderCollectionViewItem.SectionHeight;
 			} else {
 				collectionViewDelegate.Width = 0;
@@ -298,7 +298,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				SelectionIndexPaths = new NSSet (selected);
 			}
 		}
-
 
 		public override void RightMouseUp (NSEvent theEvent)
 		{
