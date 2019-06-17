@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.Editor
 					showRulerFromContext = false;
 				}
 			}
-
+			this.FireChange ();
 			return Task.FromResult (true);
 		}
 
