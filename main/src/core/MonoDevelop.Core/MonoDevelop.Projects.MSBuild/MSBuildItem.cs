@@ -342,8 +342,10 @@ namespace MonoDevelop.Projects.MSBuild
 			get {
 				if (sourceItem is MSBuildItem)
 					return (MSBuildItem) sourceItem;
-				else
-					return SourceItems.LastOrDefault (); 
+				else {
+					var lastSourceItem = SourceItems.LastOrDefault (item => item.ParentProject == metadata.ParentProject);
+					return lastSourceItem ?? SourceItems.LastOrDefault ();
+				}
 			}
 		}
 
