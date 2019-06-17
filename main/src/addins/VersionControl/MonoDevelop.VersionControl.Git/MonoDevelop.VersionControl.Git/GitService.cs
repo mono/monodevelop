@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -174,19 +175,20 @@ namespace MonoDevelop.VersionControl.Git
 			switch (status) {
 			case StashApplyStatus.Conflicts:
 				bool stashApplied = false;
-				msg = GettextCatalog.GetString ("A conflicting change has been detected in the index. ");
+				StringBuilder info = new StringBuilder (GettextCatalog.GetString ("A conflicting change has been detected in the index. "));
 				// Include conflicts in the msg
 				if (stashCount != null && repo is GitRepository gitRepo) {
 					int actualStashCount = gitRepo.GetStashes ().Count ();
 					stashApplied = actualStashCount != stashCount;
 					if (stashApplied) {
-						msg += GettextCatalog.GetString ("The following conflicts have been found:") + Environment.NewLine;
+						info.AppendLine (GettextCatalog.GetString ("The following conflicts have been found:"));
 						foreach (var conflictFile in gitRepo.RootRepository.Index.Conflicts) {
-							msg += conflictFile.Ancestor.Path + Environment.NewLine;
+							info.AppendLine (conflictFile.Ancestor.Path);
 						}
 					} else
-						msg += GettextCatalog.GetString ("Stash not applied.");
+						info.Append (GettextCatalog.GetString ("Stash not applied."));
 				}
+				msg = info.ToString ();
 				stashResultType = !stashApplied ? StashResultType.Error : StashResultType.Warning;
 				break;
 			case StashApplyStatus.UncommittedChanges:
