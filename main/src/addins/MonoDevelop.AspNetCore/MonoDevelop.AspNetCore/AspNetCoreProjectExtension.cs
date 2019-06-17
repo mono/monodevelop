@@ -211,6 +211,8 @@ namespace MonoDevelop.AspNetCore
 						StartAction = "Project"
 					};
 					this.Project.RunConfigurations.Add (projectRunConfiguration);
+				} else if (runConfig is AspNetCoreRunConfiguration config) {
+					config.CurrentProfile = profile.Value;
 				}
 			}
 		}
