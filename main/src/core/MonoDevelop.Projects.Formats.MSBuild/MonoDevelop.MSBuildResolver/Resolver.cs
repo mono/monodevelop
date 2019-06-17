@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static IEnumerable<SdkInfo> sdks;
 
 		Func<IEnumerable<SdkInfo>> sdkFetcher;
+		Func<string, string> getLocalizedString = s => s;
 
 		public override string Name => "MonoDevelop Resolver";
 
@@ -59,9 +60,11 @@ namespace MonoDevelop.Projects.MSBuild
 			this.sdkFetcher = LoadSdks;
 		}
 
-		internal Resolver (Func<IEnumerable<SdkInfo>> sdkFetcher = null)
+		internal Resolver (Func<IEnumerable<SdkInfo>> sdkFetcher = null, Func<string, string> getLocalizedString = null)
 		{
 			this.sdkFetcher = sdkFetcher;
+			if (getLocalizedString != null)
+				this.getLocalizedString = getLocalizedString;
 		}
 
 		static IEnumerable<SdkInfo> LoadSdks ()
@@ -99,7 +102,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (bestSdk != null)
 				return factory.IndicateSuccess (bestSdk.Path, bestSdk.Version?.ToString ());
 			else
-				return factory.IndicateFailure (new string [] { "SDK not found" });
+				return factory.IndicateFailure (new string [] { getLocalizedString ("SDK not found") });
 		}
 	}
 

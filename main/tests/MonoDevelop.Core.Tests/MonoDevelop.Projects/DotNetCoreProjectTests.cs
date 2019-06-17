@@ -692,8 +692,7 @@ namespace MonoDevelop.Projects
 
 			using (var item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = item.Items [0] as UnknownSolutionItem;
-				Assert.That (p.LoadError, Contains.Substring ("SDK not found")); //  MonoDevelop.Projects.MSBuild.Resolver
-				Assert.That (p.LoadError, Contains.Substring ("Check that a recent enough .NET Core SDK is installed")); // .NET Core SDK resolver
+				Assert.AreEqual (p.LoadError, "Unable to find SDK 'Test.Unknown.NET.Sdk/1.2.3'");
 			}
 		}
 
