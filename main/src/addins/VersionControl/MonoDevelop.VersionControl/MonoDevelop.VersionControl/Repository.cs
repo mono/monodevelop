@@ -1024,6 +1024,13 @@ namespace MonoDevelop.VersionControl
 		{
 			return IdeServices.DesktopService.GetFileIsText (path);
 		}
+
+		public virtual VersionStatus GetVirtualStatusViewStatus (VersionInfo versionInfo, bool includedInCommit)
+		{
+			if (versionInfo == null)
+				throw new ArgumentNullException (nameof (versionInfo));
+			return versionInfo.Status;
+		}
 	}
 
 	public class Annotation
