@@ -48,6 +48,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Core.Collections;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Projects
 {
@@ -2406,18 +2407,22 @@ namespace MonoDevelop.Projects
 
 		internal virtual void OnFileChanged (object source, FileEventArgs e)
 		{
+			var args = new ProjectFileEventArgs ();
+
 			foreach (FileEventInfo fi in e) {
 				ProjectFile file = GetProjectFile (fi.FileName);
 				if (file != null) {
 					SetFastBuildCheckDirty ();
-					try {
-						NotifyFileChangedInProject (file);
-					} catch {
-						// Workaround Mono bug. The watcher seems to
-						// stop watching if an exception is thrown in
-						// the event handler
-					}
+					args.Add (new ProjectFileEventInfo (this, file));
 				}
+			}
+
+			try {
+				OnFileChangedInProject (args);
+			} catch {
+				// Workaround Mono bug. The watcher seems to
+				// stop watching if an exception is thrown in
+				// the event handler
 			}
 		}
 
@@ -4488,17 +4493,17 @@ namespace MonoDevelop.Projects
 		void OnFileRenamed (object sender, FileCopyEventArgs e)
 		{
 			foreach (FileEventInfo info in e) {
-				OnFileRenamed (info.SourceFile, info.TargetFile);
+				OnFileRenamed (info.SourceFile, info.TargetFile, info.IsDirectory);
 			}
 		}
 
-		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
+		void OnFileRenamed (FilePath sourceFile, FilePath targetFile, bool isDirectory)
 		{
 			if (Runtime.IsMainThread)
 				return;
 
 			try {
-				if (Directory.Exists (targetFile)) {
+				if (isDirectory) {
 					OnDirectoryRenamedExternally (sourceFile, targetFile);
 					return;
 				}
@@ -4508,7 +4513,7 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				OnFileCreatedExternally (targetFile);
-				OnFileDeletedExternally (sourceFile);
+				OnFileDeletedExternally (sourceFile, isDirectory);
 			});
 		}
 
@@ -4518,25 +4523,30 @@ namespace MonoDevelop.Projects
 				return;
 
 			foreach (FileEventInfo info in e) {
-				OnFileCreated (info.FileName);
+				OnFileCreated (info.FileName, info.IsDirectory);
 			}
 		}
 
-		void OnFileCreated (FilePath filePath)
+		void OnFileCreated (FilePath filePath, bool isDirectory)
 		{
 			if (Runtime.IsMainThread)
 				return;
 
 			try {
-				if (Directory.Exists (filePath))
+				if (isDirectory)
 					return;
 
-				if (filePath.FileName == ".DS_Store")
-					return;
+				var fileName = ((string)filePath).AsSpan ();
+				fileName = fileName.Slice (fileName.LastIndexOf (Path.DirectorySeparatorChar) + 1);
 
-				// Ignore temporary files created when saving a file in the editor.
-				if (filePath.FileName.StartsWith (".#", StringComparison.OrdinalIgnoreCase))
-					return;
+				if (fileName[0] == '.') {
+					// Ignore temporary files created when saving a file in the editor.
+					if (fileName [1] == '#')
+						return;
+
+					if (fileName.SequenceEqual (".DS_Store".AsSpan ()))
+						return;
+				}
 
 				OnFileCreatedExternally (filePath);
 			} catch (Exception ex) {
@@ -4551,7 +4561,7 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				foreach (FileEventInfo info in e) {
-					OnFileDeletedExternally (info.FileName);
+					OnFileDeletedExternally (info.FileName, info.IsDirectory);
 				}
 			});
 		}
@@ -4594,22 +4604,25 @@ namespace MonoDevelop.Projects
 		void OnDirectoryMovedOutOfProject (FilePath oldDirectory)
 		{
 			// Directory moved outside project directory. Remove files from project.
-			var projectFilesInDirectory = Files.GetFilesInPath (oldDirectory);
-			if (!projectFilesInDirectory.Any ())
-				return;
-
 			Runtime.RunInMainThread (() => {
-				foreach (ProjectFile file in projectFilesInDirectory)
-					Files.Remove (file);
+				Files.RemoveFilesInPath (oldDirectory);
 			});
 		}
+
+		static readonly ObjectPool<List<ProjectItem>> projectItemListPool = ObjectPool.Create<List<ProjectItem>> ();
 
 		void OnFileCreatedExternally (FilePath fileName)
 		{
 			if (sourceProject == null) {
-				// sometimes this method is called after disposing this class. 
+				// sometimes this method is called after disposing this class.
 				// (i.e. when quitting MD or creating a new project.)
 				LoggingService.LogWarning ("File created externally not processed. {0}", fileName);
+				return;
+			}
+
+			if (Files.GetFile (fileName) != null) {
+				// File exists in project. This can happen if the file was added
+				// in the IDE and not externally.
 				return;
 			}
 
@@ -4617,12 +4630,6 @@ namespace MonoDevelop.Projects
 			// if the relative path starts with "..\" but checking here avoids checking the file globs.
 			if (!fileName.IsChildPathOf (BaseDirectory))
 				return;
-
-			if (Files.Any (file => file.FilePath == fileName)) {
-				// File exists in project. This can happen if the file was added
-				// in the IDE and not externally.
-				return;
-			}
 
 			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
 			var globItems = sourceProject.FindGlobItemsIncludingFile (include);
@@ -4633,34 +4640,37 @@ namespace MonoDevelop.Projects
 			}
 
 			if (!UseAdvancedGlobSupport)
-				globItems = globItems.Where (it => it.Metadata.GetProperties ().Count () == 0);
+				globItems = globItems.Where (it => !it.Metadata.GetProperties ().Any ());
 
+			var list = projectItemListPool.Get ();
 			foreach (var it in globItems) {
 				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
 				var pi = CreateProjectItem (eit);
 				pi.Read (this, eit);
-				if (Runtime.IsMainThread) {
-					Items.Add (pi);
-				} else {
-					Runtime.RunInMainThread (() => {
-						// Double check the file has not been added on the UI thread by the IDE.
-						if (!Files.Any (file => file.FilePath == fileName)) {
-							Items.Add (pi);
-						}
-					}).Ignore ();
-				}
+
+				list.Add (pi);
 			}
+
+			Runtime.RunInMainThread (() => {
+				// Double check the file has not been added on the UI thread by the IDE.
+				list.RemoveAll (x => Files.GetFile (fileName) != null);
+				Items.AddRange (list);
+				projectItemListPool.Return (list);
+			}).Ignore ();
 		}
 
-		void OnFileDeletedExternally (string fileName)
+		void OnFileDeletedExternally (string fileName, bool isDirectory)
 		{
-			if (File.Exists (fileName) || Directory.Exists (fileName)) {
-				// File has not been deleted. The delete event could have been due to
-				// the file being saved. Saving with TextFileUtility will result in
-				// FileService.SystemRename being called to move a temporary file
-				// to the file being saved which deletes and then creates the file.
+			// File has not been deleted. The delete event could have been due to
+			// the file being saved. Saving with TextFileUtility will result in
+			// FileService.SystemRename being called to move a temporary file
+			// to the file being saved which deletes and then creates the file.
+			bool notDeleted = isDirectory
+				? Directory.Exists (fileName)
+				: File.Exists (fileName);
+
+			if (notDeleted)
 				return;
-			}
 
 			Files.Remove (fileName);
 		}

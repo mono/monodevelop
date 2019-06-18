@@ -251,6 +251,11 @@ namespace MonoDevelop.Projects
 			}
 			return list.ToArray ();
 		}
+
+		internal void RemoveFilesInPath (FilePath path)
+		{
+			SetItems (this.Where (file => !file.FilePath.IsChildPathOf (path)));
+		}
 		
 		public void Remove (string fileName)
 		{
