@@ -61,12 +61,6 @@
 			_label="Re_target"
 			_displayName="Retarget All Packages" />
 		</Category>
-		<Category id="Hidden" _name="Hidden">
-			<Command
-				id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
-				_description="Current package version"
-				_label="Version" />
-		</Category>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
@@ -148,7 +142,6 @@
 	</ExtensionPoint>
 
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
-		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />

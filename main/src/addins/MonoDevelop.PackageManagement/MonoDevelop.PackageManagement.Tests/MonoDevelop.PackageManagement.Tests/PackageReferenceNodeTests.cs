@@ -104,7 +104,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
-			Assert.AreEqual (String.Empty, secondaryLabel);
+			Assert.AreEqual ("(1.2.3)", secondaryLabel);
 		}
 
 		[Test]
@@ -117,33 +117,33 @@ namespace MonoDevelop.PackageManagement.Tests
 			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
-			Assert.AreEqual (String.Empty, secondaryLabel);
+			Assert.AreEqual ("(1.2.3)", secondaryLabel);
 		}
 
 		[Test]
 		public void GetLabel_PackageReferenceNeedsReinstallation_ReturnsPackageId ()
 		{
-			CreatePackageReference (packageId: "MyPackage", requireReinstallation: true);
+			CreatePackageReference (packageId: "MyPackage", packageVersion: "1.2.3", requireReinstallation: true);
 			CreatePackageReferenceNode (installed: true);
 
 			string label = node.GetLabel ();
 			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
-			Assert.AreEqual (String.Empty, secondaryLabel);
+			Assert.AreEqual ("(1.2.3)", secondaryLabel);
 		}
 
 		[Test]
 		public void GetLabel_PackageReferenceIsPendingInstall_ReturnsPackageIdFollowedByInstallingText ()
 		{
-			CreatePackageReference (packageId: "MyPackage");
+			CreatePackageReference (packageId: "MyPackage", packageVersion: "1.2.3");
 			CreatePackageReferenceNode (installed: false, installPending: true);
 
 			string label = node.GetLabel ();
 			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
-			Assert.AreEqual ("(installing)", secondaryLabel);
+			Assert.AreEqual ("(1.2.3 installing)", secondaryLabel);
 		}
 
 		[Test]
@@ -184,6 +184,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreatePackageReference (
 				packageId: "MyPackage",
+				packageVersion: "1.0.2",
 				requireReinstallation: true);
 			CreatePackageReferenceNode (
 				installed: true,
@@ -193,7 +194,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
-			Assert.AreEqual ("(1.2.3.4 available)", secondaryLabel);
+			Assert.AreEqual ("(1.0.2 · 1.2.3.4 available)", secondaryLabel);
 		}
 
 		[Test]
@@ -318,36 +319,36 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetVersionLabel_SpecificVersionInstalled_ReturnsVersion ()
+		public void GetSecondaryLabel_SpecificVersionInstalled_ReturnsVersion ()
 		{
 			CreatePackageReference ("MyPackage", "1.2.3");
 			CreatePackageReferenceNode ();
 
-			string label = node.GetPackageVersionLabel ();
+			string label = node.GetSecondaryLabel ();
 
-			Assert.AreEqual (label, "Version 1.2.3");
+			Assert.AreEqual (label, "(1.2.3)");
 		}
 
 		[Test]
-		public void GetVersionLabel_FloatingVersionVersion_ReturnsFloatingVersion ()
+		public void GetSecondaryLabel_FloatingVersionVersion_ReturnsFloatingVersion ()
 		{
 			CreatePackageReferenceWithProjectJsonWildcardVersion ("MyPackage", "1.2.3-*");
 			CreatePackageReferenceNode ();
 
-			string label = node.GetPackageVersionLabel ();
+			string label = node.GetSecondaryLabel ();
 
-			Assert.AreEqual (label, "Version 1.2.3-*");
+			Assert.AreEqual (label, "(1.2.3-*)");
 		}
 
 		[Test]
-		public void GetVersionLabel_PackageWithoutVersion_NullReferenceExceptionIsNotThrown ()
+		public void GetSecondaryLabel_PackageWithoutVersion_NullReferenceExceptionIsNotThrown ()
 		{
 			CreatePackageReference ("MyPackage", packageVersion: null);
 			CreatePackageReferenceNode ();
 
-			string label = node.GetPackageVersionLabel ();
+			string label = node.GetSecondaryLabel ();
 
-			Assert.AreEqual (label, "Version None");
+			Assert.AreEqual (label, "");
 		}
 	}
 }

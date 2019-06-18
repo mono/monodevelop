@@ -108,20 +108,36 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (UpdatedVersion != null) {
 				return GetUpdatedVersionLabelText ();
 			}
+
 			if (IsInstallPending) {
 				return GetInstallingLabelText ();
 			}
-			return string.Empty;
+
+			string version = GetPackageDisplayVersion (displayNone: false);
+			if (string.IsNullOrEmpty (version)) {
+				return string.Empty;
+			}
+
+			return string.Format ("({0})", version);
 		}
 
 		string GetUpdatedVersionLabelText ()
 		{
-			return GettextCatalog.GetString ("({0} available)", UpdatedVersion);
+			string version = GetPackageDisplayVersion (displayNone: false);
+			if (string.IsNullOrEmpty (version)) {
+				return GettextCatalog.GetString ("({0} available)", UpdatedVersion);
+			}
+
+			return GettextCatalog.GetString ("({0} · {1} available)", version, UpdatedVersion);
 		}
 
 		string GetInstallingLabelText ()
 		{
-			return GettextCatalog.GetString ("(installing)");
+			string version = GetPackageDisplayVersion (displayNone: false);
+			if (string.IsNullOrEmpty (version)) {
+				return GettextCatalog.GetString ("(installing)");
+			}
+			return GettextCatalog.GetString ("({0} installing)", version);
 		}
 
 		public IconId GetIconId ()
@@ -129,20 +145,18 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return Stock.Reference;
 		}
 
-		public string GetPackageDisplayVersion ()
+		public string GetPackageDisplayVersion (bool displayNone = true)
 		{
 			if (PackageReference.IsFloating ()) {
 				return PackageReference.AllowedVersions.Float.ToString ();
 			}
 			if (Version == null) {
-				return GettextCatalog.GetString ("None");
+				if (displayNone) {
+					return GettextCatalog.GetString ("None");
+				}
+				return string.Empty;
 			}
 			return Version.ToString ();
-		}
-
-		public string GetPackageVersionLabel ()
-		{
-			return GettextCatalog.GetString ("Version {0}", GetPackageDisplayVersion ());
 		}
 
 		public TaskSeverity? GetStatusSeverity ()

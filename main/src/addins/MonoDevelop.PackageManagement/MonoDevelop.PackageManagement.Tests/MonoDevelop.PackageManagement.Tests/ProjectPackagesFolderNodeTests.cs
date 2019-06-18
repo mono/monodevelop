@@ -204,7 +204,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, nodes.Count);
 			Assert.IsFalse (referenceNode.Installed);
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual (String.Empty, referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(1.0)", referenceNode.GetSecondaryLabel ());
 		}
 
 		[Test]
@@ -222,7 +222,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, nodes.Count);
 			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual ("(1.2 available)", referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(1.0 · 1.2 available)", referenceNode.GetSecondaryLabel ());
 		}
 
 		[Test]
@@ -239,7 +239,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, nodes.Count);
 			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual ("(1.2 available)", referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(1.0 · 1.2 available)", referenceNode.GetSecondaryLabel ());
 			Assert.AreEqual (Stock.Reference, referenceNode.GetIconId ());
 			Assert.IsTrue (referenceNode.IsDisabled ());
 		}
@@ -274,7 +274,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var referenceNode = packagesFolderNode.GetPackageReferencesNodes ().Single ();
 
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual ("Version 1.2.3-*", referenceNode.GetPackageVersionLabel ());
+			Assert.AreEqual ("(1.2.3-*)", referenceNode.GetSecondaryLabel ());
 			Assert.IsTrue (referenceNode.Installed);
 		}
 	}

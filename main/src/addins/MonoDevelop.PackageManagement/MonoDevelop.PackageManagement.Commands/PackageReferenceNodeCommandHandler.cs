@@ -142,14 +142,6 @@ namespace MonoDevelop.PackageManagement.Commands
 			}
 		}
 
-		[CommandUpdateHandler (PackageReferenceNodeCommands.ShowPackageVersion)]
-		public void UpdateShowPackageVersionItem (CommandInfo info)
-		{
-			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
-			info.Enabled = false;
-			info.Text = packageReferenceNode.GetPackageVersionLabel ();
-		}
-
 		[CommandUpdateHandler (PackageReferenceNodeCommands.ReinstallPackage)]
 		public void UpdateReinstallPackageItem (CommandInfo info)
 		{
