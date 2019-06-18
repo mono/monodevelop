@@ -502,7 +502,9 @@ namespace MonoDevelop.MacIntegration
 						m.Dispose ();
 					}
 					NSApplication.SharedApplication.HelpMenu = null;
-				} catch {}
+				} catch (Exception e2) {
+					LoggingService.LogError ("Could not uninstall global menu", e2);
+				}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
 				return false;
