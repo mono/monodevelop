@@ -109,8 +109,9 @@ namespace MonoDevelop.Ide.Gui
 			info.Enabled = info.Visible;
 		}
 
+		
 		/*** Edit commands ***/
-
+		
 		[CommandHandler (EditCommands.Undo)]
 		protected void OnUndo ()
 		{
