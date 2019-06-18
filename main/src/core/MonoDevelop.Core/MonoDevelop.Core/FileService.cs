@@ -909,8 +909,6 @@ namespace MonoDevelop.Core
 
 	class EventQueue
 	{
-		static readonly EventQueue q = new EventQueue ();
-
 		static void RaiseSync (FileService.EventDataKind kind, FileEventArgs args)
 		{
 			var handler = FileService.GetHandler (kind);
@@ -920,14 +918,14 @@ namespace MonoDevelop.Core
 			// Ugly, but it saves us the problem of having to deal with generic event handlers without covariance.
 			if (args is FileCopyEventArgs copyArgs) {
 				if (handler is EventHandler<FileCopyEventArgs> copyHandler) {
-					copyHandler?.TimeInvoke (q, copyArgs);
+					copyHandler.Invoke (null, copyArgs);
 					return;
 				}
 				throw new InvalidOperationException ();
 			}
 
 			if (handler is EventHandler<FileEventArgs> fileHandler)
-				fileHandler?.TimeInvoke (q, args);
+				fileHandler.Invoke (null, args);
 			else
 				throw new InvalidOperationException ();
 		}
@@ -1347,17 +1345,17 @@ namespace MonoDevelop.Core
 
 		internal void OnFileCreated (FileEventArgs args)
 		{
-			FileCreated?.TimeInvoke (this, Clone (args));
+			FileCreated?.Invoke (this, Clone (args));
 		}
 
 		internal void OnFileRemoved (FileEventArgs args)
 		{
-			FileRemoved?.TimeInvoke (this, Clone (args));
+			FileRemoved?.Invoke (this, Clone (args));
 		}
 
 		internal void OnFileRenamed (FileCopyEventArgs args)
 		{
-			FileRenamed?.TimeInvoke (this, Clone (args));
+			FileRenamed?.Invoke (this, Clone (args));
 		}
 
 		static T Clone<T> (T args) where T : FileEventArgs, new()
