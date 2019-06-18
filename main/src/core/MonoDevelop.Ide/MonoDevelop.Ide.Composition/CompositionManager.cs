@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.Composition
 				if (e is IOException)
 					return;
 
-				if (!IdeApp.Initialized) {
+				if (!IdeApp.IsInitialized) {
 					Console.WriteLine (e);
 					return;
 				}
