@@ -356,6 +356,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 		<SeparatorItem id = "SaveSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
 		<SeparatorItem id = "ToggleSeparator" />

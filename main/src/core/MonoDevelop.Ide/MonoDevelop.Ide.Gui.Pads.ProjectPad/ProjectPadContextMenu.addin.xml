@@ -118,6 +118,7 @@
 	</Condition>
 	<Condition id="ItemType" value="IFolderItem|IFileItem">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 	</Condition>
 	<SeparatorItem id = "ToolsSectionEnd" />
 	
