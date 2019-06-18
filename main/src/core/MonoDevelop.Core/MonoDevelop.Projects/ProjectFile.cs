@@ -179,8 +179,10 @@ namespace MonoDevelop.Projects
 				filename = FileService.GetFullPath (value);
 
 				if (HasChildren) {
-					foreach (ProjectFile projectFile in DependentChildren)
-						projectFile.dependsOn = Path.GetFileName (FilePath);
+					foreach (ProjectFile projectFile in DependentChildren) {
+						if (!string.IsNullOrEmpty (projectFile.dependsOn))
+							projectFile.dependsOn = Path.GetFileName (FilePath);
+					}
 				}
 
 				// If the file is a link, rename the link too
@@ -447,8 +449,6 @@ namespace MonoDevelop.Projects
 						dependsOnFile.dependentChildren = new List<ProjectFile> ();
 					dependsOnFile.dependentChildren.Add (this);
 					return true;
-				} else {
-					return false;
 				}
 			} else {
 				// File nesting
@@ -459,10 +459,10 @@ namespace MonoDevelop.Projects
 						dependsOnFile.dependentChildren = new List<ProjectFile> ();
 					dependsOnFile.dependentChildren.Add (this);
 					return true;
-				} else {
-					return false;
 				}
 			}
+
+			return false;
 		}
 		#endregion
 
