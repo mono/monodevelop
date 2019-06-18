@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -56,6 +57,7 @@ namespace MonoDevelop.Ide.Navigation
 		uint TRANSIENT_TIMEOUT = 10000; //ms
 
 		Document currentDoc;
+		ITextView currentTextView;
 
 		Task IService.Dispose ()
 		{
@@ -199,18 +201,18 @@ namespace MonoDevelop.Ide.Navigation
 					return point;
 			}
 
-			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
-			var editBuf = doc.Editor;
-			if (editBuf != null) {
+			if (doc.GetContent<ITextView> (forActiveView: true) is ITextView textView) {
 				if (forClosedHistory) {
-					point = new TextFileNavigationPoint (doc.FileName, editBuf.CaretLine, editBuf.CaretColumn);
+					var caretPosition = textView.Caret.Position.BufferPosition;
+					var line = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (caretPosition);
+					var column = caretPosition.Position - line.Start.Position;
+					point = new TextFileNavigationPoint (doc.FileName, line.LineNumber, column);
 				} else {
-					point = new TextFileNavigationPoint (doc, editBuf);
+					point = new TextFileNavigationPoint (doc, textView);
 				}
 				if (point != null)
 					return point;
 			}
-			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 
 			return new DocumentNavigationPoint (doc);
 		}
@@ -334,17 +336,24 @@ namespace MonoDevelop.Ide.Navigation
 			DetachFromCurrentDoc ();
 			if (document == null)
 				return;
-
 			currentDoc = document;
 
 			currentDoc.Closed += HandleCurrentDocClosed;
-			
-			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
-			if (currentDoc.Editor != null) {
-				currentDoc.Editor.TextChanged += BufferTextChanged;
-				currentDoc.Editor.CaretPositionChanged += BufferCaretPositionChanged;
-			}
-			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
+			document.RunWhenContentAdded<ITextView> (textView => {
+				if (currentTextView == textView)
+					return;
+				if (currentTextView != null) {
+					currentTextView.TextBuffer.Changed -= BufferTextChanged;
+					currentTextView.Caret.PositionChanged -= BufferCaretPositionChanged;
+				}
+				textView.TextBuffer.Changed += BufferTextChanged;
+				textView.Caret.PositionChanged += BufferCaretPositionChanged;
+				currentTextView = textView;
+				// We call this so generic DocumentNavigationPoint which was created when
+				// file was opened and ITextView wasn't there yet is now replaced with
+				// more detailed TextFileNavigationPoint which also has current line
+				LogActiveDocument (true);
+			});
 		}
 
 		void HandleCurrentDocClosed (object sender, EventArgs e)
@@ -358,21 +367,24 @@ namespace MonoDevelop.Ide.Navigation
 				return;
 			
 			currentDoc.Closed -= HandleCurrentDocClosed;
-			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
-			if (currentDoc.Editor != null) {
-				currentDoc.Editor.TextChanged -= BufferTextChanged;
-				currentDoc.Editor.CaretPositionChanged -= BufferCaretPositionChanged;
+			if (currentTextView != null) {
+				currentTextView.TextBuffer.Changed -= BufferTextChanged;
+				// If editor was closed before we got here calling .Caret will throw
+				// but we also don't have to unsubcribed since that object probably
+				// got garbage collected and is not holding reference to us anymore.
+				if (!currentTextView.IsClosed)
+					currentTextView.Caret.PositionChanged -= BufferCaretPositionChanged;
 			}
-			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 			currentDoc = null;
+			currentTextView = null;
 		}
 
-		void BufferCaretPositionChanged (object sender, EventArgs args)
+		void BufferCaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
 		{
 			LogActiveDocument (true);
 		}
 
-		void BufferTextChanged (object sender, EventArgs args)
+		private void BufferTextChanged (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
 		{
 			LogActiveDocument ();
 		}
