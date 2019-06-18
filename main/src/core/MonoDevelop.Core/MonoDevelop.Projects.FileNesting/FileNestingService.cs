@@ -25,24 +25,41 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.FileNesting
 {
 	internal static class FileNestingService
 	{
-		static List<NestingRulesProvider> rulesProviders;
+		static ImmutableList<NestingRulesProvider> rulesProviders;
 
 		static FileNestingService ()
 		{
+			AddinManager.AddExtensionNodeHandler (typeof (NestingRulesProvider), HandleRulesProviderExtension);
+		}
+
+		static void HandleRulesProviderExtension (object sender, ExtensionNodeEventArgs args)
+		{
+			if (rulesProviders != null) {
+				var pr = args.ExtensionObject as NestingRulesProvider;
+				if (pr != null) {
+					if (args.Change == ExtensionChange.Add) {
+						rulesProviders = rulesProviders.Add (pr);
+					} else {
+						rulesProviders = rulesProviders.Remove (pr);
+					}
+				}
+			}
 		}
 
 		public static string GetParentFile (string inputFile)
 		{
 			if (rulesProviders == null) {
-				rulesProviders = new List<NestingRulesProvider> ();
-				foreach (var pr in Mono.Addins.AddinManager.GetExtensionObjects<NestingRulesProvider> ()) {
-					rulesProviders.Add (pr);
+				rulesProviders = ImmutableList<NestingRulesProvider>.Empty;
+				foreach (var pr in AddinManager.GetExtensionObjects<NestingRulesProvider> ()) {
+					rulesProviders = rulesProviders.Add (pr);
 				}
 			}
 
