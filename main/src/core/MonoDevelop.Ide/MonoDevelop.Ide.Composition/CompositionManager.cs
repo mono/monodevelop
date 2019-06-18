@@ -251,26 +251,31 @@ namespace MonoDevelop.Ide.Composition
 			{
 				base.HandleException (message, e);
 
-				if (!(e is IOException)) {
-					// TODO: Fix text.
-					var text = GettextCatalog.GetString ("There was a problem loading one or more extensions and {0} needs to be restarted.", BrandingService.ApplicationName);
-					var quitButton = new AlertButton (Strings.Quit);
-					var restartButton = new AlertButton (Strings.Restart);
+				if (e is IOException)
+					return;
 
-					var result = MessageService.GenericAlert (
-						IdeServices.DesktopService.GetFocusedTopLevelWindow (),
-						Gui.Stock.Error,
-						text,
-						secondaryText: null,
-						defaultButton: 1,
-						quitButton,
-						restartButton
-					);
-					if (result == restartButton)
-						IdeApp.Restart (false).Ignore ();
-					else
-						IdeApp.Exit ().Ignore ();
+				if (!IdeApp.Initialized) {
+					Console.WriteLine (e);
+					return;
 				}
+
+				var text = GettextCatalog.GetString ("There was a problem loading one or more extensions and {0} needs to be restarted.", BrandingService.ApplicationName);
+				var quitButton = new AlertButton (Strings.Quit);
+				var restartButton = new AlertButton (Strings.Restart);
+
+				var result = MessageService.GenericAlert (
+					IdeServices.DesktopService.GetFocusedTopLevelWindow (),
+					Gui.Stock.Error,
+					text,
+					secondaryText: null,
+					defaultButton: 1,
+					quitButton,
+					restartButton
+				);
+				if (result == restartButton)
+					IdeApp.Restart (false).Ignore ();
+				else
+					IdeApp.Exit ().Ignore ();
 			}
 		}
 	}
