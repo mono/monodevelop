@@ -1,4 +1,4 @@
-//
+﻿//
 // HPanedThin.cs
 //
 // Author:
@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using System;
 
 #if MAC
 using AppKit;
@@ -48,7 +49,6 @@ namespace MonoDevelop.Components
 			else
 #endif
 				handle = new CustomGtkPanedHandle (this);
-			handle.Parent = this;
 		}
 
 		public int GrabAreaSize {
@@ -104,21 +104,58 @@ namespace MonoDevelop.Components
 		public abstract int GrabAreaSize { get; set; }
 
 		public virtual Gtk.Widget HandleWidget { get; set; }
+
+		protected Gtk.Paned ParentPaned { get; private set; }
+
+		protected CustomPanedHandle (Gtk.Paned parent)
+		{
+			ParentPaned = parent;
+			ParentPaned.SizeRequested += HandleSizeRequested;
+			ParentPaned.SizeAllocated += HandleSizeAllocated;
+			Parent = parent;
+		}
+
+		protected virtual void OnParentSizeRequested (Gtk.SizeRequestedArgs args)
+		{
+			SizeRequest ();
+		}
+
+		protected virtual void OnParentSizeAllocated (Gtk.SizeAllocatedArgs args)
+		{
+		}
+
+		void HandleSizeRequested (object o, Gtk.SizeRequestedArgs args)
+		{
+			OnParentSizeRequested (args);
+		}
+
+		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			OnParentSizeAllocated (args);
+		}
+
+		protected override void OnDestroyed ()
+		{
+            if (ParentPaned != null) {
+				ParentPaned.SizeRequested -= HandleSizeRequested;
+				ParentPaned.SizeAllocated -= HandleSizeAllocated;
+				ParentPaned = null;
+			}
+			base.OnDestroyed ();
+		}
 	}
 
 #if MAC
 
 	sealed class CustomMacPanedHandle : CustomPanedHandle
 	{
-		readonly Gtk.GtkNSViewHost host;
-		readonly MacPanedHandleView handle;
-		readonly Gtk.Paned parent;
+		Gtk.GtkNSViewHost host;
+		MacPanedHandleView handle;
 		readonly bool horizontal;
 
-		public CustomMacPanedHandle (Gtk.Paned parent)
+		public CustomMacPanedHandle (Gtk.Paned parent) : base (parent)
 		{
 			VisibleWindow = false;
-			this.parent = parent;
 			HPanedThin.InitStyle (parent, 1);
 			horizontal = parent is HPanedThin;
 
@@ -126,10 +163,6 @@ namespace MonoDevelop.Components
 			host = new Gtk.GtkNSViewHost (handle, NSWindowOrderingMode.Above);
 
 			GrabAreaSize = HandleGrabWidth;
-			parent.SizeRequested += delegate {
-				SizeRequest ();
-			};
-			parent.SizeAllocated += HandleSizeAllocated;
 
 			Add (host);
 			host.Show ();
@@ -150,23 +183,31 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		protected override void OnParentSizeAllocated (Gtk.SizeAllocatedArgs args)
 		{
-			if (parent.Child1 != null && parent.Child1.Visible && parent.Child2 != null && parent.Child2.Visible) {
+			if (ParentPaned.Child1 != null && ParentPaned.Child1.Visible && ParentPaned.Child2 != null && ParentPaned.Child2.Visible) {
 				Show ();
 				int centerSize = Child == null ? GrabAreaSize / 2 : 0;
 				if (horizontal)
-					SizeAllocate (new Gdk.Rectangle (parent.Child1.Allocation.X + parent.Child1.Allocation.Width - centerSize, args.Allocation.Y, GrabAreaSize, args.Allocation.Height));
+					SizeAllocate (new Gdk.Rectangle (ParentPaned.Child1.Allocation.X + ParentPaned.Child1.Allocation.Width - centerSize, args.Allocation.Y, GrabAreaSize, args.Allocation.Height));
 				else
-					SizeAllocate (new Gdk.Rectangle (args.Allocation.X, parent.Child1.Allocation.Y + parent.Child1.Allocation.Height - centerSize, args.Allocation.Width, GrabAreaSize));
+					SizeAllocate (new Gdk.Rectangle (args.Allocation.X, ParentPaned.Child1.Allocation.Y + ParentPaned.Child1.Allocation.Height - centerSize, args.Allocation.Width, GrabAreaSize));
 			} else
 				Hide ();
+			base.OnParentSizeAllocated (args);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			host = null;
+			handle = null;
+			base.OnDestroyed ();
 		}
 	}
 
 	sealed class MacPanedHandleView: DragEventTrapView
 	{
-		readonly Gtk.Paned owner;
+		readonly WeakReference<Gtk.Paned> owner;
 		readonly bool horizontal;
 		int initialPos;
 		int initialPanedPos;
@@ -174,7 +215,7 @@ namespace MonoDevelop.Components
 		public MacPanedHandleView (Gtk.Paned owner)
 		{
 			horizontal = owner is HPanedThin;
-			this.owner = owner;
+			this.owner = new WeakReference<Gtk.Paned>(owner);
 		}
 
 		protected override NSCursor GetDragCursor ()
@@ -188,13 +229,15 @@ namespace MonoDevelop.Components
 
 		public override void MouseDown (NSEvent theEvent)
 		{
-			var point = NSEvent.CurrentMouseLocation;
+			if (owner.TryGetTarget (out var paned)) {
+				var point = NSEvent.CurrentMouseLocation;
 
-			if (horizontal)
-				initialPos = (int)point.X;
-			else
-				initialPos = (int)point.Y;
-			initialPanedPos = owner.Position;
+				if (horizontal)
+					initialPos = (int)point.X;
+				else
+					initialPos = (int)point.Y;
+				initialPanedPos = paned.Position;
+			}
 
 			base.MouseDown (theEvent);
 		}
@@ -203,14 +246,16 @@ namespace MonoDevelop.Components
 		{
 			base.MouseDragged (theEvent);
 
-			var point = NSEvent.CurrentMouseLocation;
+			if (owner.TryGetTarget (out var paned)) {
+				var point = NSEvent.CurrentMouseLocation;
 
-			if (horizontal) {
-				int newpos = initialPanedPos + ((int)point.X - initialPos);
-				owner.Position = newpos >= 10 ? newpos : 10;
-			} else {
-				int newpos = initialPanedPos + ((int)point.Y - initialPos);
-				owner.Position = newpos >= 10 ? newpos : 10;
+				if (horizontal) {
+					int newpos = initialPanedPos + ((int)point.X - initialPos);
+					paned.Position = newpos >= 10 ? newpos : 10;
+				} else {
+					int newpos = initialPanedPos + ((int)point.Y - initialPos);
+					paned.Position = newpos >= 10 ? newpos : 10;
+				}
 			}
 		}
 
@@ -238,37 +283,37 @@ namespace MonoDevelop.Components
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
 
-		Gtk.Paned parent;
 		bool horizontal;
 		bool dragging;
 		int initialPos;
 		int initialPanedPos;
 
-		public CustomGtkPanedHandle (Gtk.Paned parent)
+		public CustomGtkPanedHandle (Gtk.Paned parent) : base (parent)
 		{
-			this.parent = parent;
-			this.horizontal = parent is HPanedThin;
+			horizontal = parent is HPanedThin;
 			GrabAreaSize = HandleGrabWidth;
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask;
 
-			parent.SizeRequested += delegate {
-				SizeRequest ();
-			};
-			parent.SizeAllocated += HandleSizeAllocated;
 			HandleWidget = null;
 		}
 
-		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		void HandleSizeRequested (object o, Gtk.SizeRequestedArgs args)
 		{
-			if (parent.Child1 != null && parent.Child1.Visible && parent.Child2 != null && parent.Child2.Visible) {
+			SizeRequest ();
+		}
+
+		protected override void OnParentSizeAllocated (Gtk.SizeAllocatedArgs args)
+		{
+			if (ParentPaned.Child1 != null && ParentPaned.Child1.Visible && ParentPaned.Child2 != null && ParentPaned.Child2.Visible) {
 				Show ();
 				int centerSize = Child == null ? GrabAreaSize / 2 : 0;
 				if (horizontal)
-					SizeAllocate (new Gdk.Rectangle (parent.Child1.Allocation.X + parent.Child1.Allocation.Width - centerSize, args.Allocation.Y, GrabAreaSize, args.Allocation.Height));
+					SizeAllocate (new Gdk.Rectangle (ParentPaned.Child1.Allocation.X + ParentPaned.Child1.Allocation.Width - centerSize, args.Allocation.Y, GrabAreaSize, args.Allocation.Height));
 				else
-					SizeAllocate (new Gdk.Rectangle (args.Allocation.X, parent.Child1.Allocation.Y + parent.Child1.Allocation.Height - centerSize, args.Allocation.Width, GrabAreaSize));
+					SizeAllocate (new Gdk.Rectangle (args.Allocation.X, ParentPaned.Child1.Allocation.Y + ParentPaned.Child1.Allocation.Height - centerSize, args.Allocation.Width, GrabAreaSize));
 			} else
 				Hide ();
+			base.OnParentSizeAllocated (args);
 		}
 
 		public override int GrabAreaSize {
@@ -297,14 +342,14 @@ namespace MonoDevelop.Components
 					value.Show ();
 					VisibleWindow = true;
 					WidthRequest = HeightRequest = -1;
-					HPanedThin.InitStyle (parent, GrabAreaSize);
+					HPanedThin.InitStyle (ParentPaned, GrabAreaSize);
 				} else {
 					VisibleWindow = false;
 					if (horizontal)
 						WidthRequest = 1;
 					else
 						HeightRequest = 1;
-					HPanedThin.InitStyle (parent, 1);
+					HPanedThin.InitStyle (ParentPaned, 1);
 				}
 			}
 		}
@@ -330,7 +375,7 @@ namespace MonoDevelop.Components
 				initialPos = (int) evnt.XRoot;
 			else
 				initialPos = (int) evnt.YRoot;
-			initialPanedPos = parent.Position;
+			initialPanedPos = ParentPaned.Position;
 			dragging = true;
 			return true;
 		}
@@ -346,11 +391,11 @@ namespace MonoDevelop.Components
 			if (dragging) {
 				if (horizontal) {
 					int newpos = initialPanedPos + ((int) evnt.XRoot - initialPos);
-					parent.Position = newpos >= 10 ? newpos : 10;
+					ParentPaned.Position = newpos >= 10 ? newpos : 10;
 				}
 				else {
 					int newpos = initialPanedPos + ((int) evnt.YRoot - initialPos);
-					parent.Position = newpos >= 10 ? newpos : 10;
+					ParentPaned.Position = newpos >= 10 ? newpos : 10;
 				}
 			}
 			return base.OnMotionNotifyEvent (evnt);
