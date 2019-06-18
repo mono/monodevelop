@@ -179,7 +179,7 @@ namespace MonoDevelop.AspNetCore
 					};
 					this.Project.RunConfigurations.Add (projectRunConfiguration);
 				} else if (runConfig is AspNetCoreRunConfiguration config) {
-					config.CurrentProfile = profile.Value;
+					config.UpdateProfile (profile.Value);
 				}
 			}
 		}
@@ -227,7 +227,7 @@ namespace MonoDevelop.AspNetCore
 				} else {
 					if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
 						var index = Project.RunConfigurations.IndexOf (runConfig);
-						aspNetCoreRunConfiguration.CurrentProfile = profile.Value;
+						aspNetCoreRunConfiguration.UpdateProfile (profile.Value);
 						this.Project.RunConfigurations [index] = runConfig;
 					}
 				}
