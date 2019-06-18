@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.TextEditor
 {
-	public class CSharpEnableNewEditorSwitchController : IFeatureSwitchController
+	sealed class CSharpEnableNewEditorSwitchController : IFeatureSwitchController
 	{
 		const string FeatureName = "CSharpEnableNewEditor";
 
