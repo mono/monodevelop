@@ -4620,16 +4620,18 @@ namespace MonoDevelop.Projects
 				return;
 			}
 
-			if (Files.GetFileFromFullPath (fileName) != null) {
-				// File exists in project. This can happen if the file was added
-				// in the IDE and not externally.
-				return;
-			}
+			// PERF: IsChildPathOf is less expensive than the O(logn) for finding immutable dictionary's items.
 
 			// Check file is inside the project directory. The file globs would exclude the file anyway
 			// if the relative path starts with "..\" but checking here avoids checking the file globs.
 			if (!fileName.IsChildPathOf (BaseDirectory))
 				return;
+
+			if (Files.GetFile (fileName) != null) {
+				// File exists in project. This can happen if the file was added
+				// in the IDE and not externally.
+				return;
+			}
 
 			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
 			var globItems = sourceProject.FindGlobItemsIncludingFile (include);
@@ -4653,7 +4655,7 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				// Double check the file has not been added on the UI thread by the IDE.
-				list.RemoveAll (x => Files.GetFileFromFullPath (fileName) != null);
+				list.RemoveAll (x => Files.GetFile (fileName) != null);
 				if (list.Count > 0)
 					Items.AddRange (list);
 				projectItemListPool.Return (list);
