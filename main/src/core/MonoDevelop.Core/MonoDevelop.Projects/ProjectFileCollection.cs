@@ -208,13 +208,14 @@ namespace MonoDevelop.Projects
 			if (path.IsNull)
 				return null;
 
-			ProjectFile pf;
-			if (files.TryGetValue (path.FullPath, out pf))
-				return pf;
-
-			return null;
+			return GetFileFromFullPath (path.FullPath);
 		}
-		
+
+		internal ProjectFile GetFileFromFullPath (FilePath fullPath)
+		{
+			return files.TryGetValue (fullPath, out var pf) ? pf : null;
+		}
+
 		public ProjectFile GetFileWithVirtualPath (string virtualPath)
 		{
 			if (string.IsNullOrEmpty (virtualPath))
