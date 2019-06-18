@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects.FileNesting
 		{
 			Kind = kind;
 			AppliesTo = appliesTo ?? AllFilesWildcard;
-			this.patterns = patterns?.ToList ();
+			this.patterns = patterns?.ToList () ?? new List<string> ();
 		}
 
 		public NestingRuleKind Kind { get; private set; }
