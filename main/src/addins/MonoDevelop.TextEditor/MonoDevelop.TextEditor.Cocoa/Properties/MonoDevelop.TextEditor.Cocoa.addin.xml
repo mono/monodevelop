@@ -15,6 +15,7 @@
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Extras.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
@@ -64,6 +65,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Extras.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
