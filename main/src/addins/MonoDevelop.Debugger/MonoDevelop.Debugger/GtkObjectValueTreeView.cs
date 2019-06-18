@@ -126,10 +126,6 @@ namespace MonoDevelop.Debugger
 		const int ValueButtonTextColumn = 15;
 		const int ObjectNodeColumn = 16;
 
-		public event EventHandler StartEditing;
-		public event EventHandler EndEditing;
-		public event EventHandler PinStatusChanged;
-
 		enum LocalCommands
 		{
 			AddWatch
@@ -956,8 +952,8 @@ public StackFrame Frame {
 			editEntry = (Entry)args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
 			editEntry.KeyReleaseEvent += OnEditKeyRelease;
-			if (StartEditing != null)
-				StartEditing (this, EventArgs.Empty);
+
+			controller.OnStartEditing ();
 		}
 
 		void OnEndEditing ()
@@ -968,8 +964,8 @@ public StackFrame Frame {
 
 			CompletionWindowManager.HideWindow ();
 			currentCompletionData = null;
-			if (EndEditing != null)
-				EndEditing (this, EventArgs.Empty);
+
+			controller.OnEndEditing ();
 		}
 
 		void OnEditKeyRelease (object sender, EventArgs e)
@@ -1616,15 +1612,13 @@ public StackFrame Frame {
 			watch.Expression = expression;
 			DebuggingService.PinnedWatches.Add (watch);
 
-			if (PinStatusChanged != null)
-				PinStatusChanged (this, EventArgs.Empty);
+			controller.OnPinStatusChanged ();
 		}
 
 		public void RemovePinnedWatch (TreeIter it)
 		{
 			DebuggingService.PinnedWatches.Remove (controller.PinnedWatch);
-			if (PinStatusChanged != null)
-				PinStatusChanged (this, EventArgs.Empty);
+			controller.OnPinStatusChanged ();
 		}
 
 		#region ICompletionWidget implementation 

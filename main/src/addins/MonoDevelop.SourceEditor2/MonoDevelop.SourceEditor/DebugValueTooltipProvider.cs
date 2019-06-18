@@ -27,17 +27,15 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Debugger;
-using MonoDevelop.Components;
 using Mono.Debugging.Client;
 
+using MonoDevelop.Ide;
+using MonoDevelop.Debugger;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -61,7 +59,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (tooltip == null)
 				return;
-			var debuggerSession = tooltip.Tree.Frame?.DebuggerSession;
+
+			var debuggerSession = tooltip.GetDebuggerSession ();
 			if (debuggerSession == null || debuggerSession == sender) {
 				tooltip.Destroy ();
 				tooltip = null;

@@ -198,7 +198,6 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			ExceptionValueTreeView.AllowEditing = false;
 			ExceptionValueTreeView.CanFocus = true;
 			ExceptionValueTreeView.AllowAdding = false;
-			ExceptionValueTreeView.RulesHint = true;
 			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 			ExceptionValueTreeView.RulesHint = false;
 

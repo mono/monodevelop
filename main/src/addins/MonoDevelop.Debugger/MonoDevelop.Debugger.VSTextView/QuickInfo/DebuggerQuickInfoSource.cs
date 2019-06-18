@@ -38,7 +38,8 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		{
 			if (window == null)
 				return;
-			var debuggerSession = window.Tree.Frame?.DebuggerSession;
+
+			var debuggerSession = window.GetDebuggerSession ();
 			if (debuggerSession == null || debuggerSession == sender) {
 				DestroyWindow ();
 			}

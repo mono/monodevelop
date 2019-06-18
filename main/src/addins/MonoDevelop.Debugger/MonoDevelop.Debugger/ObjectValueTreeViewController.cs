@@ -194,6 +194,27 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		public event EventHandler PinStatusChanged;
+
+		internal void OnPinStatusChanged ()
+		{
+			PinStatusChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		public event EventHandler StartEditing;
+
+		internal void OnStartEditing ()
+		{
+			StartEditing?.Invoke (this, EventArgs.Empty);
+		}
+
+		public event EventHandler EndEditing;
+
+		internal void OnEndEditing ()
+		{
+			EndEditing?.Invoke (this, EventArgs.Empty);
+		}
+
 		public event EventHandler<ChildrenChangedEventArgs> ChildrenLoaded;
 
 		/// <summary>
