@@ -2407,15 +2407,20 @@ namespace MonoDevelop.Projects
 
 		internal virtual void OnFileChanged (object source, FileEventArgs e)
 		{
-			var args = new ProjectFileEventArgs ();
+			ProjectFileEventArgs args = null;
 
 			foreach (FileEventInfo fi in e) {
-				ProjectFile file = GetProjectFile (fi.FileName);
+				ProjectFile file = files.GetFileFromFullPath (fi.FileName);
 				if (file != null) {
 					SetFastBuildCheckDirty ();
+					if (args == null)
+						args = new ProjectFileEventArgs ();
 					args.Add (new ProjectFileEventInfo (this, file));
 				}
 			}
+
+			if (args == null)
+				return;
 
 			try {
 				OnFileChangedInProject (args);
