@@ -111,16 +111,20 @@ namespace MonoDevelop.VersionControl.Git
 
 			credentialsWidget.CredentialsChanged += OnCredentialsChanged;
 
-			mainContainer.PackStart (credentialsWidget.Widget, marginLeft: Styles.InputContainerMargin, marginTop: 20, marginRight: Styles.InputContainerMargin);
+			mainContainer.PackStart (credentialsWidget.Widget, marginLeft: Styles.InputContainerMargin, marginTop: 20, marginRight: Styles.InputContainerMargin - 20);
 
 			// Error
 			errorLabel = new Label () {
 				Font = Font.FromName (Ide.Gui.Styles.DefaultFontName).WithSize (Styles.ErrorFontSize),
-				Margin = new WidgetSpacing (192, 0, 120, 0),
+				Margin = new WidgetSpacing (192, 0, 100, 0),
 				Visible = false,
 				Wrap = WrapMode.Word,
 				TextAlignment = Alignment.Start
 			};
+
+			if (supportedCredential.HasFlag (SupportedCredentialTypes.Ssh))
+				errorLabel.MarginLeft += 6;
+
 			mainContainer.PackStart (errorLabel);
 
 			//Buttons
@@ -232,12 +236,11 @@ namespace MonoDevelop.VersionControl.Git
 			var passwordLabel = new Label () {
 				TextAlignment = Alignment.End,
 				Text = GettextCatalog.GetString ("Password:"),
-				MinWidth = Styles.DefaultlLabelWidth,
-				MarginTop = 2
+				MinWidth = Styles.DefaultlLabelWidth
 			};
 			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center, marginRight: 0);
 
-			passwordEntry = new PasswordEntry () { HeightRequest = 21, PlaceholderText = GettextCatalog.GetString("Required"), Password = Credentials.Password ?? string.Empty, MarginTop = 2 };
+			passwordEntry = new PasswordEntry () { HeightRequest = 21, PlaceholderText = GettextCatalog.GetString("Required"), Password = Credentials.Password ?? string.Empty};
 			passwordEntry.Accessible.LabelWidget = passwordLabel;
 			Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 0 : -1, marginLeft: 0);
 			passwordEntry.Changed += PasswordEntry_Changed;
