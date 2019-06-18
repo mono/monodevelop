@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace MonoDevelop.FSW
 {
@@ -67,6 +68,36 @@ namespace MonoDevelop.FSW
 			}
 
 			return (rootNode, lastNode);
+		}
+
+		public override string ToString ()
+		{
+			var sb = new StringBuilder ();
+			PrettyPrint (sb, this, "");
+			return sb.ToString ();
+		}
+
+		static void PrettyPrint (StringBuilder builder, PathTreeNode node, string indent)
+		{
+			builder.Append (indent);
+			if (node.Next == null) {
+				builder.Append ("\\-");
+				indent += "  ";
+			} else {
+				builder.Append ("|-");
+				indent += "| ";
+			}
+
+			builder.Append (node.Segment);
+			if (node.IdCount != 0) {
+				builder.AppendFormat (" ({0})", node.IdCount);
+			}
+
+			node = node.FirstChild;
+			while (node != null) {
+				PrettyPrint (builder, node, indent);
+				node = node.Next;
+			}
 		}
 	}
 }
