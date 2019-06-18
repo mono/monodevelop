@@ -22,6 +22,7 @@
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Wpf.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
@@ -69,6 +70,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Wpf.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
