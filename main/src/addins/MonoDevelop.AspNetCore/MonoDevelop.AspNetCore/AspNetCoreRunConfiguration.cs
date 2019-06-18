@@ -38,7 +38,7 @@ namespace MonoDevelop.AspNetCore
 		[ItemProperty (DefaultValue = null)]
 		public PipeTransportSettings PipeTransport { get; set; }
 
-		internal LaunchProfileData CurrentProfile { get; set; }
+		internal LaunchProfileData CurrentProfile { get; private set; }
 
 		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
 		public bool LaunchBrowser { get; set; } = true;
@@ -179,5 +179,11 @@ namespace MonoDevelop.AspNetCore
 		}
 
 		public void OnSaveRequested () => SaveRequested?.Invoke (this, EventArgs.Empty);
+
+		internal void UpdateProfile (LaunchProfileData launchProfile)
+		{
+			CurrentProfile = launchProfile;
+			LoadEnvVariables ();
+		}
 	}
 }
