@@ -42,12 +42,19 @@ namespace MonoDevelop.VersionControl
 		
 		public bool Validate ()
 		{
-			if (!repo.IsUrlValid (repositoryUrlEntry.Text)) {
+			if (!repo.IsUrlValid (repositoryUrlEntry.Text) || !CanCreateUri ()) {
 				labelError.Show ();
 				return false;
-			} else {
-				return true;
 			}
+			return true;
+		}
+
+		public bool CanCreateUri()
+		{
+			if (string.IsNullOrEmpty (repositoryUrlEntry.Text))
+				return false;
+
+			return Uri.TryCreate (repositoryUrlEntry.Text, UriKind.RelativeOrAbsolute, out Uri serverUri);
 		}
 
 		public string RelativePath {
