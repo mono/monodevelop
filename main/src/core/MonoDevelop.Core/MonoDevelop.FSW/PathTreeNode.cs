@@ -17,6 +17,7 @@ namespace MonoDevelop.FSW
 		readonly int length;
 
 		readonly List<object> ids = new List<object> ();
+		internal int IdCount => ids.Count;
 		internal void RegisterId (object id) => ids.Add (id);
 		internal bool UnregisterId (object id) => ids.Remove (id);
 
