@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl
 		public virtual string Url
 		{
 			get { return url; }
-			set { url = value; CreateUri (); }
+			set { url = value?.Trim (); CreateUri (); }
 		}
 		
 		internal Uri Uri {
@@ -94,6 +94,5 @@ namespace MonoDevelop.VersionControl
 					return null;
 			}
 		}
-
 	}
 }
