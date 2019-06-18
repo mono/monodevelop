@@ -99,7 +99,7 @@ namespace MonoDevelop.Components
 
 #if MAC
 
-	class CustomMacPanedHandle : CustomPanedHandle
+	sealed class CustomMacPanedHandle : CustomPanedHandle
 	{
 		readonly Gtk.GtkNSViewHost host;
 		readonly MacPanedHandleView handle;
@@ -155,7 +155,7 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	class MacPanedHandleView: DragEventTrapView
+	sealed class MacPanedHandleView: DragEventTrapView
 	{
 		readonly Gtk.Paned owner;
 		readonly bool horizontal;
@@ -233,7 +233,7 @@ namespace MonoDevelop.Components
 		virtual public Gtk.Widget HandleWidget { get; set; }
 	}
 
-	class CustomGtkPanedHandle: CustomPanedHandle
+	sealed class CustomGtkPanedHandle: CustomPanedHandle
 	{
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
