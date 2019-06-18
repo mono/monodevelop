@@ -248,14 +248,9 @@ namespace MonoDevelop.Components
 
 			if (owner.TryGetTarget (out var paned)) {
 				var point = NSEvent.CurrentMouseLocation;
-
-				if (horizontal) {
-					int newpos = initialPanedPos + ((int)point.X - initialPos);
-					paned.Position = newpos >= 10 ? newpos : 10;
-				} else {
-					int newpos = initialPanedPos + ((int)point.Y - initialPos);
-					paned.Position = newpos >= 10 ? newpos : 10;
-				}
+				int relativeTo = horizontal ? (int)point.X : (int)point.Y;
+				int newpos = initialPanedPos + relativeTo - initialPos;
+				paned.Position = newpos >= 10 ? newpos : 10;
 			}
 		}
 
