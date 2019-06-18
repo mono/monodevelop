@@ -109,21 +109,6 @@ namespace MonoDevelop.Ide.Gui
 			info.Enabled = info.Visible;
 		}
 
-		[CommandHandler (FileCommands.OpenInTerminal)]
-		protected void OnOpenTerminal ()
-		{
-			FilePath path = Path.GetDirectoryName (doc.FileName);
-			IdeServices.DesktopService.OpenTerminal (path);
-		}
-
-		[CommandUpdateHandler (FileCommands.OpenInTerminal)]
-		protected void OnUpdateOpenTerminal (CommandInfo info)
-		{
-			info.Visible = doc != null && !doc.FileName.IsNullOrEmpty;
-			info.Enabled = info.Visible;
-		}
-
-
 		/*** Edit commands ***/
 
 		[CommandHandler (EditCommands.Undo)]

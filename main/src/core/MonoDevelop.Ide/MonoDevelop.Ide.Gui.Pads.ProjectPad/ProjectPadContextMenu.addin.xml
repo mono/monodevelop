@@ -106,9 +106,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy" />
 			<SeparatorItem id = "PolicyToolsEnd" />
 		</Condition>
-		<Condition id="ItemType" value="IFolderItem">
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
-		</Condition>
 		<Condition id="ItemType" value="Solution|Project|UnknownSolutionItem">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" />
 		</Condition>
