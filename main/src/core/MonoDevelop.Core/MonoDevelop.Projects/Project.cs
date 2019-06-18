@@ -4620,7 +4620,7 @@ namespace MonoDevelop.Projects
 				return;
 			}
 
-			if (Files.GetFile (fileName) != null) {
+			if (Files.GetFileFromFullPath (fileName) != null) {
 				// File exists in project. This can happen if the file was added
 				// in the IDE and not externally.
 				return;
@@ -4653,8 +4653,9 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				// Double check the file has not been added on the UI thread by the IDE.
-				list.RemoveAll (x => Files.GetFile (fileName) != null);
-				Items.AddRange (list);
+				list.RemoveAll (x => Files.GetFileFromFullPath (fileName) != null);
+				if (list.Count > 0)
+					Items.AddRange (list);
 				projectItemListPool.Return (list);
 			}).Ignore ();
 		}
