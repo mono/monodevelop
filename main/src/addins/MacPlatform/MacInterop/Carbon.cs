@@ -221,7 +221,7 @@ namespace MonoDevelop.MacInterop
 			try {
 				if (GetCurrentProcess (out ProcessSerialNumber psn) == 0)
 					CPSSetProcessName (ref psn, name);
-			} catch (TypeLoadException e) {} //EntryPointNotFoundException?
+			} catch (TypeLoadException) {} //EntryPointNotFoundException?
 		}
 
 		struct ProcessSerialNumber {
@@ -241,7 +241,7 @@ namespace MonoDevelop.MacInterop
 				try {
 					SelectionRange range = GetEventParameter<SelectionRange> (eventRef, CarbonEventParameterName.AEPosition, CarbonEventParameterType.Char);
 					line = range.lineNum+1;
-				} catch (Exception e) {
+				} catch (Exception) {
 					line = 0;
 				}
 				
