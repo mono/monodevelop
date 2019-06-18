@@ -60,9 +60,11 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
-		<SupportedFileType id="csharp" extensions=".cs,.csx" />
-		<SupportedFileType id="xaml" extensions=".xaml" FeatureSwitch="DesignersNewEditor" />
-		<SupportedFileType id="androidxml" extensions=".xml,.axml" BuildAction="AndroidResource" FeatureSwitch="DesignersNewEditor" />
+		<SupportedFileType id="csharp" extensions=".cs,.csx" featureFlag="CSharpEnableNewEditor" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks">
+		<Type id="CSharpEnableNewEditor" class="MonoDevelop.TextEditor.CSharpEnableNewEditorSwitchController" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
