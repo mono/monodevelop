@@ -97,6 +97,15 @@ namespace MonoDevelop.Components
 		}
 	}
 
+	abstract class CustomPanedHandle : Gtk.EventBox
+	{
+		internal const int HandleGrabWidth = 4;
+
+		public abstract int GrabAreaSize { get; set; }
+
+		public virtual Gtk.Widget HandleWidget { get; set; }
+	}
+
 #if MAC
 
 	sealed class CustomMacPanedHandle : CustomPanedHandle
@@ -223,15 +232,6 @@ namespace MonoDevelop.Components
 	}
 
 #endif
-
-	abstract class CustomPanedHandle: Gtk.EventBox
-	{
-		internal const int HandleGrabWidth = 4;
-
-		abstract public int GrabAreaSize { get; set; }
-
-		virtual public Gtk.Widget HandleWidget { get; set; }
-	}
 
 	sealed class CustomGtkPanedHandle: CustomPanedHandle
 	{
