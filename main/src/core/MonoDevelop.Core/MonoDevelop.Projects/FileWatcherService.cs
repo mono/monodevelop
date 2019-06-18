@@ -38,8 +38,9 @@ namespace MonoDevelop.Projects
 {
 	public static class FileWatcherService
 	{
-		// We don't want more than 8 threads for FileSystemWatchers.
-		const int maxWatchers = 8;
+		// Keep previous behaviour with a maximum of 8 watchers for Linux, as it still uses one thread per watcher.
+		// Use more watchers for finer grained directory notifications for other platforms.
+		static readonly int maxWatchers = Platform.IsMac ? 32 : 8;
 
 		static readonly PathTree tree = new PathTree ();
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
