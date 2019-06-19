@@ -28,6 +28,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 using Gtk;
 
@@ -37,43 +38,34 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.Ide.Fonts;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace MonoDevelop.Debugger
 {
 	class ExceptionCaughtDialog : Gtk.Window
 	{
-		VBox VBox;
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
+		static bool UseNewTreeView = true;
 
-		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
-
-		protected TreeView StackTraceTreeView { get; private set; }
-
-		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
-
-		protected Label ExceptionMessageLabel { get; private set; }
-
-		protected Button ExceptionHelpLinkButton { get; private set; }
-
-		protected Label ExceptionTypeLabel { get; private set; }
-
+		readonly Dictionary<ExceptionInfo, ExceptionInfo> reverseInnerExceptions = new Dictionary<ExceptionInfo, ExceptionInfo> ();
 		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
+
+		Label exceptionMessageLabel, exceptionTypeLabel, innerExceptionTypeLabel, innerExceptionMessageLabel;
+		VBox vboxAroundInnerExceptionMessage, rightVBox, container;
+		Button close, helpLinkButton, innerExceptionHelpLinkButton;
+		TreeView exceptionValueTreeView, stackTraceTreeView;
+		Expander expanderProperties, expanderStacktrace;
+		InnerExceptionsTree innerExceptionsTreeView;
+		ObjectValueTreeViewController controller;
+		CheckButton onlyShowMyCodeCheckbox;
+		bool destroyed, hadInnerException;
+		TreeStore innerExceptionsStore;
+		string innerExceptionHelpLink;
+		string exceptionHelpLink;
 		ExceptionInfo selected;
-		bool destroyed;
 		VPanedThin paned;
-		Expander expanderProperties;
-		Expander expanderStacktrace;
-		Button close;
-		VBox rightVBox;
-		VBox vboxAroundInnerExceptionMessage;
 
 		protected enum ModelColumn
 		{
@@ -85,8 +77,8 @@ namespace MonoDevelop.Debugger
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
 			: base (WindowType.Toplevel)
 		{
-			this.Child = VBox = new VBox ();
-			VBox.Show ();
+			Child = container = new VBox ();
+			container.Show ();
 			this.Name = "wizard_dialog";
 			this.ApplyTheme ();
 			selected = exception = ex;
@@ -103,10 +95,10 @@ namespace MonoDevelop.Debugger
 			var icon = new ImageView (WarningIconPixbuf);
 			icon.Yalign = 0;
 
-			ExceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
-			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
-			ExceptionHelpLinkButton = new Button { HasFocus = true, Xalign = 0, Relief = ReliefStyle.None, BorderWidth = 0 };
-			ExceptionHelpLinkButton.Name = "exception_help_link_label";
+			exceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
+			exceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
+			helpLinkButton = new Button { HasFocus = true, Xalign = 0, Relief = ReliefStyle.None, BorderWidth = 0 };
+			helpLinkButton.Name = "exception_help_link_label";
 			Gtk.Rc.ParseString (@"style ""exception-help-link-label""
 {
 	GtkWidget::link-color = ""#ffffff""
@@ -117,23 +109,23 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			var textColor = Styles.ExceptionCaughtDialog.HeaderTextColor.ToGdkColor ();
 			var headerColor = Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ();
 
-			ExceptionHelpLinkButton.ModifyBg (StateType.Selected, headerColor);
+			helpLinkButton.ModifyBg (StateType.Selected, headerColor);
 
-			ExceptionHelpLinkButton.Clicked += ExceptionHelpLinkLabel_Clicked;
-			ExceptionHelpLinkButton.KeyPressEvent += EventBoxLink_KeyPressEvent;
+			helpLinkButton.Clicked += ExceptionHelpLinkLabel_Clicked;
+			helpLinkButton.KeyPressEvent += EventBoxLink_KeyPressEvent;
 
-			ExceptionTypeLabel.ModifyFg (StateType.Normal, textColor);
-			ExceptionMessageLabel.ModifyFg (StateType.Normal, textColor);
-			ExceptionHelpLinkButton.ModifyFg (StateType.Normal, textColor);
+			exceptionTypeLabel.ModifyFg (StateType.Normal, textColor);
+			exceptionMessageLabel.ModifyFg (StateType.Normal, textColor);
+			helpLinkButton.ModifyFg (StateType.Normal, textColor);
 
 			if (Platform.IsWindows) {
-				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("bold 19"));
-				ExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("10"));
-				ExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString ("10"));
+				exceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("bold 19"));
+				exceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("10"));
+				helpLinkButton.ModifyFont (Pango.FontDescription.FromString ("10"));
 			} else {
-				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("21"));
-				ExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("12"));
-				ExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString ("12"));
+				exceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("21"));
+				exceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("12"));
+				helpLinkButton.ModifyFont (Pango.FontDescription.FromString ("12"));
 			}
 
 			//Force rendering of background with EventBox
@@ -143,13 +135,13 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			rightVBox = new VBox ();
 			leftVBox.PackStart (icon, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
 
-			rightVBox.PackStart (ExceptionTypeLabel, false, false, (uint)(Platform.IsWindows ? 0 : 2));
+			rightVBox.PackStart (exceptionTypeLabel, false, false, (uint)(Platform.IsWindows ? 0 : 2));
 
 			var exceptionHContainer = new HBox ();
-			exceptionHContainer.PackStart (ExceptionHelpLinkButton, false, false, 0);
+			exceptionHContainer.PackStart (helpLinkButton, false, false, 0);
 			exceptionHContainer.PackStart (new Fixed (), true, true, 0);
 
-			rightVBox.PackStart (ExceptionMessageLabel, true, true, (uint)(Platform.IsWindows ? 6 : 5));
+			rightVBox.PackStart (exceptionMessageLabel, true, true, (uint)(Platform.IsWindows ? 6 : 5));
 			rightVBox.PackStart (exceptionHContainer, false, false, 2);
 
 			hBox.PackStart (leftVBox, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
@@ -181,27 +173,35 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			ExceptionMessageLabel.WidthRequest = rightVBox.Allocation.Width;
+			exceptionMessageLabel.WidthRequest = rightVBox.Allocation.Width;
 			if (vboxAroundInnerExceptionMessage != null) {
-				InnerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
+				innerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
 			}
 		}
 
 		Widget CreateExceptionValueTreeView ()
 		{
-			ExceptionValueTreeView = new ObjectValueTreeView ();
-			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
-			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
-			ExceptionValueTreeView.AllowPopupMenu = false;
-			ExceptionValueTreeView.AllowExpanding = true;
-			ExceptionValueTreeView.AllowPinning = false;
-			ExceptionValueTreeView.AllowEditing = false;
-			ExceptionValueTreeView.CanFocus = true;
-			ExceptionValueTreeView.AllowAdding = false;
-			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			ExceptionValueTreeView.RulesHint = false;
+			if (UseNewTreeView) {
+				controller = new ObjectValueTreeViewController ();
+				controller.SetStackFrame (DebuggingService.CurrentFrame);
+				controller.AllowExpanding = true;
 
-			ExceptionValueTreeView.Show ();
+				exceptionValueTreeView = (TreeView) controller.GetControl ();
+			} else {
+				var objValueTreeView = new ObjectValueTreeView ();
+				objValueTreeView.Frame = DebuggingService.CurrentFrame;
+				objValueTreeView.AllowPopupMenu = false;
+				objValueTreeView.AllowExpanding = true;
+				objValueTreeView.AllowPinning = false;
+				objValueTreeView.AllowEditing = false;
+				objValueTreeView.AllowAdding = false;
+			}
+
+			exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
+			exceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
+			exceptionValueTreeView.RulesHint = false;
+			exceptionValueTreeView.CanFocus = true;
+			exceptionValueTreeView.Show ();
 
 			var scrolled = new ScrolledWindow {
 				HeightRequest = 180,
@@ -211,13 +211,15 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			};
 
 			scrolled.ShadowType = ShadowType.None;
-			scrolled.Add (ExceptionValueTreeView);
+			scrolled.Add (exceptionValueTreeView);
 			scrolled.Show ();
+
 			var vbox = new VBox ();
 			expanderProperties = WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled);
 			vbox.PackStart (new VBox (), false, false, 5);
 			vbox.PackStart (expanderProperties, true, true, 0);
 			vbox.ShowAll ();
+
 			return vbox;
 		}
 
@@ -284,19 +286,19 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		Widget CreateStackTraceTreeView ()
 		{
 			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
-			StackTraceTreeView = new TreeView (store);
-			StackTraceTreeView.SearchColumn = -1; // disable the interactive search
-			StackTraceTreeView.FixedHeightMode = false;
-			StackTraceTreeView.HeadersVisible = false;
-			StackTraceTreeView.ShowExpanders = false;
-			StackTraceTreeView.RulesHint = false;
-			StackTraceTreeView.Show ();
+			stackTraceTreeView = new TreeView (store);
+			stackTraceTreeView.SearchColumn = -1; // disable the interactive search
+			stackTraceTreeView.FixedHeightMode = false;
+			stackTraceTreeView.HeadersVisible = false;
+			stackTraceTreeView.ShowExpanders = false;
+			stackTraceTreeView.RulesHint = false;
+			stackTraceTreeView.Show ();
 
-			var renderer = new StackFrameCellRenderer (StackTraceTreeView.PangoContext);
+			var renderer = new StackFrameCellRenderer (stackTraceTreeView.PangoContext);
 
-			StackTraceTreeView.AppendColumn ("", renderer, (CellLayoutDataFunc)StackFrameLayout);
+			stackTraceTreeView.AppendColumn ("", renderer, (CellLayoutDataFunc)StackFrameLayout);
 
-			StackTraceTreeView.RowActivated += StackFrameActivated;
+			stackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow {
 				HeightRequest = 180,
@@ -304,7 +306,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				VscrollbarPolicy = PolicyType.Automatic
 			};
 			scrolled.ShadowType = ShadowType.None;
-			scrolled.Add (StackTraceTreeView);
+			scrolled.Add (stackTraceTreeView);
 			scrolled.Show ();
 			var vbox = new VBox ();
 			vbox.PackStart (CreateSeparator (), false, true, 0);
@@ -353,8 +355,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			return exception.InnerException != null;
 		}
 
-		bool hadInnerException;
-
 		void Build ()
 		{
 			Title = GettextCatalog.GetString ("Exception Caught");
@@ -362,8 +362,8 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			DefaultHeight = 500;
 			HeightRequest = 350;
 			WidthRequest = 350;
-			VBox.Foreach (VBox.Remove);
-			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
+			container.Foreach (container.Remove);
+			container.PackStart (CreateExceptionHeader (), false, true, 0);
 			paned = new VPanedThin ();
 			paned.GrabAreaSize = 10;
 			paned.Pack1 (CreateStackTraceTreeView (), true, false);
@@ -388,22 +388,22 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				box.PackStart (CreateInnerExceptionsTree (), false, false, 0);
 				box.PackStart (whiteBackground, true, true, 0);
 				box.Show ();
-				VBox.PackStart (box, true, true, 0);
+				vbox.PackStart (box, true, true, 0);
 				DefaultWidth = 900;
 				DefaultHeight = 700;
 				WidthRequest = 550;
 				HeightRequest = 450;
 			} else {
-				VBox.PackStart (whiteBackground, true, true, 0);
+				vbox.PackStart (whiteBackground, true, true, 0);
 			}
 			var actionArea = new HBox (false, 0) { BorderWidth = 14 };
 
-			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
-			OnlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
-			OnlyShowMyCodeCheckbox.Show ();
-			OnlyShowMyCodeCheckbox.Active = DebuggingService.GetUserOptions ().ProjectAssembliesOnly;
+			onlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
+			onlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
+			onlyShowMyCodeCheckbox.Show ();
+			onlyShowMyCodeCheckbox.Active = DebuggingService.GetUserOptions ().ProjectAssembliesOnly;
 
-			var alignment = new Alignment (0.0f, 0.5f, 0.0f, 0.0f) { Child = OnlyShowMyCodeCheckbox };
+			var alignment = new Alignment (0.0f, 0.5f, 0.0f, 0.0f) { Child = onlyShowMyCodeCheckbox };
 			alignment.Show ();
 
 			actionArea.PackStart (alignment, true, true, 0);
@@ -411,12 +411,8 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			actionArea.PackStart (new VBox (), false, true, 3); // dummy just to take extra 6px at end to make it 20pixels
 			actionArea.ShowAll ();
 
-			VBox.PackStart (actionArea, false, true, 0);
+			vbox.PackStart (actionArea, false, true, 0);
 		}
-
-		Label InnerExceptionTypeLabel;
-		Label InnerExceptionMessageLabel;
-		Button InnerExceptionHelpLinkButton;
 
 		Widget CreateInnerExceptionMessage ()
 		{
@@ -428,38 +424,38 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			icon.Yalign = 0;
 			hbox.PackStart (icon, false, false, 0);
 
-			InnerExceptionTypeLabel = new Label ();
-			InnerExceptionTypeLabel.UseMarkup = true;
-			InnerExceptionTypeLabel.Xalign = 0;
-			InnerExceptionTypeLabel.Selectable = true;
-			InnerExceptionTypeLabel.CanFocus = false;
-			hbox.PackStart (InnerExceptionTypeLabel, false, true, 4);
+			innerExceptionTypeLabel = new Label ();
+			innerExceptionTypeLabel.UseMarkup = true;
+			innerExceptionTypeLabel.Xalign = 0;
+			innerExceptionTypeLabel.Selectable = true;
+			innerExceptionTypeLabel.CanFocus = false;
+			hbox.PackStart (innerExceptionTypeLabel, false, true, 4);
 
-			InnerExceptionMessageLabel = new Label ();
-			InnerExceptionMessageLabel.Wrap = true;
-			InnerExceptionMessageLabel.Selectable = true;
-			InnerExceptionMessageLabel.CanFocus = false;
-			InnerExceptionMessageLabel.Xalign = 0;
-			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
+			innerExceptionMessageLabel = new Label ();
+			innerExceptionMessageLabel.Wrap = true;
+			innerExceptionMessageLabel.Selectable = true;
+			innerExceptionMessageLabel.CanFocus = false;
+			innerExceptionMessageLabel.Xalign = 0;
+			innerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 
-			InnerExceptionHelpLinkButton = new Button {
+			innerExceptionHelpLinkButton = new Button {
 				CanFocus = true,
 				BorderWidth = 0,
 				Relief = ReliefStyle.Half,
 				Xalign = 0
 			};
-			InnerExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			InnerExceptionHelpLinkButton.KeyPressEvent += InnerExceptionHelpLinkLabel_KeyPressEvent;
-			InnerExceptionHelpLinkButton.Clicked += InnerExceptionHelpLinkLabel_Pressed;
+			innerExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
+			innerExceptionHelpLinkButton.KeyPressEvent += InnerExceptionHelpLinkLabel_KeyPressEvent;
+			innerExceptionHelpLinkButton.Clicked += InnerExceptionHelpLinkLabel_Pressed;
 
-			InnerExceptionHelpLinkButton.ModifyBg (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ());
+			innerExceptionHelpLinkButton.ModifyBg (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ());
 
 			vboxAroundInnerExceptionMessage.PackStart (hbox, false, true, 0);
-			vboxAroundInnerExceptionMessage.PackStart (InnerExceptionMessageLabel, true, true, 10);
+			vboxAroundInnerExceptionMessage.PackStart (innerExceptionMessageLabel, true, true, 10);
 
 			var innerExceptionHContainer = new HBox ();
 
-			innerExceptionHContainer.PackStart (InnerExceptionHelpLinkButton, false, false, 0);
+			innerExceptionHContainer.PackStart (innerExceptionHelpLinkButton, false, false, 0);
 			innerExceptionHContainer.PackStart (new Fixed (), true, true, 0);
 
 			vboxAroundInnerExceptionMessage.PackStart (innerExceptionHContainer, true, true, 2);
@@ -474,8 +470,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			if (args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.KP_Space)
 				IdeServices.DesktopService.ShowUrl (innerExceptionHelpLink);
 		}
-
-		TreeStore InnerExceptionsStore;
 
 		class InnerExceptionsTree : TreeView
 		{
@@ -495,31 +489,27 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 		}
 
-		InnerExceptionsTree InnerExceptionsTreeView;
-
-		Dictionary<ExceptionInfo, ExceptionInfo> ReverseInnerExceptions = new Dictionary<ExceptionInfo, ExceptionInfo> ();
-
 		Widget CreateInnerExceptionsTree ()
 		{
-			InnerExceptionsTreeView = new InnerExceptionsTree ();
-			InnerExceptionsTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // background
-			InnerExceptionsTreeView.ModifyBase (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ()); // selected
-			InnerExceptionsTreeView.HeadersVisible = false;
-			InnerExceptionsStore = new TreeStore (typeof (ExceptionInfo));
+			innerExceptionsTreeView = new InnerExceptionsTree ();
+			innerExceptionsTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // background
+			innerExceptionsTreeView.ModifyBase (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ()); // selected
+			innerExceptionsTreeView.HeadersVisible = false;
+			innerExceptionsStore = new TreeStore (typeof (ExceptionInfo));
 
-			FillInnerExceptionsStore (InnerExceptionsStore, exception);
-			InnerExceptionsTreeView.AppendColumn ("Exception", new CellRendererInnerException (), new TreeCellDataFunc ((tree_column, cell, tree_model, iter) => {
+			FillInnerExceptionsStore (innerExceptionsStore, exception);
+			innerExceptionsTreeView.AppendColumn ("Exception", new CellRendererInnerException (), new TreeCellDataFunc ((tree_column, cell, tree_model, iter) => {
 				var c = (CellRendererInnerException)cell;
 				c.Text = ((ExceptionInfo)tree_model.GetValue (iter, 0)).Type;
 			}));
-			InnerExceptionsTreeView.ShowExpanders = false;
-			InnerExceptionsTreeView.LevelIndentation = 10;
-			InnerExceptionsTreeView.Model = InnerExceptionsStore;
-			InnerExceptionsTreeView.ExpandAll ();
-			InnerExceptionsTreeView.Selection.Changed += (sender, e) => {
+			innerExceptionsTreeView.ShowExpanders = false;
+			innerExceptionsTreeView.LevelIndentation = 10;
+			innerExceptionsTreeView.Model = innerExceptionsStore;
+			innerExceptionsTreeView.ExpandAll ();
+			innerExceptionsTreeView.Selection.Changed += (sender, e) => {
 				TreeIter selectedIter;
-				if (InnerExceptionsTreeView.Selection.GetSelected (out selectedIter)) {
-					UpdateSelectedException ((ExceptionInfo)InnerExceptionsTreeView.Model.GetValue (selectedIter, 0));
+				if (innerExceptionsTreeView.Selection.GetSelected (out selectedIter)) {
+					UpdateSelectedException ((ExceptionInfo)innerExceptionsTreeView.Model.GetValue (selectedIter, 0));
 				}
 			};
 			var eventBox = new EventBox ();
@@ -527,7 +517,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			var vbox = new VBox ();
 			var scroll = new ScrolledWindow ();
 			scroll.WidthRequest = 200;
-			scroll.Child = InnerExceptionsTreeView;
+			scroll.Child = innerExceptionsTreeView;
 			vbox.PackStart (scroll, true, true, 12);
 			eventBox.Add (vbox);
 			eventBox.ShowAll ();
@@ -539,13 +529,13 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			TreeIter iter;
 			if (parentIter.Equals (TreeIter.Zero)) {
 				iter = store.AppendValues (exception);
-				ReverseInnerExceptions [exception] = null;
+				reverseInnerExceptions [exception] = null;
 			} else {
-				ReverseInnerExceptions [exception] = (ExceptionInfo)store.GetValue (parentIter, 0);
+				reverseInnerExceptions [exception] = (ExceptionInfo)store.GetValue (parentIter, 0);
 				iter = store.AppendValues (parentIter, exception);
 			}
 			var updateInnerExceptions = new System.Action (() => {
-				if (!InnerExceptionsStore.IterHasChild (iter)) {
+				if (!innerExceptionsStore.IterHasChild (iter)) {
 					var innerExceptions = exception.InnerExceptions;
 					if (innerExceptions != null && innerExceptions.Count > 0) {
 						foreach (var inner in innerExceptions) {
@@ -560,9 +550,9 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			});
 			exception.Changed += delegate {
 				Application.Invoke ((o, args) => {
-					InnerExceptionsStore.EmitRowChanged (InnerExceptionsStore.GetPath (iter), iter);
+					innerExceptionsStore.EmitRowChanged (innerExceptionsStore.GetPath (iter), iter);
 					updateInnerExceptions ();
-					InnerExceptionsTreeView.ExpandRow (InnerExceptionsStore.GetPath (iter), true);
+					innerExceptionsTreeView.ExpandRow (innerExceptionsStore.GetPath (iter), true);
 				});
 			};
 			updateInnerExceptions ();
@@ -570,7 +560,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 		async void StackFrameActivated (object o, RowActivatedArgs args)
 		{
-			var model = StackTraceTreeView.Model;
+			var model = stackTraceTreeView.Model;
 			TreeIter iter;
 
 			if (!model.GetIter (out iter, args.Path))
@@ -597,7 +587,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		void UpdateSelectedException (ExceptionInfo ex)
 		{
 			selected = ex;
-			var model = (ListStore)StackTraceTreeView.Model;
+			var model = (ListStore)stackTraceTreeView.Model;
 			bool external = false;
 
 			model.Clear ();
@@ -606,7 +596,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				foreach (var frame in parentException.StackTrace) {
 					bool isUserCode = IsUserCode (frame);
 
-					if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
+					if (onlyShowMyCodeCheckbox.Active && !isUserCode) {
 						if (!external) {
 							var str = "<b>" + GettextCatalog.GetString ("[External Code]") + "</b>";
 							model.AppendValues (null, str, false);
@@ -619,14 +609,27 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					model.AppendValues (frame, null, isUserCode);
 					external = false;
 				}
-				if (!ReverseInnerExceptions.TryGetValue (parentException, out parentException))
+				if (!reverseInnerExceptions.TryGetValue (parentException, out parentException))
 					parentException = null;
 			}
-			ExceptionValueTreeView.ClearAll ();
+
+			if (UseNewTreeView) {
+				controller.ClearAll ();
+			} else {
+				((ObjectValueTreeView) exceptionValueTreeView).ClearAll ();
+			}
+
 			if (!ex.IsEvaluating && ex.Instance != null) {
 				var opts = DebuggingService.GetUserOptions ().EvaluationOptions.Clone ();
 				opts.FlattenHierarchy = true;
-				ExceptionValueTreeView.AddValues (ex.Instance.GetAllChildren (opts));
+
+				var values = ex.Instance.GetAllChildren (opts);
+
+				if (UseNewTreeView) {
+					controller.AddValues (values);
+				} else {
+					((ObjectValueTreeView) exceptionValueTreeView).AddValues (values);
+				}
 			}
 
 			if (ex.StackIsEvaluating) {
@@ -634,36 +637,33 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				model.AppendValues (null, str, false);
 			}
 
-			if (InnerExceptionTypeLabel != null) {
-				InnerExceptionTypeLabel.Markup = "<b>" + GLib.Markup.EscapeText (ex.Type) + "</b>";
-				InnerExceptionMessageLabel.Text = ex.Message;
+			if (innerExceptionTypeLabel != null) {
+				innerExceptionTypeLabel.Markup = "<b>" + GLib.Markup.EscapeText (ex.Type) + "</b>";
+				innerExceptionMessageLabel.Text = ex.Message;
 				if (!string.IsNullOrEmpty (ex.HelpLink)) {
-					InnerExceptionHelpLinkButton.Label = GettextCatalog.GetString ("Read More…");
+					innerExceptionHelpLinkButton.Label = GettextCatalog.GetString ("Read More…");
 					innerExceptionHelpLink = ex.HelpLink;
-					InnerExceptionHelpLinkButton.Show ();
+					innerExceptionHelpLinkButton.Show ();
 				} else {
 					innerExceptionHelpLink = string.Empty;
-					InnerExceptionHelpLinkButton.Hide ();
+					innerExceptionHelpLinkButton.Hide ();
 				}
 			}
 		}
-
-		string innerExceptionHelpLink;
-		string exceptionHelpLink;
 
 		void UpdateDisplay ()
 		{
 			if (destroyed)
 				return;
 
-			ExceptionTypeLabel.Text = exception.Type;
-			ExceptionMessageLabel.Text = exception.Message ?? string.Empty;
+			exceptionTypeLabel.Text = exception.Type;
+			exceptionMessageLabel.Text = exception.Message ?? string.Empty;
 			if (!string.IsNullOrEmpty (exception.HelpLink)) {
-				ExceptionHelpLinkButton.Show ();
+				helpLinkButton.Show ();
 				exceptionHelpLink = exception.HelpLink;
-				ExceptionHelpLinkButton.Label = GettextCatalog.GetString ("More information");
+				helpLinkButton.Label = GettextCatalog.GetString ("More information");
 			} else {
-				ExceptionHelpLinkButton.Hide ();
+				helpLinkButton.Hide ();
 			}
 
 			UpdateSelectedException (exception);
