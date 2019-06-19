@@ -665,8 +665,6 @@ namespace MonoDevelop.Ide
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				CurrentSelectedWorkspaceItem = item;
-				if (IdeApp.IsInitialized)
-					IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
 				return true;
 			}
 
