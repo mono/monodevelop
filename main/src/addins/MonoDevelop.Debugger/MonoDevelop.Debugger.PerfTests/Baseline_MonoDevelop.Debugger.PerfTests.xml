@@ -17,8 +17,8 @@
                         <results>
                           <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.OneLineProperty" executed="True" result="Success" success="True" time="11.5" asserts="1">
                             <properties>
-                              <property name="Time" value="0.2" />
-                              <property name="Tolerance" value="0.2" />
+                              <property name="Time" value="0.1" />
+                              <property name="Tolerance" value="0.1" />
                             </properties>
                           </test-case>
                           <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.StepOverPropertiesAndOperators1" executed="True" result="Success" success="True" time="11.5" asserts="1">
