@@ -136,6 +136,7 @@ namespace MonoDevelop.Ide.Gui
 
 			TryEditorInitialization ();
 			UpdateTextBufferRegistration ();
+			SubscribeControllerEvents ();
 		}
 
 		public void TryEditorInitialization ()
@@ -469,12 +470,6 @@ namespace MonoDevelop.Ide.Gui
 
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
-			if (Editor == null) {
-				UnsubscribeAnalysisDocument ();
-				UpdateTextBufferRegistration ();
-				return Task.CompletedTask;
-			}
-
 			if (analysisDocument != null) {
 				Microsoft.CodeAnalysis.Document doc;
 				try {
@@ -487,6 +482,12 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (doc != null)
 					return Task.CompletedTask;
+			}
+
+			if (Editor == null) {
+				UnsubscribeAnalysisDocument ();
+				UpdateTextBufferRegistration ();
+				return Task.CompletedTask;
 			}
 
 			lock (analysisDocumentLock) {

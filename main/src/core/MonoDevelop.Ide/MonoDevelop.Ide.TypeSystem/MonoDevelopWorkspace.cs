@@ -995,6 +995,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// as a result, we can assume that the things it calls are _also_ main thread only
 			Runtime.CheckMainThread ();
 			lock (projectModifyLock) {
+				FileService.FreezeEvents ();
 				freezeProjectModify = true;
 				try {
 					var ret = base.TryApplyChanges (newSolution, progressTracker);
@@ -1024,6 +1025,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					tryApplyState_documentTextChangedTasks.Clear ();
 					tryApplyState_changedProjects.Clear ();
 					freezeProjectModify = false;
+					FileService.ThawEvents ();
 				}
 			}
 		}
@@ -1342,12 +1344,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			
-
-			DispatchService.PumpingWait (async () => {
-				await Runtime.RunInMainThread (() => {
-
-					FileService.FreezeEvents ();
+			DispatchService.PumpingWait (() => {
+				return Runtime.RunInMainThread (async () => {
 
 					FileService.RenameFile (document.FilePath, newName);
 					
@@ -1358,19 +1356,10 @@ namespace MonoDevelop.Ide.TypeSystem
 							FileService.RenameFile (child.File.FilePath, child.NewName);
 						}
 					}
-
-					// let's update all the things
-					//var newPath = Path.Combine (Path.GetDirectoryName (document.FilePath), newName);
-					//var newSolution = currentSolution.WithDocumentFilePath (id, newPath);
-					//newSolution = newSolution.WithDocumentName (id, newName);
-					//SetCurrentSolution (newSolution);
-
-					FileService.ThawEvents ();
 				});
-
-				await IdeApp.ProjectOperations.SaveAsync (mdProject);
-
 			});
+
+			tryApplyState_changedProjects.Add (mdProject);
 		}
 
 		static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (
