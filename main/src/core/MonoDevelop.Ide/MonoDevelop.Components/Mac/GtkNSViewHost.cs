@@ -290,9 +290,9 @@ namespace Gtk
 		{
 			LogEnter ();
 			try {
-				var firstResponder = view?.Window.FirstResponder as NSView;
-				if (firstResponder != null && view?.AncestorSharedWithView (firstResponder) == view)
-					firstResponder.Window.MakeFirstResponder (null);
+				if (view?.Window?.FirstResponder is NSView firstResponder &&
+					view?.AncestorSharedWithView (firstResponder) == view)
+					firstResponder.Window?.MakeFirstResponder (null);
 				return base.OnFocusOutEvent (evnt);
 			} finally {
 				LogExit ();
