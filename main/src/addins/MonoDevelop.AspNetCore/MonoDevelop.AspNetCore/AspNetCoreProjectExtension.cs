@@ -52,16 +52,14 @@ namespace MonoDevelop.AspNetCore
 				return aspNetCoreRunConfiguration;
 
 			var profile = new LaunchProfileData ();
-			if (!launchProfileProvider.Profiles.TryGetValue (name, out var _)) {
-				if (name == "Default") {
-					profile = launchProfileProvider.AddNewProfile (Project.DefaultNamespace);
-					launchProfileProvider.Profiles [Project.DefaultNamespace] = profile;
-				} else {
-					profile = launchProfileProvider.AddNewProfile (name);
-					launchProfileProvider.Profiles [name] = profile;
-				}
+
+			var key = name != "Default" ? name : this.Project.DefaultNamespace;
+
+			if (!launchProfileProvider.Profiles.TryGetValue (key, out var _)) {
+				profile = launchProfileProvider.AddNewProfile (key);
+				launchProfileProvider.Profiles [key] = profile;
 			} else {
-				profile = launchProfileProvider.Profiles [name];
+				profile = launchProfileProvider.Profiles [key];
 			}
 
 			var aspnetconf = new AspNetCoreRunConfiguration (name, profile);
