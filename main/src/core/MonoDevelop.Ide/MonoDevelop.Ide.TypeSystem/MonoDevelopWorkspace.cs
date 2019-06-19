@@ -1298,17 +1298,20 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyDocumentInfoChanged (DocumentId id, DocumentInfo info)
 		{
-			var document = CurrentSolution.GetDocument (id);
+			var currentSolution = CurrentSolution;
+			var document = currentSolution.GetDocument (id);
 			FailIfDocumentInfoChangesNotSupported (document, info);
 
 			// abort if the name is the same, as there's nothing to do
-			if (document.Name == info.Name || string.IsNullOrEmpty(info.Name))
+			if (document.Name == info.Name
+				|| string.IsNullOrEmpty (info.Name)
+				|| string.IsNullOrEmpty (info.FilePath))
 				return;
 
 			MonoDevelop.Projects.Project mdProject = null;
 
 			if (id.ProjectId != null) {
-				var project = CurrentSolution.GetProject (id.ProjectId);
+				var project = currentSolution.GetProject (id.ProjectId);
 				mdProject = GetMonoProject (project);
 				if (mdProject == null) {
 					LoggingService.LogWarning ("Couldn't find project for newly file file {0} (Project {1}).",
@@ -1318,7 +1321,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			var guiDoc = documentManager.Documents.FirstOrDefault (d => d.IsFile && d.Name == document.Name);
+			var guiDoc = documentManager
+				.Documents
+				.FirstOrDefault (d => d.IsFile
+					&& document.FilePath.Equals (d.FilePath, FilePath.PathComparison));
+
 			DispatchService.PumpingWait (() => guiDoc.IsDirty ? guiDoc.Save () : null);
 
 			// TODO: the Visual Studio Windows implementation of this also adds an undo unit to the
@@ -1327,23 +1334,43 @@ namespace MonoDevelop.Ide.TypeSystem
 			var newName = NameGenerator.GenerateUniqueName (
 				Path.GetFileNameWithoutExtension (info.Name),
 				Path.GetExtension (info.Name),
-				nx => !mdProject.Files.Any (p => string.Equals(p.Name, nx, FilePath.PathComparison)));
+				nx => !mdProject.Files.Any (p => string.Equals (p.Name, nx, FilePath.PathComparison)));
 
-			var mdFile = mdProject.GetProjectFile (document.Name);
-
-			FileService.RenameFile (guiDoc.FilePath, newName);
-
-			var childrenToRename = GetDependentFilesToRename (mdFile, newName);
-			if (childrenToRename != null) {
-				// we also need to rename children!
-				foreach (var child in childrenToRename) {
-					FileService.RenameFile (child.File.FilePath, child.NewName);
-				}
+			var mdFile = mdProject.GetProjectFile (document.FilePath);
+			if (mdFile == null) {
+				// TODO: log this
+				return;
 			}
 
-			DispatchService.PumpingWait (() => mdProject.SaveAsync (new ProgressMonitor ()));
+			
 
-			base.ApplyDocumentInfoChanged (id, info);
+			DispatchService.PumpingWait (async () => {
+				await Runtime.RunInMainThread (() => {
+
+					FileService.FreezeEvents ();
+
+					FileService.RenameFile (document.FilePath, newName);
+					
+					var childrenToRename = GetDependentFilesToRename (mdFile, newName);
+					if (childrenToRename != null) {
+						// we also need to rename children!
+						foreach (var child in childrenToRename) {
+							FileService.RenameFile (child.File.FilePath, child.NewName);
+						}
+					}
+
+					// let's update all the things
+					//var newPath = Path.Combine (Path.GetDirectoryName (document.FilePath), newName);
+					//var newSolution = currentSolution.WithDocumentFilePath (id, newPath);
+					//newSolution = newSolution.WithDocumentName (id, newName);
+					//SetCurrentSolution (newSolution);
+
+					FileService.ThawEvents ();
+				});
+
+				await IdeApp.ProjectOperations.SaveAsync (mdProject);
+
+			});
 		}
 
 		static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (

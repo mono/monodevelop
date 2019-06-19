@@ -310,6 +310,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void TryRegisterOpenDocument (OpenDocumentReference reference)
 		{
+ 			Console.WriteLine ($"Try Register Open Document: {reference.FilePath}");
 			// First offer the document to the primary workspace and see if it's owned by it.
 			// This is the common case, so avoid adding the document to the miscellaneous workspace
 			// unnecessarily, as it will be immediately removed anyway.
@@ -319,6 +320,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (reference.HandleMiscNamespace) {
 				// If the primary workspace didn't claim the document notify the miscellaneous workspace
 				miscellaneousFilesWorkspace.OnDocumentOpened (reference.FilePath, reference.TextBuffer);
+				Console.WriteLine ("Try Register Open Document: Handle Misc Workspace");
 			}
 		}
 
