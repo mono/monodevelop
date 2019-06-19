@@ -206,7 +206,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				filePath: filePath,
 				loader: TextLoader.From (sourceTextContainer, VersionStamp.Create ()));
 
-			Console.WriteLine ($"Misc: Added {openDocumentInfo.FilePath}");
 			OnDocumentAdded (documentInfo);
 			OnDocumentOpened (documentId, sourceTextContainer);
 		}
@@ -221,7 +220,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (documentId != null) {
 				OnDocumentClosed (documentId, EmptyTextLoader.Instance);
 				OnDocumentRemoved (documentId);
-				Console.WriteLine ($"Misc: Removed {openDocumentInfo.FilePath}");
 				openDocumentInfo.DocumentId = null;
 			}
 		}

@@ -1328,7 +1328,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				.FirstOrDefault (d => d.IsFile
 					&& document.FilePath.Equals (d.FilePath, FilePath.PathComparison));
 
-			DispatchService.PumpingWait (() => guiDoc.IsDirty ? guiDoc.Save () : null);
+			DispatchService.PumpingWait (() => guiDoc.IsDirty ? guiDoc.Save () : Task.CompletedTask);
 
 			// TODO: the Visual Studio Windows implementation of this also adds an undo unit to the
 			// global undo manager which we don't currently support.
@@ -1340,12 +1340,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var mdFile = mdProject.GetProjectFile (document.FilePath);
 			if (mdFile == null) {
-				// TODO: log this
+				LoggingService.LogWarning ($"{document.FilePath} was not found in project in ApplyDocumentInfo");
 				return;
 			}
 
 			DispatchService.PumpingWait (() => {
-				return Runtime.RunInMainThread (async () => {
+				return Runtime.RunInMainThread (() => {
 
 					FileService.RenameFile (document.FilePath, newName);
 					
@@ -1385,7 +1385,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return files;
 		}
 
-		void FailIfDocumentInfoChangesNotSupported (Document document, DocumentInfo updatedInfo)
+		static void FailIfDocumentInfoChangesNotSupported (Document document, DocumentInfo updatedInfo)
 		{
 			if (document.SourceCodeKind != updatedInfo.SourceCodeKind) {
 				throw new InvalidOperationException (
