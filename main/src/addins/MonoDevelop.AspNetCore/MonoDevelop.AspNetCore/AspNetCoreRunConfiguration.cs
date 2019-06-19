@@ -95,8 +95,13 @@ namespace MonoDevelop.AspNetCore
 #pragma warning disable CS0618 //disables warnings threw by obsolete methods used in nameof()
 			if (CurrentProfile.LaunchBrowser == null)
 				CurrentProfile.LaunchBrowser = pset.GetValue (nameof (LaunchBrowser), true);
-			if (string.IsNullOrEmpty (CurrentProfile.TryGetApplicationUrl ()))
-				CurrentProfile.OtherSettings ["applicationUrl"] = pset.GetValue (nameof (ApplicationURL), "http://localhost:5000/");
+			if (string.IsNullOrEmpty (CurrentProfile.TryGetApplicationUrl ())) {
+
+				if (CurrentProfile.OtherSettings == null)
+					CurrentProfile.OtherSettings = new Dictionary<string, object> (StringComparer.Ordinal);
+
+				CurrentProfile.OtherSettings ["applicationUrl"] = pset.GetValue (nameof (ApplicationURL), "http://localhost:5000/"); 
+			}
 			if (string.IsNullOrEmpty (CurrentProfile.LaunchUrl))
 				CurrentProfile.LaunchUrl = pset.GetValue (nameof (LaunchUrl), null);
 #pragma warning restore CS0618
@@ -150,8 +155,13 @@ namespace MonoDevelop.AspNetCore
 			CurrentProfile.LaunchBrowser = other.CurrentProfile.LaunchBrowser ?? true;
 			CurrentProfile.LaunchUrl = other.CurrentProfile.LaunchUrl;
 			var applicationUrl = other.CurrentProfile.TryGetApplicationUrl ();
-			if (!string.IsNullOrEmpty (applicationUrl))
+			if (!string.IsNullOrEmpty (applicationUrl)) {
+
+				if (CurrentProfile.OtherSettings == null)
+					CurrentProfile.OtherSettings = new Dictionary<string, object> (StringComparer.Ordinal);
+
 				CurrentProfile.OtherSettings ["applicationUrl"] = applicationUrl;
+			}
 
 			if (other.PipeTransport == null)
 				PipeTransport = null;
@@ -183,6 +193,8 @@ namespace MonoDevelop.AspNetCore
 		internal void UpdateProfile (LaunchProfileData launchProfile)
 		{
 			CurrentProfile = launchProfile;
+			if (CurrentProfile.EnvironmentVariables == null)
+				CurrentProfile.EnvironmentVariables = new Dictionary<string, string> (StringComparer.Ordinal);
 			LoadEnvVariables ();
 		}
 	}
