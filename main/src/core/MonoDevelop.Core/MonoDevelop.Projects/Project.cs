@@ -4516,9 +4516,12 @@ namespace MonoDevelop.Projects
 				LoggingService.LogError ("OnFileRenamed error.", ex);
 			}
 
+			bool exists = File.Exists (sourceFile) || Directory.Exists (sourceFile);
+
 			Runtime.RunInMainThread (() => {
 				OnFileCreatedExternally (targetFile);
-				OnFileDeletedExternally (sourceFile);
+				if (!exists)
+					OnFileDeletedExternally (sourceFile);
 			});
 		}
 
@@ -4559,14 +4562,34 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		static readonly ObjectPool<List<FilePath>> filePathListPool = ObjectPool.Create (new PooledListPolicy<FilePath> ());
+
 		void OnFileDeleted (object sender, FileEventArgs e)
 		{
 			if (Runtime.IsMainThread)
 				return;
 
+			List<FilePath> paths = null;
+			foreach (var file in e) {
+				var path = file.FileName;
+				bool exists = File.Exists (path) || Directory.Exists (path);
+
+				if (!exists) {
+					paths ??= filePathListPool.Get ();
+					paths.Add (path);
+				}
+			}
+
+			if (paths == null)
+				return;
+
 			Runtime.RunInMainThread (() => {
-				foreach (FileEventInfo info in e) {
-					OnFileDeletedExternally (info.FileName);
+				try {
+					foreach (var path in paths) {
+						OnFileDeletedExternally (path);
+					}
+				} finally {
+					filePathListPool.Return (paths);
 				}
 			});
 		}
@@ -4681,10 +4704,6 @@ namespace MonoDevelop.Projects
 			// the file being saved. Saving with TextFileUtility will result in
 			// FileService.SystemRename being called to move a temporary file
 			// to the file being saved which deletes and then creates the file.
-			bool notDeleted = File.Exists (fileName) || Directory.Exists (fileName);
-			if (notDeleted)
-				return;
-
 			Files.Remove (fileName);
 		}
 
