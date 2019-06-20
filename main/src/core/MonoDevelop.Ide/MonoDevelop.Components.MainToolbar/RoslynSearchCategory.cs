@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		public RoslynSearchCategory () : base (GettextCatalog.GetString ("Solution"))
 		{
-			sortOrder = FirstCategory;
+			sortOrder = FirstCategoryOrder;
 		}
 
 		static readonly string [] tags = new [] {

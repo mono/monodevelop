@@ -33,8 +33,14 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	public abstract class SearchCategory : IComparable<SearchCategory>
 	{
-		protected const int FirstCategory = -1000;
-		protected int sortOrder = 0;
+		protected const int FirstCategoryOrder = -100;
+		protected const int HighPriorityResultsOrder = -50;
+		protected const int CommandCategoryOrder = 50;
+		protected const int LoadingCategoryOrder = 100;
+		protected const int SearchInCategoryOrder = 150;
+
+		protected int sortOrder;
+		internal int SortOrder => sortOrder;
 
 		internal class DataItemComparer : IComparer<SearchResult>
 		{
