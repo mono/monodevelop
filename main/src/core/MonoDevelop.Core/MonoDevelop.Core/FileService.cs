@@ -1337,14 +1337,14 @@ namespace MonoDevelop.Core
 	public class AsyncEvents
 	{
 		readonly ObjectPool<Stopwatch> watchPool = ObjectPool.Create<Stopwatch> ();
-		readonly TimeSpan [] timings = new TimeSpan [Enum.GetNames (typeof (FileService.EventDataKind)).Length];
+		readonly long [] timings = new long[Enum.GetNames (typeof (FileService.EventDataKind)).Length];
 
 		public event EventHandler<FileEventArgs> FileCreated;
 		public event EventHandler<FileEventArgs> FileRemoved;
 		public event EventHandler<FileCopyEventArgs> FileRenamed;
 
 		internal TimeSpan GetTimings (FileService.EventDataKind kind)
-			=> timings[(int)kind];
+			=> TimeSpan.FromTicks (timings[(int)kind]);
 
 		internal void OnFileCreated (FileEventArgs args)
 		{
@@ -1357,7 +1357,7 @@ namespace MonoDevelop.Core
 				sw.Restart ();
 				handler.Invoke (this, Clone (args));
 				sw.Stop ();
-				timings [(int)FileService.EventDataKind.Created] += sw.Elapsed;
+				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Created], sw.Elapsed.Ticks);
 			} finally {
 				watchPool.Return (sw);
 			}
@@ -1374,7 +1374,7 @@ namespace MonoDevelop.Core
 				sw.Restart ();
 				handler.Invoke (this, Clone (args));
 				sw.Stop ();
-				timings [(int)FileService.EventDataKind.Removed] += sw.Elapsed;
+				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Created], sw.Elapsed.Ticks);
 			} finally {
 				watchPool.Return (sw);
 			}
@@ -1391,7 +1391,7 @@ namespace MonoDevelop.Core
 				sw.Restart ();
 				handler.Invoke (this, Clone (args));
 				sw.Stop ();
-				timings [(int)FileService.EventDataKind.Renamed] += sw.Elapsed;
+				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Created], sw.Elapsed.Ticks);
 			} finally {
 				watchPool.Return (sw);
 			}

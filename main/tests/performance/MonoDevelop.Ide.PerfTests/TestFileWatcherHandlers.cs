@@ -24,7 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.PerformanceTesting;
@@ -33,7 +36,7 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Ide.PerfTests
 {
-	[TestFixture ()]
+	[TestFixture]
 	public class TestFileWatcherHandlers : UITestBase
 	{
 		public override void SetUp ()
@@ -42,46 +45,94 @@ namespace MonoDevelop.Ide.PerfTests
 			PreStart ();
 		}
 
-		[Test]
+		[TestCase (1000)]
 		[Benchmark (Tolerance = 0.3)]
-		public void TestCreated ()
+		public void TestHandlers (int fileCount)
 		{
-			int [] trackedKinds = {
-				0, // Created
-				1, // Changed
-				4, // Removed
-				5, // Renamed
-			};
-
 			OpenApplicationAndWait ();
 
-			var projectFolder = OpenExampleSolutionAndWait (out var waitForPackages);
+			var projectDirectory = Path.GetDirectoryName (OpenExampleSolutionAndWait (out _));
+			var stressDirectory = Path.Combine (projectDirectory, "stress_fsw");
 
-			//var stressFolder = Path.Combine (projectFolder, "stress_fsw");
-			//Directory.CreateDirectory (stressFolder);
+			// Wait for the Workspace to finish loading.
+			if (Session.GetTimerCount ("Ide.Workspace.RoslynWorkspaceLoaded") == 0) {
+				Session.RunAndWaitForTimer (() => { }, "Ide.Workspace.RoslynWorkspaceLoaded", 100 * 1000);
+			}
 
-			//// Create 10000 files.
-			//for (int i = 0; i < 10000; ++i) {
-			//	string fileName = Path.Combine (stressFolder, i.ToString () + ".txt");
-			//	File.Create (fileName);
-			//}
+			StressFileWatchers (stressDirectory, fileCount);
 
-			//// Get timings from array
-			//Session.GlobalInvoke<TimeSpan> ("MonoDevelop.Core.FileService.eventQueue.GetTimings", new object [] { 0 });
+			var totalTime = TimeSpan.Zero;
 
-			//Session.WaitForCounterChange (() => Session.ExecuteCommand (Commands.ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt", 60000);
+			foreach (var kvp in trackedCounters) {
+				const string UIThreadMethod = "MonoDevelop.Core.FileService.eventQueue.GetTimings";
+				const string BackgroundMethod = "MonoDevelop.Core.FileService.AsyncEvents.GetTimings";
 
-			//var t = Session.GetTimerDuration ("Ide.Shell.ProjectBuilt");
+				var enumValue = kvp.Key;
+				var counterId = kvp.Value;
+				var counterValue = Session.WaitForCounterToExceed (counterId, 0);
 
-			//Benchmark.SetTime (t.TotalSeconds);
+				var durationUI = GetDuration (UIThreadMethod, enumValue);
+				var durationBackground = GetDuration (BackgroundMethod, enumValue);
+
+				Console.WriteLine (
+					"Processed {0} events {1} in UI '{2}' BG '{3}",
+					counterValue.ToString (),
+					counterId,
+					durationUI.ToString (),
+					durationBackground.ToString ()
+				);
+
+				totalTime += durationUI + durationBackground;
+			}
+
+			Benchmark.SetTime (totalTime.TotalSeconds);
 		}
 
-		[Test]
-		[Benchmark (Tolerance = 0.3)]
-		public void TestChanged ()
+		const int Created = 0;
+		const int Changed = 1;
+		const int Removed = 4;
+		const int Renamed = 5;
+		static readonly Dictionary<int, string> trackedCounters = new Dictionary<int, string> {
+			{ Created, "FileService.FilesCreated" },
+			{ Changed, "FileService.FilesChanged" },
+			{ Removed, "FileService.FilesRemoved" },
+			{ Renamed, "FileService.FilesRenamed" },
+		};
+
+		void StressFileWatchers (string stressDirectory, int fileCount)
 		{
+			// Initial stabilization might take a bit.
+			foreach (var counter in trackedCounters) {
+				Session.WaitForCounterToStabilize (counter.Value, 40 * 1000, 1000);
+			}
 
+			Directory.CreateDirectory (stressDirectory);
+
+			Run (file => File.WriteAllText (file, file), trackedCounters [Created]); // Create
+			Run (file => File.SetLastWriteTimeUtc (file, DateTime.UtcNow), trackedCounters [Changed]); // Modify
+			Run (file => FileService.SystemRename (file, file + "2"), trackedCounters [Renamed]); // Rename
+			Run (file => File.Delete (file + "2"), trackedCounters [Removed]); // Delete
+
+			// Delete the directory.
+			Directory.Delete (stressDirectory, true);
+
+			void Run (Action<string> action, string counterId)
+			{
+				var initial = Session.WaitForCounterToStabilize (counterId, 10 * 1000, 1000);
+
+				Parallel.For (0, fileCount, i => {
+					var file = Path.Combine (stressDirectory, i.ToString () + ".txt");
+					action (file);
+				});
+
+				Session.WaitForCounterToExceed (counterId, initial + fileCount, 60 * 1000);
+			}
 		}
-		
+
+		TimeSpan GetDuration (string counter, int enumValue)
+		{
+			Array values = typeof (FileService).GetNestedType ("EventDataKind", System.Reflection.BindingFlags.NonPublic).GetEnumValues ();
+			return Session.GlobalInvoke<TimeSpan> (counter, values.GetValue (enumValue));
+		}
 	}
 }

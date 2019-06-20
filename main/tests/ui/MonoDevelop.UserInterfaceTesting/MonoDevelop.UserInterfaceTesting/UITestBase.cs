@@ -165,6 +165,7 @@ namespace MonoDevelop.UserInterfaceTesting
 		public void StartSession (string mdProfile, string args = null)
 		{
 			TestService.StartSession (MonoDevelopBinPath, mdProfile, args);
+			TestService.Session.DebugObject = new UITestDebug ();
 		}
 
 		[TearDown]
