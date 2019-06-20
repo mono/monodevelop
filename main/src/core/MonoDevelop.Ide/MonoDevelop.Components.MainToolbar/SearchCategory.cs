@@ -37,7 +37,8 @@ namespace MonoDevelop.Components.MainToolbar
 		protected const int HighPriorityResultsOrder = -50;
 		protected const int CommandCategoryOrder = 50;
 		protected const int LoadingCategoryOrder = 100;
-		protected const int SearchInCategoryOrder = 150;
+		protected const int SearchPackagesOrder = 149;
+		protected const int SearchInSolutionOrder = 150;
 
 		protected int sortOrder;
 		internal int SortOrder => sortOrder;
