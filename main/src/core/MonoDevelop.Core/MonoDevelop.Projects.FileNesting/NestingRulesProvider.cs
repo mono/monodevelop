@@ -88,35 +88,34 @@ namespace MonoDevelop.Projects.FileNesting
 		static bool LoadFromFile (NestingRulesProvider provider)
 		{
 			try {
-				using (var reader = new StreamReader (provider.SourceFile)) {
-					var json = JObject.Parse (reader.ReadToEnd ());
-					if (json != null) {
-						var parentNode = json ["dependentFileProviders"] [TokenNameAdd] as JObject;
-						foreach (var jsonProp in parentNode.Properties ()) {
-							JObject rpobj = null;
-							try {
-								rpobj = parentNode [jsonProp.Name] [TokenNameAdd].Value<JObject> ();
-							} catch {
-								LoggingService.LogWarning ($"No patterns specified for {jsonProp.Name} nesting rule");
-							}
-
-							if (jsonProp.Name == RuleNameAddedExtension) {
-								ParseRulesProvider (provider, NestingRuleKind.AddedExtension, rpobj);
-							} else if (jsonProp.Name == RuleNameAllExtensions) {
-								ParseRulesProvider (provider, NestingRuleKind.AllExtensions, rpobj);
-							} else if (jsonProp.Name == RuleNameExtensionToExtension) {
-								ParseRulesProvider (provider, NestingRuleKind.ExtensionToExtension, rpobj);
-							} else if (jsonProp.Name == RuleNameFileSuffixToExtension) {
-								ParseRulesProvider (provider, NestingRuleKind.FileSuffixToExtension, rpobj);
-							} else if (jsonProp.Name == RuleNameFileToFile) {
-								ParseRulesProvider (provider, NestingRuleKind.FileToFile, rpobj);
-							} else if (jsonProp.Name == RuleNamePathSegment) {
-								ParseRulesProvider (provider, NestingRuleKind.PathSegment, rpobj);
-							}
+				using var reader = new StreamReader (provider.SourceFile);
+				var json = JObject.Parse (reader.ReadToEnd ());
+				if (json != null) {
+					var parentNode = json ["dependentFileProviders"] [TokenNameAdd] as JObject;
+					foreach (var jsonProp in parentNode.Properties ()) {
+						JObject rpobj = null;
+						try {
+							rpobj = parentNode [jsonProp.Name] [TokenNameAdd].Value<JObject> ();
+						} catch {
+							LoggingService.LogWarning ($"No patterns specified for {jsonProp.Name} nesting rule");
 						}
 
-						return true;
+						if (jsonProp.Name == RuleNameAddedExtension) {
+							ParseRulesProvider (provider, NestingRuleKind.AddedExtension, rpobj);
+						} else if (jsonProp.Name == RuleNameAllExtensions) {
+							ParseRulesProvider (provider, NestingRuleKind.AllExtensions, rpobj);
+						} else if (jsonProp.Name == RuleNameExtensionToExtension) {
+							ParseRulesProvider (provider, NestingRuleKind.ExtensionToExtension, rpobj);
+						} else if (jsonProp.Name == RuleNameFileSuffixToExtension) {
+							ParseRulesProvider (provider, NestingRuleKind.FileSuffixToExtension, rpobj);
+						} else if (jsonProp.Name == RuleNameFileToFile) {
+							ParseRulesProvider (provider, NestingRuleKind.FileToFile, rpobj);
+						} else if (jsonProp.Name == RuleNamePathSegment) {
+							ParseRulesProvider (provider, NestingRuleKind.PathSegment, rpobj);
+						}
 					}
+
+					return true;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ($"Unable to parse {provider.SourceFile}: {ex}");
