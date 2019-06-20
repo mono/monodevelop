@@ -57,9 +57,8 @@ namespace MonoDevelop.DotNetCore
 				return new UpdateInfo (ApplicationId, latestSdkVersion.Version);
 			}
 
-			// Return an UpdateInfo with version set to 0 if there is no .NET Core SDK installed.
-			// Without this no update will be available for .NET Core SDK in the Updates dialog.
-			return new UpdateInfo (ApplicationId, versionId: 0);
+			// .NET Core not installed, so don't offer as new install
+			return null;
 		}
 
 		static bool IsSierraOrHigher ()
