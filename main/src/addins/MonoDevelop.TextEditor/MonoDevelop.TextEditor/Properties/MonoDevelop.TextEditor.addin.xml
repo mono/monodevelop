@@ -142,11 +142,15 @@
 
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
-		
+
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertSnippetCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SurroundWithCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToMatchingBraceCommandArgs" />
-		
+
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningExpansionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleAllOutliningCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningDefinitionsCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.EnableDisableFolding" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningEnabledCommandArgs" />
 	</Extension>
 
 	<!--
