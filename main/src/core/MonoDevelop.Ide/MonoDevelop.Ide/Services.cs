@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide
 
 		public static string[] CounterReport ()
 		{
-			string[] reports = new string[15];
+			string[] reports = new string[16];
 			reports [0] = Initialization.ToString ();
 			reports [1] = OpenDocuments.ToString ();
 			reports [2] = DocumentsInMemory.ToString ();
