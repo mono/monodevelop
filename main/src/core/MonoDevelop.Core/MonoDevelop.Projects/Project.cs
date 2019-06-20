@@ -4498,17 +4498,17 @@ namespace MonoDevelop.Projects
 		void OnFileRenamed (object sender, FileCopyEventArgs e)
 		{
 			foreach (FileEventInfo info in e) {
-				OnFileRenamed (info.SourceFile, info.TargetFile, info.IsDirectory);
+				OnFileRenamed (info.SourceFile, info.TargetFile);
 			}
 		}
 
-		void OnFileRenamed (FilePath sourceFile, FilePath targetFile, bool isDirectory)
+		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
 		{
 			if (Runtime.IsMainThread)
 				return;
 
 			try {
-				if (isDirectory) {
+				if (Directory.Exists (targetFile)) {
 					OnDirectoryRenamedExternally (sourceFile, targetFile);
 					return;
 				}
@@ -4518,7 +4518,7 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				OnFileCreatedExternally (targetFile);
-				OnFileDeletedExternally (sourceFile, isDirectory);
+				OnFileDeletedExternally (sourceFile);
 			});
 		}
 
@@ -4528,17 +4528,17 @@ namespace MonoDevelop.Projects
 				return;
 
 			foreach (FileEventInfo info in e) {
-				OnFileCreated (info.FileName, info.IsDirectory);
+				OnFileCreated (info.FileName);
 			}
 		}
 
-		void OnFileCreated (FilePath filePath, bool isDirectory)
+		void OnFileCreated (FilePath filePath)
 		{
 			if (Runtime.IsMainThread)
 				return;
 
 			try {
-				if (isDirectory)
+				if (Directory.Exists (filePath))
 					return;
 
 				var fileName = ((string)filePath).AsSpan ();
@@ -4566,7 +4566,7 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				foreach (FileEventInfo info in e) {
-					OnFileDeletedExternally (info.FileName, info.IsDirectory);
+					OnFileDeletedExternally (info.FileName);
 				}
 			});
 		}
@@ -4667,16 +4667,13 @@ namespace MonoDevelop.Projects
 			}).Ignore ();
 		}
 
-		void OnFileDeletedExternally (string fileName, bool isDirectory)
+		void OnFileDeletedExternally (string fileName)
 		{
 			// File has not been deleted. The delete event could have been due to
 			// the file being saved. Saving with TextFileUtility will result in
 			// FileService.SystemRename being called to move a temporary file
 			// to the file being saved which deletes and then creates the file.
-			bool notDeleted = isDirectory
-				? Directory.Exists (fileName)
-				: File.Exists (fileName);
-
+			bool notDeleted = File.Exists (fileName) || Directory.Exists (fileName);
 			if (notDeleted)
 				return;
 
