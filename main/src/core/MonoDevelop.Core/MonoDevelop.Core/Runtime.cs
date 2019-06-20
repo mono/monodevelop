@@ -625,10 +625,10 @@ namespace MonoDevelop.Core
 		public static TimerCounter TargetRuntimesLoading = InstrumentationService.CreateTimerCounter ("Target runtimes loaded", "Assembly Service", 0, true);
 		public static Counter PcFilesParsed = InstrumentationService.CreateCounter (".pc Files parsed", "Assembly Service");
 		
-		public static Counter FileChangeNotifications = InstrumentationService.CreateCounter ("File change notifications", "File Service");
-		public static Counter FilesRemoved = InstrumentationService.CreateCounter ("Files removed", "File Service");
-		public static Counter FilesCreated = InstrumentationService.CreateCounter ("Files created", "File Service");
-		public static Counter FilesRenamed = InstrumentationService.CreateCounter ("Files renamed", "File Service");
+		public static Counter FileChangeNotifications = InstrumentationService.CreateCounter ("File change notifications", "File Service", id:"FileService.FilesChanged");
+		public static Counter FilesRemoved = InstrumentationService.CreateCounter ("Files removed", "File Service", id:"FileService.FilesRemoved");
+		public static Counter FilesCreated = InstrumentationService.CreateCounter ("Files created", "File Service", id:"FileService.FilesCreated");
+		public static Counter FilesRenamed = InstrumentationService.CreateCounter ("Files renamed", "File Service", id:"FileService.FilesRenamed");
 		public static Counter DirectoriesRemoved = InstrumentationService.CreateCounter ("Directories removed", "File Service");
 		public static Counter DirectoriesCreated = InstrumentationService.CreateCounter ("Directories created", "File Service");
 		public static Counter DirectoriesRenamed = InstrumentationService.CreateCounter ("Directories renamed", "File Service");
