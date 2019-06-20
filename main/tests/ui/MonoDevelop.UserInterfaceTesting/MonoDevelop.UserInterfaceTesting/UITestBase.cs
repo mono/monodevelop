@@ -143,7 +143,7 @@ namespace MonoDevelop.UserInterfaceTesting
 
 		public string OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
-			var sln = UnitTests.Util.GetSampleProject ("performance", "ExampleFormsSolution", "ExampleFormsSolution.sln");
+			var sln = UnitTests.Util.GetSampleProject ("performance", "sdk-library", "sdk-library.sln");
 
 			if (!File.Exists (sln)) {
 				throw new FileNotFoundException ("Could not find test solution", sln);

@@ -565,18 +565,17 @@ namespace MonoDevelop.Components.AutoTest
 			int lastValue = context.InitialCount;
 
 			Func<int, bool> isDone = current => {
-				DebugObject.Debug ($"{context.CounterName}: {current} ? {lastValue}");
-
-				// We're still getting value updates.
-				if (current != lastValue) {
-					return false;
-				}
-
 				// Check if the UI thread is stuck
-				// Some counters require UI thread synchronization, so we might not be getting evernts
+				// Some counters require UI thread synchronization, so we might not be getting events
 				try {
 					ExecuteOnIdle (() => { }, timeout: 5000);
 				} catch (TimeoutException) {
+					return false;
+				}
+
+				// We're still getting value updates.
+				if (current != lastValue) {
+					lastValue = current;
 					return false;
 				}
 

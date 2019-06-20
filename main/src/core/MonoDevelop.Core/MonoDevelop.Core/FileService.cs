@@ -1374,7 +1374,7 @@ namespace MonoDevelop.Core
 				sw.Restart ();
 				handler.Invoke (this, Clone (args));
 				sw.Stop ();
-				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Created], sw.Elapsed.Ticks);
+				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Removed], sw.Elapsed.Ticks);
 			} finally {
 				watchPool.Return (sw);
 			}
@@ -1391,7 +1391,7 @@ namespace MonoDevelop.Core
 				sw.Restart ();
 				handler.Invoke (this, Clone (args));
 				sw.Stop ();
-				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Created], sw.Elapsed.Ticks);
+				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Renamed], sw.Elapsed.Ticks);
 			} finally {
 				watchPool.Return (sw);
 			}

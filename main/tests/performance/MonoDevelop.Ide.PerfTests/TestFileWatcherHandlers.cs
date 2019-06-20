@@ -51,8 +51,8 @@ namespace MonoDevelop.Ide.PerfTests
 		{
 			OpenApplicationAndWait ();
 
-			var projectDirectory = Path.GetDirectoryName (OpenExampleSolutionAndWait (out _));
-			var stressDirectory = Path.Combine (projectDirectory, "stress_fsw");
+			var solutionDirectory = Path.GetDirectoryName (OpenExampleSolutionAndWait (out _));
+			var stressDirectory = Path.Combine (solutionDirectory, "sdk-library", "stress_fsw");
 
 			// Wait for the Workspace to finish loading.
 			if (Session.GetTimerCount ("Ide.Workspace.RoslynWorkspaceLoaded") == 0) {
@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.PerfTests
 				var durationBackground = GetDuration (BackgroundMethod, enumValue);
 
 				Console.WriteLine (
-					"Processed {0} events {1} in UI '{2}' BG '{3}",
+					"Processed {0} events {1} in UI '{2}' BG '{3}'",
 					counterValue.ToString (),
 					counterId,
 					durationUI.ToString (),
@@ -108,10 +108,17 @@ namespace MonoDevelop.Ide.PerfTests
 
 			Directory.CreateDirectory (stressDirectory);
 
-			Run (file => File.WriteAllText (file, file), trackedCounters [Created]); // Create
-			Run (file => File.SetLastWriteTimeUtc (file, DateTime.UtcNow), trackedCounters [Changed]); // Modify
-			Run (file => FileService.SystemRename (file, file + "2"), trackedCounters [Renamed]); // Rename
-			Run (file => File.Delete (file + "2"), trackedCounters [Removed]); // Delete
+			// Create file.txt
+			Run (file => File.WriteAllText (file, file), trackedCounters [Created]);
+
+			// Modify file.txt
+			Run (file => File.SetLastWriteTimeUtc (file, DateTime.UtcNow), trackedCounters [Changed]);
+
+			// Rename file.txt -> file.txt2
+			Run (file => FileService.SystemRename (file, file + "2"), trackedCounters [Renamed]);
+
+			// Delete file.txt2
+			Run (file => File.Delete (file + "2"), trackedCounters [Removed]);
 
 			// Delete the directory.
 			Directory.Delete (stressDirectory, true);
@@ -120,12 +127,12 @@ namespace MonoDevelop.Ide.PerfTests
 			{
 				var initial = Session.WaitForCounterToStabilize (counterId, 10 * 1000, 1000);
 
-				Parallel.For (0, fileCount, i => {
+				for (int i = 0; i < fileCount; ++i) {
 					var file = Path.Combine (stressDirectory, i.ToString () + ".txt");
 					action (file);
-				});
+				}
 
-				Session.WaitForCounterToExceed (counterId, initial + fileCount, 60 * 1000);
+				Session.WaitForCounterToExceed (counterId, initial + fileCount, 2 * 60 * 1000);
 			}
 		}
 
