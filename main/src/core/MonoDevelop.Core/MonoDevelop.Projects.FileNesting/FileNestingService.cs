@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 		}
 
-		public static string GetParentFile (string inputFile)
+		public static FilePath GetParentFile (FilePath inputFile)
 		{
 			if (rulesProviders == null) {
 				rulesProviders = ImmutableList<NestingRulesProvider>.Empty.AddRange (AddinManager.GetExtensionObjects<NestingRulesProvider> ());

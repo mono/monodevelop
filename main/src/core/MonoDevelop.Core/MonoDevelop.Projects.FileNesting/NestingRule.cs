@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public string AppliesTo { get; private set; }
 
-		bool CheckParentForFile (string inputFile, string parentFile)
+		bool CheckParentForFile (FilePath inputFile, FilePath parentFile)
 		{
 			if (File.Exists (parentFile) && inputFile != parentFile) {
 				LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
-		public string GetParentFile (string inputFile)
+		public FilePath GetParentFile (FilePath inputFile)
 		{
 			string parentFile, inputExtension;
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.FileNesting
 			case NestingRuleKind.AddedExtension:
 				// This is the simplest rules, and applies to all files, if we find a file
 				// with the same name minus the extension, that's the parent.
-				parentFile = Path.Combine (Path.GetDirectoryName (inputFile), Path.GetFileNameWithoutExtension (inputFile));
+				parentFile = inputFile.ParentDirectory.Combine (inputFile.FileNameWithoutExtension);
 				if (CheckParentForFile (inputFile, parentFile))
 					return parentFile;
 				break;
@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.FileNesting
 			case NestingRuleKind.AllExtensions:
 				if (AppliesTo == AllFilesWildcard || AppliesTo == inputExtension) {
 					foreach (var pt in patterns) {
-						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
+						parentFile = inputFile.ParentDirectory.Combine ($"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
 						if (CheckParentForFile (inputFile, parentFile))
 							return parentFile;
 					}
@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.FileNesting
 			case NestingRuleKind.ExtensionToExtension:
 				if (inputExtension == AppliesTo) {
 					foreach (var pt in patterns) {
-						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
+						parentFile = inputFile.ParentDirectory.Combine ($"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
 						if (CheckParentForFile (inputFile, parentFile))
 							return parentFile;
 					}
@@ -105,10 +105,11 @@ namespace MonoDevelop.Projects.FileNesting
 				break;
 
 			case NestingRuleKind.FileSuffixToExtension:
-				if (inputFile.EndsWith (AppliesTo, StringComparison.OrdinalIgnoreCase)) {
-					int suffixPosition = inputFile.LastIndexOf (AppliesTo, StringComparison.OrdinalIgnoreCase);
+				string inputFileString = inputFile;
+				if (inputFileString.EndsWith (AppliesTo, StringComparison.OrdinalIgnoreCase)) {
+					int suffixPosition = inputFileString.LastIndexOf (AppliesTo, StringComparison.OrdinalIgnoreCase);
 					foreach (var pt in patterns) {
-						parentFile = inputFile.Remove (suffixPosition, AppliesTo.Length).Insert (suffixPosition, pt);
+						parentFile = inputFileString.Remove (suffixPosition, AppliesTo.Length).Insert (suffixPosition, pt);
 						if (CheckParentForFile (inputFile, parentFile)) {
 							return parentFile;
 						}
@@ -119,7 +120,7 @@ namespace MonoDevelop.Projects.FileNesting
 			case NestingRuleKind.FileToFile:
 				if (AppliesTo == Path.GetFileName (inputFile)) {
 					foreach (var pt in patterns) {
-						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), pt);
+						parentFile = inputFile.ParentDirectory.Combine (pt);
 						if (CheckParentForFile (inputFile, parentFile)) {
 							return parentFile;
 						}
@@ -131,7 +132,7 @@ namespace MonoDevelop.Projects.FileNesting
 				if (AppliesTo == AllFilesWildcard || AppliesTo == inputExtension) {
 					foreach (var pt in patterns) {
 						// Search for $filename.$extension for $filename.$path_segment.$extension
-						parentFile = Path.Combine (Path.GetDirectoryName (inputFile), $"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
+						parentFile = inputFile.ParentDirectory.Combine ($"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
 						if (CheckParentForFile (inputFile, parentFile)) {
 							return parentFile;
 						}
