@@ -430,6 +430,23 @@ namespace MonoDevelop.Components.AutoTest
 			session.WaitForCounterToChange (context, timeout);
 		}
 
+		public int WaitForCounterToExceed (string counterName, int count, int timeout = 20000)
+		{
+			var context = new AutoTestSession.CounterContext {
+				CounterName = counterName,
+				InitialCount = count,
+			};
+
+			return session.WaitForCounterToExceed (context, timeout);
+		}
+
+		public int WaitForCounterToStabilize (string counterName, int timeout = 20000, int pollStep = 500)
+		{
+			AutoTestSession.CounterContext context = session.CreateNewCounterContext (counterName);
+
+			return session.WaitForCounterToStabilize (context, timeout, pollStep);
+		}
+
 		public T GetCounterMetadataValue<T> (string counterName, string propertyName)
 		{
 			return session.GetCounterMetadataValue<T> (counterName, propertyName);
