@@ -306,10 +306,10 @@ namespace MonoDevelop.Core
 		public void TestEventDataKindValues ()
 		{
 			// TestFileWatcherHandlers relies on this to avoid IVT.
-			Assert.AreEqual (0, EventDataKind.Created);
-			Assert.AreEqual (1, EventDataKind.Changed);
-			Assert.AreEqual (4, EventDataKind.Removed);
-			Assert.AreEqual (5, EventDataKind.Renamed);
+			Assert.AreEqual (0, (int)EventDataKind.Created);
+			Assert.AreEqual (1, (int)EventDataKind.Changed);
+			Assert.AreEqual (4, (int)EventDataKind.Removed);
+			Assert.AreEqual (5, (int)EventDataKind.Renamed);
 		}
 
 		[Test]

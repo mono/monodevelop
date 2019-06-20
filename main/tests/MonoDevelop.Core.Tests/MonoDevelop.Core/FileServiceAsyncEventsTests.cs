@@ -63,6 +63,7 @@ namespace MonoDevelop.Core
 			};
 
 			foreach (var (kind, trigger) in data) {
+				Assert.AreEqual (TimeSpan.Zero, asyncEvents.GetTimings (kind));
 				trigger ();
 				Assert.That (asyncEvents.GetTimings (kind), Is.GreaterThan (TimeSpan.Zero));
 			}

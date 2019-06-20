@@ -423,6 +423,11 @@ namespace MonoDevelop.Components.AutoTest
 			return session.CreateNewTimerContext (timerName).TotalTime;
 		}
 
+		public int GetTimerCount (string timerName)
+		{
+			return session.CreateNewTimerContext (timerName).Count;
+		}
+
 		public void WaitForCounterChange (string counterName, int timeout = 20000)
 		{
 			AutoTestSession.CounterContext context = session.CreateNewCounterContext (counterName);
@@ -432,12 +437,9 @@ namespace MonoDevelop.Components.AutoTest
 
 		public int WaitForCounterToExceed (string counterName, int count, int timeout = 20000)
 		{
-			var context = new AutoTestSession.CounterContext {
-				CounterName = counterName,
-				InitialCount = count,
-			};
+			AutoTestSession.CounterContext context = session.CreateNewCounterContext (counterName);
 
-			return session.WaitForCounterToExceed (context, timeout);
+			return session.WaitForCounterToExceed (context, count, timeout);
 		}
 
 		public int WaitForCounterToStabilize (string counterName, int timeout = 20000, int pollStep = 500)
