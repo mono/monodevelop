@@ -1354,12 +1354,11 @@ namespace MonoDevelop.Core
 			FileRenamed?.Invoke (this, Clone (args));
 		}
 
-		static T Clone<T> (T args) where T : FileEventArgs, new()
-		{
-			var result = new T ();
-			result.AddRange (args);
-			return result;
-		}
+		static FileCopyEventArgs Clone (FileCopyEventArgs args)
+			=> new FileCopyEventArgs (args);
+
+		static FileEventArgs Clone (FileEventArgs args)
+			=> new FileEventArgs (args);
 	}
 
 	public delegate bool FileServiceErrorHandler (string message, Exception ex);
