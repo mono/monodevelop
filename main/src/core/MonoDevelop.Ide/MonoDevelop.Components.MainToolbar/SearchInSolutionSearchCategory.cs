@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		public SearchInSolutionSearchCategory () : base (GettextCatalog.GetString("Search"))
 		{
-			this.sortOrder = SearchInCategoryOrder;
+			this.sortOrder = SearchInSolutionOrder;
 		}
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
