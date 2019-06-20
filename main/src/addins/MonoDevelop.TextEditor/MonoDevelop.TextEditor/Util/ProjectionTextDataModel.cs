@@ -24,7 +24,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Text.Editor
 {
-	public class ProjectionTextDataModel : ITextDataModel
+	sealed class ProjectionTextDataModel : ITextDataModel
 	{
 		public ProjectionTextDataModel (ITextBuffer diskBuffer, ITextBuffer projectedBuffer = null)
 		{
