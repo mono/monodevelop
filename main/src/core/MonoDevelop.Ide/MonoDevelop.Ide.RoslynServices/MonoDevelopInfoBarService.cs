@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Composition;
 using System.Linq;
 using Microsoft.CodeAnalysis.Editor;
@@ -72,11 +73,9 @@ namespace MonoDevelop.Ide.RoslynServices
 					infoBarHost.AddInfoBar (options);
 				}
 			}, _listener.BeginAsyncOperation (nameof (ShowInfoBar)));
-		}
 
-		static InfoBarItem [] ToUIItems (InfoBarUI [] items)
-		{
-			return items.Select (x => new InfoBarItem (x.Title, ToUIKind (x.Kind), x.Action, x.CloseAfterAction)).ToArray ();
+			static InfoBarItem [] ToUIItems (InfoBarUI [] items)
+				=> items?.Select (x => new InfoBarItem (x.Title, ToUIKind (x.Kind), x.Action, x.CloseAfterAction)).ToArray ();
 		}
 
 		static InfoBarItemKind ToUIKind (InfoBarUI.UIKind kind)
