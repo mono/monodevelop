@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Find;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace MonoDevelop.TextEditor
 {
@@ -50,6 +51,9 @@ namespace MonoDevelop.TextEditor
 
 		[ImportMany]
 		public List<Lazy<ITextViewModelProvider, IContentTypeAndTextViewRoleMetadata>> TextViewModelProviders { get; set; }
+
+		[ImportMany]
+		public List<Lazy<IProjectionBufferProvider>> ProjectionBufferProviders { get; set; }
 
 		[Import]
 		public IGuardedOperations GuardedOperations { get; set; }

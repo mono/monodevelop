@@ -131,9 +131,18 @@ namespace MonoDevelop.TextEditor
 			UpdateTextBufferRegistration ();
 
 			var roles = GetAllPredefinedRoles ();
+
+			ITextBuffer projectionBuffer = null;
+			foreach (var projectionBufferProvider in Imports.ProjectionBufferProviders) {
+				if (projectionBufferProvider.Value.TryGetProjectionBuffer (TextBuffer, out projectionBuffer)) {
+					break;
+				}
+			}
+
+			var dataModel = new ProjectionTextDataModel (TextBuffer, projectionBuffer);
+
 			//we have multiple copies of VacuousTextDataModel for back-compat reasons
 #pragma warning disable CS0436 // Type conflicts with imported type
-			var dataModel = new VacuousTextDataModel (TextBuffer);
 			var viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
 				Imports.TextViewModelProviders,
 				dataModel.ContentType,
