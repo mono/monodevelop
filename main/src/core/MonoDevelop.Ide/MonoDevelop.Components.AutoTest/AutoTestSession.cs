@@ -555,6 +555,28 @@ namespace MonoDevelop.Components.AutoTest
 		}
 
 		public void WaitForCounterToChange (CounterContext context, int timeout = 20000, int pollStep = 200)
+			=> WaitForCounterChange (context, ((int current, int target) tuple) => tuple.current != tuple.target, timeout, pollStep);
+
+		public int WaitForCounterToExceed (CounterContext context, int timeout = 20000, int pollStep = 200)
+			=> WaitForCounterChange (context, ((int current, int target) tuple) => tuple.current >= tuple.target, timeout, pollStep);
+
+		public int WaitForCounterToStabilize (CounterContext context, int timeout = 20000, int pollStep = 500)
+		{
+			int lastValue = context.InitialCount;
+
+			Func<(int current, int param), bool> isDone =
+				((int current, int target) tuple) => {
+					if (tuple.current == lastValue)
+						return true;
+
+					lastValue = (tuple.current);
+					return false;
+				};
+
+			return WaitForCounterChange (context, isDone, timeout, pollStep);
+		}
+
+		int WaitForCounterChange (CounterContext context, Func<(int current, int param), bool> isDone, int timeout, int pollStep)
 		{
 			var counter = GetCounterByIDOrName (context.CounterName);
 			if (counter == null) {
@@ -562,8 +584,8 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			do {
-				if (counter.Count != context.InitialCount) {
-					return;
+				if (isDone ((counter.Count, context.InitialCount))) {
+					return counter.Count;
 				}
 
 				timeout -= pollStep;
