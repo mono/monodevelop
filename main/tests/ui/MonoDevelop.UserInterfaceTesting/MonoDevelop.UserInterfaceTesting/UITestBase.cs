@@ -141,7 +141,7 @@ namespace MonoDevelop.UserInterfaceTesting
 			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 		}
 
-		public void OpenExampleSolutionAndWait (out bool waitForPackages)
+		public string OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
 			var sln = UnitTests.Util.GetSampleProject ("performance", "ExampleFormsSolution", "ExampleFormsSolution.sln");
 
@@ -158,6 +158,8 @@ namespace MonoDevelop.UserInterfaceTesting
 			// When we have more projects, we'll need a more clever system for detecting
 			// if packages need updated.
 			waitForPackages = true;
+
+			return sln;
 		}
 
 		public void StartSession (string mdProfile, string args = null)
