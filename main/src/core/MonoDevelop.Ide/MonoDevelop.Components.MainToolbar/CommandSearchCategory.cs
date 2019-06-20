@@ -56,6 +56,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public CommandSearchCategory () : base (GettextCatalog.GetString("Commands"))
 		{
+			sortOrder = CommandCategoryOrder;
 		}
 
 		readonly string[] validTags = { "cmd", "command", "c" };

@@ -44,6 +44,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		public FileSearchCategory () : base (GettextCatalog.GetString ("Files"))
 		{
+			sortOrder = HighPriorityResultsOrder;
 		}
 
 		static FileSearchCategory ()

@@ -42,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 		public SearchPackagesSearchCategory ()
 			: base (GettextCatalog.GetString("Search"))
 		{
+			this.sortOrder = SearchInCategoryOrder;
 		}
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
