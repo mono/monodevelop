@@ -4614,7 +4614,7 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		static readonly ObjectPool<List<ProjectItem>> projectItemListPool = ObjectPool.Create<List<ProjectItem>> ();
+		static readonly ObjectPool<List<(FilePath, ProjectItem)>> projectItemListPool = ObjectPool.Create<List<(FilePath, ProjectItem)>> ();
 
 		void OnFileCreatedExternally (FilePath fileName)
 		{
@@ -4655,14 +4655,14 @@ namespace MonoDevelop.Projects
 				var pi = CreateProjectItem (eit);
 				pi.Read (this, eit);
 
-				list.Add (pi);
+				list.Add ((fileName, pi));
 			}
 
 			Runtime.RunInMainThread (() => {
 				// Double check the file has not been added on the UI thread by the IDE.
-				list.RemoveAll (x => Files.GetFile (fileName) != null);
+				list.RemoveAll (item => Files.GetFile (item.Item1) != null);
 				if (list.Count > 0)
-					Items.AddRange (list);
+					Items.AddRange (list.Select (item => item.Item2));
 				projectItemListPool.Return (list);
 			}).Ignore ();
 		}
