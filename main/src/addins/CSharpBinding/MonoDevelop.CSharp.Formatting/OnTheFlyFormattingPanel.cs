@@ -65,6 +65,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			readonly CheckBox formatOnCloseBraceCheckBox;
 			readonly CheckBox formatOnReturnCheckBox;
 			readonly CheckBox formatOnPasteCheckBox;
+			readonly CheckBox showFilterButtonsCheckBox;
+			readonly CheckBox triggerCompletionOnDeletionCheckBox;
 			readonly Ide.RoslynServices.Options.RoslynPreferences.PerLanguagePreferences preferences;
 
 			public OnTheFlyFormattingPanelWidget ()
@@ -95,6 +97,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				formatOnPasteCheckBox.Active = preferences.FormatOnPaste;
 				PackStart (formatOnPasteCheckBox);
 				FormatOnTypeCheckBox_Toggled (this, EventArgs.Empty);
+
+				showFilterButtonsCheckBox = new CheckBox (GettextCatalog.GetString ("Show completion item filters"));
+				showFilterButtonsCheckBox.Active = preferences.ShowCompletionItemFilters;
+				PackStart (showFilterButtonsCheckBox);
+
+				triggerCompletionOnDeletionCheckBox = new CheckBox (GettextCatalog.GetString ("Show completion list after a character is deleted"));
+				triggerCompletionOnDeletionCheckBox.Active = preferences.TriggerOnDeletion.Value ?? false;
+				PackStart (triggerCompletionOnDeletionCheckBox);
 			}
 
 			void FormatOnTypeCheckBox_Toggled (object sender, System.EventArgs e)
@@ -110,6 +120,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				preferences.AutoFormattingOnCloseBrace.Value = formatOnCloseBraceCheckBox.Active;
 				preferences.AutoFormattingOnReturn.Value = formatOnReturnCheckBox.Active;
 				preferences.FormatOnPaste.Value = formatOnPasteCheckBox.Active;
+				preferences.ShowCompletionItemFilters.Value = showFilterButtonsCheckBox.Active;
+				preferences.TriggerOnDeletion.Value = triggerCompletionOnDeletionCheckBox.Active;
 				PropertyService.SaveProperties ();
 
 			}
