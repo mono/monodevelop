@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					var systemCollectionsNetStandard = netstandardProject.MetadataReferences
 						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference> ()
-					.FirstOrDefault (r => Path.GetFileName (r.FilePath) == "System.Collections.dll");
+						.FirstOrDefault (r => Path.GetFileName (r.FilePath) == "System.Collections.dll");
 
 					Assert.AreNotEqual (netframeworkProject.MetadataReferences.Count, netstandardProject.MetadataReferences.Count);
 
@@ -136,6 +136,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					Assert.IsFalse (netframeworkProject.CompilationOptions.SpecificDiagnosticOptions.Keys.Contains ("STA4433"));
 					Assert.That (netstandardProject.CompilationOptions.SpecificDiagnosticOptions.Keys, Contains.Item ("STA4433"));
 					Assert.IsFalse (netstandardProject.CompilationOptions.SpecificDiagnosticOptions.Keys.Contains ("NET12345"));
+
+					// Ensure that facade assemblies are not added to the .NET Standard project. This would happen
+					// if the .NET Framework was the first target framework listed in TargetFrameworks. The Project
+					// would see a .NET Standard assembly was referenced and add the facade assemblies.
+					var facadeFound = netstandardProject.MetadataReferences
+						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference> ()
+						.Where (r => r.FilePath.IndexOf ("Facades", StringComparison.OrdinalIgnoreCase) >= 0)
+						.Select (r => r.FilePath)
+						.FirstOrDefault ();
+
+					Assert.IsNull (facadeFound);
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}

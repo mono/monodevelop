@@ -111,6 +111,7 @@ namespace MonoDevelop.Projects
 
 		public string Framework {
 			get { return framework; }
+			internal set { framework = value; }
 		}
 
 		public CustomCommandCollection CustomCommands {

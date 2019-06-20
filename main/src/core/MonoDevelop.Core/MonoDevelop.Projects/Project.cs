@@ -301,30 +301,6 @@ namespace MonoDevelop.Projects
 			conf.ProjectInstance = pi;
 		}
 
-		public async Task<ProjectConfiguration> GetConfigurationAsync (string name, string platform, string framework)
-		{
-			ProjectConfiguration existingConfig = null;
-			foreach (SolutionItemConfiguration config in Configurations) {
-				if (config.Name == name && config.Platform == platform) {
-					existingConfig = config as ProjectConfiguration;
-					break;
-				}
-			}
-
-			if (existingConfig == null)
-				return null;
-
-			var newConfig = CloneConfiguration (existingConfig, name, platform);
-
-			var pi = await CreateProjectInstanceForConfigurationAsync (name, platform, framework);
-			newConfig.Properties = pi.GetPropertiesLinkedToGroup (newConfig.MainPropertyGroup);
-			newConfig.ProjectInstance = pi;
-
-			newConfig.Read (newConfig.Properties);
-
-			return newConfig;
-		}
-
 		protected override void OnConfigurationRemoved (ConfigurationEventArgs args)
 		{
 			var conf = (ProjectConfiguration) args.Configuration;
@@ -1554,6 +1530,10 @@ namespace MonoDevelop.Projects
 				MSBuildProject.SetGlobalProperty ("TargetFramework", activeTargetFramework);
 				MSBuildProject.Evaluate ();
 			}
+		}
+
+		protected internal bool HasMultipleTargetFrameworks {
+			get { return activeTargetFramework != null; }
 		}
 
 		/// <summary>
@@ -2952,14 +2932,14 @@ namespace MonoDevelop.Projects
 			return config;
 		}
 
-		MSBuildProjectInstance CreateProjectInstanceForConfiguration (string conf, string platform, string framework = null, bool onlyEvaluateProperties = true)
+		protected internal MSBuildProjectInstance CreateProjectInstanceForConfiguration (string conf, string platform, string framework = null, bool onlyEvaluateProperties = true)
 		{
 			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			pi.Evaluate ();
 			return pi;
 		}
 
-		async Task<MSBuildProjectInstance> CreateProjectInstanceForConfigurationAsync (string conf, string platform, string framework, bool onlyEvaluateProperties = true)
+		protected internal async Task<MSBuildProjectInstance> CreateProjectInstanceForConfigurationAsync (string conf, string platform, string framework, bool onlyEvaluateProperties = true)
 		{
 			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			await pi.EvaluateAsync ();

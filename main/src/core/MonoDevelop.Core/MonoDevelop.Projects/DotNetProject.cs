@@ -967,9 +967,11 @@ namespace MonoDevelop.Projects
 			if (config != null)
 				noStdLib = config.CompilationParameters.NoStdLib;
 
+			var framework = config?.TargetFramework ?? TargetFramework;
+
 			// System.Core is an implicit reference
 			if (!noStdLib) {
-				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
+				var sa = AssemblyContext.GetAssemblies (framework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
 				if (sa != null) {
 					var props = new MSBuildPropertyGroupEvaluated (null);
 					var trueString = "true";
@@ -1007,7 +1009,11 @@ namespace MonoDevelop.Projects
 				}
 
 				if (addFacadeAssemblies) {
-					var facades = await ProjectExtension.OnGetFacadeAssemblies ().ConfigureAwait (false);
+					List<AssemblyReference> facades = null;
+					if (HasMultipleTargetFrameworks)
+						facades = await ProjectExtension.OnGetFacadeAssemblies (framework).ConfigureAwait (false);
+					else
+						facades = await ProjectExtension.OnGetFacadeAssemblies ().ConfigureAwait (false);
 					if (facades != null) {
 						foreach (var facade in facades) {
 							if (!result.Contains (facade))
@@ -1018,13 +1024,13 @@ namespace MonoDevelop.Projects
 			}
 
 			// we do this here rather than PortableDotNetProjectFlavor because F# doesn't use the flavor for PCLs
-			if (TargetFramework.Id.Identifier == ".NETPortable" && TargetFramework.Id.Version != "5.0") {
+			if (framework.Id.Identifier == ".NETPortable" && framework.Id.Version != "5.0") {
 				var props = new MSBuildPropertyGroupEvaluated (null);
 				const string resolvedFrom = "ImplicitlyExpandTargetFramework";
 				var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
 				props.SetProperty (property.Name, property);
 
-				foreach (var asm in TargetRuntime.AssemblyContext.GetAssemblies (TargetFramework)) {
+				foreach (var asm in TargetRuntime.AssemblyContext.GetAssemblies (config.TargetFramework)) {
 					if (asm.Package.IsFrameworkPackage) {
 						var ar = new AssemblyReference (asm.Location, props);
 						result.Add (ar);
@@ -1037,13 +1043,18 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
 		{
+			return OnGetFacadeAssemblies (TargetFramework);
+		}
+
+		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies (TargetFramework framework)
+		{
 			var sharedProperties = new MSBuildPropertyGroupEvaluated (null);
 			var resolvedFrom = "ImplicitlyExpandDesignTimeFacades";
 			var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
 			sharedProperties.SetProperty (property.Name, property);
 
-			var runtime = TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime;
-			var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
+			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+			var facades = runtime.FindFacadeAssembliesForPCL (framework);
 			var result = facades is ICollection<string> collection ? new List<AssemblyReference> (collection.Count) : new List<AssemblyReference> ();
 
 			foreach (var facade in facades) {
@@ -2047,6 +2058,85 @@ namespace MonoDevelop.Projects
 			NotifyReferencedAssembliesChanged ();
 		}
 
+		/// <summary>
+		/// Gets a framework specific configuration.
+		/// </summary>
+		/// <param name="name">Debug or release</param>
+		/// <param name="platform">Configuration platform (e.g. AnyCPU)</param>
+		/// <param name="framework">Short framework name (e.g. net472, netstandard2.0)</param>
+		public async Task<DotNetProjectConfiguration> GetConfigurationAsync (string name, string platform, string framework)
+		{
+			DotNetProjectConfiguration newConfig = CloneConfiguration (name, platform);
+			if (newConfig == null)
+				return null;
+
+			var pi = await CreateProjectInstanceForConfigurationAsync (name, platform, framework);
+			newConfig.Properties = pi.GetPropertiesLinkedToGroup (newConfig.MainPropertyGroup);
+			newConfig.ProjectInstance = pi;
+
+			newConfig.Read (newConfig.Properties);
+			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
+			newConfig.Framework = framework;
+
+			return newConfig;
+		}
+
+		DotNetProjectConfiguration CloneConfiguration (string name, string platform)
+		{
+			DotNetProjectConfiguration existingConfig = null;
+			foreach (SolutionItemConfiguration config in Configurations) {
+				if (config.Name == name && config.Platform == platform) {
+					existingConfig = config as DotNetProjectConfiguration;
+					break;
+				}
+			}
+
+			if (existingConfig == null)
+				return null;
+
+			return CloneConfiguration (existingConfig, name, platform) as DotNetProjectConfiguration;
+		}
+
+		/// <summary>
+		/// Gets a framework specific configuration.
+		/// </summary>
+		/// <param name="name">Debug or release</param>
+		/// <param name="platform">Configuration platform (e.g. AnyCPU)</param>
+		/// <param name="framework">Short framework name (e.g. net472, netstandard2.0)</param>
+		public DotNetProjectConfiguration GetConfiguration (string name, string platform, string framework)
+		{
+			DotNetProjectConfiguration newConfig = CloneConfiguration (name, platform);
+			if (newConfig == null)
+				return null;
+
+			var pi = CreateProjectInstanceForConfiguration (name, platform, framework);
+			newConfig.Properties = pi.GetPropertiesLinkedToGroup (newConfig.MainPropertyGroup);
+			newConfig.ProjectInstance = pi;
+
+			newConfig.Read (newConfig.Properties);
+			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
+			newConfig.Framework = framework;
+
+			return newConfig;
+		}
+
+		static TargetFramework GetTargetFramework (IMSBuildEvaluatedPropertyCollection evaluatedProperties)
+		{
+			string frameworkIdentifier = evaluatedProperties.GetValue ("TargetFrameworkIdentifier");
+			string frameworkVersion = evaluatedProperties.GetValue ("TargetFrameworkVersion");
+			string frameworkProfile = evaluatedProperties.GetValue ("TargetFrameworkProfile");
+
+			if (string.IsNullOrEmpty (frameworkIdentifier) || string.IsNullOrEmpty (frameworkVersion))
+				return null;
+
+			var targetFx = new TargetFrameworkMoniker (
+				frameworkIdentifier,
+				frameworkVersion,
+				frameworkProfile);
+
+			return Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
+		}
+
 		internal class DefaultDotNetProjectExtension: DotNetProjectExtension
 		{
 			internal protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
@@ -2082,6 +2172,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
 			{
 				return Project.OnGetFacadeAssemblies ();
+			}
+
+			internal protected override Task<List<AssemblyReference>> OnGetFacadeAssemblies (TargetFramework framework)
+			{
+				return Project.OnGetFacadeAssemblies (framework);
 			}
 
 #pragma warning disable 672 // Member overrides obsolete member

@@ -136,12 +136,20 @@ namespace MonoDevelop.Projects
 				?? matches.FirstOrDefault (c => c.Platform == "");
 		}
 
+		TargetFramework targetFramework;
+
 		public TargetFramework TargetFramework {
 			get {
+				if (targetFramework != null)
+					return targetFramework;
+
 				if (ParentItem is DotNetProject prj)
 					return prj.TargetFramework;
 
 				return Services.ProjectService.DefaultTargetFramework;
+			}
+			internal set {
+				targetFramework = value;
 			}
 		}
 		
@@ -224,6 +232,14 @@ namespace MonoDevelop.Projects
 				var selector = new ItemConfigurationSelector (id);
 				return new ItemFrameworkConfigurationSelector (selector, Framework);
 			}
+		}
+
+		internal DotNetProjectConfiguration GetConfiguration (string framework)
+		{
+			if (ParentItem == null)
+				return null;
+
+			return ParentItem.GetConfiguration (Name, Platform, framework) as DotNetProjectConfiguration;
 		}
 	}
 	

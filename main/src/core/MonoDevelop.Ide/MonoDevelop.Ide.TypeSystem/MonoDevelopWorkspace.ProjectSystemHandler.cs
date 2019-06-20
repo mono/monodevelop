@@ -200,12 +200,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static async Task<DotNetProjectConfiguration> GetDotNetProjectConfiguration (MonoDevelop.Projects.Project p, string framework)
 			{
+				var dotNetProject = p as DotNetProject;
+				if (dotNetProject == null)
+					return null;
+
 				var workspace = Runtime.PeekService<RootWorkspace> ();
 				var config = workspace != null ? p.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration : p.DefaultConfiguration as DotNetProjectConfiguration;
 				if (config == null || string.IsNullOrEmpty (framework))
 					return config;
 
-				return await p.GetConfigurationAsync (config.Name, config.Platform, framework) as DotNetProjectConfiguration;
+				return await dotNetProject.GetConfigurationAsync (config.Name, config.Platform, framework);
 			}
 
 			async Task<ProjectCacheInfo> LoadProjectCacheInfo (

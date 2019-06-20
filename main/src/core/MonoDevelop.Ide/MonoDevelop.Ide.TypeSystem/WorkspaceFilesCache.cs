@@ -201,7 +201,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				ProjectReferences = projectRefs,
 			};
 
-			var cacheFile = GetProjectCacheFile (proj, projConfig.Id, framework);
+			string configId = GetConfigId (projConfig);
+			var cacheFile = GetProjectCacheFile (proj, configId, framework);
 
 			FileLock fileLock = AcquireWriteLock (cacheFile);
 			try {
@@ -215,6 +216,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			} finally {
 				ReleaseWriteLock (cacheFile, fileLock);
 			}
+		}
+
+		string GetConfigId (ProjectConfiguration config)
+		{
+			if (string.IsNullOrEmpty (config.Platform))
+				return config.Name;
+
+			return config.Name + "|" + config.Platform;
 		}
 
 		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap, string framework,

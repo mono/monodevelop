@@ -42,11 +42,7 @@ namespace MonoDevelop.Projects
 			var original = configuration.GetConfiguration (target);
 
 			if (original is DotNetProjectConfiguration itemConfiguration) {
-				ItemConfiguration.ParseConfigurationId (original.Id, out string name, out string platform);
-				var copy = new DotNetProjectConfiguration (name, platform, framework);
-				copy.CopyFrom (itemConfiguration);
-
-				return copy;
+				return itemConfiguration.GetConfiguration (framework);
 			}
 
 			return original;
