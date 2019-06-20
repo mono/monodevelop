@@ -570,7 +570,8 @@ namespace MonoDevelop.Projects
 				var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 				var results = ImmutableArray.CreateBuilder<ProjectFile> ();
 
-				var pri = await CreateProjectInstanceForConfigurationAsync (config?.Name, config?.Platform, config?.Framework, false);
+				var dotNetProjectConfig = config as DotNetProjectConfiguration;
+				var pri = await CreateProjectInstanceForConfigurationAsync (config?.Name, config?.Platform, dotNetProjectConfig?.Framework, false);
 				foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 					results.Add (CreateProjectFile (it));
 
@@ -1583,16 +1584,12 @@ namespace MonoDevelop.Projects
 		/// Sets a global TargetFramework property for multi-target projects so MSBuild targets work.
 		/// For Build and Clean the TargetFramework property is not set so all frameworks are built.
 		/// </summary>
-		internal Dictionary<string, string> CreateGlobalProperties (ConfigurationSelector configuration, string target)
+		internal protected virtual Dictionary<string, string> CreateGlobalProperties (ConfigurationSelector configuration, string target)
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
 			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
 				properties ["TargetFramework"] = framework;
-
-			var itemConfiguration = GetConfiguration (configuration);
-			if (itemConfiguration != null && !string.IsNullOrEmpty (itemConfiguration.Framework))
-				properties ["TargetFramework"] = itemConfiguration.Framework;
 
 			return properties;
 		}

@@ -1,5 +1,5 @@
 //
-// ItemFrameworkConfigurationSelector.cs
+// DotNetProjectFrameworkConfigurationSelector.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -26,12 +26,12 @@
 
 namespace MonoDevelop.Projects
 {
-	public class ItemFrameworkConfigurationSelector : ConfigurationSelector
+	public class DotNetProjectFrameworkConfigurationSelector : ConfigurationSelector
 	{
 		readonly ConfigurationSelector configuration;
 		readonly string framework;
 
-		public ItemFrameworkConfigurationSelector (ConfigurationSelector configuration, string framework)
+		public DotNetProjectFrameworkConfigurationSelector (ConfigurationSelector configuration, string framework)
 		{
 			this.configuration = configuration;
 			this.framework = framework;

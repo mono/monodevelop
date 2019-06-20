@@ -43,8 +43,8 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal SolutionItemConfiguration (string name, string platform, string framework)
-			: base (name, platform, framework)
+		internal SolutionItemConfiguration (string name, string platform)
+			: base (name, platform)
 		{
 		}
 

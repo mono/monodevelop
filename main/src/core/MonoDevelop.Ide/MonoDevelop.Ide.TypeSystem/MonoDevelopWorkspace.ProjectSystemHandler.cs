@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var configSelector = config?.Selector;
 				if (p is MonoDevelop.Projects.DotNetProject && configSelector != null && !string.IsNullOrEmpty (framework))
-					configSelector = new MonoDevelop.Projects.ItemFrameworkConfigurationSelector (config.Selector, framework);
+					configSelector = new MonoDevelop.Projects.DotNetProjectFrameworkConfigurationSelector (config.Selector, framework);
 
 				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 				var sourceFiles = await p.GetSourceFilesAsync (configSelector).ConfigureAwait (false);

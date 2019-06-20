@@ -57,8 +57,9 @@ namespace MonoDevelop.Projects
 		}
 
 		internal DotNetProjectConfiguration (string name, string platform, string framework)
-			: base (name, platform, framework)
+			: base (name, platform)
 		{
+			Framework = framework;
 		}
 
 		internal protected override void Read (IPropertySet pset)
@@ -230,16 +231,32 @@ namespace MonoDevelop.Projects
 					id += "|" + Platform;
 
 				var selector = new ItemConfigurationSelector (id);
-				return new ItemFrameworkConfigurationSelector (selector, Framework);
+				return new DotNetProjectFrameworkConfigurationSelector (selector, Framework);
 			}
 		}
+
+		public string Framework { get; internal set; }
 
 		internal DotNetProjectConfiguration GetConfiguration (string framework)
 		{
 			if (ParentItem == null)
 				return null;
-
 			return ParentItem.GetConfiguration (Name, Platform, framework) as DotNetProjectConfiguration;
+		}
+
+		internal protected override string GetId ()
+		{
+			bool hasPlatform = !string.IsNullOrEmpty (Platform);
+			bool hasFramework = !string.IsNullOrEmpty (Framework);
+
+			if (hasPlatform && hasFramework)
+				return Name + "|" + Platform + "|" + Framework;
+			else if (hasPlatform)
+				return Name + "|" + Platform;
+			else if (hasFramework)
+				return Name + "||" + Framework;
+			else
+				return Name;
 		}
 	}
 	

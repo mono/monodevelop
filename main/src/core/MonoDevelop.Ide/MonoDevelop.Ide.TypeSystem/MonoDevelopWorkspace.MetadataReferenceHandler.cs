@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
 
 				if (!string.IsNullOrEmpty (framework))
-					config = new MonoDevelop.Projects.ItemFrameworkConfigurationSelector (config, framework);
+					config = new MonoDevelop.Projects.DotNetProjectFrameworkConfigurationSelector (config, framework);
 
 				var data = new AddReferencesData {
 					References = new List<MonoDevelopMetadataReference> (),

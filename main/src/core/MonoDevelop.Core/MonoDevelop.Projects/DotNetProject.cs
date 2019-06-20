@@ -2137,6 +2137,17 @@ namespace MonoDevelop.Projects
 			return Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 		}
 
+		internal protected override Dictionary<string, string> CreateGlobalProperties (ConfigurationSelector configuration, string target)
+		{
+			var properties = base.CreateGlobalProperties (configuration, target);
+
+			var dotNetProjectConfiguration = GetConfiguration (configuration) as DotNetProjectConfiguration;
+			if (dotNetProjectConfiguration != null && !string.IsNullOrEmpty (dotNetProjectConfiguration.Framework))
+				properties ["TargetFramework"] = dotNetProjectConfiguration.Framework;
+
+			return properties;
+		}
+
 		internal class DefaultDotNetProjectExtension: DotNetProjectExtension
 		{
 			internal protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
