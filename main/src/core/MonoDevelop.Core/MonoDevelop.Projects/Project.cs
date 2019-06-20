@@ -4660,10 +4660,14 @@ namespace MonoDevelop.Projects
 
 			Runtime.RunInMainThread (() => {
 				// Double check the file has not been added on the UI thread by the IDE.
-				list.RemoveAll (item => Files.GetFile (item.Item1) != null);
-				if (list.Count > 0)
-					Items.AddRange (list.Select (item => item.Item2));
-				projectItemListPool.Return (list);
+				try {
+					list.RemoveAll (item => Files.GetFile (item.Item1) != null);
+					if (list.Count > 0)
+						Items.AddRange (list.Select (item => item.Item2));
+				} finally {
+					list.Clear ();
+					projectItemListPool.Return (list);
+				}
 			}).Ignore ();
 		}
 
