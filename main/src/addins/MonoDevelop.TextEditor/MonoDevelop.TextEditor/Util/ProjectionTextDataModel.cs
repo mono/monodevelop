@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.Text.Editor
 		public event EventHandler<TextDataModelContentTypeChangedEventArgs> ContentTypeChanged;
 
 		public ITextBuffer DocumentBuffer { get; }
-		public ITextBuffer DataBuffer { get; private set; }
+		public ITextBuffer DataBuffer { get; set; }
 
 		public IContentType ContentType => DocumentBuffer.ContentType;
 
