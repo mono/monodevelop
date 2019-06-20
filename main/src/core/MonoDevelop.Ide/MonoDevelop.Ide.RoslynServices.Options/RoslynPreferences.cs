@@ -72,9 +72,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			public readonly ConfigurationProperty<bool> FormatOnPaste;
 			public readonly ConfigurationProperty<bool> PlaceSystemNamespaceFirst;
 			public readonly ConfigurationProperty<bool> SeparateImportDirectiveGroups;
+			public readonly ConfigurationProperty<bool> ShowCompletionItemFilters;
 			public readonly ConfigurationProperty<bool?> ShowItemsFromUnimportedNamespaces;
 			public readonly ConfigurationProperty<bool> SuggestForTypesInNuGetPackages;
 			public readonly ConfigurationProperty<bool> SolutionCrawlerClosedFileDiagnostic;
+			public readonly ConfigurationProperty<bool?> TriggerOnDeletion;
 
 			internal PerLanguagePreferences (string language, RoslynPreferences preferences)
 			{
@@ -115,6 +117,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					language + ".SeparateImportDirectiveGroups"
 				);
 
+				ShowCompletionItemFilters = preferences.Wrap<bool> (
+					new OptionKey (CompletionOptions.ShowCompletionItemFilters, language),
+					language + ".ShowCompletionItemFilters"
+				);
+
 				ShowItemsFromUnimportedNamespaces = preferences.Wrap<bool?> (
 					new OptionKey (CompletionOptions.ShowItemsFromUnimportedNamespaces, language),
 					IdeApp.Preferences.AddImportedItemsToCompletionList.Value,
@@ -129,6 +136,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				SolutionCrawlerClosedFileDiagnostic = new ClosedFileDiagnosticProperty (preferences.Wrap<bool?> (
 					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language)
 				), language, roslynPreferences);
+
+				TriggerOnDeletion = preferences.Wrap<bool?> (
+					new OptionKey (CompletionOptions.TriggerOnDeletion, language),
+					language + ".TriggerOnDeletion"
+				);
 			}
 
 			class ClosedFileDiagnosticProperty : ConfigurationProperty<bool>
