@@ -656,6 +656,35 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Tests that on saving the project after making a small change the .xaml.fs files still depend on the
+		/// correct .xaml file.
+		/// </summary>
+		[Test]
+		[Platform (Exclude = "Win")]
+		public async Task FSharpXamarinFormsProject_SaveProject_XamlFilesDependentUponUnchanged ()
+		{
+			FilePath solFile = Util.GetSampleProject ("FSharpForms", "FSharpForms.sln");
+
+			RunMSBuildRestore (solFile);
+
+			using (var s = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = s.GetAllProjects ().OfType<DotNetProject> ().Single ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Re-evaluate to force the Project.Files to be refreshed. This would cause the DependsUpon
+				// to be changed for the ProjectFiles.
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				var mainPageXamlFSharp = p.Files.FirstOrDefault (f => f.FilePath.FileName == "MainPage.xaml.fs");
+				var appXamlFSharp = p.Files.FirstOrDefault (f => f.FilePath.FileName == "App.xaml.fs");
+
+				Assert.IsTrue (appXamlFSharp.DependsOn.EndsWith ("App.xaml", StringComparison.Ordinal), "Should end with App.xaml was '{0}'", appXamlFSharp.DependsOn);
+				Assert.IsTrue (mainPageXamlFSharp.DependsOn.EndsWith ("MainPage.xaml", StringComparison.Ordinal), "Should end with MainPage.xaml was '{0}'", mainPageXamlFSharp.DependsOn);
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);
