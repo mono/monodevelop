@@ -53,6 +53,8 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public NestingRulesProvider (string fromFile)
 		{
+			if (string.IsNullOrEmpty (fromFile))
+				throw new ArgumentNullException (nameof (fromFile));
 			SourceFile = fromFile;
 		}
 
