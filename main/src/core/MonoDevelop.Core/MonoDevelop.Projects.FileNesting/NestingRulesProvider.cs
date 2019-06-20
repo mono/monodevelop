@@ -92,25 +92,25 @@ namespace MonoDevelop.Projects.FileNesting
 					var json = JObject.Parse (reader.ReadToEnd ());
 					if (json != null) {
 						var parentNode = json ["dependentFileProviders"] [TokenNameAdd] as JObject;
-						foreach (var rp in parentNode.Properties ()) {
+						foreach (var jsonProp in parentNode.Properties ()) {
 							JObject rpobj = null;
 							try {
-								rpobj = parentNode [rp.Name] [TokenNameAdd].Value<JObject> ();
+								rpobj = parentNode [jsonProp.Name] [TokenNameAdd].Value<JObject> ();
 							} catch {
-								LoggingService.LogWarning ($"No patterns specified for {rp.Name} nesting rule");
+								LoggingService.LogWarning ($"No patterns specified for {jsonProp.Name} nesting rule");
 							}
 
-							if (rp.Name == RuleNameAddedExtension) {
+							if (jsonProp.Name == RuleNameAddedExtension) {
 								ParseRulesProvider (provider, NestingRuleKind.AddedExtension, rpobj);
-							} else if (rp.Name == RuleNameAllExtensions) {
+							} else if (jsonProp.Name == RuleNameAllExtensions) {
 								ParseRulesProvider (provider, NestingRuleKind.AllExtensions, rpobj);
-							} else if (rp.Name == RuleNameExtensionToExtension) {
+							} else if (jsonProp.Name == RuleNameExtensionToExtension) {
 								ParseRulesProvider (provider, NestingRuleKind.ExtensionToExtension, rpobj);
-							} else if (rp.Name == RuleNameFileSuffixToExtension) {
+							} else if (jsonProp.Name == RuleNameFileSuffixToExtension) {
 								ParseRulesProvider (provider, NestingRuleKind.FileSuffixToExtension, rpobj);
-							} else if (rp.Name == RuleNameFileToFile) {
+							} else if (jsonProp.Name == RuleNameFileToFile) {
 								ParseRulesProvider (provider, NestingRuleKind.FileToFile, rpobj);
-							} else if (rp.Name == RuleNamePathSegment) {
+							} else if (jsonProp.Name == RuleNamePathSegment) {
 								ParseRulesProvider (provider, NestingRuleKind.PathSegment, rpobj);
 							}
 						}
