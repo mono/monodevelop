@@ -57,15 +57,12 @@ namespace MonoDevelop.Projects.FileNesting
 		public static string GetParentFile (string inputFile)
 		{
 			if (rulesProviders == null) {
-				rulesProviders = ImmutableList<NestingRulesProvider>.Empty;
-				foreach (var pr in AddinManager.GetExtensionObjects<NestingRulesProvider> ()) {
-					rulesProviders = rulesProviders.Add (pr);
-				}
+				rulesProviders = ImmutableList<NestingRulesProvider>.Empty.AddRange (AddinManager.GetExtensionObjects<NestingRulesProvider> ());
 			}
 
 			foreach (var rp in rulesProviders) {
 				var parentFile = rp.GetParentFile (inputFile);
-				if (!String.IsNullOrEmpty (parentFile)) {
+				if (!string.IsNullOrEmpty (parentFile)) {
 					return parentFile;
 				}
 			}
