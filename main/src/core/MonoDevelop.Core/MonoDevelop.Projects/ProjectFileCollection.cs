@@ -261,11 +261,9 @@ namespace MonoDevelop.Projects
 		public void Remove (string fileName)
 		{
 			fileName = FileService.GetFullPath (fileName);
-			for (int n = 0; n < Count; n++) {
-				if (this[n].Name == fileName) {
-					RemoveAt (n);
-					break;
-				}
+
+			if (files.TryGetValue (fileName, out var projectFile)) {
+				Remove (projectFile);
 			}
 		}
 	}
