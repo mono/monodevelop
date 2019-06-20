@@ -206,6 +206,7 @@ namespace MonoDevelop.TextEditor
 			// all the themes expect that. Fixes https://devdiv.visualstudio.com/DevDiv/_workitems/edit/804158
 			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.BackgroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.IndentationGuide);
+			CreateResourceDictionary (editorFormat, defaultSettings, "RulerFormat", EditorThemeColors.Ruler);
 			CreateResourceDictionary (editorFormat, defaultSettings, "NavigableSymbolFormat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "urlformat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes before save", EditorThemeColors.QuickDiffDirty);
