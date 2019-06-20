@@ -42,6 +42,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Core
 {
@@ -1335,23 +1336,65 @@ namespace MonoDevelop.Core
 
 	public class AsyncEvents
 	{
+		readonly ObjectPool<Stopwatch> watchPool = ObjectPool.Create<Stopwatch> ();
+		readonly TimeSpan [] timings = new TimeSpan [Enum.GetNames (typeof (FileService.EventDataKind)).Length];
+
 		public event EventHandler<FileEventArgs> FileCreated;
 		public event EventHandler<FileEventArgs> FileRemoved;
 		public event EventHandler<FileCopyEventArgs> FileRenamed;
 
+		internal TimeSpan GetTimings (FileService.EventDataKind kind)
+			=> timings[(int)kind];
+
 		internal void OnFileCreated (FileEventArgs args)
 		{
-			FileCreated?.Invoke (this, Clone (args));
+			var handler = FileCreated;
+			if (handler == null)
+				return;
+
+			var sw = watchPool.Get ();
+			try {
+				sw.Restart ();
+				handler.Invoke (this, Clone (args));
+				sw.Stop ();
+				timings [(int)FileService.EventDataKind.Created] += sw.Elapsed;
+			} finally {
+				watchPool.Return (sw);
+			}
 		}
 
 		internal void OnFileRemoved (FileEventArgs args)
 		{
-			FileRemoved?.Invoke (this, Clone (args));
+			var handler = FileRemoved;
+			if (handler == null)
+				return;
+
+			var sw = watchPool.Get ();
+			try {
+				sw.Restart ();
+				handler.Invoke (this, Clone (args));
+				sw.Stop ();
+				timings [(int)FileService.EventDataKind.Removed] += sw.Elapsed;
+			} finally {
+				watchPool.Return (sw);
+			}
 		}
 
 		internal void OnFileRenamed (FileCopyEventArgs args)
 		{
-			FileRenamed?.Invoke (this, Clone (args));
+			var handler = FileRenamed;
+			if (handler == null)
+				return;
+
+			var sw = watchPool.Get ();
+			try {
+				sw.Restart ();
+				handler.Invoke (this, Clone (args));
+				sw.Stop ();
+				timings [(int)FileService.EventDataKind.Renamed] += sw.Elapsed;
+			} finally {
+				watchPool.Return (sw);
+			}
 		}
 
 		static FileCopyEventArgs Clone (FileCopyEventArgs args)
