@@ -290,7 +290,7 @@ namespace MonoDevelop.UserInterfaceTesting
 					if (folder != null && Directory.Exists (folder))
 						Directory.Delete (folder, true);
 				} catch (IOException e) {
-					TestService.Session.DebugObject.Debug ("Cleanup failed\n" +e);
+					TestService.Session.DebugObject.Debug ($"Failed to cleanup directory: {folder}\n" + e);
 				} catch (UnauthorizedAccessException e) {
 					TestService.Session.DebugObject.Debug (string.Format ("Unable to clean directory: {0}\n", folder) + e);
 				}
