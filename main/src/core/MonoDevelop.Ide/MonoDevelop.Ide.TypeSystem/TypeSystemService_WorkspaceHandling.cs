@@ -270,7 +270,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public FilePath FilePath { get; set; }
 			public ITextBuffer TextBuffer { get; set; }
 			public WorkspaceObject Owner { get; set; }
-			public bool HandleMiscNamespace { get; set; }
+			public bool HandleMiscWorkspace { get; set; }
 		}
 
 		class DocumentRegistration : IDisposable
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public IDisposable RegisterOpenDocument (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer, bool handleMiscNamespace = true)
+		public IDisposable RegisterOpenDocument (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer, bool handleMiscWorkspace = true)
 		{
 			Runtime.AssertMainThread ();
 
@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				FilePath = path,
 				TextBuffer = textBuffer,
 				Owner = owner,
-				HandleMiscNamespace = handleMiscNamespace
+				HandleMiscWorkspace = handleMiscWorkspace
 			};
 			openDocuments.Add (path, reference);
 
@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			TryOpenDocumentInWorkspace (reference.Owner, reference.FilePath, reference.TextBuffer);
 
 			// Only use misc workspace with the new editor; old editor has its own
-			if (reference.HandleMiscNamespace) {
+			if (reference.HandleMiscWorkspace) {
 				// If the primary workspace didn't claim the document notify the miscellaneous workspace
 				miscellaneousFilesWorkspace.OnDocumentOpened (reference.FilePath, reference.TextBuffer);
 			}
@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			openDocuments.Remove (reference.FilePath);
 
 			// Only use misc workspace with the new editor; old editor has its own
-			if (reference.HandleMiscNamespace) {
+			if (reference.HandleMiscWorkspace) {
 				// In the common case the primary workspace will own the document, so shut down
 				// miscellaneous workspace first to avoid adding and then immediately removing
 				// the document to the miscellaneous workspace
