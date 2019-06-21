@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[TestCase (1000)]
-		[Benchmark (Tolerance = 0.3)]
+		[Benchmark (Tolerance = 0.20)]
 		public void TestHandlers (int fileCount)
 		{
 			OpenApplicationAndWait ();
