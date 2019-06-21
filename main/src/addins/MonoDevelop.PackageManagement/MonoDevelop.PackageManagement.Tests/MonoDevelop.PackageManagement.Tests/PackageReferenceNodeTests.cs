@@ -105,6 +105,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("MyPackage", label);
 			Assert.AreEqual ("(1.2.3)", secondaryLabel);
+			Assert.AreEqual (IconId.Null, node.GetStatusIconId ());
 		}
 
 		[Test]
@@ -179,8 +180,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (Stock.Reference, icon);
 		}
 
+		/// <summary>
+		/// Can only show one status icon. Warning icon is displayed - Update icon is not.
+		/// </summary>
 		[Test]
-		public void GetLabel_PackageReferenceNeedsReinstallationButHasUpdate_ReturnsPackageIdInBlackTextAndUpdatedPackageVersionInGreySpan ()
+		public void GetLabel_PackageReferenceNeedsReinstallationButHasUpdate_DoesNotShowUpdateInformation ()
 		{
 			CreatePackageReference (
 				packageId: "MyPackage",
@@ -194,7 +198,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
-			Assert.AreEqual ("(1.0.2 · 1.2.3.4 available)", secondaryLabel);
+			Assert.AreEqual ("(1.0.2)", secondaryLabel);
+			Assert.AreEqual (TaskSeverity.Warning, node.GetStatusSeverity ());
+			Assert.AreEqual ("Package needs retargeting", node.GetStatusMessage ());
+			Assert.AreEqual (IconId.Null, node.GetStatusIconId ());
 		}
 
 		[Test]

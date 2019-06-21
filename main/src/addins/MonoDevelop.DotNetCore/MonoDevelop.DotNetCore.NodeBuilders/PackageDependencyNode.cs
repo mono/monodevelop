@@ -142,21 +142,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			if (updatedVersion != null)
-				return GetUpdatedVersionLabelText ();
-
 			if (string.IsNullOrEmpty (version))
 				return string.Empty;
 
 			return string.Format ("({0})", version);
-		}
-
-		string GetUpdatedVersionLabelText ()
-		{
-			if (string.IsNullOrEmpty (version))
-				return GettextCatalog.GetString ("({0} available)", updatedVersion);
-
-			return GettextCatalog.GetString ("({0} · {1} available)", version, updatedVersion);
 		}
 
 		public IconId GetIconId ()
@@ -166,10 +155,20 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return new IconId ("md-package-dependency");
 		}
 
+		public IconId GetStatusIconId ()
+		{
+			if (IsDiagnostic || HasChildDiagnostic || updatedVersion == null)
+				return IconId.Null;
+
+			return new IconId ("md-package-update");
+		}
+
 		public TaskSeverity? GetStatusSeverity ()
 		{
 			if (IsDiagnostic || HasChildDiagnostic)
 				return TaskSeverity.Warning;
+			if (updatedVersion != null)
+				return TaskSeverity.Information;
 			return null;
 		}
 
@@ -180,6 +179,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			if (HasChildDiagnostic)
 				return GetChildDiagnosticStatusMessage ();
+
+			if (updatedVersion != null)
+				return GettextCatalog.GetString ("{0} available", updatedVersion);
 
 			return null;
 		}

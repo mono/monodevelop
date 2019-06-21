@@ -105,10 +105,6 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			if (UpdatedVersion != null) {
-				return GetUpdatedVersionLabelText ();
-			}
-
 			if (IsInstallPending) {
 				return GetInstallingLabelText ();
 			}
@@ -119,16 +115,6 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			}
 
 			return string.Format ("({0})", version);
-		}
-
-		string GetUpdatedVersionLabelText ()
-		{
-			string version = GetPackageDisplayVersion (displayNone: false);
-			if (string.IsNullOrEmpty (version)) {
-				return GettextCatalog.GetString ("({0} available)", UpdatedVersion);
-			}
-
-			return GettextCatalog.GetString ("({0} · {1} available)", version, UpdatedVersion);
 		}
 
 		string GetInstallingLabelText ()
@@ -143,6 +129,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public IconId GetIconId ()
 		{
 			return Stock.Reference;
+		}
+
+		public IconId GetStatusIconId ()
+		{
+			if (IsInstallPending || !Installed || IsReinstallNeeded || UpdatedVersion == null)
+				return IconId.Null;
+
+			return new IconId ("md-package-update");
 		}
 
 		public string GetPackageDisplayVersion (bool displayNone = true)
@@ -167,6 +161,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				}
 			}
 
+			if (UpdatedVersion != null)
+				return TaskSeverity.Information;
+
 			return null;
 		}
 
@@ -178,6 +175,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				return GettextCatalog.GetString ("Package is not restored");
 			} else if (IsReinstallNeeded) {
 				return GettextCatalog.GetString ("Package needs retargeting");
+			} else if (UpdatedVersion != null) {
+				return GettextCatalog.GetString ("{0} available", UpdatedVersion);
 			}
 			return null;
 		}
