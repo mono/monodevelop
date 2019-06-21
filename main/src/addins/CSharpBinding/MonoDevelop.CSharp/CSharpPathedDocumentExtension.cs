@@ -69,6 +69,10 @@ namespace MonoDevelop.CSharp
 			isPathSet = false;
 			view.Caret.PositionChanged += CaretPositionChanged;
 			view.TextBuffer.PostChanged += TextBufferChanged;
+
+			// WorkspaceChanged event is not always fired so run the logic to update the owner projects to
+			// ensure they are available in the path bar.
+			WorkspaceChanged (null, null);
 		}
 
 		private void WorkspaceChanged (object sender, EventArgs e)
