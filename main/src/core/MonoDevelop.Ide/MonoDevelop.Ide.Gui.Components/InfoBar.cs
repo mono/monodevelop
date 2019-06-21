@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			var mainBox = new HBox {
 				BackgroundColor = Styles.NotificationBar.BarBackgroundColor,
+				MinHeight = 30
 			};
 
 			mainBox.PackStart (new ImageView (ImageService.GetIcon (Stock.Information, Gtk.IconSize.Menu)), marginLeft: 11);
