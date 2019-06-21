@@ -252,7 +252,7 @@
 	<StockIcon stockid="md-struct" resource="element-struct-16.png" size="Menu" imageid="2992;2993;2994;2995;2996;2997;3331;3332;3333;3334;3335;3336;3337" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-16.png" size="Menu" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-32.png" size="Dnd" />
-	<StockIcon stockid="md-task-list" resource="pad-task-list-16.png" size="Menu" />
+	<StockIcon stockid="md-task-list" resource="pad-task-list-16.png" size="Menu" imageid="3063" />
 	<StockIcon stockid="md-template" resource="element-template-16.png" size="Menu" imageid="2852" />
 	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-16.png" size="Menu" imageid="2853" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-16.png" size="Menu" />
