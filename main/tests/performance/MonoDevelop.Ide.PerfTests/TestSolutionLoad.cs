@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test]
-		[Benchmark (Tolerance = 0.2)]
+		[Benchmark (Tolerance = 0.20)]
 		public void TestLoad ()
 		{
 			OpenApplicationAndWait ();
