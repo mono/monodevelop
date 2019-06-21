@@ -387,6 +387,7 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+				EditorOptions.ClearOptionValue (DefaultTextViewOptions.VerticalRulersName);
 
 				return;
 			}
@@ -399,6 +400,10 @@ namespace MonoDevelop.TextEditor
 			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
 			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
 			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
+
+			EditorOptions.SetOptionValue (
+				DefaultTextViewOptions.VerticalRulersName,
+				PropertyService.Get<bool> ("ShowRuler") ? new [] { currentPolicy.FileWidth } : Array.Empty<int> ());
 		}
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
@@ -416,6 +421,29 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
 				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
+
+			var setVerticalRulers = false;
+			int [] verticalRulers = null;
+
+			if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.RulersConvention, out var rulers)) {
+				setVerticalRulers = true;
+				if (!string.IsNullOrEmpty(rulers)) {
+					verticalRulers = Array.ConvertAll (rulers.Split (','), val => {
+						if (int.TryParse (val, out var col))
+							return col;
+						return 0;
+					});
+				}
+			} else if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out var maxLineLength)) {
+				if (maxLineLength != "off" && int.TryParse (maxLineLength, out var i)) {
+					setVerticalRulers = true;
+					verticalRulers = new [] { i };
+				} else
+					setVerticalRulers = false;
+			}
+
+			if (setVerticalRulers)
+				EditorOptions.SetOptionValue (DefaultTextViewOptions.VerticalRulersName, verticalRulers ?? Array.Empty<int> ());
 
 			return Task.FromResult (true);
 		}
