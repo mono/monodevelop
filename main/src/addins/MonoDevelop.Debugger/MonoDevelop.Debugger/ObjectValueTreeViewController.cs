@@ -196,9 +196,37 @@ namespace MonoDevelop.Debugger
 
 		public event EventHandler PinStatusChanged;
 
-		internal void OnPinStatusChanged ()
+		void OnPinStatusChanged ()
 		{
 			PinStatusChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		public void CreatePinnedWatch (string expression, int height)
+		{
+			var watch = new PinnedWatch ();
+
+			if (PinnedWatch != null) {
+				watch.File = PinnedWatch.File;
+				watch.Line = PinnedWatch.Line;
+				watch.OffsetX = PinnedWatch.OffsetX;
+				watch.OffsetY = PinnedWatch.OffsetY + height + 5;
+			} else {
+				watch.File = PinnedWatchFile;
+				watch.Line = PinnedWatchLine;
+				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
+				watch.OffsetY = -1;
+			}
+
+			watch.Expression = expression;
+			DebuggingService.PinnedWatches.Add (watch);
+
+			OnPinStatusChanged ();
+		}
+
+		public void RemovePinnedWatch ()
+		{
+			DebuggingService.PinnedWatches.Remove (PinnedWatch);
+			OnPinStatusChanged ();
 		}
 
 		public event EventHandler StartEditing;

@@ -1296,7 +1296,7 @@ public StackFrame Frame {
 						clickProcessed = true;
 						TreeIter pi;
 						if (controller.PinnedWatch != null && !store.IterParent (out pi, it))
-							RemovePinnedWatch (it);
+							controller.RemovePinnedWatch ();
 						else
 							CreatePinnedWatch (it);
 					} else if (cr == crpLiveUpdate) {
@@ -1594,31 +1594,12 @@ public StackFrame Frame {
 			if (string.IsNullOrEmpty (expression))
 				return;
 
-			var watch = new PinnedWatch ();
+			var height = SizeRequest ().Height;
 
-			if (controller.PinnedWatch != null) {
+			if (controller.PinnedWatch != null)
 				CollapseAll ();
-				watch.File = controller.PinnedWatch.File;
-				watch.Line = controller.PinnedWatch.Line;
-				watch.OffsetX = controller.PinnedWatch.OffsetX;
-				watch.OffsetY = controller.PinnedWatch.OffsetY + SizeRequest ().Height + 5;
-			} else {
-				watch.File = controller.PinnedWatchFile;
-				watch.Line = controller.PinnedWatchLine;
-				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
-				watch.OffsetY = -1;
-			}
 
-			watch.Expression = expression;
-			DebuggingService.PinnedWatches.Add (watch);
-
-			controller.OnPinStatusChanged ();
-		}
-
-		public void RemovePinnedWatch (TreeIter it)
-		{
-			DebuggingService.PinnedWatches.Remove (controller.PinnedWatch);
-			controller.OnPinStatusChanged ();
+			controller.CreatePinnedWatch (expression, height);
 		}
 
 		#region ICompletionWidget implementation 
