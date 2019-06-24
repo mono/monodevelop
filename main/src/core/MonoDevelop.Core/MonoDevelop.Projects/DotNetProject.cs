@@ -548,21 +548,46 @@ namespace MonoDevelop.Projects
 			get { return LanguageBinding.SupportsPartialTypes; }
 		}
 
-		void CheckReferenceChange (FilePath updatedFile)
+		void CheckReferenceChange (FileEventArgs updatedFiles)
 		{
-			for (int n=0; n<References.Count; n++) {
+			int done = 0;
+			foreach (var item in updatedFiles) {
+				// HACK: Don't like this, but we need it for now.
+				if (!item.FileName.HasExtension ("dll"))
+					done++;
+			}
+
+			for (int n=0; n<References.Count && done != updatedFiles.Count; n++) {
 				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
-					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile)) {
-						SetFastBuildCheckDirty ();
-						pr.NotifyStatusChanged ();
+					foreach (var fileName in pr.GetReferencedFileNames (DefaultConfiguration.Selector)) {
+						if (Contains (updatedFiles, fileName)) {
+							done++;
+							SetFastBuildCheckDirty ();
+							pr.NotifyStatusChanged ();
+							break;
+						}
 					}
-				} else if (pr.HintPath == updatedFile) {
+				} else if (Contains (updatedFiles, pr.HintPath)) {
+					done++;
 					SetFastBuildCheckDirty ();
 					var nr = pr.GetRefreshedReference ();
 					if (nr != null)
 						References [n] = nr;
 				}
+			}
+
+			static bool Contains (FileEventArgs args, FilePath fileName)
+			{
+				if (fileName.IsNullOrEmpty)
+					return false;
+
+				foreach (var arg in args) {
+					if (arg.FileName == fileName)
+						return true;
+				}
+
+				return false;
 			}
 
 			// If a referenced assembly changes, dirtify the project.
@@ -587,8 +612,7 @@ namespace MonoDevelop.Projects
 				return;
 
 			base.OnFileChanged (source, e);
-			foreach (FileEventInfo ei in e)
-				CheckReferenceChange (ei.FileName);
+			CheckReferenceChange (e);
 		}
 
 
@@ -1874,10 +1898,9 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public event EventHandler ReferencedAssembliesChanged;
 
-		private void OnFileRemoved (Object o, FileEventArgs e)
+		private void OnFileRemoved (object o, FileEventArgs e)
 		{
-			foreach (FileEventInfo ei in e)
-				CheckReferenceChange (ei.FileName);
+			CheckReferenceChange (e);
 		}
 
 		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)

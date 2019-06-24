@@ -38,8 +38,9 @@ namespace MonoDevelop.Projects
 {
 	public static class FileWatcherService
 	{
-		// We don't want more than 8 threads for FileSystemWatchers.
-		const int maxWatchers = 8;
+		// Keep previous behaviour with a maximum of 8 watchers for Linux, as it still uses one thread per watcher.
+		// Use more watchers for finer grained directory notifications for other platforms.
+		static readonly int maxWatchers = Platform.IsMac ? 32 : 8;
 
 		static readonly PathTree tree = new PathTree ();
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
@@ -221,9 +222,9 @@ namespace MonoDevelop.Projects
 		}
 	}
 
-	class FileWatcherWrapper : IDisposable
+	sealed class FileWatcherWrapper : IDisposable
 	{
-		FileSystemWatcher watcher;
+		readonly FileSystemWatcher watcher;
 
 		public FileWatcherWrapper (FilePath path)
 		{
@@ -259,12 +260,12 @@ namespace MonoDevelop.Projects
 			watcher.Dispose ();
 		}
 
-		void OnFileChanged (object sender, FileSystemEventArgs e)
+		static void OnFileChanged (object sender, FileSystemEventArgs e)
 		{
 			FileService.NotifyFileChanged (e.FullPath);
 		}
 
-		void OnFileCreated (object sender, FileSystemEventArgs e)
+		static void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
 			FileService.NotifyFileCreated (e.FullPath);
 
@@ -274,7 +275,7 @@ namespace MonoDevelop.Projects
 			FileService.NotifyFileChanged (e.FullPath);
 		}
 
-		void OnFileDeleted (object sender, FileSystemEventArgs e)
+		static void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
 			// The native file watcher sometimes generates a Changed, Created and Deleted event in
 			// that order from a single native file event. So check the file has been deleted before raising
@@ -290,7 +291,7 @@ namespace MonoDevelop.Projects
 		/// 3. Some applications use a rename to update the original file so these are turned into
 		/// a change event and a remove event.
 		/// </summary>
-		void OnFileRenamed (object sender, RenamedEventArgs e)
+		static void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
 			FileService.NotifyFileRenamedExternally (e.OldFullPath, e.FullPath);
 			// Some applications, such as TextEdit.app, will create a backup file
@@ -311,7 +312,7 @@ namespace MonoDevelop.Projects
 				FileService.NotifyFileRemoved (e.OldFullPath);
 		}
 
-		void OnFileWatcherError (object sender, ErrorEventArgs e)
+		static void OnFileWatcherError (object sender, ErrorEventArgs e)
 		{
 			LoggingService.LogError ("FileService.FileWatcher error", e.GetException ());
 		}

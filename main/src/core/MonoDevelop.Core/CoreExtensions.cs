@@ -26,6 +26,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 
@@ -295,6 +296,82 @@ namespace System
 					LoggingService.LogInternalError (ex);
 				}
 			}
+		}
+
+		internal static void TimeInvoke<T> (this EventHandler<T> events, object sender, T args)
+		{
+			var sw = new Diagnostics.Stopwatch ();
+			foreach (var ev in events.GetInvocationList ()) {
+				try {
+					sw.Restart ();
+					((EventHandler<T>)ev) (sender, args);
+					sw.Stop ();
+
+					lock (timings) {
+						if (!timings.TryGetValue (sender, out var timingPair)) {
+							timings [sender] = timingPair = new Dictionary<Reflection.MethodInfo, TimeSpan> ();
+						}
+
+						if (!timingPair.TryGetValue (ev.Method, out var previousTime))
+							previousTime = TimeSpan.Zero;
+
+						timingPair [ev.Method] = previousTime.Add (sw.Elapsed);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+				}
+			}
+		}
+
+		static readonly Dictionary<object, Dictionary<MethodInfo, TimeSpan>> timings = new Dictionary<object, Dictionary<MethodInfo, TimeSpan>> ();
+
+		internal static void TimingsReport ()
+		{
+			foreach (var kvp in timings) {
+				var source = kvp.Key;
+				var values = kvp.Value;
+
+				Console.WriteLine ("Source {0}", source);
+				foreach (var timeReport in values.OrderByDescending (x => x.Value)) {
+					Console.WriteLine ("{0} - {1} {2}", timeReport.Value.ToString (), timeReport.Key.DeclaringType, timeReport.Key);
+				}
+			}
+		}
+
+		internal static void TimeInvoke (this EventHandler events, object sender, EventArgs args)
+		{
+			var sw = new Diagnostics.Stopwatch ();
+			foreach (var ev in events.GetInvocationList ()) {
+				try {
+					sw.Restart ();
+					((EventHandler)ev) (sender, args);
+					sw.Stop ();
+
+					lock (timings) {
+						if (!timings.TryGetValue (sender, out var timingPair)) {
+							timings [sender] = timingPair = new Dictionary<MethodInfo, TimeSpan> (MethodInfoEqualityComparer.Instance);
+						}
+
+						if (!timingPair.TryGetValue (ev.Method, out var previousTime))
+							previousTime = TimeSpan.Zero;
+
+						timingPair [ev.Method] = previousTime.Add (sw.Elapsed);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+				}
+			}
+		}
+
+		sealed class MethodInfoEqualityComparer : IEqualityComparer<MethodInfo>
+		{
+			public static MethodInfoEqualityComparer Instance = new MethodInfoEqualityComparer ();
+			public bool Equals (MethodInfo x, MethodInfo y)
+				=> x.Name == y.Name
+				&& x.DeclaringType == y.DeclaringType;
+
+			public int GetHashCode (MethodInfo obj)
+				=> obj.Name.GetHashCode () ^ obj.DeclaringType.GetHashCode ();
 		}
 	}
 }

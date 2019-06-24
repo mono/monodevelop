@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.FSW
@@ -36,7 +37,7 @@ namespace MonoDevelop.FSW
 
 		public PathTree ()
 		{
-			rootNode = new PathTreeNode ("", 0, 1);
+			rootNode = new PathTreeNode ("", 0, 0);
 			if (!Platform.IsWindows) {
 				rootNode.FirstChild = new PathTreeNode ("/", 0, 0) {
 					Parent = rootNode,
@@ -262,5 +263,7 @@ namespace MonoDevelop.FSW
 			if (next != null)
 				next.Previous = node;
 		}
+
+		public string PrettyPrint () => rootNode.ToString ();
 	}
 }

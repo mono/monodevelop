@@ -1,10 +1,10 @@
-﻿//
-// TestSolutionLoad.cs
+//
+// PooledListPolicy.cs
 //
 // Author:
-//       iain <iaholmes@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,36 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using NUnit.Framework;
+using System.Collections.Generic;
+using Microsoft.Extensions.ObjectPool;
 
-using MonoDevelop.UserInterfaceTesting;
-using MonoDevelop.PerformanceTesting;
-using MonoDevelop.Core.Instrumentation;
-
-namespace MonoDevelop.Ide.PerfTests
+namespace MonoDevelop.Core
 {
-	[TestFixture ()]
-	public class TestSolutionLoad : UITestBase
+	sealed class PooledListPolicy<T> : PooledObjectPolicy<List<T>>
 	{
-		public override void SetUp ()
+		public int InitialCapacity { get; set; } = 8;
+		public int MaximumRetainedCapacity { get; set; } = 32;
+
+		public override List<T> Create () => new List<T> (InitialCapacity);
+
+		public override bool Return (List<T> obj)
 		{
-			InstrumentationService.Enabled = true;
-			PreStart ();
-		}
+			if (obj.Capacity > MaximumRetainedCapacity)
+				obj.Capacity = MaximumRetainedCapacity;
 
-		[Test]
-		[Benchmark (Tolerance = 0.20)]
-		public void TestLoad ()
-		{
-			OpenApplicationAndWait ();
-
-			OpenExampleSolutionAndWait (out _);
-
-			var t = Session.GetTimerDuration ("Ide.Shell.SolutionOpened");
-
-			Benchmark.SetTime (t.TotalSeconds);
+			obj.Clear ();
+			return true;
 		}
 	}
 }

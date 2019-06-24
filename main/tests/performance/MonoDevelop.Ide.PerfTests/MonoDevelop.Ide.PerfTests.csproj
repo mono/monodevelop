@@ -47,6 +47,7 @@
     <Compile Include="TestStartup.cs" />
     <Compile Include="TestSolutionLoad.cs" />
     <Compile Include="TestSolutionBuild.cs" />
+    <Compile Include="TestFileWatcherHandlers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

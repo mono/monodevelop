@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
 			public static TimerCounter ObjectSerialized = InstrumentationService.CreateTimerCounter ("Object serialized", "Parser Service");
 			public static TimerCounter ObjectDeserialized = InstrumentationService.CreateTimerCounter ("Object deserialized", "Parser Service");
-			public static TimerCounter WorkspaceItemLoaded = InstrumentationService.CreateTimerCounter ("Workspace item loaded", "Parser Service");
+			public static TimerCounter WorkspaceItemLoaded = InstrumentationService.CreateTimerCounter ("Workspace item loaded", "Parser Service", id:"Ide.Workspace.RoslynWorkspaceLoaded");
 			public static Counter ProjectsLoaded = InstrumentationService.CreateTimerCounter ("Projects loaded", "Parser Service");
 		}
 
