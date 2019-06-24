@@ -734,6 +734,10 @@
     <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
     <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
     <Compile Include="MonoDevelop.Core\PooledListPolicy.cs" />
+    <Compile Include="MonoDevelop.Core\ObjectPoolUtil.cs" />
+    <Compile Include="MonoDevelop.Projects.FileNesting\FileNestingService.cs" />
+    <Compile Include="MonoDevelop.Projects.FileNesting\NestingRulesProvider.cs" />
+    <Compile Include="MonoDevelop.Projects.FileNesting\NestingRule.cs" />
     <Compile Include="CoreExtensions.IEnumerable.cs" />
     <Compile Include="CoreExtensions.Memoize.cs" />
     <Compile Include="CoreExtensions.EventHandlers.cs" />
