@@ -2667,6 +2667,11 @@ namespace MonoDevelop.Ide
 
 		public IReadonlyTextDocument GetReadOnlyTextEditorData (FilePath filePath)
 		{
+			return GetReadOnlyTextEditorData (filePath, true);
+		}
+
+		internal IReadonlyTextDocument GetReadOnlyTextEditorData (FilePath filePath, bool throwOnFileNotFound)
+		{
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
 			foreach (var doc in IdeServices.DocumentManager.Documents) {
@@ -2674,6 +2679,10 @@ namespace MonoDevelop.Ide
 					return doc.Editor;
 				}
 			}
+
+			if (!throwOnFileNotFound && !File.Exists (filePath))
+				return null;
+
 			var data = TextEditorFactory.CreateNewReadonlyDocument (StringTextSource.ReadFrom (filePath), filePath);
 			return data;
 		}
