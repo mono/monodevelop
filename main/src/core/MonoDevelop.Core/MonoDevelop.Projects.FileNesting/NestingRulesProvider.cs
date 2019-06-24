@@ -62,10 +62,6 @@ namespace MonoDevelop.Projects.FileNesting
 
 		void AddRule (NestingRuleKind kind, string appliesTo, IEnumerable<string> patterns)
 		{
-			if (nestingRules == null) {
-				nestingRules = new List<NestingRule> ();
-			}
-
 			nestingRules.Add (new NestingRule (kind, appliesTo, patterns));
 			LoggingService.LogInfo ($"Added nesting rule of type {kind} for {appliesTo} on files [{String.Join (", ", patterns)}]");
 		}
