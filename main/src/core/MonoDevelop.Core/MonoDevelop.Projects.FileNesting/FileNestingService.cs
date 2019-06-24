@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects.FileNesting
 {
 	internal static class FileNestingService
 	{
-		static ImmutableList<NestingRulesProvider> rulesProviders;
+		static ImmutableList<NestingRulesProvider> rulesProviders = ImmutableList<NestingRulesProvider>.Empty;
 
 		static FileNestingService ()
 		{
@@ -42,24 +42,18 @@ namespace MonoDevelop.Projects.FileNesting
 
 		static void HandleRulesProviderExtension (object sender, ExtensionNodeEventArgs args)
 		{
-			if (rulesProviders != null) {
-				var pr = args.ExtensionObject as NestingRulesProvider;
-				if (pr != null) {
-					if (args.Change == ExtensionChange.Add) {
-						rulesProviders = rulesProviders.Add (pr);
-					} else {
-						rulesProviders = rulesProviders.Remove (pr);
-					}
+			var pr = args.ExtensionObject as NestingRulesProvider;
+			if (pr != null) {
+				if (args.Change == ExtensionChange.Add) {
+					rulesProviders = rulesProviders.Add (pr);
+				} else {
+					rulesProviders = rulesProviders.Remove (pr);
 				}
 			}
 		}
 
 		public static FilePath GetParentFile (FilePath inputFile)
 		{
-			if (rulesProviders == null) {
-				rulesProviders = ImmutableList<NestingRulesProvider>.Empty.AddRange (AddinManager.GetExtensionObjects<NestingRulesProvider> ());
-			}
-
 			foreach (var rp in rulesProviders) {
 				var parentFile = rp.GetParentFile (inputFile);
 				if (!string.IsNullOrEmpty (parentFile)) {
