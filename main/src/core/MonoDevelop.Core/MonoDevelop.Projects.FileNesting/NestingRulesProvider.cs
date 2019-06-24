@@ -124,7 +124,7 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
-		public FilePath GetParentFile (FilePath inputFile)
+		public FilePath GetParentFile (Project project, FilePath inputFile)
 		{
 			if (nestingRules == null) {
 				// Create the list here, so that we don't get this path called
@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 
 			foreach (var rule in nestingRules) {
-				FilePath parentFile = rule.GetParentFile (inputFile);
+				FilePath parentFile = rule.GetParentFile (project, inputFile);
 				if (!String.IsNullOrEmpty (parentFile)) {
 					// Stop at the 1st rule found
 					return parentFile;

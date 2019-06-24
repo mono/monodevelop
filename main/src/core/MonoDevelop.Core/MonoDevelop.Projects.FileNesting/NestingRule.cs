@@ -59,9 +59,9 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public string AppliesTo { get; private set; }
 
-		bool CheckParentForFile (FilePath inputFile, FilePath parentFile)
+		bool CheckParentForFile (Project project, FilePath inputFile, FilePath parentFile)
 		{
-			if (File.Exists (parentFile) && inputFile != parentFile) {
+			if (project.Files.Any (x => x.FilePath == parentFile) && inputFile != parentFile && !parentFile.IsDirectory && inputFile.ParentDirectory == parentFile.ParentDirectory) {
 				LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
 				return true;
 			}
@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
-		public FilePath GetParentFile (FilePath inputFile)
+		public FilePath GetParentFile (Project project, FilePath inputFile)
 		{
 			string parentFile, inputExtension;
 
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects.FileNesting
 				// This is the simplest rules, and applies to all files, if we find a file
 				// with the same name minus the extension, that's the parent.
 				parentFile = inputFile.ParentDirectory.Combine (inputFile.FileNameWithoutExtension);
-				if (CheckParentForFile (inputFile, parentFile))
+				if (CheckParentForFile (project, inputFile, parentFile))
 					return parentFile;
 				break;
 
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.FileNesting
 				if (AppliesTo == AllFilesWildcard || AppliesTo == inputExtension) {
 					foreach (var pt in patterns) {
 						parentFile = inputFile.ParentDirectory.Combine ($"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
-						if (CheckParentForFile (inputFile, parentFile))
+						if (CheckParentForFile (project, inputFile, parentFile))
 							return parentFile;
 					}
 				}
@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects.FileNesting
 				if (inputExtension == AppliesTo) {
 					foreach (var pt in patterns) {
 						parentFile = inputFile.ParentDirectory.Combine ($"{Path.GetFileNameWithoutExtension (inputFile)}{pt}");
-						if (CheckParentForFile (inputFile, parentFile))
+						if (CheckParentForFile (project, inputFile, parentFile))
 							return parentFile;
 					}
 				}
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.FileNesting
 					int suffixPosition = inputFileString.LastIndexOf (AppliesTo, StringComparison.OrdinalIgnoreCase);
 					foreach (var pt in patterns) {
 						parentFile = inputFileString.Remove (suffixPosition, AppliesTo.Length).Insert (suffixPosition, pt);
-						if (CheckParentForFile (inputFile, parentFile)) {
+						if (CheckParentForFile (project, inputFile, parentFile)) {
 							return parentFile;
 						}
 					}
@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.FileNesting
 				if (AppliesTo == Path.GetFileName (inputFile)) {
 					foreach (var pt in patterns) {
 						parentFile = inputFile.ParentDirectory.Combine (pt);
-						if (CheckParentForFile (inputFile, parentFile)) {
+						if (CheckParentForFile (project, inputFile, parentFile)) {
 							return parentFile;
 						}
 					}
@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.FileNesting
 					foreach (var pt in patterns) {
 						// Search for $filename.$extension for $filename.$path_segment.$extension
 						parentFile = inputFile.ParentDirectory.Combine ($"{Path.GetFileNameWithoutExtension (Path.GetFileNameWithoutExtension (inputFile))}{inputExtension}");
-						if (CheckParentForFile (inputFile, parentFile)) {
+						if (CheckParentForFile (project, inputFile, parentFile)) {
 							return parentFile;
 						}
 					}

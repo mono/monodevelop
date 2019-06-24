@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using MonoDevelop.Projects.FileNesting;
 using UnitTests;
@@ -44,26 +45,30 @@ namespace MonoDevelop.Projects
 		[TestCase ("template.cs", "template.tt")]
 		[TestCase ("template.doc", "template.tt")]
 		[TestCase (".bowerrc", "bower.json")]
-		public void GetParentFileTest (string inputFile, string expectedParentFile)
+		public async Task GetParentFileTest (string inputFile, string expectedParentFile)
 		{
-			var folder = Path.Combine (Path.GetTempPath (), Path.GetRandomFileName ());
-			Directory.CreateDirectory (folder);
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
-			string inputFileDestination = Path.Combine (folder, inputFile);
-			string parentFileDestination = Path.Combine (folder, expectedParentFile);
+			Project p = (Project)sol.Items [0];
+			var dir = p.BaseDirectory;
 
-			File.Create (inputFileDestination);
-			File.Create (parentFileDestination);
+			string inputFileDestination = Path.Combine (dir, "FileNesting", inputFile);
+			string parentFileDestination = Path.Combine (dir, "FileNesting", expectedParentFile);
 
-			string parentFile = FileNestingService.GetParentFile (inputFileDestination);
+			p.AddDirectory ("FileNesting");
+			p.AddFile (inputFileDestination);
+			p.AddFile (parentFileDestination);
+
+			string parentFile = FileNestingService.GetParentFile (p, inputFileDestination);
 			Assert.That (parentFile, Is.EqualTo (parentFileDestination), $"Was expecting parent file {parentFileDestination} for {inputFileDestination} but got {parentFile}");
 
 			// Now check we get nothing when parent file doesn't exist
-			File.Delete (parentFileDestination);
-			parentFile = FileNestingService.GetParentFile (inputFileDestination);
+			p.Files.Remove (parentFileDestination);
+			parentFile = FileNestingService.GetParentFile (p, inputFileDestination);
 			Assert.Null (parentFile, $"Was expecting no parent file for {inputFileDestination} but got {parentFile}");
 
-			Directory.Delete (folder, true);
+			sol.Dispose ();
 		}
 	}
 }

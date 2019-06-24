@@ -386,7 +386,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				foreach (var si in p.Files) {
 					if (si.DependentChildren != null && si.DependentChildren.Count > 0) {
 						foreach (var c in si.DependentChildren) {
-							Assert.True (FileNestingService.GetParentFile (c.FilePath) == si.FilePath);
+							Assert.True (FileNestingService.GetParentFile (p, c.FilePath) == si.FilePath);
 						}
 					}
 				}

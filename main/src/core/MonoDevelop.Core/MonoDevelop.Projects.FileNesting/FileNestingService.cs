@@ -52,10 +52,10 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 		}
 
-		public static FilePath GetParentFile (FilePath inputFile)
+		public static FilePath GetParentFile (Project project, FilePath inputFile)
 		{
 			foreach (var rp in rulesProviders) {
-				var parentFile = rp.GetParentFile (inputFile);
+				var parentFile = rp.GetParentFile (project, inputFile);
 				if (!string.IsNullOrEmpty (parentFile)) {
 					return parentFile;
 				}
