@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.FileNesting
 			case NestingRuleKind.FileSuffixToExtension:
 				string inputFileString = inputFile;
 				if (inputFileString.EndsWith (AppliesTo, StringComparison.OrdinalIgnoreCase)) {
-					int suffixPosition = inputFileString.LastIndexOf (AppliesTo, StringComparison.OrdinalIgnoreCase);
+					int suffixPosition = inputFileString.Length - AppliesTo.Length;
 					foreach (var pt in patterns) {
 						parentFile = inputFileString.Remove (suffixPosition, AppliesTo.Length).Insert (suffixPosition, pt);
 						if (CheckParentForFile (project, inputFile, parentFile)) {
