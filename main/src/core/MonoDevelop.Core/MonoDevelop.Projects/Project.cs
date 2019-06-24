@@ -4988,6 +4988,10 @@ namespace MonoDevelop.Projects
 			{
 				Project.OnItemsRemoved (objs);
 			}
+
+			internal protected override void OnRemoveRunConfiguration (IEnumerable<SolutionItemRunConfiguration> objs)
+			{
+			}
 		}
 	}
 
