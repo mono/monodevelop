@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	class AssetMetadata : CounterMetadata
+	public class AssetMetadata : CounterMetadata
 	{
 		public int AssetTypeId {
 			get => GetProperty<int> ();
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	class StartupMetadata: AssetMetadata
+	public class StartupMetadata: AssetMetadata
 	{	
 		public StartupMetadata ()
 		{
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	class TimeToCodeMetadata : CounterMetadata
+	public class TimeToCodeMetadata : CounterMetadata
 	{
 		public enum DocumentType {
 			Solution,
@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	class UnhandledExceptionMetadata : CounterMetadata
+	public class UnhandledExceptionMetadata : CounterMetadata
 	{
 		public System.Exception Exception {
 			get => GetProperty<System.Exception> ();
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	class BuildAndDeployMetadata : CounterMetadata
+	public class BuildAndDeployMetadata : CounterMetadata
 	{
 		public BuildAndDeployMetadata ()
 		{
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	class CompositionLoadMetadata : CounterMetadata
+	public class CompositionLoadMetadata : CounterMetadata
 	{
 		public CompositionLoadMetadata ()
 		{
