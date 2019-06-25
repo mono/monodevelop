@@ -223,6 +223,13 @@ Thumbs.db
 /main/tests/MonoDevelop.Core.Tests/Makefile
 /main/tests/WindowsPlatform.Tests/Makefile
 /main/tests/IdeUnitTests/Makefile
+/main/tests/performance/Makefile
+/main/tests/performance/MonoDevelop.Ide.PerfTests/Makefile
+/main/tests/performance/MonoDevelop.PerformanceTesting/Makefile
+/main/tests/performance/PerfTool/Makefile
+/main/tests/ui/Makefile
+/main/tests/ui/MonoDevelop.UserInterfaceTesting/Makefile
+
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL
