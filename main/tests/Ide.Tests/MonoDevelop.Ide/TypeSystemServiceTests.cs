@@ -511,6 +511,46 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		/// <summary>
+		/// Tests that a missing file that supports projections does not result in the type system not loading
+		/// any information.
+		/// </summary>
+		[Test]
+		public async Task MissingProjectionFileDoesNotThrowException ()
+		{
+			string solFile = Util.GetSampleProject ("projection-tests", "missing-projection-file.sln");
+
+			var parsers = IdeApp.TypeSystemService.Parsers;
+			try {
+				var projectionParser = new TypeSystemParserNode ();
+				projectionParser.BuildActions = new [] { "ProjectionTest" };
+				projectionParser.MimeType = "text/plain";
+
+				var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+				var field = typeof (TypeExtensionNode).GetField ("type", flags);
+				field.SetValue (projectionParser, typeof (ProjectionParser));
+
+				var newParsers = new List<TypeSystemParserNode> ();
+				newParsers.Add (projectionParser);
+				IdeApp.TypeSystemService.Parsers = newParsers;
+
+				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					var p = sol.GetAllProjects ().OfType<DotNetProject> ().Single ();
+					try {
+						var projectId = ws.GetProjectId (p);
+						var roslynProject = ws.CurrentSolution.GetProject (projectId);
+						var doc = roslynProject.Documents.FirstOrDefault (d => Path.GetFileName (d.FilePath) == "MyClass.cs");
+						Assert.IsNotNull (doc);
+					} finally {
+						TypeSystemServiceTestExtensions.UnloadSolution (sol);
+					}
+				}
+			} finally {
+				IdeApp.TypeSystemService.Parsers = parsers;
+			}
+		}
+
 		class ProjectionParser : TypeSystemParser
 		{
 			public override Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken = default)
