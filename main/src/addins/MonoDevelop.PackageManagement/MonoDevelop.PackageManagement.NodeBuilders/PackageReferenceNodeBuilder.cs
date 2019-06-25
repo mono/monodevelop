@@ -62,6 +62,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			nodeInfo.StatusSeverity = packageReferenceNode.GetStatusSeverity ();
 			nodeInfo.StatusMessage = packageReferenceNode.GetStatusMessage ();
 			nodeInfo.DisabledStyle = packageReferenceNode.IsDisabled ();
+
+			IconId statusIconId = packageReferenceNode.GetStatusIconId ();
+			if (statusIconId != IconId.Null)
+				nodeInfo.StatusIcon = Context.GetIcon (statusIconId);
 		}
 	}
 }

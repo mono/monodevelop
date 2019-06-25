@@ -42,6 +42,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		PackageDependencyInfo dependency;
 		string name;
 		string version;
+		NuGetVersion updatedVersion;
 
 		PackageDependencyNode (
 			DependenciesNode dependenciesNode,
@@ -60,8 +61,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 				if (IsTopLevel) {
 					IsReadOnly = !PackageReferenceExistsInProject ();
+					if (!IsReadOnly) {
+						updatedVersion = GetUpdatedPackageVersion ();
+					}
 				}
 			}
+		}
+
+		NuGetVersion GetUpdatedPackageVersion ()
+		{
+			var updatedPackages = dependenciesNode.GetUpdatedPackages ();
+			var package = updatedPackages.GetUpdatedPackage (name);
+			return package?.Version;
 		}
 
 		PackageDependencyNode (DependenciesNode dependenciesNode, ProjectPackageReference packageReference)
@@ -120,6 +131,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return name; }
 		}
 
+		internal string Version {
+			get { return version; }
+		}
+
 		public string GetLabel ()
 		{
 			return GLib.Markup.EscapeText (Name);
@@ -140,10 +155,20 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return new IconId ("md-package-dependency");
 		}
 
+		public IconId GetStatusIconId ()
+		{
+			if (IsDiagnostic || HasChildDiagnostic || updatedVersion == null)
+				return IconId.Null;
+
+			return new IconId ("md-package-update");
+		}
+
 		public TaskSeverity? GetStatusSeverity ()
 		{
 			if (IsDiagnostic || HasChildDiagnostic)
 				return TaskSeverity.Warning;
+			if (updatedVersion != null)
+				return TaskSeverity.Information;
 			return null;
 		}
 
@@ -154,6 +179,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			if (HasChildDiagnostic)
 				return GetChildDiagnosticStatusMessage ();
+
+			if (updatedVersion != null)
+				return GettextCatalog.GetString ("{0} available", updatedVersion);
 
 			return null;
 		}
@@ -175,6 +203,14 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public bool HasChildDiagnostic {
 			get { return dependency?.HasChildDiagnostic == true; }
+		}
+
+		public string GetUpdateLabel ()
+		{
+			if (!CanBeRemoved || updatedVersion == null)
+				return GettextCatalog.GetString ("Update");
+
+			return GettextCatalog.GetString ("Update to {0}", updatedVersion);
 		}
 
 		public bool IsReleaseVersion ()
