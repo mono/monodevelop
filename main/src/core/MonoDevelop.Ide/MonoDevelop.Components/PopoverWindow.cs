@@ -245,9 +245,12 @@ namespace MonoDevelop.Components
 			QueueResize ();
 		}
 
+		bool IsDestroyed { get; set; }
+
 		protected override void OnDestroyed ()
 		{
 			this.AbortAnimation ("Resize");
+			IsDestroyed = true;
 			base.OnDestroyed ();
 		}
 
@@ -277,7 +280,7 @@ namespace MonoDevelop.Components
 
 		public virtual void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
-			if (!HasParent)
+			if (!HasParent || IsDestroyed)
 				return;
 
 			if (newCaret.HasValue) {//Update caret if parameter is given
@@ -399,7 +402,7 @@ namespace MonoDevelop.Components
 
 			Move (x, y);
 			Show ();
-			if (!ShowWindowShadow)
+			if (!ShowWindowShadow && !IsDestroyed)
 				IdeServices.DesktopService.RemoveWindowShadow (this);
 		}
 		

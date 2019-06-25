@@ -1206,9 +1206,10 @@ namespace MonoDevelop.MacIntegration
 		internal override void RemoveWindowShadow (Gtk.Window window)
 		{
 			if (window == null)
-				throw new ArgumentNullException ("window");
-			NSWindow w = GtkQuartz.GetWindow (window);
-			w.HasShadow = false;
+				throw new ArgumentNullException (nameof(window));
+			var w = GtkQuartz.GetWindow (window);
+			if (w != null)
+				w.HasShadow = false;
 		}
 
 		internal override IMainToolbarView CreateMainToolbar (Gtk.Window window)
