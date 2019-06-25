@@ -156,21 +156,27 @@ namespace MonoDevelop.Ide.Tasks
 
 		void Context_DocumentParsed (object sender, EventArgs e)
 		{
-			var pd = context.ParsedDocument;
-			var project = Controller.Owner as Project;
-			if (project == null || !(Controller is FileDocumentController fileController))
-				return;
-			ProjectCommentTags tags;
-			if (!CommentTasksProvider.Legacy.ProjectTags.TryGetValue (project, out tags))
-				return;
-			var token = CommentTasksProvider.Legacy.CancellationToken;
-			var file = fileController.FilePath;
-			Task.Run (async () => {
-				try {
-					tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
-				} catch (OperationCanceledException) {
-				}
-			});
+			try {
+				var pd = context.ParsedDocument;
+				if (pd == null)
+					return;
+				if (!(Controller is FileDocumentController fileController) || !(Controller.Owner is Project project))
+					return;
+				if (!CommentTasksProvider.Legacy.ProjectTags.TryGetValue (project, out var tags))
+					return;
+				var token = CommentTasksProvider.Legacy.CancellationToken;
+				var file = fileController.FilePath;
+				Task.Run (async () => {
+					try {
+						tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
+					} catch (OperationCanceledException) {
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while updating comment tags.", ex);
+					}
+				}).Ignore ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
 		}
 
 	}
