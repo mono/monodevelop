@@ -454,6 +454,9 @@ namespace MonoDevelop.AspNet.WebForms
 		MetadataReference LoadMetadataReference (string path)
 		{
 			var roslynProject = IdeApp.TypeSystemService.GetProject (Project);
+			if (roslynProject == null) {
+				return null; //this happens when a WebForm file is edited independently (no project loaded)
+			}	
 			var workspace = (MonoDevelopWorkspace)roslynProject.Solution.Workspace;
 			var reference = workspace.MetadataReferenceManager.GetOrCreateMetadataReferenceSnapshot (path, MetadataReferenceProperties.Assembly);
 
