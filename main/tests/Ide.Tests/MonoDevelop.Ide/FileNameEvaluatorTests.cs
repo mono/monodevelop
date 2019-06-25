@@ -75,5 +75,19 @@ namespace MonoDevelop.Ide
 				new string[] { "base.test", }
 			).SetName ("test"),
 		};
+
+		/// <summary>
+		/// Bug 936228: Exact match and regex match mimetypes no longer match
+		/// </summary>
+		[Test]
+		public void TestVSTSBug936228 ()
+		{
+			var evaluator = FileNameEvalutor.CreateFileNameEvaluator (new string [] { "Makefile|Makefile.am|Makefile.in" });
+
+			Assert.IsTrue (evaluator.SupportsFile ("Makefile.am"));
+			Assert.IsTrue (evaluator.SupportsFile ("/Makefile"));
+			Assert.IsTrue (evaluator.SupportsFile ("/a/b/Makefile.in"));
+			Assert.IsFalse (evaluator.SupportsFile ("NoMakefile.am"));
+		}
 	}
 }
