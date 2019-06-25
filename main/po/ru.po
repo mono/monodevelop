@@ -4056,7 +4056,7 @@ msgstr "Сборка проектов в активной конфигураци
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:220
 msgid "Build {0}"
-msgstr "Сборка {0}"
+msgstr "Построить {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1802
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1804
@@ -4547,7 +4547,7 @@ msgstr "Файлы шейдеров Cg"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.SignatureChange/SignatureChangeDialog.cs:139
 msgid "Change Signature"
-msgstr "Изменить подпись"
+msgstr "Изменить сигнатуру"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:94
 msgid "Change Targets"
@@ -8721,7 +8721,7 @@ msgstr "Включить инструментирование MonoDevelop"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:133
 msgid "Enable Source Analysis"
-msgstr "Включить анализ источника"
+msgstr "Включить анализ исходного кода"
 
 #: ../src/addins/VBNetBinding/Gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:234
 msgid "Enable Warnings:"
@@ -8800,7 +8800,7 @@ msgstr "Включить синхронизацию ссылок"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/AnalysisOptionsPanel.cs:66
 msgid "Enable source analysis of open files"
-msgstr "Включить анализ источника для открытых файлов"
+msgstr "Включить анализ исходного кода для открытых файлов"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/AnalysisOptionsPanel.cs:68
 msgid "Enable source analysis of whole solution"
@@ -20939,11 +20939,11 @@ msgstr "Сортировка выбранных строк"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:331
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:74
 msgid "Source"
-msgstr "Источник"
+msgstr "Исходный код"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:133
 msgid "Source Analysis"
-msgstr "Анализ источника"
+msgstr "Анализ исходного кода"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:34
@@ -21286,7 +21286,7 @@ msgstr "Начать отладку"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:69
 msgid "Start Debugging (Current Project)"
-msgstr "Запустить отладку (текущий проект)"
+msgstr "Начать отладку (текущий проект)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:151
 msgid "Start Debugging Project"
@@ -21312,7 +21312,7 @@ msgstr "Окно запуска"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:299
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:276
 msgid "Start Without Debugging"
-msgstr "Начать без отладки"
+msgstr "Запустить без отладки"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:63
 msgid "Start _Debugging"
@@ -27029,7 +27029,7 @@ msgstr "_Анализировать"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:111
 msgid "_Analyze Source"
-msgstr "_Анализировать источник"
+msgstr "_Анализировать исходный код"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs:186
 msgid "_Apply policies"
@@ -27095,7 +27095,7 @@ msgstr "_Сборка"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:267
 msgid "_Build All"
-msgstr "_Компилировать все"
+msgstr "Собрать все"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.FileReplaceDialog.cs:431
 msgid "_Cancel deployment"
@@ -27261,7 +27261,7 @@ msgstr "Д_иагностика"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:120
 msgid "_Diff"
-msgstr "_Несовпадение"
+msgstr "_Различия"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:181
 msgid "_Don't save changes to open documents "
@@ -27269,7 +27269,7 @@ msgstr "_Не сохранять изменения в открытых доку
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:55
 msgid "_Edit"
-msgstr "_Изменить"
+msgstr "_Правка"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:242
 msgid "_Edit References..."
@@ -27790,7 +27790,7 @@ msgstr "_Выход"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:284
 msgid "_Rebuild All"
-msgstr "_Повторно компилировать все"
+msgstr "_Пересобрать все"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:78
 msgid "_Redo"
@@ -28197,7 +28197,7 @@ msgstr "_Версия:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:115
 msgid "_View"
-msgstr "_Просмотреть"
+msgstr "_Вид"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:158
 msgid "_View Conflicts"
