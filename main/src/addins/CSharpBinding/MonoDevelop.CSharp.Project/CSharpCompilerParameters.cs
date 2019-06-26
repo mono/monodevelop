@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -37,6 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -159,11 +161,69 @@ namespace MonoDevelop.CSharp.Project
 				specificDiagnosticOptions: GetSpecificDiagnosticOptions (),
 				concurrentBuild: true,
 				metadataReferenceResolver: metadataReferenceResolver,
-				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
+				assemblyIdentityComparer: GetAssemblyIdentityComparer (ParentConfiguration, ParentProject?.MSBuildProject),
 				strongNameProvider: new DesktopStrongNameProvider ()
 			);
 
 			return options;
+
+			static DesktopAssemblyIdentityComparer GetAssemblyIdentityComparer (DotNetProjectConfiguration configuration, MSBuildProject project)
+			{
+				var appConfigFile = GetAppConfigPath (configuration, project);
+
+				if (appConfigFile != null) {
+					try {
+						using var appConfigStream = new FileStream (appConfigFile, FileMode.Open, FileAccess.Read);
+						return DesktopAssemblyIdentityComparer.LoadFromXml (appConfigStream);
+					} catch (Exception ex) {
+						LoggingService.LogError ($"Can't read app config file {appConfigFile}", ex);
+					}
+				}
+
+				return DesktopAssemblyIdentityComparer.Default;
+			}
+
+			static string GetAppConfigPath (DotNetProjectConfiguration configuration, MSBuildProject project)
+			{
+				var appConfigFile = configuration.Properties.GetValue ("AppConfig")
+					?? FindAppConfigFile (project, true)
+					?? FindAppConfigFile (project, false);
+
+				return appConfigFile != null
+					? MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, appConfigFile)
+					: null;
+			}
+
+			static string FindAppConfigFile (MSBuildProject project, bool matchWholeItemSpec)
+			{
+				// Matches behaviour in MSBuild, bar prioritizing None over Content.
+				// That complicates the code and makes it run all the matches in case the app config files is set to Content.
+				// https://github.com/microsoft/msbuild/blob/6c53fccfab0f1a58e8d04f8c57dac058c798dcf7/src/Tasks/FindAppConfigFile.cs#L72
+
+				if (project == null)
+					return null;
+
+				// Probe for item in None and Content
+				const string appConfig = "app.config";
+				var appConfigSpan = appConfig.AsSpan ();
+
+				foreach (var item in project.EvaluatedItems) {
+					if (item.Name != "Content" && item.Name != "None")
+						continue;
+
+					var include = item.Include;
+					if (matchWholeItemSpec) {
+						if (appConfig.Equals (include, StringComparison.OrdinalIgnoreCase))
+							return include;
+					} else {
+						var fileNameStart = include.LastIndexOf (Path.DirectorySeparatorChar) + 1;
+						if (include.AsSpan (fileNameStart).Equals (appConfigSpan, StringComparison.OrdinalIgnoreCase))
+							return include;
+					}
+				}
+
+				return null;
+			}
 		}
 
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
