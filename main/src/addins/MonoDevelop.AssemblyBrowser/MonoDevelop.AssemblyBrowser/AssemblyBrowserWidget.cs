@@ -829,31 +829,35 @@ namespace MonoDevelop.AssemblyBrowser
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
 				var marker = TextMarkerFactory.CreateLinkMarker (inspectEditor, seg.Offset, seg.Length, delegate (LinkRequest request) {
-					bool? isNotPublic;
-					var link = GetLink (seg, out isNotPublic);
-					if (link == null)
-						return;
-					if (isNotPublic.HasValue) {
-						if (isNotPublic.Value) {
-							PublicApiOnly = false;
+					try {
+						bool? isNotPublic;
+						var link = GetLink (seg, out isNotPublic);
+						if (link == null)
+							return;
+						if (isNotPublic.HasValue) {
+							if (isNotPublic.Value) {
+								PublicApiOnly = false;
+							}
+						} else {
+							// unable to determine if the member is public or not (in case of member references) -> try to search
+							var nav = SearchMember (link, false);
+							if (nav == null)
+								PublicApiOnly = false;
 						}
-					} else {
-						// unable to determine if the member is public or not (in case of member references) -> try to search
-						var nav = SearchMember (link, false);
-						if (nav == null)
-							PublicApiOnly = false;
-					}
-					var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof(AssemblyLoader), true);
-					// args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
-					if (request == LinkRequest.RequestNewView) {
-						AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
-						foreach (var cu in definitions) {
-							assemblyBrowserView.Load (cu.FileName);
+						var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ()?.GetParentDataItem (typeof (AssemblyLoader), true);
+						// args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+						if (request == LinkRequest.RequestNewView) {
+							var assemblyBrowserView = new AssemblyBrowserViewContent ();
+							foreach (var cu in definitions) {
+								assemblyBrowserView.Load (cu.FileName);
+							}
+							IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
+							assemblyBrowserView.Open (link);
+						} else {
+							this.Open (link, loader);
 						}
-						IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-						Open (link);
-					} else {
-						this.Open (link, loader);
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Error while processing link request.", e);
 					}
 				});
 				marker.OnlyShowLinkOnHover = true;
