@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public TextEditorViewContent ()
 		{
+			HasUnsavedChangesChanged += TextEditorViewContent_HasUnsavedChangesChanged;
 		}
 
 		protected override async Task OnLoad (bool reloading)
@@ -161,6 +162,15 @@ namespace MonoDevelop.Ide.Editor
 		{
 			HasUnsavedChanges = textEditorImpl.IsDirty;
 			InformAutoSave ();
+		}
+
+		void TextEditorViewContent_HasUnsavedChangesChanged (object sender, EventArgs e)
+		{
+			// Synchronize state
+			if (textEditor != null && textEditor.IsDirty && !HasUnsavedChanges) {
+				textEditor.SetNotDirtyState ();
+				textEditor.IsDirty = false;
+			}
 		}
 
 		void HandleTextChanged (object sender, TextChangeEventArgs e)
@@ -358,6 +368,8 @@ namespace MonoDevelop.Ide.Editor
 				return;
 
 			isDisposed = true;
+
+			HasUnsavedChangesChanged -= TextEditorViewContent_HasUnsavedChangesChanged;
 
 			if (textEditorImpl != null) {
 
