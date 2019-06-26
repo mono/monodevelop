@@ -54,6 +54,16 @@ namespace MonoDevelop.Ide.Extensions
 
 		public abstract bool SupportsFile (string fileName);
 
+		static string SafeGetFileName (string fileName)
+		{
+			try {
+				return System.IO.Path.GetFileName (fileName);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+				return fileName;
+			}
+		}
+
 		class RegexFileNameEvaluator : FileNameEvalutor
 		{
 			Regex regex;
@@ -81,7 +91,7 @@ namespace MonoDevelop.Ide.Extensions
 
 			public override bool SupportsFile (string fileName)
 			{
-				return regex.IsMatch (fileName);
+				return regex.IsMatch (SafeGetFileName (fileName));
 			}
 		}
 
@@ -133,6 +143,7 @@ namespace MonoDevelop.Ide.Extensions
 
 			public override bool SupportsFile (string fileName)
 			{
+				fileName = SafeGetFileName (fileName);
 				foreach (var name in names)
 					if (name.Equals (fileName, StringComparison.OrdinalIgnoreCase))
 						return true;
