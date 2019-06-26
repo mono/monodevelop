@@ -190,9 +190,13 @@ namespace MonoDevelop.Ide
 		static LaunchType launchType = LaunchType.Unknown;
 		public static LaunchType LaunchReason {
 			get => launchType;
-			set {
+			internal set {
 				launchType = value;
-				LaunchCompletionSource.SetResult (value);
+				if (!LaunchCompletionSource.Task.IsCompleted) {
+					LaunchCompletionSource.SetResult (value);
+				} else {
+					LoggingService.LogWarning ($"LaunchReason is already set to {launchType}.");
+				}
 			}
 		}
 

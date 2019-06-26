@@ -121,6 +121,8 @@ namespace MonoDevelop.Ide
 				// If files are present, consider started from the commandline as being the same as file manager.
 				// On macOS, we need to wait until the DidFinishLaunching notification to find out we were launched from the Finder
 				IdeApp.LaunchReason = IdeApp.LaunchType.LaunchedFromFileManager;
+			} else if (!Platform.IsMac) {
+				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
 			}
 
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
