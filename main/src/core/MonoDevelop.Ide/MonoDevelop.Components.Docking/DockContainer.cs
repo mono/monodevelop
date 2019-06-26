@@ -161,16 +161,18 @@ namespace MonoDevelop.Components.Docking
 
 		int usedSplitters;
 
+		const int SplitterSize = 5;
+
 		internal void AllocateSplitter (DockGroup grp, int index, Gdk.Rectangle a)
 		{
 			var s = splitters[usedSplitters++];
 			if (a.Height > a.Width) {
-				a.Width = 5;
-				a.X -= 2;
+				a.Width = SplitterSize;
+				a.X -= (int)(SplitterSize / 2);
 			}
 			else {
-				a.Height = 5;
-				a.Y -= 2;
+				a.Height = SplitterSize;
+				a.Y -= (int)(SplitterSize / 2);
 			}
 			s.SizeAllocate (a);
 			s.Init (grp, index);

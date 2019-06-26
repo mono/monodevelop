@@ -49,8 +49,11 @@ namespace MonoDevelop.Components.Mac
 	/// NOTE: this view should be added with NSWindowOrderingMode.Above to its superview, to
 	///       make sure the it's the first widget to receive pointer events.
 	/// </remarks>
-	abstract class DragEventTrapView : NSView
+	abstract class DragEventTrapView : NSView, Gtk.INSViewOrdering
 	{
+		const int DefaultSplitterZOrder = 1000;
+		public int ZOrder => DefaultSplitterZOrder;
+
 		NSCursor currentCursor;
 		bool hover, dragging;
 
@@ -99,6 +102,7 @@ namespace MonoDevelop.Components.Mac
 
 		public override void MouseEntered (NSEvent theEvent)
 		{
+			AddGdkEventFilter ();
 			lastEventTimestamp = theEvent.Timestamp;
 			if (!dragging) {
 				SetDragCursor ();
@@ -112,6 +116,7 @@ namespace MonoDevelop.Components.Mac
 			lastEventTimestamp = theEvent.Timestamp;
 			if (!dragging) {
 				SetDefaultCursor ();
+				RemoveGdkEventFilter ();
 			}
 			hover = false;
 			base.MouseExited (theEvent);
@@ -130,8 +135,6 @@ namespace MonoDevelop.Components.Mac
 		{
 			lastEventTimestamp = theEvent.Timestamp;
 			dragging = true;
-
-			AddGdkEventFilter ();
 		}
 
 		public override void MouseUp (NSEvent theEvent)
