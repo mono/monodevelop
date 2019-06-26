@@ -343,6 +343,15 @@ namespace MonoDevelop.MacIntegration
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
 				NSWindow.AllowsAutomaticWindowTabbing = false;
 
+
+			// At this point, Cocoa should have been initialized; it is initialized along with Gtk+ at the beginning of IdeStartup.Run
+			// If LaunchReason is still Unknown at this point, it means we have missed the NSApplicationDidLaunch notification for some reason and
+			// we fall back to it being a Normal startup to unblock anything waiting for that notification.
+			if (IdeApp.LaunchReason == IdeApp.LaunchType.Unknown) {
+				LoggingService.LogWarning ("Missed NSApplicationDidLaunch notification, assuming normal startup");
+				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
+			}
+
 			return loaded;
 		}
 
