@@ -238,12 +238,6 @@ namespace MonoDevelop.TextEditor
 				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
 		}
 
-		protected override void OnGrabFocus (DocumentView view)
-		{
-			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-			base.OnGrabFocus (view);
-		}
-
 		protected override void OnFileNameChanged ()
 		{
 			base.OnFileNameChanged ();
