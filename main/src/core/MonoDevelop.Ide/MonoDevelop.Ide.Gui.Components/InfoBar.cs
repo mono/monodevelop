@@ -32,7 +32,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	class XwtInfoBar : Widget
+	sealed class XwtInfoBar : Widget
 	{
 		static Image closeImage = Image.FromResource ("pad-close-9.png");
 		static Image closeImageInactive = Image.FromResource ("pad-close-9.png").WithAlpha (0.5);
@@ -43,6 +43,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public XwtInfoBar (string description, Action onDispose, params InfoBarItem[] items)
 		{
+			items ??= Array.Empty<InfoBarItem> ();
+
 			this.onDispose = onDispose;
 
 			var mainBox = new HBox {
