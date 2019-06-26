@@ -32,6 +32,7 @@ using Mono.Debugging.Client;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.IO;
 
 namespace MonoDevelop.Debugger
 {
@@ -41,7 +42,8 @@ namespace MonoDevelop.Debugger
 		DisassemblyView disassemblyView;
 		Document noSourceDoc;
 		NoSourceView noSourceView;
-		
+		string symbolCachePath;
+
 		protected override void Run ()
 		{
 			DebuggingService.CallStackChanged += OnStackChanged;
@@ -49,6 +51,7 @@ namespace MonoDevelop.Debugger
 			DebuggingService.DisassemblyRequested += OnShowDisassembly;
 
 			IdeApp.CommandService.RegisterGlobalHandler (new GlobalRunMethodHandler ());
+			symbolCachePath = UserProfile.Current.CacheDir.Combine ("Symbols");
 		}
 
 		void OnStackChanged (object s, EventArgs a)
@@ -63,15 +66,16 @@ namespace MonoDevelop.Debugger
 		{
 			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
-			
+		
 			var frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return;
 			
 			FilePath file = frame.SourceLocation.FileName;
+
 			int line = frame.SourceLocation.Line;
 			if (line != -1) {
-				if (!file.IsNullOrEmpty && System.IO.File.Exists (file)) {
+				if (!file.IsNullOrEmpty && File.Exists (file)) {
 					var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
 					if (doc != null)
 						return;
@@ -81,6 +85,14 @@ namespace MonoDevelop.Debugger
 					if (newFilePath != null) {
 						frame.UpdateSourceFile (newFilePath);
 						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
+						if (doc != null)
+							return;
+					}
+
+					if (frame.SourceLocation.SourceLink != null) {
+						var saveTo = await frame.SourceLocation.SourceLink.DownloadFile (frame.SourceLocation.FileName, symbolCachePath);
+						frame.UpdateSourceFile (saveTo);
+						var doc = await IdeApp.Workbench.OpenDocument (saveTo, null, line, 1, OpenDocumentOptions.Debugger);
 						if (doc != null)
 							return;
 					}
@@ -142,12 +154,15 @@ namespace MonoDevelop.Debugger
 			if (bt != null) {
 				for (int n = 0; n < bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
+
 					if (!sf.IsExternalCode &&
 					    sf.SourceLocation.Line != -1 &&
 					    !string.IsNullOrEmpty (sf.SourceLocation.FileName) &&
 					    //Uncomment condition below once logic for ProjectOnlyCode in runtime is fixed
 					    (/*DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly) ||*/
-					        System.IO.File.Exists (sf.SourceLocation.FileName) ||
+
+						    sf.SourceLocation.SourceLink != null ||
+							File.Exists (sf.SourceLocation.FileName) ||
 					        SourceCodeLookup.FindSourceFile (sf.SourceLocation.FileName, sf.SourceLocation.FileHash).IsNotNull)) {
 						if (n != DebuggingService.CurrentFrameIndex)
 							DebuggingService.CurrentFrameIndex = n;
