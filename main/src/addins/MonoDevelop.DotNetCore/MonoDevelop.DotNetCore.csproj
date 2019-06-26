@@ -92,6 +92,7 @@
     <Compile Include="MonoDevelop.DotNetCore\FrameworkReference.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodePropertyProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodeDescriptor.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Commands\SelectSDKCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

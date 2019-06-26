@@ -248,7 +248,7 @@ namespace MonoDevelop.DotNetCore
 			return globalJsonPath.FullName;
 		}
 
-		string ReadGlobalJson ()
+		internal string ReadGlobalJson ()
 		{
 			if (string.IsNullOrEmpty (GlobalJsonPath))
 				return string.Empty;

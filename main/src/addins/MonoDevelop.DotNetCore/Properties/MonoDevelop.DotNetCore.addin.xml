@@ -1297,7 +1297,20 @@
 				class="MonoDevelop.DotNetCore.Gui.DotNetCoreSdkLocationPanel" />
 		</Section>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+			<Command id = "MonoDevelop.DotNetCore.Commands.SelectSDK" 
+					defaultHandler = "MonoDevelop.DotNetCore.Commands.SelectSDKCommandHandler"
+					_label = "Manage SDK (global.json)..." />
+	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="Solution">
+			<SeparatorItem insertafter ="MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+			<CommandItem id="MonoDevelop.DotNetCore.Commands.SelectSDK" />
+		</Condition>
+	</Extension>
+	
 	<!--
 	Workaround Visual Studio 2017 problem where it sometimes changes the project type guid
 	for .NET Core projects. Setting the project's TypeGuid to match this alternative guid
