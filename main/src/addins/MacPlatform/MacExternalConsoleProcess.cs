@@ -80,12 +80,18 @@ using exec -a to name the process has problems because the terminal can get into
 where running an explicit exec causes it to quit after the exec runs, so we can't use the 
 bash pause on exit trick
 */ 
-
 		//use full path to fix command failure when users have another app called "Terminal"
 		//this happens with Parallels exporting a stub for the Unbuntu "Terminal"
-		const string TERMINAL_APP = "/Applications/Utilities/Terminal.app";
+		const string TERMINAL_APP_PATH = "/Applications/Utilities/Terminal.app";
+
+		//Terminal default path was changes after MacOS Catalina (10.15)
+		const string TERMINAL_APP_CATALINA_PATH = "/System/Applications/Utilities/Terminal.app";
 
 		string windowId;
+
+		//TODO: This path is strongly typed and could change it easily by user
+		static string TERMINAL_APP = MacSystemInformation.OsVersion >= MacSystemInformation.Catalina ?
+			 TERMINAL_APP_CATALINA_PATH : TERMINAL_APP_PATH;
 
 		public MacExternalConsoleProcess (string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
