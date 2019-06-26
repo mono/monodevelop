@@ -685,6 +685,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task LoadProject_UnknownNuGetSDKPackage_SDKResolutionErrorsReported ()
+		{
+			FilePath solFile = Util.GetSampleProject ("unknown-nuget-sdk", "UnknownNuGetSdk.sln");
+
+			using (var item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = item.Items [0] as UnknownSolutionItem;
+				Assert.AreEqual (p.LoadError, "Unable to find SDK 'Test.Unknown.NET.Sdk/1.2.3'");
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);
