@@ -29,6 +29,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
+using Roslyn.Utilities;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
@@ -40,6 +41,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.CSharp.OptionProvider
 {
@@ -87,6 +89,8 @@ namespace MonoDevelop.CSharp.OptionProvider
 			TextStylePolicy TextPolicy => textpolicy ?? (textpolicy = policyBag?.Get<TextStylePolicy> (types) ?? PolicyService.InvariantPolicies?.Get<TextStylePolicy> (types));
 
 			readonly ICodingConventionsSnapshot codingConventionsSnapshot;
+			private static readonly ConditionalWeakTable<IReadOnlyDictionary<string, object>, IReadOnlyDictionary<string, string>> s_convertedDictionaryCache =
+				new ConditionalWeakTable<IReadOnlyDictionary<string, object>, IReadOnlyDictionary<string, string>> ();
 
 			public DocumentOptions (PolicyBag policyBag, ICodingConventionsSnapshot codingConventionsSnapshot)
 			{
@@ -94,20 +98,24 @@ namespace MonoDevelop.CSharp.OptionProvider
 				this.codingConventionsSnapshot = codingConventionsSnapshot;
 			}
 
-			public bool TryGetDocumentOption (OptionKey option, OptionSet underlyingOptions, out object value)
+			public bool TryGetDocumentOption (OptionKey option, out object value)
 			{
 				if (codingConventionsSnapshot != null) {
 					var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
 					if (editorConfigPersistence != null) {
-
-						var tempRawConventions = codingConventionsSnapshot.AllRawConventions;
-						// HACK: temporarly map our old Dictionary<string, object> to a Dictionary<string, string>. This will go away in a future commit.
-						// see https://github.com/dotnet/roslyn/commit/6a5be42f026f8d0432cfe8ee7770ff8f6be01bd6#diff-626aa9dd2f6e07eafa8eac7ddb0eb291R34
-						var allRawConventions = ImmutableDictionary.CreateRange (tempRawConventions.Select (c => Roslyn.Utilities.KeyValuePairUtil.Create (c.Key, c.Value.ToString ())));
+						// Temporarly map our old Dictionary<string, object> to a Dictionary<string, string>. This can go away once we either
+						// eliminate the legacy editorconfig support, or we change IEditorConfigStorageLocation.TryGetOption to take
+						// some interface that lets us pass both the Dictionary<string, string> we get from the new system, and the
+						// Dictionary<string, object> from the old system.
+						//
+						// We cache this with a conditional weak table so we're able to maintain the assumptions in EditorConfigNamingStyleParser
+						// that the instance doesn't regularly change and thus can be used for further caching
+						var allRawConventions = s_convertedDictionaryCache.GetValue (
+							codingConventionsSnapshot.AllRawConventions,
+							d => ImmutableDictionary.CreateRange (d.Select (c => KeyValuePairUtil.Create (c.Key, c.Value.ToString ()))));
 
 						try {
-							var underlyingOption = Policy.OptionSet.GetOption (option);
-							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
+							if (editorConfigPersistence.TryGetOption (allRawConventions, option.Option.Type, out value))
 								return true;
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error while getting editor config preferences.", ex);
@@ -141,10 +149,6 @@ namespace MonoDevelop.CSharp.OptionProvider
 				}
 
 				var result = Policy.OptionSet.GetOption (option);
-				if (result == underlyingOptions.GetOption (option)) {
-					value = null;
-					return false;
-				}
 				value = result;
 				return true;
 			}
