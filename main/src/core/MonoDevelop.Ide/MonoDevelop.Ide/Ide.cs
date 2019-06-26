@@ -192,9 +192,8 @@ namespace MonoDevelop.Ide
 			get => launchType;
 			internal set {
 				launchType = value;
-				if (!LaunchCompletionSource.Task.IsCompleted) {
-					LaunchCompletionSource.SetResult (value);
-				} else {
+
+				if (!LaunchCompletionSource.TrySetResult (value)) {
 					LoggingService.LogWarning ($"LaunchReason is already set to {launchType}.");
 				}
 			}
