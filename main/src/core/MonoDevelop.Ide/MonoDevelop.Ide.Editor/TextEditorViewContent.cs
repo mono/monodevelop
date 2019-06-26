@@ -45,7 +45,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace MonoDevelop.Ide.Editor
 {
 	/// <summary>
-	/// The TextEditor object needs to be available through BaseViewContent.GetContent therefore we need to insert a 
+	/// The TextEditor object needs to be available through BaseViewContent.GetContent therefore we need to insert a
 	/// decorator in between.
 	/// </summary>
 	class TextEditorViewContent : FileDocumentController, ICommandRouter
@@ -58,6 +58,17 @@ namespace MonoDevelop.Ide.Editor
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
 		protected override Type FileModelType => typeof (TextBufferFileModel);
+
+		public override bool HasUnsavedChanges {
+			get {
+				CheckInitialized ();
+				return textEditor != null ? textEditor.IsDirty : false;
+			}
+			set {
+				if (textEditor != null)
+					textEditor.IsDirty = value;
+			}
+		}
 
 		public TextEditorViewContent ()
 		{
@@ -82,12 +93,11 @@ namespace MonoDevelop.Ide.Editor
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
 			if (textEditor == null) {
-				await Model.Load (); 
+				await Model.Load ();
 				var editor = TextEditorFactory.CreateNewEditor ((TextBufferFileModel)Model);
 				var impl = editor.Implementation;
 
 				await Init (editor, impl);
-				HasUnsavedChanges = impl.IsDirty;
 				await UpdateStyleParent (Owner, editor.MimeType, token);
 
 				// Editor extensions can provide additional content
@@ -154,12 +164,11 @@ namespace MonoDevelop.Ide.Editor
 
 		void ViewContent_DirtyChanged (object sender, EventArgs e)
 		{
-			HasUnsavedChanges = textEditorImpl.IsDirty;
+			OnHasUnsavedChangesChanged ();
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
 		{
-			HasUnsavedChanges = textEditorImpl.IsDirty;
 			InformAutoSave ();
 		}
 
@@ -241,7 +250,7 @@ namespace MonoDevelop.Ide.Editor
 
 		async Task RunFirstTimeFoldUpdate (string text)
 		{
-			if (string.IsNullOrEmpty (text)) 
+			if (string.IsNullOrEmpty (text))
 				return;
 
 			try {

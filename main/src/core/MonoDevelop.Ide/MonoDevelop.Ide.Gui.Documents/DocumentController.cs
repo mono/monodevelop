@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Returs true if the document has been modified and the changes are not yet saved
 		/// </summary>
-		public bool HasUnsavedChanges {
+		public virtual bool HasUnsavedChanges {
 			get {
 				CheckInitialized ();
 				return hasUnsavedChanges;
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			set {
 				if (value != hasUnsavedChanges) {
 					hasUnsavedChanges = value;
-					HasUnsavedChangesChanged?.Invoke (this, EventArgs.Empty);
+					OnHasUnsavedChangesChanged ();
 				}
 			}
 		}
@@ -1249,6 +1249,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			// Use the default GrabFocus implementation in DocumentView.
 			view.DefaultGrabFocus ();
+		}
+
+		/// <summary>
+		/// Called when HasUnsavedChanges changes it's value.
+		/// </summary>
+		protected virtual void OnHasUnsavedChangesChanged ()
+		{
+			HasUnsavedChangesChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected bool CheckInitialized ()
