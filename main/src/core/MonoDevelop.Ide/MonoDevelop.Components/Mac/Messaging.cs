@@ -61,6 +61,9 @@ namespace MonoDevelop.Components.Mac
 
 		[DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
 		public static extern uint UInt32_objc_msgSend (IntPtr receiver, IntPtr selector);
+
+		[DllImport (LIBOBJC_DYLIB, EntryPoint = "objc_msgSend")]
+		public extern static void void_objc_msgSend_IntPtr_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2);
 	}
 }
 #endif
