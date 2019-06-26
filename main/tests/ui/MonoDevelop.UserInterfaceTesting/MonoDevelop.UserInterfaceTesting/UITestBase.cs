@@ -141,9 +141,9 @@ namespace MonoDevelop.UserInterfaceTesting
 			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 		}
 
-		public void OpenExampleSolutionAndWait (out bool waitForPackages)
+		public string OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
-			var sln = UnitTests.Util.GetSampleProject ("performance", "ExampleFormsSolution", "ExampleFormsSolution.sln");
+			var sln = UnitTests.Util.GetSampleProject ("performance", "sdk-library", "sdk-library.sln");
 
 			if (!File.Exists (sln)) {
 				throw new FileNotFoundException ("Could not find test solution", sln);
@@ -158,11 +158,14 @@ namespace MonoDevelop.UserInterfaceTesting
 			// When we have more projects, we'll need a more clever system for detecting
 			// if packages need updated.
 			waitForPackages = true;
+
+			return sln;
 		}
 
 		public void StartSession (string mdProfile, string args = null)
 		{
 			TestService.StartSession (MonoDevelopBinPath, mdProfile, args);
+			TestService.Session.DebugObject = new UITestDebug ();
 		}
 
 		[TearDown]
@@ -287,7 +290,7 @@ namespace MonoDevelop.UserInterfaceTesting
 					if (folder != null && Directory.Exists (folder))
 						Directory.Delete (folder, true);
 				} catch (IOException e) {
-					TestService.Session.DebugObject.Debug ("Cleanup failed\n" +e);
+					TestService.Session.DebugObject.Debug ($"Failed to cleanup directory: {folder}\n" + e);
 				} catch (UnauthorizedAccessException e) {
 					TestService.Session.DebugObject.Debug (string.Format ("Unable to clean directory: {0}\n", folder) + e);
 				}

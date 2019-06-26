@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using static MonoDevelop.Core.EventQueue;
@@ -35,6 +36,7 @@ namespace MonoDevelop.Core
 	public class FileServiceEventQueueTests
 	{
 		readonly FilePath a = "a", b = "b", c = "c", d = "d", e = "e", btmp = "b.tmp";
+		readonly EventDataKind [] AllKinds = (EventDataKind [])Enum.GetValues (typeof (EventDataKind));
 
 		[Test]
 		public void TestMergeRemovesEmptyChangeSets()
@@ -300,6 +302,44 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (2, events [0].Args.Count);
 		}
 
+		[Test]
+		public void TestEventDataKindValues ()
+		{
+			// TestFileWatcherHandlers relies on this to avoid IVT.
+			Assert.AreEqual (0, (int)EventDataKind.Created);
+			Assert.AreEqual (1, (int)EventDataKind.Changed);
+			Assert.AreEqual (4, (int)EventDataKind.Removed);
+			Assert.AreEqual (5, (int)EventDataKind.Renamed);
+		}
+
+		[Test]
+		public void TestEventDataKindValuesHandlers ()
+		{
+			// Test that we have full coverage in the FileServiceEventQueue handler map.
+			var queue = new FileServiceEventQueue ();
+
+			// If anything went wrong, something will throw here.
+			foreach (var kind in AllKinds) {
+				queue.RaiseEvent (kind, new FileCopyEventArgs ());
+			}
+		}
+
+		[Test]
+		public void TestTimeTracking ()
+		{
+			var queue = new CallTrackingEventQueue ();
+
+			foreach (var kind in AllKinds) {
+				Assert.AreEqual (TimeSpan.Zero, queue.GetTimings (kind));
+
+				queue.RaiseEvent (kind, new FileCopyEventArgs ());
+				Assert.That (queue.GetTimings (kind), Is.GreaterThan (TimeSpan.Zero), "Time it took to call event handler was not recorded");
+
+				queue.RaiseEvent (kind, new FileCopyEventArgs ());
+				Assert.AreEqual (2, queue.Values.Where (x => x.Kind == kind).Count (), "We did not call the handlers the correct number of times");
+			}
+		}
+
 		FileEventData [] DoRun(Action<Processor> callback)
 		{
 			var processor = new Processor ();
@@ -348,6 +388,26 @@ namespace MonoDevelop.Core
 				Kind = kind,
 				Args = args,
 			};
+		}
+
+		class CallTrackingEventQueue : EventQueue
+		{
+			public List<WrappedFileEventArgs> Values = new List<WrappedFileEventArgs> ();
+
+			protected override void OnRaiseSync (EventDataKind kind, FileEventArgs args)
+				=> Values.Add (new WrappedFileEventArgs (kind, args));
+		}
+
+		class WrappedFileEventArgs : EventArgs
+		{
+			public FileEventArgs Args { get; }
+			public EventDataKind Kind { get; }
+
+			public WrappedFileEventArgs (EventDataKind kind, FileEventArgs args)
+			{
+				Kind = kind;
+				Args = args;
+			}
 		}
 	}
 }

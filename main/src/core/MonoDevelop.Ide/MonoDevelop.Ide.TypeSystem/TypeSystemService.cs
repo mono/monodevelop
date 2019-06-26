@@ -133,24 +133,26 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
 		{
-			var filesToUpdate = new List<string> ();
+			List<string> filesToUpdate = null;
 			foreach (var file in e) {
 				// Open documents are handled by the Document class itself.
 				if (documentManager?.GetDocument (file.FileName) != null)
 					continue;
 
 				foreach (var w in workspaces) {
-					foreach (var p in w.CurrentSolution.ProjectIds) {
-						if (w.GetDocumentId (p, file.FileName) != null) {
-							filesToUpdate.Add (file.FileName);
-							goto found;
-						}
-					}
+					var documentIds = w.CurrentSolution.GetDocumentIdsWithFilePath (file.FileName);
+					if (documentIds.IsEmpty)
+						continue;
+
+					if (filesToUpdate == null)
+						filesToUpdate = new List<string> ();
+					filesToUpdate.Add (file.FileName);
+					goto found;
 				}
 			found:;
 
 			}
-			if (filesToUpdate.Count == 0)
+			if (filesToUpdate == null || filesToUpdate.Count == 0)
 				return;
 
 			Task.Run (async delegate {
