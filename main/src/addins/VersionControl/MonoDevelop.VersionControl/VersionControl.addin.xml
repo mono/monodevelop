@@ -150,6 +150,7 @@
 			defaultHandler="MonoDevelop.VersionControl.UpdateCommandHandler"
 			description = "Updates the local copy with remote changes."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Publish"
+			defaultHandler = "MonoDevelop.VersionControl.PublishCommand"
 			_label = "_Publish in Version Control..."
 			icon = "vc-push"
 			description = "Publish actual project into repository."/>
