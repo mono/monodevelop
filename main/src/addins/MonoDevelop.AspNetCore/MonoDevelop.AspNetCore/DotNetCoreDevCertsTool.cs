@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNetCore
 {
-	static class DotNetCoreDevCertsTool
+	public static class DotNetCoreDevCertsTool
 	{
 		static OutputProgressMonitor CreateProgressMonitor ()
 		{
@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNetCore
 				true);
 		}
 
-		public static async Task<CertificateCheckResult> CheckCertificate (CancellationToken cancellationToken)
+		internal static async Task<CertificateCheckResult> CheckCertificate (CancellationToken cancellationToken)
 		{
 			int exitCode = await RunDotNetCommand (
 				"dev-certs https --trust --check",
