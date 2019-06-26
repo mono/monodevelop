@@ -59,6 +59,17 @@ namespace MonoDevelop.Ide.Editor
 
 		protected override Type FileModelType => typeof (TextBufferFileModel);
 
+		public override bool HasUnsavedChanges {
+			get {
+				CheckInitialized ();
+				return textEditor != null ? textEditor.IsDirty : false;
+			}
+			set {
+				if (textEditor != null)
+					textEditor.IsDirty = value;
+			}
+		}
+
 		public TextEditorViewContent ()
 		{
 		}
@@ -86,7 +97,6 @@ namespace MonoDevelop.Ide.Editor
 				var impl = editor.Implementation;
 
 				await Init (editor, impl);
-				HasUnsavedChanges = impl.IsDirty;
 
 				// Editor extensions can provide additional content
 				NotifyContentChanged ();
@@ -152,12 +162,11 @@ namespace MonoDevelop.Ide.Editor
 
 		void ViewContent_DirtyChanged (object sender, EventArgs e)
 		{
-			HasUnsavedChanges = textEditorImpl.IsDirty;
+			OnHasUnsavedChangesChanged ();
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
 		{
-			HasUnsavedChanges = textEditorImpl.IsDirty;
 			InformAutoSave ();
 		}
 
