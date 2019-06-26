@@ -181,7 +181,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 			// Query two queries.
 			VersionInfo vi = await Repo.GetVersionInfoAsync (LocalPath + "testfile");
-			VersionInfo[] vis = Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
+			VersionInfo[] vis = await Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
 
 			// No cache, query.
 			Assert.AreEqual (InitialValue, vi.Status);
@@ -196,21 +196,21 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile (Path.Combine ("testdir", "testfile2"), null, true, false);
 
 			// Old cache.
-			vis = Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
+			vis = await Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
 			Assert.AreEqual (1 + RepoItemsCount, vis.Length, "Old DirectoryVersionInfo.");
 
 			// Query.
 			Repo.ClearCachedVersionInfo (LocalPath);
-			Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
+			await Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
 			System.Threading.Thread.Sleep (QueryTimer);
 
 			// Cached.
-			vis = Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
+			vis = await Repo.GetDirectoryVersionInfoAsync (LocalPath, false, false);
 			Assert.AreEqual (2 + RepoItemsCount, vis.Length, "New DirectoryVersionInfo.");
 
 			// Wait for result.
 			AddFile ("testfile3", null, true, false);
-			vis = Repo.GetDirectoryVersionInfoAsync (LocalPath, false, true);
+			vis = await Repo.GetDirectoryVersionInfoAsync (LocalPath, false, true);
 			Assert.AreEqual (4 + RepoItemsCountRecursive, vis.Length, "Recursive DirectoryVersionInfo.");
 		}
 

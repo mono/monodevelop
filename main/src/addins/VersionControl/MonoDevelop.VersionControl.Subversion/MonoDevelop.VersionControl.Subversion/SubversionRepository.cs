@@ -525,7 +525,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				} else {
 					if (keepLocal) {
-						foreach (var info in GetDirectoryVersionInfoAsync (path, false, true)) {
+						foreach (var info in await GetDirectoryVersionInfoAsync (path, false, true)) {
 							if (info != null && info.HasLocalChange (VersionStatus.ScheduledAdd)) {
 								// Revert the add command
 								await RevertAsync (path, false, monitor);

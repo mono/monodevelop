@@ -200,9 +200,6 @@ namespace MonoDevelop.VersionControl.Git
 						rep.Item2.Dispose ();
 			}
 
-			scheduler = null;
-			ReadingOperationFactory = null;
-			BlockingOperationFactory = null;
 			watcher = null;
 			rootRepository = null;
 			cachedSubmodules = null;
@@ -759,7 +756,7 @@ namespace MonoDevelop.VersionControl.Git
 						foreach (var p in group) {
 							if (Directory.Exists (p)) {
 								if (recursive)
-									versions.AddRange (GetDirectoryVersionInfoAsync (p, getRemoteStatus, true));
+									versions.AddRange (GetDirectoryVersionInfoAsync (p, getRemoteStatus, true).Result);
 								versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
 							} else
 								localFiles.Add (p);
@@ -1047,7 +1044,7 @@ namespace MonoDevelop.VersionControl.Git
 			if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
 				const VersionStatus unclean = VersionStatus.Modified | VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete;
 				bool modified = false;
-				if (GetDirectoryVersionInfoAsync (RootPath, false, true).Any (v => (v.Status & unclean) != VersionStatus.Unversioned))
+				if (GetDirectoryVersionInfoAsync (RootPath, false, true).Result.Any (v => (v.Status & unclean) != VersionStatus.Unversioned))
 					modified = true;
 
 				if (modified) {
@@ -1294,10 +1291,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		HashSet<FilePath> GetAddedLocalPathItems (ChangeSet changeSet)
 		{
-			return readingOperationFactory.StartNew (() => {
+			return ConcurrentOperationFactory.StartNew (() => {
 				var addedLocalPathItems = new HashSet<FilePath> ();
 				try {
-					var directoryVersionInfo = GetDirectoryVersionInfo (changeSet.BaseLocalPath, null, false, true);
+					var directoryVersionInfo = GetDirectoryVersionInfoAsync (changeSet.BaseLocalPath, false, true).Result;
 					const VersionStatus addedStatus = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
 					var directoryVersionInfoItems = directoryVersionInfo.Where (vi => vi.Status == addedStatus);
 
@@ -1483,7 +1480,7 @@ namespace MonoDevelop.VersionControl.Git
 
 				foreach (var item in group)
 					if (item.IsDirectory) {
-						foreach (var vi in GetDirectoryVersionInfoAsync (item, false, recurse))
+						foreach (var vi in await GetDirectoryVersionInfoAsync (item, false, recurse))
 							if (!vi.IsDirectory) {
 								if (vi.Status == VersionStatus.Unversioned)
 									continue;
@@ -1577,7 +1574,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (var path in localPaths) {
 				if (keepLocal) {
 					// Undo addition of directories and files.
-					foreach (var info in GetDirectoryVersionInfoAsync (path, false, true)) {
+					foreach (var info in await GetDirectoryVersionInfoAsync (path, false, true)) {
 						if (info != null && info.HasLocalChange (VersionStatus.ScheduledAdd)) {
 							// Revert addition.
 							await RevertAsync (path, true, monitor);
@@ -2037,7 +2034,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override async Task OnMoveDirectoryAsync (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
-			VersionInfo[] versionedFiles = GetDirectoryVersionInfoAsync (localSrcPath, false, true);
+			VersionInfo[] versionedFiles = await GetDirectoryVersionInfoAsync (localSrcPath, false, true);
 			await base.OnMoveDirectoryAsync (localSrcPath, localDestPath, force, monitor);
 			monitor.BeginTask (GettextCatalog.GetString ("Moving files"), versionedFiles.Length);
 			foreach (VersionInfo vif in versionedFiles) {
