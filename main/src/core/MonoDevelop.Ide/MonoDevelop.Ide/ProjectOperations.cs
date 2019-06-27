@@ -1497,19 +1497,21 @@ namespace MonoDevelop.Ide
 				prepareExecutionTask = RunPrepareExecutionTasks ();
 			}
 
-			BuildResult result = await Build (buildTarget, token, context).Task;
+			using (prepareOpTokenSource) {
+				BuildResult result = await Build (buildTarget, token, context).Task;
 
-			if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
-				prepareOpTokenSource?.Cancel ();
-				return false;
+				if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
+					prepareOpTokenSource?.Cancel ();
+					return false;
+				}
+
+				building = false;
+				if (prepareExecutionTask != null) {
+					await prepareExecutionTask;
+				}
+
+				return true;
 			}
-
-			building = false;
-			if (prepareExecutionTask != null) {
-				await prepareExecutionTask;
-			}
-
-			return true;
 
 			async Task RunPrepareExecutionTasks ()
 			{

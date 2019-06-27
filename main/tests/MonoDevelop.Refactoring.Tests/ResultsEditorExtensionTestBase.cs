@@ -81,9 +81,8 @@ namespace MonoDevelop.Refactoring.Tests
 			};
 			resultsExt.TasksUpdated += handler;
 
-			using var cts = new CancellationTokenSource ();
+			using var cts = new CancellationTokenSource (TimeSpan.FromSeconds (60));
 			cts.Token.Register (() => tcs.TrySetCanceled ());
-			cts.CancelAfter (60 * 1000);
 
 			await doc.DocumentContext.UpdateParseDocument ();
 
