@@ -382,8 +382,8 @@ namespace MonoDevelop.Projects
 
 				InitBuildSyncEvent (project1);
 
-				// Start the build. Use RunTarget to avoid the BindTask which will cancel the build on project dispose.
-				var build1 = project1.RunTarget (Util.GetMonitor (), "Build", sol.Configurations [0].Selector);
+				// Start the build. Use RunTargetInternal to avoid the BindTask which will cancel the build on project dispose.
+				var build1 = project1.RunTargetInternal (Util.GetMonitor (), "Build", sol.Configurations [0].Selector);
 
 				// Wait for the build to reach the sync task
 				await WaitForBuildSyncEvent (project1);
