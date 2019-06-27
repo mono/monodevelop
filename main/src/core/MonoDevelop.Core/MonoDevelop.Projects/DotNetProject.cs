@@ -1091,7 +1091,7 @@ namespace MonoDevelop.Projects
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 				context.GlobalProperties.SetValue ("Silent", true);
 
-				var result = await RunTarget (monitor, "ResolveAssemblyReferences", configuration, context);
+				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferences", configuration, context);
 
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
@@ -1152,7 +1152,7 @@ namespace MonoDevelop.Projects
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 
-				var result = await RunTarget (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
+				var result = await RunTargetInternal (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
 
 				if (result == null)
 					return new List<PackageDependency> ();
