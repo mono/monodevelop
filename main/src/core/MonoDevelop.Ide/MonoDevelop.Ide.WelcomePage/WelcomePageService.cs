@@ -105,14 +105,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		public static void HideWelcomePageOrWindow ()
+		public static async void HideWelcomePageOrWindow ()
 		{
 			if (WelcomeWindowProvider != null) {
-				WelcomeWindowProvider.HideWindow ();
+				await WelcomeWindowProvider.HideWindow ();
 			} else {
 				HideWelcomePage (true);
 			}
-
 			visible = false;
 		}
 
