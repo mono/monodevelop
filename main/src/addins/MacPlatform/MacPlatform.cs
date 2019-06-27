@@ -370,10 +370,21 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogError ($"Failed to start new instance: {error.LocalizedDescription}");
 		}
 
-
+		static bool voiceOverNoticeShown;
 		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
+		const string VoiceOverNoticeShownKey = "com.monodevelop.VoiceOverShown";
 		static void ShowVoiceOverNotice ()
 		{
+			NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
+
+			if (voiceOverNoticeShown || defaults.BoolForKey (VoiceOverNoticeShownKey)) {
+				return;
+			}
+
+			// Show the VoiceOver notice once
+			voiceOverNoticeShown = true;
+			defaults.SetBool (true, VoiceOverNoticeShownKey);
+
 			var alert = new NSAlert ();
 			alert.MessageText = GettextCatalog.GetString ("Assistive Technology Detected");
 			alert.InformativeText = GettextCatalog.GetString ("{0} has detected an assistive technology (such as VoiceOver) is running. Do you want to restart {0} and enable the accessibility features?", BrandingService.ApplicationName);
@@ -383,7 +394,6 @@ namespace MonoDevelop.MacIntegration
 			var result = alert.RunModal ();
 			switch (result) {
 			case 1000:
-				NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
 				defaults.SetBool (true, EnabledKey);
 				defaults.Synchronize ();
 
