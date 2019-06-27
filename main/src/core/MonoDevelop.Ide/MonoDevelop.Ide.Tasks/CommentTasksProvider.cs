@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (!TryGetDocument (args, out var doc, out var project))
 				return null;
 
-			var file = doc.Name;
+			var file = doc.FilePath;
 			var tags = args.TodoItems.Length == 0 ? (IReadOnlyList<Tag>)null : args.TodoItems.SelectAsArray (x => x.ToTag ());
 			return new CommentTaskChange (file, tags, project);
 		}
