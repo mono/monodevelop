@@ -993,20 +993,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public event EventHandler Changed;
-
-		/// <summary>
-		/// This is to allow setting UseAsyncCompletion to true for the Cocoa editor and to false for the Gtk editor.
-		/// Currently Roslyn doesn't allow setting this option per view, so we have to work around.
-		/// See here for details: https://github.com/dotnet/roslyn/issues/33807
-		/// </summary>
-		internal static void SetUseAsyncCompletion(bool useAsyncCompletion)
-		{
-			var asyncCompletionService = Composition.CompositionManager.Instance.GetExportedValue<Microsoft.CodeAnalysis.Editor.IAsyncCompletionService> ();
-			var field = asyncCompletionService.GetType ().GetField (
-				"_newCompletionAPIEnabled",
-				System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-			field.SetValue (asyncCompletionService, useAsyncCompletion);
-		}
 	}
 }
 
