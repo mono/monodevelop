@@ -82,8 +82,10 @@
 		<StockIcon stockid="vs-signature-help-next" resource="go-down-16.png" size="Menu" imageid="{95fdedcb-dc13-48a8-8165-ed1fff877d9a}#2" />
 	</Extension>
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+	<!--
+		Don't re-add this! See bug 937834 for more details. Basically let native editor handle this. 
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
-
+	-->
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Find" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindNext" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindNextCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindPreviousCommandArgs" />
