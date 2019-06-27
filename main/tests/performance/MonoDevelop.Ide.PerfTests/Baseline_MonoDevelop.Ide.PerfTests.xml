@@ -61,6 +61,16 @@
                       </test-case>
                     </results>
                   </test-suite>
+                  <test-suite type="TestFixture" name="TestTypeSystemServiceLoad" executed="True" result="Success" success="True" time="28.637" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestTypeSystemServiceLoad.TestLoad" executed="True" result="Success" success="True" time="28.633" asserts="1">
+                        <properties>
+                          <property name="Time" value="3.95" />
+                          <property name="Tolerance" value="0.3" />
+                        </properties>
+                      </test-case>
+                    </results>
+                  </test-suite>
                 </results>
               </test-suite>
             </results>
