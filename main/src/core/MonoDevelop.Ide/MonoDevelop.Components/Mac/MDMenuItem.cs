@@ -111,18 +111,22 @@ namespace MonoDevelop.Components.Mac
 
 		public void Update (MDMenu parent, ref int index)
 		{
-			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
-			if (lastInfo != info) {
-				if (lastInfo != null) {
-					lastInfo.CancelAsyncUpdate ();
-					lastInfo.Changed -= OnLastInfoChanged;
+			try {
+				var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
+				if (lastInfo != info) {
+					if (lastInfo != null) {
+						lastInfo.CancelAsyncUpdate ();
+						lastInfo.Changed -= OnLastInfoChanged;
+					}
+					lastInfo = info;
+					if (lastInfo.IsUpdatingAsynchronously) {
+						lastInfo.Changed += OnLastInfoChanged;
+					}
 				}
-				lastInfo = info;
-				if (lastInfo.IsUpdatingAsynchronously) {
-					lastInfo.Changed += OnLastInfoChanged;
-				}
+				Update (parent, ref index, info);
+			} catch(Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
-			Update (parent, ref index, info);
 		}
 
 		void OnLastInfoChanged (object sender, EventArgs args)
