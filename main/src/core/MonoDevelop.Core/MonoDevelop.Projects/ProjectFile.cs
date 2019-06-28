@@ -173,8 +173,8 @@ namespace MonoDevelop.Projects
 			set {
 				Debug.Assert (!String.IsNullOrEmpty (value));
 
-				FilePath oldVirtualPath = ProjectVirtualPath;
 				FilePath oldPath = filename;
+				FilePath oldLink = Link;
 
 				filename = FileService.GetFullPath (value);
 
@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects
 				if (Project != null)
 					UnevaluatedInclude = Include;
 
-				OnPathChanged (oldPath, filename, oldVirtualPath, ProjectVirtualPath);
+				OnPathChanged (oldPath, oldLink);
 
 				if (Project != null)
 					Project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (Project, this, oldPath));
@@ -525,12 +525,15 @@ namespace MonoDevelop.Projects
 
 		internal event EventHandler<ProjectFilePathChangedEventArgs> PathChanged;
 
-		void OnPathChanged (FilePath oldPath, FilePath newPath, FilePath oldVirtualPath, FilePath newVirtualPath)
+		void OnPathChanged (FilePath oldPath, FilePath oldLink)
 		{
-			var handler = PathChanged;
+			PathChanged?.Invoke (this, CreateEventArgs ());
 
-			if (handler != null)
-				handler (this, new ProjectFilePathChangedEventArgs (this, oldPath, newPath, oldVirtualPath, newVirtualPath));
+			ProjectFilePathChangedEventArgs CreateEventArgs ()
+			{
+				var oldVirtualPath = GetProjectVirtualPath (oldLink, oldPath, Project);
+				return new ProjectFilePathChangedEventArgs (this, oldPath, filename, oldVirtualPath, ProjectVirtualPath);
+			}
 		}
 
 		protected virtual void OnChanged (string property)
