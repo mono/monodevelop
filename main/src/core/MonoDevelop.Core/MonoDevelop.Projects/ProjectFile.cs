@@ -525,7 +525,7 @@ namespace MonoDevelop.Projects
 
 		public virtual SourceCodeKind SourceCodeKind {  
 			get {
-				if (filename.Extension == ".sketchcs" || filename.Extension == ".sketchvb")
+				if (filename.HasExtension (".sketchcs") || filename.HasExtension (".sketchvb"))
 					return SourceCodeKind.Script;
 				return SourceCodeKind.Regular;
 			}
