@@ -50,9 +50,9 @@ namespace MonoDevelop.CSharp.Debugger
 			var document = buffer.AsTextContainer ().GetOpenDocumentInCurrentContext ();
 			var tree = await document.GetSyntaxTreeAsync (cancellationToken);
 
-			BreakpointSpans.TryGetBreakpointSpan (tree, position, cancellationToken, out var span);
-
-			return new Span (span.Start, span.Length);
+			if (BreakpointSpans.TryGetBreakpointSpan (tree, Math.Max (0, Math.Min (position, tree.Length - 1)), cancellationToken, out var span))
+				return new Span (span.Start, span.Length);
+			return buffer.CurrentSnapshot.GetLineFromPosition (Math.Max (0, Math.Min (position, buffer.CurrentSnapshot.Length - 1))).Extent.Span;
 		}
 	}
 }
