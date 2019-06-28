@@ -864,7 +864,7 @@ namespace Mono.TextEditor
 			if (currentFocus == FocusMargin.TextView) {
 				imContextNeedsReset = true;
 				mouseButtonPressed = 0;
-				imContext.FocusOut ();
+				imContext?.FocusOut ();
 
 				if (tipWindow != null && currentTooltipProvider != null) {
 					if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
@@ -885,8 +885,11 @@ namespace Mono.TextEditor
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			var result = base.OnFocusOutEvent (evnt);
-
-			FocusOut ();
+			try {
+				FocusOut ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("TextArea error while focus out event.", e);
+			}
 
 			return result;
 		}
