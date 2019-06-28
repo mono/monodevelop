@@ -390,7 +390,9 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+#if !WINDOWS
 				EditorOptions.ClearOptionValue (DefaultTextViewOptions.VerticalRulersName);
+#endif
 
 				return;
 			}
@@ -404,9 +406,11 @@ namespace MonoDevelop.TextEditor
 			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
 			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
 
+#if !WINDOWS
 			EditorOptions.SetOptionValue (
 				DefaultTextViewOptions.VerticalRulersName,
 				PropertyService.Get<bool> ("ShowRuler") ? new [] { currentPolicy.FileWidth } : Array.Empty<int> ());
+#endif
 		}
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
@@ -445,8 +449,10 @@ namespace MonoDevelop.TextEditor
 					setVerticalRulers = false;
 			}
 
+#if !WINDOWS
 			if (setVerticalRulers)
 				EditorOptions.SetOptionValue (DefaultTextViewOptions.VerticalRulersName, verticalRulers ?? Array.Empty<int> ());
+#endif
 
 			return Task.FromResult (true);
 		}
