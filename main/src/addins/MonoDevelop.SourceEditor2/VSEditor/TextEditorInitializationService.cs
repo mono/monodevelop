@@ -66,6 +66,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         internal ITextSearchService2 TextSearchService { get; set; }
 
         [Import]
+        internal IFeatureServiceFactory FeatureServiceFactory { get; set; }
+
+        [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelectorService { get; set; }
 
         [Import]
@@ -140,6 +143,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             view.Initialize(viewModel, roles, this.EditorOptionsFactoryService.GlobalOptions, this);
             view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
+            FeatureServiceFactory.GetOrCreate(view).Disable(PredefinedEditorFeatureNames.AsyncCompletion, EmptyFeatureController.Instance);
+
             this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(view));
 
             return view;
@@ -189,6 +194,15 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             for (int i = 0; (i < orderedManagers.Count); ++i)
             {
                 this.OrderedSpaceReservationManagerDefinitions.Add(orderedManagers[i].Metadata.Name, i);
+            }
+        }
+
+        sealed class EmptyFeatureController : IFeatureController
+        {
+            internal static readonly EmptyFeatureController Instance = new EmptyFeatureController();
+
+            private EmptyFeatureController()
+            {
             }
         }
     }
