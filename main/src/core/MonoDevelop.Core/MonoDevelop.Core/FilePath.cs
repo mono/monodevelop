@@ -153,7 +153,7 @@ namespace MonoDevelop.Core
 		public bool HasExtension (string extension)
 		{
 			return fileName.Length > extension.Length
-				&& fileName.EndsWith (extension, StringComparison.OrdinalIgnoreCase)
+				&& fileName.EndsWith (extension, PathComparison)
 				&& fileName[fileName.Length - extension.Length - 1] != Path.PathSeparator;
 		}
 

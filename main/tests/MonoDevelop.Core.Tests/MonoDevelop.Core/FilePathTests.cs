@@ -117,6 +117,7 @@ namespace MonoDevelop.Core
 			var path = new FilePath ("asdf.txt");
 			Assert.AreEqual ("asdf.txt", path.FileName);
 			Assert.IsTrue (path.HasExtension (".txt"));
+			Assert.AreEqual (FilePath.PathComparison == StringComparison.OrdinalIgnoreCase, path.HasExtension (".TXT"));
 			Assert.AreEqual (".txt", path.Extension);
 			Assert.AreEqual ("asdf", path.FileNameWithoutExtension);
 
