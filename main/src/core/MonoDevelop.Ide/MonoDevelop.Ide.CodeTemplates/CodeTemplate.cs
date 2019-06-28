@@ -486,11 +486,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 					start++;
 				}
 				int end = data.SelectionRange.EndOffset;
-				while (Char.IsWhiteSpace (data.GetCharAt (end - 1))) {
+				while (start < end && Char.IsWhiteSpace (data.GetCharAt (end - 1))) {
 					end--;
 				}
 				templateCtx.LineIndent = data.GetLineIndent (data.OffsetToLineNumber (start));
-				templateCtx.SelectedText = RemoveIndent (data.GetTextBetween (start, end), templateCtx.LineIndent);
+				templateCtx.SelectedText = start < end ? RemoveIndent (data.GetTextBetween (start, end), templateCtx.LineIndent) : "";
 				data.RemoveText (start, end - start);
 				offset = start;
 			} else {
