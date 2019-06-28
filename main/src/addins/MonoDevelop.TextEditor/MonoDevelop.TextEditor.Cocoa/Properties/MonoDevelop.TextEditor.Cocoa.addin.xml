@@ -15,6 +15,7 @@
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Extras.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
@@ -22,6 +23,7 @@
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Wpf.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
@@ -63,12 +65,14 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Extras.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Wpf.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
@@ -83,8 +87,10 @@
 		<StockIcon stockid="vs-signature-help-next" resource="go-down-16.png" size="Menu" imageid="{95fdedcb-dc13-48a8-8165-ed1fff877d9a}#2" />
 	</Extension>
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+	<!--
+		Don't re-add this! See bug 937834 for more details. Basically let native editor handle this. 
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
-
+	-->
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Find" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindNext" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindNextCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindPreviousCommandArgs" />

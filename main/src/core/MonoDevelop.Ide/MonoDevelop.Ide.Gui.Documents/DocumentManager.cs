@@ -658,10 +658,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 					var offset = info.Offset;
 					if (offset < 0) {
 						var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
-						if (info.Column >= 1)
-							offset = line.Start + info.Column - 1;
-						else
+						if (info.Column >= 1) {
+							offset = line.Start + Math.Min (info.Column - 1, line.Length);
+						} else {
 							offset = line.Start;
+						}
 					}
 					if (editorOperationsFactoryService != null) {
 						var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);

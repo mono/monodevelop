@@ -930,6 +930,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void GrabFocusForView (DocumentView view)
 		{
+			if (disposed)
+				return;
 			if (linkedController != null)
 				linkedController?.GrabFocusForView (view);
 			else

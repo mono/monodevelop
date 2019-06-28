@@ -81,7 +81,14 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (!hideWelcomePage && HasWindowImplementation) {
 				await Runtime.GetService<DesktopService> ();
 				var commandManager = await Runtime.GetService<CommandManager> ();
-				await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
+
+				var reason = await IdeApp.LaunchCompletionSource.Task;
+
+				if (IdeApp.LaunchReason == IdeApp.LaunchType.Normal) {
+					await ShowWelcomeWindow (new WelcomeWindowShowOptions (false));
+				} else if (IdeApp.LaunchReason == IdeApp.LaunchType.Unknown) {
+					LoggingService.LogInternalError ("LaunchCompletion is still Unknown", new Exception ());
+				}
 			}
 		}
 
@@ -105,14 +112,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		public static void HideWelcomePageOrWindow ()
+		public static async void HideWelcomePageOrWindow ()
 		{
 			if (WelcomeWindowProvider != null) {
-				WelcomeWindowProvider.HideWindow ();
+				await WelcomeWindowProvider.HideWindow ();
 			} else {
 				HideWelcomePage (true);
 			}
-
 			visible = false;
 		}
 

@@ -49,6 +49,10 @@ namespace MonoDevelop.Ide.Composition
 				// Change one of the assemblies' path
 				info.Location = typeof (LocationCachingFaultInjector).Assembly.Location;
 			}
+
+			public void FaultWritingComposition ()
+			{
+			}
 		}
 
 		internal class ModuleVersionIdCachingFaultInjector : CompositionManager.ICachingFaultInjector
@@ -58,12 +62,29 @@ namespace MonoDevelop.Ide.Composition
 				// Change one of the assemblies' mvid
 				info.ModuleVersionId = Guid.NewGuid ();
 			}
+
+			public void FaultWritingComposition ()
+			{
+			}
+		}
+
+		internal class CacheWritingFaultInjector : CompositionManager.ICachingFaultInjector
+		{
+			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
+			{
+			}
+
+			public void FaultWritingComposition ()
+			{
+				throw new CompositionManager.InvalidRuntimeCompositionException ("test");
+			}
 		}
 
 		static CompositionManager.Caching GetCaching (CompositionManager.ICachingFaultInjector faultInjector = null, Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null, CompositionManager.RuntimeCompositionExceptionHandler handler = null)
 		{
 			var mefAssemblies = CompositionManager.ReadAssembliesFromAddins ();
-			var caching = new CompositionManager.Caching (mefAssemblies, file => {
+			var exceptionHandler = handler ?? new CompositionManager.RuntimeCompositionExceptionHandler ();
+			var caching = new CompositionManager.Caching (mefAssemblies, handler, file => {
 				onCacheFileRequested?.Invoke (file);
 
 				var tmpDir = Path.Combine (Util.TmpDir, "mef", testName);
@@ -72,7 +93,7 @@ namespace MonoDevelop.Ide.Composition
 				}
 				Directory.CreateDirectory (tmpDir);
 				return Path.Combine (tmpDir, file);
-			}, faultInjector, handler);
+			}, faultInjector);
 
 			return caching;
 		}
@@ -230,10 +251,7 @@ namespace MonoDevelop.Ide.Composition
 		public async Task TestControlCacheFileStaleList ()
 		{
 			var caching = GetCaching ();
-			var (composition, catalog) = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
-			var cacheManager = new CachedComposition ();
-
-			await caching.Write (composition, catalog, cacheManager);
+			await CreateAndWrite (caching);
 
 			caching.MefAssemblies.Add (typeof (CompositionManagerCachingTests).Assembly);
 
@@ -261,10 +279,7 @@ namespace MonoDevelop.Ide.Composition
 		{
 			var injector = (CompositionManager.ICachingFaultInjector)Activator.CreateInstance (injectorType);
 			var caching = GetCaching (injector);
-			var (composition, catalog) = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
-			var cacheManager = new CachedComposition ();
-
-			await caching.Write (composition, catalog, cacheManager);
+			await CreateAndWrite (caching);
 
 			Assert.IsFalse (caching.CanUse ());
 		}
@@ -290,6 +305,23 @@ namespace MonoDevelop.Ide.Composition
 			};
 			var results = codeProvider.CompileAssemblyFromSource (parameters, "public class GeneratedClass {}");
 			return results.CompiledAssembly;
+		}
+
+		[Test]
+		public async Task TestCacheDeletedOnTryingToWriteInvalid ()
+		{
+			var caching = GetCaching ();
+			await CreateAndWrite (caching);
+
+			Assert.True (caching.CanUse ());
+			Assert.True (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.True (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+
+			caching = GetCaching (new CacheWritingFaultInjector ());
+			await CreateAndWrite (caching);
+
+			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
 		}
 	}
 }

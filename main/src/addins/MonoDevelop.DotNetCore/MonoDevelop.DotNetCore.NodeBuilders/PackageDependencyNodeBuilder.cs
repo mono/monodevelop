@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.DotNetCore.Commands;
 
@@ -59,6 +60,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
 			nodeInfo.StatusSeverity = node.GetStatusSeverity ();
 			nodeInfo.StatusMessage = node.GetStatusMessage ();
+
+			IconId statusIconId = node.GetStatusIconId ();
+			if (statusIconId != IconId.Null)
+				nodeInfo.StatusIcon = Context.GetIcon (statusIconId);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

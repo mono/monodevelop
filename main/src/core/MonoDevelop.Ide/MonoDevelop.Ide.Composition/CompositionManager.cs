@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Composition
 				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
-				var caching = new Caching (mefAssemblies);
+				var caching = new Caching (mefAssemblies, new IdeRuntimeCompositionExceptionHandler ());
 
 				// Try to use cached MEF data
 
@@ -236,6 +236,46 @@ namespace MonoDevelop.Ide.Composition
 						}
 					}
 				}
+			}
+		}
+
+		sealed class IdeRuntimeCompositionExceptionHandler : RuntimeCompositionExceptionHandler
+		{
+			static class Strings
+			{
+				public static string Quit = GettextCatalog.GetString ("Quit");
+				public static string Restart = GettextCatalog.GetString ("Restart");
+			}
+
+			public override void HandleException (string message, Exception e)
+			{
+				base.HandleException (message, e);
+
+				if (e is IOException)
+					return;
+
+				if (!IdeApp.IsInitialized) {
+					Console.WriteLine (e);
+					return;
+				}
+
+				var text = GettextCatalog.GetString ("There was a problem loading one or more extensions and {0} needs to be restarted.", BrandingService.ApplicationName);
+				var quitButton = new AlertButton (Strings.Quit);
+				var restartButton = new AlertButton (Strings.Restart);
+
+				var result = MessageService.GenericAlert (
+					IdeServices.DesktopService.GetFocusedTopLevelWindow (),
+					Gui.Stock.Error,
+					text,
+					secondaryText: null,
+					defaultButton: 1,
+					quitButton,
+					restartButton
+				);
+				if (result == restartButton)
+					IdeApp.Restart (false).Ignore ();
+				else
+					IdeApp.Exit ().Ignore ();
 			}
 		}
 	}

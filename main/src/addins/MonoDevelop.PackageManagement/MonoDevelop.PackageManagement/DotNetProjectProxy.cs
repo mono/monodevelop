@@ -133,7 +133,8 @@ namespace MonoDevelop.PackageManagement
 
 		public bool Equals (IDotNetProject project)
 		{
-			return DotNetProject == project.DotNetProject;
+			return DotNetProject == project.DotNetProject ||
+				DotNetProject.FileName == project.DotNetProject.FileName;
 		}
 
 		public void RefreshProjectBuilder ()

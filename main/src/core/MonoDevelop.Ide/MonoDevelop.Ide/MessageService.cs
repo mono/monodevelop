@@ -458,7 +458,6 @@ namespace MonoDevelop.Ide
 				int x, y;
 				gtkChild.GetSize (out var w, out var h);
 				if (gtkParent != null) {
-					gtkChild.TransientFor = gtkParent;
 					gtkParent.GetSize (out var winw, out var winh);
 					gtkParent.GetPosition (out var winx, out var winy);
 					x = Math.Max (0, (winw - w) / 2) + winx;

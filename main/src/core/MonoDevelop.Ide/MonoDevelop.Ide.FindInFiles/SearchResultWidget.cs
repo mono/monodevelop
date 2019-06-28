@@ -720,14 +720,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = await base.DoShow ();
 				if (doc == null)
 					return null;
-				
-				var buf = doc.Editor;
-				if (buf != null) {
+
+				doc.RunWhenContentAdded<Microsoft.VisualStudio.Text.Editor.ITextView> (textView => {
 					doc.DisableAutoScroll ();
-					buf.RunWhenLoaded (() => {
-						JumpToCurrentLocation (buf);
-					});
-				}
+					JumpToCurrentLocation (textView);
+				});
 				
 				return doc;
 			}

@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpForms", "FSharpForms\FSharpForms.fsproj", "{BC24106A-7259-45C8-87EC-D849CDF80800}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhone = Release|iPhone
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Release|iPhone.Build.0 = Release|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC24106A-7259-45C8-87EC-D849CDF80800}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

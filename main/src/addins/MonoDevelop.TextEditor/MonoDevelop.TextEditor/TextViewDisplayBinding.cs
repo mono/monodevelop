@@ -41,10 +41,6 @@ namespace MonoDevelop.TextEditor
 
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
-			if (!DefaultSourceEditorOptions.Instance.EnableNewEditor) {
-				yield break;
-			}
-
 			var nodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
 
 			bool supported =

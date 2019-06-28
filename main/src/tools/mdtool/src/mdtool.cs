@@ -145,6 +145,7 @@ class MonoDevelopProcessHost
 			var task = tool.Run (toolArgs);
 			task.ContinueWith ((t) => sc.ExitLoop ());
 			sc.RunMainLoop ();
+
 			return task.Result;
 
 		} catch (UserException ex) {
@@ -155,12 +156,18 @@ class MonoDevelopProcessHost
 			return -1;
 		} finally {
 			try {
-				Runtime.Shutdown ();
+				Shutdown ();
 			} catch {
 				// Ignore shutdown exceptions
 			}
 			LoggingService.Shutdown ();
 		}
+	}
+
+	static void Shutdown ()
+	{
+ 		Runtime.Shutdown ();
+		MonoDevelop.Components.GtkWorkarounds.Terminate ();
 	}
 
 	static void ShowHelp (bool shortHelp, string exeName)

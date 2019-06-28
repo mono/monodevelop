@@ -8,7 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using Microsoft.Build.Framework;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.MSBuild
@@ -79,6 +81,8 @@ namespace MonoDevelop.Projects.MSBuild
 				throw;
 			}
 
+			StringBuilder errorMessage = null;
+
 			foreach (var result in results) {
 				LogWarnings (logger, buildEventContext, projectFile, result);
 
@@ -86,8 +90,18 @@ namespace MonoDevelop.Projects.MSBuild
 					foreach (var error in result.Errors) {
 						logger.LogErrorFromText (buildEventContext, subcategoryResourceName: null, errorCode: null,
 							helpKeyword: null, file: projectFile, message: error);
+
+						if (errorMessage == null)
+							errorMessage = StringBuilderCache.Allocate ();
+						errorMessage.AppendLine (error);
 					}
 				}
+			}
+
+			if (errorMessage != null) {
+				throw new UserException (
+					GettextCatalog.GetString ("Unable to find SDK '{0}'", sdk),
+					StringBuilderCache.ReturnAndFree (errorMessage));
 			}
 
 			return null;
@@ -117,7 +131,10 @@ namespace MonoDevelop.Projects.MSBuild
 			// Add the MonoDevelop resolver, which resolves SDKs registered by add-ins.
 			// Also add the default resolver.
 
-			var resolvers = new List<SdkResolver> { new MonoDevelop.Projects.MSBuild.Resolver (MSBuildProjectService.FindRegisteredSdks), new DefaultSdkResolver { TargetRuntime = runtime } };
+			var resolvers = new List<SdkResolver> {
+				new Resolver (MSBuildProjectService.FindRegisteredSdks, GettextCatalog.GetString),
+				new DefaultSdkResolver { TargetRuntime = runtime }
+			};
 			var binDir = MSBuildProjectService.GetMSBuildBinPath (runtime);
 			var potentialResolvers = FindPotentialSdkResolvers (Path.Combine (binDir, "SdkResolvers"), logger);
 
