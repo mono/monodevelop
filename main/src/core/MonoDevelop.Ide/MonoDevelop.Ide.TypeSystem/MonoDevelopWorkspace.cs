@@ -690,18 +690,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			using (var edit = buffer.CreateEdit (options, reiteratedVersionNumber: null, editTag: null)) {
 				var oldSnapshot = buffer.CurrentSnapshot;
-				var oldText = oldSnapshot.AsText ();
-				var changes = newText.GetTextChanges (oldText);
-				//if (Microsoft.CodeAnalysis.Workspace.TryGetWorkspace(oldText.Container, out var workspace))
-				//{
-				//    var undoService = workspace.Services.GetService<ISourceTextUndoService>();
-				//    undoService.BeginUndoTransaction(oldSnapshot);
-				//}
-
-				foreach (var change in changes) {
-					edit.Replace (change.Span.Start, change.Span.Length, change.NewText);
-				}
-
+				edit.Replace (0, oldSnapshot.Length, newText.ToString ());
 				edit.Apply ();
 			}
 		}
