@@ -236,15 +236,20 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public FilePath ProjectVirtualPath {
 			get {
-				if (!Link.IsNullOrEmpty)
-					return Link;
-				if (Project != null) {
-					var rel = Project.GetRelativeChildPath (FilePath);
-					if (!rel.ToString ().StartsWith ("..", StringComparison.Ordinal))
-						return rel;
-				}
-				return FilePath.FileName;
+				return GetProjectVirtualPath (Link, FilePath, Project);
 			}
+		}
+
+		static FilePath GetProjectVirtualPath (FilePath link, FilePath filePath, Project project)
+		{
+			if (!link.IsNullOrEmpty)
+				return link;
+			if (project != null) {
+				var rel = project.GetRelativeChildPath (filePath);
+				if (!rel.ToString ().StartsWith ("..", StringComparison.Ordinal))
+					return rel;
+			}
+			return filePath.FileName;
 		}
 
 
