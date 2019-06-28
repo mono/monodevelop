@@ -383,8 +383,6 @@ namespace MonoDevelop.MacIntegration
 		const string VoiceOverNoticeShownKey = "com.monodevelop.VoiceOverShown";
 		static void ShowVoiceOverNotice ()
 		{
-			NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
-
 			if (voiceOverNoticeShown || PropertyService.Get<bool> (VoiceOverNoticeShownKey, false)) {
 				return;
 			}
@@ -402,6 +400,7 @@ namespace MonoDevelop.MacIntegration
 			var result = alert.RunModal ();
 			switch (result) {
 			case 1000:
+				NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
 				defaults.SetBool (true, EnabledKey);
 				defaults.Synchronize ();
 
