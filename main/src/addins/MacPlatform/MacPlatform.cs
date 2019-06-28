@@ -375,6 +375,9 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogError ($"Failed to start new instance: {error.LocalizedDescription}");
 		}
 
+		// The Enabled key needs to be controlled through NSUserDefaults so that it can be
+		// set from the command line. This lets users who require accessibility features to
+		// enabled to control it through the commandline, if it has been disabled from inside the software
 		static bool voiceOverNoticeShown;
 		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
 		const string VoiceOverNoticeShownKey = "com.monodevelop.VoiceOverShown";
@@ -382,13 +385,13 @@ namespace MonoDevelop.MacIntegration
 		{
 			NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
 
-			if (voiceOverNoticeShown || defaults.BoolForKey (VoiceOverNoticeShownKey)) {
+			if (voiceOverNoticeShown || PropertyService.Get<bool> (VoiceOverNoticeShownKey, false)) {
 				return;
 			}
 
 			// Show the VoiceOver notice once
 			voiceOverNoticeShown = true;
-			defaults.SetBool (true, VoiceOverNoticeShownKey);
+			PropertyService.Set (VoiceOverNoticeShownKey, true);
 
 			var alert = new NSAlert ();
 			alert.MessageText = GettextCatalog.GetString ("Assistive Technology Detected");
