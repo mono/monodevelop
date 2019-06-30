@@ -196,8 +196,7 @@ namespace MonoDevelop.Projects
 
 				OnPathChanged (oldPath, oldLink);
 
-				if (Project != null)
-					Project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (Project, this, oldPath));
+				Project?.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (Project, this, oldPath));
 			}
 		}
 
@@ -216,8 +215,8 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		internal string GetResourceId (ResourceNamePolicy policy)
 		{
-			if (string.IsNullOrEmpty (resourceId) && (Project is DotNetProject))
-				return ((DotNetProject)Project).GetDefaultResourceIdForPolicy (this, policy);
+			if (string.IsNullOrEmpty (resourceId) && (Project is DotNetProject dnp))
+				return dnp.GetDefaultResourceIdForPolicy (this, policy);
 			return resourceId;
 		}
 
@@ -234,11 +233,7 @@ namespace MonoDevelop.Projects
 		/// The file should be treated as effectively having this relative path within the project. If the file is
 		/// a link or outside the project root, this will not be the same as the physical file.
 		/// </summary>
-		public FilePath ProjectVirtualPath {
-			get {
-				return GetProjectVirtualPath (Link, FilePath, Project);
-			}
-		}
+		public FilePath ProjectVirtualPath => GetProjectVirtualPath (Link, FilePath, Project);
 
 		static FilePath GetProjectVirtualPath (FilePath link, FilePath filePath, Project project)
 		{
@@ -475,8 +470,8 @@ namespace MonoDevelop.Projects
 		public string ResourceId {
 			get {
 				// If the resource id is not set, return the project's default
-				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && Project is DotNetProject)
-					return ((DotNetProject)Project).GetDefaultResourceId (this);
+				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && Project is DotNetProject dnp)
+					return dnp.GetDefaultResourceId (this);
 
 				return resourceId;
 			}
@@ -517,7 +512,9 @@ namespace MonoDevelop.Projects
 			return pf;
 		}
 
-		public virtual void Dispose ()
+		public void Dispose () => OnDispose ();
+
+		protected virtual void OnDispose ()
 		{
 		}
 
@@ -538,8 +535,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnChanged (string property)
 		{
-			if (Project != null)
-				Project.NotifyFilePropertyChangedInProject (this, property);
+			Project?.NotifyFilePropertyChangedInProject (this, property);
 		}
 
 		public virtual SourceCodeKind SourceCodeKind
@@ -557,9 +553,9 @@ namespace MonoDevelop.Projects
 			NewVirtualPath = newPath;
 		}
 
-		public ProjectFile ProjectFile { get; private set; }
-		public FilePath OldVirtualPath { get; private set; }
-		public FilePath NewVirtualPath { get; private set; }
+		public ProjectFile ProjectFile { get; }
+		public FilePath OldVirtualPath { get; }
+		public FilePath NewVirtualPath { get; }
 	}
 
 	class ProjectFilePathChangedEventArgs : ProjectFileVirtualPathChangedEventArgs
@@ -570,7 +566,7 @@ namespace MonoDevelop.Projects
 			NewPath = newPath;
 		}
 
-		public FilePath OldPath { get; private set; }
-		public FilePath NewPath { get; private set; }
+		public FilePath OldPath { get; }
+		public FilePath NewPath { get; }
 	}
 }
