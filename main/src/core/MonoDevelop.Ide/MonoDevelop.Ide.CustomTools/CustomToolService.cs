@@ -47,13 +47,13 @@ namespace MonoDevelop.Ide.CustomTools
 	{
 		static readonly Dictionary<string,CustomToolExtensionNode> nodes = new Dictionary<string,CustomToolExtensionNode> ();
 
-		class TaskInfo {
+		sealed class TaskInfo {
 			public Task Task;
 			public CancellationTokenSource CancellationTokenSource;
 			public SingleFileCustomToolResult Result;
 		}
 
-		static readonly Dictionary<string,TaskInfo> runningTasks = new Dictionary<string, TaskInfo> ();
+		static readonly Dictionary<FilePath,TaskInfo> runningTasks = new Dictionary<FilePath, TaskInfo> ();
 		
 		static CustomToolService ()
 		{
@@ -76,24 +76,18 @@ namespace MonoDevelop.Ide.CustomTools
 			if (IdeApp.Workspace == null)
 				return;
 
-			IdeApp.Workspace.FileChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
-				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, e.Project, false);
-			};
-			IdeApp.Workspace.FilePropertyChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
-				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, e.Project, false);
-			};
-			IdeApp.Workspace.FileRemovedFromProject += delegate (object sender, ProjectFileEventArgs args) {
-				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, e.Project, false);
-			};
-			IdeApp.Workspace.FileAddedToProject += delegate (object sender, ProjectFileEventArgs args) {
-				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, e.Project, false);
-			};
+			IdeApp.Workspace.FileChangedInProject += DoUpdate;
+			IdeApp.Workspace.FilePropertyChangedInProject += DoUpdate;
+			IdeApp.Workspace.FileRemovedFromProject += DoUpdate;
+			IdeApp.Workspace.FileAddedToProject += DoUpdate;
 			//FIXME: handle the rename
 			//MonoDevelop.Ide.Gui.IdeApp.Workspace.FileRenamedInProject
+
+			static void DoUpdate (object sender, ProjectFileEventArgs args)
+			{
+				foreach (ProjectFileEventInfo e in args)
+					Update (e.ProjectFile, e.Project, false).Ignore ();
+			}
 		}
 		
 		internal static void Init ()
@@ -259,15 +253,9 @@ namespace MonoDevelop.Ide.CustomTools
 			monitor.Dispose ();
 		}
 
-		[Obsolete("Use the overload that specifies the project explicitly")]
-		public static void Update (ProjectFile file, bool force)
-		{
-			Update (file, file.Project, force);
-		}
-
 		static WeakReference<Pad> monitorPad;
 
-		public static async void Update (ProjectFile file, Project project, bool force)
+		public static async Task Update (ProjectFile file, Project project, bool force)
 		{
 			SingleProjectFileCustomTool tool;
 			ProjectFile genFile;
@@ -426,7 +414,7 @@ namespace MonoDevelop.Ide.CustomTools
 							IdeServices.TaskService.Errors.Add (new TaskListEntry (file.FilePath, err.ErrorText, err.Column, err.Line,
 								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
 								TaskPriority.Normal, file.Project.ParentSolution, file));
-					});
+					}).Ignore ();
 				}
 				
 				if (broken)
@@ -449,7 +437,7 @@ namespace MonoDevelop.Ide.CustomTools
 				return true;
 
 			// add file to project, update file properties, etc
-			Gtk.Application.Invoke (async (o, args) => {
+			Runtime.RunInMainThread (async () => {
 				bool projectChanged = false;
 				if (genFile == null) {
 					genFile = file.Project.AddFile (result.GeneratedFilePath, result.OverrideBuildAction);
@@ -471,7 +459,7 @@ namespace MonoDevelop.Ide.CustomTools
 
 				if (projectChanged)
 					await IdeApp.ProjectOperations.SaveAsync (file.Project);
-			});
+			}).Ignore ();
 
 			return true;
 		}
@@ -491,44 +479,42 @@ namespace MonoDevelop.Ide.CustomTools
 			string ns = file.CustomToolNamespace;
 			if (!string.IsNullOrEmpty (ns) || string.IsNullOrEmpty (outputFile))
 				return ns;
-			var dnfc = file.Project as IDotNetFileContainer;
-			if (dnfc != null)
-				return dnfc.GetDefaultNamespace (outputFile, useVisualStudioNamingPolicy);
-			return ns;
+
+			return file.Project is IDotNetFileContainer dnfc
+				? dnfc.GetDefaultNamespace (outputFile, useVisualStudioNamingPolicy)
+				: ns;
 		}
 
-		public static Task WaitForRunningTools (ProgressMonitor monitor)
+		public static async Task WaitForRunningTools (ProgressMonitor monitor)
 		{
-			TaskInfo[] operations;
+			Task [] operations;
+			int i;
+
 			lock (runningTasks) {
-				operations = runningTasks.Values.ToArray ();
+				if (runningTasks.Count == 0)
+					return;
+
+				operations = new Task [runningTasks.Count];
+				i = 0;
+				foreach (var kvp in runningTasks) {
+					operations [i++] = kvp.Value.Task;
+				}
 			}
 
-			if (operations.Length == 0)
-				return Task.FromResult (true);
+			using (monitor.BeginTask ("Waiting for custom tools…", operations.Length)) {
+				for (i = 0; i < operations.Length; ++i) {
+					operations [i] = operations [i].ContinueWith (ta => {
+						if (!monitor.CancellationToken.IsCancellationRequested)
+							monitor.Step ();
+					});
+				}
 
-			monitor.BeginTask ("Waiting for custom tools...", operations.Length);
+				var cancelTask = new TaskCompletionSource<bool> ();
 
-			List<Task> tasks = new List<Task> ();
-
-			foreach (var t in operations) {
-				tasks.Add (t.Task.ContinueWith (ta => {
-					if (!monitor.CancellationToken.IsCancellationRequested)
-						monitor.Step (1);
-				}));
+				using (monitor.CancellationToken.Register (tcs => ((TaskCompletionSource<bool>)tcs).SetResult (true), cancelTask)) {
+					await Task.WhenAny (Task.WhenAll (operations), cancelTask.Task);
+				}
 			}
-
-			var cancelTask = new TaskCompletionSource<bool> ();
-			var allDone = Task.WhenAll (tasks);
-
-			var cancelReg = monitor.CancellationToken.Register (() => {
-				cancelTask.SetResult (true);
-			});
-
-			return Task.WhenAny (allDone, cancelTask.Task).ContinueWith (t => {
-				monitor.EndTask (); 
-				cancelReg.Dispose ();
-			});
 		}
 	}
 }

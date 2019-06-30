@@ -47,7 +47,7 @@ namespace MonoDevelop.TextTemplating
 
 			var pf = wob as ProjectFile;
 			if (pf != null) {
-				CustomToolService.Update (pf, pf.Project, true);
+				await CustomToolService.Update (pf, pf.Project, true);
 				return;
 			}
 

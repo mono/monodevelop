@@ -541,12 +541,6 @@ namespace MonoDevelop.Core
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 
-		[Obsolete ("Use LogError")]
-		public static void LogUserError (string message, Exception ex)
-		{
-			Log (LogLevel.Error, FormatExceptionText (message, ex));
-		}
-
 		/// <summary>
 		/// Reports that an unexpected error has occurred, but the IDE will continue executing.
 		/// Error information is sent to the crash reporting service
