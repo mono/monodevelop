@@ -913,16 +913,14 @@ namespace MonoDevelop.Projects
 
 		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration)
 		{
-			return BindTask (async ct => {
-				return await ProjectExtension.OnGetReferences (configuration, ct);
-			});
+			return BindTask (ct => ProjectExtension.OnGetReferences (configuration, ct));
 		}
 
 		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			return BindTask (ct => {
+			return BindTask (async ct => {
 				using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, token)) {
-					return ProjectExtension.OnGetReferences (configuration, tokenSource.Token);
+					return await ProjectExtension.OnGetReferences (configuration, tokenSource.Token).ConfigureAwait (false);
 				}
 			});
 		}

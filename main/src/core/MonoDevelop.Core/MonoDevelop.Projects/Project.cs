@@ -472,10 +472,10 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (ImmutableArray<FilePath>.Empty);
 
-			return BindTask<ImmutableArray<FilePath>> (cancelToken => {
+			return BindTask<ImmutableArray<FilePath>> (async cancelToken => {
 				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return GetAnalyzerFilesAsync (monitor, configuration);
+					return await GetAnalyzerFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -496,10 +496,10 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (ImmutableArray<ProjectFile>.Empty);
 
-			return BindTask<ImmutableArray<ProjectFile>> (cancelToken => {
+			return BindTask<ImmutableArray<ProjectFile>> (async cancelToken => {
 				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return GetSourceFilesAsync (monitor, configuration);
+					return await GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}
