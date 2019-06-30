@@ -390,8 +390,7 @@ namespace MonoDevelop.Ide
 		public async Task SaveAsync (ProgressMonitor monitor)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Saving Workspace..."), Items.Count);
-			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
-			foreach (WorkspaceItem it in items) {
+			foreach (WorkspaceItem it in Items.ToList ()) {
 				await it.SaveAsync (monitor);
 				monitor.Step (1);
 			}

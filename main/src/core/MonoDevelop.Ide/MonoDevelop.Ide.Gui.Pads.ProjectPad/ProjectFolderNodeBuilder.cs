@@ -381,14 +381,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.MoveToParent ();
 		}
 		
-		internal static bool PathExistsInProject (Project project, string path)
+		internal static bool PathExistsInProject (Project project, FilePath path)
 		{
-			string basePath = path;
-			foreach (ProjectFile f in project.Files)
-				if (f.Name.StartsWith (basePath)
-				    && (f.Name.Length == basePath.Length || f.Name[basePath.Length] == Path.DirectorySeparatorChar))
-					return true;
-			return false;
+			string basePath = path.ToRelative (project.BaseDirectory);
+			return project.Files.GetFilesInVirtualPath (basePath).Any ();
 		}
 
 		internal static bool ContainsDirectorySeparator (string name)
