@@ -563,7 +563,10 @@ namespace MonoDevelop.Components.Commands
 				if (cinfo.Enabled && cinfo.Visible) {
 					if (!dispatched)
 						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time, cinfo);
-					if (!bindings.BindingExists (binding))
+					// A nested pumping wait could possibly queue the next task to run
+					// on the UI scheduler, thus have CommandManager.Dispose run after
+					// UpdateTask.Wait() is called.
+					if (disposed || !bindings.BindingExists (binding))
 						break;
 					conflict.Add (commands [i]);
 				} else
@@ -791,17 +794,20 @@ namespace MonoDevelop.Components.Commands
 		public void Dispose ()
 		{
 			disposed = true;
-			if (bindings != null) {
-				bindings.Dispose ();
-				bindings = null;
-			}
-
 #if MAC
+			// Remove the keyMonitor before the bindings, as it can cause
+			// a crash on quitting after opening the IDE without loading keybindings
 			if (keyMonitor != null) {
 				AppKit.NSEvent.RemoveMonitor (keyMonitor);
 				keyMonitor = null;
 			}
 #endif
+
+			if (bindings != null) {
+				bindings.Dispose ();
+				bindings = null;
+			}
+
 			lastFocused = null;
 		}
 		
