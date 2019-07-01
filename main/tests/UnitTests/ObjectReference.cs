@@ -48,22 +48,48 @@ namespace UnitTests
 			_weakReference = new WeakReference (target);
 		}
 
-		public void Release ()
+		/// <summary>
+		/// Asserts that the underlying object has been released.
+		/// </summary>
+		[MethodImpl (MethodImplOptions.NoInlining)]
+		public void AssertReleased ()
+		{
+			ReleaseAndGarbageCollect ();
+
+			Assert.False (_weakReference.IsAlive, "Reference should have been released but was not.");
+		}
+
+		/// <summary>
+		/// Asserts that the underlying object is still being held.
+		/// </summary>
+		[MethodImpl (MethodImplOptions.NoInlining)]
+		public void AssertHeld ()
+		{
+			ReleaseAndGarbageCollect ();
+
+			// Since we are asserting it's still held, if it is held we can just recover our strong reference again
+			_strongReference = (T)_weakReference.Target;
+			Assert.True (_strongReference != null, "Reference should still be held.");
+		}
+
+		// Ensure the mention of the field doesn't result in any local temporaries being created in the parent
+		[MethodImpl (MethodImplOptions.NoInlining)]
+		private void ReleaseAndGarbageCollect ()
 		{
 			if (_strongReferenceRetrievedOutsideScopedCall) {
 				throw new InvalidOperationException ($"The strong reference being held by the {nameof (ObjectReference<T>)} was retrieved via a call to {nameof (GetReference)}. Since the CLR might have cached a temporary somewhere in your stack, assertions can no longer be made about the correctness of lifetime.");
 			}
+
 			_strongReference = null;
-		}
 
-		public void AssertAlive ()
-		{
-			Assert.True (_weakReference.IsAlive, "Reference should still be held.");
-		}
-
-		public void AssertDead ()
-		{
-			Assert.False (_weakReference.IsAlive, "Reference should have been released but was not.");
+			// We'll loop 1000 times, or until the weak reference disappears. When we're trying to assert that the
+			// object is released, once the weak reference goes away, we know we're good. But if we're trying to assert
+			// that the object is held, our only real option is to know to do it "enough" times; but if it goes away then
+			// we are definitely done.
+			for (var i = 0; i < 10 && _weakReference.IsAlive; i++) {
+				GC.Collect ();
+				GC.WaitForPendingFinalizers ();
+			}
 		}
 
 		/// <summary>
@@ -90,7 +116,7 @@ namespace UnitTests
 
 		/// <summary>
 		/// Fetches the object strongly being held from this. Because the value returned might be cached in a local temporary from
-		/// the caller of this function, no further calls to <see cref="AssertAlive"/> or <see cref="AssertDead"/> may be called
+		/// the caller of this function, no further calls to <see cref="AssertHeld"/> or <see cref="AssertReleased"/> may be called
 		/// on this object as the test is not valid either way. If you need to operate with the object without invalidating
 		/// the ability to reference the object, see <see cref="UseReference"/>.
 		/// </summary>
@@ -103,7 +129,7 @@ namespace UnitTests
 		private T GetReferenceWithChecks ()
 		{
 			if (_strongReference == null) {
-				throw new InvalidOperationException ($"The type has already been released due to a call to {nameof (Release)}.");
+				throw new InvalidOperationException ($"The type has already been released due to a call to {nameof (AssertReleased)}.");
 			}
 
 			return _strongReference;
