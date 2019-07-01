@@ -330,12 +330,22 @@ namespace MonoDevelop.TextEditor
 
 		protected virtual void UnsubscribeFromEvents ()
 		{
-			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
-			if (TextDocument != null) {
+			if (sourceEditorOptions != null)
+				sourceEditorOptions.Changed -= UpdateTextEditorOptions;
+
+			if (TextDocument != null)
 				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+
+			if (TextBuffer != null)
 				TextBuffer.Changed -= HandleTextBufferChanged;
+
+			// while this actually generates a "warning" about potentially comparing value types,
+			// we can be fairly confident that's not actually going to happen - and while the correct
+			// change would be to ensure TView is a "class", that's too big of a change to try and
+			// and combat this bug with.
+			// In addition, this will get JITTed into a cast to Object and a check for null.
+			if (TextView != null && TextView.Options != null)
 				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
-			}
 		}
 
 		void UpdateBufferOptions ()
