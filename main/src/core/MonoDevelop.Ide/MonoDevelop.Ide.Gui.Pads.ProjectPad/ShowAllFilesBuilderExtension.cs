@@ -248,6 +248,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnSystemFileAdded (object sender, FileEventArgs args)
 		{
+			if (Context.Tree.IsDestroyed)
+				return;
 			foreach (FileEventInfo e in args) {
 				Project project = GetProjectForFile (e.FileName);
 				if (project == null) return;
@@ -263,6 +265,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnSystemFileDeleted (object sender, FileEventArgs args)
 		{
+			if (Context.Tree.IsDestroyed)
+				return;
 			foreach (FileEventInfo e in args) {
 				try {
 					Project project = GetProjectForFile (e.FileName);
@@ -298,6 +302,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnSystemFileRenamed (object sender, FileCopyEventArgs args)
 		{
+			if (Context.Tree.IsDestroyed)
+				return;
 			foreach (FileEventInfo e in args) {
 				Project project = GetProjectForFile (e.SourceFile);
 				if (project == null) return;
