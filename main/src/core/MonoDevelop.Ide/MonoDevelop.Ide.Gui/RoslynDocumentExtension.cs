@@ -136,6 +136,7 @@ namespace MonoDevelop.Ide.Gui
 
 			TryEditorInitialization ();
 			UpdateTextBufferRegistration ();
+			SubscribeControllerEvents ();
 		}
 
 		public void TryEditorInitialization ()
@@ -482,6 +483,7 @@ namespace MonoDevelop.Ide.Gui
 				if (doc != null)
 					return Task.CompletedTask;
 			}
+
 			if (Editor == null) {
 				UnsubscribeAnalysisDocument ();
 				UpdateTextBufferRegistration ();
