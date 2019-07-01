@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test]
-		[Benchmark(Tolerance=0.1)]
+		[Benchmark(Tolerance = 0.10)]
 		public void TestStartupTime ()
 		{
 			OpenApplicationAndWait ();
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test]
-		[Benchmark(Tolerance = 0.1)]
+		[Benchmark(Tolerance = 0.10)]
 		public void TestTimeToCode ()
 		{
 			OpenApplicationAndWait ();

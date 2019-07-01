@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp.Completion
 						result.AutoCompleteUniqueMatch = false;
 						result.AutoCompleteEmptyMatch = false;
 						return (ICompletionDataList)result;
-					});
+					}, token, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 				} catch (Exception e) {
 					LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine +
 											 "FileName: " + DocumentContext.Name + Environment.NewLine +
@@ -446,7 +446,9 @@ namespace MonoDevelop.CSharp.Completion
 			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
 			var customOptions = DocumentContext.RoslynWorkspace.Options
 				.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true)
-				.WithChangedOption (CompletionOptions.HideAdvancedMembers, LanguageNames.CSharp, IdeApp.Preferences.CompletionOptionsHideAdvancedMembers);
+				.WithChangedOption (CompletionOptions.HideAdvancedMembers, LanguageNames.CSharp, IdeApp.Preferences.CompletionOptionsHideAdvancedMembers)
+				// Roslyn's implementation of this feature doesn't work correctly in old editor
+				.WithChangedOption (CompletionOptions.ShowItemsFromUnimportedNamespaces, LanguageNames.CSharp, false);
 			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
 

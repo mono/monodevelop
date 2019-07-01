@@ -1,7 +1,7 @@
 [submodule "main/external/debugger-libs"]
 	path = main/external/debugger-libs
 	url = git://github.com/mono/debugger-libs.git
-	branch = master
+	branch = d16-3
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
 	url = git://github.com/mono/guiunit.git
@@ -46,13 +46,13 @@
 	url = git://github.com/mono/sharpsvn-binary.git
 [submodule "main/external/vs-editor-api"]
 	path = main/external/vs-editor-api
-	url = https://github.com/KirillOsenkov/vs-editor-api.git
-	branch = monodevelop/release-8.2
+	url = https://github.com/microsoft/vs-editor-api.git
+	branch = vsmac/release-8.3
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
 	url = https://github.com/xamarin/Xamarin.PropertyEditing
-	branch = d16-2
+	branch = d16-3
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = d16-2
+	branch = d16-3

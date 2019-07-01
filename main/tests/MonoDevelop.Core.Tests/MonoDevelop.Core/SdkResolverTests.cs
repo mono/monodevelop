@@ -54,11 +54,18 @@ namespace MonoDevelop.Core
 			var sdkReference = new SdkReference ("MonoDevelop.Unknown.Test.Sdk", "InvalidVersion", null);
 			var logger = new TestLoggingService ();
 			var context = new MSBuildContext ();
-			var result = resolution.GetSdkPath (sdkReference, logger, context, null, null);
+
+			string result = null;
+			UserException ex = Assert.Throws<UserException> (() => {
+				result = resolution.GetSdkPath (sdkReference, logger, context, null, null);
+			});
 
 			var error = logger.FatalBuildErrors.FirstOrDefault ();
 			Assert.AreEqual (0, logger.FatalBuildErrors.Count, "First error: " + error);
 			Assert.IsNull (result);
+			Assert.AreEqual ("Unable to find SDK 'MonoDevelop.Unknown.Test.Sdk/InvalidVersion'", ex.Message);
+			Assert.That (ex.Details, Contains.Substring ("SDK not found")); //  MonoDevelop.Projects.MSBuild.Resolver
+			Assert.That (ex.Details, Contains.Substring ("Check that a recent enough .NET Core SDK is installed")); // .NET Core SDK resolver
 		}
 
 		[Test]

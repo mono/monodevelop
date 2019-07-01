@@ -25,9 +25,12 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using NuGet.Packaging;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
@@ -35,9 +38,17 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 	{
 		public static readonly string NodeName = "Dependencies";
 
+		readonly IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
+
 		public DependenciesNode (DotNetProject project)
+			: this (project, PackageManagementServices.UpdatedPackagesInWorkspace)
+		{
+		}
+
+		public DependenciesNode (DotNetProject project, IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
 		{
 			Project = project;
+			this.updatedPackagesInWorkspace = updatedPackagesInWorkspace;
 			PackageDependencyCache = new PackageDependencyNodeCache (Project);
 		}
 
@@ -51,7 +62,25 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			return string.Empty;
+			int count = GetUpdatedPackagesCount ();
+			if (count == 0) {
+				return string.Empty;
+			}
+
+			return GetUpdatedPackagesCountLabel (count);
+		}
+
+		string GetUpdatedPackagesCountLabel (int count)
+		{
+			return GettextCatalog.GetPluralString ("({0} update)", "({0} updates)", count, count);
+		}
+
+		int GetUpdatedPackagesCount ()
+		{
+			UpdatedNuGetPackagesInProject updatedPackages = GetUpdatedPackages ();
+			updatedPackages.RemoveUpdatedPackages (GetPackageReferences ());
+
+			return updatedPackages.GetPackages ().Count ();
 		}
 
 		public IconId Icon {
@@ -70,6 +99,25 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
 		{
 			return PackageDependencyCache.GetProjectPackageReferencesAsDependencyNodes (this);
+		}
+
+		public UpdatedNuGetPackagesInProject GetUpdatedPackages ()
+		{
+			return updatedPackagesInWorkspace.GetUpdatedPackages (new DotNetProjectProxy (Project));
+		}
+
+		IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			foreach (ProjectPackageReference packageReference in Project.Items.OfType<ProjectPackageReference> ()) {
+				if (packageReference.Metadata.GetValue ("IsImplicitlyDefined", false)) {
+					// Ignore. Microsoft.AspNetCore.App package reference gets the version from an MSBuild import
+					// so should not show updates. Currently this does not handle the case where the
+					// Microsoft.AspNetCore.App package is listed with a version in the project file so it will
+					// not show updates.
+				} else {
+					yield return packageReference.CreatePackageReference ();
+				}
+			}
 		}
 	}
 }

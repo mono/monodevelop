@@ -97,6 +97,22 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					return;
 
 				var startToken = token.GetPreviousTokenIfTouchingWord (position);
+
+				// We're marking the context as exclusive, to resolve the
+				// regression in the new editor that appeared since introducing
+				// Roslyn's provider mechanism. The actual override completion
+				// provider took precedence and therefore this one was ignored.
+				// We submitted a PR for roslyn, that allows multiple providers,
+				// marked as exclusive, to render suggestions.
+				// See: https://github.com/dotnet/roslyn/pull/36088
+				//
+				// Important note, though, we should only set exclusivity when
+				// we are actually competing with an override provider - that
+				// is, if the token before this one is the override keyword. If
+				// it's not, we're not competing, and therefore shouldn't set
+				// this to true, as we'll be the ones stealing the spotlight.
+				context.IsExclusive = startToken.IsKind (SyntaxKind.OverrideKeyword);
+
 				TryDetermineReturnType (startToken, model, cancellationToken, out ITypeSymbol returnType, out SyntaxToken tokenBeforeReturnType);
 				if (returnType == null) {
 					var enclosingType = model.GetEnclosingSymbol (position, cancellationToken) as INamedTypeSymbol;
@@ -155,7 +171,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				pDict = pDict.Add ("InsertionText", sb.ToString ());
 				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + inlineDescription + "</span>");
 				pDict = pDict.Add ("Description", await GenerateQuickInfo (semanticModel, position, m, cancellationToken));
-				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString());
+				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString ());
 
 				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
 				var completionData = CompletionItem.Create (m.Name, sortText: m.ToSignatureDisplayString (), properties: pDict, rules: ProtocolCompletionRules, tags: tags, inlineDescription: inlineDescription);
@@ -467,6 +483,24 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					.WithIsOverride (true)
 					.WithIsSealed (isSealed);*/
 			return overrideToken.IsKind (SyntaxKind.OverrideKeyword) && IsOnStartLine (text, startLine, overrideToken.Parent.SpanStart);
+		}
+
+		public override bool ShouldTriggerCompletion (SourceText text, int position, CompletionTrigger trigger, Microsoft.CodeAnalysis.Options.OptionSet options)
+		{
+			// This method is overridden because Roslyn's Completion Service calls us, in cases
+			// where the change kind is an Insertion or Deletion. This mimics the behavior
+			// of the OverrideCompletionProvider provided by Roslyn, so we'll now get called
+			// in all the same cases as that one. The goal is to also display our protocol member
+			// completion suggestions, even when the user types "overrides" and presses space.
+			// See here: http://source.roslyn.io/#Microsoft.CodeAnalysis.Features/Completion/CompletionServiceWithProviders.cs,231
+			switch (trigger.Kind) {
+				case CompletionTriggerKind.Insertion when position > 0:
+					var insertedCharacterPosition = position - 1;
+					return Microsoft.CodeAnalysis.CSharp.Completion.Providers.CompletionUtilities.IsTriggerAfterSpaceOrStartOfWordCharacter (text, insertedCharacterPosition, options);
+
+				default:
+					return false;
+			}
 		}
 	}
 }

@@ -11,11 +11,25 @@
             <results>
               <test-suite type="Namespace" name="PerfTests" executed="True" result="Success" success="True" time="71.520" asserts="0">
                 <results>
+                  <test-suite type="TestFixture" name="TestFileWatcherHandlers" executed="True" result="Success" success="True" time="104.805" asserts="0">
+                    <results>
+                      <test-suite type="ParameterizedTest" name="TestHandlers" executed="True" result="Success" success="True" time="104.794" asserts="0">
+                        <results>
+                          <test-case name="MonoDevelop.Ide.PerfTests.TestFileWatcherHandlers.TestHandlers(1000)" executed="True" result="Success" success="True" time="104.791" asserts="1">
+                            <properties>
+                              <property name="Time" value="113.921" />
+                              <property name="Tolerance" value="0.2" />
+                            </properties>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="TestFixture" name="TestSolutionBuild" executed="True" result="Success" success="True" time="21.396" asserts="0">
                     <results>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestSolutionBuild.TestBuild" executed="True" result="Success" success="True" time="21.392" asserts="1">
                         <properties>
-                          <property name="Time" value="4.118" />
+                          <property name="Time" value="0.817" />
                           <property name="Tolerance" value="0.3" />
                         </properties>
                       </test-case>
@@ -25,7 +39,7 @@
                     <results>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestSolutionLoad.TestLoad" executed="True" result="Success" success="True" time="18.720" asserts="1">
                         <properties>
-                          <property name="Time" value="20.615" />
+                          <property name="Time" value="8.248" />
                           <property name="Tolerance" value="0.2" />
                         </properties>
                       </test-case>
@@ -35,14 +49,24 @@
                     <results>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestStartupTime" executed="True" result="Success" success="True" time="12.519" asserts="1">
                         <properties>
-                          <property name="Time" value="14.724" />
+                          <property name="Time" value="13.358" />
                           <property name="Tolerance" value="0.1" />
                         </properties>
                       </test-case>
                       <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestTimeToCode" executed="True" result="Success" success="True" time="18.884" asserts="1">
                         <properties>
-                          <property name="Time" value="37.018" />
+                          <property name="Time" value="25.74" />
                           <property name="Tolerance" value="0.1" />
+                        </properties>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="TestTypeSystemServiceLoad" executed="True" result="Success" success="True" time="28.637" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestTypeSystemServiceLoad.TestLoad" executed="True" result="Success" success="True" time="28.633" asserts="1">
+                        <properties>
+                          <property name="Time" value="3.95" />
+                          <property name="Tolerance" value="0.3" />
                         </properties>
                       </test-case>
                     </results>

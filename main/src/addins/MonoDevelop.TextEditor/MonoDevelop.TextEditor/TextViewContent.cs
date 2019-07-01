@@ -65,7 +65,6 @@ namespace MonoDevelop.TextEditor
 {
 	abstract partial class TextViewContent<TView, TImports> :
 		FileDocumentController,
-		INavigable,
 		ICustomCommandTarget,
 		ICommandHandler,
 		ICommandUpdater,
@@ -132,9 +131,18 @@ namespace MonoDevelop.TextEditor
 			UpdateTextBufferRegistration ();
 
 			var roles = GetAllPredefinedRoles ();
+
+			ITextBuffer projectionBuffer = null;
+			foreach (var projectionBufferProvider in Imports.ProjectionBufferProviders) {
+				if (projectionBufferProvider.Value.TryGetProjectionBuffer (TextBuffer, out projectionBuffer)) {
+					break;
+				}
+			}
+
+			var dataModel = new ProjectionTextDataModel (TextBuffer, projectionBuffer);
+
 			//we have multiple copies of VacuousTextDataModel for back-compat reasons
 #pragma warning disable CS0436 // Type conflicts with imported type
-			var dataModel = new VacuousTextDataModel (TextBuffer);
 			var viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
 				Imports.TextViewModelProviders,
 				dataModel.ContentType,
@@ -230,20 +238,12 @@ namespace MonoDevelop.TextEditor
 				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
 		}
 
-		protected override void OnGrabFocus (DocumentView view)
-		{
-			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-			base.OnGrabFocus (view);
-		}
-
 		protected override void OnFileNameChanged ()
 		{
 			base.OnFileNameChanged ();
 
 			if (TextDocument == null)
 				return;
-
-			UpdateTextBufferRegistration ();
 
 			warnOverwrite = false;
 
@@ -267,6 +267,8 @@ namespace MonoDevelop.TextEditor
 
 			//if (this.WorkbenchWindow?.Document != null)
 			//	textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
+
+			UpdateTextBufferRegistration ();
 
 			UpdateTextEditorOptions (null, null);
 		}
@@ -323,8 +325,6 @@ namespace MonoDevelop.TextEditor
 			sourceEditorOptions.Changed += UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
 			TextBuffer.Changed += HandleTextBufferChanged;
-			TextView.Caret.PositionChanged += CaretPositionChanged;
-			TextView.TextBuffer.Changed += TextBufferChanged;
 			TextView.Options.OptionChanged += TextBufferOptionsChanged;
 		}
 
@@ -334,8 +334,6 @@ namespace MonoDevelop.TextEditor
 			if (TextDocument != null) {
 				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
 				TextBuffer.Changed -= HandleTextBufferChanged;
-				TextView.Caret.PositionChanged -= CaretPositionChanged;
-				TextView.TextBuffer.Changed -= TextBufferChanged;
 				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
 			}
 		}
@@ -392,6 +390,7 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+				EditorOptions.ClearOptionValue (DefaultTextViewOptions.VerticalRulersName);
 
 				return;
 			}
@@ -404,6 +403,10 @@ namespace MonoDevelop.TextEditor
 			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
 			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
 			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
+
+			EditorOptions.SetOptionValue (
+				DefaultTextViewOptions.VerticalRulersName,
+				PropertyService.Get<bool> ("ShowRuler") ? new [] { currentPolicy.FileWidth } : Array.Empty<int> ());
 		}
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
@@ -421,6 +424,29 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
 				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
+
+			var setVerticalRulers = false;
+			int [] verticalRulers = null;
+
+			if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.RulersConvention, out var rulers)) {
+				setVerticalRulers = true;
+				if (!string.IsNullOrEmpty(rulers)) {
+					verticalRulers = Array.ConvertAll (rulers.Split (','), val => {
+						if (int.TryParse (val, out var col))
+							return col;
+						return 0;
+					});
+				}
+			} else if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out var maxLineLength)) {
+				if (maxLineLength != "off" && int.TryParse (maxLineLength, out var i)) {
+					setVerticalRulers = true;
+					verticalRulers = new [] { i };
+				} else
+					setVerticalRulers = false;
+			}
+
+			if (setVerticalRulers)
+				EditorOptions.SetOptionValue (DefaultTextViewOptions.VerticalRulersName, verticalRulers ?? Array.Empty<int> ());
 
 			return Task.FromResult (true);
 		}
@@ -660,16 +686,6 @@ namespace MonoDevelop.TextEditor
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		protected internal override ProjectReloadCapability OnGetProjectReloadCapability () => ProjectReloadCapability.Full;
-
-		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
-		{
-			TryLogNavPoint (true);
-		}
-
-		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
-		{
-			TryLogNavPoint (false);
-		}
 
 		void TextBufferOptionsChanged (object sender, EventArgs a)
 		{

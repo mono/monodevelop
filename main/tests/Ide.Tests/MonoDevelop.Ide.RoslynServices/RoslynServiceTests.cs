@@ -70,15 +70,5 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			Assert.AreEqual (2, x);
 		}
-
-		/// <summary>
-		/// This verifies that the Reflection logic in <see cref="DefaultSourceEditorOptions.SetUseAsyncCompletion(bool)"/>
-		/// is still compatible with the Roslyn build we're using
-		/// </summary>
-		[TestCase]
-		public void TestAsyncCompletionServiceReflection ()
-		{
-			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-		}
 	}
 }

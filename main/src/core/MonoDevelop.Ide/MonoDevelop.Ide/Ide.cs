@@ -180,6 +180,27 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		public enum LaunchType
+		{
+			Unknown,
+			Normal,
+			LaunchedFromFileManager
+		}
+
+		static LaunchType launchType = LaunchType.Unknown;
+		public static LaunchType LaunchReason {
+			get => launchType;
+			internal set {
+				launchType = value;
+
+				if (!LaunchCompletionSource.TrySetResult (value)) {
+					LoggingService.LogWarning ($"LaunchReason is already set to {launchType}.");
+				}
+			}
+		}
+
+		internal static TaskCompletionSource<LaunchType> LaunchCompletionSource { get; } = new TaskCompletionSource<LaunchType>();
+
 		public static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage = false)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
@@ -293,6 +314,11 @@ namespace MonoDevelop.Ide
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
+		}
+
+		public static Task EnsureInitializedAsync ()
+		{
+			return initializationTask.Task;
 		}
 
 		public static void BringToFront ()

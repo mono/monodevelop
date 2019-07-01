@@ -1004,8 +1004,9 @@ namespace MonoDevelop.Ide.Gui
 		public void ReparseOpenDocuments ()
 		{
 			foreach (var doc in Documents) {
-				if (doc.DocumentContext.ParsedDocument != null)
-					doc.DocumentContext.ReparseDocument ();
+				var ctx = doc.DocumentContext;
+				if (ctx?.ParsedDocument != null)
+					ctx.ReparseDocument ();
 			}
 		}
 

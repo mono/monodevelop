@@ -56,7 +56,8 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 				},
 				CodeRefactoringData = new CodeActionData [] {
 					new CodeActionData { Message = "To public" },
-					new CodeActionData { Message = "Move to namespace..." },
+					// NOTE: This will return when we implement UI for it
+					//new CodeActionData { Message = "Move to namespace..." },
 					new CodeActionData { Message = "Generate overrides..." },
 					new CodeActionData { Message = "Generate constructor 'MyClass()'" },
 					new CodeActionData { Message = "Rename file to MyClass.cs" },
@@ -95,7 +96,8 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					new CodeActionData { Message = "Fix formatting" },
 				}.OrderBy(d => d.Message).ToArray(),
 				CodeRefactoringData = new CodeActionData [] {
-					new CodeActionData { Message = "Move to namespace..." },
+					// NOTE: This will return when we implement UI for it
+					//new CodeActionData { Message = "Move to namespace..." },
 				},
 			};
 

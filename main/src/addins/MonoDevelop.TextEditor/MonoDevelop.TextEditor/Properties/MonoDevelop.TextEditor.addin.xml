@@ -13,6 +13,11 @@
 		<Description>Context menu for the navigation bar.</Description>
 		<ExtensionNode name="Map" type="MonoDevelop.TextEditor.CommandMappingExtensionNode" />
 	</ExtensionPoint>
+
+	<ExtensionPoint path="/MonoDevelop/TextEditor/SupportedFileTypes" name="Opts in file types to be opened in the new editor">
+		<ExtensionNode name="SupportedFileType" type="MonoDevelop.TextEditor.SupportedFileTypeExtensionNode" />
+	</ExtensionPoint>
+
 <!--
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/NavigationBar" name = "Navigation bar context menu">
 		<Description>Context menu for the navigation bar.</Description>
@@ -42,7 +47,9 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	--><!-- Extensions -->
+	-->
+
+	<!-- Extensions -->
 
   	<Extension path="/MonoDevelop/Ide/Composition">
 		<!--
@@ -50,6 +57,14 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		-->
 		<Assembly file="MonoDevelop.TextEditor.dll"/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
+		<SupportedFileType id="csharp" extensions=".cs,.csx" featureFlag="CSharpEnableNewEditor" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks">
+		<Type id="CSharpEnableNewEditor" class="MonoDevelop.TextEditor.CSharpEnableNewEditorSwitchController" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
@@ -127,10 +142,15 @@
 
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
 		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
-		
+
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertSnippetCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SurroundWithCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToMatchingBraceCommandArgs" />
 
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningExpansionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleAllOutliningCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningDefinitionsCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.EnableDisableFolding" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningEnabledCommandArgs" />
 	</Extension>
 
 	<!--

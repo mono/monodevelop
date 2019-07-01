@@ -23,12 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Core.Execution;
+
 using MonoDevelop.DotNetCore;
 
 namespace MonoDevelop.AspNetCore
 {
-	class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
+	public class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
 	{
 		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
 			: base (directory, outputPath, arguments)

@@ -657,7 +657,7 @@ namespace MonoDevelop.Components.MainToolbar
 				popup.ShowPopup (anchor, PopupPosition.TopRight);
 
 			if (anchor.GdkWindow == null) {
-				var location = new Xwt.Point (anchor.Allocation.Width - popup.Size.Width, anchor.Allocation.Y);
+				var location = new Xwt.Point (anchor.Allocation.X + anchor.Allocation.Width - popup.Size.Width, anchor.Allocation.Y);
 
 				// Need to hard lock the location because Xwt doesn't know that the allocation might be coming from a
 				// Cocoa control and thus has been changed to take macOS monitor layout into consideration

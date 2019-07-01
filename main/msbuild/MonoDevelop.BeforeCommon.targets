@@ -37,7 +37,7 @@
 	<!-- https://aka.ms/roslyn-packages has a list that maps Roslyn version to latest language version -->
 	<!-- Set the roslyn language version to the latest stable version our provisioned csc supports -->
 	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
-		<LangVersion>7.3</LangVersion>
+		<LangVersion>8.0</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.vbproj'">

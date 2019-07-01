@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Editor.Options;
 using Microsoft.CodeAnalysis.Editor.Shared.Options;
 using Microsoft.CodeAnalysis.Editor.Implementation.TodoComments;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Shared.Options;
 using MonoDevelop.Core;
@@ -71,8 +72,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			public readonly ConfigurationProperty<bool> FormatOnPaste;
 			public readonly ConfigurationProperty<bool> PlaceSystemNamespaceFirst;
 			public readonly ConfigurationProperty<bool> SeparateImportDirectiveGroups;
+			public readonly ConfigurationProperty<bool> ShowCompletionItemFilters;
+			public readonly ConfigurationProperty<bool?> ShowItemsFromUnimportedNamespaces;
 			public readonly ConfigurationProperty<bool> SuggestForTypesInNuGetPackages;
 			public readonly ConfigurationProperty<bool> SolutionCrawlerClosedFileDiagnostic;
+			public readonly ConfigurationProperty<bool?> TriggerOnDeletion;
 
 			internal PerLanguagePreferences (string language, RoslynPreferences preferences)
 			{
@@ -85,7 +89,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				);
 
 				AutoFormattingOnReturn = preferences.Wrap<bool> (
-					new OptionKey (FeatureOnOffOptions.AutoFormattingOnReturn, language),
+					new OptionKey (FormattingOptions.AutoFormattingOnReturn, language),
 					language + ".AutoFormattingOnReturn"
 				);
 
@@ -113,6 +117,17 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					language + ".SeparateImportDirectiveGroups"
 				);
 
+				ShowCompletionItemFilters = preferences.Wrap<bool> (
+					new OptionKey (CompletionOptions.ShowCompletionItemFilters, language),
+					language + ".ShowCompletionItemFilters"
+				);
+
+				ShowItemsFromUnimportedNamespaces = preferences.Wrap<bool?> (
+					new OptionKey (CompletionOptions.ShowItemsFromUnimportedNamespaces, language),
+					IdeApp.Preferences.AddImportedItemsToCompletionList.Value,
+					language + ".ShowItemsFromUnimportedNamespaces"
+				);
+
 				SuggestForTypesInNuGetPackages = preferences.Wrap (
 					new OptionKey (Microsoft.CodeAnalysis.SymbolSearch.SymbolSearchOptions.SuggestForTypesInNuGetPackages, language),
 					true
@@ -121,6 +136,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				SolutionCrawlerClosedFileDiagnostic = new ClosedFileDiagnosticProperty (preferences.Wrap<bool?> (
 					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language)
 				), language, roslynPreferences);
+
+				TriggerOnDeletion = preferences.Wrap<bool?> (
+					new OptionKey (CompletionOptions.TriggerOnDeletion, language),
+					language + ".TriggerOnDeletion"
+				);
 			}
 
 			class ClosedFileDiagnosticProperty : ConfigurationProperty<bool>

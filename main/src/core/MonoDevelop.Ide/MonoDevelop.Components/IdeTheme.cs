@@ -71,9 +71,7 @@ namespace MonoDevelop.Components
 
 #if MAC
 			// Early init Cocoa through xwt
-			var path = Path.GetDirectoryName (typeof (IdeTheme).Assembly.Location);
-			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
-			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+			var loaded = NativeToolkitHelper.LoadCocoa ();
 
 			var disableA11y = Environment.GetEnvironmentVariable ("DISABLE_ATKCOCOA");
 			if (Platform.IsMac && (NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled") && string.IsNullOrEmpty (disableA11y))) {

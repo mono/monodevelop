@@ -208,13 +208,14 @@ namespace MonoDevelop.Projects
 			if (path.IsNull)
 				return null;
 
-			ProjectFile pf;
-			if (files.TryGetValue (path.FullPath, out pf))
-				return pf;
-
-			return null;
+			return GetFileFromFullPath (path.FullPath);
 		}
-		
+
+		internal ProjectFile GetFileFromFullPath (FilePath fullPath)
+		{
+			return files.TryGetValue (fullPath, out var pf) ? pf : null;
+		}
+
 		public ProjectFile GetFileWithVirtualPath (string virtualPath)
 		{
 			if (string.IsNullOrEmpty (virtualPath))
@@ -251,15 +252,18 @@ namespace MonoDevelop.Projects
 			}
 			return list.ToArray ();
 		}
+
+		internal void RemoveFilesInPath (FilePath path)
+		{
+			SetItems (this.Where (file => !file.FilePath.IsChildPathOf (path)));
+		}
 		
 		public void Remove (string fileName)
 		{
 			fileName = FileService.GetFullPath (fileName);
-			for (int n = 0; n < Count; n++) {
-				if (this[n].Name == fileName) {
-					RemoveAt (n);
-					break;
-				}
+
+			if (files.TryGetValue (fileName, out var projectFile)) {
+				Remove (projectFile);
 			}
 		}
 	}

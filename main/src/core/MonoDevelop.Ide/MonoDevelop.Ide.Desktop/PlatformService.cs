@@ -107,7 +107,9 @@ namespace MonoDevelop.Ide.Desktop
 				if (Path.IsPathRooted (uri) && File.Exists (uri) && !Core.Text.TextFileUtility.IsBinary (uri)) {
 					return "text/plain";
 				}
-			} catch (IOException) {}
+			}
+			catch (UnauthorizedAccessException) {}
+			catch (IOException) {}
 
 			return "application/octet-stream";
 		}
