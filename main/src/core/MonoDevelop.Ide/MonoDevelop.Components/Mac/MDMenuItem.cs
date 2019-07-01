@@ -125,7 +125,7 @@ namespace MonoDevelop.Components.Mac
 				}
 				Update (parent, ref index, info);
 			} catch(Exception ex) {
-				LoggingService.LogInternalError (ex);
+				LoggingService.LogInternalError ($"Updating MDMenu for {ce.CommandId} failed.", ex);
 			}
 		}
 
