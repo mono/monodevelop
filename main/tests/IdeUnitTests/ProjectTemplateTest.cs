@@ -77,13 +77,17 @@ namespace IdeUnitTests
 			Directory.CreateDirectory (Config.ProjectLocation);
 		}
 
-		public async Task<SolutionTemplate> CreateAndBuild ()
+		public async Task<SolutionTemplate> CreateAndBuild (Action<Solution> preBuildChecks = null)
 		{
 			var template = FindTemplate ();
 			var result = await templatingService.ProcessTemplate (template, Config, null);
 
 			Solution = result.WorkspaceItems.FirstOrDefault () as Solution;
 			await Solution.SaveAsync (Util.GetMonitor ());
+
+			if (preBuildChecks != null) {
+				preBuildChecks (Solution);
+			}
 
 			// RestoreDisableParallel prevents parallel restores which sometimes cause
 			// the restore to fail on Mono.

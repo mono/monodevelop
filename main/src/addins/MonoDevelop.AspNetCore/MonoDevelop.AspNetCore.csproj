@@ -45,6 +45,7 @@
     <Compile Include="MonoDevelop.AspNetCore\ILaunchProfile.cs" />
     <Compile Include="MonoDevelop.AspNetCore\LaunchProfileDataExtensions.cs" />
     <Compile Include="MonoDevelop.AspNetCore\LaunchProfileProvider.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\AspNetCoreNestingRulesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
@@ -125,6 +126,9 @@
     <None Include="Templates\AppSettingsFile.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\AspNetCore.filenesting.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -160,6 +164,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.AspNetCore.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

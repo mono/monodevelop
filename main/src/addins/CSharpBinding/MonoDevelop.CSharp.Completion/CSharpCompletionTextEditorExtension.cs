@@ -480,21 +480,6 @@ namespace MonoDevelop.CSharp.Completion
 			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
 
-			if (addProtocolCompletion) {
-				var provider = new ProtocolMemberCompletionProvider ();
-
-				var protocolMemberContext = new CompletionContext (provider, analysisDocument, completionContext.TriggerOffset, new TextSpan (completionContext.TriggerOffset, completionContext.TriggerWordLength), trigger, customOptions, token);
-
-				await provider.ProvideCompletionsAsync (protocolMemberContext);
-
-				foreach (var item in protocolMemberContext.Items) {
-					if (string.IsNullOrEmpty (item.DisplayText))
-						continue;
-					var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
-					result.Add (data);
-				}
-			}
-
 			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
 				Counters.ProcessCodeCompletion.Trace ("C#: Adding import completion data");
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);

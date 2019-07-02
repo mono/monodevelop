@@ -38,6 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.FileNesting;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.Policies;
 
@@ -178,8 +179,10 @@ namespace MonoDevelop.Projects
 				filename = FileService.GetFullPath (value);
 
 				if (HasChildren) {
-					foreach (ProjectFile projectFile in DependentChildren)
-						projectFile.dependsOn = Path.GetFileName (FilePath);
+					foreach (ProjectFile projectFile in DependentChildren) {
+						if (!string.IsNullOrEmpty (projectFile.dependsOn))
+							projectFile.dependsOn = Path.GetFileName (FilePath);
+					}
 				}
 
 				// If the file is a link, rename the link too
@@ -446,12 +449,20 @@ namespace MonoDevelop.Projects
 						dependsOnFile.dependentChildren = new List<ProjectFile> ();
 					dependsOnFile.dependentChildren.Add (this);
 					return true;
-				} else {
-					return false;
 				}
 			} else {
-				return true;
+				// File nesting
+				var parentPath = FileNestingService.GetParentFile (Project, Name);
+				dependsOnFile = Project.Files.GetFile (parentPath);
+				if (dependsOnFile != null) {
+					if (dependsOnFile.dependentChildren == null)
+						dependsOnFile.dependentChildren = new List<ProjectFile> ();
+					dependsOnFile.dependentChildren.Add (this);
+					return true;
+				}
 			}
+
+			return false;
 		}
 		#endregion
 

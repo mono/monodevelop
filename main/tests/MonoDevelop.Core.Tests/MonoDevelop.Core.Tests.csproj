@@ -122,6 +122,7 @@
     <Compile Include="MonoDevelop.Core\UserProfileTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildSdkProjectTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceAsyncEventsTests.cs" />
+    <Compile Include="MonoDevelop.Projects\FileNestingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
