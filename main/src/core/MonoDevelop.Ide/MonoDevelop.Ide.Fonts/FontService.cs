@@ -31,6 +31,10 @@ using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Core;
 using Pango;
+using System.Globalization;
+#if MAC
+using AppKit;
+#endif
 
 namespace MonoDevelop.Ide.Fonts
 {
@@ -44,6 +48,11 @@ namespace MonoDevelop.Ide.Fonts
 
 		string defaultMonospaceFontName = String.Empty;
 		FontDescription defaultMonospaceFont = new FontDescription ();
+
+		static FontService ()
+		{
+			InitializeFontTables ();
+		}
 
 		void LoadDefaults ()
 		{
@@ -85,6 +94,15 @@ namespace MonoDevelop.Ide.Fonts
 			LoadDefaults ();
 		}
 
+		protected override Task OnDispose ()
+		{
+			if (pangoContext != null) {
+				pangoContext.Dispose ();
+				pangoContext = null;
+			}
+			return base.OnDispose ();
+		}
+
 		public FontDescription MonospaceFont { get { return defaultMonospaceFont; } }
 		public FontDescription SansFont { get { return Gui.Styles.DefaultFont; } }
 
@@ -103,7 +121,10 @@ namespace MonoDevelop.Ide.Fonts
 		FontDescription LoadFont (string name)
 		{
 			var fontName = FilterFontName (name);
-			return FontDescription.FromString (fontName);
+			if (TryParsePangoFont (fontName, out var result))
+				return result;
+			LoggingService.LogError ("Can't load font : " + name);
+			return null;
 		}
 		
 		public string FilterFontName (string name)
@@ -147,9 +168,11 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			if (loadedFonts.ContainsKey (name))
 				return loadedFonts [name];
-			return loadedFonts [name] = LoadFont (GetUnderlyingFontName (name));
+			if (TryParsePangoFont(GetUnderlyingFontName (name), out var result))
+				return loadedFonts [name] = result;
+			return null;
 		}
-		
+
 		internal FontDescriptionCodon GetFont (string name)
 		{
 			foreach (var d in fontDescriptions) {
@@ -159,10 +182,10 @@ namespace MonoDevelop.Ide.Fonts
 			LoggingService.LogError ("Font " + name + " not found.");
 			return null;
 		}
-		
+
 		public void SetFont (string name, string value)
 		{
-			if (loadedFonts.ContainsKey (name)) 
+			if (loadedFonts.ContainsKey (name))
 				loadedFonts.Remove (name);
 
 			var font = GetFont (name);
@@ -181,7 +204,7 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			return new FontConfigurationProperty (name);
 		}
-		
+
 		Dictionary<string, List<Action>> fontChangeCallbacks = new Dictionary<string, List<Action>> ();
 		public void RegisterFontChangedCallback (string fontName, Action callback)
 		{
@@ -189,11 +212,234 @@ namespace MonoDevelop.Ide.Fonts
 				fontChangeCallbacks [fontName] = new List<Action> ();
 			fontChangeCallbacks [fontName].Add (callback);
 		}
-		
+
 		public void RemoveCallback (Action callback)
 		{
 			foreach (var list in fontChangeCallbacks.Values.ToList ())
 				list.Remove (callback);
+		}
+
+#if MAC
+
+		static bool TryGetWeight (string token, out int weight)
+		{
+			if (fontIndexTable.TryGetValue (token, out weight))
+				return true;
+			weight = 5;
+			return false;
+		}
+
+		static bool TryParseTraits (string token, ref NSFontTraitMask traits)
+		{
+			switch (token) {
+			case "Small-Caps":
+				traits |= NSFontTraitMask.SmallCaps;
+				return true;
+			case "Ultra-Condensed":
+			case "Extra-Condensed":
+			case "UltraCondensed":
+				traits |= NSFontTraitMask.Condensed;
+				return true;
+			case "Semi-Condensed":
+			case "Normal":
+				return true;
+			case "Semi-Expanded":
+			case "Expanded":
+			case "Extra-Expanded":
+			case "Ultra-Expanded":
+				traits |= NSFontTraitMask.Expanded;
+				return true;
+			}
+			return false;
+		}
+
+		public bool TryParseNSFont (string fontDescription, out NSFont font)
+		{
+			double size = -1;
+			int weight = 5;
+
+			int i = fontDescription.LastIndexOf (' ');
+			int lasti = fontDescription.Length;
+			var traits = (NSFontTraitMask)0;
+			while (i >= 0) {
+				var potentialFontName = fontDescription.Substring (0, lasti);
+				if (lasti > 0 && NSFontManager.SharedFontManager.AvailableFontFamilies.Contains (potentialFontName))
+					break;
+				string token = fontDescription.Substring (i + 1, lasti - i - 1);
+				if (size < 0) { // take only first number
+					double siz;
+					if (double.TryParse (token, NumberStyles.Any, CultureInfo.InvariantCulture, out siz)) {
+						size = siz;
+					}
+				} else {
+					if (TryGetWeight (token, out int parsedWeight))
+						weight = parsedWeight;
+					else
+						TryParseTraits (token, ref traits);
+				}
+				lasti = i;
+				i = fontDescription.LastIndexOf (' ', i - 1);
+			}
+			if (lasti <= 0) {
+				font = null;
+				return false;
+			}
+			string familyName = fontDescription.Substring (0, lasti);
+			font = NSFontManager.SharedFontManager.FontWithFamily (familyName, traits, weight, (nfloat)size);
+			return font != null;
+		}
+
+		readonly static string [] fontNameTable = {
+			"Thin", // 1
+			"Ultra-Light",
+			"Light",
+			"Book",
+			"Normal",
+			"Medium",
+			"Retina",
+			"Semibold",
+			"Bold",
+			"Ultra-Bold",
+			"Heavy",
+			"Ultra-Heavy",
+			"Ultra-Heavy2",
+			"Ultra-Heavy3",
+			"Ultra-Heavy4" // 15
+		};
+		readonly static Dictionary<string, int> fontIndexTable = new Dictionary<string, int> ();
+
+		private static void InitializeFontTables ()
+		{
+			for (int i = 0; i < fontNameTable.Length; i++)
+				fontIndexTable [fontNameTable [i]] = i + 1;
+		}
+
+		static string GetFontWeightString (nint w) => fontNameTable [Math.Min (fontNameTable.Length - 1, Math.Max (0, w - 1))];
+
+		public string GetFontDescription (NSFont font)
+		{
+			if (font == null) 
+				throw new ArgumentNullException (nameof (font));
+
+			var sb = StringBuilderCache.Allocate ();
+
+			sb.Append (font.FamilyName);
+
+			var weight = NSFontManager.SharedFontManager.WeightOfFont (font);
+			if (weight != 5) {
+				sb.Append (' ');
+				sb.Append (GetFontWeightString (weight));
+			}
+
+			sb.Append (' ');
+			sb.Append (font.PointSize);
+
+			return StringBuilderCache.ReturnAndFree (sb);
+		}
+
+#endif
+		Pango.Context pangoContext;
+		HashSet<string> installedFonts = new HashSet<string> ();
+
+		static bool TryGetPangoWeight (string token, out Pango.Weight weight)
+		{
+			switch (token) {
+			case "Thin":
+				weight = (Pango.Weight)100;
+				return true;
+			case "Ultra-Light":
+				weight = Pango.Weight.Ultralight; // 200
+				return true;
+			case "Light":
+				weight = Pango.Weight.Light; // 300
+				return true;
+			case "Book":
+				weight = (Pango.Weight)380;
+				return true;
+			case "Normal":
+				weight = Pango.Weight.Normal; // 400
+				return true;
+			case "Medium":
+				weight = Pango.Weight.Normal;
+				return true;
+			case "Retina":
+				weight = Pango.Weight.Normal;
+				return true;
+			case "Semibold":
+				weight = Pango.Weight.Semibold; // 600
+				return true;
+			case "Bold":
+				weight = Pango.Weight.Bold; // 700
+				return true;
+			case "Ultra-Bold":
+				weight = Pango.Weight.Ultrabold; // 800
+				return true;
+			case "Heavy":
+				weight = Pango.Weight.Heavy; // 900
+				return true;
+			case "Ultra-Heavy":
+			case "Ultra-Heavy2":
+			case "Ultra-Heavy3":
+			case "Ultra-Heavy4":
+				weight = (Pango.Weight)1000;
+				return true;
+			}
+			weight = Pango.Weight.Normal;
+			return false;
+		}
+
+		public bool TryParsePangoFont (string fontDescription, out FontDescription font)
+		{
+			if (pangoContext == null) {
+				pangoContext = Gdk.PangoHelper.ContextGet ();
+				foreach (var fontFamily in pangoContext.FontMap.Families) {
+					Console.WriteLine (fontFamily.Name);
+					installedFonts.Add (fontFamily.Name);
+				}
+			}
+
+			double size = -1;
+			var weight = Pango.Weight.Normal;
+
+			int i = fontDescription.LastIndexOf (' ');
+			int lasti = fontDescription.Length;
+			var style = Pango.Style.Normal;
+			var variant = Pango.Variant.Normal;
+			while (i >= 0) {
+				var potentialFontName = fontDescription.Substring (0, lasti);
+				if (lasti > 0 && installedFonts.Contains (potentialFontName))
+					break;
+				string token = fontDescription.Substring (i + 1, lasti - i - 1);
+				if (size < 0) { // take only first number
+					double siz;
+					if (double.TryParse (token, NumberStyles.Any, CultureInfo.InvariantCulture, out siz)) {
+						size = siz;
+					}
+				} else {
+					if (TryGetPangoWeight (token, out var parsedWeight))
+						weight = parsedWeight;
+					else if (Enum.TryParse<Pango.Style> (token, out var parsedStyle))
+						style = parsedStyle;
+					else if (token == "Small-Caps")
+						variant = Variant.SmallCaps;
+				}
+				lasti = i;
+				i = fontDescription.LastIndexOf (' ', i - 1);
+			}
+			if (lasti <= 0) {
+				font = null;
+				return false;
+			}
+			string familyName = fontDescription.Substring (0, lasti);
+
+			font = new FontDescription {
+				Family = familyName,
+				Weight = weight,
+				Style = style,
+				Size = (int)(size * Pango.Scale.PangoScale),
+				Variant = variant
+			};
+			return true;
 		}
 	}
 

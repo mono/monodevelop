@@ -32,6 +32,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide;
 
 namespace Mono.TextEditor
 {
@@ -402,7 +403,8 @@ namespace Mono.TextEditor
 			get {
 				if (font == null) {
 					try {
-						font = Pango.FontDescription.FromString (FontName);
+						if (!IdeServices.FontService.TryParsePangoFont (FontName, out font))
+							font = Pango.FontDescription.FromString (DEFAULT_FONT);
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not load font: " + FontName, e);
 					}
