@@ -26,6 +26,8 @@ using Gdk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -59,9 +61,12 @@ namespace Mono.TextEditor
 			this.fontName = fontName = fontName ?? DefaultSourceEditorOptions.Instance.FontName;
 
 			layout = PangoUtil.CreateLayout (this);
-			fontDescription = Pango.FontDescription.FromString (fontName);
-			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
-			layout.FontDescription = fontDescription;
+			if (!IdeServices.FontService.TryParsePangoFont (fontName, out fontDescription)) {
+				LoggingService.LogError ("Can't parse font " + fontName);
+			} else {
+				fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+				layout.FontDescription = fontDescription;
+			}
 			layout.Ellipsize = Pango.EllipsizeMode.End;
 
 			var geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtWindow (ParentWindow));

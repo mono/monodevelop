@@ -64,8 +64,11 @@ namespace MonoDevelop.Refactoring
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
-			fontDescription = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
-			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+			if (IdeServices.FontService.TryParsePangoFont (DefaultSourceEditorOptions.Instance.FontName, out fontDescription)) {
+				fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+			} else {
+				LoggingService.LogError ("Error loading font : " + DefaultSourceEditorOptions.Instance.FontName);
+			}
 
 			using (var metrics = PangoContext.GetMetrics (fontDescription, PangoContext.Language)) {
 				lineHeight = (int)Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);

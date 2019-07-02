@@ -29,6 +29,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.AtkCocoaHelper;
 using Gtk;
 using System.Diagnostics;
+using AppKit;
+using Foundation;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Fonts
 {
@@ -68,6 +71,22 @@ namespace MonoDevelop.Ide.Fonts
 			base.OnDestroyed ();
 		}
 
+#if MAC
+		class FontPanelDelegate : NSWindowDelegate
+		{
+			[Export ("validModesForFontPanel:")]
+			NSFontPanelMode ValidModesForFontPanel (NSFontPanel panel)
+			{
+				return NSFontPanelMode.CollectionMask | NSFontPanelMode.FaceMask | NSFontPanelMode.SizeMask;
+			}
+
+			public override void WillClose (NSNotification notification)
+			{
+				NSApplication.SharedApplication.StopModal ();
+			}
+		}
+
+#endif
 		public FontChooserPanelWidget ()
 		{
 			this.Build ();
@@ -85,6 +104,22 @@ namespace MonoDevelop.Ide.Fonts
 				var descStr = GettextCatalog.GetString ("Set the font options for {0}", desc.DisplayName);
 				setFontButton.Accessible.Description = descStr;
 				setFontButton.Clicked += delegate {
+#if MAC
+					var fontPanel = NSFontPanel.SharedFontPanel;
+					fontPanel.ParentWindow = IdeServices.DesktopService.GetParentForModalWindow ();
+					fontPanel.Delegate = new FontPanelDelegate ();
+					var fontDescription = GetFont (desc.Name);
+					if (IdeServices.FontService.TryParseNSFont (fontDescription, out var outFont)) {
+						NSFontManager.SharedFontManager.SetSelectedFont (outFont, false);
+					}
+					IdeTheme.ApplyTheme (fontPanel);
+					NSApplication.SharedApplication.RunModalForWindow (fontPanel);
+
+					var font = NSFontPanel.SharedFontPanel.PanelConvertFont (NSFont.SystemFontOfSize (0));
+					fontDescription = IdeServices.FontService.GetFontDescription (font);
+					SetFont (desc.Name, fontDescription);
+					setFontButton.Label = fontDescription;
+#else
 					var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
 						Modal = true,
 						DestroyWithParent = true,
@@ -106,6 +141,7 @@ namespace MonoDevelop.Ide.Fonts
 						selectionDialog.Destroy ();
 						selectionDialog.Dispose ();
 					}
+#endif
 				};
 				hBox.PackStart (setFontButton, true, true, 0);
 
