@@ -37,6 +37,7 @@ using NUnit.Framework;
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture]
+	[Category("Performance")]
 	public class TestFileWatcherHandlers : UITestBase
 	{
 		public override void SetUp ()

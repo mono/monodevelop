@@ -31,6 +31,8 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Ide.PerfTests
 {
+	[TestFixture]
+	[Category ("Performance")]
 	public class TestTypeSystemServiceLoad : UITestBase
 	{
 		public override void SetUp ()
