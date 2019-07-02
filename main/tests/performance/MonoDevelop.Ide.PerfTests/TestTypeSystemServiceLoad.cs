@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture]
-	[Category ("Performance")]
+	[BenchmarkCategory]
 	public class TestTypeSystemServiceLoad : UITestBase
 	{
 		public override void SetUp ()

@@ -37,7 +37,7 @@ using MonoDevelop.Core.Instrumentation;
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture]
-	[Category ("Performance")]
+	[BenchmarkCategory]
 	public class TestStartup : UITestBase
 	{
 		// Override the setup so it only sets up the environment for running

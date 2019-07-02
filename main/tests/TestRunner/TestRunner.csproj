@@ -24,6 +24,7 @@
     <IncludeCopyLocal Include="nunit.core.interfaces.dll" />
     <IncludeCopyLocal Include="nunit-console-runner.dll" />
     <IncludeCopyLocal Include="nunit.util.dll" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -31,6 +32,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="TestResults.cs" />
     <Compile Include="TestSuiteResult.cs" />
+    <Compile Include="PerfTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
