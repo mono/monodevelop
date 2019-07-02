@@ -269,7 +269,11 @@ namespace MonoDevelop.Components.MainToolbar
 						return false;
 					}
 					Runtime.RunInMainThread (delegate {
-						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (MainToolbar.LastCommandTarget));
+						CommandTargetRoute route = null;
+#if !MAC
+						route = new CommandTargetRoute (MainToolbar.LastCommandTarget);
+#endif
+						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (route));
 					}).Wait ();
 				}
 				return ci.Enabled && ci.Visible;
