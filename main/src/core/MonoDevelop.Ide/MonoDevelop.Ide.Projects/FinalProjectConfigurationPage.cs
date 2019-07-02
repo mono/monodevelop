@@ -244,12 +244,12 @@ namespace MonoDevelop.Ide.Projects
 
 		void OnIsValidChanged ()
 		{
-			IsValidChanged?.Invoke (this, new EventArgs ());
+			IsValidChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		void OnParentFolderChanged ()
 		{
-			ParentFolderChanged?.Invoke (this, new EventArgs ());
+			ParentFolderChanged?.Invoke (this, EventArgs.Empty);
 		}
 	
 		public void UpdateFromParameters ()
