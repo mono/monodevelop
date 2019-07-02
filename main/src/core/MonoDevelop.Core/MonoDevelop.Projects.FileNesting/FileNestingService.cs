@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.FileNesting
 		{
 			var pr = args.ExtensionObject as NestingRulesProvider;
 			if (pr != null) {
-				if (args.Change == ExtensionChange.Add) {
+				if (args.Change == ExtensionChange.Add && !rulesProviders.Contains (pr)) {
 					rulesProviders = rulesProviders.Add (pr);
 				} else {
 					rulesProviders = rulesProviders.Remove (pr);

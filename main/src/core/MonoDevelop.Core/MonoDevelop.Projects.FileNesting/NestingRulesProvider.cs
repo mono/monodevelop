@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.FileNesting
 		const string TokenNameAdd = "add";
 
 		List<NestingRule> nestingRules;
+		readonly object loadingLock = new object ();
 
 		public NestingRulesProvider ()
 		{
@@ -122,18 +123,20 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public FilePath GetParentFile (Project project, FilePath inputFile)
 		{
-			if (nestingRules == null) {
-				// Create the list here, so that we don't get this path called
-				// again and again for every file in the solution if something
-				// goes wrong when loading the file.
-				nestingRules = new List<NestingRule> ();
+			lock (loadingLock) {
+				if (nestingRules == null) {
+					// Create the list here, so that we don't get this path called
+					// again and again for every file in the solution if something
+					// goes wrong when loading the file.
+					nestingRules = new List<NestingRule> ();
 
-				if (!File.Exists (SourceFile)) {
-					return null;
-				}
+					if (!File.Exists (SourceFile)) {
+						return null;
+					}
 
-				if (!LoadFromFile (this)) {
-					return null;
+					if (!LoadFromFile (this)) {
+						return null;
+					}
 				}
 			}
 
