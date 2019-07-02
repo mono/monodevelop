@@ -50,7 +50,11 @@ namespace MonoDevelop.Projects
 	{
 		string assembly;
 		string sourcePath;
+
 		DotNetCompilerParameters compilationParameters;
+
+		public bool AppendTargetFrameworkToOutputPath {	 get; set; }
+		public string TargetFrameworkShortName { get; internal set; } = string.Empty;
 
 		public DotNetProjectConfiguration (string id): base (id)
 		{
@@ -60,6 +64,8 @@ namespace MonoDevelop.Projects
 		{
 			base.Read (pset);
 
+			AppendTargetFrameworkToOutputPath = pset.GetValue<bool> ("AppendTargetFrameworkToOutputPath");
+			TargetFrameworkShortName = pset.GetValue ("TargetFramework");
 			assembly = pset.GetValue ("AssemblyName");
 			signAssembly = pset.GetValue<bool> ("SignAssembly");
 			delaySign = pset.GetValue<bool> ("DelaySign");
@@ -79,6 +85,11 @@ namespace MonoDevelop.Projects
 			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
 			pset.SetValue (nameof(PublicSign), PublicSign, defaultValue: false, mergeToMainGroup: true);
 			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, defaultValue:FilePath.Empty, mergeToMainGroup:true);
+			if (AppendTargetFrameworkToOutputPath) {
+				pset.RemoveProperty (nameof (AppendTargetFrameworkToOutputPath));
+			} else {
+				pset.SetValue (nameof (AppendTargetFrameworkToOutputPath), false);
+			}
 			if (compilationParameters != null)
 				compilationParameters.Write (pset);
 		}
@@ -189,8 +200,10 @@ namespace MonoDevelop.Projects
 		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
 			base.OnCopyFrom (configuration, isRename);
-			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) configuration;
-			
+			var conf = (DotNetProjectConfiguration) configuration;
+
+			AppendTargetFrameworkToOutputPath = conf.AppendTargetFrameworkToOutputPath;
+			TargetFrameworkShortName = conf.TargetFrameworkShortName ?? "unknown";
 			assembly = conf.assembly;
 			sourcePath = conf.sourcePath;
 			bool notifyParentItem = ParentItem != null;

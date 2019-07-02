@@ -24,9 +24,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Gtk;
+using IO = System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
@@ -66,20 +65,14 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		protected override bool ConfigurationsAreEqual (IEnumerable<ItemConfiguration> configs)
 		{
-			string outAsm = null;
-			string outDir = null;
-			string outDirTemplate = null;
-			OutputOptionsPanelWidget.GetCommonData (configs, out outAsm, out outDir, out outDirTemplate);
-			return outAsm.Length != 0 && (outDir.Length != 0 || outDirTemplate.Length != 0);
+			return !string.IsNullOrEmpty (configs.CompareTemplates ());
 		}
-
 		
 		public override void ApplyChanges()
 		{
 			widget.Store ();
 		}
 	}
-
 
 	partial class OutputOptionsPanelWidget : Gtk.Bin 
 	{
@@ -108,46 +101,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		public void Load (Project project, ItemConfiguration[] configs)
 		{	
-			this.configurations = configs;
-			string outAsm = null;
-			string outDir = null;
-			string outDirTemplate = null;
-			
-			GetCommonData (configs, out outAsm, out outDir, out outDirTemplate);
-			
-			assemblyNameEntry.Text = outAsm;
+			configurations = configs;
+
+			var outDirTemplate = configs.CompareTemplates ();
+			assemblyNameEntry.Text = configs.GetAssemblyName ();
 			
 			outputPathEntry.DefaultPath = project.BaseDirectory;
-			outputPathEntry.Path = !string.IsNullOrEmpty (outDir) ? outDir : outDirTemplate;
-		}
-		
-		internal static void GetCommonData (IEnumerable<ItemConfiguration> configs, out string outAsm, out string outDir, out string outDirTemplate)
-		{
-			outAsm = null;
-			outDir = null;
-			outDirTemplate = null;
-			
-			foreach (DotNetProjectConfiguration conf in configs) {
-				if (outAsm == null)
-					outAsm = conf.OutputAssembly;
-				else if (outAsm != conf.OutputAssembly)
-					outAsm = "";
-				
-				string dirTemplate = conf.OutputDirectory.ToString ().Replace (conf.Name, "$(Configuration)");
-				if (conf.Platform.Length > 0)
-					dirTemplate = dirTemplate.Replace (conf.Platform, "$(Platform)");
-				
-				if (outDir == null) {
-					outDir = conf.OutputDirectory;
-					outDirTemplate = dirTemplate;
-				}
-				else {
-					if (outDir != conf.OutputDirectory)
-						outDir = "";
-					if (outDirTemplate != dirTemplate)
-						outDirTemplate = "";
-				}
-			}
+
+			if (configs.Length == 1 && configs [0] is DotNetProjectConfiguration dotNetConfig) {
+				outDirTemplate = dotNetConfig.ParseOutDirectoryTemplate (outDirTemplate);
+			} 
+			outputPathEntry.Path = outDirTemplate;
 		}
 
 		public bool ValidateChanges ()
@@ -163,6 +127,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				string dir = outputPathEntry.Path;
 				dir = dir.Replace ("$(Configuration)", conf.Name);
 				dir = dir.Replace ("$(Platform)", conf.Platform);
+				dir = dir.Replace ("@(TargetFramework)", conf.TargetFrameworkShortName);
 				if (!string.IsNullOrEmpty (dir) && !FileService.IsValidPath (dir)) {
 					MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory: {0}", dir));
 					return false;
@@ -180,13 +145,135 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			foreach (DotNetProjectConfiguration conf in configurations) {
 				if (assemblyNameEntry.Text.Length > 0)
 					conf.OutputAssembly = assemblyNameEntry.Text;
-				string dir = outputPathEntry.Path;
-				dir = dir.Replace ("$(Configuration)", conf.Name);
-				dir = dir.Replace ("$(Platform)", conf.Platform);
-				if (!string.IsNullOrEmpty (dir))
-					conf.OutputDirectory = dir;
+
+				var dir = conf.ResolveOutDirectoryTemplate (outputPathEntry.Path);
+
+				if (!string.IsNullOrEmpty (dir)) {
+					conf.OutputDirectory = dir; 
+				}
 			}
 		}
 	}
-}
 
+	internal static class DotNetProjectConfigurationExtensions
+	{
+		/// <summary>
+		/// Given a DotNetProjectConfiguration returns final output directory with no msbuild variables
+		/// </summary>
+		/// <param name="conf"></param>
+		/// <param name="dir"></param>
+		/// <returns></returns>
+		internal static string ParseOutDirectoryTemplate (this DotNetProjectConfiguration conf, string dir)
+		{
+			dir = dir.Replace ("$(Configuration)", conf.Name);
+			dir = dir.Replace ("$(Platform)", conf.Platform);
+			dir = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
+			return dir;
+		}
+
+		/// <summary>
+		/// Given a DotNetProjectConfiguration returns temporary output directory for OutputOptionsPanelWidget
+		/// </summary>
+		/// <param name="conf"></param>
+		/// <param name="dir"></param>
+		/// <returns></returns>
+		internal static string ResolveOutDirectoryTemplate (this DotNetProjectConfiguration conf, string dir)
+		{
+			dir = dir.Replace ("$(Configuration)", conf.Name);
+			dir = dir.Replace ("$(Platform)", conf.Platform);
+
+			var outputDirTemp = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
+			// check if the outputDirectory has been modified
+			if (conf.OutputDirectory.FullPath.ToString ().IndexOf (outputDirTemp, StringComparison.InvariantCulture) != 0
+				|| conf.AppendTargetFrameworkToOutputPath) { 
+				// if outputDirectory does not contain the targetFramework.Id, AppendTargetFrameworkToOutputPath is false for that config
+				conf.AppendTargetFrameworkToOutputPath = dir.Contains (conf.TargetFrameworkShortName) || dir.Contains ("$(TargetFramework)");
+				// if so, we have to remove $(TargetFramework) since msbuild will add it due to AppendTargetFrameworkToOutputPath == true 
+				dir = dir.Replace ("$(TargetFramework)", string.Empty);
+				// in case we are in a specific configuration i.e. Debug, Release, there will be no msbuild variable $(TargetFramework)
+				// but TargetFrameworkId values, therefore we have to apply the same logic checking the end of the dir template
+				if (dir.TrimEnd (IO.Path.DirectorySeparatorChar).EndsWith (conf.TargetFrameworkShortName, StringComparison.InvariantCulture)) {
+					dir = dir.Replace (conf.TargetFrameworkShortName, string.Empty);
+				}
+			} else {
+				// no changes, leaving it as it is
+				dir = outputDirTemp;
+			}
+
+			return dir.TrimEnd (IO.Path.DirectorySeparatorChar);
+		}
+
+		/// <summary>
+		/// Returns common name of AssemblyName for all configs; otherwise returns string.Empty
+		/// </summary>
+		/// <param name="configs"></param>
+		/// <returns></returns>
+		internal static string GetAssemblyName (this IEnumerable<ItemConfiguration> configs)
+		{
+			var outAsm = string.Empty;
+
+			foreach (DotNetProjectConfiguration conf in configs) {
+				if (string.IsNullOrEmpty (outAsm)) {
+					outAsm = conf.OutputAssembly;
+					continue;
+				}
+
+				if (outAsm != conf.OutputAssembly) {
+					outAsm = "";
+					break;
+				}
+			}
+
+			return outAsm;
+		}
+
+		/// <summary>
+		/// If exists returns template pattern for all configs
+		/// </summary>
+		/// <param name="configs"></param>
+		/// <returns>String.Empty if there is no common pattern otherwise the template pattern</returns>
+		internal static string CompareTemplates (this IEnumerable<ItemConfiguration> configs)
+		{
+			var baseTemplate = string.Empty;
+			foreach (DotNetProjectConfiguration config in configs) {
+				var template = GetTemplate (config);
+				if (string.IsNullOrEmpty (baseTemplate)) {
+					baseTemplate = template;
+					continue;
+				}
+				if (template != baseTemplate) {
+					return string.Empty;
+				}
+			}
+
+			return baseTemplate;
+		}
+
+		/// <summary>
+		/// Given a DotNetProjectConfiguration returns output directory template with msbuild variables
+		/// </summary>
+		/// <param name="conf"></param>
+		/// <returns></returns>
+		internal static string GetTemplate (this DotNetProjectConfiguration conf)
+		{
+			var dirTemplate = conf.OutputDirectory.ToString ();
+
+			if (conf.AppendTargetFrameworkToOutputPath) {
+				//default output directory contains TargetFrameworkId but if the output directory
+				//has been previously modified then it does not, however we have to append it to dir template since will be part of
+				//the output part due to AppendTargetFrameworkToOutputPath == true
+				if (!dirTemplate.Contains (conf.TargetFrameworkShortName)) {
+					dirTemplate = IO.Path.Combine (dirTemplate, conf.TargetFrameworkShortName);
+				}
+
+				dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.TargetFrameworkShortName}", $"{IO.Path.DirectorySeparatorChar}$(TargetFramework)");
+			}
+
+			dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.Name}", $"{IO.Path.DirectorySeparatorChar}$(Configuration)");
+			if (conf.Platform.Length > 0)
+				dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.Platform}", $"{IO.Path.DirectorySeparatorChar}$(Platform)");
+
+			return dirTemplate;
+		}
+	}
+}
