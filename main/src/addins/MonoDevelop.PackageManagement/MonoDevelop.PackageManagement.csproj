@@ -26,8 +26,8 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
-    <PackageReference Include="NuGet.PackageManagement" Version="5.1.0" PrivateAssets="runtime" />
-    <PackageReference Include="NuGet.Indexing" Version="5.1.0" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.PackageManagement" Version="$(NuGetVersionNuGet)" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.Indexing" Version="$(NuGetVersionNuGet)" PrivateAssets="runtime" />
     <!-- Ensure .NET 4.7.2's System.Net.Http is used not the one from this NuGet package -->
     <PackageReference Include="System.Net.Http" Version="4.3.3" ExcludeAssets="all" />
     <!-- Ensure .NET 4.7.2's System.IO.Compression is used not the one from this NuGet package -->
