@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using MonoDevelop.Projects;
@@ -6,6 +6,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
+using Xwt;
 
 namespace MonoDevelop.VersionControl 
 {
@@ -18,7 +19,9 @@ namespace MonoDevelop.VersionControl
 				var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 				if (solution == null)
 					return;
-				info.Enabled = info.Visible = Publish (solution, solution.BaseDirectory, true);
+				Repository repository = VersionControlService.GetRepository (solution);
+				VersionInfo versionInfo = repository.GetVersionInfo (repository.RootPath);
+				info.Enabled = info.Visible = Publish (versionInfo, solution, solution.BaseDirectory, true);
 			}
 		}
 
@@ -27,36 +30,76 @@ namespace MonoDevelop.VersionControl
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution == null)
 				return;
-			Publish (solution, solution.BaseDirectory, false);
+			Repository repository = VersionControlService.GetRepository (solution);
+			VersionInfo versionInfo = repository.GetVersionInfo (repository.RootPath);
+			Publish (versionInfo, solution, solution.BaseDirectory, false);
 		}
 
-		public static bool Publish (WorkspaceObject entry, FilePath localPath, bool test)
+		public static bool Publish (VersionInfo versionInfo, WorkspaceObject entry, FilePath localPath, bool test)
 		{
-			if (test)
-				return VersionControlService.CheckVersionControlInstalled () && VersionControlService.GetRepository (entry) == null;
+			if (test) {
+				var canPublish = !versionInfo.CanUpdate;
 
+				if (canPublish)
+					return true;
+
+				return VersionControlService.CheckVersionControlInstalled () && VersionControlService.GetRepository (entry) == null;
+			}
+
+			string moduleName = entry.Name;
+			Repository repository = VersionControlService.GetRepository (entry);
+			bool isInitialized = repository != null;
 			List<FilePath> files = new List<FilePath> ();
 
-			// Build the list of files to be checked in			
-			string moduleName = entry.Name;
-			if (localPath == entry.BaseDirectory) {
-				GetFiles (files, entry);
-			} else if (entry is Project) {
-				foreach (ProjectFile file in ((Project)entry).Files.GetFilesInPath (localPath))
-					if (file.Subtype != Subtype.Directory)
-						files.Add (file.FilePath);
-			} else
-				return false;
+			if (!isInitialized) {
+				// Build the list of files to be checked in         
+				if (localPath == entry.BaseDirectory) {
+					GetFiles (files, entry);
+				} else if (entry is Project) {
+					foreach (ProjectFile file in ((Project)entry).Files.GetFilesInPath (localPath)) {
+						if (file.Subtype != Subtype.Directory)
+							files.Add (file.FilePath);
+					}
+				} else
+					return false;
 
-			if (files.Count == 0)
-				return false;
-	
+				if (files.Count == 0)
+					return false;
+			}
+
+			bool hasChanges = false;
+			if (repository != null) {
+				var directoryVersionInfo = repository.GetDirectoryVersionInfo (localPath, true, false);
+				if (directoryVersionInfo != null)
+					hasChanges = directoryVersionInfo.Any (vi => vi.HasLocalChanges);
+
+				if (hasChanges) {
+					foreach (var vi in directoryVersionInfo) {
+						if (vi.HasRemoteChanges)
+							files.Add (vi.LocalPath);
+					}
+				}
+			}
+
+			if (!isInitialized) {
+				SelectRepository (moduleName, localPath, files);
+			} else {
+				ValidateRepository (repository);
+				ConfigureRepository (repository, moduleName, localPath, files, hasChanges);
+			}
+			return true;
+		}
+
+		static void SelectRepository (string moduleName, FilePath localPath, List<FilePath> files)
+		{
 			SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish);
+
 			try {
 				dlg.ModuleName = moduleName;
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
+
 				do {
-					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
+					if (MessageService.RunCustomDialog (dlg) == (int)Gtk.ResponseType.Ok && dlg.Repository != null) {
 						AlertButton publishButton = new AlertButton (GettextCatalog.GetString ("_Publish"));
 						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
@@ -70,7 +113,34 @@ namespace MonoDevelop.VersionControl
 				dlg.Destroy ();
 				dlg.Dispose ();
 			}
-			return true;
+		}
+
+		static void ValidateRepository (Repository repository)
+		{
+			if (repository != null && repository is UrlBasedRepository urlBasedRepository) {
+				if (string.IsNullOrEmpty (urlBasedRepository.Url)) {
+					var tempRepository = repository.VersionControlSystem.CreateRepositoryInstance ();
+
+					if (tempRepository is UrlBasedRepository urlTempBasedRepository)
+						urlBasedRepository.Url = urlTempBasedRepository.Url;
+
+					tempRepository.Dispose ();
+				}
+			}
+		}
+
+		static void ConfigureRepository (Repository repository, string moduleName, FilePath localPath, List<FilePath> files, bool hasChanges)
+		{
+			using (ConfigureRepositoryDialog dlg = new ConfigureRepositoryDialog (repository, hasChanges)) {
+				if (hasChanges) {
+					dlg.Message = GettextCatalog.GetString ("Check-in of module {0}", moduleName);
+				}
+				dlg.ModuleName = moduleName;
+				if (dlg.Run (MessageDialog.RootWindow) == Xwt.Command.Ok && dlg.Repository != null) {
+					PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
+					w.Start ();
+				}
+			}
 		}
 
 		static void GetFiles (List<FilePath> files, WorkspaceObject entry)

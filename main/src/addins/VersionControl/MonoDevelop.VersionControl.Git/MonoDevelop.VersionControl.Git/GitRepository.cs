@@ -926,21 +926,34 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
-			// Initialize the repository
-			RootPath = localPath;
-			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
+            if (!RootPath.Equals (localPath))
+                RootPath = localPath;
+
+            // Initialize the repository
+            if (RootRepository == null) {
+                if (!RootPath.Combine (GitVersionControl.GitExtension).IsDirectory)
+                    RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (RootPath));
+                else
+                    RootRepository = new LibGit2Sharp.Repository (RootPath);
+            }
+
+            // Add the repository remote
 			RootRepository.Network.Remotes.Add ("origin", Url);
 
-			// Add the project files
-			ChangeSet cs = CreateChangeSet (localPath);
-			foreach (FilePath fp in files) {
-				LibGit2Sharp.Commands.Stage (RootRepository, RootRepository.ToGitPath (fp));
-				cs.AddFile (fp);
-			}
+            // Add the project files
+            ChangeSet cs = CreateChangeSet (localPath);
 
-			// Create the initial commit
-			cs.GlobalComment = message;
-			Commit (cs, monitor);
+            if (files.Length > 0) {
+                // Add the project files
+                foreach (FilePath fp in files) {
+                    LibGit2Sharp.Commands.Stage (RootRepository, RootRepository.ToGitPath (fp));
+                    cs.AddFile (fp);
+                }
+
+                // Create the initial commit
+                cs.GlobalComment = message;
+                Commit (cs, monitor);
+            }
 
 			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
 
