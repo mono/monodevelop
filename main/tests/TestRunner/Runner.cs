@@ -41,13 +41,15 @@ namespace MonoDevelop.Tests.TestRunner
 	{
 		public Task<int> Run (string[] arguments)
 		{
+			Func<List<string>, int> runTests = args => RunNUnit (args);
+
 			var args = new List<string> (arguments);
-			Assembly guiUnitAsm = null;
 			var argsToAdd = new List<string> ();
 
 			foreach (var ar in args) {
 				if (ar == "--performance") {
 					argsToAdd.Add ("-include=Performance");
+					continue;
 				}
 
 				if ((ar.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) || ar.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) && File.Exists (ar)) {
@@ -57,7 +59,8 @@ namespace MonoDevelop.Tests.TestRunner
 						var ids = new HashSet<string> ();
 						foreach (var aname in asm.GetReferencedAssemblies ()) {
 							if (aname.Name == "GuiUnit") {
-								guiUnitAsm = Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
+								var guiUnitAsm = Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
+								runTests = args => RunGuiUnit (args, guiUnitAsm);
 								continue;
 							}
 							ids.UnionWith (GetAddinsFromReferences (aname));
@@ -77,17 +80,28 @@ namespace MonoDevelop.Tests.TestRunner
 			// Make sure the updater is disabled while running tests
 			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 
-			if (guiUnitAsm != null) {
-				Xwt.XwtSynchronizationContext.AutoInstall = false;
-				SynchronizationContext.SetSynchronizationContext (new Xwt.XwtSynchronizationContext ());
-				Runtime.MainSynchronizationContext = SynchronizationContext.Current;
+			var result = runTests (args);
 
-				var method = guiUnitAsm.EntryPoint;
-				return Task.FromResult ((int)method.Invoke (null, new [] { args.ToArray () }));
-			}
+			// run performance analysis
+
+			return Task.FromResult (result);
+		}
+
+		static int RunGuiUnit (List<string> args, Assembly guiUnitAsm)
+		{
+			Xwt.XwtSynchronizationContext.AutoInstall = false;
+			SynchronizationContext.SetSynchronizationContext (new Xwt.XwtSynchronizationContext ());
+			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
+
+			var method = guiUnitAsm.EntryPoint;
+			return (int)method.Invoke (null, new [] { args.ToArray () });
+		}
+
+		static int RunNUnit (List<string> args)
+		{
 			args.RemoveAll (a => a.StartsWith ("-port=", StringComparison.Ordinal));
 			args.Add ("-domain=None");
-			return Task.FromResult (NUnit.ConsoleRunner.Runner.Main (args.ToArray ()));
+			return NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
 		}
 
 		static IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)
