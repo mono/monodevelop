@@ -29,6 +29,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="TestResults.cs" />
+    <Compile Include="TestSuiteResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
