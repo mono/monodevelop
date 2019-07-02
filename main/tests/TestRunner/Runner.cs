@@ -43,7 +43,13 @@ namespace MonoDevelop.Tests.TestRunner
 		{
 			var args = new List<string> (arguments);
 			Assembly guiUnitAsm = null;
+			var argsToAdd = new List<string> ();
+
 			foreach (var ar in args) {
+				if (ar == "--performance") {
+					argsToAdd.Add ("-include=Performance");
+				}
+
 				if ((ar.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) || ar.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) && File.Exists (ar)) {
 					try {
 						var path = Path.GetFullPath (ar);
@@ -65,6 +71,8 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
+
+			args.AddRange (argsToAdd);
 
 			// Make sure the updater is disabled while running tests
 			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
