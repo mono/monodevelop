@@ -183,11 +183,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			dir = dir.Replace ("$(Platform)", conf.Platform);
 
 			var outputDirTemp = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
+
+			// if outputDirectory does not contain the targetFramework.Id, AppendTargetFrameworkToOutputPath is false for that config
+			conf.AppendTargetFrameworkToOutputPath = dir.Contains (conf.TargetFrameworkShortName) || dir.Contains ("$(TargetFramework)");
+
 			// check if the outputDirectory has been modified
-			if (conf.OutputDirectory.FullPath.ToString ().IndexOf (outputDirTemp, StringComparison.InvariantCulture) != 0
-				|| conf.AppendTargetFrameworkToOutputPath) { 
-				// if outputDirectory does not contain the targetFramework.Id, AppendTargetFrameworkToOutputPath is false for that config
-				conf.AppendTargetFrameworkToOutputPath = dir.Contains (conf.TargetFrameworkShortName) || dir.Contains ("$(TargetFramework)");
+			var outputModified = conf.OutputDirectory.FullPath.ToString ().IndexOf (outputDirTemp, StringComparison.InvariantCulture) != 0;
+			if (outputModified) { 
 				// if so, we have to remove $(TargetFramework) since msbuild will add it due to AppendTargetFrameworkToOutputPath == true 
 				dir = dir.Replace ("$(TargetFramework)", string.Empty);
 				// in case we are in a specific configuration i.e. Debug, Release, there will be no msbuild variable $(TargetFramework)
