@@ -172,6 +172,11 @@
 		<ExtensionNode name="SearchPath" type="MonoDevelop.Projects.Extensions.ImportSearchPathExtensionNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/Core/ProjectModel/FileNesting" name="File nesting rules providers">
+  		<Description>Pluggable checks for file nesting rules providers</Description>
+  		<ExtensionNode objectType="MonoDevelop.Projects.FileNesting.NestingRulesProvider" />
+  	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">

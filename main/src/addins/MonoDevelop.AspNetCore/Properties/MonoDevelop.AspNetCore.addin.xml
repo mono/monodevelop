@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 	
 	<Runtime>
 		<Import file = "Templates/MiddlewareClass.xft.xml" />
@@ -27,6 +27,8 @@
 		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
 		<Import file = "Templates/AppSettingsFile.xft.xml" />
 		<Import file = "Templates/AppSettingsFile.json" />
+		
+		<Import file = "Resources/AspNetCore.filenesting.json" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
