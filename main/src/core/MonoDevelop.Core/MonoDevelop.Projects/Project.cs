@@ -706,7 +706,7 @@ namespace MonoDevelop.Projects
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
 
-						var evalResult = await project.RunTarget (monitor, dependsList, config.Selector, ctx);
+						var evalResult = await project.RunTargetInternal (monitor, dependsList, config.Selector, ctx);
 						if (evalResult != null && evalResult.Items != null) {
 							result = ProcessMSBuildItems (evalResult.Items, project);
 						}
@@ -1250,6 +1250,13 @@ namespace MonoDevelop.Projects
 		/// Configuration to use to run the target
 		/// </param>
 		public Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
+		{
+			return BindTask<TargetEvaluationResult> (cancelToken => {
+				return RunTargetInternal (monitor.WithCancellationToken (cancelToken), target, configuration, context);
+			});
+		}
+
+		internal Task<TargetEvaluationResult> RunTargetInternal (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
 			// Initialize the evaluation context. This initialization is shared with FastCheckNeedsBuild.
 			// Extenders will override OnConfigureTargetEvaluationContext to add custom properties and do other
@@ -1865,7 +1872,7 @@ namespace MonoDevelop.Projects
 		protected override async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			var newContext = operationContext as TargetEvaluationContext ?? new TargetEvaluationContext (operationContext);
-			return (await RunTarget (monitor, "Build", configuration, newContext)).BuildResult;
+			return (await RunTargetInternal (monitor, "Build", configuration, newContext)).BuildResult;
 		}
 
 		async Task<TargetEvaluationResult> RunBuildTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)
@@ -2250,7 +2257,7 @@ namespace MonoDevelop.Projects
 		protected override async Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
 		{
 			var newContext = buildSession as TargetEvaluationContext ?? new TargetEvaluationContext (buildSession);
-			return (await RunTarget (monitor, "Clean", configuration, newContext)).BuildResult;
+			return (await RunTargetInternal (monitor, "Clean", configuration, newContext)).BuildResult;
 		}
 
 		Task<TargetEvaluationResult> RunCleanTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)

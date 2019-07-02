@@ -1098,6 +1098,26 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ProjectDisposed_RunTarget_NullReferenceExceptionNotThrown ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+			sol.Dispose ();
+
+			Assert.IsNull (p.MSBuildProject);
+
+			try {
+				// RunTarget should fail since BindTask will not register a task after Project has been disposed
+				await p.RunTarget (Util.GetMonitor (), "ResolveAssemblyReferences", ConfigurationSelector.Default);
+				Assert.Fail ("Should not reach here.");
+			} catch (TaskCanceledException) {
+				// Expected exception.
+			}
+		}
+
+		[Test]
 		public async Task ProjectExtensionOnModifiedCalledWhenProjectModified ()
 		{
 			var fn = new CustomItemNode<TestModifiedProjectExtension> ();
