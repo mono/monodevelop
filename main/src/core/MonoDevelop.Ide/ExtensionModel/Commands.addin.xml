@@ -256,7 +256,7 @@
 			_description = "Adds and existing folder and its contents"
 			_label = "_Add Existing Folder..." />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
-			_label = "New _Folder…"
+			_label = "New _Folder"
 			_description = "Create a new folder"
 			icon  = "md-new-folder" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
