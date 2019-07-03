@@ -182,6 +182,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			dir = dir.Replace ("$(Configuration)", conf.Name);
 			dir = dir.Replace ("$(Platform)", conf.Platform);
 
+			if (conf.AppendTargetFrameworkToOutputPath == null)
+				return dir;
+
 			var outputDirTemp = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
 
 			// if outputDirectory does not contain the targetFramework.Id, AppendTargetFrameworkToOutputPath is false for that config
@@ -260,7 +263,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			var dirTemplate = conf.OutputDirectory.ToString ();
 
-			if (conf.AppendTargetFrameworkToOutputPath) {
+			if (conf.AppendTargetFrameworkToOutputPath == true) {
 				//default output directory contains TargetFrameworkId but if the output directory
 				//has been previously modified then it does not, however we have to append it to dir template since will be part of
 				//the output part due to AppendTargetFrameworkToOutputPath == true

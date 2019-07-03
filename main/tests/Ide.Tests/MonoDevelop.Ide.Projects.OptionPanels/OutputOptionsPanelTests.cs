@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				outDirTemplate = outDirTemplate.Replace ("$(TargetFramework)", string.Empty);
 				release.OutputDirectory = release.ResolveOutDirectoryTemplate (outDirTemplate);
 				Assert.That (release.OutputDirectory.FullPath.ToString ().TrimEnd (System.IO.Path.DirectorySeparatorChar), Is.StringEnding (release.Name));
-				Assert.False (release.AppendTargetFrameworkToOutputPath);
+				Assert.That (release.AppendTargetFrameworkToOutputPath, Is.False);
 			}
 		}
 
