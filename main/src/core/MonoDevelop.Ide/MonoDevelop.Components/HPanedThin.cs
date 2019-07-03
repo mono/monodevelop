@@ -160,7 +160,7 @@ namespace MonoDevelop.Components
 			horizontal = parent is HPanedThin;
 
 			handle = new MacPanedHandleView (parent);
-			host = new Gtk.GtkNSViewHost (handle, NSWindowOrderingMode.Above);
+			host = new Gtk.GtkNSViewHost (handle);
 
 			GrabAreaSize = HandleGrabWidth;
 

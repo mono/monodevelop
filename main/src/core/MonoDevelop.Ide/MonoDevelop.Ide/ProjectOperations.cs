@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide
 				await SaveAsync (((SolutionFolderItem)item).ParentSolution);
 			} else {
 				await workspace.SaveAsync ();
-				workspace.SavePreferences ();
+				await workspace.SavePreferencesAsync ();
 			}
 		}
 		
@@ -618,7 +618,7 @@ namespace MonoDevelop.Ide
 							}
 						}
 						await SaveAsync (selectedProject);
-						workspace.SavePreferences ();
+						await workspace.SavePreferencesAsync ();
 						IdeApp.Workbench.ReparseOpenDocuments ();
 					}
 				} finally {
@@ -655,7 +655,7 @@ namespace MonoDevelop.Ide
 							if (si.ParentSolution != null)
 								await SaveAsync (si.ParentSolution);
 						}
-						workspace.SavePreferences ();
+						await workspace.SavePreferencesAsync ();
 					}
 				} finally {
 					optionsDialog.Destroy ();
