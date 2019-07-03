@@ -236,8 +236,6 @@ namespace MonoDevelop.TextEditor
 			if (TextDocument == null)
 				return;
 
-			UpdateTextBufferRegistration ();
-
 			warnOverwrite = false;
 
 			if (editorConfigContext != null) {
@@ -260,6 +258,8 @@ namespace MonoDevelop.TextEditor
 
 			//if (this.WorkbenchWindow?.Document != null)
 			//	textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
+
+			UpdateTextBufferRegistration ();
 
 			UpdateTextEditorOptions (null, null);
 		}
