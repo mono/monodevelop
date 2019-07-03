@@ -378,17 +378,15 @@ namespace MonoDevelop.MacIntegration
 		// The Enabled key needs to be controlled through NSUserDefaults so that it can be
 		// set from the command line. This lets users who require accessibility features to
 		// enabled to control it through the commandline, if it has been disabled from inside the software
-		static bool voiceOverNoticeShown;
 		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
-		const string VoiceOverNoticeShownKey = "com.monodevelop.VoiceOverShown";
+		const string VoiceOverNoticeShownKey = "MonoDevelop.VoiceOver.Show";
 		static void ShowVoiceOverNotice ()
 		{
-			if (voiceOverNoticeShown || PropertyService.Get<bool> (VoiceOverNoticeShownKey, false)) {
+			if (PropertyService.Get<bool> (VoiceOverNoticeShownKey, false)) {
 				return;
 			}
 
 			// Show the VoiceOver notice once
-			voiceOverNoticeShown = true;
 			PropertyService.Set (VoiceOverNoticeShownKey, true);
 
 			var alert = new NSAlert ();
