@@ -104,7 +104,7 @@ type FSharpParser() =
             let shortFilename = Path.GetFileName filename
             try
                 if not token.IsCancellationRequested then
-                    match MonoDevelop.tryGetVisibleDocument filename with
+                    match MonoDevelop.tryGetVisibleDocument (filename |> FilePath) with
                     | Some doc ->
                         let newVersion = doc.Editor.Version
                         if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
@@ -128,7 +128,7 @@ type FSharpParser() =
 
         let proj = parseOptions.Project
 
-        let doc = MonoDevelop.tryGetVisibleDocument fileName
+        let doc = MonoDevelop.tryGetVisibleDocument (fileName |> FilePath)
 
         if doc.IsNone || not (FileService.supportedFileName (fileName)) then null else
         

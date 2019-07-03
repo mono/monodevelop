@@ -1,12 +1,10 @@
-﻿namespace MonoDevelop.FSharp
+namespace MonoDevelop.FSharp
 
-open System
 open System.Collections.Generic
-open System.Collections.Immutable
 open MonoDevelop.FSharp.Shared
-open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Highlighting
+open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
 open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler
@@ -26,7 +24,7 @@ module Patterns =
         match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
         | FSharpTokenColorKind.Keyword, _ -> Some ts
         | _ -> None
-        
+
     let (|Punctuation|_|) (ts : TokenSymbol) =
         if ts.TokenInfo.Tag = FSharpTokenTag.PLUS_MINUS_OP
            || ts.TokenInfo.Tag = FSharpTokenTag.MINUS
@@ -99,7 +97,7 @@ module Patterns =
         if isIdentifier ts.TokenInfo.ColorClass
         then ts.SymbolUse |> Option.map (fun su -> IdentifierSymbol(su))
         else None
-        
+
     let (|Namespace|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse ->
@@ -139,7 +137,7 @@ module Patterns =
             | SymbolUse.Function _ | SymbolUse.ClosureOrNestedFunction _  -> Some Function
             | _ -> None
         | _ -> None
-        
+
     let (|Constructor|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse ->
@@ -276,13 +274,13 @@ module Patterns =
                     | true, v -> Some(v)
                     | _ -> None
                 else None
-    
+
             let extraColor =
                 if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
                     colourisations
                     |> Option.bind (Array.tryFind (fun (rng : Range.range, _) -> rng.StartLine = lineNo && rng.EndColumn = token.RightColumn + 1))
                 else None
-    
+
             let highlightMutable isMut = isMut && PropertyService.Get("FSharpBinding.HighlightMutables", false)
 
             let makeSeg (chunkStyle:string) =
@@ -290,7 +288,7 @@ module Patterns =
                |> Some
                 //Uncomment to visualise tokens segments
                 //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
-         
+
             let tryGetStyle =
                 match { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor } with
                 | WildcardIdentifier ->
@@ -314,7 +312,7 @@ module Patterns =
                     makeSeg EditorThemeColors.UserMethod
                 | Val isMut ->
                     if highlightMutable isMut then makeSeg EditorThemeColors.UserTypesMutable
-                    //elif su.Symbol.DisplayName.StartsWith "_" then style.ExcludedCode 
+                    //elif su.Symbol.DisplayName.StartsWith "_" then style.ExcludedCode
                     else makeSeg EditorThemeColors.UserField
                 | UnionCase | Enum _ ->
                     makeSeg EditorThemeColors.UserTypes
@@ -335,12 +333,12 @@ module Patterns =
                 //| PreprocessorKeyword -> None//Some style.Preprocessor
                 | _other -> None
             tryGetStyle
-            
+
         let tryGetTokensSymbolsAndColours (context:DocumentContext) =
             maybe {
                 let! pd = context.TryGetFSharpParsedDocument()
                 let! checkResults = pd.TryGetAst()
-                let! tokens = pd.Tokens 
+                let! tokens = pd.Tokens
                 let symbolsInFile = pd.AllSymbolsKeyed
                 let colourisations = checkResults.GetExtraColorizations None
                 let formatters = checkResults.GetStringFormatterColours()
@@ -357,18 +355,13 @@ module Patterns =
             | _ -> Seq.empty
 
 
-type FSharpSyntaxMode(editor, context) =
+type FSharpSyntaxMode(editor, context: DocumentContext) =
     inherit SemanticHighlighting(editor, context)
     let tokenssymbolscolours = ref None
-    //let style = ref (getColourScheme())
-    //let colourSchemChanged =
-    //    IdeApp.Preferences.ColorScheme.Changed.Subscribe
-    //        (fun _ (eventArgs:EventArgs) ->
-    //                          let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
-    //                          (*style := colourStyles*) )
-                                  
+    let roslynContext = context :?> RoslynDocumentContext
+
     override x.DocumentParsed() =
-        if MonoDevelop.isDocumentVisible context.Name then
+        if MonoDevelop.isDocumentVisible roslynContext.FileName then
             SyntaxMode.tryGetTokensSymbolsAndColours context
             |> Option.iter (fun tsc -> tokenssymbolscolours := Some tsc
                                        Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
@@ -378,6 +371,4 @@ type FSharpSyntaxMode(editor, context) =
         let lineNumber = line.LineNumber
         let txt = editor.GetLineText line
 
-        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt// !style
-        
-    //interface IDisposable with member x.Dispose() = colourSchemChanged.Dispose()
+        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt
