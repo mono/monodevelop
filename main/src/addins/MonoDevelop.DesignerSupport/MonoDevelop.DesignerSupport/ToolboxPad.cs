@@ -55,21 +55,15 @@ namespace MonoDevelop.DesignerSupport
 #if MAC
 			this.window = window;
 			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, window);
-			widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
-			widget.CanFocus = true;
-			widget.Sensitive = true;
-			widget.KeyPressEvent += toolbox.OnKeyPressed;
-			widget.KeyReleaseEvent += toolbox.KeyReleased;
+			widget = new GtkNSViewHost (toolbox);
 
 			widget.DragDataGet += Widget_DragDataGet;
 			widget.DragBegin += Widget_DragBegin;
 			widget.DragEnd += Widget_DragEnd;
-			widget.Focused += Widget_Focused;
 
 			this.window.PadContentShown += Container_PadContentShown;
 			this.window.PadContentHidden += Container_PadContentHidden;
 
-			toolbox.ContentFocused += Toolbox_ContentFocused;
 			toolbox.DragSourceSet += Toolbox_DragSourceSet;
 			toolbox.DragBegin += Toolbox_DragBegin;
 		
@@ -92,11 +86,6 @@ namespace MonoDevelop.DesignerSupport
 			isDragging = false;
 		}
 
-		void Widget_Focused (object sender, EventArgs args)
-		{
-			toolbox.FocusSelectedView();
-		}
-
 		void Widget_DragBegin (object sender, DragBeginArgs args)
 		{
 			if (!isDragging) {
@@ -117,14 +106,6 @@ namespace MonoDevelop.DesignerSupport
 				foreach (var format in node.Formats) {
 					args.SelectionData.Set (Gdk.Atom.Intern (format, false), 8, node.GetData (format));
 				}
-			}
-		}
-
-		void Toolbox_ContentFocused (object sender, EventArgs args)
-		{
-			if (!widget.HasFocus) {
-				widget.HasFocus = true;
-				toolbox.FocusSelectedView ();
 			}
 		}
 
@@ -170,15 +151,11 @@ namespace MonoDevelop.DesignerSupport
 				widget.DragDataGet -= Widget_DragDataGet;
 				widget.DragBegin -= Widget_DragBegin;
 				widget.DragEnd -= Widget_DragEnd;
-				widget.Focused -= Widget_Focused;
-				widget.KeyPressEvent -= toolbox.OnKeyPressed;
-				widget.KeyReleaseEvent -= toolbox.KeyReleased;
 				widget.Destroy ();
 				widget.Dispose ();
 				widget = null;
 			}
 			if (toolbox != null) {
-				toolbox.ContentFocused -= Toolbox_ContentFocused;
 				toolbox.DragBegin -= Toolbox_DragBegin;
 				toolbox.DragSourceSet -= Toolbox_DragSourceSet;
 				toolbox.Dispose ();
