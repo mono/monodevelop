@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr_FR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-28 18:27:11+0200\n"
+"POT-Creation-Date: 2019-07-03 14:27:26+0200\n"
 "PO-Revision-Date: 2014-03-01 23:55+0100\n"
 "Last-Translator: François DORIN <f.dorin@free.fr>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -456,11 +456,13 @@ msgstr "(indisponible)"
 msgid "(working copy)"
 msgstr "(copie de travail)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
-msgid "({0} available)"
-msgstr "({0} disponible)"
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:126
+#, fuzzy
+msgid "({0} installing)"
+msgstr "(installation)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:132
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:75
 msgid "({0} update)"
 msgid_plural "({0} updates)"
 msgstr[0] "({0} mises à jour)"
@@ -517,8 +519,8 @@ msgstr "Services web .NET 2.0"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:38
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:11
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1296
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1299
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1292
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1295
 msgid ".NET Core"
 msgstr ".NET Core"
 
@@ -558,7 +560,7 @@ msgstr ""
 msgid ".NET Core is not installed"
 msgstr ".NET Core n'est pas installé"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:226
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:198
 msgid ".NET Core is required to run this application."
 msgstr ".NET Core est obligatoire pour exécuter cette application."
 
@@ -644,7 +646,7 @@ msgstr "Assembly .NET"
 msgid ".desktop application folder"
 msgstr "Dossier d’application .desktop"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/Roslyn/RoslynMemberNodeBuilder.cs:103
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/Roslyn/RoslynMemberNodeBuilder.cs:78
 msgid "// no source node found for {0}"
 msgstr "// aucun nœud source trouvé pour {0}"
 
@@ -742,7 +744,7 @@ msgid "<b>Add a link</b> to the file"
 msgstr "<b>Ajoute un lien</b> au fichier"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:964
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:504
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:526
 msgid ""
 "<b>An autosave file has been found for this file.</b>\n"
 "This could mean that another instance of MonoDevelop is editing this file, "
@@ -763,7 +765,7 @@ msgstr ""
 msgid "<b>Appearance</b>"
 msgstr "<b>Apparence</b>"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/Cecil/TypeDefinitionNodeBuilder.cs:148
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/Cecil/TypeDefinitionNodeBuilder.cs:130
 msgid "<b>Assembly:</b>\t{0}, Version={1}"
 msgstr "<b>Assembly:</b>\t{0}, Version={1}"
 
@@ -791,7 +793,7 @@ msgid "<b>Code Folding</b>"
 msgstr "<b>Pliage de code</b>"
 
 #: ../src/addins/ILAsmBinding/Gui/ILAsmBinding.CompilerParametersPanelWidget.cs:92
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:71
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:75
 msgid "<b>Code Generation</b>"
 msgstr "<b>Génération de code</b>"
 
@@ -888,7 +890,7 @@ msgstr "<b>Date d'émission :</b>"
 msgid "<b>Keep</b> the file in its the current subdirectory ({0})"
 msgstr "<b>Conserver</b> le fichier dans son sous-répertoire actuel ({0})"
 
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:219
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:223
 msgid "<b>Language Options</b>"
 msgstr "<b>Options langage</b>"
 
@@ -918,7 +920,7 @@ msgstr "<b>Navigation</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:261
 msgid "<b>New Editor</b>"
-msgstr ""
+msgstr "<b>Nouvel éditeur</b>"
 
 #: ../src/addins/ChangeLogAddIn/Gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:117
 msgid ""
@@ -1001,6 +1003,10 @@ msgid ""
 "file, located at the project root directory. The ChangeLog file will be "
 "created if it doesn't exist."
 msgstr ""
+"<b>Journal des modifications unique du projet</b>\n"
+"Tous les changements apportés aux fichiers projet sont consignés dans un "
+"seul journal des modifications, situé dans le répertoire racine du projet. "
+"Si le fichier journal des modifications n'existe pas, il est créé."
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:95
 msgid "<b>Start</b>"
@@ -1015,7 +1021,7 @@ msgid "<b>Task Priorities Foreground Colors</b>"
 msgstr "<b>Couleurs de premier plan indiquant la priorité des tâches</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:712
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:716
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:728
 msgid ""
 "<b>The file \"{0}\" has been changed outside of {1}.</b>\n"
 "Do you want to keep your changes, or reload the file from disk?"
@@ -1095,7 +1101,7 @@ msgid "<b>{0}</b>"
 msgstr "<b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1112
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:299
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:304
 msgid "<b>{0}</b> has been thrown"
 msgstr "<b>{0}</b> a été levée"
 
@@ -1158,7 +1164,7 @@ msgstr ""
 "similaire aux applications de bureau</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2030
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2093
 msgid "<uncommitted>"
 msgstr "<uncommitted>"
 
@@ -1430,11 +1436,13 @@ msgstr "Aperçu des paramètres ci-dessus"
 msgid "A profiling tool"
 msgstr "Outil de profilage"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:176
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:319
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:462
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:178
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:321
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:464
 msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr ""
+"Projet de création d'une bibliothèque de classes Razor qui cible .NET "
+"Standard"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbar.cs:148
 #: ../src/addins/MacPlatform/MainToolbar/SelectorView.cs:434
@@ -1453,37 +1461,42 @@ msgstr ""
 "Modèle de projet permettant de créer un projet de bibliothèque "
 "multiplateforme et son paquet NuGet correspondant."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:189
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:332
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:475
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:191
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:334
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:477
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular"
 msgstr ""
+"Modèle de projet pour la création d'une application ASP.NET Core avec Angular"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:202
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:345
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:488
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:204
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:347
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:490
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js"
 msgstr ""
+"Modèle de projet pour la création d'une application ASP.NET Core avec React."
+"js"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:215
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:358
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:501
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:217
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:360
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:503
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux"
 msgstr ""
+"Modèle de projet pour la création d'une application ASP.NET Core avec React."
+"js et Redux"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:111
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:254
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:266
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:397
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:409
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:540
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:552
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:628
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:113
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:125
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:268
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:411
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:554
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
@@ -1493,16 +1506,16 @@ msgstr ""
 "exemple de contrôleur pour un service HTTP RESTful. Vous pouvez également "
 "utiliser ce modèle pour les vues et contrôleurs ASP.NET Core MVC."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:150
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:163
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:293
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:306
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:436
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:449
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:579
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:592
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:639
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:651
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:152
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:165
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:438
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:451
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:581
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:594
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:653
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
@@ -1512,10 +1525,10 @@ msgstr ""
 "exemples de vues et de contrôleurs ASP.NET Core MVC. Vous pouvez également "
 "utiliser ce modèle pour les services HTTP RESTful."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:279
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:422
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:565
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:281
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:424
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:567
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1694,15 +1707,15 @@ msgstr ""
 "constantes, des champs, des méthodes, des propriétés, des indexeurs, des "
 "opérateurs, des événements et des types imbriqués."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:122
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:253
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:265
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:396
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:408
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:539
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:551
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:627
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:112
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:267
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:410
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:553
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:629
 msgid "API"
 msgstr "API"
 
@@ -1712,9 +1725,9 @@ msgstr "Documentation sur l’API"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:137
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:248
+#: ../src/addins/AspNet/Templates/WebConfig-SubDir.xft.xml:10
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:9
 #: ../src/addins/AspNet/Templates/WebConfig-Application.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebConfig-SubDir.xft.xml:10
 msgid "ASP.NET"
 msgstr "ASP.NET"
 
@@ -1723,7 +1736,7 @@ msgid "ASP.NET Controls"
 msgstr "Contrôles ASP.NET"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:121
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:64
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:66
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:10
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:10
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:10
@@ -1757,14 +1770,14 @@ msgid "ASP.NET HTML encoded expression"
 msgstr "Expression codée au format HTML ASP.NET"
 
 #: ../src/addins/AspNet/Templates/Mvc/Controller.xft.xml:10
-#: ../src/addins/AspNet/Templates/Mvc/LayoutPage.xft.xml:10
-#: ../src/addins/AspNet/Templates/Mvc/PartialViewPageRazor.xft.xml:10
-#: ../src/addins/AspNet/Templates/Mvc/UserControl.xft.xml:10
 #: ../src/addins/AspNet/Templates/Mvc/ViewContentPage.xft.xml:10
+#: ../src/addins/AspNet/Templates/Mvc/UserControl.xft.xml:10
+#: ../src/addins/AspNet/Templates/Mvc/WebConfigViews.xft.xml:6
+#: ../src/addins/AspNet/Templates/Mvc/ViewPageRazor.xft.xml:10
+#: ../src/addins/AspNet/Templates/Mvc/LayoutPage.xft.xml:10
 #: ../src/addins/AspNet/Templates/Mvc/ViewMasterPage.xft.xml:10
 #: ../src/addins/AspNet/Templates/Mvc/ViewPage.xft.xml:10
-#: ../src/addins/AspNet/Templates/Mvc/ViewPageRazor.xft.xml:10
-#: ../src/addins/AspNet/Templates/Mvc/WebConfigViews.xft.xml:6
+#: ../src/addins/AspNet/Templates/Mvc/PartialViewPageRazor.xft.xml:10
 msgid "ASP.NET MVC"
 msgstr "ASP.NET MVC"
 
@@ -1808,20 +1821,20 @@ msgstr "Contrôle utilisateur de vue ASP.NET MVC"
 msgid "ASP.NET MVC Views Configuration"
 msgstr "Configuration des vues ASP.NET MVC"
 
-#: ../src/addins/AspNet/Templates/WebForms/MasterPage-CodeBehind.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/MasterPage-Empty.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/NestedMasterPage-CodeBehind.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/NestedMasterPage.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/WebContentForm-CodeBehind.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/WebContentForm.xft.xml:10
 #: ../src/addins/AspNet/Templates/WebForms/WebControl-CodeBehind.xft.xml:9
-#: ../src/addins/AspNet/Templates/WebForms/WebControl-Empty.xft.xml:9
 #: ../src/addins/AspNet/Templates/WebForms/WebForm-CodeBehind.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/WebForm-Empty.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/WebHandler-CodeBehind.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/WebContentForm-CodeBehind.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/WebControl-Empty.xft.xml:9
 #: ../src/addins/AspNet/Templates/WebForms/WebHandler-Empty.xft.xml:10
-#: ../src/addins/AspNet/Templates/WebForms/WebService-CodeBehind.xft.xml:9
 #: ../src/addins/AspNet/Templates/WebForms/WebService-Empty.xft.xml:9
+#: ../src/addins/AspNet/Templates/WebForms/MasterPage-Empty.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/NestedMasterPage.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/WebHandler-CodeBehind.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/WebService-CodeBehind.xft.xml:9
+#: ../src/addins/AspNet/Templates/WebForms/MasterPage-CodeBehind.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/WebForm-Empty.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/NestedMasterPage-CodeBehind.xft.xml:10
+#: ../src/addins/AspNet/Templates/WebForms/WebContentForm.xft.xml:10
 msgid "ASP.NET Web Forms"
 msgstr "Web Forms ASP.NET"
 
@@ -1902,7 +1915,7 @@ msgid "Abort Update"
 msgstr "Abandonner la mise à jour"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:598
+#: ../src/addins/MacPlatform/MacPlatform.cs:603
 msgid "About {0}"
 msgstr "À propos de {0}"
 
@@ -2180,7 +2193,7 @@ msgid "Add New Repository"
 msgstr "Ajouter un nouveau référentiel"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:22
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:93
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:87
 msgid "Add NuGet _Packages..."
 msgstr "Ajouter les _paquets NuGet..."
 
@@ -2257,8 +2270,8 @@ msgstr "Ajouter une vue..."
 msgid "Add Web Reference"
 msgstr "Ajouter une référence web"
 
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1221
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1229
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1217
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1225
 msgid "Add _Packages..."
 msgstr "Ajouter les _paquets..."
 
@@ -2331,8 +2344,8 @@ msgstr "Ajouter un élément existant à l’espace de travail sélectionné"
 msgid "Add and remove project references"
 msgstr "Ajouter et supprimer des références de projet"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddAnotherAccessorCodeRefactoringProvider.cs:57
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/AddAnotherAccessorCodeRefactoringProvider.cs:57
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddAnotherAccessorCodeRefactoringProvider.cs:57
 msgid "Add another accessor"
 msgstr "Ajouter un autre accesseur"
 
@@ -2440,7 +2453,7 @@ msgstr "Ajouter le projet aux paquets existants"
 msgid "Add the user defined header to the top of the file"
 msgstr "Ajouter l’en-tête défini par l’utilisateur au début du fichier"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:178
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:179
 msgid "Add to Ignore List"
 msgstr "Ajouter à la liste Ignorer"
 
@@ -2729,7 +2742,7 @@ msgstr "Toutes les solutions"
 msgid "Allocates a block of memory on the stack."
 msgstr "Alloue un bloc de mémoire sur la pile."
 
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:282
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:293
 msgid "Allow '_unsafe' code"
 msgstr "Autoriser le code « _non sécurisé »"
 
@@ -2823,16 +2836,16 @@ msgstr "Fichier appsettings.json utilisé pour configurer des applications web."
 msgid "An audio application"
 msgstr "Application audio"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:230
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:242
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:373
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:385
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:516
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:528
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:606
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:617
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:89
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:101
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:244
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:375
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:387
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:518
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:530
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:608
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2949,9 +2962,9 @@ msgstr "Et que l’expression suivante change"
 msgid "Android"
 msgstr "Android"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:188
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:331
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:474
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
 msgid "Angular"
 msgstr "Angular"
 
@@ -3078,7 +3091,7 @@ msgid "Application to record audio/video files"
 msgstr "Application d’enregistrement de fichiers audio/vidéo"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:786
+#: ../src/addins/MacPlatform/MacPlatform.cs:791
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3144,7 +3157,7 @@ msgstr "Appliquer au projet"
 msgid "Apply to all"
 msgstr "Appliquer à tous"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:357
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:376
 msgid "Applying stash"
 msgstr "Application de dissimulation"
 
@@ -3170,11 +3183,11 @@ msgstr "Voulez-vous vraiment annuler l’installation ?"
 msgid "Are you sure you want to clear all specified options?"
 msgstr "Voulez-vous vraiment effacer toutes les options spécifiées ?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:317
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:329
 msgid "Are you sure you want to clear recent files list?"
 msgstr "Êtes-vous pas de vouloir effacer la liste des fichiers récents ?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:402
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:415
 msgid "Are you sure you want to clear recent projects list?"
 msgstr "Voulez-vous vraiment effacer la liste des projets récents ?"
 
@@ -3275,7 +3288,7 @@ msgstr ""
 msgid "Are you sure you want to permanently delete the file {0}?"
 msgstr "Voulez-vous vraiment supprimer définitivement le fichier {0} ?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:41
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:61
 msgid "Are you sure you want to publish the project?"
 msgstr "Voulez-vous vraiment publier le projet ?"
 
@@ -3362,9 +3375,7 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:29
 #, fuzzy
 msgid "Are you sure you want to revert the changes made in the selected files?"
-msgstr ""
-"Voulez-vous vraiment annuler les modifications apportées aux fichiers "
-"sélectionnés ?"
+msgstr "Voulez-vous vraiment cesser d’ignorer les fichiers sélectionnés ?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:54
 msgid ""
@@ -3433,12 +3444,12 @@ msgstr ""
 "disque. Si la référence est requise pour générer le projet, vous risquez "
 "d’obtenir des erreurs de compilation."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/Cecil/AssemblyNodeBuilder.cs:159
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/Cecil/AssemblyNodeBuilder.cs:156
 msgid "Assembly <b>{0}</b>, Version {1}"
 msgstr "Assembly <b>{0}</b>, Version {1}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DisplayBinding.cs:47
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserViewContent.cs:65
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserViewContent.cs:67
 msgid "Assembly Browser"
 msgstr "Explorateur d’assembly"
 
@@ -3483,15 +3494,15 @@ msgid "Assembly directive must have non-empty 'name' or 'src' attribute"
 msgstr ""
 "La directive assembly doit avoir un attribut « name » ou « src » non vide"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:498
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:503
 msgid "Assembly not found"
 msgstr "Assembly introuvable"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:487
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:492
 msgid "Assembly not found for framework {0}"
 msgstr "Assembly introuvable pour l’infrastructure {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:489
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:494
 msgid "Assembly not found for framework {0} (in {1})"
 msgstr "Assembly introuvable pour l’infrastructure {0} (dans {1})"
 
@@ -3501,7 +3512,7 @@ msgstr "Assembly introuvable pour l’infrastructure {0} (dans {1})"
 msgid "Assembly:\t{0}"
 msgstr "Assembly :\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:380
+#: ../src/addins/MacPlatform/MacPlatform.cs:383
 msgid "Assistive Technology Detected"
 msgstr "Technologie d'assistance détectée"
 
@@ -3590,7 +3601,7 @@ msgstr "Nom de l’auteur :"
 msgid "Author:"
 msgstr "Auteur :"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:170
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
 msgid "Authors"
 msgstr "Auteurs"
@@ -3630,23 +3641,23 @@ msgstr "Saisie semi-automatique avec la touche Entrée ou Tab"
 msgid "Automatically check for updates:"
 msgstr "Rechercher automatiquement les mises à jour :"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:85
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:87
 msgid "Automatically format block on }"
 msgstr "Mise en forme automatique du bloc lors de la saisie de }"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:94
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:96
 msgid "Automatically format on paste"
 msgstr "Mise en forme automatique lors du collage"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:90
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:92
 msgid "Automatically format on return"
 msgstr "Mise en forme automatique au retour"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:80
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:82
 msgid "Automatically format statement on ;"
 msgstr "Mise en forme automatique de l'instruction lors de la saisie de ;"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:75
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:77
 msgid "Automatically format when typing"
 msgstr "Mise en forme automatique en cours de frappe"
 
@@ -3666,13 +3677,13 @@ msgstr "Insérer automatiquement des balises de fermeture"
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr "Insérer automatiquement les signes de ponctuation (=\"\", />, etc.)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1063
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1084
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr ""
 "Remiser/déremiser automatiquement les changements pendant la fusion/le "
 "rebasage"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1842
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1902
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr ""
@@ -3736,7 +3747,7 @@ msgstr "Précédent"
 msgid "Back to Service Gallery"
 msgstr "Retour à la galerie de services"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:198
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:199
 msgid "Back to _Previous view"
 msgstr "Revenir à la vue _précédente"
 
@@ -3784,7 +3795,7 @@ msgstr "Base"
 msgid "Base Symbols"
 msgstr "Symboles de base"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/BaseTypeFolderNodeBuilder.cs:93
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/BaseTypeFolderNodeBuilder.cs:91
 msgid "Base Types"
 msgstr "Types de bases"
 
@@ -3992,7 +4003,7 @@ msgstr "_Générer"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:139
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:105
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:70
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1185
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1181
 msgid "Build"
 msgstr "Générer"
 
@@ -4027,7 +4038,7 @@ msgstr "Générer tous les projets de toutes les solutions"
 msgid "Build canceled."
 msgstr "Génération annulée."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1905
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1926
 msgid "Build complete -- "
 msgstr "Génération terminée -- "
 
@@ -4200,7 +4211,7 @@ msgstr "Chaîne C"
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:333
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:175
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:134
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1191
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1187
 msgid "C#"
 msgstr "C#"
 
@@ -4212,7 +4223,7 @@ msgstr "Fichiers C#"
 msgid "C# Format"
 msgstr "Format C#"
 
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:260
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:269
 msgid "C# Language Version:"
 msgstr "Version du langage C# :"
 
@@ -4247,7 +4258,7 @@ msgstr "Document CSS"
 msgid "C_ase sensitive"
 msgstr "Respecte la _casse"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:158
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:159
 msgid "C_heckout..."
 msgstr "E_xtraire..."
 
@@ -4263,7 +4274,7 @@ msgstr "Ne_ttoyer {0}"
 msgid "C_lose"
 msgstr "_Fermer"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:206
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:218
 msgid "C_lose All Solutions"
 msgstr "Fermer toutes les _solutions"
 
@@ -4271,16 +4282,16 @@ msgstr "Fermer toutes les _solutions"
 msgid "C_lose Others"
 msgstr "_Fermer les autres"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:204
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
 msgid "C_lose Project"
 msgstr "Fermer le pro_jet"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:212
 msgid "C_lose Solution"
 msgstr "Fermer la so_lution"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:437
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:202
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:214
 msgid "C_lose Workspace"
 msgstr "Fermer _l’espace de travail"
 
@@ -4336,7 +4347,7 @@ msgstr "Appeler un membre static via une classe dérivée"
 msgid "Camera tools, etc."
 msgstr "Outils d'appareil photo, etc."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1902
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1921
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4345,7 +4356,7 @@ msgstr ""
 "Impossible d’exécuter \"{0}\". Le mode d’exécution sélectionné n’est pas "
 "pris en charge pour les projets .NET."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1920
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1939
 msgid ""
 "Can not execute. The run configuration working directory doesn't exist at {0}"
 msgstr ""
@@ -4381,11 +4392,11 @@ msgstr "Chargement impossible :"
 msgid "Can't lock file: {0}."
 msgstr "Impossible de verrouiller le fichier : {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:164
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:165
 msgid "Can't remove directory {0}"
 msgstr "Impossible de supprimer le répertoire {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:151
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:152
 msgid "Can't remove file {0}"
 msgstr "Impossible de supprimer le fichier {0}"
 
@@ -4464,12 +4475,12 @@ msgstr ""
 msgid "Cancelling operation..."
 msgstr "Annulation de l’opération..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1839
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1860
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Impossible de créer le répertoire {0}, car il existe un fichier de ce nom."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1910
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1929
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 msgid "Cannot execute \"{0}\""
 msgstr "Impossible d’exécuter \"{0}\""
@@ -4523,10 +4534,6 @@ msgstr "Non concordance de la casse dans « {0} »"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:72
 msgid "Cast to '{0}'"
 msgstr "Cast dans « {0} »"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:60
-msgid "Catalan"
-msgstr "Catalan"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewFileDialog.cs:96
 msgid "Categories"
@@ -4603,8 +4610,8 @@ msgstr "Modifier le type de champ"
 msgid "Change local variable type"
 msgstr "Modifier le type de variable locale"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:154
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/ReturnMustNotBeFollowedByAnyExpressionCodeFixProvider.cs:66
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:154
 msgid "Change return type of method"
 msgstr "Modifier le type de retour de la méthode"
 
@@ -4661,6 +4668,9 @@ msgid ""
 "for existing projects can be modified in the project (or solution) options "
 "dialog."
 msgstr ""
+"Les changements apportés à cette section vont s'appliquer uniquement aux "
+"nouveaux projets. Vous pouvez modifier les paramètres des projets existants "
+"dans la boîte de dialogue des options du projet (ou de la solution)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:538
 msgid "Changes made in those files will be overwritten by {0}."
@@ -4788,7 +4798,7 @@ msgstr ""
 msgid "Check to align the message text"
 msgstr "Cocher cette case pour aligner le texte du message"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:150
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:175
 msgid "Check to allow 'unsafe' code"
 msgstr "Cocher cette case pour autoriser le code unsafe"
 
@@ -5153,7 +5163,7 @@ msgstr "Cocher cette case pour utiliser la même version que la solution"
 msgid "Check to wrap the lines at 60 characters"
 msgstr "Cocher cette case pour faire un retour à la ligne après 60 caractères"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:333
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:352
 msgid "Checking out files"
 msgstr "Extraction des fichiers"
 
@@ -5184,7 +5194,7 @@ msgstr ""
 msgid "Chemistry software"
 msgstr "Logiciel de chimie"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1181
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1202
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "Opération cherry-pick {0} - {1}/{2}"
 
@@ -5192,16 +5202,6 @@ msgstr "Opération cherry-pick {0} - {1}/{2}"
 msgid "Child projects must be in sub-directories of their parent"
 msgstr ""
 "Les projets enfants doivent figurer dans des sous-répertoires de leur parent"
-
-# Traditionnel ?
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:61
-msgid "Chinese - China"
-msgstr "Chinois - Chine"
-
-# Traditionnel ?
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:62
-msgid "Chinese - Taiwan"
-msgstr "Chinois - Taïwan"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:193
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:194
@@ -5295,7 +5295,7 @@ msgstr "Nettoyer tous les projets de toutes les solutions"
 msgid "Clean canceled."
 msgstr "Le nettoyage a été annulé."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2302
 msgid "Clean complete"
 msgstr "Nettoyage terminé"
 
@@ -5392,7 +5392,7 @@ msgstr "Effacer les signets"
 msgid "Clear console"
 msgstr "Effacer la console"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:328
 msgid "Clear recent files"
 msgstr "Effacer la liste des fichiers récents"
 
@@ -5400,7 +5400,7 @@ msgstr "Effacer la liste des fichiers récents"
 msgid "Clear recent files list"
 msgstr "Effacer la liste des fichiers récents"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:401
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:414
 msgid "Clear recent projects"
 msgstr "Effacer les projets récents"
 
@@ -5516,7 +5516,7 @@ msgstr "Fermer"
 msgid "Close All Files"
 msgstr "Fermer tous les fichiers"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:633
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:640
 msgid "Close MonoDevelop"
 msgstr "Fermer MonoDevelop"
 
@@ -5587,7 +5587,7 @@ msgstr "Fermer le bloc {0}"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:536
 msgid "Close to the _Right"
-msgstr ""
+msgstr "Fermer à _droite"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:53
 msgid "Close welcome page after opening a solution"
@@ -5609,7 +5609,7 @@ msgstr "Ferme tous les fichiers ouverts dans un onglet"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
 msgid "Closes all opened files to the right of the active file"
-msgstr ""
+msgstr "Ferme tous les fichiers ouverts à droite du fichier actif"
 
 #: ../src/addins/Xml/Editor/BaseXmlEditorExtension.cs:702
 msgid "Closing tag for '{0}'"
@@ -5809,9 +5809,9 @@ msgstr "Commentaires"
 msgid "Commit Files"
 msgstr "Valider les fichiers"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:304
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:310
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:315
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:305
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:311
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:316
 msgid "Commit Message Style"
 msgstr "Style de message de validation"
 
@@ -5866,7 +5866,7 @@ msgstr "Compatibilité"
 
 #: ../src/addins/ILAsmBinding/Gui/ILAsmBinding.CompilerParametersPanelWidget.cs:48
 #: ../src/addins/VBNetBinding/Gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:209
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:165
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:169
 msgid "Compile _Target:"
 msgstr "_Cible de la compilation :"
 
@@ -5874,7 +5874,7 @@ msgstr "_Cible de la compilation :"
 #: ../src/addins/ILAsmBinding/ILAsmBinding.addin.xml:12
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:119
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:104
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1200
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1196
 msgid "Compiler"
 msgstr "Compilateur"
 
@@ -5883,7 +5883,7 @@ msgid "Compiler :"
 msgstr "Compilateur :"
 
 #: ../src/addins/VBNetBinding/Gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:198
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:143
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:147
 msgid "Compiler Code Page:"
 msgstr "Page de code du compilateur :"
 
@@ -5915,8 +5915,8 @@ msgstr "Compléter avec un espace ou une ponctuation"
 msgid "Completes the current statement"
 msgstr "Achève l’instruction en cours"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ComputeConstantValueCodeRefactoringProvider.cs:93
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ComputeConstantValueCodeRefactoringProvider.cs:92
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ComputeConstantValueCodeRefactoringProvider.cs:93
 msgid "Compute constant value"
 msgstr "Calculer une valeur constante"
 
@@ -5957,10 +5957,10 @@ msgstr "L’expression conditionnelle peut être simplifiée"
 msgid "Configuration"
 msgstr "Configuration"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1861
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2245
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2295
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1891
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1882
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2266
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2316
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1910
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Configuration « {0} » introuvable dans le projet « {1} »"
 
@@ -6025,7 +6025,7 @@ msgid "Configure your new workspace"
 msgstr "Configurer votre nouvel espace de travail"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:547
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Templating/DotNetCoreProjectTemplateWizardPage.cs:69
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Templating/DotNetCoreProjectTemplateWizardPage.cs:70
 msgid "Configure your new {0}"
 msgstr "Configurer votre {0}"
 
@@ -6060,7 +6060,7 @@ msgstr "Conflit"
 msgid "Conflict {0}"
 msgstr "{0} en conflit"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1087
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1108
 msgid "Conflicting local changes found"
 msgstr "Changements locaux en conflit"
 
@@ -6098,7 +6098,7 @@ msgstr "Application console"
 msgid "Console Project"
 msgstr "Projet de console"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:1030
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:1051
 msgid ""
 "Console input is not supported when using the {0} output console. If your "
 "application needs to read data from the standard input, please set the 'Run "
@@ -6109,7 +6109,7 @@ msgstr ""
 "l’entrée standard, définissez « Exécuter dans une console externe » dans les "
 "options du projet."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:1029
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:1050
 msgid "Console input not supported"
 msgstr "Entrée de la console non prise en charge"
 
@@ -6151,7 +6151,7 @@ msgstr ""
 msgid "Continue"
 msgstr "Continuer"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:635
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:642
 msgid "Continue Anyway"
 msgstr "Continuer malgré tout"
 
@@ -6298,13 +6298,13 @@ msgstr "Copier la tâche"
 msgid "Copy Task Description"
 msgstr "Description de la tâche copie"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:60
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CopyCommentsFromBaseCodeRefactoringProvider.cs:62
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:60
 msgid "Copy comments from base"
 msgstr "Copier les commentaires à partir de la base"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:60
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CopyCommentsFromBaseCodeRefactoringProvider.cs:62
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:60
 msgid "Copy comments from interface"
 msgstr "Copier les commentaires à partir de l’interface"
 
@@ -6382,7 +6382,7 @@ msgid "Could not create temporary directory."
 msgstr "Impossible de créer le répertoire temporaire."
 
 # Support ?
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2052
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2073
 msgid "Could not find support file '{0}'."
 msgstr "Fichier de support « {0} » introuvable."
 
@@ -6447,7 +6447,7 @@ msgid "Could not load solution item: {0}"
 msgstr "Impossible de charger l’élément de solution : {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:388
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:347
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:373
 msgid "Could not load solution: {0}"
 msgstr "Impossible de charger la solution : {0}"
 
@@ -6473,6 +6473,10 @@ msgstr "Nous n’avons pas pu ouvrir l’URL « {0} »"
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:52
 msgid "Could not open the url {0}"
 msgstr "Nous n’avons pas pu ouvrir l’URL {0}"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:606
+msgid "Could not open unmigrated project and no migrator was supplied"
+msgstr ""
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/TextTemplatingFilePreprocessor.cs:68
 msgid ""
@@ -6606,7 +6610,7 @@ msgstr "Créer une configuration d'exécution de solution"
 msgid "Create _Layout"
 msgstr "Créer une _disposition"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:174
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:175
 msgid "Create _Patch"
 msgstr "Créer un _correctif"
 
@@ -6668,8 +6672,8 @@ msgstr "Créer un projet qui peut générer des paquets pour une solution"
 msgid "Create an initial commit first."
 msgstr "Créez d'abord une validation initiale."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/CreateChangedEventCodeRefactoringProvider.cs:50
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CreateChangedEventCodeRefactoringProvider.cs:56
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/CreateChangedEventCodeRefactoringProvider.cs:50
 msgid "Create changed event"
 msgstr "Créer un événement modifié"
 
@@ -6721,8 +6725,8 @@ msgstr "Créer une méthode"
 msgid "Create new packages for the project"
 msgstr "Créer de nouveaux paquets pour le projet"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Uncategorized/CreateOverloadWithoutParameterCodeRefactoringProvider.cs:43
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CreateOverloadWithoutParameterCodeRefactoringProvider.cs:44
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Uncategorized/CreateOverloadWithoutParameterCodeRefactoringProvider.cs:43
 msgid "Create overload without parameter"
 msgstr "Créer une surcharge sans paramètre"
 
@@ -7145,7 +7149,7 @@ msgstr "Crée une structure vide."
 msgid "Creates an empty text file."
 msgstr "Crée un fichier texte vide."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/ProtocolMemberCompletionProvider.cs:179
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/ProtocolMemberCompletionProvider.cs:195
 msgid "Creates an implementation for:"
 msgstr "Crée une implémentation pour :"
 
@@ -7237,10 +7241,6 @@ msgstr "Document en cours"
 msgid "Current format:"
 msgstr "Format actuel :"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:67
-msgid "Current package version"
-msgstr "Version du paquet actuel"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:193
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:76
 msgid "Current project"
@@ -7312,8 +7312,8 @@ msgstr "Outil personnalisé"
 msgid "Custom Tool Namespace"
 msgstr "Espace de noms d’outil personnalisé"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1327
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1340
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1344
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1357
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:671
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:685
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:758
@@ -7358,11 +7358,11 @@ msgstr "Projet personnalisé"
 msgid "Custom project started building"
 msgstr "Génération du projet personnalisé démarrée"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:748
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:755
 msgid "CustomizerAssemblyPath"
 msgstr "CustomizerAssemblyPath"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:753
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:760
 msgid "CustomizerType"
 msgstr "CustomizerType"
 
@@ -7412,17 +7412,9 @@ msgstr "Cyrillique/Russe"
 msgid "Cyrillic/Ukrainian"
 msgstr "Cyrillique/Ukrainien"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:63
-msgid "Czech"
-msgstr "Tchèque"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:88
 msgid "D_iscard"
 msgstr "A_bandonner"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:64
-msgid "Danish"
-msgstr "Danois"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:204
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:150
@@ -7449,7 +7441,7 @@ msgstr "Date/Heure"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -7511,13 +7503,13 @@ msgstr "Informations de débogage :"
 msgid "Debug session not started."
 msgstr "La session de débogage n’a pas démarré."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:901
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:911
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:271
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:281
 msgid "Debugger"
 msgstr "Débogueur"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:903
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:913
 msgid "Debugger information"
 msgstr "Informations du débogueur"
 
@@ -7553,7 +7545,7 @@ msgstr "Refuser"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:233
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -7806,9 +7798,15 @@ msgstr "Suppression des fichiers..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:303
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:49
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:60
 msgid "Dependencies"
 msgstr "Dépendances"
+
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:41
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:47
+#, fuzzy
+msgid "Dependency"
+msgstr "Ajouter une dépendance"
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:50
 msgid "Deploy directory:"
@@ -7871,7 +7869,7 @@ msgstr "Description :"
 msgid "Design"
 msgstr "Design"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:328
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:326
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:84
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:99
 msgid "Designer"
@@ -8066,12 +8064,12 @@ msgid "Disable AIO"
 msgstr "Désactiver AIO"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:379
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:437
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:452
 msgid "Disable All Breakpoints"
 msgstr "Désactiver tous les points d'arrêt"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:384
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:387
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:402
 msgid "Disable Breakpoint"
 msgid_plural "Disable Breakpoints"
 msgstr[0] "Désactiver les points d'arrêt"
@@ -8135,7 +8133,7 @@ msgstr "Onglet Désassemblage"
 msgid "Discovery document"
 msgstr "Document de découverte"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1988
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1996
 msgid "Display Options"
 msgstr "Options d’affichage"
 
@@ -8171,7 +8169,7 @@ msgstr "Ne pas copier"
 msgid "Do not prefer 'this.'"
 msgstr "Ne pas préférer 'this.'"
 
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:200
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:204
 msgid "Do not reference mscorlib.dll"
 msgstr "Ne pas référencer mscorlib.dll"
 
@@ -8371,7 +8369,7 @@ msgstr "_Commentaires sur la documentation"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:624
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:690
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:873
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:878
 msgid "Documents"
 msgstr "Documents"
 
@@ -8443,10 +8441,6 @@ msgstr "Dupliquer la ligne"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:827
 msgid "Duplicates:"
 msgstr "Doublons :"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:65
-msgid "Dutch"
-msgstr "Néerlandais"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1193
 msgid "Dynamic abbrev"
@@ -8631,16 +8625,16 @@ msgid "Emoji & Symbols"
 msgstr "Emoji et symboles"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:229
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:241
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:372
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:384
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:515
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:527
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:605
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:616
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:100
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:231
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:243
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:374
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:386
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:517
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:529
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:607
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:618
 msgid "Empty"
 msgstr "Vides"
 
@@ -8779,12 +8773,12 @@ msgid "Enable Accessibility"
 msgstr "Activer l'accessibilité"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:377
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:435
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:450
 msgid "Enable All Breakpoints"
 msgstr "Activer tous les points d'arrêt"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:382
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:390
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:405
 msgid "Enable Breakpoint"
 msgid_plural "Enable Breakpoints"
 msgstr[0] "Activer les points d'arrêt"
@@ -8960,10 +8954,6 @@ msgstr "Fin de la liste"
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:116
 msgid "Engineering software, e.g. CAD programs"
 msgstr "Logiciel d’ingénierie, par exemple, programme de CAO"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:69
-msgid "English"
-msgstr "Anglais"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:21
 msgid "Enhance Sample output file"
@@ -9168,7 +9158,7 @@ msgstr ""
 msgid "Enter the file mask"
 msgstr "Entrez le masque de fichier"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:138
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:163
 msgid "Enter the file to use as the icon on Windows"
 msgstr "Entrer le fichier à utiliser comme icône sur Windows"
 
@@ -9188,7 +9178,7 @@ msgstr "Entrez le nombre d'accès nécessaire pour la condition"
 msgid "Enter the keybinding for this command"
 msgstr "Entrez la combinaison de touches de cette commande"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:135
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:160
 msgid "Enter the main class for the code generation"
 msgstr "Entrer la classe principale pour la génération de code"
 
@@ -9365,7 +9355,7 @@ msgid "Error"
 msgstr "Erreur"
 
 # Support?
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2055
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2076
 msgid "Error copying support file '{0}'."
 msgstr "Erreur lors de la copie du fichier de support « {0} »."
 
@@ -9378,7 +9368,7 @@ msgid "Error creating file"
 msgstr "Erreur lors de la création du fichier"
 
 # Support
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2088
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2109
 msgid "Error deleting support file '{0}'."
 msgstr "Erreur lors de la suppression du fichier de support « {0} »."
 
@@ -9398,7 +9388,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs:94
 msgid "Error initializing Version Control"
-msgstr ""
+msgstr "Erreur durant l'initialisation de la gestion de versions"
 
 #: ../src/addins/AspNet/Execution/BrowserLauncher.cs:44
 msgid "Error launching web browser"
@@ -9445,7 +9435,7 @@ msgstr ""
 "projet « {1} » :\n"
 "{2}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:240
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:252
 msgid "Error while generating the print preview"
 msgstr "Erreur pendant la génération de l’aperçu avant impression"
 
@@ -9509,7 +9499,7 @@ msgstr ""
 "satellite pour la culture « {1} » : \n"
 " {2}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:501
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:508
 msgid "Error while trying to load the project '{0}': {1}"
 msgstr "Erreur lors de la tentative de chargement du projet « {0} » : {1}"
 
@@ -9937,7 +9927,7 @@ msgstr "Les méthodes d’extension doivent être déclarées static"
 msgid "Extension packages"
 msgstr "Paquets d'extensions"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:542
+#: ../src/addins/MacPlatform/MacPlatform.cs:547
 msgid "Extensions..."
 msgstr "Extensions..."
 
@@ -10110,11 +10100,13 @@ msgstr "Échec de l’écriture du fichier « {0} »."
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:109
 msgid "Failed to write {0}"
-msgstr ""
+msgstr "Échec de l'écriture de {0}"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:112
 msgid "Failed to write {0}. Unable to access file or access is denied"
 msgstr ""
+"Échec de l'écriture de {0}. Impossible d'accéder au fichier, ou l'accès est "
+"refusé"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:77
 msgid "Falling blocks game"
@@ -10128,7 +10120,7 @@ msgstr "Commentaires"
 msgid "Fetch"
 msgstr "Extraire"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1032
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1053
 msgid "Fetching"
 msgstr "Récupération"
 
@@ -10137,7 +10129,7 @@ msgstr "Récupération"
 msgid "Fetching external item into '{0}'"
 msgstr "Récupération (fetch) d'un élément dans '{0}'"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1033
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1054
 msgid "Fetching from '{0}'"
 msgstr "Extraction à partir de « {0} »"
 
@@ -10303,7 +10295,7 @@ msgstr "Format du fichier de projet."
 msgid "File format:"
 msgstr "Format de fichier :"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:739
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:737
 msgid "File is not a project or solution: {0}"
 msgstr "Fichier n’est pas un projet ou une solution : {0}"
 
@@ -10319,7 +10311,7 @@ msgstr "Nom de fichier non fourni dans le modèle"
 msgid "File name not specified"
 msgstr "Nom de fichier non spécifié"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:498
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:514
 msgid "File name {0} is invalid"
 msgstr "Le nom de fichier {0} n’est pas valide"
 
@@ -10328,7 +10320,7 @@ msgstr "Le nom de fichier {0} n’est pas valide"
 msgid "File name:"
 msgstr "Nom de fichier :"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:514
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:519
 msgid "File not found"
 msgstr "Fichier introuvable"
 
@@ -10338,7 +10330,7 @@ msgstr "Fichier introuvable."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:118
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:212
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:733
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:731
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentManager.cs:394
 msgid "File not found: {0}"
 msgstr "Fichier introuvable : {0}"
@@ -10391,7 +10383,7 @@ msgstr ""
 "Le fichier {0} existe déjà.\n"
 "Voulez-vous remplacer le fichier existant ou l’ajouter au projet ?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:503
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:519
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:669
 msgid "File {0} already exists. Overwrite?"
 msgstr "Le fichier {0} existe déjà. Voulez-vous le remplacer ?"
@@ -10530,7 +10522,7 @@ msgstr "Chercher le curseur"
 msgid "Find in Files"
 msgstr "Chercher dans les fichiers"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:318
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:181
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:161
 msgid "Find next {0}"
@@ -10540,7 +10532,7 @@ msgstr "Chercher {0} suivant"
 msgid "Find overriden Symbols"
 msgstr "Rechercher les symboles remplacés"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:326
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:328
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:182
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:162
 msgid "Find previous {0}"
@@ -10821,21 +10813,17 @@ msgstr "Infrastructure non installée : {0}"
 msgid "Framework that provides this reference."
 msgstr "Infrastructure qui fournit cette référence."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:493
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:498
 msgid "Framework {0} is not installed"
 msgstr "L’infrastructure {0} n’est pas installée"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:495
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:500
 msgid "Framework {0} is not installed (in {1})"
 msgstr "L’infrastructure {0} n’est pas installée (dans {1})"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:184
 msgid "Framework:"
 msgstr "Infrastructure :"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:66
-msgid "French"
-msgstr "Français"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectReferencesFromPackagesFolderNodeBuilder.cs:49
 msgid "From Packages"
@@ -10949,10 +10937,6 @@ msgstr ""
 "Échec de la génération de code d’interface utilisateur pour le projet "
 "« {0} ». Nous n’avons pas pu charger Le fichier « {1} »."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:67
-msgid "Galician"
-msgstr "Galicien"
-
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:133
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:334
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:313
@@ -10963,7 +10947,7 @@ msgstr "Galerie"
 msgid "Garbage Collector"
 msgstr "Récupérateur de mémoire"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:834
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:836
 msgid "Gathering class information"
 msgstr "Collecte des informations de classe"
 
@@ -10981,12 +10965,12 @@ msgstr "Collecte des informations de classe"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:760
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:301
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:130
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:297
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:314
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:298
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:315
 #: ../src/addins/VBNetBinding/templates/EmptyVBFile.xft.xml:7
 #: ../src/addins/CSharpBinding/templates/EmptyCSharpFile.xft.xml:7
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:145
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:124
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:119
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:18
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
@@ -11215,10 +11199,6 @@ msgstr "Géorgien"
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:100
 msgid "Geoscience software"
 msgstr "Logiciel de science de la terre"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:68
-msgid "German"
-msgstr "Allemand"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1452
 msgid "Get annotations {0}"
@@ -11662,9 +11642,8 @@ msgstr "Éditeur de texte hexadécimal"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:264
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:188
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:64
 msgid "Hidden"
 msgstr "Masquées"
 
@@ -11693,7 +11672,7 @@ msgstr "Masquer les détails"
 msgid "Hide other applications' windows"
 msgstr "Masquer les fenêtres d’autres applications"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:603
+#: ../src/addins/MacPlatform/MacPlatform.cs:608
 msgid "Hide {0}"
 msgstr "Masquer {0}"
 
@@ -11744,7 +11723,7 @@ msgstr ""
 "Maintenez la touche Ctrl enfoncée pour ouvrir dans l’espace de travail "
 "actuel."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:348
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:360
 msgid "Hold Control to open in current workspace."
 msgstr ""
 "Maintenir la touche Ctrl enfoncée pour ouvrir dans l’espace de travail en "
@@ -11768,10 +11747,6 @@ msgstr "HTML"
 #: ../external/xwt/Xwt/Xwt/ColorSelector.cs:160
 msgid "Hue"
 msgstr "Teinte"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:70
-msgid "Hungarian"
-msgstr "Hongrois"
 
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:190
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:188
@@ -11968,7 +11943,7 @@ msgid "If you chose this option the Git configuration will be overwritten."
 msgstr ""
 "Si vous avez choisi cette option, la configuration Git va être remplacée."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:593
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:609
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:493
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
@@ -12031,11 +12006,11 @@ msgstr ""
 msgid "Illegal characters in path."
 msgstr "Caractères non conformes dans le chemin."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:146
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:148
 msgid "Illegal characters used in location."
 msgstr "Caractères non autorisés utilisés dans l’emplacement."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:163
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:165
 msgid "Illegal characters used in project location."
 msgstr "Caractères non autorisés utilisés dans l’emplacement du projet."
 
@@ -12047,7 +12022,7 @@ msgstr ""
 "Nom de projet non autorisé.\n"
 "Le nom ne peut pas contenir de mot clé de langue."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:158
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:160
 msgid ""
 "Illegal project name.\n"
 "Only use letters, digits, '.' or '_'."
@@ -12065,7 +12040,7 @@ msgstr ""
 "Vous ne pouvez utiliser que des lettres, des chiffres, des espaces, et les "
 "signes « . » et « _ »."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:153
 msgid ""
 "Illegal solution name.\n"
 "Only use letters, digits, '.' or '_'."
@@ -12115,7 +12090,7 @@ msgstr "Implémenter l’interface via « {0} »"
 msgid "Implement interface with Dispose pattern"
 msgstr "Implémenter l’interface avec le modèle Dispose"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/ProtocolMemberCompletionProvider.cs:154
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/ProtocolMemberCompletionProvider.cs:170
 msgid "Implement protocol member"
 msgstr "Implémenter le membre de protocole"
 
@@ -12364,15 +12339,11 @@ msgstr ""
 "Indique que cette balise doit être\n"
 "manipulable par programmation sur le serveur web."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:71
-msgid "Indonesian"
-msgstr "Indonésien"
-
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:97
 msgid "Info"
 msgstr "Infos"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:574
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:600
 msgid "Information about the Instrumentation Service"
 msgstr "Informations sur le service d'instrumentation"
 
@@ -12380,7 +12351,7 @@ msgstr "Informations sur le service d'instrumentation"
 msgid "Inherited Policy"
 msgstr "Stratégie héritée"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:37
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:57
 msgid "Initial check-in of module {0}"
 msgstr "Archiver initiale du module {0}"
 
@@ -12450,7 +12421,7 @@ msgstr "Insérer un point d'arrêt"
 msgid "Insert ChangeLog Entry"
 msgstr "Insérer une entrée de journal des modifications"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:840
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:886
 msgid "Insert Code"
 msgstr "Insérer un code"
 
@@ -12458,7 +12429,7 @@ msgstr "Insérer un code"
 msgid "Insert Documentation Comments"
 msgstr "Insérer des commentaires sur la documentation"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:831
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:877
 msgid "Insert Field"
 msgstr "Insérer un champ"
 
@@ -12467,11 +12438,11 @@ msgid "Insert GUID (Globally Unique Identifier)"
 msgstr ""
 "Insérer l’identificateur global unique (GUID, Globally Unique Identifier)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:834
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:880
 msgid "Insert Method"
 msgstr "Insérer une méthode"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:837
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:883
 msgid "Insert Property"
 msgstr "Insérer une propriété"
 
@@ -12494,7 +12465,7 @@ msgid "Insert Standard Header"
 msgstr "Insérer l’en-tête standard"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:109
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:232
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:252
 msgid "Insert Template..."
 msgstr "Insérer un modèle..."
 
@@ -12506,7 +12477,7 @@ msgstr "Insérer une étiquette personnalisée dans l'entrée de la commande"
 msgid "Insert a custom tag into the directory entry"
 msgstr "Insérer une étiquette personnalisée dans l'entrée du répertoire"
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:62
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:77
 msgid "Insert carets at all matching"
 msgstr ""
 
@@ -12522,7 +12493,7 @@ msgstr "Insérer un saut de ligne après le signe d’insertion"
 msgid "Insert new line"
 msgstr "Insérer une ligne"
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:58
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:73
 #, fuzzy
 msgid "Insert next matching caret"
 msgstr "_Insérer l’accolade correspondante"
@@ -12690,7 +12661,7 @@ msgstr "Installation des paquets d'extensions"
 msgid "Installing…"
 msgstr "Installation…"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:572
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:598
 msgid "Instrumentation"
 msgstr "Instrumentation"
 
@@ -12698,7 +12669,7 @@ msgstr "Instrumentation"
 msgid "Instrumentation Monitor"
 msgstr "Analyseur d’instrumentation"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:573
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:599
 msgid "Instrumentation service enabled"
 msgstr "Service d'instrumentation activé"
 
@@ -12810,7 +12781,7 @@ msgstr "Bundle non valide : {0}"
 msgid "Invalid character '{0}' in translatable string: '{1}'"
 msgstr "Caractère non valide « {0} » dans la chaîne traduisible : « {1} »"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:167
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:192
 msgid "Invalid code page number."
 msgstr "Numéro de page de code non valide."
 
@@ -12842,7 +12813,7 @@ msgstr "Séquence d’échappement non valide « {0} » dans la chaîne : « 
 msgid "Invalid expression"
 msgstr "Expression non valide"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:680
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:681
 msgid "Invalid file move accross filesystem boundaries."
 msgstr ""
 "Déplacement de fichier non valide au-delà des limites du système de fichiers."
@@ -12881,7 +12852,7 @@ msgid "Invalid regex for Warning messages: {0}"
 msgstr ""
 "Expression régulière non valide pour les messages d’avertissement : {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:524
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:532
 msgid ""
 "Invalid solution file. There are two projects with the same GUID. The "
 "project {0} will be ignored."
@@ -12889,7 +12860,7 @@ msgstr ""
 "Fichier de solution non valide. Deux projets ont le même GUID. Le projet {0} "
 "sera ignoré."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
 msgid "Invariant"
 msgstr "Indifférent"
 
@@ -12911,10 +12882,6 @@ msgstr "Est un modèle e_xtensible"
 msgid "Is _surround with template"
 msgstr "Est un modèle _entouré"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:72
-msgid "Italian"
-msgstr "Italien"
-
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:149
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:214
 msgid "Itanium"
@@ -12924,7 +12891,7 @@ msgstr "Itanium"
 msgid "Item saved."
 msgstr "Élément enregistré."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:761
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:769
 msgid "Item with guid '{0}' is not a folder."
 msgstr "L’élément avec le guid « {0} » n’est pas un dossier."
 
@@ -12941,7 +12908,6 @@ msgstr "Fichiers JSON"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:188
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:206
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:214
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:73
 msgid "Japanese"
 msgstr "Japonais"
 
@@ -13047,7 +13013,6 @@ msgstr "Type de clé :"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:207
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:209
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:217
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:74
 msgid "Korean"
 msgstr "Coréen"
 
@@ -13211,7 +13176,7 @@ msgstr "Suivi des fuites"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:60
 msgid "Learn more about the New Editor"
-msgstr ""
+msgstr "En savoir plus sur le nouvel éditeur"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
 msgid "Leave block on single line"
@@ -13329,7 +13294,7 @@ msgstr "Erreur de chargement :"
 msgid "Load failed: "
 msgstr "Le chargement a échoué : "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:347
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:359
 msgid "Load solution {0}"
 msgstr "Charger la solution {0}"
 
@@ -13345,7 +13310,7 @@ msgstr "Charger/Enregistrer"
 msgid "Loaded Assemblies"
 msgstr "Assemblys chargés"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:264
 msgid "Loading Workbench"
 msgstr "Chargement de Workbench"
 
@@ -13404,7 +13369,7 @@ msgstr "Chargement en cours…"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:116
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:253
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:275
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:99
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:101
 msgid "Local"
 msgstr "Local"
 
@@ -13452,7 +13417,7 @@ msgstr "Emplacement des fichiers de projet"
 msgid "Location:"
 msgstr "Emplacement :"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:163
 msgid "Lock"
 msgstr "Verrouiller"
 
@@ -13513,11 +13478,11 @@ msgstr "Le littéral de valeur Long se termine par « l » au lieu de « L �
 msgid "Look for packages in configure.in"
 msgstr "Rechercher les paquets dans configure.in"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:279
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:289
 msgid "Looking for '{0}' in all open documents"
 msgstr "Recherche de « {0} » dans tous les documents ouverts"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:204
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:208
 msgid "Looking for '{0}' in all projects"
 msgstr "Recherche de « {0} » dans tous les projets"
 
@@ -13529,11 +13494,11 @@ msgstr "Recherche de « {0} » dans le document actif"
 msgid "Looking for '{0}' in current selection"
 msgstr "Recherche de « {0} » dans la sélection active"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:369
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:379
 msgid "Looking for '{0}' in directory '{1}'"
 msgstr "Recherche de « {0} » dans le répertoire « {1} »"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:256
 msgid "Looking for '{0}' in project '{1}'"
 msgstr "Recherche de « {0} » dans le projet « {1} »"
 
@@ -13547,12 +13512,12 @@ msgid "Looking for components..."
 msgstr "Recherche de composants..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:80
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:264
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:272
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:372
 msgid "Looking in '{0}'"
 msgstr "Recherche dans « {0} »"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:233
 msgid "Looking in project '{0}'"
 msgstr "Recherche dans le projet « {0} »"
 
@@ -13585,7 +13550,7 @@ msgstr "Types MIME pris en charge par cette application :"
 msgid "MIT/X11 License"
 msgstr "Licence MIT/X11"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:78
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:77
 msgid "MSBuild SDKs: {0}"
 msgstr "SDK MSBuild : {0}"
 
@@ -14011,7 +13976,7 @@ msgstr "Fusionner la branche..."
 msgid "Merge Conflict Resolution"
 msgstr "Résolution de conflit de fusion"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1212
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1233
 msgid "Merging"
 msgstr "Fusion"
 
@@ -14064,7 +14029,7 @@ msgstr "Méthode {0}"
 msgid "Methods"
 msgstr "Méthodes"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:238
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
@@ -14085,7 +14050,7 @@ msgstr "Migrer"
 msgid "Migrate Project?"
 msgstr "Migrer le projet ?"
 
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1208
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1204
 msgid "Migrate to New Format"
 msgstr "Migrer vers un nouveau format"
 
@@ -14197,7 +14162,7 @@ msgstr "Nom du module :"
 msgid "Monitor application/applet that monitors some resource or activity"
 msgstr "Application/applet de surveillance de ressources ou d’activités"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
 msgid "Mono"
 msgstr "Mono"
 
@@ -14233,7 +14198,7 @@ msgstr "Runtime Mono introuvable"
 msgid "Mono runtime settings:"
 msgstr "Paramètres du runtime Mono :"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:241
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -14282,7 +14247,7 @@ msgstr ""
 "courantes. Il est également possible d’entrer des commandes personnalisées "
 "qui seront disponibles dans le menu du projet ou de la solution."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:324
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:331
 msgid "MonoDevelop failed to start"
 msgstr "Le démarrage de MonoDevelop a échoué"
 
@@ -14301,7 +14266,7 @@ msgstr "Solution MonoDevelop/MSBuild"
 msgid "More"
 msgstr "Plus"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:634
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:641
 msgid "More Information"
 msgstr "Informations supplémentaires"
 
@@ -14340,7 +14305,7 @@ msgid "Move cursor to previous error or search match"
 msgstr ""
 "Déplacer le curseur vers l’erreur ou le résultat de recherche précédents"
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:70
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:85
 #, fuzzy
 msgid "Move last caret down"
 msgstr "Annuler la dernière action"
@@ -14383,7 +14348,7 @@ msgstr ""
 msgid "Move to the next page"
 msgstr "Passer à la page suivante"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1993
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2053
 msgid "Moving files"
 msgstr "Déplacement des fichiers"
 
@@ -14499,8 +14464,8 @@ msgstr "Projet de test NUnit"
 msgid "NUnit Test failed (click to run)"
 msgstr "Échec du test NUnit (cliquer pour exécuter)"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:16
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:16
 msgid "NUnit test methods should be public"
 msgstr "Les méthodes de test NUnit doivent avoir être publiques"
 
@@ -14525,6 +14490,7 @@ msgstr "N_om :"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:117
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:59
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:60
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:42
 msgid "Name"
 msgstr "Nom"
 
@@ -14696,8 +14662,8 @@ msgstr "_Suivant"
 msgid "Need to select at least two frameworks."
 msgstr "Vous devez sélectionner au moins deux infrastructures."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/NegateIsExpressionCodeRefactoringProvider.cs:34
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/NegateLogicalExpressionCodeRefactoringProvider.cs:37
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/NegateIsExpressionCodeRefactoringProvider.cs:34
 msgid "Negate '{0}'"
 msgstr "Inverser « {0} »"
 
@@ -14805,7 +14771,7 @@ msgstr "Nouveau groupe"
 msgid "New Group..."
 msgstr "Nouveau groupe..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:361
+#: ../src/addins/MacPlatform/MacPlatform.cs:364
 msgid "New Instance"
 msgstr "Nouvelle instance"
 
@@ -14829,7 +14795,7 @@ msgstr "Nouveau profil"
 msgid "New Project"
 msgstr "Nouveau projet"
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewDisplayBinding.cs:60
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewDisplayBinding.cs:58
 #, fuzzy
 msgid "New Source Code Editor"
 msgstr "Éditeur de code source"
@@ -14958,7 +14924,7 @@ msgstr "Document suivant"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:383
+#: ../src/addins/MacPlatform/MacPlatform.cs:386
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -15101,10 +15067,10 @@ msgstr "Aucun fichier exécutable trouvé."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:847
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:849
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:68
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:485
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:530
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:574
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:576
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:489
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:534
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:578
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:580
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:178
 msgid "No selection"
 msgstr "Aucune sélection"
@@ -15147,8 +15113,8 @@ msgstr "Aucune mise à jour trouvée, mais des avertissements ont été signalé
 msgid "No variables found in the selected Makefile"
 msgstr "Aucune variable trouvée dans le Makefile sélectionné"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:15
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:15
 msgid "Non public methods are not found by NUnit"
 msgstr "NUnit ne trouve pas de méthodes non publiques"
 
@@ -15186,7 +15152,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:308
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:138
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -15214,8 +15180,8 @@ msgstr "Pas un projet déployable."
 msgid "Not a glade file according to node name."
 msgstr "N’est pas un fichier glade d’après le nom du nœud."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1018
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1020
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1039
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1041
 msgid "Not a valid git repository."
 msgstr "Dépôt Git non valide."
 
@@ -15235,7 +15201,7 @@ msgstr "Non trouvé"
 msgid "Not implemented"
 msgstr "Non implémenté"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:93
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:92
 msgid "Not installed"
 msgstr "Non installé"
 
@@ -15284,7 +15250,7 @@ msgstr ""
 "solution entière."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:18
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:123
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:118
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:42
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:42
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:94
@@ -15296,7 +15262,7 @@ msgstr "NuGet"
 msgid "NuGet Package"
 msgstr "Paquet NuGet"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:433
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementSdkProjectExtension.cs:116
 msgid ""
 "NuGet packages need to be restored before building. NuGet MSBuild targets "
 "are missing and are needed for building. The NuGet MSBuild targets are "
@@ -15512,7 +15478,7 @@ msgstr "Ouvrir la solution {0}"
 msgid "Open with '{0}'"
 msgstr "Ouvrir avec « {0} »"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:284
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:296
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/LinkCommandEntry.cs:84
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:218
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFeedItem.cs:404
@@ -15824,7 +15790,7 @@ msgstr "Ve_rsion du projet :"
 msgid "Package"
 msgstr "Paquet"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/DotNetCoreNuGetProject.cs:179
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/DotNetCoreNuGetProject.cs:195
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageReferenceNuGetProject.cs:160
 msgid "Package '{0}' already exists in project '{1}'"
 msgstr "Le paquet '{0}' existe déjà dans le projet '{1}'"
@@ -15833,7 +15799,7 @@ msgstr "Le paquet '{0}' existe déjà dans le projet '{1}'"
 msgid "Package '{0}' already installed."
 msgstr "Le paquet '{0}' est déjà installé."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/DotNetCoreNuGetProject.cs:220
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/DotNetCoreNuGetProject.cs:236
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageReferenceNuGetProject.cs:201
 msgid "Package '{0}' does not exist in project '{1}'"
 msgstr "Le paquet '{0}' n'existe pas dans le projet '{1}'"
@@ -15862,7 +15828,7 @@ msgstr "Paramètres du paquet"
 msgid "Package is a development dependency."
 msgstr "Le paquet est une dépendance de développement."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:164
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:175
 msgid "Package is not restored"
 msgstr "Le paquet n’est pas restauré"
 
@@ -15870,7 +15836,7 @@ msgstr "Le paquet n’est pas restauré"
 msgid "Package name not provided."
 msgstr "Nom de paquet non fourni."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:166
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:177
 msgid "Package needs retargeting"
 msgstr "Le paquet nécessite un reciblage"
 
@@ -15882,7 +15848,7 @@ msgstr "La restauration du paquet a échoué pour le projet {0} : {1}"
 msgid "Package restore failed."
 msgstr "La restauration du paquet a échoué."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:241
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:277
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/MonoDevelop.DotNetCore.Tests/DependencyNodeTests.cs:229
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/MonoDevelop.DotNetCore.Tests/DependencyNodeTests.cs:273
 msgid "Package restored with warnings. Expand the package to see the warnings."
@@ -16180,7 +16146,7 @@ msgstr "Pauser le programme"
 msgid "Performance Diagnostics"
 msgstr "Performance Diagnostics"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1897
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1918
 msgid "Performing main compilation…"
 msgstr "Compilation principale en cours…"
 
@@ -16394,7 +16360,7 @@ msgstr "Stratégies à exporter :"
 msgid "Policies to set or replace:"
 msgstr "Stratégies à définir ou à remplacer :"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:539
+#: ../src/addins/MacPlatform/MacPlatform.cs:544
 msgid "Policies..."
 msgstr "Stratégies..."
 
@@ -16415,15 +16381,11 @@ msgstr "Nom de stratégie non spécifié"
 msgid "Policy:"
 msgstr "Stratégie :"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:75
-msgid "Polish"
-msgstr "Polonais"
-
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:37
 msgid "Pop stash"
 msgstr "Appliquer et supprimer la remise"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:377
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:396
 msgid "Popping stash"
 msgstr "Application et suppression de la remise (stash)"
 
@@ -16441,14 +16403,6 @@ msgstr "Portable"
 #: ../src/addins/CSharpBinding/templates/PortableLibrary.xpt.xml:8
 msgid "Portable Library"
 msgstr "Bibliothèque portable"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:76
-msgid "Portuguese"
-msgstr "Portugais"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:77
-msgid "Portuguese - Brazil"
-msgstr "Portugais - Brésil"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:38
 msgid ""
@@ -16613,7 +16567,7 @@ msgstr "Préférer l'expression throw"
 msgid "Preferences"
 msgstr "Préférences"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:538
+#: ../src/addins/MacPlatform/MacPlatform.cs:543
 msgid "Preferences..."
 msgstr "Préférences..."
 
@@ -16677,7 +16631,7 @@ msgid "Prevents relocation of a variable by the garbage collector."
 msgstr "Empêche le récupérateur de mémoire de déplacer une variable."
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:126
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:327
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:325
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:50
 msgid "Preview"
 msgstr "Aperçu"
@@ -16792,7 +16746,7 @@ msgstr "Traiter les modèles T4..."
 msgid "Process all T4 templates."
 msgstr "Traitez tous les modèles T4."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 msgid "Profile"
 msgstr "Profiler"
@@ -16984,6 +16938,12 @@ msgstr ""
 msgid "Project management application"
 msgstr "Application de gestion de projet"
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:607
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:638
+#, fuzzy
+msgid "Project migration failed"
+msgstr "Nom de la configuration du projet"
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:190
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:216
 msgid "Project name not provided."
@@ -16997,7 +16957,7 @@ msgstr "Nom du projet :"
 msgid "Project not built in active configuration"
 msgstr "Projet non généré dans la configuration active"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:510
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:515
 msgid "Project not found"
 msgstr "Projet introuvable"
 
@@ -17034,8 +16994,8 @@ msgstr "Projet correctement nettoyé"
 msgid "Project will be saved at {0}"
 msgstr "Le projet sera enregistré à {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:755
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:767
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:763
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:775
 msgid "Project with guid '{0}' not found."
 msgstr "Le projet avec le guid « {0} » est introuvable."
 
@@ -17154,11 +17114,11 @@ msgstr "Clé publique :"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:235
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Dialogs/PublishToFolderDialog.cs:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:676
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:678
 msgid "Publish"
 msgstr "Publier"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:108
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:128
 msgid "Publish operation completed."
 msgstr "Opération de publication accomplie."
 
@@ -17167,7 +17127,7 @@ msgstr "Opération de publication accomplie."
 msgid "Publish to Folder"
 msgstr "Publier sur un dossier"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:672
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:674
 msgid "Publish to Folder..."
 msgstr "Publier sur un dossier..."
 
@@ -17183,7 +17143,7 @@ msgstr "Publier votre application sur un dossier ou un partage de fichiers"
 msgid "Published"
 msgstr "Publié"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:92
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:112
 msgid "Publishing \"{0}\" Project..."
 msgstr "Publication du projet \"{0}\"..."
 
@@ -17210,7 +17170,7 @@ msgstr ""
 "Envoyer par une opération Push les modifications au référentiel distant "
 "après validation"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1648
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1708
 msgid "Push operation successfully completed."
 msgstr "Opération Push accomplie."
 
@@ -17324,6 +17284,11 @@ msgstr ""
 msgid "Quiet"
 msgstr "Silencieux"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:246
+#, fuzzy
+msgid "Quit"
+msgstr "_Quitter"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:495
 msgid "Quit MonoDevelop"
 msgstr "Quitter MonoDevelop"
@@ -17399,9 +17364,9 @@ msgstr "Application graphique matricielle"
 msgid "Razor"
 msgstr "Razor"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:175
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:318
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:461
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
 msgid "Razor Class Library"
 msgstr "Bibliothèque de classes Razor"
 
@@ -17464,21 +17429,21 @@ msgstr "Bas atteint, poursuite à partir du haut"
 msgid "Reached top, continued from bottom"
 msgstr "Haut atteint, poursuite à partir du bas"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:201
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:344
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:487
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
 msgid "React.js"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:214
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:357
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:500
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
 msgid "React.js and Redux"
 msgstr "React.js et Redux"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:642
 msgid "Read More…"
-msgstr ""
+msgstr "En savoir plus…"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ReadonlyPropertyGenerator.cs:48
 msgid "Read-only properties"
@@ -17498,7 +17463,7 @@ msgstr "Rebaser"
 msgid "Rebase to Branch..."
 msgstr "Rebaser sur la branche..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1183
 msgid "Rebasing"
 msgstr "Rebasage"
 
@@ -17531,7 +17496,7 @@ msgstr "Régénération en cours... (Génération)"
 msgid "Rebuilding... (Clean)"
 msgstr "Régénération en cours... (Nettoyage)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:310
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:329
 msgid "Receiving and indexing objects"
 msgstr "Réception et indexation des objets"
 
@@ -17556,11 +17521,11 @@ msgstr "Modèles récents"
 msgid "Recent _Files"
 msgstr "_Fichiers récents"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:317
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:319
 msgid "Recently used"
 msgstr "Utilisé récemment"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:413
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:415
 msgid "Recently used templates"
 msgstr "Modèles utilisés récemment"
 
@@ -17802,7 +17767,7 @@ msgstr "Chemin d’accès relatif du fichier dans le répertoire d’installatio
 msgid "Relative target path"
 msgstr "Chemin d’accès cible relatif"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:166
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:167
 msgid "Release Lock"
 msgstr "Libérer le verrou"
 
@@ -17851,7 +17816,7 @@ msgstr "Sources distantes"
 msgid "Remote Status"
 msgstr "État à distance"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:971
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:992
 msgid "Remote server error: {0}"
 msgstr "Erreur du serveur distant : {0}"
 
@@ -17879,8 +17844,8 @@ msgstr "Supprimer l’étiquette « case {0} »"
 msgid "Remove 'case {0}' switch section"
 msgstr "Supprimer la section switch « case {0} »"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/CS0759RedundantPartialMethodCodeFixProvider.cs:47
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartCodeFixProvider.cs:42
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/CS0759RedundantPartialMethodCodeFixProvider.cs:47
 msgid "Remove 'partial'"
 msgstr "Supprimer « partial »"
 
@@ -17936,7 +17901,7 @@ msgstr "Supprimer l’attribut"
 msgid "Remove braces from '{0}'"
 msgstr "Supprimer les accolades de « {0} »"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:181
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:182
 msgid "Remove from Ignore List"
 msgstr "Supprimer de la liste Ignorer"
 
@@ -17948,7 +17913,7 @@ msgstr "Supprimer de la liste Ignorer"
 msgid "Remove integer checks:"
 msgstr "Supprimer les contrôles des entiers :"
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:66
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:81
 #, fuzzy
 msgid "Remove last caret"
 msgstr "Supprimer le modèle"
@@ -18267,11 +18232,11 @@ msgstr "{0} remplacé."
 msgid "Replacing      {0}"
 msgstr "Remplacement de      {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:280
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:290
 msgid "Replacing '{0}' in all open documents"
 msgstr "Remplacement de « {0} » dans tous les documents ouverts"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:205
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:209
 msgid "Replacing '{0}' in all projects"
 msgstr "Remplacement de « {0} » dans tous les projets"
 
@@ -18283,11 +18248,11 @@ msgstr "Remplacement de « {0} » dans le document actif"
 msgid "Replacing '{0}' in current selection"
 msgstr "Remplacement de « {0} » dans la sélection active"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:370
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:380
 msgid "Replacing '{0}' in directory '{1}'"
 msgstr "Remplacement de « {0} » dans le répertoire « {1} »"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:249
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:257
 msgid "Replacing '{0}' in project '{1}'"
 msgstr "Remplacement de « {0} » dans le projet « {1} »"
 
@@ -18387,7 +18352,7 @@ msgstr "Condition de réinitialisation"
 msgid "Resets zoom to default"
 msgstr "Rétablit le zoom par défaut"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:184
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:185
 msgid "Resolve Conflicts"
 msgstr "Résoudre les conflits"
 
@@ -18426,6 +18391,11 @@ msgstr "Ressource à utiliser"
 msgid "Resources"
 msgstr "Ressources"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:247
+#, fuzzy
+msgid "Restart"
+msgstr "Redémarrer {0}"
+
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:288
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:289
 msgid "Restart F# Interactive"
@@ -18439,7 +18409,7 @@ msgstr "Redémarrer avec débogage"
 msgid "Restart Without Debugging"
 msgstr "Redémarrer sans débogage"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:382
+#: ../src/addins/MacPlatform/MacPlatform.cs:385
 msgid "Restart and enable"
 msgstr "Redémarrer et activer"
 
@@ -18487,7 +18457,7 @@ msgstr "Restaurer les paquets manquants"
 msgid "Restored '{0}'"
 msgstr "« {0} » restauré"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1135
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1156
 msgid "Restoring local changes"
 msgstr "Restauration des modifications locales"
 
@@ -18503,7 +18473,7 @@ msgstr "Restauration des paquets pour le projet..."
 msgid "Restoring packages for solution..."
 msgstr "Restauration des paquets pour la solution..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1811
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1871
 msgid "Restoring stash for branch {0} failed"
 msgstr "La restauration du remisage de la branche {0} a échoué"
 
@@ -18572,7 +18542,7 @@ msgstr "Récupération de la révision {0}..."
 msgid "Retry"
 msgstr "Réessayer"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:972
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:993
 msgid "Retry authentication?"
 msgstr "Réessayer l'authentification ?"
 
@@ -18644,7 +18614,7 @@ msgstr "« {0} » rétabli"
 msgid "Reverting ..."
 msgstr "Rétablissement en cours..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1459
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1519
 msgid "Reverting files"
 msgstr "Rétablissement des fichiers"
 
@@ -18713,16 +18683,16 @@ msgstr ""
 msgid "Root directory:"
 msgstr "Répertoire racine :"
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:74
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:89
 msgid "Rotate primary caret down"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:78
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:93
 msgid "Rotate primary caret up"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -18929,7 +18899,7 @@ msgstr "Exécution des tests de <b>{0}</b> configuration <b>{1}</b>"
 msgid "Running web server..."
 msgstr "Exécution du serveur web..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1895
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1914
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:798
 msgid "Running {0} ..."
@@ -18970,7 +18940,7 @@ msgstr "Runtime"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:48
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:51
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1180
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1176
 msgid "Runtime Options"
 msgstr "Options du runtime"
 
@@ -18978,11 +18948,11 @@ msgstr "Options du runtime"
 msgid "Runtime Version"
 msgstr "Version du runtime"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:117
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:116
 msgid "Runtime Version: {0}"
 msgstr "Version du runtime : {0}"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:118
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:117
 msgid "Runtime Versions:"
 msgstr "Versions du runtime :"
 
@@ -18992,13 +18962,9 @@ msgid_plural "Runtimes found"
 msgstr[0] "Runtimes trouvés"
 msgstr[1] "Runtimes trouvés"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:74
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:73
 msgid "Runtime: {0}"
 msgstr "Runtime : {0}"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:78
-msgid "Russian"
-msgstr "Russe"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:324
 msgid "SASS, CSS document"
@@ -19024,11 +18990,11 @@ msgstr "SDK"
 msgid "SDK Locations"
 msgstr "Emplacements SDK"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:126
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:125
 msgid "SDK Version: {0}"
 msgstr "Version du SDK : {0}"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:127
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:126
 msgid "SDK Versions:"
 msgstr "Versions du SDK :"
 
@@ -19046,7 +19012,7 @@ msgstr "Kit de développement logiciel (SDK) trouvé à l’emplacement par déf
 msgid "SDK found at specified location."
 msgstr "Kit de développement logiciel (SDK) trouvé à l’emplacement spécifié."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:76
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSystemInformation.cs:75
 msgid "SDK: {0}"
 msgstr "SDK : {0}"
 
@@ -19062,7 +19028,7 @@ msgstr "Mode SSL :"
 msgid "SSL protocol:"
 msgstr "Protocole SSL :"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:194
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:195
 msgid "S_how Log"
 msgstr "Affic_her le journal"
 
@@ -19131,7 +19097,7 @@ msgstr "Enregistrer en Unicode"
 msgid "Save as script"
 msgstr "Enregistrer en tant que script"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:478
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:494
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:322
 msgid "Save as..."
 msgstr "Enregistrer sous..."
@@ -19179,7 +19145,7 @@ msgstr "Enregistrer le projet {0}"
 msgid "Save the active document"
 msgstr "Enregistrer le document actif"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:592
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:608
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "Enregistrer les modifications du document « {0} » avant de fermer ?"
 
@@ -19218,7 +19184,7 @@ msgstr "Enregistrement de l’espace de travail..."
 msgid "Saving item: {0}"
 msgstr "Enregistrement de l’élément : {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1071
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1092
 msgid "Saving local changes"
 msgstr "Enregistrement des modifications locales"
 
@@ -19348,7 +19314,7 @@ msgstr "Rechercher dans les membres"
 msgid "Search Packages..."
 msgstr "Rechercher des paquets..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:651
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:655
 msgid "Search Result"
 msgstr "Résultats de la recherche"
 
@@ -19474,7 +19440,7 @@ msgstr "Rechercher les données d'erreur"
 msgid "Search time: {0} seconds."
 msgstr "Durée de la recherche : {0} secondes."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:302
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:304
 msgid "Search:"
 msgstr "Rechercher :"
 
@@ -19558,7 +19524,7 @@ msgstr[1] "Sélectionner les répertoires"
 #: ../external/xwt/Xwt.XamMac/Xwt.Mac/SaveFileDialogBackend.cs:45
 #, fuzzy
 msgid "Select File"
-msgstr "選取檔案"
+msgstr "Seleziona file"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:45
 msgid "Select File Format"
@@ -19877,12 +19843,12 @@ msgid "Select the categories you want to assign to the desktop entry:"
 msgstr ""
 "Sélectionner les catégories que vous voulez assigner à l’entrée du bureau :"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:132
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:157
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpProjectCompilerOptions.fs:34
 msgid "Select the compile target for the code generation"
 msgstr "Sélectionner la cible de compilation pour la génération de code"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:142
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:167
 msgid "Select the compiler code page"
 msgstr "Sélectionner la page de codes du compilateur"
 
@@ -20062,7 +20028,7 @@ msgstr "Sélectionnez le thème de l'interface utilisateur"
 msgid "Select the verbosity level of the build"
 msgstr "Sélectionnez le niveau de détail de la build"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:147
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:172
 msgid "Select the version of C# to use"
 msgstr "Sélectionner la version de C# à utiliser"
 
@@ -20423,7 +20389,7 @@ msgstr "Afficher la ligne d’exécution en cours"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:88
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1060
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:233
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:238
 msgid "Show Details"
 msgstr "Afficher les détails"
 
@@ -20541,6 +20507,11 @@ msgstr "Afficher l’état à distance"
 msgid "Show Scopes"
 msgstr "Afficher les étendues"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:50
+#, fuzzy
+msgid "Show Start Window"
+msgstr "Fenêtre Démarrer"
+
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:181
 msgid "Show Successful Tests"
 msgstr "Afficher les tests réussis"
@@ -20570,7 +20541,12 @@ msgstr "Afficher les icônes de superposition de la gestion de version"
 msgid "Show Warnings"
 msgstr "Afficher les avertissements"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:196
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:50
+#, fuzzy
+msgid "Show Welcome Page"
+msgstr "Page d’accueil"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:197
 msgid "Show _Authors prior to this change"
 msgstr "Afficher _Authors avant ce changement"
 
@@ -20599,6 +20575,18 @@ msgstr "Afficher le profil intégré"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:87
 msgid "Show categories"
 msgstr "Afficher les catégories"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:101
+#, fuzzy
+msgid "Show completion item filters"
+msgstr ""
+"_Afficher la liste de saisie semi-automatique après la frappe d’un caractère"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:105
+#, fuzzy
+msgid "Show completion list after a character is deleted"
+msgstr ""
+"_Afficher la liste de saisie semi-automatique après la frappe d’un caractère"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:73
 msgid "Show error pad:"
@@ -20902,10 +20890,6 @@ msgstr "{0} ignoré : le fichier existe."
 msgid "Skipping project since output files are up to date"
 msgstr "Projet ignoré, car les fichiers de sortie sont à jour."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:79
-msgid "Slovenian"
-msgstr "Slovène"
-
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:15
 msgid "Small utility application, 'Accessories'"
 msgstr "Petite application utilitaire, « Accessoires »"
@@ -20989,7 +20973,7 @@ msgstr "Solution extraite"
 msgid "Solution could not be deployed: "
 msgstr "Nous n’avons pas pu déployer la solution : "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:828
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:826
 msgid "Solution loaded."
 msgstr "Solution chargée."
 
@@ -21018,9 +21002,9 @@ msgstr "Solution enregistrée."
 msgid "Solution template doesn't have any project templates"
 msgstr "Le modèle de solution ne comporte pas de modèle de projet"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1498
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1496
 msgid "Solution was deleted and will be closed. {0}"
-msgstr ""
+msgstr "La solution a été supprimée et va être fermée. {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:224
 msgid "Solution was successfully deployed."
@@ -21060,9 +21044,9 @@ msgstr "Certains documents sont actuellement ouverts"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:82
 msgid "Some files could not be saved."
-msgstr ""
+msgstr "Certains fichiers n'ont pas pu être enregistrés."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1116
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1114
 msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
@@ -21135,8 +21119,8 @@ msgstr "Trier en catégories"
 msgid "Sort the selected lines"
 msgstr "Trier les lignes sélectionnées"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/TextEditorViewContent.cs:98
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:331
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/TextEditorViewContent.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:329
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:74
 msgid "Source"
 msgstr "Source"
@@ -21175,7 +21159,7 @@ msgstr ""
 "Il manque des informations sources dans les informations de débogage de ce "
 "module"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:125
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:120
 msgid "Sources"
 msgstr "Sources"
 
@@ -21221,10 +21205,6 @@ msgstr "Espaces avant l’affectation"
 msgid "Spacing"
 msgstr "Espacement"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:80
-msgid "Spanish"
-msgstr "Espagnol"
-
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:333
 msgid "Spark View template"
 msgstr "Modèle d’affichage Spark"
@@ -21237,7 +21217,7 @@ msgstr "Version spécifique"
 msgid "Specified makefile is invalid: {0}"
 msgstr "Le Makefile spécifié n’est pas valide : {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:479
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:484
 msgid "Specified version not found: expected {0}, found {1}"
 msgstr ""
 "Version spécifiée introuvable : version attendue {0}, version trouvée {1}"
@@ -21429,8 +21409,8 @@ msgstr "Scinder la déclaration et l’attribution"
 msgid "Split declaration list"
 msgstr "Scinder la liste des déclarations"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/SplitIfWithAndConditionInTwoCodeRefactoringProvider.cs:48
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/SplitIfWithOrConditionInTwoCodeRefactoringProvider.cs:48
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/SplitIfWithAndConditionInTwoCodeRefactoringProvider.cs:48
 msgid "Split into two 'if' statements"
 msgstr "Scinder en deux instructions « if »"
 
@@ -21507,7 +21487,7 @@ msgstr "Démarrer le débogage sur une console externe"
 msgid "Start Session Recorder"
 msgstr "Démarrer l’enregistreur de session"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:49
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:52
 msgid "Start Window"
 msgstr "Fenêtre Démarrer"
 
@@ -21576,7 +21556,7 @@ msgstr "Démarrer le projet avec les variables d'environnement '{0}'"
 msgid "Start tool {0}"
 msgstr "Démarrer l'outil {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:245
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:252
 msgid "Starting {0}"
 msgstr "Démarrage de {0}"
 
@@ -21596,15 +21576,15 @@ msgstr "Remiser (stash)"
 msgid "Stash Manager"
 msgstr "Gestionnaire de dissimulation"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1213
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1234
 msgid "Stash and Merge"
 msgstr "Remiser et fusionner"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1163
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1184
 msgid "Stash and Rebase"
 msgstr "Remiser et rebaser"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1841
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1901
 msgid "Stash and Switch"
 msgstr "Remiser et basculer"
 
@@ -21637,7 +21617,7 @@ msgstr "Remiser/Déremiser les modifications locales avant/après le rebasage"
 msgid "Stash/unstash local changes before/after the merge"
 msgstr "Remiser/Déremiser les modifications locales avant/après la fusion"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:405
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:424
 msgid "Stashing changes"
 msgstr "Dissimulation des modifications"
 
@@ -21713,7 +21693,7 @@ msgstr "Arrêter"
 msgid "Stop Debugger"
 msgstr "Arrêter le débogueur"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:123
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:132
 msgid "Stop Debugging"
 msgstr "Arrêter le débogage"
 
@@ -21910,7 +21890,7 @@ msgid "Surround Selection With..."
 msgstr "Entourer la sélection avec..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:108
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:231
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:251
 msgid "Surround With..."
 msgstr "Entourer de..."
 
@@ -21925,10 +21905,6 @@ msgstr "Paramètre de permutation"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
 msgid "Swaps the characters on either side of the caret"
 msgstr "Permute les caractères de part et d’autre du curseur"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:81
-msgid "Swedish"
-msgstr "Suédois"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
@@ -22018,14 +21994,14 @@ msgstr "Passer à l'onglet {0}"
 msgid "Switch to {0}"
 msgstr "Passer à {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1832
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1852
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1892
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1912
 msgid "Switching to branch {0}"
 msgstr "Basculement vers la branche{0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1845
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1869
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1873
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1905
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1933
 msgid "Switching to branch {0} failed"
 msgstr "Le basculement vers la branche {0} a échoué"
 
@@ -22493,7 +22469,7 @@ msgstr "Texte"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:375
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:404
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:56
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:71
 msgid "Text Editor"
 msgstr "Éditeur de texte"
 
@@ -22507,8 +22483,8 @@ msgid "Text Style"
 msgstr "Style de texte"
 
 #: ../src/addins/AspNet/Templates/PreprocessedRazorTemplate.xft.xml:9
-#: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4PreprocessedTemplateCSharp.xft.xml:10
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4TemplateCSharp.xft.xml:10
+#: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4PreprocessedTemplateCSharp.xft.xml:10
 msgid "Text Templating"
 msgstr "Création de modèles de texte"
 
@@ -22516,7 +22492,7 @@ msgstr "Création de modèles de texte"
 msgid "Text document"
 msgstr "Document texte"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:120
 msgid "Text file"
 msgstr "Fichier texte"
 
@@ -22727,10 +22703,10 @@ msgid "The application could not be started"
 msgstr "Impossible de démarrer l'application"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1940
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1959
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:284
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:256
 msgid "The application exited with code: {0}"
 msgstr "L’application s’est fermée avec le code : {0}"
 
@@ -22817,7 +22793,7 @@ msgstr ""
 msgid "The current scheme has conflicting key bindings"
 msgstr "Le schéma actuel présente des conflits de combinaisons de touches"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:121
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:130
 msgid ""
 "The debugger is currently running and will have to be stopped. Do you want "
 "to stop debugging?"
@@ -22825,7 +22801,7 @@ msgstr ""
 "Le débogueur en cours d’exécution va devoir être arrêté. Voulez-vous arrêter "
 "le débogage ?"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:902
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:912
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs:34
 msgid ""
 "The debugger runtime is not responding. You can wait for it to recover, or "
@@ -22945,7 +22921,7 @@ msgstr "Le fichier « {0} » est actuellement ouvert."
 msgid "The file '{0}' is not a known project file format."
 msgstr "Le fichier « {0} » n’a pas un format de fichier de projet connu."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:420
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:436
 msgid "The file could not be saved."
 msgstr "Nous n’avons pas pu enregistrer le fichier."
 
@@ -23127,11 +23103,11 @@ msgstr "L’installation a échoué !"
 msgid "The installation has completed with warnings."
 msgstr "L’installation s’est terminée avec des avertissements."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:590
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:591
 msgid "The key combination ({0}) has conflicts."
 msgstr "La combinaison de touches ({0}) génère des conflits."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:537
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:533
 msgid "The key combination ({0}, {1}) is not a command."
 msgstr "La combinaison de touches ({0}, {1}) n’est pas une commande."
 
@@ -23163,7 +23139,7 @@ msgstr "Liste des dossiers"
 msgid "The location of the assembly."
 msgstr "Emplacement de l’assembly."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/TextEditorViewContent.cs:337
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/TextEditorViewContent.cs:358
 msgid "The main source editor"
 msgstr "Éditeur source principal"
 
@@ -23252,7 +23228,7 @@ msgstr ""
 "Le nom que vous avez choisi contient des caractères non autorisés. "
 "Choisissez un autre nom."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:55
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:53
 msgid ""
 "The operation could not be completed because a shared library is missing: "
 msgstr ""
@@ -23333,7 +23309,7 @@ msgstr "La valeur du port est en dehors de la plage autorisée"
 msgid "The project '{0}' has already been added."
 msgstr "Le projet « {0} » a déjà été ajouté."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1120
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1118
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:169
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
@@ -23399,7 +23375,7 @@ msgstr "Projet dans lequel le nouveau type va être généré."
 msgid "The project or assembly from which this component originates."
 msgstr "Projet ou assembly dont ce composant provient."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:41
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:61
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr "Le projet sera publié dans le référentiel « {0} », module « {1} »."
 
@@ -23578,6 +23554,11 @@ msgstr "La désinstallation a échoué !"
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:217
 msgid "The uninstallation has completed with warnings."
 msgstr "La désinstallation s’est terminée avec des avertissements."
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:616
+#, fuzzy
+msgid "The user choose not to migrate the project"
+msgstr "Voulez-vous vraiment publier le projet ?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs:41
 msgid ""
@@ -24194,7 +24175,7 @@ msgstr "Les leurs"
 msgid "Themed Icons"
 msgstr "Icônes à thème"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1840
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1900
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
@@ -24204,7 +24185,7 @@ msgstr ""
 "branche <b>{0}</b>. Voulez-vous remiser les changements et continuer le "
 "basculement sur une branche ?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1061
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1082
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue?"
@@ -24297,6 +24278,12 @@ msgstr "Il existe déjà un lien nommé « {0} » dans le répertoire cible"
 msgid "There must be at least one configuration."
 msgstr "Il doit y avoir au moins une configuration."
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:262
+msgid ""
+"There was a problem loading one or more extensions and {0} needs to be "
+"restarted."
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:182
 msgid "There was an error renaming the directory."
 msgstr ""
@@ -24358,7 +24345,7 @@ msgstr ""
 "stratégie ({1})."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:746
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:608
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:630
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
@@ -24545,8 +24532,8 @@ msgstr "En « do...while »"
 msgid "To 'for'"
 msgstr "En « for »"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertSwitchToIfCodeRefactoringProvider.cs:47
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertSelectCaseToIfCodeRefactoringProvider.cs:53
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertSwitchToIfCodeRefactoringProvider.cs:47
 msgid "To 'if'"
 msgstr "En « if »"
 
@@ -24582,8 +24569,8 @@ msgstr "En « {0}= »"
 msgid "To abstract"
 msgstr "En abstrait"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertLambdaToAnonymousMethodCodeRefactoringProvider.cs:41
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertMethodGroupToAnonymousMethodCodeRefactoringProvider.cs:54
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertLambdaToAnonymousMethodCodeRefactoringProvider.cs:41
 msgid "To anonymous method"
 msgstr "En méthode anonyme"
 
@@ -24644,9 +24631,9 @@ msgstr "En chaîne interpolée"
 msgid "To know more about this topic see the article:"
 msgstr "Pour en savoir plus à ce sujet, voir l’article :"
 
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertMethodGroupToLambdaCodeRefactoringProvider.cs:54
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertAnonymousMethodToLambdaCodeRefactoringProvider.cs:43
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertLambdaStatementToExpressionCodeRefactoringProvider.cs:78
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertMethodGroupToLambdaCodeRefactoringProvider.cs:54
 msgid "To lambda expression"
 msgstr "En expression lambda"
 
@@ -24822,7 +24809,7 @@ msgstr "Barre d'outils de la boîte à outils"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:329
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:327
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:49
 msgid "Tools"
@@ -24955,7 +24942,6 @@ msgstr "Traiter les avertissements comme des _erreurs"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:165
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:202
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:224
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:82
 msgid "Turkish"
 msgstr "Turc"
 
@@ -25088,7 +25074,7 @@ msgstr "_Mettre à jour les traductions"
 msgid "U_se Country Code"
 msgstr "Utiliser le code du pays"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1016
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1037
 msgid "Unable to authorize credentials for the repository."
 msgstr ""
 "Impossible d’autoriser les informations d’identification pour le référentiel."
@@ -25119,7 +25105,7 @@ msgstr ""
 "Motif : \n"
 "{2}\"n"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/DotNetCoreNuGetProject.cs:268
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/DotNetCoreNuGetProject.cs:284
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageReferenceNuGetProject.cs:249
 msgid "Unable to create package spec for project. '{0}'"
 msgstr ""
@@ -25146,6 +25132,11 @@ msgstr "Impossible de chiffrer les mots de passe de la source du paquet."
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:257
 msgid "Unable to find 'resgen' tool."
 msgstr "Impossible de trouver l’outil « resgen »."
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SdkResolution.cs:103
+#, fuzzy
+msgid "Unable to find SDK '{0}'"
+msgstr "Fichier configure.in introuvable dans « {0} »."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1714
 msgid "Unable to find configure.in at '{0}'."
@@ -25212,11 +25203,11 @@ msgid "Unable to save package source changes.{0}{0}{1}"
 msgstr ""
 "Impossible d’enregistrer les modifications de la source du paquet.{0}{0}{1}"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:740
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:755
 msgid "Unable to set the next statement to this location."
 msgstr "Impossible d'affecter cet emplacement à l'instruction suivante."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:738
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:753
 msgid ""
 "Unable to set the next statement. The next statement cannot be set to "
 "another function."
@@ -25349,7 +25340,7 @@ msgstr "Unix"
 msgid "Unix / Mac"
 msgstr "Unix/Mac"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:120
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:122
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs:114
 msgid "Unknown"
 msgstr "Inconnu"
@@ -25385,11 +25376,14 @@ msgid "Unknown parser error: {0}"
 msgstr "Erreur d’analyseur inconnu : {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:432
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:790
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:548
 msgid "Unknown project type"
 msgstr "Type de projet inconnu"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:426
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:795
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:803
 msgid "Unknown project type: {0}"
 msgstr "Type de projet inconnu : {0}"
 
@@ -25409,9 +25403,9 @@ msgstr "Widget inconnu :"
 msgid "Unload"
 msgstr "Décharger"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1479
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1477
 msgid "Unloading…"
-msgstr ""
+msgstr "Déchargement…"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:347
 msgid "Unloads selected project"
@@ -25458,6 +25452,8 @@ msgid "Unversioned"
 msgstr "Sans version"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Components.FolderListSelector.cs:91
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:205
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:211
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinInfoView.cs:220
 msgid "Update"
 msgstr "Mettre à jour"
@@ -25520,6 +25516,12 @@ msgstr "Mettre à jour le paquet sélectionné"
 msgid "Update the binding for this command"
 msgstr "Mettre à jour la combinaison de touches de cette commande"
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:203
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:213
+#, fuzzy
+msgid "Update to {0}"
+msgstr "Mettre à jour « {0} »"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:49
 msgid "Update welcome page from internet"
 msgstr "Mettre à jour la page d’accueil d’Internet"
@@ -25546,7 +25548,7 @@ msgstr "Met à jour tous les fichiers de traduction."
 msgid "Updates this translation."
 msgstr "Met à jour cette traduction."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:951
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:972
 msgid "Updating"
 msgstr "Mise à jour"
 
@@ -25983,7 +25985,7 @@ msgstr ""
 msgid "Verify All"
 msgstr "Vérifier tout"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:214
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:215
 msgid "Versio_n Control"
 msgstr "Gestio_n de version"
 
@@ -25992,7 +25994,7 @@ msgstr "Gestio_n de version"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:330
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:68
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
@@ -26045,7 +26047,7 @@ msgstr "Contrainte de version"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:23
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:42
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:108
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:295
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:296
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:669
 msgid "Version Control"
 msgstr "Gestion de version"
@@ -26080,18 +26082,14 @@ msgstr "Contrainte de version pour le paquet."
 msgid "Version control command failed."
 msgstr "La commande de gestion de version a échoué."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:59
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:62
-msgid "Version control operation failed: "
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:85
+#, fuzzy
+msgid "Version control operation failed"
 msgstr "Échec de l’opération de gestion de version : "
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:105
 msgid "Version of the assembly."
 msgstr "Version de l’assembly."
-
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:145
-msgid "Version {0}"
-msgstr "Version {0}"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:152
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:211
@@ -26200,7 +26198,7 @@ msgstr "Style visuel"
 msgid "WARNING: "
 msgstr "AVERTISSEMENT : "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1106
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1104
 msgid ""
 "WARNING: Some documents may need to be closed, and unsaved data will be "
 "lost. You will be asked to save the unsaved documents."
@@ -26209,7 +26207,7 @@ msgstr ""
 "entraînant la perte des données non enregistrées. Vous serez invité à "
 "enregistrer les documents non enregistrés."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1108
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1106
 msgid ""
 "WARNING: Some documents may need to be reloaded or closed, and unsaved data "
 "will be lost. You will be asked to save the unsaved documents."
@@ -26218,7 +26216,7 @@ msgstr ""
 "fermés, entraînant la perte des données non enregistrées. Vous serez invité "
 "à enregistrer les documents non enregistrés."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1108
 msgid ""
 "WARNING: Some files may need to be reloaded, and unsaved data will be lost. "
 "You will be asked to save the unsaved files."
@@ -26231,11 +26229,11 @@ msgstr ""
 msgid "WARNING: The branch has not yet been merged to HEAD"
 msgstr "AVERTISSEMENT : la branche n’a pas encore été fusionnée en HEAD"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1565
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1596
 msgid "Waiting for debugger"
 msgstr "En attente du débogueur"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1537
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1568
 msgid "Waiting for debugger to connect..."
 msgstr "En attente de la connexion du débogueur..."
 
@@ -26315,12 +26313,12 @@ msgid "Watch"
 msgstr "Espion"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
-#: ../src/addins/AspNet/Templates/EmptyCssFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyCssFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:11
-#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/npmConfigurationFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:11
 msgid "Web"
 msgstr "Web"
 
@@ -26332,23 +26330,23 @@ msgstr "API web"
 msgid "Web API Controller Class"
 msgstr "Classe de contrôleur d'API web"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:278
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:421
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:564
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
 msgid "Web Application"
 msgstr "Application web"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:162
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:305
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:435
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:448
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:578
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:591
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:638
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:650
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:151
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:294
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:437
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:580
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:640
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:652
 msgid "Web Application (Model-View-Controller)"
 msgstr "Application web (Model-View-Controller)"
 
@@ -26430,7 +26428,7 @@ msgid "Web service not found."
 msgstr "Service web introuvable."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:697
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:49
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:52
 msgid "Welcome Page"
 msgstr "Page d’accueil"
 
@@ -26580,7 +26578,7 @@ msgstr "Où voulez-vous enregistrer cette configuration ?"
 msgid "Where your app should listen for connections"
 msgstr "Emplacement où votre application doit écouter les connexions"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:144
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:169
 msgid "Whether or not to include a reference to mscorlib.dll"
 msgstr "Indiquer s'il faut ou non inclure une référence à mscorlib.dll"
 
@@ -26627,7 +26625,7 @@ msgid "Widgets"
 msgstr "Widgets"
 
 #: ../src/addins/VBNetBinding/Gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:143
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:154
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:158
 msgid "Win32 Icon:"
 msgstr "Icone Win32 :"
 
@@ -26705,9 +26703,9 @@ msgstr "Nom de l’espace de travail"
 msgid "Workspace Name:"
 msgstr "Nom de l’espace de travail :"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1500
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1498
 msgid "Workspace item was deleted and will be closed. {0}"
-msgstr ""
+msgstr "L'élément d'espace de travail a été supprimé et va être fermé. {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:368
 msgid "Workspace saved."
@@ -26827,7 +26825,7 @@ msgstr "Serveur web XSP"
 msgid "Xamarin News"
 msgstr "Actualités de Xamarin"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -26835,12 +26833,12 @@ msgstr ""
 "Les projets Xamarin.Mac ne sont pas pris en charge dans MonoDevelop sous "
 "Windows. Vous devez utiliser Xamarin Studio sur Mac."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:278
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -27466,7 +27464,7 @@ msgstr "_Convertir les tabulations en espaces"
 msgid "_Copy"
 msgstr "_Copier"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:190
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:191
 msgid "_Copy Revision"
 msgstr "_Copier la révision"
 
@@ -27732,7 +27730,7 @@ msgid "_Icon Name:"
 msgstr "Nom d’_icône :"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:741
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:709
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:721
 msgid "_Ignore all"
 msgstr "_Ignorer tout"
 
@@ -27794,7 +27792,7 @@ msgid "_Jump To {0}"
 msgstr "_Passer à {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:725
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:704
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:716
 msgid "_Keep changes"
 msgstr "_Conserver les modifications"
 
@@ -27823,7 +27821,7 @@ msgid "_Line..."
 msgstr "_Ligne..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:986
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:517
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:539
 msgid "_Load from autosave"
 msgstr "_Charger à partir de l’enregistrement automatique"
 
@@ -27848,7 +27846,7 @@ msgid "_Lowercase"
 msgstr "_Minuscules"
 
 #: ../src/addins/VBNetBinding/Gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:219
-#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:175
+#: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:179
 msgid "_Main Class:"
 msgstr "_Classe principale :"
 
@@ -28048,11 +28046,11 @@ msgstr "_Inviter à enregistrer les modifications dans les documents ouverts"
 msgid "_Properties"
 msgstr "_Propriétés"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:40
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:60
 msgid "_Publish"
 msgstr "_Publier"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:153
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:154
 msgid "_Publish in Version Control..."
 msgstr "_Publier dans la gestion de version..."
 
@@ -28094,12 +28092,12 @@ msgid "_Reload"
 msgstr "_Recharger"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:734
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:708
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:720
 msgid "_Reload all"
 msgstr "_Recharger tout"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:717
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:703
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:715
 msgid "_Reload from disk"
 msgstr "_Recharger à partir du disque"
 
@@ -28252,7 +28250,7 @@ msgstr "_Définir en tant que projet de démarrage"
 msgid "_Shortcut:"
 msgstr "_Raccourci :"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:192
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:193
 msgid "_Show Diff"
 msgstr "_Afficher Diff"
 
@@ -28455,7 +28453,7 @@ msgid "_Use custom author information for this solution"
 msgstr "_Utiliser les informations d’auteur personnalisées pour cette solution"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:970
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:514
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:536
 msgid "_Use original file"
 msgstr "_Utiliser le fichier d’origine"
 
@@ -28467,9 +28465,9 @@ msgstr "_Paramètres régionaux définis par l’utilisateur"
 msgid "_Validate"
 msgstr "_Valider"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:203
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:236
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:245
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:204
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:237
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:246
 msgid "_Version Control"
 msgstr "_Gestion de version"
 
@@ -28872,7 +28870,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "type * ptr = {0} type [ expr ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2030
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2093
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:635
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:643
 msgid "working copy"
@@ -28916,10 +28914,10 @@ msgstr "{0:0.00} Mo"
 msgid "{0:0.0} MBytes"
 msgstr "{0:0.0} Mo"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RoslynUsageAnalyzer.cs:22
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertClosureToMethodGroupAnalyzer.cs:18
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:16
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorAnalyzer.cs:15
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RoslynUsageAnalyzer.cs:22
 msgid "{0}"
 msgstr "{0}"
 
@@ -28967,6 +28965,11 @@ msgstr ""
 "    instruction\n"
 "    instruction-saut]\n"
 "}}"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:132
+#, fuzzy
+msgid "{0} (Unknown Version)"
+msgstr "Erreur inconnue"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1154
 msgid "{0} ([initializers]; [expression]; [iterators]) statement"
@@ -29076,13 +29079,13 @@ msgstr ""
 msgid "{0} (type)"
 msgstr "{0} (type)"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:620
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:628
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
 msgstr ""
 "{0} ({1}) : le projet avec le guid = « {2} » est introuvable ou n’a pas été "
 "chargé. Il est ignoré."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:655
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:663
 msgid ""
 "{0} ({1}) : Unknown action. Only ActiveCfg, Build.0 and Deploy.0 supported."
 msgstr ""
@@ -29197,6 +29200,12 @@ msgid ""
 msgstr ""
 "{0} existent déjà pour cette solution. Voulez-vous les remplacer ? (O/N)"
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:179
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:184
+#, fuzzy
+msgid "{0} available"
+msgstr "({0} disponible)"
+
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1051
 msgid ""
 "{0} block\n"
@@ -29270,7 +29279,7 @@ msgstr[1] "il y a {0} jours"
 msgid "{0} declaration"
 msgstr "{0} déclaration"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1902
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1923
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1265
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1794
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
@@ -29310,7 +29319,7 @@ msgstr[1] ""
 "{0} fichiers traités au total. {1} générés avec succès, {2} avec des "
 "avertissements, {3} avec des erreurs"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:381
+#: ../src/addins/MacPlatform/MacPlatform.cs:384
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -29339,7 +29348,7 @@ msgstr ""
 msgid "{0} is a directory"
 msgstr "{0} est un répertoire"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:669
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:112
 msgid "{0} is already opened"
 msgstr "{0} est déjà ouvert"
 
@@ -29619,7 +29628,7 @@ msgstr[1] "{0} mises à jour disponibles"
 msgid "{0} updated with warnings."
 msgstr "{0} mis à jour avec des avertissements."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1903
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1924
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1266
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1795
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:362
@@ -29688,7 +29697,7 @@ msgstr "{0}, Ligne {1}"
 msgid "{0}. (dirty)"
 msgstr "{0}. (intégrité compromise)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementMSBuildExtension.cs:82
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementMSBuildExtension.cs:88
 msgid "{0}. Please see the Package Console for more details."
 msgstr "{0}. Pour plus d'informations, consultez la Console des paquets."
 
@@ -29712,6 +29721,10 @@ msgstr "{0} h {1} min"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputNode.cs:390
 msgid "{0}m {1}s"
 msgstr "{0} min {1} s"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:615
+msgid "{1} cannot open the project '{0}' unless it is migrated."
+msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
 msgid "{n,m}"
@@ -29741,24 +29754,70 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid ""
-#~ ".NET Core {0} SDK is not installed. This is required to build and run ."
-#~ "NET Core {0} projects."
-#~ msgstr ""
-#~ "Le kit SDK .NET Core {0} n'est pas installé. Il est obligatoire pour "
-#~ "générer et exécuter des projets .NET Core {0}."
+#~ msgid "Catalan"
+#~ msgstr "Catalan"
 
-#~ msgid "Could not open file: {0}"
-#~ msgstr "Nous n’avons pas pu ouvrir le fichier : {0}"
+# Traditionnel ?
+#~ msgid "Chinese - China"
+#~ msgstr "Chinois - Chine"
 
-#~ msgid "New Editor Preview"
-#~ msgstr "Préversion du nouvel éditeur"
+# Traditionnel ?
+#~ msgid "Chinese - Taiwan"
+#~ msgstr "Chinois - Taïwan"
 
-#~ msgid ""
-#~ "The version of the .NET Core SDK currently installed ({0}) is not "
-#~ "supported and continuing to use it may result in a broken tooling "
-#~ "experience."
-#~ msgstr ""
-#~ "La version du SDK .NET Core actuellement installée ({0}) n'est pas prise "
-#~ "en charge et son utilisation peut entraîner un dysfonctionnement des "
-#~ "outils."
+#~ msgid "Current package version"
+#~ msgstr "Version du paquet actuel"
+
+#~ msgid "Czech"
+#~ msgstr "Tchèque"
+
+#~ msgid "Danish"
+#~ msgstr "Danois"
+
+#~ msgid "Dutch"
+#~ msgstr "Néerlandais"
+
+#~ msgid "English"
+#~ msgstr "Anglais"
+
+#~ msgid "French"
+#~ msgstr "Français"
+
+#~ msgid "Galician"
+#~ msgstr "Galicien"
+
+#~ msgid "German"
+#~ msgstr "Allemand"
+
+#~ msgid "Hungarian"
+#~ msgstr "Hongrois"
+
+#~ msgid "Indonesian"
+#~ msgstr "Indonésien"
+
+#~ msgid "Italian"
+#~ msgstr "Italien"
+
+#~ msgid "Polish"
+#~ msgstr "Polonais"
+
+#~ msgid "Portuguese"
+#~ msgstr "Portugais"
+
+#~ msgid "Portuguese - Brazil"
+#~ msgstr "Portugais - Brésil"
+
+#~ msgid "Russian"
+#~ msgstr "Russe"
+
+#~ msgid "Slovenian"
+#~ msgstr "Slovène"
+
+#~ msgid "Spanish"
+#~ msgstr "Espagnol"
+
+#~ msgid "Swedish"
+#~ msgstr "Suédois"
+
+#~ msgid "Version {0}"
+#~ msgstr "Version {0}"
