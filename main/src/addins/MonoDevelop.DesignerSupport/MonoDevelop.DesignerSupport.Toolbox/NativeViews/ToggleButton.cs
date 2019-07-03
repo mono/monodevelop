@@ -34,7 +34,7 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	class ToggleButton : NSButton, INativeChildView
+	class ToggleButton : NSButton
 	{
 		public event EventHandler Focused;
 
@@ -69,22 +69,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 				PerformClick (this);
 			}
 		}
-
-		#region INativeChildView
-
-		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-			if (ev.Event.State == Gdk.ModifierType.None && (ev.Event.Key == Gdk.Key.KP_Enter || ev.Event.Key == Gdk.Key.KP_Space)) {
-				PerformClick (this);
-			}
-		}
-
-		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
-		{
-
-		}
-
-		#endregion
 	}
 }
 #endif
