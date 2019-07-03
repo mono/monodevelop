@@ -182,6 +182,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 			cancelButton.Clicked -= OnCancel;
 			okButton.Clicked -= OnOkClicked;
 
+			if (repoContainer != null) {
+				repoContainer = null;
+			}
+
 			base.Dispose (disposing);
 		}
 
