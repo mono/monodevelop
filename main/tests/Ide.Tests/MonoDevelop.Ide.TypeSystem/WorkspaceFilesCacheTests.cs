@@ -296,7 +296,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var ext = p.GetFlavor<DelayGetReferencesProjectExtension> ();
 				ext.TaskCompletionSource.TrySetResult (true);
-				Assert.IsTrue (ext.IsCalled);
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 				TypeSystemServiceTestExtensions.UnloadSolution (sol);
@@ -362,7 +361,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var ext = project.GetFlavor<DelayGetReferencesProjectExtension> ();
 				ext.TaskCompletionSource.TrySetResult (true);
-				Assert.IsFalse (ext.IsCalled);
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 				TypeSystemServiceTestExtensions.UnloadSolution (sol);
@@ -461,11 +459,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		class DelayGetReferencesProjectExtension : DotNetProjectExtension
 		{
 			public TaskCompletionSource<bool> TaskCompletionSource = new TaskCompletionSource<bool> ();
-			public bool IsCalled;
 
 			protected internal override async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 			{
-				IsCalled = true;
 				await TaskCompletionSource.Task;
 				return await base.OnGetReferencedAssemblies (configuration);
 			}
