@@ -32,7 +32,7 @@ using AppKit;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	class SearchTextField : NSSearchField, INativeChildView
+	class SearchTextField : NSSearchField
 	{
 		public event EventHandler Focused;
 
@@ -46,20 +46,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}
-
-		#region INativeChildView
-
-		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-
-		}
-
-		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
-		{
-
-		}
-
-		#endregion
 	}
 }
 #endif

@@ -41,13 +41,6 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	interface INativeChildView
-	{
-		event EventHandler Focused;
-		void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev);
-		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev);
-	}
-
 	class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
 		const string ToolboxItemContextMenuCommand = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu";
@@ -60,7 +53,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler DragBegin;
 		public event EventHandler DragSourceUnset;
 		public event EventHandler<Gtk.TargetEntry []> DragSourceSet;
-		public event EventHandler ContentFocused;
 
 		public ItemToolboxNode SelectedNode => toolboxWidget.SelectedItem?.Node;
 
@@ -108,10 +100,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.AccessibilityTitle = GettextCatalog.GetString ("Search Toolbox");
 			filterEntry.AccessibilityHelp = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
 			filterEntry.Activated += FilterTextChanged;
-			filterEntry.Focused += FilterEntry_Focused;
 
 			horizontalStackView.AddArrangedSubview (filterEntry);
-			AddWidgetToFocusChain (filterEntry);
 
 			filterEntry.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultLow, NSLayoutConstraintOrientation.Horizontal);
 			filterEntry.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultLow, NSLayoutConstraintOrientation.Horizontal);
@@ -122,10 +112,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
 			catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show categories");
 			catToggleButton.Activated += ToggleCategorisation;
-			catToggleButton.Focused += CatToggleButton_Focused;
 
 			horizontalStackView.AddArrangedSubview (catToggleButton);
-			AddWidgetToFocusChain (catToggleButton);
 
 			catToggleButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
 			catToggleButton.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
@@ -136,10 +124,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout");
 			compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
 			compactModeToggleButton.Activated += ToggleCompactMode;
-			compactModeToggleButton.Focused += CompactModeToggleButton_Focused;
 
 			horizontalStackView.AddArrangedSubview (compactModeToggleButton);
-			AddWidgetToFocusChain (compactModeToggleButton);
 
 			compactModeToggleButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
 			compactModeToggleButton.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
@@ -150,10 +136,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Activated += ToolboxAddButton_Clicked;
-			toolboxAddButton.Focused += ToolboxAddButton_Focused;
 
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
-			AddWidgetToFocusChain (toolboxAddButton);
 
 			toolboxAddButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
 			toolboxAddButton.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
@@ -163,7 +147,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget = new MacToolboxWidget (container) {
 				AccessibilityTitle = GettextCatalog.GetString ("Toolbox Toolbar"),
 			};
-			AddWidgetToFocusChain (toolboxWidget);
 
 			var scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
@@ -181,7 +164,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.Changed += FilterEntry_Changed;
 
 			toolboxWidget.DragBegin += ToolboxWidget_DragBegin;
-			toolboxWidget.MouseDownActivated += ToolboxWidget_MouseDownActivated;
 			toolboxWidget.ActivateSelectedItem += ToolboxWidget_ActivateSelectedItem;
 			toolboxWidget.MenuOpened += ToolboxWidget_MenuOpened;
 			toolboxWidget.RegionCollapsed += FilterTextChanged;
@@ -216,141 +198,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Refilter ();
 		}
 
-		void ToolboxAddButton_Focused (object sender, EventArgs e)
-		{
-			ChangeFocusedView (sender as INativeChildView);
-		}
-
-		void CompactModeToggleButton_Focused (object sender, EventArgs e)
-		{
-			ChangeFocusedView (sender as INativeChildView);
-		}
-
-		void CatToggleButton_Focused (object sender, EventArgs e)
-		{
-			ChangeFocusedView (sender as INativeChildView);
-		}
-
-		void FilterEntry_Focused (object sender, EventArgs e)
-		{
-			ChangeFocusedView (sender as INativeChildView);
-		}
-
 		void ToolboxWidget_DragBegin (object sender, EventArgs e)
 		{
 			if (this.toolboxWidget.SelectedItem != null) {
 				DragBegin?.Invoke (this, e);
 			}
-		}
-
-		void ToolboxWidget_MouseDownActivated (NSEvent obj)
-		{
-			ContentFocused?.Invoke (this, EventArgs.Empty);
-		}
-
-		internal void FocusSelectedView ()
-		{
-			if (Window == null) {
-				return;
-			}
-			if (FocusedView is NSView focusView && Window.FirstResponder != focusView && focusView.AcceptsFirstResponder ()) {
-				Window.MakeFirstResponder (focusView);
-			}
-		}
-
-		public override bool BecomeFirstResponder ()
-		{
-			return false;
-		}
-
-		#region Focus Chain
-
-		int focusedViewIndex = -1;
-		INativeChildView FocusedView => focusedViewIndex == -1 ? null : responderViewChain [focusedViewIndex];
-		List<INativeChildView> responderViewChain = new List<INativeChildView> ();
-	
-		void AddWidgetToFocusChain (INativeChildView view)
-		{
-			if (responderViewChain.Contains (view)) {
-				return;
-			}
-			responderViewChain.Add (view);
-			view.Focused -= View_Focused;
-			view.Focused += View_Focused;
-
-			if (focusedViewIndex == -1) {
-				focusedViewIndex = 0;
-			}
-		}
-
-		void View_Focused (object sender, EventArgs e)
-		{
-			ChangeFocusedView (sender as INativeChildView);
-		}
-
-		void ChangeFocusedView (INativeChildView view)
-		{
-			var index = responderViewChain.IndexOf (view);
-			if (index != -1)
-				focusedViewIndex = index;
-		}
-
-		void FocusPreviousItem (GLib.SignalArgs ev)
-		{
-			if (focusedViewIndex <= 0) {
-				//leave element
-				Window.ResignFirstResponder ();
-				if (ev != null) {
-					ev.RetVal = false;
-				}
-			} else {
-				focusedViewIndex--;
-				if (((NSView)FocusedView).Hidden) {
-					FocusPreviousItem (ev);
-				} else {
-					Window.MakeFirstResponder ((NSView)FocusedView);
-				}
-			}
-		}
-
-		void FocusNextItem (GLib.SignalArgs ev)
-		{
-			if (focusedViewIndex >= responderViewChain.Count - 1) {
-				//leave element
-				Window.ResignFirstResponder ();
-				if (ev != null) {
-					ev.RetVal = false;
-				}
-			} else {
-				focusedViewIndex++;
-				if (((NSView)FocusedView).Hidden) {
-					FocusNextItem (ev);
-				} else {
-					Window.MakeFirstResponder ((NSView)FocusedView);
-				}
-			}
-		}
-
-		#endregion
-
-		internal void KeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
-		{
-			ev.RetVal = true;
-		}
-
-		internal void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-			ev.RetVal = true;
-			if (ev.Event.Key == Gdk.Key.Tab || ev.Event.Key == Gdk.Key.ISO_Left_Tab) {
-				if (ev.Event.State == Gdk.ModifierType.ShiftMask) {
-					FocusPreviousItem (ev);
-				} else {
-					FocusNextItem (ev);
-				}
-				return;
-			}
-
-			FocusedView?.OnKeyPressed (o, ev);
 		}
 
 		#region Toolbar event handlers
@@ -528,20 +380,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			if (disposing) {
 				filterEntry.Activated -= FilterTextChanged;
-				filterEntry.Focused -= FilterEntry_Focused;
 
 				catToggleButton.Activated -= ToggleCategorisation;
-				catToggleButton.Focused -= CatToggleButton_Focused;
 
 				compactModeToggleButton.Activated -= ToggleCompactMode;
-				compactModeToggleButton.Focused -= CompactModeToggleButton_Focused;
 
 				toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
-				toolboxAddButton.Focused -= ToolboxAddButton_Focused;
 
 				toolboxWidget.ActivateSelectedItem -= ToolboxWidget_ActivateSelectedItem;
 				toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
-				toolboxWidget.MouseDownActivated -= ToolboxWidget_MouseDownActivated;
 				toolboxWidget.DragBegin -= ToolboxWidget_DragBegin;
 				toolboxWidget.RegionCollapsed -= FilterTextChanged;
 
