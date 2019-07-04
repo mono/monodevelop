@@ -119,12 +119,9 @@ namespace MonoDevelop.VersionControl
 		{
 			if (repository != null && repository is UrlBasedRepository urlBasedRepository) {
 				if (string.IsNullOrEmpty (urlBasedRepository.Url)) {
-					var tempRepository = repository.VersionControlSystem.CreateRepositoryInstance ();
-
+					using var tempRepository = repository.VersionControlSystem.CreateRepositoryInstance ();
 					if (tempRepository is UrlBasedRepository urlTempBasedRepository)
 						urlBasedRepository.Url = urlTempBasedRepository.Url;
-
-					tempRepository.Dispose ();
 				}
 			}
 		}

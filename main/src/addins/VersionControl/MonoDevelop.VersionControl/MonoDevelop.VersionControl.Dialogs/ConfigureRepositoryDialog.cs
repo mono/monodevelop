@@ -32,43 +32,27 @@ namespace MonoDevelop.VersionControl.Dialogs
 {
 	public class ConfigureRepositoryDialog : Dialog
 	{
-		readonly Repository repo;
 		readonly bool hasChanges;
 
-		IRepositoryEditor currentEditor;
-
-		VBox repoContainer;
-		VBox contentContainer;
-		HSeparator separator;
-		Label repository;
-		HBox moduleContainer;
-		Label moduleName;
 		TextEntry entryName;
-		HBox messageContainer;
-		Label message;
 		TextEntry entryMessage;
-		HBox buttonContainer;
 		Button cancelButton;
 		Button okButton;
 
+		IRepositoryEditor currentEditor;
+
 		public ConfigureRepositoryDialog (Repository repo, bool hasChanges = true)
 		{
-			this.repo = repo;
+			Repository = repo;
 			this.hasChanges = hasChanges;
 
-			Init ();
-			BuildGui ();
-			AttachEvents ();
+			Initialize ();
 			UpdateCheckoutButton ();
 		}
 
-		public Repository Repository {
-			get {
-				return repo;
-			}
-		}
+        public Repository Repository { get; }
 
-		public string ModuleName {
+        public string ModuleName {
 			get { return entryName.Text; }
 			set { entryName.Text = value; }
 		}
@@ -78,50 +62,46 @@ namespace MonoDevelop.VersionControl.Dialogs
 			set { entryMessage.Text = value; }
 		}
 
-		void Init ()
+		void Initialize ()
 		{
-			repoContainer = new VBox ();
+			Title = GettextCatalog.GetString ("Configure Repository");
+			Width = 500;
+			Resizable = false;
 
-			contentContainer = new VBox {
+			var repoContainer = new VBox ();
+
+			var contentContainer = new VBox {
 				BackgroundColor = Ide.Gui.Styles.BackgroundColor
 			};
 
-			separator = new HSeparator ();
+			var separator = new HSeparator ();
 
-			repository = new Label (GettextCatalog.GetString ("Repository") + ":") {
+			var repository = new Label (GettextCatalog.GetString ("Repository") + ":") {
 				Margin = new WidgetSpacing (0, 6, 0, 6)
 			};
 
-			moduleContainer = new HBox ();
+			var moduleContainer = new HBox ();
 
-			moduleName = new Label (GettextCatalog.GetString ("Module name") + ":") {
+			var moduleName = new Label (GettextCatalog.GetString ("Module name") + ":") {
 				WidthRequest = 80
 			};
 
 			entryName = new TextEntry ();
-			messageContainer = new HBox ();
+			var messageContainer = new HBox ();
 
-			message = new Label (GettextCatalog.GetString ("Message") + ":") {
+			var message = new Label (GettextCatalog.GetString ("Message") + ":") {
 				WidthRequest = 80
 			};
 
 			entryMessage = new TextEntry ();
 
-			buttonContainer = new HBox {
+			var buttonContainer = new HBox {
 				Margin = new WidgetSpacing (0, 6, 0, 0)
 			};
 
 			cancelButton = new Button (GettextCatalog.GetString ("Cancel"));
 			okButton = new Button (GettextCatalog.GetString ("Configure"));
-			currentEditor = repo.VersionControlSystem.CreateRepositoryEditor (repo);
-
-		}
-
-		void BuildGui ()
-		{
-			Title = GettextCatalog.GetString ("Configure Repository");
-
-			Width = 500;
+			currentEditor = Repository.VersionControlSystem.CreateRepositoryEditor (Repository);
 
 			contentContainer.PackStart (currentEditor.Widget, true, true);
 			currentEditor.Show ();
@@ -148,13 +128,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repoContainer.PackEnd (buttonContainer);
 
 			Content = repoContainer;
-			Resizable = false;
-		}
 
-		void AttachEvents ()
-		{
-			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
-			if (edit != null) {
+			if (currentEditor is UrlBasedRepositoryEditor edit) {
 				edit.UrlChanged += OnEditUrlChanged;
 				edit.PathChanged += OnEditUrlChanged;
 			}
@@ -169,8 +144,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected override void Dispose (bool disposing)
 		{
-			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
-			if (edit != null) {
+			if (currentEditor is UrlBasedRepositoryEditor edit) {
 				edit.UrlChanged -= OnEditUrlChanged;
 				edit.PathChanged -= OnEditUrlChanged;
 			}
@@ -182,9 +156,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 			cancelButton.Clicked -= OnCancel;
 			okButton.Clicked -= OnOkClicked;
 
-			if (repoContainer != null) {
-				repoContainer = null;
-			}
+			currentEditor = null;
+			entryName = null;
+			entryMessage = null;
+			cancelButton = null;
+			okButton = null;
 
 			base.Dispose (disposing);
 		}
@@ -216,8 +192,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		void UpdateCheckoutButton ()
 		{
-			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
-			if (edit == null)
+			if (!(currentEditor is UrlBasedRepositoryEditor edit))
 				return;
 			okButton.Sensitive = !string.IsNullOrWhiteSpace (edit.RepositoryServer);
 		}
