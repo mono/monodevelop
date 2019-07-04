@@ -49,6 +49,7 @@
 	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution-pad" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left" group="1Solution">
 		<ContextMenu path="/MonoDevelop/Ide/ContextMenu/ProjectPad" />
 		<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
+		<PadOption id = "FileNesting" _label = "File Nesting" defaultValue = "True" />
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionFolderNodeBuilder"/>

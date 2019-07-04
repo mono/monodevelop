@@ -54,6 +54,10 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public static FilePath GetParentFile (Project project, FilePath inputFile)
 		{
+			if (!project.UserProperties.GetValue<bool> ("FileNesting", true)) {
+				return null;
+			}
+
 			foreach (var rp in rulesProviders) {
 				var parentFile = rp.GetParentFile (project, inputFile);
 				if (!string.IsNullOrEmpty (parentFile)) {
