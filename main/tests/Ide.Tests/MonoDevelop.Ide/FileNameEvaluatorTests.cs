@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide
 		[Test]
 		public void TestVSTSBug936228 ()
 		{
-			var evaluator = FileNameEvalutor.CreateFileNameEvaluator (new string [] { "Makefile|Makefile.am|Makefile.in" });
+			var evaluator = FileNameEvaluator.CreateFileNameEvaluator (new string [] { "Makefile|Makefile.am|Makefile.in" });
 
 			Assert.IsTrue (evaluator.SupportsFile ("Makefile.am"));
 			Assert.IsTrue (evaluator.SupportsFile ("/Makefile"));

@@ -75,9 +75,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (scope == null)
 				return;
 			currentScope = scope;
-			fileProviderTask = Task.Run (async delegate {
-				return await scope.GetFilesAsync (model);
-			});
+			fileProviderTask = scope.GetFilesAsync (model);
 		}
 
 		internal static void SearchReplace (FindInFilesModel model, Scope scope, Task<IReadOnlyList<FileProvider>> getFilesTask, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
