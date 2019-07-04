@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
@@ -274,6 +275,49 @@ namespace MonoDevelop.Projects
 				return globItems [0].Name;
 
 			return base.OnGetDefaultBuildAction (fileName);
+		}
+
+		protected internal override IEnumerable<ExecutionTarget> OnGetExecutionTargets (
+			OperationContext ctx,
+			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfig)
+		{
+			if (Project.HasMultipleTargetFrameworks) {
+				return GetMultipleTargetFrameworkExecutionTargets (ctx, configuration, runConfig);
+			}
+			return base.OnGetExecutionTargets (ctx, configuration, runConfig);
+		}
+
+		/// <summary>
+		/// This is only called if the main project has a CompileTarget which is not Library. Does not handle
+		/// configurations which have different CompileTargets.
+		/// </summary>
+		IEnumerable<ExecutionTarget> GetMultipleTargetFrameworkExecutionTargets (
+			OperationContext ctx,
+			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfig)
+		{
+			var targets = new List<ExecutionTarget> ();
+			foreach (string framework in Project.GetTargetFrameworks ()) {
+				var target = new TargetFrameworkExecutionTarget (framework);
+				targets.Add (target);
+			}
+			return targets;
+		}
+
+		protected internal override Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfiguration)
+		{
+			if (Project.HasMultipleTargetFrameworks) {
+				var frameworkContext = context?.ExecutionTarget as TargetFrameworkExecutionTarget;
+				if (frameworkContext != null) {
+					configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.Framework);
+				}
+			}
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
 		}
 	}
 }

@@ -743,6 +743,7 @@
     <Compile Include="CoreExtensions.Array.cs" />
     <Compile Include="CoreExtensions.ReaderWriterLockSlim.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectFrameworkConfigurationSelector.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\TargetFrameworkExecutionTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

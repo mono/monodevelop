@@ -125,7 +125,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			if (Project.TargetFramework.IsNetCoreApp ()) {
+			if (configuration.TargetFramework.IsNetCoreApp ()) {
 				return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
 			}
 			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
@@ -184,11 +184,17 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (Project.TargetFramework.IsNetCoreApp () && DotNetCoreRuntime.IsMissing) {
+			if (GetTargetFramework (configuration).IsNetCoreApp () && DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		TargetFramework GetTargetFramework (ConfigurationSelector configuration)
+		{
+			var projectConfiguration = configuration.GetConfiguration (Project) as DotNetProjectConfiguration;
+			return projectConfiguration?.TargetFramework ?? Project.TargetFramework;
 		}
 
 		Task ShowCannotExecuteDotNetCoreApplicationDialog ()
@@ -227,7 +233,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
-			if (Project.TargetFramework.IsNetCoreApp ()) {
+			if (GetTargetFramework (configuration).IsNetCoreApp ()) {
 				return OnExecuteDotNetCoreCommand (monitor, context, configuration, executionCommand);
 			}
 			return base.OnExecuteCommand (monitor, context, configuration, executionCommand);
