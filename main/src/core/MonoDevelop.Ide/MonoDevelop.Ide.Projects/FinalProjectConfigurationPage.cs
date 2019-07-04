@@ -285,21 +285,13 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool GitIgnoreFileExistsInParentFolder ()
 		{
-			IEnumerable<DirectoryInfo> di = GetAllParentDirectories (new DirectoryInfo(config.SolutionLocation));
-			foreach (var directory in di) {
-				FilePath solutionPath = directory.FullName;
-				FilePath gitIgnoreFilePath = solutionPath.Combine (".gitignore");
-				if (File.Exists (gitIgnoreFilePath))
+			FilePath path = new FilePath (config.SolutionLocation);
+			while (!path.IsNullOrEmpty) {
+				if (File.Exists (path.Combine (".gitignore")))
 					return true;
+				path = path.ParentDirectory;
 			}
 			return false;
-		}
-
-		IEnumerable<DirectoryInfo> GetAllParentDirectories (DirectoryInfo directoryToScan)
-		{
-			Stack<DirectoryInfo> ret = new Stack<DirectoryInfo> ();
-			GetAllParentDirectories (directoryToScan, ref ret);
-			return ret;
 		}
 
 		void GetAllParentDirectories (DirectoryInfo directoryToScan, ref Stack<DirectoryInfo> directories)
