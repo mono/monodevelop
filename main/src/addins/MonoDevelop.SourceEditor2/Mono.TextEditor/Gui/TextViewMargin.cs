@@ -599,19 +599,22 @@ namespace Mono.TextEditor
 			selectionColor = null;
 			currentLineColor = null;
 
-			markerLayoutFont = textEditor.Options.Font.Copy ();
+			var editorOptions = textEditor?.Options;
+			if (editorOptions == null)
+				return;
+			markerLayoutFont = editorOptions.Font.Copy ();
 			markerLayoutFont.Size = markerLayoutFont.Size * 8 / 10;
 			markerLayoutFont.Style = Pango.Style.Normal;
 			markerLayoutFont.Weight = Pango.Weight.Normal;
 			markerLayout.FontDescription = markerLayoutFont;
 
 			// Gutter font may be bigger
-			GetFontMetrics (textEditor.Options.GutterFont, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
-			GetFontMetrics (textEditor.Options.Font, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics (editorOptions.GutterFont, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics (editorOptions.Font, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
 			this.textEditor.GetTextEditorData ().LineHeight = fontLineHeight;
 			this.charWidth = fontCharWidth;
 
-			var family = textEditor.PangoContext.Families.FirstOrDefault (f => f.Name == textEditor.Options.Font.Family);
+			var family = textEditor.PangoContext.Families.FirstOrDefault (f => f.Name == editorOptions.Font.Family);
 			if (family != null) {
 				isMonospacedFont = family.IsMonospace;
 			} else {
@@ -627,7 +630,7 @@ namespace Mono.TextEditor
 					eolMarkerLayout [i] = PangoUtil.CreateLayout (textEditor);
 			}
 
-			var font = textEditor.Options.Font.Copy ();
+			var font = editorOptions.Font.Copy ();
 			font.Size = font.Size * 3 / 4;
 
 			Pango.Rectangle logRect;
