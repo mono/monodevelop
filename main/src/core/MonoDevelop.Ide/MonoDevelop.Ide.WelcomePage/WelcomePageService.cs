@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
+		public static event EventHandler WelcomeWindowShown;
+		public static event EventHandler WelcomeWindowHidden;
 
 		internal static async Task Initialize (bool hideWelcomePage)
 		{
@@ -116,6 +118,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			if (WelcomeWindowProvider != null) {
 				await WelcomeWindowProvider.HideWindow ();
+				WelcomeWindowHidden?.Invoke (WelcomeWindow, EventArgs.Empty);
 			} else {
 				HideWelcomePage (true);
 			}
@@ -163,6 +166,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			await WelcomeWindowProvider.ShowWindow (options);
 			visible = true;
+
+			WelcomeWindowShown?.Invoke (WelcomeWindow, EventArgs.Empty);
 
 			return true;
 		}
