@@ -271,16 +271,18 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void ActivateItem (int n)
 			{
+				var textEditor = (MonoTextEditor)box.Tag;
 				if (n == 0) {
 					box.SetItem (GettextCatalog.GetString ("Local"), null, new object());
-					widget.SetLocal (((MonoTextEditor)box.Tag).GetTextEditorData ());
+					widget.SetLocal (textEditor.GetTextEditorData ());
 					return;
 				}
-				widget.RemoveLocal (((MonoTextEditor)box.Tag).GetTextEditorData ());
-				((MonoTextEditor)box.Tag).Document.IsReadOnly = true;
+				widget.RemoveLocal (textEditor.GetTextEditorData ());
+				textEditor.Document.IsReadOnly = true;
+
 				if (n == 1) {
 					box.SetItem (GettextCatalog.GetString ("Base"), null, new object());
-					if (((MonoTextEditor)box.Tag) == widget.editors[0]) {
+					if (textEditor == widget.editors[0]) {
 						widget.diffRevision = null;
 					} else {
 						widget.originalRevision = null;
@@ -292,14 +294,14 @@ namespace MonoDevelop.VersionControl.Views
 						text = string.Format (GettextCatalog.GetString ("Error while getting the base text of {0}:\n{1}"), widget.info.Item.Path, ex.ToString ());
 						MessageService.ShowError (text);
 					}
-					
-					((MonoTextEditor)box.Tag).Document.Text = text;
+
+					textEditor.Document.Text = text;
 					widget.CreateDiff ();
 					return;
 				}
 				
 				Revision rev = widget.info.History[n - 2];
-				widget.SetRevision ((MonoTextEditor)box.Tag, rev);
+				widget.SetRevision (textEditor, rev);
 			}
 
 			public int IconCount {

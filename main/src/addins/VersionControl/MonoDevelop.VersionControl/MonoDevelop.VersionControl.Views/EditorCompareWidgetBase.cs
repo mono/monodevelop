@@ -608,9 +608,16 @@ namespace MonoDevelop.VersionControl.Views
 		public void UpdateLocalText ()
 		{
 			var textBuffer = info.Controller.GetContent<ITextBuffer> ();
+			string localText = null;
+			if (textBuffer != null) {
+				localText = textBuffer.CurrentSnapshot.GetText ();
+			} else {
+				localText = TextFileUtility.GetText (info.Item.Path);
+			}
+			 
 			foreach (var data in dict.Values) {
 				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
-				data.Document.Text = textBuffer.CurrentSnapshot.GetText ();
+				data.Document.Text = localText;
 				data.Document.TextChanged += HandleDataDocumentTextReplaced;
 			}
 			CreateDiff ();
@@ -624,10 +631,13 @@ namespace MonoDevelop.VersionControl.Views
 
 			var editor = info.Document.GetContent<ITextBuffer> ();
 			if (editor != null) {
-				data.Document.Text = editor.CurrentSnapshot.GetText();
+				data.Document.Text = editor.CurrentSnapshot.GetText ();
 				data.Document.IsReadOnly = editor.IsReadOnly (0);
+			} else {
+				data.Document.Text = TextFileUtility.GetText (info.Item.Path);
+				data.Document.IsReadOnly = true;
 			}
-			
+
 			CreateDiff ();
 			data.Document.TextChanged += HandleDataDocumentTextReplaced;
 		}
