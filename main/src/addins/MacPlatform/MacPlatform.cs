@@ -58,6 +58,7 @@ using MonoDevelop.Components.Mac;
 using System.Reflection;
 using MacPlatform;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -301,12 +302,13 @@ namespace MonoDevelop.MacIntegration
 
 			var appDelegate = NSApplication.SharedApplication.Delegate as Xwt.Mac.AppDelegate;
 			if (appDelegate != null) {
-				appDelegate.Terminating += (object o, TerminationEventArgs e) => {
+				appDelegate.Terminating += async (object o, TerminationEventArgs e) => {
 					if (MonoDevelop.Ide.IdeApp.IsRunning) {
 						// If GLib the mainloop is still running that means NSApplication.Terminate() was called
 						// before Gtk.Application.Quit(). Cancel Cocoa termination and exit the mainloop.
 						e.Reply = NSApplicationTerminateReply.Cancel;
-						Gtk.Main.Quit ();
+
+						await IdeApp.Exit();
 					} else {
 						// The mainloop has already exited and we've already cleaned up our application state
 						// so it's now safe to terminate Cocoa.
@@ -681,30 +683,6 @@ namespace MonoDevelop.MacIntegration
 		{
 			//FIXME: should we remove these when finalizing?
 			try {
-				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
-				{
-					// We can only attempt to quit safely if all windows are GTK windows and not modal
-					if (!IsModalDialogRunning ()) {
-						e.UserCancelled = !IdeApp.Exit ().Result; // FIXME: could this block in rare cases?
-						e.Handled = true;
-						return;
-					}
-
-					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the
-					// dialog, and aborting the dialog may not be appropriate.
-					//
-					// There's NSTerminateLater but I'm not sure how to access it from carbon, maybe
-					// we need to swizzle methods into the app's NSApplicationDelegate.
-					// Also, it stops the main CFRunLoop and enters a special runloop mode, not sure how that would
-					// interact with GTK+.
-
-					// For now, just bounce
-					NSApplication.SharedApplication.RequestUserAttention (NSRequestUserAttentionType.CriticalRequest);
-					// and abort the quit.
-					e.UserCancelled = true;
-					e.Handled = true;
-				};
-
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					e.Handled = true;
 					IdeApp.BringToFront ();
