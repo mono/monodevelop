@@ -120,6 +120,11 @@ namespace MonoDevelop.TextEditor
 			[EditCommands.LowercaseSelection] = op => op.MakeLowercase (),
 			[EditCommands.RemoveTrailingWhiteSpaces] = op => op.TrimTrailingWhiteSpace (),
 
+#if !WINDOWS
+			[EditCommands.JoinWithNextLine] = op => op.JoinSelectedLines (),
+			[EditCommands.SortSelectedLines] = op => op.SortSelectedLines (),
+#endif
+
 			[ViewCommands.CenterAndFocusCurrentDocument] = op => op.ScrollLineCenter ()
 		};
 
