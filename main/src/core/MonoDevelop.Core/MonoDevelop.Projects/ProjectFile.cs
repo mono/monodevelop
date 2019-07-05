@@ -534,13 +534,10 @@ namespace MonoDevelop.Projects
 				Project.NotifyFilePropertyChangedInProject (this, property);
 		}
 
-		public virtual SourceCodeKind SourceCodeKind {  
-			get {
-				if (filename.Extension == ".sketchcs" || filename.Extension == ".sketchvb")
-					return SourceCodeKind.Script;
-				return SourceCodeKind.Regular;
-			}
-		}
+		public virtual SourceCodeKind SourceCodeKind
+			=> filename.HasExtension (".csx") || filename.HasExtension (".vbx")
+				? SourceCodeKind.Script
+				: SourceCodeKind.Regular;
 	}
 
 	class ProjectFileVirtualPathChangedEventArgs : EventArgs
