@@ -31,6 +31,7 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.FileNesting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
@@ -96,11 +97,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			var file = (ProjectFile) dataObject;
 			var dir = !file.IsLink ? file.FilePath.ParentDirectory : file.Project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory;
-			
+
 			if (!string.IsNullOrEmpty (file.DependsOn)) {
 				ProjectFile groupUnder = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.DependsOn));
 				if (groupUnder != null)
 					return groupUnder;
+			} else {
+				// File nesting
+				var parentPath = FileNestingService.GetParentFile (file.Project, file.Name);
+				var parentFile = file.Project.Files.GetFile (parentPath);
+				if (parentFile != null) {
+					return parentFile;
+				}
 			}
 			
 			if (dir == file.Project.BaseDirectory)
@@ -134,7 +142,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
-			return file.HasChildren;
+			return file.HasChildren ? true : FileNestingService.HasChildren (file.Project, file.FilePath);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -143,6 +151,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile file = (ProjectFile) dataObject;
 			if (file.HasChildren)
 				treeBuilder.AddChildren (file.DependentChildren);
+			else {
+				var children = FileNestingService.GetChildren (file.Project, file.FilePath);
+				if (children != null) {
+					treeBuilder.AddChildren (children);
+				}
+			}
 		}
 	}
 	
