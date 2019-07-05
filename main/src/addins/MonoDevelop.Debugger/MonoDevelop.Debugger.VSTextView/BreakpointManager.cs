@@ -63,13 +63,21 @@ namespace MonoDevelop.Debugger
 		private async void OnBreakpointsChanged (object sender, EventArgs eventArgs)
 		{
 			var newBreakpoints = new Dictionary<Breakpoint, ManagerBreakpoint> ();
+			var breakpointStore = DebuggingService.Breakpoints;
 			var snapshot = textBuffer.CurrentSnapshot;
+			var bps = new List<Breakpoint> ();
 			var needsUpdate = false;
 
-			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (textDocument.FilePath)) {
-				if (breakpoint.Line > snapshot.LineCount)
-					continue;
+			lock (breakpointStore) {
+				foreach (var breakpoint in breakpointStore.GetBreakpointsAtFile (textDocument.FilePath)) {
+					if (breakpoint.Line > snapshot.LineCount)
+						continue;
 
+					bps.Add (breakpoint);
+				}
+			}
+
+			foreach (var breakpoint in bps) {
 				if (eventArgs is BreakpointEventArgs breakpointEventArgs && breakpointEventArgs.Breakpoint == breakpoint)
 					needsUpdate = true;
 
