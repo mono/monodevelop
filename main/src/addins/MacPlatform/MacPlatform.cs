@@ -688,30 +688,6 @@ namespace MonoDevelop.MacIntegration
 		{
 			//FIXME: should we remove these when finalizing?
 			try {
-				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
-				{
-					// We can only attempt to quit safely if all windows are GTK windows and not modal
-					if (!IsModalDialogRunning ()) {
-						e.UserCancelled = !IdeApp.Exit ().Result; // FIXME: could this block in rare cases?
-						e.Handled = true;
-						return;
-					}
-
-					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the
-					// dialog, and aborting the dialog may not be appropriate.
-					//
-					// There's NSTerminateLater but I'm not sure how to access it from carbon, maybe
-					// we need to swizzle methods into the app's NSApplicationDelegate.
-					// Also, it stops the main CFRunLoop and enters a special runloop mode, not sure how that would
-					// interact with GTK+.
-
-					// For now, just bounce
-					NSApplication.SharedApplication.RequestUserAttention (NSRequestUserAttentionType.CriticalRequest);
-					// and abort the quit.
-					e.UserCancelled = true;
-					e.Handled = true;
-				};
-
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					e.Handled = true;
 					IdeApp.BringToFront ();
