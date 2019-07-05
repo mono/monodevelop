@@ -138,7 +138,6 @@ namespace MonoDevelop.CSharp.Formatting
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
 			scrolledwindow.AddWithViewport (texteditor);
-			ShowAll ();
 			
 			#region Indent options
 			indentationOptions = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
