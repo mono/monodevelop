@@ -1,14 +1,11 @@
 ﻿namespace MonoDevelop.FSharp
 
-open System
 open System.Collections.Generic
-open System.Collections.Immutable
 open MonoDevelop.FSharp.Shared
-open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Highlighting
+open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
-open Mono.TextEditor.Highlighting
 open FSharp.Compiler
 open FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
@@ -357,18 +354,13 @@ module Patterns =
             | _ -> Seq.empty
 
 
-type FSharpSyntaxMode(editor, context) =
+type FSharpSyntaxMode(editor, context: DocumentContext) =
     inherit SemanticHighlighting(editor, context)
     let tokenssymbolscolours = ref None
-    //let style = ref (getColourScheme())
-    //let colourSchemChanged =
-    //    IdeApp.Preferences.ColorScheme.Changed.Subscribe
-    //        (fun _ (eventArgs:EventArgs) ->
-    //                          let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
-    //                          (*style := colourStyles*) )
-                                  
+    let roslynContext = context :?> RoslynDocumentContext
+
     override x.DocumentParsed() =
-        if MonoDevelop.isDocumentVisible context.Name then
+        if MonoDevelop.isDocumentVisible roslynContext.FileName then
             SyntaxMode.tryGetTokensSymbolsAndColours context
             |> Option.iter (fun tsc -> tokenssymbolscolours := Some tsc
                                        Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
@@ -378,6 +370,4 @@ type FSharpSyntaxMode(editor, context) =
         let lineNumber = line.LineNumber
         let txt = editor.GetLineText line
 
-        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt// !style
-        
-    //interface IDisposable with member x.Dispose() = colourSchemChanged.Dispose()
+        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt

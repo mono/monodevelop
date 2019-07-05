@@ -33,7 +33,7 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	class ClickedButton : NSButton, INativeChildView
+	class ClickedButton : NSButton
 	{
 		public event EventHandler Focused;
 
@@ -54,30 +54,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}
-
-		#region INativeChildView
-
-		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-			if (ev.Event.State == Gdk.ModifierType.None && (ev.Event.Key == Gdk.Key.KP_Enter || ev.Event.Key == Gdk.Key.KP_Space)) {
-				PerformClick (this);
-			}
-		}
-
-		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
-		{
-
-		}
-
-		public override void KeyDown (NSEvent theEvent)
-		{
-			base.KeyDown (theEvent);
-			if ((int)theEvent.ModifierFlags == (int)KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter || theEvent.KeyCode == (int)KeyCodes.Space)) {
-				PerformClick (this);
-			}
-		}
-
-		#endregion
 	}
 }
 #endif

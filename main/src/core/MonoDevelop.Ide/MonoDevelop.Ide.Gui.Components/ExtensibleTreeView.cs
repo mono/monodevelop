@@ -2159,8 +2159,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				SelectionChanged (this, EventArgs.Empty);
 		}
 
+		public bool IsDestroyed { get; set; }
+
 		void Destroy ()
 		{
+			IsDestroyed = true;
 			IdeApp.Preferences.CustomPadFont.Changed -= CustomFontPropertyChanged;
 			if (pix_render != null) {
 				pix_render.Destroy ();
@@ -2175,11 +2178,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render = null;
 			}
 
-			if (store != null) {
-				Clear ();
-				store = null;
-			}
-
 			if (builders != null) {
 				foreach (NodeBuilder nb in builders) {
 					try {
@@ -2190,6 +2188,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				builders = null;
 			}
+
+			if (store != null) {
+				Clear ();
+				store = null;
+			}
+
 			builderChains.Clear ();
 		}
 
@@ -2229,6 +2233,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public ITreeBuilder GetTreeBuilder ()
 			{
+				if (pad.IsDestroyed)
+					throw new InvalidOperationException ("TreeView is destroyed.");
 				Gtk.TreeIter iter;
 				if (!pad.store.GetIterFirst (out iter))
 					return pad.CreateBuilder (Gtk.TreeIter.Zero);

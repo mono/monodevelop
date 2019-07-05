@@ -95,7 +95,7 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			var span = trackingSpan.GetSpan (textView.TextSnapshot);
 			if (textView.TextViewLines == null)
 				return;
-			if (!textView.TextViewLines.FormattedSpan.IntersectsWith (span))
+			if (!textView.TextViewLines.FormattedSpan.Contains (span.End))
 				return;
 			try {
 				var charBound = textView.TextViewLines.GetCharacterBounds (span.End);

@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="$(NuGetVersionRoslyn)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
     <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
     <PackageReference Include="Microsoft.VisualStudio.InteractiveWindow" Version="2.8.0" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.InteractiveHost" Version="$(NuGetVersionRoslyn)" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.InteractiveHost" Version="$(NuGetVersionRoslyn)" ExcludeAssets="$(ReferencesVSEditorPrivateAssets)" />
   </ItemGroup>
 
   <!-- The consolidated package is authored in a way to avoid adding it to the C# compiler (ref\net46 is empty).
