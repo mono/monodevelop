@@ -460,16 +460,6 @@ namespace MonoDevelop.Projects
 					dependsOnFile.dependentChildren.Add (this);
 					return true;
 				}
-			} else {
-				// File nesting
-				var parentPath = FileNestingService.GetParentFile (Project, Name);
-				dependsOnFile = Project.Files.GetFile (parentPath);
-				if (dependsOnFile != null) {
-					if (dependsOnFile.dependentChildren == null)
-						dependsOnFile.dependentChildren = new List<ProjectFile> ();
-					dependsOnFile.dependentChildren.Add (this);
-					return true;
-				}
 			}
 
 			return false;

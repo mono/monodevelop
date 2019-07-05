@@ -25,13 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.FileNesting
 {
-	internal static class FileNestingService
+	public static class FileNestingService
 	{
 		static ImmutableList<NestingRulesProvider> rulesProviders = ImmutableList<NestingRulesProvider>.Empty;
 
@@ -62,6 +64,16 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 
 			return null;
+		}
+
+		public static bool HasChildren (Project project, FilePath inputFile)
+		{
+			return project.Files.Any (x => GetParentFile (project, x.FilePath) == inputFile);
+		}
+
+		public static IEnumerable<ProjectFile> GetChildren (Project project, FilePath inputFile)
+		{
+			return project.Files.Where (x => x.FilePath.ParentDirectory == inputFile.ParentDirectory && GetParentFile (project, x.FilePath) == inputFile);
 		}
 	}
 }
