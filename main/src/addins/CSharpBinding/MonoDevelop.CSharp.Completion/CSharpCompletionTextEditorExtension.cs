@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp.Completion
 						result.AutoCompleteUniqueMatch = false;
 						result.AutoCompleteEmptyMatch = false;
 						return (ICompletionDataList)result;
-					});
+					}, token, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 				} catch (Exception e) {
 					LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine +
 											 "FileName: " + DocumentContext.Name + Environment.NewLine +
