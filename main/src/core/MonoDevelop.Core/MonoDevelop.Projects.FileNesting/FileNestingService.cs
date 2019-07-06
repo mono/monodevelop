@@ -54,11 +54,13 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 		}
 
-		public static FilePath GetParentFile (Project project, FilePath inputFile)
+		public static bool HasParent (ProjectFile inputFile) => GetParentFile (inputFile) != null;
+
+		public static ProjectFile GetParentFile (ProjectFile inputFile)
 		{
 			foreach (var rp in rulesProviders) {
-				var parentFile = rp.GetParentFile (project, inputFile);
-				if (!string.IsNullOrEmpty (parentFile)) {
+				var parentFile = rp.GetParentFile (inputFile);
+				if (parentFile != null) {
 					return parentFile;
 				}
 			}
@@ -66,14 +68,14 @@ namespace MonoDevelop.Projects.FileNesting
 			return null;
 		}
 
-		public static bool HasChildren (Project project, FilePath inputFile)
+		public static bool HasChildren (ProjectFile inputFile)
 		{
-			return project.Files.Any (x => GetParentFile (project, x.FilePath) == inputFile);
+			return inputFile.Project.Files.Any (x => GetParentFile (x) == inputFile);
 		}
 
-		public static IEnumerable<ProjectFile> GetChildren (Project project, FilePath inputFile)
+		public static IEnumerable<ProjectFile> GetChildren (ProjectFile inputFile)
 		{
-			return project.Files.Where (x => x.FilePath.ParentDirectory == inputFile.ParentDirectory && GetParentFile (project, x.FilePath) == inputFile);
+			return inputFile.Project.Files.Where (x => x.FilePath.ParentDirectory == inputFile.FilePath.ParentDirectory && GetParentFile (x) == inputFile);
 		}
 	}
 }
