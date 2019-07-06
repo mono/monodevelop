@@ -57,16 +57,14 @@ namespace MonoDevelop.Projects
 			string parentFileDestination = Path.Combine (dir, "FileNesting", expectedParentFile);
 
 			p.AddDirectory ("FileNesting");
-			p.AddFile (inputFileDestination);
-			p.AddFile (parentFileDestination);
+			var inf = p.AddFile (inputFileDestination);
+			var parentFile = p.AddFile (parentFileDestination);
 
-			string parentFile = FileNestingService.GetParentFile (p, inputFileDestination);
-			Assert.That (parentFile, Is.EqualTo (parentFileDestination), $"Was expecting parent file {parentFileDestination} for {inputFileDestination} but got {parentFile}");
+			Assert.That (parentFile, Is.EqualTo (FileNestingService.GetParentFile (inf)), $"Was expecting parent file {parentFileDestination} for {inputFileDestination} but got {parentFile.FilePath}");
 
 			// Now check we get nothing when parent file doesn't exist
 			p.Files.Remove (parentFileDestination);
-			parentFile = FileNestingService.GetParentFile (p, inputFileDestination);
-			Assert.Null (parentFile, $"Was expecting no parent file for {inputFileDestination} but got {parentFile}");
+			Assert.Null (FileNestingService.GetParentFile (inf), $"Was expecting no parent file for {inputFileDestination} but got {parentFile.FilePath}");
 
 			sol.Dispose ();
 		}

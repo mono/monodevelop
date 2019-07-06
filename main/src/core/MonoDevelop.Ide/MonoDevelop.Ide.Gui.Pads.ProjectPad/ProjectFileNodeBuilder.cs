@@ -104,8 +104,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					return groupUnder;
 			} else {
 				// File nesting
-				var parentPath = FileNestingService.GetParentFile (file.Project, file.Name);
-				var parentFile = file.Project.Files.GetFile (parentPath);
+				var parentFile = FileNestingService.GetParentFile (file);
 				if (parentFile != null) {
 					return parentFile;
 				}
@@ -142,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
-			return file.HasChildren ? true : FileNestingService.HasChildren (file.Project, file.FilePath);
+			return file.HasChildren ? true : FileNestingService.HasChildren (file);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -152,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (file.HasChildren)
 				treeBuilder.AddChildren (file.DependentChildren);
 			else {
-				var children = FileNestingService.GetChildren (file.Project, file.FilePath);
+				var children = FileNestingService.GetChildren (file);
 				if (children != null) {
 					treeBuilder.AddChildren (children);
 				}
