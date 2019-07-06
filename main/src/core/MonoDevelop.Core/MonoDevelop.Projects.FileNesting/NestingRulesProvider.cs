@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
-		public FilePath GetParentFile (Project project, FilePath inputFile)
+		public ProjectFile GetParentFile (ProjectFile inputFile)
 		{
 			lock (loadingLock) {
 				if (nestingRules == null) {
@@ -141,8 +141,8 @@ namespace MonoDevelop.Projects.FileNesting
 			}
 
 			foreach (var rule in nestingRules) {
-				FilePath parentFile = rule.GetParentFile (project, inputFile);
-				if (!String.IsNullOrEmpty (parentFile)) {
+				var parentFile = rule.GetParentFile (inputFile);
+				if (parentFile != null) {
 					// Stop at the 1st rule found
 					return parentFile;
 				}
