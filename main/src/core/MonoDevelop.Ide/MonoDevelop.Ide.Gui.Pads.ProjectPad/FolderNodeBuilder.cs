@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Projects;
+using MonoDevelop.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -92,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				
 				if (file.Subtype != Subtype.Directory) {
 					// If file depends on something other than a directory, continue
-					if (file.DependsOnFile != null && file.DependsOnFile.Subtype != Subtype.Directory)
+					if ((file.DependsOnFile != null && file.DependsOnFile.Subtype != Subtype.Directory) || FileNestingService.HasParent (file))
 						continue;
 					
 					dir = file.IsLink
