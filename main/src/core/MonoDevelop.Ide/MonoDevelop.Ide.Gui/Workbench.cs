@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!IdeApp.OnExit ())
 				return false;
 
-			IdeApp.Workspace.SavePreferences ();
+			await IdeApp.Workspace.SavePreferencesAsync ();
 
 			bool showDirtyDialog = false;
 
@@ -222,8 +222,6 @@ namespace MonoDevelop.Ide.Gui
 			await Task.WhenAll (tasks);
 
 			workbench.Close ();
-
-			IdeApp.Workspace.SavePreferences ();
 
 			IdeApp.OnExited ();
 
@@ -1004,8 +1002,9 @@ namespace MonoDevelop.Ide.Gui
 		public void ReparseOpenDocuments ()
 		{
 			foreach (var doc in Documents) {
-				if (doc.DocumentContext.ParsedDocument != null)
-					doc.DocumentContext.ReparseDocument ();
+				var ctx = doc.DocumentContext;
+				if (ctx?.ParsedDocument != null)
+					ctx.ReparseDocument ();
 			}
 		}
 

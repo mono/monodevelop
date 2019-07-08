@@ -37,10 +37,11 @@ using NUnit.Framework;
 using Microsoft.CodeAnalysis.CSharp.Completion;
 using System.Collections.Generic;
 using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharpBinding.Tests.Features.Completion
 {
-	abstract class AbstractCSharpCompletionProviderTests : TestBase
+	abstract class AbstractCSharpCompletionProviderTests : CSharpCompletionTextEditorTests
 	{
 		protected abstract IEnumerable<CompletionProvider> CreateCompletionProvider ();
 

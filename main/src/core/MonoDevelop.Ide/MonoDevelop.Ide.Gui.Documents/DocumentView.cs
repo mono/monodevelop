@@ -268,6 +268,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			await Task.Yield ();
 
+			if (disposed)
+				return;
+
 			if (SourceController != null)
 				SourceController.GrabFocusForView (this);
 			else

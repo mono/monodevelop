@@ -548,21 +548,46 @@ namespace MonoDevelop.Projects
 			get { return LanguageBinding.SupportsPartialTypes; }
 		}
 
-		void CheckReferenceChange (FilePath updatedFile)
+		void CheckReferenceChange (FileEventArgs updatedFiles)
 		{
-			for (int n=0; n<References.Count; n++) {
+			int done = 0;
+			foreach (var item in updatedFiles) {
+				// HACK: Don't like this, but we need it for now.
+				if (!item.FileName.HasExtension ("dll"))
+					done++;
+			}
+
+			for (int n=0; n<References.Count && done != updatedFiles.Count; n++) {
 				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
-					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile)) {
-						SetFastBuildCheckDirty ();
-						pr.NotifyStatusChanged ();
+					foreach (var fileName in pr.GetReferencedFileNames (DefaultConfiguration.Selector)) {
+						if (Contains (updatedFiles, fileName)) {
+							done++;
+							SetFastBuildCheckDirty ();
+							pr.NotifyStatusChanged ();
+							break;
+						}
 					}
-				} else if (pr.HintPath == updatedFile) {
+				} else if (Contains (updatedFiles, pr.HintPath)) {
+					done++;
 					SetFastBuildCheckDirty ();
 					var nr = pr.GetRefreshedReference ();
 					if (nr != null)
 						References [n] = nr;
 				}
+			}
+
+			static bool Contains (FileEventArgs args, FilePath fileName)
+			{
+				if (fileName.IsNullOrEmpty)
+					return false;
+
+				foreach (var arg in args) {
+					if (arg.FileName == fileName)
+						return true;
+				}
+
+				return false;
 			}
 
 			// If a referenced assembly changes, dirtify the project.
@@ -587,8 +612,7 @@ namespace MonoDevelop.Projects
 				return;
 
 			base.OnFileChanged (source, e);
-			foreach (FileEventInfo ei in e)
-				CheckReferenceChange (ei.FileName);
+			CheckReferenceChange (e);
 		}
 
 
@@ -889,16 +913,15 @@ namespace MonoDevelop.Projects
 
 		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration)
 		{
-			return BindTask (async ct => {
-				return await ProjectExtension.OnGetReferences (configuration, ct);
-			});
+			return BindTask (ct => ProjectExtension.OnGetReferences (configuration, ct));
 		}
 
 		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			return BindTask (ct => {
-				var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, token);
-				return ProjectExtension.OnGetReferences (configuration, tokenSource.Token);
+			return BindTask (async ct => {
+				using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, token)) {
+					return await ProjectExtension.OnGetReferences (configuration, tokenSource.Token).ConfigureAwait (false);
+				}
 			});
 		}
 
@@ -1067,7 +1090,7 @@ namespace MonoDevelop.Projects
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 				context.GlobalProperties.SetValue ("Silent", true);
 
-				var result = await RunTarget (monitor, "ResolveAssemblyReferences", configuration, context);
+				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferences", configuration, context);
 
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
@@ -1079,8 +1102,9 @@ namespace MonoDevelop.Projects
 		public Task<IEnumerable<PackageDependency>> GetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			return BindTask<IEnumerable<PackageDependency>> (async ct => {
-				var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, cancellationToken);
-				return await OnGetPackageDependencies (configuration, tokenSource.Token);
+				using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, cancellationToken)) {
+					return await OnGetPackageDependencies (configuration, tokenSource.Token);
+				}
 			});
 		}
 
@@ -1128,7 +1152,7 @@ namespace MonoDevelop.Projects
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 
-				var result = await RunTarget (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
+				var result = await RunTargetInternal (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
 
 				if (result == null)
 					return new List<PackageDependency> ();
@@ -1874,10 +1898,9 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public event EventHandler ReferencedAssembliesChanged;
 
-		private void OnFileRemoved (Object o, FileEventArgs e)
+		private void OnFileRemoved (object o, FileEventArgs e)
 		{
-			foreach (FileEventInfo ei in e)
-				CheckReferenceChange (ei.FileName);
+			CheckReferenceChange (e);
 		}
 
 		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)

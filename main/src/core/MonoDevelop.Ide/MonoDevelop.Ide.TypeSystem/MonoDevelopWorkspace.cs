@@ -436,14 +436,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.ReloadModifiedProject (project);
 		}
 
-		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
+		async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+			using (var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token)) {
+				return await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, cts.Token);
+			}
 		}
 
-		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
+		async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
 		{
-			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+			using (var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token)) {
+				return await ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, cts.Token);
+			}
 		}
 
 		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> LoadSolution (CancellationToken cancellationToken)
@@ -477,7 +481,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
-				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
+				using var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
 
 				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 				if (cancellationToken.IsCancellationRequested)
@@ -690,18 +694,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			using (var edit = buffer.CreateEdit (options, reiteratedVersionNumber: null, editTag: null)) {
 				var oldSnapshot = buffer.CurrentSnapshot;
-				var oldText = oldSnapshot.AsText ();
-				var changes = newText.GetTextChanges (oldText);
-				//if (Microsoft.CodeAnalysis.Workspace.TryGetWorkspace(oldText.Container, out var workspace))
-				//{
-				//    var undoService = workspace.Services.GetService<ISourceTextUndoService>();
-				//    undoService.BeginUndoTransaction(oldSnapshot);
-				//}
-
-				foreach (var change in changes) {
-					edit.Replace (change.Span.Start, change.Span.Length, change.NewText);
-				}
-
+				edit.Replace (0, oldSnapshot.Length, newText.ToString ());
 				edit.Apply ();
 			}
 		}
@@ -995,6 +988,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// as a result, we can assume that the things it calls are _also_ main thread only
 			Runtime.CheckMainThread ();
 			lock (projectModifyLock) {
+				FileService.FreezeEvents ();
 				freezeProjectModify = true;
 				try {
 					var ret = base.TryApplyChanges (newSolution, progressTracker);
@@ -1024,6 +1018,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					tryApplyState_documentTextChangedTasks.Clear ();
 					tryApplyState_changedProjects.Clear ();
 					freezeProjectModify = false;
+					FileService.ThawEvents ();
 				}
 			}
 		}
@@ -1040,6 +1035,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			case ApplyChangesKind.RemoveMetadataReference:
 			case ApplyChangesKind.AddProjectReference:
 			case ApplyChangesKind.RemoveProjectReference:
+			case ApplyChangesKind.ChangeDocumentInfo:
 				return true;
 			default:
 				return false;
@@ -1294,6 +1290,122 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
+
+		protected override void ApplyDocumentInfoChanged (DocumentId id, DocumentInfo info)
+		{
+			var currentSolution = CurrentSolution;
+			var document = currentSolution.GetDocument (id);
+			FailIfDocumentInfoChangesNotSupported (document, info);
+
+			// abort if the name is the same, as there's nothing to do
+			if (document.Name == info.Name
+				|| string.IsNullOrEmpty (info.Name)
+				|| string.IsNullOrEmpty (info.FilePath))
+				return;
+
+			MonoDevelop.Projects.Project mdProject = null;
+
+			if (id.ProjectId != null) {
+				var project = currentSolution.GetProject (id.ProjectId);
+				mdProject = GetMonoProject (project);
+				if (mdProject == null) {
+					LoggingService.LogWarning ("Couldn't find project for newly file file {0} (Project {1}).",
+						info.Name, info.Id.ProjectId);
+
+					return;
+				}
+			}
+
+			var guiDoc = documentManager
+				.Documents
+				.FirstOrDefault (d => d.IsFile
+					&& document.FilePath.Equals (d.FilePath, FilePath.PathComparison));
+
+			DispatchService.PumpingWait (() => guiDoc.IsDirty ? guiDoc.Save () : Task.CompletedTask);
+
+			// TODO: the Visual Studio Windows implementation of this also adds an undo unit to the
+			// global undo manager which we don't currently support.
+
+			var newName = NameGenerator.GenerateUniqueName (
+				Path.GetFileNameWithoutExtension (info.Name),
+				Path.GetExtension (info.Name),
+				nx => !mdProject.Files.Any (p => string.Equals (p.Name, nx, FilePath.PathComparison)));
+
+			var mdFile = mdProject.GetProjectFile (document.FilePath);
+			if (mdFile == null) {
+				LoggingService.LogWarning ($"{document.FilePath} was not found in project in ApplyDocumentInfo");
+				return;
+			}
+
+			DispatchService.PumpingWait (() => {
+				return Runtime.RunInMainThread (() => {
+
+					FileService.RenameFile (document.FilePath, newName);
+					
+					var childrenToRename = GetDependentFilesToRename (mdFile, newName);
+					if (childrenToRename != null) {
+						// we also need to rename children!
+						foreach (var child in childrenToRename) {
+							FileService.RenameFile (child.File.FilePath, child.NewName);
+						}
+					}
+				});
+			});
+
+			tryApplyState_changedProjects.Add (mdProject);
+		}
+
+		static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (
+			MonoDevelop.Projects.ProjectFile file,
+			string newName)
+		{
+			if (!file.HasChildren)
+				return null;
+
+			List<(MonoDevelop.Projects.ProjectFile File, string NewName)> files = null;
+
+			string oldName = file.FilePath.FileName;
+			foreach (MonoDevelop.Projects.ProjectFile child in file.DependentChildren) {
+				string oldChildName = child.FilePath.FileName;
+				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
+					string childNewName = newName + oldChildName.Substring (oldName.Length);
+
+					if (files == null)
+						files = new List<(MonoDevelop.Projects.ProjectFile projectFile, string name)> ();
+					files.Add ((child, childNewName));
+				}
+			}
+			return files;
+		}
+
+		static void FailIfDocumentInfoChangesNotSupported (Document document, DocumentInfo updatedInfo)
+		{
+			if (document.SourceCodeKind != updatedInfo.SourceCodeKind) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.SourceCodeKind)}.");
+			}
+
+			if (document.FilePath != updatedInfo.FilePath) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.FilePath)}.");
+			}
+
+			if (document.Id != updatedInfo.Id) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.Id)}.");
+			}
+
+			if (document.Folders != updatedInfo.Folders) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.Folders)}.");
+			}
+
+			if (document.State.Attributes.IsGenerated != updatedInfo.IsGenerated) {
+				throw new InvalidOperationException (
+					$"This Workspace does not support changing a document's {nameof (document.State.Attributes.IsGenerated)} state.");
+			}
+		}
+
 
 		#endregion
 

@@ -4251,6 +4251,8 @@
     <Compile Include="MonoDevelop.Components.Docking\SplitterWidgetWrapper.cs" />
     <Compile Include="MonoDevelop.Components.Docking\SplitterMacHostWidget.cs" />
     <Compile Include="MonoDevelop.Components\Mac\DragEventTrapView.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NativeToolkitHelper.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NSViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

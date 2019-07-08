@@ -155,12 +155,12 @@ namespace console61
 
 		}
 
-		Task TestCompletion (string text, Action<Document, ICompletionDataList> action, Action<Document> preCompletionAction = null)
+		protected Task TestCompletion (string text, Action<Document, ICompletionDataList> action, Action<Document> preCompletionAction = null)
 		{
 			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand, preCompletionAction);
 		}
 
-		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo, Action<Document> preCompletionAction = null)
+		protected async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo, Action<Document> preCompletionAction = null)
 		{
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)

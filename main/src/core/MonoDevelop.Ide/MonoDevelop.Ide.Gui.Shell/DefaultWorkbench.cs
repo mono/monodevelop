@@ -567,12 +567,13 @@ namespace MonoDevelop.Ide.Gui
 				GetSize (out int width, out int height);
 				// HACK: always capture bounds on OS X because we don't restore Gdk.WindowState.Maximized due to
 				// the bug mentioned below. So we simular Maximized by capturing the Maximized size.
-				if (GdkWindow.State == 0 || Platform.IsMac) {
+				if (GdkWindow?.State == 0 || Platform.IsMac) {
 					memento.Bounds = new Rectangle (x, y, width, height);
 				} else {
 					memento.Bounds = requestedBounds;
 				}
-				memento.WindowState = GdkWindow.State;
+				if (GdkWindow != null)
+					memento.WindowState = GdkWindow.State;
 				memento.FullScreen  = FullScreen;
 				return memento.ToProperties ();
 			}
@@ -641,7 +642,13 @@ namespace MonoDevelop.Ide.Gui
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 
 			if (initialized) {
-				PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
+				try {
+					if (GdkWindow != null)
+						PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", Memento);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while creating the workbench preferences.", e);
+				}
+
 				//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
 				foreach (var fv in dock.Layouts)
 					if (fv.EndsWith (fullViewModeTag))
@@ -1065,7 +1072,7 @@ namespace MonoDevelop.Ide.Gui
 
 		bool IsInFullViewMode {
 			get {
-				return dock.CurrentLayout != null && dock.CurrentLayout.EndsWith(fullViewModeTag, StringComparison.Ordinal);
+				return dock?.CurrentLayout?.EndsWith(fullViewModeTag, StringComparison.Ordinal) ?? false;
 			}
 		}
 

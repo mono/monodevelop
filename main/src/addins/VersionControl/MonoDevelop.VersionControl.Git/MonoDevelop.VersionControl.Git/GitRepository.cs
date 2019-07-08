@@ -69,13 +69,12 @@ namespace MonoDevelop.VersionControl.Git
 				rootRepository = value;
 
 				InitScheduler (); 
-                if (this.watchGitLockfiles)
+				if (this.watchGitLockfiles)
 					InitFileWatcher (false);
 			}
 		}
 
 		public static event EventHandler BranchSelectionChanged;
-
 
 		FileSystemWatcher watcher;
 		ConcurrentExclusiveSchedulerPair scheduler;
@@ -142,7 +141,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			ShutdownFileWatcher ();
 
-			watcher = new FileSystemWatcher (dotGitPath.CanonicalPath.ParentDirectory, Path.Combine (dotGitPath.FileName, "*.lock"));
+			watcher = new FileSystemWatcher (dotGitPath.CanonicalPath.ParentDirectory, Path.Combine (dotGitPath.FileName, "*"));
 			watcher.Created += HandleGitLockCreated;
 			watcher.Deleted += HandleGitLockDeleted;
 			watcher.Renamed += HandleGitLockRenamed;
@@ -158,20 +157,39 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		const string rebaseApply = "rebase-apply";
+		const string rebaseMerge = "rebase-merge";
+		const string cherryPickHead = "CHERRY_PICK_HEAD";
+		const string revertHead = "REVERT_HEAD";
+
+		static bool ShouldLock (string fullPath)
+		{
+			var fileName = Path.GetFileName (fullPath);
+			return fileName == rebaseApply || fileName == rebaseMerge || fileName == cherryPickHead || fileName == revertHead;
+		}
+
 		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
 		{
-			OnGitLocked ();
+			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal))
+				OnGitLocked ();
+			if (ShouldLock (e.FullPath))
+				OnGitLocked ();
 		}
 
 		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
 		{
 			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) && !e.Name.EndsWith (".lock", StringComparison.Ordinal))
 				OnGitUnlocked ();
+			if (ShouldLock (e.OldName))
+				OnGitUnlocked ();
 		}
 
 		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
 		{
-			OnGitUnlocked ();
+			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal))
+				OnGitUnlocked ();
+			if (ShouldLock (e.FullPath))
+				OnGitUnlocked ();
 		}
 
 		void OnGitLocked ()
@@ -1047,7 +1065,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
+		bool CommonPreMergeRebase (ref GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
 		{
 			FileService.FreezeEvents ();
 			stashIndex = -1;
@@ -1163,7 +1181,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase"), isUpdate))
+				if (!CommonPreMergeRebase (ref options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase"), isUpdate))
 					return;
 
 				RunBlockingOperation (() => {
@@ -1213,7 +1231,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge"), isUpdate))
+				if (!CommonPreMergeRebase (ref options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge"), isUpdate))
 					return;
 				// Do a merge.
 				MergeResult mergeResult = RunBlockingOperation (() =>

@@ -105,23 +105,25 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			if (UpdatedVersion != null) {
-				return GetUpdatedVersionLabelText ();
-			}
 			if (IsInstallPending) {
 				return GetInstallingLabelText ();
 			}
-			return string.Empty;
-		}
 
-		string GetUpdatedVersionLabelText ()
-		{
-			return GettextCatalog.GetString ("({0} available)", UpdatedVersion);
+			string version = GetPackageDisplayVersion (displayNone: false);
+			if (string.IsNullOrEmpty (version)) {
+				return string.Empty;
+			}
+
+			return string.Format ("({0})", version);
 		}
 
 		string GetInstallingLabelText ()
 		{
-			return GettextCatalog.GetString ("(installing)");
+			string version = GetPackageDisplayVersion (displayNone: false);
+			if (string.IsNullOrEmpty (version)) {
+				return GettextCatalog.GetString ("(installing)");
+			}
+			return GettextCatalog.GetString ("({0} installing)", version);
 		}
 
 		public IconId GetIconId ()
@@ -129,20 +131,26 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return Stock.Reference;
 		}
 
-		public string GetPackageDisplayVersion ()
+		public IconId GetStatusIconId ()
+		{
+			if (IsInstallPending || !Installed || IsReinstallNeeded || UpdatedVersion == null)
+				return IconId.Null;
+
+			return new IconId ("md-package-update");
+		}
+
+		public string GetPackageDisplayVersion (bool displayNone = true)
 		{
 			if (PackageReference.IsFloating ()) {
 				return PackageReference.AllowedVersions.Float.ToString ();
 			}
 			if (Version == null) {
-				return GettextCatalog.GetString ("None");
+				if (displayNone) {
+					return GettextCatalog.GetString ("None");
+				}
+				return string.Empty;
 			}
 			return Version.ToString ();
-		}
-
-		public string GetPackageVersionLabel ()
-		{
-			return GettextCatalog.GetString ("Version {0}", GetPackageDisplayVersion ());
 		}
 
 		public TaskSeverity? GetStatusSeverity ()
@@ -152,6 +160,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 					return TaskSeverity.Warning;
 				}
 			}
+
+			if (UpdatedVersion != null)
+				return TaskSeverity.Information;
 
 			return null;
 		}
@@ -164,6 +175,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				return GettextCatalog.GetString ("Package is not restored");
 			} else if (IsReinstallNeeded) {
 				return GettextCatalog.GetString ("Package needs retargeting");
+			} else if (UpdatedVersion != null) {
+				return GettextCatalog.GetString ("{0} available", UpdatedVersion);
 			}
 			return null;
 		}
@@ -182,6 +195,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return !ParentNode.IsNuGetIntegratedProject () &&
 				!ParentNode.IsPackageInstalled (PackageReference);
+		}
+
+		public string GetUpdateLabel ()
+		{
+			if (UpdatedVersion != null)
+				return GettextCatalog.GetString ("Update to {0}", UpdatedVersion);
+
+			return GettextCatalog.GetString ("Update");
 		}
 	}
 }

@@ -31,8 +31,8 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using IdeUnitTests;
-using MonoDevelop.Ide;
-using UnitTests;
+using MonoDevelop.Projects.FileNesting;
+
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -286,7 +286,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules);
 		}
 
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore22=true")]
@@ -311,7 +311,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules);
 		}
 
 		[Ignore ("Requires .NET Core App 3.0 runtime")]
@@ -337,7 +337,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters, CheckAspNetCoreNestingRules);
 		}
 
 		static bool IsDotNetCoreSdk2xInstalled ()
@@ -366,7 +366,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 3 && version.Minor == 0);
 		}
 
-		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters)
+		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters, Action<Solution> preBuildChecks = null)
 		{
 			using (var ptt = new ProjectTemplateTest (basename, templateId)) {
 
@@ -374,9 +374,22 @@ namespace MonoDevelop.DotNetCore.Tests
 					ptt.Config.Parameters [templateParameter.Name] = templateParameter.Value;
 				}
 
-				var template = await ptt.CreateAndBuild ();
+				var template = await ptt.CreateAndBuild (preBuildChecks);
 
 				CheckProjectTypeGuids (ptt.Solution, GetProjectTypeGuid (template));
+			}
+		}
+
+		static void CheckAspNetCoreNestingRules (Solution sol)
+		{
+			foreach (var p in sol.GetAllProjects ()) {
+				foreach (var si in p.Files) {
+					if (si.DependentChildren != null && si.DependentChildren.Count > 0) {
+						foreach (var c in si.DependentChildren) {
+							Assert.True (FileNestingService.GetParentFile (p, c.FilePath) == si.FilePath);
+						}
+					}
+				}
 			}
 		}
 

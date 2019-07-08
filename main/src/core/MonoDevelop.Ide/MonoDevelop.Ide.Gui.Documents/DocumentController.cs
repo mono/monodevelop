@@ -672,7 +672,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			// Get the list of nodes for which an extension has been created
 
-			var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
+			var allExtensions = (extensionChain.GetAllExtensions () ?? Array.Empty<DocumentControllerExtension>())
+									.OfType<DocumentControllerExtension> ().ToList ();
+
 			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
 				.Select (ex => ex.SourceExtensionNode.Data.NodeId).ToList ();
 
@@ -930,6 +932,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void GrabFocusForView (DocumentView view)
 		{
+			if (disposed)
+				return;
 			if (linkedController != null)
 				linkedController?.GrabFocusForView (view);
 			else

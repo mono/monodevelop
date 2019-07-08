@@ -107,6 +107,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 			protected override void OnSetText (string text)
 			{
 				// OnLoad is always called before anything else, so the document should be ready
+				if (textDocument == null) {
+					return;
+				}
+
 				var edit = textDocument.TextBuffer.CreateEdit ();
 				edit.Replace (0, textDocument.TextBuffer.CurrentSnapshot.Length, text);
 				edit.Apply ();

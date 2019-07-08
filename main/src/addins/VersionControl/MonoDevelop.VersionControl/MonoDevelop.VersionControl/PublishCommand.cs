@@ -5,11 +5,31 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl 
 {
-	internal class PublishCommand 
+	internal class PublishCommand : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = info.Visible = false;
+			if (!VersionControlService.IsGloballyDisabled) {
+				var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				if (solution == null)
+					return;
+				info.Enabled = info.Visible = Publish (solution, solution.BaseDirectory, true);
+			}
+		}
+
+		protected override void Run ()
+		{
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution == null)
+				return;
+			Publish (solution, solution.BaseDirectory, false);
+		}
+
 		public static bool Publish (WorkspaceObject entry, FilePath localPath, bool test)
 		{
 			if (test)

@@ -47,9 +47,6 @@ namespace Mono.MHex
 			get {
 				return editor.Options;
 			}
-			set {
-				editor.Options = value;
-			}
 		}
 
 		public void PurgeLayoutCaches ()

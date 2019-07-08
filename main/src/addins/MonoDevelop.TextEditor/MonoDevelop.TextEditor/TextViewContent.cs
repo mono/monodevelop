@@ -238,20 +238,12 @@ namespace MonoDevelop.TextEditor
 				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
 		}
 
-		protected override void OnGrabFocus (DocumentView view)
-		{
-			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-			base.OnGrabFocus (view);
-		}
-
 		protected override void OnFileNameChanged ()
 		{
 			base.OnFileNameChanged ();
 
 			if (TextDocument == null)
 				return;
-
-			UpdateTextBufferRegistration ();
 
 			warnOverwrite = false;
 
@@ -275,6 +267,8 @@ namespace MonoDevelop.TextEditor
 
 			//if (this.WorkbenchWindow?.Document != null)
 			//	textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
+
+			UpdateTextBufferRegistration ();
 
 			UpdateTextEditorOptions (null, null);
 		}
@@ -336,12 +330,22 @@ namespace MonoDevelop.TextEditor
 
 		protected virtual void UnsubscribeFromEvents ()
 		{
-			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
-			if (TextDocument != null) {
+			if (sourceEditorOptions != null)
+				sourceEditorOptions.Changed -= UpdateTextEditorOptions;
+
+			if (TextDocument != null)
 				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+
+			if (TextBuffer != null)
 				TextBuffer.Changed -= HandleTextBufferChanged;
+
+			// while this actually generates a "warning" about potentially comparing value types,
+			// we can be fairly confident that's not actually going to happen - and while the correct
+			// change would be to ensure TView is a "class", that's too big of a change to try and
+			// and combat this bug with.
+			// In addition, this will get JITTed into a cast to Object and a check for null.
+			if (TextView != null && TextView.Options != null)
 				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
-			}
 		}
 
 		void UpdateBufferOptions ()
@@ -396,7 +400,9 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+#if !WINDOWS
 				EditorOptions.ClearOptionValue (DefaultTextViewOptions.VerticalRulersName);
+#endif
 
 				return;
 			}
@@ -410,9 +416,11 @@ namespace MonoDevelop.TextEditor
 			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
 			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
 
+#if !WINDOWS
 			EditorOptions.SetOptionValue (
 				DefaultTextViewOptions.VerticalRulersName,
 				PropertyService.Get<bool> ("ShowRuler") ? new [] { currentPolicy.FileWidth } : Array.Empty<int> ());
+#endif
 		}
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
@@ -451,8 +459,10 @@ namespace MonoDevelop.TextEditor
 					setVerticalRulers = false;
 			}
 
+#if !WINDOWS
 			if (setVerticalRulers)
 				EditorOptions.SetOptionValue (DefaultTextViewOptions.VerticalRulersName, verticalRulers ?? Array.Empty<int> ());
+#endif
 
 			return Task.FromResult (true);
 		}

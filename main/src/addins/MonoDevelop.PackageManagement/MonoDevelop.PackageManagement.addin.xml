@@ -61,12 +61,6 @@
 			_label="Re_target"
 			_displayName="Retarget All Packages" />
 		</Category>
-		<Category id="Hidden" _name="Hidden">
-			<Command
-				id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
-				_description="Current package version"
-				_label="Version" />
-		</Category>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
@@ -117,6 +111,7 @@
 		<StockIcon stockid="md-package-dependency" resource="nuget-16.png" />
 		<StockIcon stockid="md-framework-dependency" resource="framework-16.png" />
 		<StockIcon stockid="md-nuget-warning" resource="nuget-warning-16.png" />
+		<StockIcon stockid="md-package-update" resource="package-update-16.png" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
@@ -148,7 +143,6 @@
 	</ExtensionPoint>
 
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
-		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
