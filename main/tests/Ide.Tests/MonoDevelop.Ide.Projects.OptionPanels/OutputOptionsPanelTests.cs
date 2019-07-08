@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 				//gets the dir template for both configs
 				var configs = new ItemConfiguration [] { debug, release };
-				var outDirTemplate = configs.CompareTemplates ();
+				var outDirTemplate = configs.GetCommonOutDirTemplate ();
 
 				Assert.That (outDirTemplate, Is.Not.Empty);
 
@@ -120,18 +120,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 
 		[Test]
-		public void CompareTemplatesTest ()
+		public void GetCommonOutDirTemplateTest ()
 		{
 			var debug = new DotNetProjectConfiguration ("Debug");
 			var release = new DotNetProjectConfiguration ("Release");
 
 			debug.OutputDirectory = new FilePath ("/Users/project/bin/Debug");
 			release.OutputDirectory = new FilePath ("/Users/project/bin/Release");
-			Assert.That (new ItemConfiguration [] { debug, release }.CompareTemplates (), Is.EqualTo ("/Users/project/bin/$(Configuration)"));
+			Assert.That (new ItemConfiguration [] { debug, release }.GetCommonOutDirTemplate (), Is.EqualTo ("/Users/project/bin/$(Configuration)"));
 
 			debug.OutputDirectory = new FilePath ("/Users/project/build/Debug");
 			release.OutputDirectory = new FilePath ("/Users/project/bin/Release");
-			Assert.That (new ItemConfiguration [] { debug, release }.CompareTemplates (), Is.Empty);
+			Assert.That (new ItemConfiguration [] { debug, release }.GetCommonOutDirTemplate (), Is.Empty);
 		}
 	}
 }

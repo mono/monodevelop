@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects
 			if (compilationParameters != null)
 				compilationParameters.Write (pset);
 
-			if (AppendTargetFrameworkToOutputPath == null || AppendTargetFrameworkToOutputPath == true) {
+			if (AppendTargetFrameworkToOutputPath ?? true) {
 				pset.RemoveProperty (nameof (AppendTargetFrameworkToOutputPath));
 			} else {
 				pset.SetValue (nameof (AppendTargetFrameworkToOutputPath), false);

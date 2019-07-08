@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		protected override bool ConfigurationsAreEqual (IEnumerable<ItemConfiguration> configs)
 		{
-			return !string.IsNullOrEmpty (configs.CompareTemplates ());
+			return !string.IsNullOrEmpty (configs.GetCommonOutDirTemplate ());
 		}
 		
 		public override void ApplyChanges()
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{	
 			configurations = configs;
 
-			var outDirTemplate = configs.CompareTemplates ();
+			var outDirTemplate = configs.GetCommonOutDirTemplate ();
 			assemblyNameEntry.Text = configs.GetAssemblyName ();
 			
 			outputPathEntry.DefaultPath = project.BaseDirectory;
@@ -149,7 +149,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				var dir = conf.ResolveOutDirectoryTemplate (outputPathEntry.Path);
 
 				if (!string.IsNullOrEmpty (dir)) {
-					conf.OutputDirectory = dir; 
+					conf.OutputDirectory = dir;
+				} else {
+					//in case output dir is empty, we set DefaultPath
+					conf.OutputDirectory = IO.Path.Combine (outputPathEntry.DefaultPath, "bin", conf.Name);
+					if (conf.AppendTargetFrameworkToOutputPath != null) { //if it is null is because of it's not a .NET Core project
+						conf.AppendTargetFrameworkToOutputPath = true;
+					}
 				}
 			}
 		}
@@ -188,17 +194,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var outputDirTemp = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
 
 			// if outputDirectory does not contain the targetFramework.Id, AppendTargetFrameworkToOutputPath is false for that config
-			conf.AppendTargetFrameworkToOutputPath = dir.Contains (conf.TargetFrameworkShortName) || dir.Contains ("$(TargetFramework)");
+			conf.AppendTargetFrameworkToOutputPath = dir.EndsWithTargetFramework (conf.TargetFrameworkShortName) || dir.EndsWithTargetFramework ();
 
 			// check if the outputDirectory has been modified
 			var outputModified = conf.OutputDirectory.FullPath.ToString ().IndexOf (outputDirTemp, StringComparison.InvariantCulture) != 0;
-			if (outputModified) { 
-				// if so, we have to remove $(TargetFramework) since msbuild will add it due to AppendTargetFrameworkToOutputPath == true 
-				dir = dir.Replace ("$(TargetFramework)", string.Empty);
+			if (outputModified) {
+				// if so, we have to remove $(TargetFramework) at the end since msbuild will add it due to AppendTargetFrameworkToOutputPath == true
+				if (dir.EndsWithTargetFramework ()) {
+					dir = dir.Remove (dir.Length - "$(TargetFramework)".Length);
+				}
 				// in case we are in a specific configuration i.e. Debug, Release, there will be no msbuild variable $(TargetFramework)
 				// but TargetFrameworkId values, therefore we have to apply the same logic checking the end of the dir template
-				if (dir.TrimEnd (IO.Path.DirectorySeparatorChar).EndsWith (conf.TargetFrameworkShortName, StringComparison.InvariantCulture)) {
-					dir = dir.Replace (conf.TargetFrameworkShortName, string.Empty);
+				if (dir.EndsWithTargetFramework (conf.TargetFrameworkShortName)) {
+					dir = dir.Remove (dir.Length - conf.TargetFrameworkShortName.Length);
 				}
 			} else {
 				// no changes, leaving it as it is
@@ -237,7 +245,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		/// </summary>
 		/// <param name="configs"></param>
 		/// <returns>String.Empty if there is no common pattern otherwise the template pattern</returns>
-		internal static string CompareTemplates (this IEnumerable<ItemConfiguration> configs)
+		internal static string GetCommonOutDirTemplate (this IEnumerable<ItemConfiguration> configs)
 		{
 			var baseTemplate = string.Empty;
 			foreach (DotNetProjectConfiguration config in configs) {
@@ -264,10 +272,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var dirTemplate = conf.OutputDirectory.ToString ();
 
 			if (conf.AppendTargetFrameworkToOutputPath == true) {
-				//default output directory contains TargetFrameworkId but if the output directory
+				//default output directory ends with TargetFrameworkId but if the output directory
 				//has been previously modified then it does not, however we have to append it to dir template since will be part of
 				//the output part due to AppendTargetFrameworkToOutputPath == true
-				if (!dirTemplate.Contains (conf.TargetFrameworkShortName)) {
+				if (!dirTemplate.EndsWithTargetFramework (conf.TargetFrameworkShortName)) {
 					dirTemplate = IO.Path.Combine (dirTemplate, conf.TargetFrameworkShortName);
 				}
 
@@ -279,6 +287,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.Platform}", $"{IO.Path.DirectorySeparatorChar}$(Platform)");
 
 			return dirTemplate;
+		}
+
+		static bool EndsWithTargetFramework (this string directory, string targetFramework = "$(TargetFramework)")
+		{
+			return directory.TrimEnd (IO.Path.DirectorySeparatorChar).EndsWith (targetFramework, StringComparison.InvariantCulture);
 		}
 	}
 }
