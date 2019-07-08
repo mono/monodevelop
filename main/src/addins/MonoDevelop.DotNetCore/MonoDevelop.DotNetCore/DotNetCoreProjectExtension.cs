@@ -87,8 +87,11 @@ namespace MonoDevelop.DotNetCore
 		/// Cannot check TargetFramework property since it may not be set.
 		/// Currently support .NET Core and .NET Standard.
 		/// </summary>
-		bool HasSupportedFramework (DotNetProject project)
+		static bool HasSupportedFramework (DotNetProject project)
 		{
+			if (project.HasMultipleTargetFrameworks)
+				return project.TargetFrameworkMonikers.Any (moniker => moniker.IsNetStandardOrNetCoreApp ());
+
 			string framework = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetFrameworkIdentifier");
 			if (framework != null)
 				return framework == ".NETCoreApp" || framework == ".NETStandard";
@@ -98,6 +101,12 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
+			if (Project.HasMultipleTargetFrameworks) {
+				// Gets called when assigning the Project.TargetFramework. The framework being set may not be
+				// supported by the DotNetCoreProjectExtension but one of the multi-target frameworks will be
+				// supported so return true to allow the Project to be loaded.
+				return true;
+			}
 			return framework.IsNetCoreApp () || framework.IsNetStandard ();
 		}
 

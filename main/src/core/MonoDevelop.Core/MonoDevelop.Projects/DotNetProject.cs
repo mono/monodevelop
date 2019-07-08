@@ -91,8 +91,30 @@ namespace MonoDevelop.Projects
 
 			base.OnInitialize ();
 
+			if (HasMultipleTargetFrameworks)
+				EvaluateTargetFrameworkMonikers ();
+
 			if (languageName == null)
 				languageName = MSBuildProjectService.GetLanguageFromGuid (TypeGuid);
+		}
+
+		ImmutableArray<TargetFrameworkMoniker> targetFrameworkMonikers;
+
+		void EvaluateTargetFrameworkMonikers ()
+		{
+			var frameworksList = new List<TargetFrameworkMoniker> ();
+
+			var globalGroup = MSBuildProject.GetOrCreateGlobalPropertyGroup ();
+			foreach (string framework in GetTargetFrameworks ()) {
+				var c = Guid.NewGuid ().ToString ();
+				using (var pi = CreateProjectInstanceForConfiguration (c, c, framework)) {
+					pi.GetPropertiesLinkedToGroup (globalGroup);
+					var currentTargetFramework = GetTargetFramework (pi.EvaluatedProperties);
+					frameworksList.Add (currentTargetFramework.Id);
+				}
+			}
+
+			targetFrameworkMonikers = frameworksList.ToImmutableArray ();
 		}
 
 		protected override void OnExtensionChainInitialized ()
@@ -413,10 +435,16 @@ namespace MonoDevelop.Projects
 					return;
 				bool updateReferences = targetFramework != null;
 				targetFramework = value;
+				if (targetFrameworkMonikers.IsDefaultOrEmpty)
+					targetFrameworkMonikers = ImmutableArray.Create<TargetFrameworkMoniker> (targetFramework.Id);
 				if (updateReferences)
 					UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
 			}
+		}
+
+		public ImmutableArray<TargetFrameworkMoniker> TargetFrameworkMonikers {
+			get { return targetFrameworkMonikers; }
 		}
 
 		public TargetRuntime TargetRuntime {
