@@ -125,7 +125,6 @@
     <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
     <Compile Include="MonoDevelop.Debugger\NoSourceView.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugSourceFilesOptionsPanel.cs" />
-    <Compile Include="MonoDevelop.Debugger\SolutionHasDebugSourceFilesCondition.cs" />
     <Compile Include="MonoDevelop.Debugger\Counters.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.AttachToProcessDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
