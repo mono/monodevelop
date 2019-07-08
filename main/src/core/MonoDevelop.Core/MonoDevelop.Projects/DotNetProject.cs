@@ -2148,6 +2148,12 @@ namespace MonoDevelop.Projects
 			return newConfig;
 		}
 
+		public TargetFramework GetTargetFramework (ConfigurationSelector configuration)
+		{
+			var projectConfiguration = configuration.GetConfiguration (this) as DotNetProjectConfiguration;
+			return projectConfiguration?.TargetFramework ?? TargetFramework;
+		}
+
 		static TargetFramework GetTargetFramework (IMSBuildEvaluatedPropertyCollection evaluatedProperties)
 		{
 			string frameworkIdentifier = evaluatedProperties.GetValue ("TargetFrameworkIdentifier");

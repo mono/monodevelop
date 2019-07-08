@@ -56,7 +56,7 @@ namespace MonoDevelop.AspNetCore
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			if (Project.TargetFramework.IsNetCoreApp ()) {
+			if (configuration.TargetFramework.IsNetCoreApp ()) {
 				var result = CreateAspNetCoreExecutionCommand (configSel, configuration, runConfiguration);
 				if (result != null)
 					return result;
@@ -95,7 +95,7 @@ namespace MonoDevelop.AspNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (DotNetCoreRuntime.IsInstalled) {
+			if (Project.GetTargetFramework (configuration).IsNetCoreApp () && DotNetCoreRuntime.IsInstalled) {
 				return CheckCertificateThenExecute (monitor, context, configuration, runConfiguration);
 			}
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
