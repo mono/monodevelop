@@ -90,11 +90,11 @@ namespace MonoDevelop.Debugger
 		internal void BindAll (BreakpointStore bps)
 		{
 			lock (watches) {
-				foreach (PinnedWatch w in watches) {
-					foreach (Breakpoint bp in bps.GetBreakpoints ()) {
+				foreach (var watch in watches) {
+					foreach (var bp in bps.GetBreakpoints ()) {
 						if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None &&
-							bp.TraceExpression == "{" + w.Expression + "}" && bp.FileName == w.File && bp.Line == w.Line)
-							Bind (w, bp);
+							bp.TraceExpression == "{" + watch.Expression + "}" && bp.FileName == watch.File && bp.Line == watch.Line)
+							Bind (watch, bp);
 					}
 				}
 			}
