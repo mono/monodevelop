@@ -61,7 +61,7 @@ generate_fallback_paths (NSString *binDir)
 		/* Add Xcode's CommandLineTools dev lib dir before Xcode's Developer dir */
 		@"/Library/Developer/CommandLineTools/usr/lib",
 		/* Add Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-		xcode_get_dev_path(),
+		[xcode_get_dev_path() stringByAppendingString:@"/usr/lib"],
 		/* Add Mono's lib dir */
 		@"/Library/Frameworks/Mono.framework/Libraries",
 		@"/usr/lib",
