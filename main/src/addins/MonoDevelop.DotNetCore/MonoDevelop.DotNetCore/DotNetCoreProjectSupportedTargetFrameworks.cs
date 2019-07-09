@@ -62,9 +62,8 @@ namespace MonoDevelop.DotNetCore
 
 		public static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
-			// NOTE: .NET Standard 2.1 is still not available
-			//if (DotNetCoreRuntime.IsNetCore30Installed () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard21 ())
-			//	yield return CreateTargetFramework (".NETStandard", "2.1");
+			if (DotNetCoreRuntime.IsNetCore30Installed () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard21 ())
+				yield return CreateTargetFramework (".NETStandard", "2.1");
 				
 			if (DotNetCoreRuntime.IsNetCore2xInstalled () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ())
 				yield return CreateTargetFramework (".NETStandard", "2.0");
