@@ -298,7 +298,7 @@ namespace MonoDevelop.Projects
 			SolutionItemRunConfiguration runConfig)
 		{
 			var targets = new List<ExecutionTarget> ();
-			foreach (string framework in Project.GetTargetFrameworks ()) {
+			foreach (TargetFrameworkMoniker framework in Project.TargetFrameworkMonikers) {
 				var target = new TargetFrameworkExecutionTarget (framework);
 				targets.Add (target);
 			}
@@ -313,9 +313,8 @@ namespace MonoDevelop.Projects
 		{
 			if (Project.HasMultipleTargetFrameworks) {
 				var frameworkContext = context?.ExecutionTarget as TargetFrameworkExecutionTarget;
-				if (frameworkContext != null) {
-					configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.Framework);
-				}
+				if (frameworkContext != null)
+					configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.FrameworkShortName);
 			}
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
 		}

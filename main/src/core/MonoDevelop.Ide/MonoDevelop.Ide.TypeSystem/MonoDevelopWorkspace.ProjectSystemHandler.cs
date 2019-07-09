@@ -97,14 +97,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> ();
 			}
 
-			static string[] NonMultiTargetProjectFrameworks = { null };
-
 			internal IEnumerable<string> GetFrameworks (MonoDevelop.Projects.Project p)
 			{
-				var frameworks = p.GetTargetFrameworks ();
-				if (frameworks.Any ())
-					return frameworks;
-				return NonMultiTargetProjectFrameworks;
+				if (p.HasMultipleTargetFrameworks && p is DotNetProject dotNetProject) {
+					var frameworks = dotNetProject.TargetFrameworkMonikers;
+					foreach (var framework in frameworks)
+						yield return framework.ShortName;
+				} else {
+					yield return null;
+				}
 			}
 
 			internal async Task<ProjectInfo>  LoadProject (

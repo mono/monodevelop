@@ -24,20 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core.Assemblies;
+
 namespace MonoDevelop.Core.Execution
 {
 	internal class TargetFrameworkExecutionTarget : ExecutionTarget
 	{
-		public TargetFrameworkExecutionTarget (string framework)
+		public TargetFrameworkExecutionTarget (TargetFrameworkMoniker framework)
 		{
-			Id = framework;
-			Name = framework;
+			Id = framework.ShortName;
+			Name = framework.ShortName;
 			Framework = framework;
 			Image = "md-framework-dependency";
 		}
 
 		public override string Name { get; }
 		public override string Id { get; }
-		public string Framework { get; }
+		public TargetFrameworkMoniker Framework { get; }
+		public string FrameworkShortName => Framework.ShortName;
 	}
 }

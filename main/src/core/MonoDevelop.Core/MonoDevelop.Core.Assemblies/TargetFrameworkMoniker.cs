@@ -285,6 +285,13 @@ namespace MonoDevelop.Core.Assemblies
 			return string.Compare (profile ?? string.Empty, other.Profile ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 		}
 
+		internal TargetFrameworkMoniker WithShortName (string name)
+		{
+			return new TargetFrameworkMoniker (identifier, version, profile) {
+				shortName = name
+			};
+		}
+
 		public static TargetFrameworkMoniker Default {
 			get { return NET_1_1; }
 		}

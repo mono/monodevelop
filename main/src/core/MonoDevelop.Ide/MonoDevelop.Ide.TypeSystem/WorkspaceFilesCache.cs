@@ -112,15 +112,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static string[] NullFramework = { null };
-
-		static IEnumerable<string> GetFrameworks (Project project)
+		internal IEnumerable<string> GetFrameworks (Project p)
 		{
-			var frameworks = project.GetTargetFrameworks ();
-			if (frameworks.Any ())
-				return frameworks;
-
-			return NullFramework;
+			if (p.HasMultipleTargetFrameworks && p is DotNetProject dotNetProject) {
+				var frameworks = dotNetProject.TargetFrameworkMonikers;
+				foreach (var framework in frameworks)
+					yield return framework.ShortName;
+			} else {
+				yield return null;
+			}
 		}
 
 		// We only care about invalid characters on Windows, as unix-systems only have `/` as invalid character.

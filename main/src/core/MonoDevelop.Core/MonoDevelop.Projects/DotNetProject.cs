@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects
 				using (var pi = CreateProjectInstanceForConfiguration (c, c, framework)) {
 					pi.GetPropertiesLinkedToGroup (globalGroup);
 					var currentTargetFramework = GetTargetFramework (pi.EvaluatedProperties);
-					frameworksList.Add (currentTargetFramework.Id);
+					frameworksList.Add (currentTargetFramework.Id.WithShortName (framework));
 				}
 			}
 
