@@ -700,6 +700,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
+
 			ReconstructString ();
 			RepositionContents ();
 		}
@@ -720,7 +721,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				imageView.Image = image;
 				if (updatePopover) {
 					DestroyPopover (null, null);
-					ShowPopoverForStatusBar ();
+
+					// Window will be null if the StatusBar has been removed from its parent
+					// In that case we want to destroy the popover, but we don't want to show
+					// it again
+					if (Window != null) {
+						ShowPopoverForStatusBar ();
+					}
 				}
 			}
 		}
