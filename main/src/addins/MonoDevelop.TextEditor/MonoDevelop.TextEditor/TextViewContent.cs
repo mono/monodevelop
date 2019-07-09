@@ -378,8 +378,6 @@ namespace MonoDevelop.TextEditor
 			if (policyContainer != null)
 				policyContainer.PolicyChanged += PolicyChanged;
 
-			UpdateOptionsFromPolicy ();
-
 			var newEditorConfigContext = await EditorConfigService.GetEditorConfigContext (FilePath, default);
 			if (newEditorConfigContext != editorConfigContext) {
 				if (editorConfigContext != null)
@@ -425,6 +423,9 @@ namespace MonoDevelop.TextEditor
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
 		{
+			// Set base options first, then override with editorconfig values
+			UpdateOptionsFromPolicy ();
+
 			if (editorConfigContext == null)
 				return Task.FromResult (false);
 
