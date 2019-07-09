@@ -128,17 +128,23 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void OnUnfocused ()
 		{
-			var textView = info.Controller.GetContent <ITextView> ();
-			if (textView != null) {
-				var pos = ComparisonWidget.OriginalEditor.Caret.Offset;
-				var snapshot = textView.TextSnapshot;
-				var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
-				textView.Caret.MoveTo (point);
+			try {
+				var textView = info.Controller.GetContent<ITextView> ();
+				if (textView != null) {
+					if (textView.IsClosed)
+						return;
+					var pos = ComparisonWidget.OriginalEditor.Caret.Offset;
+					var snapshot = textView.TextSnapshot;
+					var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
+					textView.Caret.MoveTo (point);
 
-				int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
-				line = Math.Min (line, snapshot.LineCount);
-				var middleLine = snapshot.GetLineFromLineNumber (line);
-				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
+					int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
+					line = Math.Min (line, snapshot.LineCount);
+					var middleLine = snapshot.GetLineFromLineNumber (line);
+					textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
+				}
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 			}
 		}
 

@@ -39,7 +39,7 @@ using MonoDevelop.Components.Mac;
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[Register ("MacToolboxWidget")]
-	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
+	class MacToolboxWidget : NSCollectionView, IToolboxWidget
 	{
 		internal const string ImageViewItemName = "ImageViewItem";
 		internal const string LabelViewItemName = "LabelViewItem";
@@ -57,7 +57,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler DragBegin;
 		public event EventHandler<CGPoint> MenuOpened;
 		public event EventHandler ActivateSelectedItem;
-		public Action<NSEvent> MouseDownActivated { get; set; }
 
 		IPadWindow container;
 		NSTextField messageTextField;
@@ -256,11 +255,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override void MouseDown (NSEvent theEvent)
 		{
-			// MouseDownActivated needs to be called before logic activating toolbox item
-			// because MacToolbox uses this event to focus GTK widget that hosts MacToolboxWidget
-			// resulting into stealing focus from toolbox consumer that gains focus when toolbox item is activated
-			MouseDownActivated?.Invoke (theEvent);
-
 			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
 			base.MouseDown (theEvent);
 			if (SelectedItem != null && theEvent.ClickCount > 1) {

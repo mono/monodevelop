@@ -28,6 +28,9 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Completion;
 using MonoDevelop.CSharp.Completion.Provider;
 using NUnit.Framework;
+using System.Threading.Tasks;
+using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.CSharpBinding.Tests.Features.Completion
 {
@@ -92,9 +95,9 @@ class FooBar : ProtocolClass
 		/// Bug 39428 - [iOS] Override of protocol method shows 2 completions
 		/// </summary>
 		[Test]
-		public void TestBug39428 ()
+		public async Task TestBug39428 ()
 		{
-			VerifyItemIsAbsent (Header + @"
+			await TestCompletion (Header + @"
 
 class MyProtocol
 {
@@ -119,7 +122,8 @@ class FooBar : ProtocolClass
 override $$
 }
 
-", "FooBar");
+", (doc, list) => Assert.AreEqual (1, list.Where (d => d.CompletionText == "FooBar").Count ()));
 		}
+
 	}
 }
