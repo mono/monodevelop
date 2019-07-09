@@ -95,12 +95,17 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			var span = trackingSpan.GetSpan (textView.TextSnapshot);
 			if (textView.TextViewLines == null)
 				return;
-			if (!textView.TextViewLines.FormattedSpan.IntersectsWith (span))
+			if (!textView.TextViewLines.FormattedSpan.Contains (span.End))
 				return;
-			var charBound = textView.TextViewLines.GetCharacterBounds (span.End);
-			view.SetFrameOrigin (new CGPoint (
-				Math.Round (charBound.Left),
-				Math.Round (charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2)));
+			try {
+				var charBound = textView.TextViewLines.GetCharacterBounds (span.End);
+				view.SetFrameOrigin (new CGPoint (
+					Math.Round (charBound.Left),
+					Math.Round (charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2)));
+			} catch (Exception e) {
+				view.SetFrameOrigin (default);
+				LoggingService.LogInternalError ("https://vsmac.dev/923058", e);
+			}
 			_exceptionCaughtLayer.RemoveAllAdornments ();
 			_exceptionCaughtLayer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, null, view, null);
 		}

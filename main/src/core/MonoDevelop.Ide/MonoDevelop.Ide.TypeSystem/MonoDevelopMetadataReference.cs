@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			_provider = provider;
 			_properties = properties;
 
-			FileWatcherService.WatchDirectories (this, new [] { FilePath.ParentDirectory });
+			FileWatcherService.WatchDirectories (this, new [] { FilePath.ParentDirectory }).Ignore ();
 			FileService.FileChanged += OnUpdatedOnDisk;
 		}
 
@@ -50,9 +50,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnUpdatedOnDisk (object sender, FileEventArgs e)
 		{
-			var args = new MetadataReferenceUpdatedEventArgs (this);
 			foreach (var file in e) {
 				if (file.FileName == FilePath) {
+					var args = new MetadataReferenceUpdatedEventArgs (this);
 					SnapshotUpdated?.Invoke (this, args);
 					return;
 				}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void Dispose ()
 		{
 			FileService.FileChanged -= OnUpdatedOnDisk;
-			FileWatcherService.WatchDirectories (this, null);
+			FileWatcherService.WatchDirectories (this, null).Ignore ();
 		}
 
 		internal void UpdateSnapshot () => _currentSnapshot = new Snapshot (_provider, Properties, FilePath);

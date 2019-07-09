@@ -218,7 +218,12 @@ namespace MonoDevelop.MacIntegration
 							NSApplication.SharedApplication.StopModal ();
 						});
 
-						NSApplication.SharedApplication.RunModalForWindow (alert.Window);
+						// pass parent and not alert so that the Runloop will change
+						// and processing will stop until the sheet is closed.
+						// If we pass alert, then it will run until a second alert is created
+						// which will be shown as a dialog and then the runloop changes and
+						// processing stops
+						NSApplication.SharedApplication.RunModalForWindow (parent);
 					}
 				}
 

@@ -491,12 +491,19 @@ namespace MonoDevelop.Ide
 		
 #region Opening and closing
 
+		[Obsolete("Use SavePreferencesAync")]
 		public void SavePreferences ()
 		{
 			foreach (WorkspaceItem it in Items)
 				SavePreferences (it);
 		}
-		
+
+		internal async Task SavePreferencesAsync ()
+		{
+			foreach (WorkspaceItem it in Items)
+				await SavePreferences (it); 
+		}
+
 		public async Task<bool> Close ()
 		{
 			return await Close (true);
@@ -521,7 +528,7 @@ namespace MonoDevelop.Ide
 					}
 
 					if (saveWorkspacePreferencies)
-						SavePreferences ();
+						await SavePreferencesAsync ();
 
 					if (closeProjectFiles && documentManager != null) {
 						foreach (Document doc in documentManager.Documents.ToArray ()) {
@@ -624,7 +631,7 @@ namespace MonoDevelop.Ide
 		internal async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences, OpenWorkspaceItemMetadata metadata)
 		{
 			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 
 			lock (loadLock) {
 				if (++loadOperationsCount == 1)
@@ -661,12 +668,10 @@ namespace MonoDevelop.Ide
 		internal async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, OpenWorkspaceItemMetadata metadata, ProgressMonitor loadMonitor)
 		{
 			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				CurrentSelectedWorkspaceItem = item;
-				if (IdeApp.IsInitialized)
-					IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
 				return true;
 			}
 
@@ -993,7 +998,7 @@ namespace MonoDevelop.Ide
 						string file = item.FileName;
 						try {
 							SetReloading (true);
-							SavePreferences ();
+							await SavePreferencesAsync ();
 							await CloseWorkspaceItem (item, false);
 							await OpenWorkspaceItem (file, false, false);
 						} finally {
@@ -1207,11 +1212,11 @@ namespace MonoDevelop.Ide
 		async Task LoadWorkspaceTypeSystem (WorkspaceItem item)
 		{
 			try {
-				var typeSystem = await serviceProvider.GetService<TypeSystemService> ();
-				await typeSystem.Load (item, null);
+				var typeSystem = await serviceProvider.GetService<TypeSystemService> ().ConfigureAwait (false);
+				await typeSystem.Load (item, null).ConfigureAwait (false);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
-			};
+			}
 		}
 
 		internal void NotifyItemRemoved (WorkspaceItem item)

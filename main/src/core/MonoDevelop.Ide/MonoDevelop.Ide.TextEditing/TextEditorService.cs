@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.TextEditing
 		/// </param>
 		public void NotifyLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)
 		{
-			foreach (var ext in GetFileLineExtensions (textFile.Name).Where (ex => ex.TrackLinePosition).ToList ()) {
+			foreach (var ext in GetFileLineExtensions (textFile.Name).Where (ex => ex.TrackLinePosition)) {
 				if (ext.Line > lineNumber) {
 					if (ext.Line + lineCount < lineNumber)
 						ext.NotifyDeleted ();

@@ -58,6 +58,7 @@ using MonoDevelop.Components.Mac;
 using System.Reflection;
 using MacPlatform;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -286,11 +287,7 @@ namespace MonoDevelop.MacIntegration
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
-			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
-
-			// Also calls NSApplication.Init();
-			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+			var loaded = NativeToolkitHelper.LoadCocoa ();
 
 			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
 			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
@@ -305,12 +302,13 @@ namespace MonoDevelop.MacIntegration
 
 			var appDelegate = NSApplication.SharedApplication.Delegate as Xwt.Mac.AppDelegate;
 			if (appDelegate != null) {
-				appDelegate.Terminating += (object o, TerminationEventArgs e) => {
+				appDelegate.Terminating += async (object o, TerminationEventArgs e) => {
 					if (MonoDevelop.Ide.IdeApp.IsRunning) {
 						// If GLib the mainloop is still running that means NSApplication.Terminate() was called
 						// before Gtk.Application.Quit(). Cancel Cocoa termination and exit the mainloop.
 						e.Reply = NSApplicationTerminateReply.Cancel;
-						Gtk.Main.Quit ();
+
+						await IdeApp.Exit();
 					} else {
 						// The mainloop has already exited and we've already cleaned up our application state
 						// so it's now safe to terminate Cocoa.
@@ -347,6 +345,15 @@ namespace MonoDevelop.MacIntegration
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
 				NSWindow.AllowsAutomaticWindowTabbing = false;
 
+
+			// At this point, Cocoa should have been initialized; it is initialized along with Gtk+ at the beginning of IdeStartup.Run
+			// If LaunchReason is still Unknown at this point, it means we have missed the NSApplicationDidLaunch notification for some reason and
+			// we fall back to it being a Normal startup to unblock anything waiting for that notification.
+			if (IdeApp.LaunchReason == IdeApp.LaunchType.Unknown) {
+				LoggingService.LogWarning ("Missed NSApplicationDidLaunch notification, assuming normal startup");
+				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
+			}
+
 			return loaded;
 		}
 
@@ -370,10 +377,20 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogError ($"Failed to start new instance: {error.LocalizedDescription}");
 		}
 
-
+		// The Enabled key needs to be controlled through NSUserDefaults so that it can be
+		// set from the command line. This lets users who require accessibility features to
+		// enabled to control it through the commandline, if it has been disabled from inside the software
 		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
+		const string VoiceOverNoticeShownKey = "MonoDevelop.VoiceOver.Show";
 		static void ShowVoiceOverNotice ()
 		{
+			if (PropertyService.Get<bool> (VoiceOverNoticeShownKey, false)) {
+				return;
+			}
+
+			// Show the VoiceOver notice once
+			PropertyService.Set (VoiceOverNoticeShownKey, true);
+
 			var alert = new NSAlert ();
 			alert.MessageText = GettextCatalog.GetString ("Assistive Technology Detected");
 			alert.InformativeText = GettextCatalog.GetString ("{0} has detected an assistive technology (such as VoiceOver) is running. Do you want to restart {0} and enable the accessibility features?", BrandingService.ApplicationName);
@@ -502,7 +519,9 @@ namespace MonoDevelop.MacIntegration
 						m.Dispose ();
 					}
 					NSApplication.SharedApplication.HelpMenu = null;
-				} catch {}
+				} catch (Exception e2) {
+					LoggingService.LogError ("Could not uninstall global menu", e2);
+				}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
 				return false;
@@ -666,30 +685,6 @@ namespace MonoDevelop.MacIntegration
 		{
 			//FIXME: should we remove these when finalizing?
 			try {
-				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
-				{
-					// We can only attempt to quit safely if all windows are GTK windows and not modal
-					if (!IsModalDialogRunning ()) {
-						e.UserCancelled = !IdeApp.Exit ().Result; // FIXME: could this block in rare cases?
-						e.Handled = true;
-						return;
-					}
-
-					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the
-					// dialog, and aborting the dialog may not be appropriate.
-					//
-					// There's NSTerminateLater but I'm not sure how to access it from carbon, maybe
-					// we need to swizzle methods into the app's NSApplicationDelegate.
-					// Also, it stops the main CFRunLoop and enters a special runloop mode, not sure how that would
-					// interact with GTK+.
-
-					// For now, just bounce
-					NSApplication.SharedApplication.RequestUserAttention (NSRequestUserAttentionType.CriticalRequest);
-					// and abort the quit.
-					e.UserCancelled = true;
-					e.Handled = true;
-				};
-
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					e.Handled = true;
 					IdeApp.BringToFront ();
@@ -1204,9 +1199,10 @@ namespace MonoDevelop.MacIntegration
 		internal override void RemoveWindowShadow (Gtk.Window window)
 		{
 			if (window == null)
-				throw new ArgumentNullException ("window");
-			NSWindow w = GtkQuartz.GetWindow (window);
-			w.HasShadow = false;
+				throw new ArgumentNullException (nameof(window));
+			var w = GtkQuartz.GetWindow (window);
+			if (w != null)
+				w.HasShadow = false;
 		}
 
 		internal override IMainToolbarView CreateMainToolbar (Gtk.Window window)

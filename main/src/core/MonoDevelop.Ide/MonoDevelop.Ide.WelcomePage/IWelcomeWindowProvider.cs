@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	public interface IWelcomeWindowProvider
 	{
 		Task ShowWindow (WelcomeWindowShowOptions options);
-		void HideWindow ();
+		Task HideWindow ();
 		bool IsWindowVisible { get; }
 		Window WindowInstance { get; }
 	}

@@ -45,39 +45,14 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (!(otherNode.DataItem is ISymbol)) return 1;
-
-			if (thisNode.Options ["GroupByType"]) {
-				int v1 = GetTypeSortValue (thisNode.DataItem);
-				int v2 = GetTypeSortValue (otherNode.DataItem);
-				if (v1 < v2) return -1;
-				else if (v1 > v2) return 1;
+			try {
+				if (thisNode == null || otherNode == null)
+					return -1;
+				return string.Compare (thisNode.NodeName, otherNode.NodeName, StringComparison.OrdinalIgnoreCase);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in assembly browser sort function.", e);
+				return -1;
 			}
-			if (thisNode.Options ["GroupByAccess"]) {
-				int v1 = GetAccessSortValue (((ISymbol)thisNode.DataItem).DeclaredAccessibility);
-				int v2 = GetAccessSortValue (((ISymbol)otherNode.DataItem).DeclaredAccessibility);
-				if (v1 < v2) return -1;
-				else if (v1 > v2) return 1;
-			}
-			return DefaultSort;
-		}
-
-		int GetTypeSortValue (object member)
-		{
-			if (member is IFieldSymbol) return 0;
-			if (member is IEventSymbol) return 1;
-			if (member is IPropertySymbol) return 2;
-			if (member is IMethodSymbol) return 3;
-			return 4;
-		}
-
-		int GetAccessSortValue (Accessibility mods)
-		{
-			if ((mods & Accessibility.Private) != 0) return 0;
-			if ((mods & Accessibility.Internal) != 0) return 1;
-			if ((mods & Accessibility.Protected) != 0) return 2;
-			if ((mods & Accessibility.Public) != 0) return 3;
-			return 4;
 		}
 
 		public Task<List<ReferenceSegment>> DecompileAsync (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
@@ -85,17 +60,17 @@ namespace MonoDevelop.AssemblyBrowser
 			return DisassembleAsync (data, navigator);
 		}
 
-		public Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
+		public async Task<List<ReferenceSegment>> DisassembleAsync (TextEditor data, ITreeNavigator navigator)
 		{
 			var symbol = navigator.DataItem as ISymbol;
 			if (symbol == null) {
 				data.Text = "// DataItem is no symbol " + navigator.DataItem; // should never happen
 				LoggingService.LogError ("DataItem is no symbol " + navigator.DataItem);
-				return AssemblyBrowserTypeNodeBuilder.EmptyReferenceSegmentTask;
+				return new List<ReferenceSegment> ();
 			}
 			var location = symbol.Locations [0];
 			if (location.IsInSource) {
-				var root = location.SourceTree.GetRoot ();
+				var root = await location.SourceTree.GetRootAsync ();
 				var node = root.FindNode (location.SourceSpan);
 				if (node != null) {
 					data.Text = node.ToFullString ();
@@ -106,7 +81,7 @@ namespace MonoDevelop.AssemblyBrowser
 				data.Text = "// Error: Symbol " + symbol.MetadataName + " is not in source."; // should never happen
 				LoggingService.LogError ("Symbol " + symbol.MetadataName + " is not in source.");
 			}
-			return AssemblyBrowserTypeNodeBuilder.EmptyReferenceSegmentTask;
+			return new List<ReferenceSegment> ();
 		}
 
 

@@ -1,9 +1,7 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Gtk;
-
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -56,11 +54,9 @@ namespace MonoDevelop.VersionControl
 						tracker.ReportError (msg + exception.Message, null);
 						LoggingService.LogError ("Version Control command failed: ", exception);
 					} else if (exception is VersionControlException) {
-						var msg = GettextCatalog.GetString ("Version control operation failed: ");
-						tracker.ReportError (msg + exception.Message, exception);
+						ReportError (exception.Message, exception);
 					} else {
-						var msg = GettextCatalog.GetString ("Version control operation failed: ");
-						tracker.ReportError (msg, exception);
+						ReportError (exception.Message, exception);
 					}
 				}
 				Wakeup ();
@@ -82,6 +78,14 @@ namespace MonoDevelop.VersionControl
 		
 		protected void Warn(string logtext) {
 			tracker.ReportWarning(logtext);
+		}
+
+		void ReportError (string message, Exception exception)
+		{
+			string msg = GettextCatalog.GetString ("Version control operation failed");
+			tracker.ReportError ($"{msg}: {message}", exception);
+			if (IdeApp.Workbench.RootWindow?.Visible == false)
+				MessageService.ShowError (msg, message, exception);
 		}
 	}
 }

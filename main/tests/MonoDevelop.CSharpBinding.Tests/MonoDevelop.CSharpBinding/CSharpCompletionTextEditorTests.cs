@@ -155,12 +155,12 @@ namespace console61
 
 		}
 
-		Task TestCompletion (string text, Action<Document, ICompletionDataList> action, Action<Document> preCompletionAction = null)
+		protected Task TestCompletion (string text, Action<Document, ICompletionDataList> action, Action<Document> preCompletionAction = null)
 		{
 			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand, preCompletionAction);
 		}
 
-		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo, Action<Document> preCompletionAction = null)
+		protected async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo, Action<Document> preCompletionAction = null)
 		{
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
@@ -309,7 +309,7 @@ namespace console61
 				var endLine = doc.Editor.GetLineByOffset (endOfStatement);
 				var endColumn = endOfStatement - endLine.Offset;
 
-				var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
+				var completionResult = await compExt.GetExpressionCompletionDataAsync ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
 				Assert.IsNotNull (completionResult);
 				Assert.Less (10, completionResult.Items.Count);//Just randomly high number
 				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));

@@ -105,7 +105,7 @@ namespace console61
 			var endColumn = endOfStatement - endLine.Start.Position;
 
 			var completionResult =
-				await controller.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default);
+				await controller.GetExpressionCompletionDataAsync ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default);
 
 			var items = completionResult.Items.Select(i => i.Name);
 			Assert.That (items, Contains.Item ("args"));

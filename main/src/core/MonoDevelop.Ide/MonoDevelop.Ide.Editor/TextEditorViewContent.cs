@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public TextEditorViewContent ()
 		{
+			HasUnsavedChangesChanged += TextEditorViewContent_HasUnsavedChangesChanged;
 		}
 
 		protected override async Task OnLoad (bool reloading)
@@ -76,6 +77,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			fileDescriptor = modelDescriptor as FileDescriptor;
 			await base.OnInitialize (modelDescriptor, status);
+			Encoding = fileDescriptor.Encoding;
 		}
 
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
@@ -87,6 +89,7 @@ namespace MonoDevelop.Ide.Editor
 
 				await Init (editor, impl);
 				HasUnsavedChanges = impl.IsDirty;
+				await UpdateStyleParent (Owner, editor.MimeType, token);
 
 				// Editor extensions can provide additional content
 				NotifyContentChanged ();
@@ -159,6 +162,15 @@ namespace MonoDevelop.Ide.Editor
 		{
 			HasUnsavedChanges = textEditorImpl.IsDirty;
 			InformAutoSave ();
+		}
+
+		void TextEditorViewContent_HasUnsavedChangesChanged (object sender, EventArgs e)
+		{
+			// Synchronize state
+			if (textEditor != null && textEditor.IsDirty && !HasUnsavedChanges) {
+				textEditor.SetNotDirtyState ();
+				textEditor.IsDirty = false;
+			}
 		}
 
 		void HandleTextChanged (object sender, TextChangeEventArgs e)
@@ -357,6 +369,8 @@ namespace MonoDevelop.Ide.Editor
 
 			isDisposed = true;
 
+			HasUnsavedChangesChanged -= TextEditorViewContent_HasUnsavedChangesChanged;
+
 			if (textEditorImpl != null) {
 
 				if (autoSaveTask != null)
@@ -395,11 +409,6 @@ namespace MonoDevelop.Ide.Editor
 		protected override void OnGrabFocus (DocumentView view)
 		{
 			textEditor.GrabFocus ();
-			try {
-				DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
-			} catch (Exception e) {
-				LoggingService.LogInternalError ("Error while setting up async completion.", e);
-			}
 		}
 	}
 }

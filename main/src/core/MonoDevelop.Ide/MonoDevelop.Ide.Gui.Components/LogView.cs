@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
@@ -58,6 +59,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		QueuedTextWrite lastTextWrite;
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
+		readonly Regex consoleTextSanitizerRegex = new Regex ("(\\e[[0-9]*m)|(\b)", RegexOptions.Compiled);
 
 		const int MAX_BUFFER_LENGTH = 4000 * 1024;
 
@@ -624,6 +626,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public void WriteText (LogViewProgressMonitor monitor, string text)
 		{
+			text = SanitizeConsoleText (text);
+
 			//raw text has an extra optimisation here, as we can append it to existing updates
 			lock (updates) {
 				if (lastTextWrite != null) {
@@ -691,6 +695,23 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			// we need to account for the page size as well for some reason
 			return scrollView.Vadjustment.Value + scrollView.Vadjustment.PageSize >= scrollView.Vadjustment.Upper;
+		}
+
+		/// <summary>
+		/// This method removes ANSI/VT100 Color escape sequences from the string, along with other
+		/// control/non-printable characters. We currently do not handle control characters performantly in the
+		/// LogView, as the text rendering component tries to render a custom glyph denoting the control code. We
+		/// also do not support colorization of the output, so the color information is redundant.
+		///
+		/// Specifically we remove color escape sequences (\e[ + color code + m) and the backspace (\b) control
+		/// character.
+		/// 
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns>original text with control characters and escape sequences removed</returns>
+		string SanitizeConsoleText(string text)
+		{
+			return consoleTextSanitizerRegex.Replace (text, string.Empty);
 		}
 
 		protected void UnsafeAddText (TextMark mark, string text, TextTag indentTag, TextTag extraTag)

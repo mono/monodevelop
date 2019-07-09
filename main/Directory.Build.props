@@ -13,11 +13,12 @@
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
     <NuGetVersionMicrosoftTemplateEngine>1.0.0-beta3-20171117-314</NuGetVersionMicrosoftTemplateEngine>
     <NuGetVersionMicrosoftTestPlatform>15.5.0-preview-20170919-04</NuGetVersionMicrosoftTestPlatform>
-    <NuGetVersionMonoDevelopAnalyzers>0.1.0.1</NuGetVersionMonoDevelopAnalyzers>
+    <NuGetVersionMonoDevelopAnalyzers>0.1.0.2</NuGetVersionMonoDevelopAnalyzers>
     <NuGetVersionNewtonsoftJson>10.0.3</NuGetVersionNewtonsoftJson>
+    <NuGetVersionNuGet>5.2.0-rtm.6067</NuGetVersionNuGet>
     <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
     <NuGetVersionNUnit3>3.9.0</NuGetVersionNUnit3>
-    <NuGetVersionRoslyn>3.1.0-beta4-19261-04</NuGetVersionRoslyn>
+    <NuGetVersionRoslyn>3.2.0-beta4-19324-01</NuGetVersionRoslyn>
     <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
     <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
     <NuGetVersionVSEditor>16.1.28-g2ad4df7366</NuGetVersionVSEditor>

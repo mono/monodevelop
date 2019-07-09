@@ -67,46 +67,54 @@ namespace Microsoft.VisualStudio.Platform
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
+			var snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
 			if ((this.classifier == null) || (snapshotLine == null)) {
 				return Task.FromResult (new HighlightedLine (line, new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
 			}
-			List<ColoredSegment> coloredSegments = new List<ColoredSegment> ();
 
-			SnapshotSpan snapshotSpan = new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, snapshotLine.Extent.Span);
-			int start = snapshotSpan.Start.Position;
-			int end = snapshotSpan.End.Position;
+			try {
+ 				var coloredSegments = new List<ColoredSegment>();
+ 				
+ 				var snapshotSpan = new SnapshotSpan(snapshotLine.Snapshot, snapshotLine.Extent.Span);
+ 				int start = snapshotSpan.Start.Position;
+ 				int end = snapshotSpan.End.Position;
+ 				
+ 				var classifications = classifier.GetClassificationSpans(snapshotSpan);
+ 				
+ 				int lastClassifiedOffsetEnd = start;
+ 				ScopeStack scopeStack;
+ 				foreach (var curSpan in classifications)
+ 				{
+ 					if (curSpan.Span.Start > lastClassifiedOffsetEnd) {
+ 						scopeStack = defaultScopeStack;
+ 						var whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
+ 						coloredSegments.Add (whitespaceSegment);
+ 					}
 
-			IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans (snapshotSpan);
+ 					scopeStack = GetScopeStackFromClassificationType (curSpan.ClassificationType);
+ 					if (scopeStack.Peek ().StartsWith ("comment", StringComparison.Ordinal)) {
+ 						ScanAndAddComment (coloredSegments, start, scopeStack, curSpan);
+ 					} else {
+ 						var curColoredSegment = new ColoredSegment (curSpan.Span.Start - start, curSpan.Span.Length, scopeStack);
+ 						coloredSegments.Add (curColoredSegment);
+ 					}
 
-			int lastClassifiedOffsetEnd = start;
-			ScopeStack scopeStack;
-			foreach (ClassificationSpan curSpan in classifications) {
-				if (curSpan.Span.Start > lastClassifiedOffsetEnd) {
-					scopeStack = defaultScopeStack;
-					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
-					coloredSegments.Add (whitespaceSegment);
-				}
+ 					lastClassifiedOffsetEnd = curSpan.Span.End;
+ 				}
 
-				scopeStack = GetScopeStackFromClassificationType (curSpan.ClassificationType);
-				if (scopeStack.Peek ().StartsWith ("comment", StringComparison.Ordinal)) {
-					ScanAndAddComment (coloredSegments, start, scopeStack, curSpan);
-				} else {
-					var curColoredSegment = new ColoredSegment (curSpan.Span.Start - start, curSpan.Span.Length, scopeStack);
-					coloredSegments.Add (curColoredSegment);
-				}
-
-				lastClassifiedOffsetEnd = curSpan.Span.End;
+ 				if (end > lastClassifiedOffsetEnd) {
+ 					scopeStack = defaultScopeStack;
+ 					var whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, end - lastClassifiedOffsetEnd, scopeStack);
+ 					coloredSegments.Add (whitespaceSegment);
+ 				}
+ 				
+ 				return Task.FromResult (new HighlightedLine (line, coloredSegments));
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error while getting highlighted line " + line, e);
+				return Task.FromResult (new HighlightedLine (line, new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
 			}
-
-			if (end > lastClassifiedOffsetEnd) {
-				scopeStack = defaultScopeStack;
-				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, end - lastClassifiedOffsetEnd, scopeStack);
-				coloredSegments.Add (whitespaceSegment);
-			}
-
-			return Task.FromResult(new HighlightedLine (line, coloredSegments));
 		}
+
 		#region Tag Comment Scanning
 
 		void ScanAndAddComment (List<ColoredSegment> coloredSegments, int startOffset, ScopeStack commentScopeStack, ClassificationSpan classificationSpan)

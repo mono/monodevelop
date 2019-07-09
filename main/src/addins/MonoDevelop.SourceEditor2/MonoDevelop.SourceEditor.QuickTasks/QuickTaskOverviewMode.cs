@@ -723,16 +723,22 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void DrawBreakpoints (Cairo.Context cr)
 		{
-			var breakPoints = parentStrip.SourceEditorView.Breakpoints.GetBreakpointsAtFile (TextEditor.FileName);
-			if (breakPoints == null)
-				return;
-			foreach (var point in breakPoints) {
-				int y = (int)GetYPosition (point.Line);
+			var breakpointStore = parentStrip.SourceEditorView.Breakpoints;
 
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.BreakpointMarker));
-				int r = 4;
-				cr.Rectangle (0, y  - r / 2, r, r);
-				cr.Fill ();
+			lock (breakpointStore) {
+				var breakPoints = breakpointStore.GetBreakpointsAtFile (TextEditor.FileName);
+
+				if (breakPoints == null)
+					return;
+
+				foreach (var point in breakPoints) {
+					int y = (int)GetYPosition (point.Line);
+
+					cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.BreakpointMarker));
+					int r = 4;
+					cr.Rectangle (0, y - r / 2, r, r);
+					cr.Fill ();
+				}
 			}
 		}
 

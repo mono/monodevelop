@@ -1,4 +1,4 @@
-// TreeBuilder.cs
+﻿// TreeBuilder.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -155,11 +155,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				return ats;
 			}
 			
-			static int NullSortFunc (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
-			{
-				return 0;
-			}
-			
 			public void AddChildren (IEnumerable dataObjects)
 			{
 				NodeBuilder[] chain = null;
@@ -168,7 +163,6 @@ namespace MonoDevelop.Ide.Gui.Components
 //				DateTime time = DateTime.Now;
 				int items = 0;
 				pad.Tree.FreezeChildNotify ();
-				store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (NullSortFunc);
 				foreach (object dataObject in dataObjects) {
 					items++;
 					if (chain == null || dataObject.GetType () != oldType) {
@@ -197,8 +191,6 @@ namespace MonoDevelop.Ide.Gui.Components
 					BuildNode (it, chain, ats, dataObject);
 					pad.NotifyInserted (it, dataObject);
 				}
-				store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (pad.CompareNodes);
-
 				pad.Tree.ThawChildNotify ();
 //				Console.WriteLine (items + " : " +(DateTime.Now - time).TotalMilliseconds);
 				MoveToIter (oldIter);

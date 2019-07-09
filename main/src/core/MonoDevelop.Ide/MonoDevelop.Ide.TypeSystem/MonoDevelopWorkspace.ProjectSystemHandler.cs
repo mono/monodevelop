@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var tp = LoadProject (proj, token, null, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
-					});
+					}, TaskContinuationOptions.ExecuteSynchronously);
 					allTasks.Add (tp);
 
 				}
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var tp = LoadProject (proj, token, null, cacheInfo).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
-					});
+					}, TaskContinuationOptions.ExecuteSynchronously);
 					allTasks.Add (tp);
 				}
 
@@ -488,10 +488,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					return new List<DocumentInfo> ();
 
+				var content = TextFileProvider.Instance.GetReadOnlyTextEditorData (f.FilePath, throwOnFileNotFound: false);
+				if (content == null)
+					return new List<DocumentInfo> ();
+
 				var options = new ParseOptions {
 					FileName = f.FilePath,
 					Project = p,
-					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (f.FilePath),
+					Content = content,
 				};
 				var generatedProjections = await node.Parser.GenerateProjections (options, token);
 				var list = new List<Projection> ();

@@ -27,8 +27,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-
 using System;
 using System.Collections.Generic;
 using Gtk;
@@ -37,10 +35,11 @@ using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using GLib;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockContainer: Container
+	class DockContainer : Container
 	{
 		DockLayout layout;
 		DockFrame frame;
@@ -48,7 +47,7 @@ namespace MonoDevelop.Components.Docking
 		List<TabStrip> notebooks = new List<TabStrip> ();
 		List<DockItem> items = new List<DockItem> ();
 
-		List<SplitterWidget> splitters = new List<SplitterWidget> ();
+		List<SplitterWidgetWrapper> splitters = new List<SplitterWidgetWrapper> ();
 
 		bool needsRelayout = true;
 
@@ -162,16 +161,18 @@ namespace MonoDevelop.Components.Docking
 
 		int usedSplitters;
 
+		const int SplitterSize = 5;
+
 		internal void AllocateSplitter (DockGroup grp, int index, Gdk.Rectangle a)
 		{
 			var s = splitters[usedSplitters++];
 			if (a.Height > a.Width) {
-				a.Width = 5;
-				a.X -= 2;
+				a.Width = SplitterSize;
+				a.X -= (int)(SplitterSize / 2);
 			}
 			else {
-				a.Height = 5;
-				a.Y -= 2;
+				a.Height = SplitterSize;
+				a.Y -= (int)(SplitterSize / 2);
 			}
 			s.SizeAllocate (a);
 			s.Init (grp, index);
@@ -190,7 +191,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			foreach (var s in splitters)
 				if (s.Parent != null)
-					callback (s);
+					callback (s.Widget);
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -288,7 +289,7 @@ namespace MonoDevelop.Components.Docking
 			for (int n=0; n < splitters.Count; n++) {
 				var s = splitters [n];
 				if (s.Parent != null)
-					Remove (s);
+					Remove (s.Widget);
 			}
 
 			// Hide the splitters that are not required
@@ -307,12 +308,19 @@ namespace MonoDevelop.Components.Docking
 					var s = splitters [n];
 					if (!s.Visible)
 						s.Show ();
-					Add (s);
+					Add (s.Widget);
 				} else {
-					var s = new SplitterWidget ();
+
+					SplitterWidgetWrapper s = null;
+#if MAC
+					var widget = new SplitterMacHostWidget ();
+#else
+					var widget = new SplitterWidget ();
+#endif
+					s = new SplitterWidgetWrapper (widget);
 					splitters.Add (s);
 					s.Show ();
-					Add (s);
+					Add (s.Widget);
 				}
 			}
 		}
@@ -457,24 +465,28 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (placeholderWindow == null || !placeholderWindow.Visible)
 				return;
-			
-			if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
-				item.Status = DockItemStatus.Dockable;
-				DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
-				DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
-				gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
-				placeholderWindow.DockDelegate (item);
-				dummyItem.ParentGroup.Remove (dummyItem);
-				RelayoutWidgets ();
-			} else {
-				int px, py;
-				GetPointer (out px, out py);
-				DockGroupItem gi = FindDockGroupItem (item.Id);
-				int pw, ph;
-				placeholderWindow.GetPosition (out px, out py);
-				placeholderWindow.GetSize (out pw, out ph);
-				gi.FloatRect = new Rectangle (px, py, pw, ph);
-				item.Status = DockItemStatus.Floating;
+
+			try {
+				if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
+					item.Status = DockItemStatus.Dockable;
+					DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
+					DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
+					gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
+					placeholderWindow.DockDelegate (item);
+					dummyItem.ParentGroup.Remove (dummyItem);
+					RelayoutWidgets ();
+				} else {
+					int px, py;
+					GetPointer (out px, out py);
+					DockGroupItem gi = FindDockGroupItem (item.Id);
+					int pw, ph;
+					placeholderWindow.GetPosition (out px, out py);
+					placeholderWindow.GetSize (out pw, out ph);
+					gi.FloatRect = new Rectangle (px, py, pw, ph);
+					item.Status = DockItemStatus.Floating;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Updating the dock container placeholder failed", ex);
 			}
 		}
 		
@@ -490,7 +502,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		internal class SplitterWidget: EventBox
+		internal class SplitterWidget: EventBox, ISplitterWidget
 		{
 			static Gdk.Cursor hresizeCursor = new Gdk.Cursor (CursorType.SbHDoubleArrow);
 			static Gdk.Cursor vresizeCursor = new Gdk.Cursor (CursorType.SbVDoubleArrow);
@@ -501,7 +513,9 @@ namespace MonoDevelop.Components.Docking
 
 			DockGroup dockGroup;
 			int dockIndex;
-	
+
+			public Widget Widget => this;
+
 			public SplitterWidget ()
 			{
 				Accessible.SetRole (AtkCocoa.Roles.AXSplitter);

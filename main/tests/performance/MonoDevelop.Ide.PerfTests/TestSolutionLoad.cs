@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test]
-		[Benchmark (Tolerance = 0.1)]
+		[Benchmark (Tolerance = 0.20)]
 		public void TestLoad ()
 		{
 			OpenApplicationAndWait ();
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.PerfTests
 
 			var t = Session.GetTimerDuration ("Ide.Shell.SolutionOpened");
 
-			Benchmark.SetTime (t.TotalMilliseconds);
+			Benchmark.SetTime (t.TotalSeconds);
 		}
 	}
 }

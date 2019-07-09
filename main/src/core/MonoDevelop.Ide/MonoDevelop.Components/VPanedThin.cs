@@ -35,8 +35,7 @@ namespace MonoDevelop.Components
 		public VPanedThin ()
 		{
 			GtkWorkarounds.FixContainerLeak (this);
-			handle = new CustomPanedHandle (this);
-			handle.Parent = this;
+			handle = new CustomGtkPanedHandle (this);
 		}
 
 		public int GrabAreaSize {

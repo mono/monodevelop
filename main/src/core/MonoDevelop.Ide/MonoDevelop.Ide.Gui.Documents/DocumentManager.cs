@@ -657,11 +657,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 				} else {
 					var offset = info.Offset;
 					if (offset < 0) {
-						var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
-						if (info.Column >= 1)
-							offset = line.Start + info.Column - 1;
-						else
-							offset = line.Start;
+						try {
+							if (info.Line - 1 > (textView?.TextSnapshot?.LineCount ?? 0)) {
+								LoggingService.LogInfo ($"ScrollToRequestedCaretLocation line was over the snapshot's line count. "
+									+ $"Called with {info.Line - 1} but line count was {textView?.TextSnapshot?.LineCount}");
+								return;
+							}
+
+							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
+							if (info.Column >= 1) {
+								offset = line.Start + Math.Min (info.Column - 1, line.Length);
+							} else {
+								offset = line.Start;
+							}
+						} catch (ArgumentException ae) {
+							LoggingService.LogError ($"Calling GetLineFromLineNumber resulted in an argument exception."
+								+ $"We tried calling with line number: {info.Line - 1}", ae);
+							// we should just abort in this case, since we can't really do anything
+							return;
+						}
 					}
 					if (editorOperationsFactoryService != null) {
 						var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);

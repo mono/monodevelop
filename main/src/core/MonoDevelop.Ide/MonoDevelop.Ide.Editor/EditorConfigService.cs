@@ -39,6 +39,8 @@ namespace MonoDevelop.Ide.Editor
 	static class EditorConfigService
 	{
 		public readonly static string MaxLineLengthConvention = "max_line_length";
+		public readonly static string RulersConvention = "rulers";
+
 		readonly static object contextCacheLock = new object ();
 		readonly static ICodingConventionsManager codingConventionsManager = CodingConventionsManagerFactory.CreateCodingConventionsManager (new ConventionsFileManager());
 		static ImmutableDictionary<string, ICodingConventionContext> contextCache = ImmutableDictionary<string, ICodingConventionContext>.Empty;

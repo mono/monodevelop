@@ -134,27 +134,22 @@ namespace MonoDevelop.Ide.Gui
 			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
 
-			Counters.Initialization.Trace ("Loading memento");
-			var memento = IdeApp.Preferences.WorkbenchMemento.Value;
-			Counters.Initialization.Trace ("Setting memento");
-			workbench.Memento = memento;
-
 			Counters.Initialization.Trace ("Initializing monitors");
 		}
 
+		[Obsolete ("Use Present () instead")]
 		internal void Show ()
 		{
-			EnsureLayout ();
 			Present ();
 		}
 
 		internal void EnsureLayout ()
 		{
 			if (!hasEverBeenShown) {
-
 				Realize ();
 				workbench.InitializeWorkspace ();
 				workbench.InitializeLayout ();
+
 				statusBar.Attach (workbench.StatusBar);
 
 				workbench.CurrentLayout = "Solution";
@@ -162,6 +157,11 @@ namespace MonoDevelop.Ide.Gui
 				// now we have an layout set notify it
 				if (LayoutChanged != null)
 					LayoutChanged (this, EventArgs.Empty);
+
+				Counters.Initialization.Trace ("Loading memento");
+				var memento = IdeApp.Preferences.WorkbenchMemento.Value;
+				Counters.Initialization.Trace ("Setting memento");
+				workbench.Memento = memento;
 
 				hasEverBeenShown = true;
 			} else if (!RootWindow.Visible) {
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void EnsureShown ()
 		{
 			if (!RootWindow.Visible)
-				Show ();
+				Present ();
 		}
 
 		internal void Hide ()
@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!IdeApp.OnExit ())
 				return false;
 
-			IdeApp.Workspace.SavePreferences ();
+			await IdeApp.Workspace.SavePreferencesAsync ();
 
 			bool showDirtyDialog = false;
 
@@ -222,8 +222,6 @@ namespace MonoDevelop.Ide.Gui
 			await Task.WhenAll (tasks);
 
 			workbench.Close ();
-
-			IdeApp.Workspace.SavePreferences ();
 
 			IdeApp.OnExited ();
 
@@ -348,7 +346,7 @@ namespace MonoDevelop.Ide.Gui
 		public void GrabDesktopFocus ()
 		{
 			if (!Visible)
-				Show ();
+				Present ();
 			else
 				IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
 		}
@@ -1004,8 +1002,9 @@ namespace MonoDevelop.Ide.Gui
 		public void ReparseOpenDocuments ()
 		{
 			foreach (var doc in Documents) {
-				if (doc.DocumentContext.ParsedDocument != null)
-					doc.DocumentContext.ReparseDocument ();
+				var ctx = doc.DocumentContext;
+				if (ctx?.ParsedDocument != null)
+					ctx.ReparseDocument ();
 			}
 		}
 

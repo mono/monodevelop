@@ -1,4 +1,4 @@
-//
+﻿//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -397,7 +397,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				else if (!(nb is NodeBuilderExtension))
 					throw new InvalidOperationException (string.Format ("Invalid NodeBuilder type: {0}. NodeBuilders must inherit either from TypeNodeBuilder or NodeBuilderExtension", nb.GetType()));
 			}
-
+			if (NodeBuilders != null) {
+				var builderHash = new HashSet<NodeBuilder> (builders);
+				foreach (var builder in NodeBuilders) {
+					if (!builderHash.Contains (builder))
+						builder.Dispose ();
+				}
+			}
 			NodeBuilders = builders.ToArray ();
 
 			foreach (NodeBuilder nb in builders)
@@ -2153,8 +2159,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				SelectionChanged (this, EventArgs.Empty);
 		}
 
+		public bool IsDestroyed { get; set; }
+
 		void Destroy ()
 		{
+			IsDestroyed = true;
 			IdeApp.Preferences.CustomPadFont.Changed -= CustomFontPropertyChanged;
 			if (pix_render != null) {
 				pix_render.Destroy ();
@@ -2169,11 +2178,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render = null;
 			}
 
-			if (store != null) {
-				Clear ();
-				store = null;
-			}
-
 			if (builders != null) {
 				foreach (NodeBuilder nb in builders) {
 					try {
@@ -2184,6 +2188,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				builders = null;
 			}
+
+			if (store != null) {
+				Clear ();
+				store = null;
+			}
+
 			builderChains.Clear ();
 		}
 
@@ -2223,6 +2233,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public ITreeBuilder GetTreeBuilder ()
 			{
+				if (pad.IsDestroyed)
+					throw new InvalidOperationException ("TreeView is destroyed.");
 				Gtk.TreeIter iter;
 				if (!pad.store.GetIterFirst (out iter))
 					return pad.CreateBuilder (Gtk.TreeIter.Zero);

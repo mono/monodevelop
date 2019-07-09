@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide
 				await SaveAsync (((SolutionFolderItem)item).ParentSolution);
 			} else {
 				await workspace.SaveAsync ();
-				workspace.SavePreferences ();
+				await workspace.SavePreferencesAsync ();
 			}
 		}
 		
@@ -618,7 +618,7 @@ namespace MonoDevelop.Ide
 							}
 						}
 						await SaveAsync (selectedProject);
-						workspace.SavePreferences ();
+						await workspace.SavePreferencesAsync ();
 						IdeApp.Workbench.ReparseOpenDocuments ();
 					}
 				} finally {
@@ -655,7 +655,7 @@ namespace MonoDevelop.Ide
 							if (si.ParentSolution != null)
 								await SaveAsync (si.ParentSolution);
 						}
-						workspace.SavePreferences ();
+						await workspace.SavePreferencesAsync ();
 					}
 				} finally {
 					optionsDialog.Destroy ();
@@ -1497,19 +1497,21 @@ namespace MonoDevelop.Ide
 				prepareExecutionTask = RunPrepareExecutionTasks ();
 			}
 
-			BuildResult result = await Build (buildTarget, token, context).Task;
+			using (prepareOpTokenSource) {
+				BuildResult result = await Build (buildTarget, token, context).Task;
 
-			if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
-				prepareOpTokenSource?.Cancel ();
-				return false;
+				if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
+					prepareOpTokenSource?.Cancel ();
+					return false;
+				}
+
+				building = false;
+				if (prepareExecutionTask != null) {
+					await prepareExecutionTask;
+				}
+
+				return true;
 			}
-
-			building = false;
-			if (prepareExecutionTask != null) {
-				await prepareExecutionTask;
-			}
-
-			return true;
 
 			async Task RunPrepareExecutionTasks ()
 			{
@@ -2667,6 +2669,11 @@ namespace MonoDevelop.Ide
 
 		public IReadonlyTextDocument GetReadOnlyTextEditorData (FilePath filePath)
 		{
+			return GetReadOnlyTextEditorData (filePath, true);
+		}
+
+		internal IReadonlyTextDocument GetReadOnlyTextEditorData (FilePath filePath, bool throwOnFileNotFound)
+		{
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
 			foreach (var doc in IdeServices.DocumentManager.Documents) {
@@ -2674,6 +2681,10 @@ namespace MonoDevelop.Ide
 					return doc.Editor;
 				}
 			}
+
+			if (!throwOnFileNotFound && !File.Exists (filePath))
+				return null;
+
 			var data = TextEditorFactory.CreateNewReadonlyDocument (StringTextSource.ReadFrom (filePath), filePath);
 			return data;
 		}

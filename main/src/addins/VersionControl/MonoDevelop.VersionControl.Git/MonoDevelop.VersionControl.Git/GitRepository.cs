@@ -1,4 +1,4 @@
-//
+﻿//
 // GitRepository.cs
 //
 // Author:
@@ -38,6 +38,7 @@ using LibGit2Sharp;
 using System.Threading.Tasks;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -68,13 +69,12 @@ namespace MonoDevelop.VersionControl.Git
 				rootRepository = value;
 
 				InitScheduler (); 
-                if (this.watchGitLockfiles)
+				if (this.watchGitLockfiles)
 					InitFileWatcher (false);
 			}
 		}
 
 		public static event EventHandler BranchSelectionChanged;
-
 
 		FileSystemWatcher watcher;
 		ConcurrentExclusiveSchedulerPair scheduler;
@@ -107,8 +107,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (scheduler == null) {
 				scheduler = new ConcurrentExclusiveSchedulerPair ();
-				blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
-				readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
+				blockingOperationFactory = new TaskFactory (default, TaskCreationOptions.PreferFairness, TaskContinuationOptions.PreferFairness, scheduler.ExclusiveScheduler);
+				readingOperationFactory = new TaskFactory (default, TaskCreationOptions.PreferFairness, TaskContinuationOptions.PreferFairness, scheduler.ConcurrentScheduler);
 			}
 		}
 
@@ -141,7 +141,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			ShutdownFileWatcher ();
 
-			watcher = new FileSystemWatcher (dotGitPath.CanonicalPath.ParentDirectory, Path.Combine (dotGitPath.FileName, "*.lock"));
+			watcher = new FileSystemWatcher (dotGitPath.CanonicalPath.ParentDirectory, Path.Combine (dotGitPath.FileName, "*"));
 			watcher.Created += HandleGitLockCreated;
 			watcher.Deleted += HandleGitLockDeleted;
 			watcher.Renamed += HandleGitLockRenamed;
@@ -157,20 +157,39 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		const string rebaseApply = "rebase-apply";
+		const string rebaseMerge = "rebase-merge";
+		const string cherryPickHead = "CHERRY_PICK_HEAD";
+		const string revertHead = "REVERT_HEAD";
+
+		static bool ShouldLock (string fullPath)
+		{
+			var fileName = Path.GetFileName (fullPath);
+			return fileName == rebaseApply || fileName == rebaseMerge || fileName == cherryPickHead || fileName == revertHead;
+		}
+
 		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
 		{
-			OnGitLocked ();
+			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal))
+				OnGitLocked ();
+			if (ShouldLock (e.FullPath))
+				OnGitLocked ();
 		}
 
 		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
 		{
 			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) && !e.Name.EndsWith (".lock", StringComparison.Ordinal))
 				OnGitUnlocked ();
+			if (ShouldLock (e.OldName))
+				OnGitUnlocked ();
 		}
 
 		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
 		{
-			OnGitUnlocked ();
+			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal))
+				OnGitUnlocked ();
+			if (ShouldLock (e.FullPath))
+				OnGitUnlocked ();
 		}
 
 		void OnGitLocked ()
@@ -431,10 +450,12 @@ namespace MonoDevelop.VersionControl.Git
 			var submoduleWriteTime = File.GetLastWriteTimeUtc (RootPath.Combine (".gitmodules"));
 			if (cachedSubmoduleTime != submoduleWriteTime) {
 				cachedSubmoduleTime = submoduleWriteTime;
-				cachedSubmodules = RootRepository.Submodules.Select (s => {
+				lock (this) {
+					cachedSubmodules = RootRepository.Submodules.Select (s => {
 						var fp = new FilePath (Path.Combine (RootRepository.Info.WorkingDirectory, s.Path.Replace ('/', Path.DirectorySeparatorChar))).CanonicalPath;
 						return new Tuple<FilePath, LibGit2Sharp.Repository> (fp, new LibGit2Sharp.Repository (fp));
 					}).ToArray ();
+				}
 			}
 			return cachedSubmodules;
 		}
@@ -1044,7 +1065,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
+		bool CommonPreMergeRebase (ref GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
 		{
 			FileService.FreezeEvents ();
 			stashIndex = -1;
@@ -1160,7 +1181,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase"), isUpdate))
+				if (!CommonPreMergeRebase (ref options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase"), isUpdate))
 					return;
 
 				RunBlockingOperation (() => {
@@ -1210,7 +1231,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge"), isUpdate))
+				if (!CommonPreMergeRebase (ref options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge"), isUpdate))
 					return;
 				// Do a merge.
 				MergeResult mergeResult = RunBlockingOperation (() =>
@@ -1265,17 +1286,56 @@ namespace MonoDevelop.VersionControl.Git
 				return;
 
 			var repo = (GitRepository)changeSet.Repository;
-			RunBlockingOperation (() => {
-				LibGit2Sharp.Commands.Stage (RootRepository, changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
+			var addedFiles = GetAddedLocalPathItems (changeSet);
 
-				if (changeSet.ExtendedProperties.Contains ("Git.AuthorName"))
-					RootRepository.Commit (message, new Signature (
-						(string)changeSet.ExtendedProperties ["Git.AuthorName"],
-						(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
-						DateTimeOffset.Now), sig);
-				else
-					RootRepository.Commit (message, sig, sig);
+			RunBlockingOperation (() => {
+				try {
+					// Unstage added files not included in the changeSet
+					if (addedFiles.Any ())
+						LibGit2Sharp.Commands.Unstage (RootRepository, addedFiles.ToPathStrings ());
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Failed to commit.", ex);
+					return;
+				}
+				try {
+					// Commit
+					LibGit2Sharp.Commands.Stage (RootRepository, changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
+
+					if (changeSet.ExtendedProperties.Contains ("Git.AuthorName"))
+						RootRepository.Commit (message, new Signature (
+							(string)changeSet.ExtendedProperties ["Git.AuthorName"],
+							(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
+							DateTimeOffset.Now), sig);
+					else
+						RootRepository.Commit (message, sig, sig);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Failed to commit.", ex);
+				} finally {
+					// Always at the end, stage again the unstage added files not included in the changeSet
+					if (addedFiles.Any ())
+						LibGit2Sharp.Commands.Stage (RootRepository, addedFiles.ToPathStrings ());
+				}
 			});
+		}
+
+		HashSet<FilePath> GetAddedLocalPathItems (ChangeSet changeSet)
+		{
+			return readingOperationFactory.StartNew (() => {
+				var addedLocalPathItems = new HashSet<FilePath> ();
+				try {
+					var directoryVersionInfo = GetDirectoryVersionInfo (changeSet.BaseLocalPath, null, false, true);
+					const VersionStatus addedStatus = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+					var directoryVersionInfoItems = directoryVersionInfo.Where (vi => vi.Status == addedStatus);
+
+					foreach (var item in directoryVersionInfoItems)
+						foreach (var changeSetItem in changeSet.Items)
+							if (item.LocalPath != changeSetItem.LocalPath)
+								addedLocalPathItems.Add (item.LocalPath);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Could not get added VersionInfo items.", ex);
+				}
+				return addedLocalPathItems;
+			}).RunWaitAndCapture ();
 		}
 
 		public bool IsUserInfoDefault ()
@@ -2001,33 +2061,36 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
+		object blameLock = new object ();
+
 		public override Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			return RunOperation (repositoryPath, repository => {
 				Commit hc = GetHeadCommit (repository);
 				Commit sinceCommit = since != null ? ((GitRevision)since).GetCommit (repository) : null;
 				if (hc == null)
-					return new Annotation [0];
+					return Array.Empty<Annotation> ();
 
 				var list = new List<Annotation> ();
 
-				var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
-				var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
-
-				repositoryPath = repository.ToGitPath (repositoryPath);
-				var status = repository.RetrieveStatus (repositoryPath);
+				var gitPath = repository.ToGitPath (repositoryPath);
+				var status = repository.RetrieveStatus (gitPath);
 				if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-					foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { FindExactRenames = true, StartingAt = sinceCommit })) {
-						var commit = hunk.FinalCommit;
-						var author = hunk.FinalSignature;
-						var working = new Annotation (new GitRevision (this, repositoryPath, commit), author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
-						for (int i = 0; i < hunk.LineCount; ++i)
-							list.Add (working);
+					lock (blameLock) {
+						foreach (var hunk in repository.Blame (gitPath, new BlameOptions { FindExactRenames = true, StartingAt = sinceCommit })) {
+							var commit = hunk.FinalCommit;
+							var author = hunk.FinalSignature;
+							var working = new Annotation (new GitRevision (this, gitPath, commit), author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+							for (int i = 0; i < hunk.LineCount; ++i)
+								list.Add (working);
+						}
 					}
 				}
 
 				if (sinceCommit == null) {
-					Annotation nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+					var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
+					var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
+					var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
 					foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
 						list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
 						for (int i = 0; i < hunk.Inserted; ++i) {

@@ -97,13 +97,25 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 			if (Services.ProjectService.IsWorkspaceItemFile (file) || Services.ProjectService.IsSolutionItemFile (file)) {
+				WarnIfWorkspaceItemIsAlreadyOpen (file);
 				IdeApp.Workspace.OpenWorkspaceItem (file, dlg.CloseCurrentWorkspace);
 			}
 			else
 				IdeApp.Workbench.OpenDocument (file, null, dlg.Encoding, OpenDocumentOptions.DefaultInternal);
 		}
-		
+
+		internal static bool WarnIfWorkspaceItemIsAlreadyOpen (FilePath file)
+		{
+			var item = IdeApp.Workspace.GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
+			if (item != null) {
+				if (IdeApp.IsInitialized)
+					IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
+				return true;
+			}
+			return false;
+		}
 	}
+
 	// MonoDevelop.Ide.Commands.FileCommands.NewFile
 	public class NewFileHandler : CommandHandler
 	{
@@ -388,6 +400,7 @@ namespace MonoDevelop.Ide.Commands
 			string filename = (string)dataItem;
 			Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
 			bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
+			OpenFileHandler.WarnIfWorkspaceItemIsAlreadyOpen (filename);
 			IdeApp.Workspace.OpenWorkspaceItem (filename, !inWorkspace);
 		}
 	}

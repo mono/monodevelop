@@ -164,11 +164,9 @@ namespace MonoDevelop.Projects
 					}
 
 					ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
-					var stopper = monitor.CancellationToken.Register (asyncOp.Cancel);
-
-					await asyncOp.Task;
-
-					stopper.Dispose ();
+					using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel)) {
+						await asyncOp.Task;
+					}
 
 					monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
 				} finally {

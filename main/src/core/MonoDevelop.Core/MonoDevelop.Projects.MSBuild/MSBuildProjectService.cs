@@ -843,7 +843,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			int i = str.IndexOfAny (specialCharacters);
 			if (i != -1) {
-				var sb = new System.Text.StringBuilder ();
+				var sb = StringBuilderCache.Allocate ();
 				int start = 0;
 				while (i != -1) {
 					sb.Append (str, start, i - start);
@@ -855,7 +855,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				if (start < str.Length)
 					sb.Append (str, start, str.Length - start);
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			}
 			return str;
 		}

@@ -1,22 +1,72 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="/Users/iain/Projects/xamarin/md-accessibility/monodevelop/main/build/tests/MonoDevelop.Ide.PerfTests.dll" total="1" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2018-04-24" time="17:27:35">
-  <environment nunit-version="2.6.4.14350" clr-version="4.0.30319.42000" os-version="Unix 16.7.0.0" platform="Unix" cwd="/Users/iain/Projects/xamarin/md-accessibility/monodevelop/main/tests" machine-name="Piscataway-3.local" user="iain" user-domain="Piscataway-3.local" />
-  <culture-info current-culture="en-GB" current-uiculture="en-GB" />
-  <test-suite type="Assembly" name="/Users/iain/Projects/xamarin/md-accessibility/monodevelop/main/build/tests/MonoDevelop.Ide.PerfTests.dll" executed="True" result="Success" success="True" time="7.989" asserts="0">
+<test-results name="/Users/therzok/Work/md/monodevelop/main/build/tests/MonoDevelop.Ide.PerfTests.dll" total="4" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2019-06-06" time="05:32:07">
+  <environment nunit-version="2.7.0.0" clr-version="4.0.30319.42000" os-version="Unix 18.6.0.0" platform="Unix" cwd="/Users/therzok/Work/md/monodevelop/main/build/tests" machine-name="MacBook-Pro" user="therzok" user-domain="MacBook-Pro" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Assembly" name="/Users/therzok/Work/md/monodevelop/main/build/tests/MonoDevelop.Ide.PerfTests.dll" executed="True" result="Success" success="True" time="71.524" asserts="0">
     <results>
-      <test-suite type="Namespace" name="MonoDevelop" executed="True" result="Success" success="True" time="7.985" asserts="0">
+      <test-suite type="Namespace" name="MonoDevelop" executed="True" result="Success" success="True" time="71.520" asserts="0">
         <results>
-          <test-suite type="Namespace" name="Ide" executed="True" result="Success" success="True" time="7.985" asserts="0">
+          <test-suite type="Namespace" name="Ide" executed="True" result="Success" success="True" time="71.520" asserts="0">
             <results>
-              <test-suite type="Namespace" name="PerfTests" executed="True" result="Success" success="True" time="7.985" asserts="0">
+              <test-suite type="Namespace" name="PerfTests" executed="True" result="Success" success="True" time="71.520" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="TestStartup" executed="True" result="Success" success="True" time="7.984" asserts="0">
+                  <test-suite type="TestFixture" name="TestFileWatcherHandlers" executed="True" result="Success" success="True" time="104.805" asserts="0">
                     <results>
-                      <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestStartupTime" executed="True" result="Success" success="True" time="7.980" asserts="1">
+                      <test-suite type="ParameterizedTest" name="TestHandlers" executed="True" result="Success" success="True" time="104.794" asserts="0">
+                        <results>
+                          <test-case name="MonoDevelop.Ide.PerfTests.TestFileWatcherHandlers.TestHandlers(1000)" executed="True" result="Success" success="True" time="104.791" asserts="1">
+                            <properties>
+                              <property name="Time" value="113.921" />
+                              <property name="Tolerance" value="0.2" />
+                            </properties>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="TestSolutionBuild" executed="True" result="Success" success="True" time="21.396" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestSolutionBuild.TestBuild" executed="True" result="Success" success="True" time="21.392" asserts="1">
                         <properties>
-                          <property name="Time" value="7.631" />
+                          <property name="Time" value="0.817" />
+                          <property name="Tolerance" value="0.3" />
+                        </properties>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="TestSolutionLoad" executed="True" result="Success" success="True" time="18.720" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestSolutionLoad.TestLoad" executed="True" result="Success" success="True" time="18.720" asserts="1">
+                        <properties>
+                          <property name="Time" value="8.248" />
+                          <property name="Tolerance" value="0.2" />
+                        </properties>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="TestStartup" executed="True" result="Success" success="True" time="31.403" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestStartupTime" executed="True" result="Success" success="True" time="12.519" asserts="1">
+                        <properties>
+                          <property name="Time" value="13.358" />
                           <property name="Tolerance" value="0.1" />
+                        </properties>
+                      </test-case>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestTimeToCode" executed="True" result="Success" success="True" time="18.884" asserts="1">
+                        <properties>
+                          <property name="Time" value="25.74" />
+                          <property name="Tolerance" value="0.1" />
+                        </properties>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="TestTypeSystemServiceLoad" executed="True" result="Success" success="True" time="28.637" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestTypeSystemServiceLoad.TestLoad" executed="True" result="Success" success="True" time="28.633" asserts="1">
+                        <properties>
+                          <property name="Time" value="3.95" />
+                          <property name="Tolerance" value="0.3" />
                         </properties>
                       </test-case>
                     </results>

@@ -58,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var project = (Project)dataObject;
 			return project.Name;
 		}
-		
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var project = (Project)dataObject;
@@ -74,27 +74,27 @@ namespace MonoDevelop.AssemblyBrowser
 			var dom = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
 			if (dom == null)
 				return;
-			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
-			HashSet<string> addedNames = new HashSet<string> ();
-			foreach (var ns in dom.Assembly.GlobalNamespace.GetNamespaceMembers ()) {
-				FillNamespaces (builder, project, ns);
+
+			var data = new List<NamespaceData> (32);
+			CollectNamespaces (data, dom.Assembly.GlobalNamespace.GetNamespaceMembers ());
+			builder.AddChildren (data);
+
+			var types = dom.Assembly.GlobalNamespace.GetTypeMembers ();
+			if (types.Length > 0) {
+				var children = publicOnly
+					? types.Where (t => t.IsPublic ())
+					: types;
+
+				builder.AddChildren (children);
 			}
-			builder.AddChildren (dom.Assembly.GlobalNamespace.GetTypeMembers ()
-			                     .Where (type => !publicOnly || type.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public));
 		}
 
-		public static void FillNamespaces (ITreeBuilder builder, Project project, Microsoft.CodeAnalysis.INamespaceSymbol ns)
+		static void CollectNamespaces (List<NamespaceData> acc, IEnumerable<Microsoft.CodeAnalysis.INamespaceSymbol> namespaces)
 		{
-			var members = ns.GetTypeMembers ();
-			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			if (members.Any ()) {
-				var data = new NamespaceData (ns.Name);
-				foreach (var member in members)
-					data.Types.Add ((member.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public, member));
-				builder.AddChild (data);
-			}
-			foreach (var nSpace in ns.GetNamespaceMembers ()) {
-				FillNamespaces (builder, project, nSpace);
+			acc.AddRange (namespaces.Select (x => new NamespaceData (x)));
+
+			foreach (var ns in namespaces) {
+				CollectNamespaces (acc, ns.GetNamespaceMembers ());
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return 1;
 				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (e1.Name, e2.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;

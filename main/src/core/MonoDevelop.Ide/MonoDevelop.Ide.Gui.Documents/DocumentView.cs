@@ -229,6 +229,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		internal DocumentView GetTopLevelDocumentView ()
+		{
+			var result = this;
+			while (result.Parent != null)
+				result = result.Parent;
+			return result;
+		}
+
 		internal IShellDocumentViewItem ShellView {
 			get {
 				return shellView;
@@ -259,6 +267,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			// the list.
 
 			await Task.Yield ();
+
+			if (disposed)
+				return;
 
 			if (SourceController != null)
 				SourceController.GrabFocusForView (this);

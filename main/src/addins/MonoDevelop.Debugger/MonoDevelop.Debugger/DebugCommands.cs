@@ -315,15 +315,30 @@ namespace MonoDevelop.Debugger
 			var breakpoints = DebuggingService.Breakpoints;
 
 			lock (breakpoints)
-				breakpoints.Clear ();
+				breakpoints.Clear (false);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			var breakpoints = DebuggingService.Breakpoints;
 
-			lock (breakpoints)
-				info.Enabled = !breakpoints.IsReadOnly && breakpoints.Count > 0;
+			lock (breakpoints) {
+				if (!breakpoints.IsReadOnly) {
+					foreach (var be in breakpoints) {
+						if (be is Breakpoint bp) {
+							if (!bp.NonUserBreakpoint) {
+								info.Enabled = true;
+								break;
+							}
+						} else {
+							info.Enabled = true;
+							break;
+						}
+					}
+				} else {
+					info.Enabled = false;
+				}
+			}
 
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
@@ -553,7 +568,7 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			if (!IdeApp.Workbench.Visible) {
-				IdeApp.Workbench.Show ();
+				IdeApp.Workbench.Present ();
 			}
 			var breakpointsPad = IdeApp.Workbench.Pads.FirstOrDefault (p => p.Id == "MonoDevelop.Debugger.BreakpointPad");
 			if (breakpointsPad != null) {

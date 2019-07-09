@@ -1331,11 +1331,19 @@ namespace MonoDevelop.Debugger
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)
 		{
 			lock (breakpoints) {
-				foreach (Breakpoint bp in breakpoints.GetBreakpoints ()) {
+				foreach (var bp in breakpoints.GetBreakpoints ()) {
 					if (bp.FileName == a.TextFile.Name) {
 						if (bp.Line > a.LineNumber) {
+							var startIndex = a.TextFile.GetPositionFromLineColumn (bp.Line, bp.Column);
+							var endIndex = a.TextFile.GetPositionFromLineColumn (bp.Line + 1, 0) - 1;
+
+							if (endIndex < startIndex)
+								endIndex = startIndex;
+
+							var text = a.TextFile.GetText (startIndex, endIndex);
+
 							// If the line that has the breakpoint is deleted, delete the breakpoint, otherwise update the line #.
-							if (bp.Line + a.LineCount >= a.LineNumber)
+							if (bp.Line + a.LineCount >= a.LineNumber && !string.IsNullOrWhiteSpace (text))
 								breakpoints.UpdateBreakpointLine (bp, bp.Line + a.LineCount);
 							else
 								breakpoints.Remove (bp);
@@ -1464,7 +1472,7 @@ namespace MonoDevelop.Debugger
 			return info != null ? info.Evaluator : null;
 		}
 
-		static Task<CompletionData> GetExpressionCompletionData (string exp, StackFrame frame, CancellationToken token)
+		static Task<CompletionData> GetExpressionCompletionDataAsync (string exp, StackFrame frame, CancellationToken token)
 		{
 			Document doc = IdeApp.Workbench.GetDocument (frame.SourceLocation.FileName);
 			if (doc == null)
@@ -1472,15 +1480,28 @@ namespace MonoDevelop.Debugger
 			var completionProvider = doc.GetContent<IDebuggerCompletionProvider> (true);
 			if (completionProvider == null)
 				return null;
-			return completionProvider.GetExpressionCompletionData (exp, frame, token);
+			return completionProvider.GetExpressionCompletionDataAsync (exp, frame, token);
 		}
 
 		public static async Task<CompletionData> GetCompletionDataAsync (StackFrame frame, string exp, CancellationToken token = default (CancellationToken))
 		{
-			var result = await GetExpressionCompletionData (exp, frame, token);
+			var result = await GetExpressionCompletionDataAsync (exp, frame, token);
 			if (result != null)
 				return result;
 			return frame.GetExpressionCompletionData (exp);
+		}
+
+		public static Task<Span> GetBreakpointSpanAsync (ITextDocument document, int position, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var doc = IdeApp.Workbench.GetDocument (document.FilePath);
+			IBreakpointSpanResolver resolver = null;
+
+			if (doc != null)
+				resolver = doc.GetContent<IBreakpointSpanResolver> ();
+
+			resolver = resolver ?? new DefaultBreakpointSpanResolver ();
+
+			return resolver.GetBreakpointSpanAsync (document.TextBuffer, position, cancellationToken);
 		}
 	}
 

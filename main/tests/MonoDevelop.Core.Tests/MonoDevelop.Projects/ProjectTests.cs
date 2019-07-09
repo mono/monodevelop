@@ -33,6 +33,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.Policies;
 using System.Xml;
@@ -1050,9 +1051,15 @@ namespace MonoDevelop.Projects
 			FilePath solFile = Util.GetSampleProject ("expand-facades", "ExpandFacadesTest.sln");
 			CreateNuGetConfigFile (solFile.ParentDirectory);
 
-			var process = Process.Start ("nuget", $"restore -DisableParallelProcessing \"{solFile}\"");
+			var process = Process.Start (new ProcessStartInfo {
+				FileName = "nuget",
+				Arguments = $"restore -DisableParallelProcessing \"{solFile}\"",
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				UseShellExecute = false
+			});
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Assert.AreEqual (0, process.ExitCode, await process.StandardError.ReadToEndAsync ());
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var expandFalseProject = (DotNetProject)sol.FindProjectByName ("ExpandFacadesFalse");
@@ -1092,6 +1099,26 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ProjectDisposed_RunTarget_NullReferenceExceptionNotThrown ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+			sol.Dispose ();
+
+			Assert.IsNull (p.MSBuildProject);
+
+			try {
+				// RunTarget should fail since BindTask will not register a task after Project has been disposed
+				await p.RunTarget (Util.GetMonitor (), "ResolveAssemblyReferences", ConfigurationSelector.Default);
+				Assert.Fail ("Should not reach here.");
+			} catch (TaskCanceledException) {
+				// Expected exception.
+			}
+		}
+
+		[Test]
 		public async Task ProjectExtensionOnModifiedCalledWhenProjectModified ()
 		{
 			var fn = new CustomItemNode<TestModifiedProjectExtension> ();
@@ -1125,6 +1152,87 @@ namespace MonoDevelop.Projects
 			{
 				base.OnModified (args);
 				ModifiedEventArgs.Add (args);
+			}
+		}
+
+		/// <summary>
+		/// Tests that the project will be disposed even if something fails when the Func passed to
+		/// BindTask throws an exception. We want to ensure that the active task is cleared if there is
+		/// an error to avoid the project waiting forever for this task to finish on disposing.
+		/// </summary>
+		[Test]
+		public async Task BindTask_FuncThrowsException_ProjectIsDisposed_ProjectDoesNotWaitForTask ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+
+				Task task = null;
+				try {
+					task = p.BindTask (arg => throw new ApplicationException ("Test"));
+					await task;
+					Assert.Fail ("Should not reach this line");
+				} catch (ApplicationException) {
+				}
+
+				Assert.IsNotNull (task);
+
+				Task<string> task2 = null;
+				try {
+					task2 = p.BindTask<string> (arg => throw new ApplicationException ("Test 2"));
+					await task2;
+					Assert.Fail ("Should not reach this line - BindTask<T>");
+				} catch (ApplicationException) {
+				}
+
+				Assert.IsNotNull (task2);
+
+				p.Dispose ();
+
+				const int timeout = 5000; // ms
+				int howLong = 0;
+				const int interval = 200; // ms
+
+				while (p.MSBuildProject != null) {
+					if (howLong >= timeout)
+						Assert.Fail ("Timed out waiting for project to be disposed");
+
+					await Task.Delay (interval);
+					howLong += interval;
+				}
+			}
+		}
+
+		[Test]
+		public async Task GetReferences_ProjectDisposed_BeforeTaskIsBound_DoesNotThrowNullReferenceException ()
+		{
+			var fn = new CustomItemNode<TestGetReferencesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+				using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+					var p = (DotNetProject)sol.Items [0];
+
+					// The TestGetReferencesProjectExtension will call Project.Dispose during the GetReferences call.
+					// Previously the GetReferences would throw a TaskCanceledException and Project.OnGetReferences would
+					// throw a unhandled NullReferenceException since the project was disposed which results in MSBuildProject
+					// being set to null.
+					var refs = await p.GetReferences (ConfigurationSelector.Default, CancellationToken.None);
+					Assert.IsTrue (refs.Any (r => r.FilePath.FileName == "System.Xml.dll"));
+				}
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		class TestGetReferencesProjectExtension : DotNetProjectExtension
+		{
+			protected internal override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+			{
+				// Simulate the project being disposed whilst BindTask is called.
+				Project.Dispose ();
+				return base.OnGetReferences (configuration, token);
 			}
 		}
 	}

@@ -98,46 +98,28 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var type = (ITypeDefinition)dataObject;
-			var list = new System.Collections.ArrayList ();
 			if (type.DirectBaseTypes.Any ())
-				list.Add (new BaseTypeFolder (type));
+				builder.AddChild (new BaseTypeFolder (type));
+
 			bool publicOnly = Widget.PublicApiOnly;
 
-			foreach (var field in type.Fields.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && !field.IsPublic ())
-					continue;
-				builder.AddChild (field);
-			}
-
-			foreach (var property in type.Properties.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				var accessor = property.Getter ?? property.Setter;
-				if (publicOnly && !accessor.IsPublic ())
-					continue;
-				builder.AddChild (property);
-			}
-
-			foreach (var evt in type.Events.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				var accessor = evt.AddAccessor ?? evt.RemoveAccessor;
-				if (publicOnly && !accessor.IsPublic ())
-					continue;
-				builder.AddChild (evt);
-			}
-
-			var accessorMethods = type.GetAccessors ();
-			foreach (var method in type.Methods.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && !method.IsPublic ())
-					continue;
-				if (!accessorMethods.Contains (method)) {
-					builder.AddChild (method);
-				}
-			}
+			// PERF: We can take advantage of the fact that AddChildren is faster than AddChild, due to not processing
+			// sorting of child nodes. Avoid creating additional collection, as TreeBuilder does not optimize for ICollection implementors,
+			// thus the overhead of creating a IEnumerable is not that big.
+			AddFilteredChildren (builder, type.Members, publicOnly);
+			AddFilteredChildren (builder, type.NestedTypes, publicOnly);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
 		}
-		
+
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			return -50;
+		}
+
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintAssembly (StringBuilder result, ITreeNavigator navigator)
 		{

@@ -35,46 +35,41 @@ using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Text;
 using System.Linq;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace MonoDevelop.Ide.Navigation
 {
-	[Obsolete]
 	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
 		int line;
 		int column;
 
-		int offset;
-		ITextSourceVersion version;
-		TextEditor buffer;
+		SnapshotPoint? offset;
 
-		public TextFileNavigationPoint (Document doc, TextEditor buffer)
+		public TextFileNavigationPoint (Document doc, ITextView textView)
 			: base (doc)
 		{
-			var location = buffer.CaretLocation;
-			version = buffer.Version;
-			offset = buffer.CaretOffset;
-			line = location.Line;
-			column = location.Column;
-			this.buffer = buffer;
+			offset = textView.Caret.Position.BufferPosition;
 		}
 
 		protected override void OnDocumentClosing ()
 		{
 			try {
 				// text source version becomes invalid on document close.
-				if (buffer != null) {
-					if (version.BelongsToSameDocumentAs (buffer.Version))
-						offset = version.MoveOffsetTo (buffer.Version, offset);
-					var location = buffer.CaretLocation;
-					line = location.Line;
-					column = location.Column;
+				if (this.offset is SnapshotPoint point) {
+					var currentSnapshot = point.Snapshot.TextBuffer.CurrentSnapshot;
+					var translatedOffset = point.TranslateTo (currentSnapshot, PointTrackingMode.Positive);
+					var snapshotLine = currentSnapshot.GetLineFromPosition (translatedOffset);
+					line = snapshotLine.LineNumber;
+					column = translatedOffset - snapshotLine.Start.Position;
+					offset = null;
 				}
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}
-			version = null;
-			buffer = null;
 		}
 
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -83,13 +78,25 @@ namespace MonoDevelop.Ide.Navigation
 			this.line = line;
 			this.column = column;
 		}
-		
+
 		public override bool ShouldReplace (NavigationPoint oldPoint)
 		{
-			TextFileNavigationPoint tf = oldPoint as TextFileNavigationPoint;
+			var tf = oldPoint as TextFileNavigationPoint;
 			if (tf == null)
 				return false;
-			return base.Equals (tf) && Math.Abs (line - tf.line) < 5;
+			var line1 = this.line;
+			if (this.offset is SnapshotPoint sp1) {
+				var currentSnapshot = sp1.Snapshot.TextBuffer.CurrentSnapshot;
+				var translatedOffset1 = sp1.TranslateTo (currentSnapshot, PointTrackingMode.Positive);
+				line1 = currentSnapshot.GetLineNumberFromPosition (translatedOffset1);
+			}
+			var line2 = tf.line;
+			if (tf.offset is SnapshotPoint sp2) {
+				var currentSnapshot = sp2.Snapshot.TextBuffer.CurrentSnapshot;
+				var translatedOffset2 = sp2.TranslateTo (currentSnapshot, PointTrackingMode.Positive);
+				line2 = currentSnapshot.GetLineNumberFromPosition (translatedOffset2);
+			}
+			return base.Equals (tf) && Math.Abs (line1 - line2) < 5;
 		}
 		
 		
@@ -109,108 +116,43 @@ namespace MonoDevelop.Ide.Navigation
 		
 		protected override async Task<Document> DoShow ()
 		{
-			Document doc = await base.DoShow ();
+			var doc = await base.DoShow ();
 			if (doc != null) {
-				var buf = doc.Editor;
-				if (buf != null) {
+				doc.RunWhenContentAdded<ITextView> (textView => {
 					doc.DisableAutoScroll ();
-					buf.RunWhenLoaded (() => {
-						JumpToCurrentLocation (buf);
-					});
-				}
+					JumpToCurrentLocation (textView);
+				});
 			}
 			return doc;
 		}
 
-		protected void JumpToCurrentLocation (TextEditor editor)
+		protected void JumpToCurrentLocation (ITextView textView)
 		{
-			if (version != null && version.BelongsToSameDocumentAs (editor.Version)) {
-				var currentOffset = version.MoveOffsetTo (editor.Version, offset);
-				var loc = editor.OffsetToLocation (currentOffset);
-				editor.SetCaretLocation (loc);
+			var editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
+			var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
+			VirtualSnapshotPoint point;
+			if (offset is SnapshotPoint sp1 && sp1.Snapshot.TextBuffer == textView.TextBuffer) {
+				var currentSnapshot = textView.TextBuffer.CurrentSnapshot;
+				var sp = sp1.TranslateTo (currentSnapshot, PointTrackingMode.Positive);
+				point = new VirtualSnapshotPoint (currentSnapshot, sp);
 			} else {
-				var doc = IdeApp.Workbench.Documents.FirstOrDefault (d => d.Editor == editor);
-				if (doc != null) {
-					buffer = doc.Editor;
-					version = buffer.Version;
-					offset = buffer.LocationToOffset (line, column);
-					SetDocument (doc);
-				}
-				editor.SetCaretLocation (Math.Max (line, 1), Math.Max (column, 1));
+				var snapshotLine = textView.TextSnapshot.GetLineFromLineNumber (Math.Min (textView.TextSnapshot.LineCount - 1, this.line));
+				point = new VirtualSnapshotPoint (textView.TextSnapshot, Math.Min (textView.TextSnapshot.Length - 1, snapshotLine.Start.Position + column));
+				offset = point.Position;
 			}
+			editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
 		}
-
-		/*
-		
-		//FIXME: this currently isn't hooked up to any GUI. In addition, it should be done lazily, since it's expensive 
-		// and the nav menus are shown much less frequently than nav points are created.
-		
-		public override string Tooltip {
-			get { return snippet; }
-		}
-		
-		public void UpdateLine (int line, MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buffer)
-		{
-			this.line = line;
-			UpdateSnippet (buffer);
-		}
-		
-		//gets a snippet for the tooltip
-		void UpdateSnippet (MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buffer)
-		{
-			//get some lines from the file
-			int startPos = buffer.GetPositionFromLineColumn (Math.Max (Line - 1, 1), 1);
-			int endPos = buffer.GetPositionFromLineColumn (Line + 2, 1);
-			if (endPos < 0)
-				endPos = buffer.Length; 
-			
-			string [] lines = buffer.GetText (startPos, endPos).Split ('\n', '\r');
-			System.Text.StringBuilder fragment = new System.Text.StringBuilder ();
-			
-			//calculate the minimum indent of any of these lines, using an approximation that tab == 4 spaces
-			int minIndentLength = int.MaxValue;
-			foreach (string line in lines) {
-				if (line.Length == 0)
-					continue;
-				int indentLength = GetIndentLength (line);
-				if (indentLength < minIndentLength)
-					minIndentLength = indentLength;
-			}
-			
-			//strip off the indents and truncate the length
-			const int MAX_LINE_LENGTH = 40;
-			foreach (string line in lines) {
-				if (line.Length == 0)
-					continue;
-				
-				int length = Math.Min (MAX_LINE_LENGTH, line.Length) - minIndentLength;
-				if (length > 0)
-					fragment.AppendLine (line.Substring (minIndentLength, length));
-				else
-					fragment.AppendLine ();
-			}
-			
-			snippet = fragment.ToString ();
-		}
-		
-		int GetIndentLength (string line)
-		{
-			int indent = 0;
-			for (int i = 0; i < line.Length; i++) {
-				if (line[i] == ' ')
-					indent++;
-				else if (line[i] == '\t')
-					indent += 4;
-				else
-					break;
-			}
-			return indent;
-		}*/
 
 		public override bool Equals (object o)
 		{
-			TextFileNavigationPoint other = o as TextFileNavigationPoint;
-			return other != null && other.line == line && base.Equals (other);
+			var other = o as TextFileNavigationPoint;
+			if (other == null)
+				return false;
+			if (this.offset.HasValue != other.offset.HasValue)
+				return false;
+			if (this.offset.HasValue && !other.offset.Value.Equals (offset.Value))
+				return false;
+			return base.Equals (other);
 		}
 		
 		public override int GetHashCode ()

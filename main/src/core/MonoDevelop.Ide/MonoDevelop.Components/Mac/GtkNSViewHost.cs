@@ -24,13 +24,25 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
 using AppKit;
 using CoreGraphics;
 using ObjCRuntime;
+using Foundation;
 
 namespace Gtk
 {
+	/// <summary>
+	/// This interface helps to reorganize the ZOrder of a native view inside a GdkQuarz window
+	/// </summary>
+	public interface INSViewOrdering
+	{
+		/// <summary>
+		/// This parameter is taking into account when this viewhost is added.
+		/// More values means the view is on top of others
+		/// </summary>
+		public int ZOrder { get; }
+	}
+
 	public sealed class GtkNSViewHost : Widget
 	{
 		const string LIBGTKQUARTZ = "libgtk-quartz-2.0.dylib";
@@ -141,6 +153,20 @@ namespace Gtk
 			}
 		}
 
+		NSComparisonResult CompareViews (NSView view1, NSView view2)
+		{
+			if (view1 is INSViewOrdering viewOrdering1) {
+
+				if (view2 is INSViewOrdering viewOrdering2 && viewOrdering2.ZOrder >= viewOrdering1.ZOrder)
+					return NSComparisonResult.Ascending;
+				//view 1 on top
+				return NSComparisonResult.Descending;
+
+			}
+			//if view1 is not ordering view 2 on top
+			return NSComparisonResult.Ascending;
+		}
+
 		protected override void OnRealized ()
 		{
 			LogEnter ();
@@ -151,11 +177,12 @@ namespace Gtk
 					var superviewHandle = gdk_quartz_window_get_nsview (GdkWindow.Handle);
 					if (superviewHandle != IntPtr.Zero)
 						superview = Runtime.GetNSObject<NSView> (superviewHandle);
-				}
+					}
 
-				if (superview != null && view != null)
+				if (superview != null && view != null) {
 					superview.AddSubview (view);
-
+					superview.SortSubviews (CompareViews);
+				}
 				base.OnRealized ();
 
 				UpdateViewFrame ();
@@ -280,9 +307,9 @@ namespace Gtk
 		{
 			LogEnter ();
 			try {
-				var firstResponder = view?.Window.FirstResponder as NSView;
-				if (firstResponder != null && view?.AncestorSharedWithView (firstResponder) == view)
-					firstResponder.Window.MakeFirstResponder (null);
+				if (view?.Window?.FirstResponder is NSView firstResponder &&
+					view?.AncestorSharedWithView (firstResponder) == view)
+					firstResponder.Window?.MakeFirstResponder (null);
 				return base.OnFocusOutEvent (evnt);
 			} finally {
 				LogExit ();

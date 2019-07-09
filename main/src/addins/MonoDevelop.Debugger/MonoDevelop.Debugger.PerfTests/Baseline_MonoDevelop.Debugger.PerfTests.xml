@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="/Users/fejj/src/monodevelop/main/build/tests/MonoDevelop.Debugger.PerfTests.dll" total="4" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2019-06-06" time="05:32:07">
+  <environment nunit-version="2.7.0.0" clr-version="4.0.30319.42000" os-version="Unix 18.6.0.0" platform="Unix" cwd="/Users/fejj/src/monodevelop/main/build/tests" machine-name="MacBook-Pro" user="fejj" user-domain="MacBook-Pro" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Assembly" name="/Users/fejj/src/monodevelop/main/build/tests/MonoDevelop.Debugger.PerfTests.dll" executed="True" result="Success" success="True" time="11.5" asserts="0">
+    <results>
+      <test-suite type="Namespace" name="Mono" executed="True" result="Success" success="True" time="11.5" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="Debugging" executed="True" result="Success" success="True" time="11.5" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="PerfTests" executed="True" result="Success" success="True" time="11.5" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="Soft" executed="True" result="Success" success="True" time="11.5" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="SdbSteppingTests" executed="True" result="Success" success="True" time="11.5" asserts="0">
+                        <results>
+                          <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.OneLineProperty" executed="True" result="Success" success="True" time="11.5" asserts="1">
+                            <properties>
+                              <property name="Time" value="0.1" />
+                              <property name="Tolerance" value="0.1" />
+                            </properties>
+                          </test-case>
+                          <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.StepOverPropertiesAndOperators1" executed="True" result="Success" success="True" time="11.5" asserts="1">
+                            <properties>
+                              <property name="Time" value="0.1" />
+                              <property name="Tolerance" value="0.1" />
+                            </properties>
+                          </test-case>
+                          <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.StepOverPropertiesAndOperators2" executed="True" result="Success" success="True" time="11.5" asserts="1">
+                            <properties>
+                              <property name="Time" value="0.1" />
+                              <property name="Tolerance" value="0.1" />
+                            </properties>
+                          </test-case>
+                          <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.StaticConstructorStepping" executed="True" result="Success" success="True" time="11.5" asserts="1">
+                            <properties>
+                              <property name="Time" value="0.1" />
+                              <property name="Tolerance" value="0.1" />
+                            </properties>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

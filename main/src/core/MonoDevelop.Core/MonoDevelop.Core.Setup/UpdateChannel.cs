@@ -116,7 +116,7 @@ namespace MonoDevelop.Core.Setup
 
 		public override int GetHashCode ()
 		{
-			return Idx;
+			return Id.GetHashCode();
 		}
 
 		public override string ToString ()

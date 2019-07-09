@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -65,7 +65,6 @@ namespace MonoDevelop.TextEditor
 {
 	abstract partial class TextViewContent<TView, TImports> :
 		FileDocumentController,
-		INavigable,
 		ICustomCommandTarget,
 		ICommandHandler,
 		ICommandUpdater,
@@ -132,9 +131,18 @@ namespace MonoDevelop.TextEditor
 			UpdateTextBufferRegistration ();
 
 			var roles = GetAllPredefinedRoles ();
+
+			ITextBuffer projectionBuffer = null;
+			foreach (var projectionBufferProvider in Imports.ProjectionBufferProviders) {
+				if (projectionBufferProvider.Value.TryGetProjectionBuffer (TextBuffer, out projectionBuffer)) {
+					break;
+				}
+			}
+
+			var dataModel = new ProjectionTextDataModel (TextBuffer, projectionBuffer);
+
 			//we have multiple copies of VacuousTextDataModel for back-compat reasons
 #pragma warning disable CS0436 // Type conflicts with imported type
-			var dataModel = new VacuousTextDataModel (TextBuffer);
 			var viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
 				Imports.TextViewModelProviders,
 				dataModel.ContentType,
@@ -230,20 +238,12 @@ namespace MonoDevelop.TextEditor
 				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
 		}
 
-		protected override void OnGrabFocus (DocumentView view)
-		{
-			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-			base.OnGrabFocus (view);
-		}
-
 		protected override void OnFileNameChanged ()
 		{
 			base.OnFileNameChanged ();
 
 			if (TextDocument == null)
 				return;
-
-			UpdateTextBufferRegistration ();
 
 			warnOverwrite = false;
 
@@ -268,6 +268,8 @@ namespace MonoDevelop.TextEditor
 			//if (this.WorkbenchWindow?.Document != null)
 			//	textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
 
+			UpdateTextBufferRegistration ();
+
 			UpdateTextEditorOptions (null, null);
 		}
 
@@ -291,13 +293,10 @@ namespace MonoDevelop.TextEditor
 
 		Components.Control control;
 
-		bool isDisposed;
 		protected override void OnDispose ()
 		{
-			if (isDisposed)
+			if (IsDisposed)
 				return;
-
-			isDisposed = true;
 
 			textBufferRegistration?.Dispose ();
 			textBufferRegistration = null;
@@ -326,21 +325,27 @@ namespace MonoDevelop.TextEditor
 			sourceEditorOptions.Changed += UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
 			TextBuffer.Changed += HandleTextBufferChanged;
-			TextView.Caret.PositionChanged += CaretPositionChanged;
-			TextView.TextBuffer.Changed += TextBufferChanged;
 			TextView.Options.OptionChanged += TextBufferOptionsChanged;
 		}
 
 		protected virtual void UnsubscribeFromEvents ()
 		{
-			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
-			if (TextDocument != null) {
+			if (sourceEditorOptions != null)
+				sourceEditorOptions.Changed -= UpdateTextEditorOptions;
+
+			if (TextDocument != null)
 				TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+
+			if (TextBuffer != null)
 				TextBuffer.Changed -= HandleTextBufferChanged;
-				TextView.Caret.PositionChanged -= CaretPositionChanged;
-				TextView.TextBuffer.Changed -= TextBufferChanged;
+
+			// while this actually generates a "warning" about potentially comparing value types,
+			// we can be fairly confident that's not actually going to happen - and while the correct
+			// change would be to ensure TView is a "class", that's too big of a change to try and
+			// and combat this bug with.
+			// In addition, this will get JITTed into a cast to Object and a check for null.
+			if (TextView != null && TextView.Options != null)
 				TextView.Options.OptionChanged -= TextBufferOptionsChanged;
-			}
 		}
 
 		void UpdateBufferOptions ()
@@ -395,6 +400,9 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
 				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+#if !WINDOWS
+				EditorOptions.ClearOptionValue (DefaultTextViewOptions.VerticalRulersName);
+#endif
 
 				return;
 			}
@@ -407,6 +415,12 @@ namespace MonoDevelop.TextEditor
 			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
 			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
 			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
+
+#if !WINDOWS
+			EditorOptions.SetOptionValue (
+				DefaultTextViewOptions.VerticalRulersName,
+				PropertyService.Get<bool> ("ShowRuler") ? new [] { currentPolicy.FileWidth } : Array.Empty<int> ());
+#endif
 		}
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
@@ -424,6 +438,31 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
 				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
+
+			var setVerticalRulers = false;
+			int [] verticalRulers = null;
+
+			if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.RulersConvention, out var rulers)) {
+				setVerticalRulers = true;
+				if (!string.IsNullOrEmpty(rulers)) {
+					verticalRulers = Array.ConvertAll (rulers.Split (','), val => {
+						if (int.TryParse (val, out var col))
+							return col;
+						return 0;
+					});
+				}
+			} else if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out var maxLineLength)) {
+				if (maxLineLength != "off" && int.TryParse (maxLineLength, out var i)) {
+					setVerticalRulers = true;
+					verticalRulers = new [] { i };
+				} else
+					setVerticalRulers = false;
+			}
+
+#if !WINDOWS
+			if (setVerticalRulers)
+				EditorOptions.SetOptionValue (DefaultTextViewOptions.VerticalRulersName, verticalRulers ?? Array.Empty<int> ());
+#endif
 
 			return Task.FromResult (true);
 		}
@@ -579,7 +618,7 @@ namespace MonoDevelop.TextEditor
 		Task autoSaveTask;
 		void InformAutoSave ()
 		{
-			if (isDisposed)
+			if (IsDisposed)
 				return;
 			RemoveAutoSaveTimer ();
 			autoSaveTimer = GLib.Timeout.Add (500, delegate {
@@ -664,16 +703,6 @@ namespace MonoDevelop.TextEditor
 
 		protected internal override ProjectReloadCapability OnGetProjectReloadCapability () => ProjectReloadCapability.Full;
 
-		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
-		{
-			TryLogNavPoint (true);
-		}
-
-		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
-		{
-			TryLogNavPoint (false);
-		}
-
 		void TextBufferOptionsChanged (object sender, EventArgs a)
 		{
 			UpdateBufferOptions ();
@@ -725,7 +754,7 @@ namespace MonoDevelop.TextEditor
 			void ReloadFromDisk ()
 			{
 				try {
-					if (isDisposed || !File.Exists (FilePath))
+					if (IsDisposed || !File.Exists (FilePath))
 						return;
 
 					Load (true);
@@ -739,7 +768,7 @@ namespace MonoDevelop.TextEditor
 
 			void KeepChanges ()
 			{
-				if (isDisposed)
+				if (IsDisposed)
 					return;
 				ShowNotification = false;
 				DismissInfoBar ();

@@ -1,10 +1,10 @@
-﻿//
-// SolutionHasDebugSourceFilesCondition.cs
+//
+// PackageDependencyNodeDescriptor.cs
 //
 // Author:
-//       David Karlaš <david.karlas@microsoft.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft Corporation
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using Mono.Addins;
-using MonoDevelop.Ide;
-using System.Linq;
 
-namespace MonoDevelop.Debugger
+using MonoDevelop.Core;
+using MonoDevelop.DesignerSupport;
+
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	public class SolutionHasDebugSourceFilesCondition : ConditionType
+	class PackageDependencyNodeDescriptor : CustomDescriptor
 	{
-		public override bool Evaluate (NodeElement conditionNode)
+		readonly PackageDependencyNode dependencyNode;
+
+		public PackageDependencyNodeDescriptor (PackageDependencyNode dependencyNode)
 		{
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if(solution == null)
-				return false;
-			return SourceCodeLookup.GetDebugSourceFolders (solution).Any ();
+			this.dependencyNode = dependencyNode;
+		}
+
+		[LocalizedCategory ("Dependency")]
+		[LocalizedDisplayName ("Name")]
+		public string Name {
+			get { return dependencyNode.Name; }
+		}
+
+		[LocalizedCategory ("Dependency")]
+		[LocalizedDisplayName ("Version")]
+		public string Version {
+			get { return dependencyNode.Version; }
 		}
 	}
 }

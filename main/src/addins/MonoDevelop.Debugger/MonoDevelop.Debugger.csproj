@@ -125,7 +125,6 @@
     <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
     <Compile Include="MonoDevelop.Debugger\NoSourceView.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugSourceFilesOptionsPanel.cs" />
-    <Compile Include="MonoDevelop.Debugger\SolutionHasDebugSourceFilesCondition.cs" />
     <Compile Include="MonoDevelop.Debugger\Counters.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.AttachToProcessDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
@@ -178,6 +177,8 @@
     <Compile Include="MonoDevelop.Debugger\GtkObjectValueTreeView.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValueTreeViewModels.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValueTreeViewFakes.cs" />
+    <Compile Include="MonoDevelop.Debugger\IBreakpointSpanResolver.cs" />
+    <Compile Include="MonoDevelop.Debugger\DefaultBreakpointSpanResolver.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />

@@ -34,6 +34,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -79,5 +80,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return treeBuilder.GetParentDataItem (typeof(AssemblyLoader), true) != null;
 		}
 
+		protected static void AddFilteredChildren<T> (ITreeBuilder builder, IReadOnlyCollection<T> collection, bool publicApiOnly) where T:IEntity
+		{
+			if (collection.Count == 0)
+				return;
+
+			var children = publicApiOnly
+				? collection.Where (x => x.IsPublic ())
+				: collection;
+
+			builder.AddChildren (collection);
+		}
 	}
 }

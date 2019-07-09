@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
+			info.Enabled = CanRestoreSelectedDotNetProjectOrSolution ();
 		}
 
 		public static void Run (Solution solution)

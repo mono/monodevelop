@@ -1,4 +1,4 @@
-//
+﻿//
 // DocumentController.cs
 //
 // Author:
@@ -384,11 +384,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		CancellationTokenSource disposedTokenSource = new CancellationTokenSource ();
+
+		/// <summary>
+		/// Returns a dispose token that's canceled when the document controller disposes.
+		/// </summary>
+		protected CancellationToken DisposedToken { get; }
+
+		protected bool IsDisposed { get => disposed; }
+
 		protected virtual bool ControllerIsViewOnly => false;
 
 		internal FilePath OriginalContentName { get; set; }
 
 		internal bool Initialized => initialized;
+
+		public DocumentController ()
+		{
+			DisposedToken = disposedTokenSource.Token;
+		}
 
 		/// <summary>
 		/// Initializes the controller
@@ -412,11 +426,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void Dispose ()
 		{
-			if (!disposed) {
+			if (disposed)
+				return;
+			try {
 				linkedController?.Dispose ();
-				disposed = true;
 				OnDispose ();
 				extensionChain?.Dispose ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError ($"Error while disposing document controller {this}", e);
+			} finally {
+				disposedTokenSource.Cancel ();
+				disposedTokenSource.Dispose ();
+				disposedTokenSource = null;
+				disposed = true;
 			}
 		}
 
@@ -650,7 +672,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			// Get the list of nodes for which an extension has been created
 
-			var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
+			var allExtensions = (extensionChain.GetAllExtensions () ?? Array.Empty<DocumentControllerExtension>())
+									.OfType<DocumentControllerExtension> ().ToList ();
+
 			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
 				.Select (ex => ex.SourceExtensionNode.Data.NodeId).ToList ();
 
@@ -908,6 +932,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal void GrabFocusForView (DocumentView view)
 		{
+			if (disposed)
+				return;
 			if (linkedController != null)
 				linkedController?.GrabFocusForView (view);
 			else

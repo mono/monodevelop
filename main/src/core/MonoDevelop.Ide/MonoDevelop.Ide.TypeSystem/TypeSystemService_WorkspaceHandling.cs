@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
-				await CreateWorkspaces (item, wsList);
+				await CreateWorkspaces (item, wsList).ConfigureAwait (false);
 				//If we want BeginTiming to work correctly we need to `await`
 				await InternalLoad (wsList, progressMonitor, cancellationToken).ConfigureAwait (false);
 				return wsList;
@@ -138,12 +138,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (item is MonoDevelop.Projects.Workspace ws) {
 				foreach (var wsItem in ws.Items)
-					await CreateWorkspaces (wsItem, result);
+					await CreateWorkspaces (wsItem, result).ConfigureAwait (false);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is MonoDevelop.Projects.Solution solution) {
 				var workspace = new MonoDevelopWorkspace (compositionManager.HostServices, solution, this);
-				await workspace.Initialize ();
+				await workspace.Initialize ().ConfigureAwait (false);
 				lock (workspaceLock)
 					workspaces = workspaces.Add (workspace);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -270,7 +270,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public FilePath FilePath { get; set; }
 			public ITextBuffer TextBuffer { get; set; }
 			public WorkspaceObject Owner { get; set; }
-			public bool HandleMiscNamespace { get; set; }
+			public bool HandleMiscWorkspace { get; set; }
 		}
 
 		class DocumentRegistration : IDisposable
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public IDisposable RegisterOpenDocument (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer, bool handleMiscNamespace = true)
+		public IDisposable RegisterOpenDocument (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer, bool handleMiscWorkspace = true)
 		{
 			Runtime.AssertMainThread ();
 
@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				FilePath = path,
 				TextBuffer = textBuffer,
 				Owner = owner,
-				HandleMiscNamespace = handleMiscNamespace
+				HandleMiscWorkspace = handleMiscWorkspace
 			};
 			openDocuments.Add (path, reference);
 
@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			TryOpenDocumentInWorkspace (reference.Owner, reference.FilePath, reference.TextBuffer);
 
 			// Only use misc workspace with the new editor; old editor has its own
-			if (reference.HandleMiscNamespace) {
+			if (reference.HandleMiscWorkspace) {
 				// If the primary workspace didn't claim the document notify the miscellaneous workspace
 				miscellaneousFilesWorkspace.OnDocumentOpened (reference.FilePath, reference.TextBuffer);
 			}
@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			openDocuments.Remove (reference.FilePath);
 
 			// Only use misc workspace with the new editor; old editor has its own
-			if (reference.HandleMiscNamespace) {
+			if (reference.HandleMiscWorkspace) {
 				// In the common case the primary workspace will own the document, so shut down
 				// miscellaneous workspace first to avoid adding and then immediately removing
 				// the document to the miscellaneous workspace
@@ -617,7 +617,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					// update documents
 					if (documentManager != null) {
 						foreach (var openDocument in documentManager.Documents)
-							openDocument.DocumentContext.ReparseDocument ();
+							openDocument.DocumentContext?.ReparseDocument ();
 					}
 				}
 			}

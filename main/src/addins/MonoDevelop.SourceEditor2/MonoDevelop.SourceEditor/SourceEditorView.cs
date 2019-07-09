@@ -99,7 +99,7 @@ namespace MonoDevelop.SourceEditor
 
 		internal ExtensibleTextEditor TextEditor {
 			get {
-				return widget.TextEditor;
+				return widget?.TextEditor;
 			}
 		}
 
@@ -1384,7 +1384,7 @@ namespace MonoDevelop.SourceEditor
 			breakpointSegments.Clear ();
 
 			lock (breakpoints) {
-				foreach (Breakpoint bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
+				foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 					lineNumbers.Add (bp.Line);
 					AddBreakpoint (bp);
 				}
@@ -3400,10 +3400,13 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.GrabFocus ()
 		{
-			var topLevelWindow = this.TextEditor.Toplevel as Gtk.Window;
+			var editor = this.TextEditor;
+			if (editor == null)
+				return;
+			var topLevelWindow = editor.Toplevel as Gtk.Window;
 			if (topLevelWindow != null)
 				topLevelWindow.Present ();
-			this.TextEditor.GrabFocus ();
+			editor.GrabFocus ();
 		}
 
 		void ITextEditorImpl.ShowTooltipWindow (Components.Window window, TooltipWindowOptions options)

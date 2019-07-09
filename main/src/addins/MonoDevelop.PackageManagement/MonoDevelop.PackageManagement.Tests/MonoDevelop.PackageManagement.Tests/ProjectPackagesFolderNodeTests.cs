@@ -204,7 +204,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, nodes.Count);
 			Assert.IsFalse (referenceNode.Installed);
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual (String.Empty, referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(1.0)", referenceNode.GetSecondaryLabel ());
 		}
 
 		[Test]
@@ -222,11 +222,16 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, nodes.Count);
 			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual ("(1.2 available)", referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(1.0)", referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("1.2 available", referenceNode.GetStatusMessage ());
+			Assert.AreEqual ("md-package-update", referenceNode.GetStatusIconId ().Name);
 		}
 
+		/// <summary>
+		/// Warning information shown not update information since only one status icon is supported.
+		/// </summary>
 		[Test]
-		public async Task GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackagesButPackageNotRestored_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
+		public async Task GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackagesButPackageNotRestored_ReturnsOneNodeWithUpdatedVersionInformationInMenu ()
 		{
 			CreateNode ();
 			AddPackageReferenceToProject ("MyPackage", "1.0");
@@ -239,9 +244,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, nodes.Count);
 			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual ("(1.2 available)", referenceNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(1.0)", referenceNode.GetSecondaryLabel ());
 			Assert.AreEqual (Stock.Reference, referenceNode.GetIconId ());
 			Assert.IsTrue (referenceNode.IsDisabled ());
+			Assert.AreEqual ("Package is not restored", referenceNode.GetStatusMessage ());
+			Assert.AreEqual ("Update to 1.2", referenceNode.GetUpdateLabel ());
+			Assert.AreEqual (IconId.Null, referenceNode.GetStatusIconId ());
 		}
 
 		[Test]
@@ -274,7 +282,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var referenceNode = packagesFolderNode.GetPackageReferencesNodes ().Single ();
 
 			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
-			Assert.AreEqual ("Version 1.2.3-*", referenceNode.GetPackageVersionLabel ());
+			Assert.AreEqual ("(1.2.3-*)", referenceNode.GetSecondaryLabel ());
 			Assert.IsTrue (referenceNode.Installed);
 		}
 	}

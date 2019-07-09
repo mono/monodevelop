@@ -48,6 +48,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Core.Collections;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Projects
 {
@@ -448,9 +449,7 @@ namespace MonoDevelop.Projects
 		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
 		{
 			return BindTask<TargetEvaluationResult> (async cancelToken => {
-				var cancelSource = new CancellationTokenSource ();
-				cancelToken.Register (() => cancelSource.Cancel ());
-
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
 					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
 				}
@@ -473,12 +472,10 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (ImmutableArray<FilePath>.Empty);
 
-			return BindTask<ImmutableArray<FilePath>> (cancelToken => {
-				var cancelSource = new CancellationTokenSource ();
-				cancelToken.Register (() => cancelSource.Cancel ());
-
+			return BindTask<ImmutableArray<FilePath>> (async cancelToken => {
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return GetAnalyzerFilesAsync (monitor, configuration);
+					return await GetAnalyzerFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -499,12 +496,10 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (ImmutableArray<ProjectFile>.Empty);
 
-			return BindTask<ImmutableArray<ProjectFile>> (cancelToken => {
-				var cancelSource = new CancellationTokenSource ();
-				cancelToken.Register (() => cancelSource.Cancel ());
-
+			return BindTask<ImmutableArray<ProjectFile>> (async cancelToken => {
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return GetSourceFilesAsync (monitor, configuration);
+					return await GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -705,7 +700,7 @@ namespace MonoDevelop.Projects
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
 
-						var evalResult = await project.RunTarget (monitor, dependsList, config.Selector, ctx);
+						var evalResult = await project.RunTargetInternal (monitor, dependsList, config.Selector, ctx);
 						if (evalResult != null && evalResult.Items != null) {
 							result = ProcessMSBuildItems (evalResult.Items, project);
 						}
@@ -1249,6 +1244,13 @@ namespace MonoDevelop.Projects
 		/// Configuration to use to run the target
 		/// </param>
 		public Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
+		{
+			return BindTask<TargetEvaluationResult> (cancelToken => {
+				return RunTargetInternal (monitor.WithCancellationToken (cancelToken), target, configuration, context);
+			});
+		}
+
+		internal Task<TargetEvaluationResult> RunTargetInternal (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
 			// Initialize the evaluation context. This initialization is shared with FastCheckNeedsBuild.
 			// Extenders will override OnConfigureTargetEvaluationContext to add custom properties and do other
@@ -1864,7 +1866,7 @@ namespace MonoDevelop.Projects
 		protected override async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			var newContext = operationContext as TargetEvaluationContext ?? new TargetEvaluationContext (operationContext);
-			return (await RunTarget (monitor, "Build", configuration, newContext)).BuildResult;
+			return (await RunTargetInternal (monitor, "Build", configuration, newContext)).BuildResult;
 		}
 
 		async Task<TargetEvaluationResult> RunBuildTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)
@@ -2249,7 +2251,7 @@ namespace MonoDevelop.Projects
 		protected override async Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
 		{
 			var newContext = buildSession as TargetEvaluationContext ?? new TargetEvaluationContext (buildSession);
-			return (await RunTarget (monitor, "Clean", configuration, newContext)).BuildResult;
+			return (await RunTargetInternal (monitor, "Clean", configuration, newContext)).BuildResult;
 		}
 
 		Task<TargetEvaluationResult> RunCleanTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)
@@ -2406,18 +2408,27 @@ namespace MonoDevelop.Projects
 
 		internal virtual void OnFileChanged (object source, FileEventArgs e)
 		{
+			ProjectFileEventArgs args = null;
+
 			foreach (FileEventInfo fi in e) {
-				ProjectFile file = GetProjectFile (fi.FileName);
+				ProjectFile file = files.GetFileFromFullPath (fi.FileName);
 				if (file != null) {
 					SetFastBuildCheckDirty ();
-					try {
-						NotifyFileChangedInProject (file);
-					} catch {
-						// Workaround Mono bug. The watcher seems to
-						// stop watching if an exception is thrown in
-						// the event handler
-					}
+					if (args == null)
+						args = new ProjectFileEventArgs ();
+					args.Add (new ProjectFileEventInfo (this, file));
 				}
+			}
+
+			if (args == null)
+				return;
+
+			try {
+				OnFileChangedInProject (args);
+			} catch {
+				// Workaround Mono bug. The watcher seems to
+				// stop watching if an exception is thrown in
+				// the event handler
 			}
 		}
 
@@ -4506,9 +4517,12 @@ namespace MonoDevelop.Projects
 				LoggingService.LogError ("OnFileRenamed error.", ex);
 			}
 
+			bool exists = File.Exists (sourceFile) || Directory.Exists (sourceFile);
+
 			Runtime.RunInMainThread (() => {
 				OnFileCreatedExternally (targetFile);
-				OnFileDeletedExternally (sourceFile);
+				if (!exists)
+					OnFileDeletedExternally (sourceFile);
 			});
 		}
 
@@ -4531,12 +4545,17 @@ namespace MonoDevelop.Projects
 				if (Directory.Exists (filePath))
 					return;
 
-				if (filePath.FileName == ".DS_Store")
-					return;
+				var fileName = ((string)filePath).AsSpan ();
+				fileName = fileName.Slice (fileName.LastIndexOf (Path.DirectorySeparatorChar) + 1);
 
-				// Ignore temporary files created when saving a file in the editor.
-				if (filePath.FileName.StartsWith (".#", StringComparison.OrdinalIgnoreCase))
-					return;
+				if (fileName[0] == '.') {
+					// Ignore temporary files created when saving a file in the editor.
+					if (fileName [1] == '#')
+						return;
+
+					if (fileName.SequenceEqual (".DS_Store".AsSpan ()))
+						return;
+				}
 
 				OnFileCreatedExternally (filePath);
 			} catch (Exception ex) {
@@ -4544,14 +4563,34 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		static readonly ObjectPool<List<FilePath>> filePathListPool = ObjectPool.Create (new PooledListPolicy<FilePath> ());
+
 		void OnFileDeleted (object sender, FileEventArgs e)
 		{
 			if (Runtime.IsMainThread)
 				return;
 
+			List<FilePath> paths = null;
+			foreach (var file in e) {
+				var path = file.FileName;
+				bool exists = File.Exists (path) || Directory.Exists (path);
+
+				if (!exists) {
+					paths ??= filePathListPool.Get ();
+					paths.Add (path);
+				}
+			}
+
+			if (paths == null)
+				return;
+
 			Runtime.RunInMainThread (() => {
-				foreach (FileEventInfo info in e) {
-					OnFileDeletedExternally (info.FileName);
+				try {
+					foreach (var path in paths) {
+						OnFileDeletedExternally (path);
+					}
+				} finally {
+					filePathListPool.Return (paths);
 				}
 			});
 		}
@@ -4594,31 +4633,31 @@ namespace MonoDevelop.Projects
 		void OnDirectoryMovedOutOfProject (FilePath oldDirectory)
 		{
 			// Directory moved outside project directory. Remove files from project.
-			var projectFilesInDirectory = Files.GetFilesInPath (oldDirectory);
-			if (!projectFilesInDirectory.Any ())
-				return;
-
 			Runtime.RunInMainThread (() => {
-				foreach (ProjectFile file in projectFilesInDirectory)
-					Files.Remove (file);
+				Files.RemoveFilesInPath (oldDirectory);
 			});
 		}
+
+		static readonly ObjectPool<List<(FilePath, ProjectItem)>> projectItemListPool
+			= ObjectPool.Create (new PooledListPolicy<(FilePath, ProjectItem)> { MaximumRetainedCapacity = 8, InitialCapacity = 4 });
 
 		void OnFileCreatedExternally (FilePath fileName)
 		{
 			if (sourceProject == null) {
-				// sometimes this method is called after disposing this class. 
+				// sometimes this method is called after disposing this class.
 				// (i.e. when quitting MD or creating a new project.)
 				LoggingService.LogWarning ("File created externally not processed. {0}", fileName);
 				return;
 			}
+
+			// PERF: IsChildPathOf is less expensive than the O(logn) for finding immutable dictionary's items.
 
 			// Check file is inside the project directory. The file globs would exclude the file anyway
 			// if the relative path starts with "..\" but checking here avoids checking the file globs.
 			if (!fileName.IsChildPathOf (BaseDirectory))
 				return;
 
-			if (Files.Any (file => file.FilePath == fileName)) {
+			if (Files.GetFile (fileName) != null) {
 				// File exists in project. This can happen if the file was added
 				// in the IDE and not externally.
 				return;
@@ -4633,35 +4672,39 @@ namespace MonoDevelop.Projects
 			}
 
 			if (!UseAdvancedGlobSupport)
-				globItems = globItems.Where (it => it.Metadata.GetProperties ().Count () == 0);
+				globItems = globItems.Where (it => !it.Metadata.GetProperties ().Any ());
 
+			List<(FilePath, ProjectItem)> list = null;
 			foreach (var it in globItems) {
 				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
 				var pi = CreateProjectItem (eit);
 				pi.Read (this, eit);
-				if (Runtime.IsMainThread) {
-					Items.Add (pi);
-				} else {
-					Runtime.RunInMainThread (() => {
-						// Double check the file has not been added on the UI thread by the IDE.
-						if (!Files.Any (file => file.FilePath == fileName)) {
-							Items.Add (pi);
-						}
-					}).Ignore ();
-				}
+
+				list ??= projectItemListPool.Get ();
+				list.Add ((fileName, pi));
 			}
+
+			if (list == null)
+				return;
+
+			Runtime.RunInMainThread (() => {
+				// Double check the file has not been added on the UI thread by the IDE.
+				try {
+					list.RemoveAll (item => Files.GetFile (item.Item1) != null);
+					if (list.Count > 0)
+						Items.AddRange (list.Select (item => item.Item2));
+				} finally {
+					projectItemListPool.Return (list);
+				}
+			}).Ignore ();
 		}
 
 		void OnFileDeletedExternally (string fileName)
 		{
-			if (File.Exists (fileName) || Directory.Exists (fileName)) {
-				// File has not been deleted. The delete event could have been due to
-				// the file being saved. Saving with TextFileUtility will result in
-				// FileService.SystemRename being called to move a temporary file
-				// to the file being saved which deletes and then creates the file.
-				return;
-			}
-
+			// File has not been deleted. The delete event could have been due to
+			// the file being saved. Saving with TextFileUtility will result in
+			// FileService.SystemRename being called to move a temporary file
+			// to the file being saved which deletes and then creates the file.
 			Files.Remove (fileName);
 		}
 

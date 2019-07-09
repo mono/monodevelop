@@ -44,6 +44,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 			packageManagementEvents.PackageOperationsFinished += PackageOperationsFinished;
+			packageManagementEvents.UpdatedPackagesAvailable += UpdatePackagesAvailable;
 
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferencesChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferencesChanged;
@@ -52,6 +53,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public override void Dispose ()
 		{
 			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
+			packageManagementEvents.UpdatedPackagesAvailable -= UpdatePackagesAvailable;
+
 			IdeApp.Workspace.ReferenceAddedToProject -= OnReferencesChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferencesChanged;
 
@@ -99,7 +102,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			ITreeBuilder builder = Context.GetTreeBuilder (project);
 			if (builder != null) {
 				if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
-					if (packagesOnly) {
+					if (packagesOnly && !AnyPackageUpdates (project)) {
 						var dependenciesNode = (DependenciesNode)builder.DataItem;
 						dependenciesNode.PackageDependencyCache.Refresh ();
 						UpdateNuGetFolderNode (builder, dependenciesNode);
@@ -108,6 +111,16 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Need to refresh all nodes, including the Dependencies folder node, if there are updates to ensure
+		/// the secondary label on the Dependencies folder is updated if a NuGet package is updated.
+		/// </summary>
+		bool AnyPackageUpdates (DotNetProject project)
+		{
+			var updatedPackages = PackageManagementServices.UpdatedPackagesInWorkspace.GetUpdatedPackages (new DotNetProjectProxy (project));
+			return updatedPackages.AnyPackages ();
 		}
 
 		void UpdateNuGetFolderNode (ITreeBuilder builder, DependenciesNode dependenciesNode)
@@ -133,6 +146,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				if (project.IsDotNetCoreProject ())
 					RefreshChildNodes (project, packagesOnly: false);
 			});
+		}
+
+		void UpdatePackagesAvailable (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
 		}
 	}
 }

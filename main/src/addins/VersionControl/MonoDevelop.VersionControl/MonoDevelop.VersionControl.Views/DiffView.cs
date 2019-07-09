@@ -1,4 +1,4 @@
-// 
+﻿// 
 // VersionControlView.cs
 //  
 // Author:
@@ -33,6 +33,8 @@ using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -40,7 +42,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	class DiffView : DocumentController, IDiffView, IUndoHandler, IClipboardHandler
+	class DiffView : DocumentController, IDiffView, IUndoHandler
 	{
 		DiffWidget widget;
 
@@ -126,17 +128,23 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void OnUnfocused ()
 		{
-			var textView = info.Controller.GetContent <ITextView> ();
-			if (textView != null) {
-				var pos = ComparisonWidget.OriginalEditor.Caret.Offset;
-				var snapshot = textView.TextSnapshot;
-				var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
-				textView.Caret.MoveTo (point);
+			try {
+				var textView = info.Controller.GetContent<ITextView> ();
+				if (textView != null) {
+					if (textView.IsClosed)
+						return;
+					var pos = ComparisonWidget.OriginalEditor.Caret.Offset;
+					var snapshot = textView.TextSnapshot;
+					var point = new SnapshotPoint (snapshot, Math.Max (0, Math.Min (snapshot.Length - 1, pos)));
+					textView.Caret.MoveTo (point);
 
-				int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
-				line = Math.Min (line, snapshot.LineCount);
-				var middleLine = snapshot.GetLineFromLineNumber (line);
-				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
+					int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
+					line = Math.Min (line, snapshot.LineCount);
+					var middleLine = snapshot.GetLineFromLineNumber (line);
+					textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
+				}
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
 			}
 		}
 
@@ -172,7 +180,8 @@ namespace MonoDevelop.VersionControl.Views
 		#endregion
 
 		#region IClipboardHandler implementation
-		void IClipboardHandler.Cut ()
+		[CommandHandler (EditCommands.Cut)]
+		protected void Cut ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -180,7 +189,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.ClipboardActions.Cut);
 		}
 
-		void IClipboardHandler.Copy ()
+		[CommandHandler (EditCommands.Copy)]
+		protected void Copy ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -188,7 +198,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.ClipboardActions.Copy);
 		}
 
-		void IClipboardHandler.Paste ()
+		[CommandHandler (EditCommands.Paste)]
+		protected void Paste ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -196,7 +207,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.ClipboardActions.Paste);
 		}
 
-		void IClipboardHandler.Delete ()
+		[CommandHandler (EditCommands.Delete)]
+		protected void Delete ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -208,7 +220,8 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		void IClipboardHandler.SelectAll ()
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void SelectAll ()
 		{
 			var editor = this.widget.FocusedEditor;
 			if (editor == null)
@@ -216,47 +229,28 @@ namespace MonoDevelop.VersionControl.Views
 			editor.RunAction (Mono.TextEditor.SelectionActions.SelectAll);
 		}
 
-		bool IClipboardHandler.EnableCut {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return editor.IsSomethingSelected && !editor.Document.IsReadOnly;
-			}
+		[CommandUpdateHandler (EditCommands.Cut)]
+		protected void OnUpdateCut (CommandInfo info)
+		{
+			var editor = this.widget.FocusedEditor;
+			info.Enabled = editor != null && editor.IsSomethingSelected && !editor.Document.IsReadOnly;
 		}
 
-		bool IClipboardHandler.EnableCopy {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return editor.IsSomethingSelected;
-			}
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo info)
+		{
+			var editor = this.widget.FocusedEditor;
+			info.Enabled = editor != null && editor.IsSomethingSelected;
 		}
 
-		bool IClipboardHandler.EnablePaste {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return !editor.Document.IsReadOnly;
-			}
+		[CommandUpdateHandler (EditCommands.Paste)]
+		[CommandUpdateHandler (EditCommands.Delete)]
+		protected void OnUpdatePasteDelete (CommandInfo info)
+		{
+			var editor = this.widget.FocusedEditor;
+			info.Enabled = editor != null && !editor.Document.IsReadOnly;
 		}
 
-		bool IClipboardHandler.EnableDelete {
-			get {
-				var editor = this.widget.FocusedEditor;
-				if (editor == null)
-					return false;
-				return !editor.Document.IsReadOnly;
-			}
-		}
-
-		bool IClipboardHandler.EnableSelectAll {
-			get {
-				return true;
-			}
-		}
 		#endregion
 	}
 }

@@ -98,6 +98,13 @@ namespace MonoDevelop.PackageManagement.Commands
 			return !MultipleSelectedNodes;
 		}
 
+		[CommandUpdateHandler (PackageReferenceNodeCommands.UpdatePackage)]
+		void CheckCanUpdatePackage (CommandInfo info)
+		{
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			info.Text = packageReferenceNode.GetUpdateLabel ();
+		}
+
 		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
 		public void UpdatePackage ()
 		{
@@ -133,14 +140,6 @@ namespace MonoDevelop.PackageManagement.Commands
 			} catch (Exception ex) {
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
-		}
-
-		[CommandUpdateHandler (PackageReferenceNodeCommands.ShowPackageVersion)]
-		public void UpdateShowPackageVersionItem (CommandInfo info)
-		{
-			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
-			info.Enabled = false;
-			info.Text = packageReferenceNode.GetPackageVersionLabel ();
 		}
 
 		[CommandUpdateHandler (PackageReferenceNodeCommands.ReinstallPackage)]

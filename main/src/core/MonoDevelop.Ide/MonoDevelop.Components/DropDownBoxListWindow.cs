@@ -92,6 +92,8 @@ namespace MonoDevelop.Components
 				var sel = list.Selection;
 				if (sel >= 0 && sel < DataProvider.IconCount) {
 					DataProvider.ActivateItem (sel);
+					// This is so parent window of dropdown regains focus
+					TransientFor?.Present ();
 					Destroy ();
 				}
 			};

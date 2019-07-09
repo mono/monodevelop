@@ -37,15 +37,17 @@ namespace MonoDevelop.Debugger
 		void TextBuffer_Changed (object sender, TextContentChangedEventArgs e)
 		{
 			foreach (var breakpoint in breakpoints.Values) {
-				var newSpan = breakpoint.TrackingSpan.GetSpan (e.After);
-				if (newSpan.IsEmpty) {
+				var span = breakpoint.TrackingSpan.GetSpan (e.After);
+
+				if (span.IsEmpty || string.IsNullOrWhiteSpace (span.GetText ())) {
 					DebuggingService.Breakpoints.Remove (breakpoint.Breakpoint);
 					continue;
 				}
-				var newLineNumber = e.After.GetLineFromPosition (newSpan.Start).LineNumber + 1;
-				if (breakpoint.Breakpoint.Line != newLineNumber) {
+
+				var newLineNumber = e.After.GetLineFromPosition (span.Start).LineNumber + 1;
+
+				if (breakpoint.Breakpoint.Line != newLineNumber)
 					DebuggingService.Breakpoints.UpdateBreakpointLine (breakpoint.Breakpoint, newLineNumber);
-				}
 			}
 		}
 
@@ -58,38 +60,55 @@ namespace MonoDevelop.Debugger
 
 		private Dictionary<Breakpoint, ManagerBreakpoint> breakpoints = new Dictionary<Breakpoint, ManagerBreakpoint> ();
 
-		private void OnBreakpointsChanged (object sender, EventArgs eventArgs)
+		private async void OnBreakpointsChanged (object sender, EventArgs eventArgs)
 		{
-			var snapshot = textBuffer.CurrentSnapshot;
 			var newBreakpoints = new Dictionary<Breakpoint, ManagerBreakpoint> ();
-			bool needsUpdate = false;
-			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (textDocument.FilePath)) {
-				if (breakpoint.Line > snapshot.LineCount)
-					continue;
+			var breakpointStore = DebuggingService.Breakpoints;
+			var snapshot = textBuffer.CurrentSnapshot;
+			var bps = new List<Breakpoint> ();
+			var needsUpdate = false;
+
+			lock (breakpointStore) {
+				foreach (var breakpoint in breakpointStore.GetBreakpointsAtFile (textDocument.FilePath)) {
+					if (breakpoint.Line > snapshot.LineCount)
+						continue;
+
+					bps.Add (breakpoint);
+				}
+			}
+
+			foreach (var breakpoint in bps) {
 				if (eventArgs is BreakpointEventArgs breakpointEventArgs && breakpointEventArgs.Breakpoint == breakpoint)
 					needsUpdate = true;
-				var newSpan = snapshot.GetLineFromLineNumber (breakpoint.Line - 1).Extent;
+
+				var line = snapshot.GetLineFromLineNumber (breakpoint.Line - 1);
+				var position = line.Start.Position + breakpoint.Column;
+				var span = await DebuggingService.GetBreakpointSpanAsync (textDocument, position);
+
 				if (breakpoints.TryGetValue (breakpoint, out var existingBreakpoint)) {
 					newBreakpoints.Add (breakpoint, existingBreakpoint);
-					if (existingBreakpoint.Span != newSpan.Span) {
-						// Update if anything was modifed
+					if (existingBreakpoint.Span != span) {
+						// Update if anything was modified
+						existingBreakpoint.Span = span;
 						needsUpdate = true;
-						existingBreakpoint.Span = newSpan.Span;
 					}
 				} else {
 					// Update if anything was added
-					needsUpdate = true;
-					newBreakpoints.Add (breakpoint, new ManagerBreakpoint () {
+					newBreakpoints.Add (breakpoint, new ManagerBreakpoint {
 						Breakpoint = breakpoint,
-						TrackingSpan = snapshot.CreateTrackingSpan (newSpan, SpanTrackingMode.EdgeExclusive),
-						Span = newSpan.Span
+						TrackingSpan = snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeExclusive),
+						Span = span
 					});
+					needsUpdate = true;
 				}
 			}
+
 			// Update if anything was removed
 			if (needsUpdate || breakpoints.Keys.Except (newBreakpoints.Keys).Any ())
 				needsUpdate = true;
+
 			breakpoints = newBreakpoints;
+
 			if (needsUpdate)
 				BreakpointsChanged?.Invoke (this, new SnapshotSpanEventArgs (new SnapshotSpan (snapshot, 0, snapshot.Length)));
 		}

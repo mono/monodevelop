@@ -625,7 +625,7 @@ namespace MonoDevelop.Projects
 			
 			if (s != null)
 				return new string[] { s };
-			return new string [0];
+			return Array.Empty<string> ();
 		}
 		/*
 		void AddRequiredPackages (List<string> result, SystemPackage fromPackage)

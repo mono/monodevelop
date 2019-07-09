@@ -64,7 +64,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return -1;
 				
-				return e1.Name.CompareTo (e2.Name);
+				return string.Compare (e1.Name, e2.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -87,12 +87,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			NamespaceData ns = (NamespaceData)dataObject;
-			bool publicOnly = Widget.PublicApiOnly;
-			foreach (var type in ns.Types) {
-				if (publicOnly && !type.isPublic)
-					continue;
-				ctx.AddChild (type.typeObject);
-			}
+
+			IEnumerable<object> result = ns.Types;
+			if (Widget.PublicApiOnly)
+				result = result.Where (x => NamespaceData.IsPublic (x));
+
+			ctx.AddChildren (result);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

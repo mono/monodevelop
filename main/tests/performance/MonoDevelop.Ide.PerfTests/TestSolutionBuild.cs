@@ -35,7 +35,6 @@ using MonoDevelop.Core.Instrumentation;
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture ()]
-	[Benchmark (Tolerance = 0.1)]
 	public class TestSolutionBuild : UITestBase
 	{
 		public override void SetUp ()
@@ -45,6 +44,7 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test ()]
+		[Benchmark (Tolerance = 0.30)]
 		public void TestBuild ()
 		{
 			OpenApplicationAndWait ();
@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.PerfTests
 
 			var t = Session.GetTimerDuration ("Ide.Shell.ProjectBuilt");
 
-			Benchmark.SetTime (t.TotalMilliseconds);
+			Benchmark.SetTime (t.TotalSeconds);
 		}
 	}
 }
