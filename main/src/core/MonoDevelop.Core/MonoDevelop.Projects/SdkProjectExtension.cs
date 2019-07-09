@@ -311,11 +311,39 @@ namespace MonoDevelop.Projects
 			ConfigurationSelector configuration,
 			SolutionItemRunConfiguration runConfiguration)
 		{
+			TargetFrameworkMoniker framework = Project.TargetFramework.Id;
 			if (Project.HasMultipleTargetFrameworks) {
 				var frameworkContext = context?.ExecutionTarget as TargetFrameworkExecutionTarget;
-				if (frameworkContext != null)
-					configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.FrameworkShortName);
+				if (frameworkContext != null) {
+					framework = frameworkContext.Framework;
+					if (!(configuration is DotNetProjectFrameworkConfigurationSelector))
+						configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.FrameworkShortName);
+				}
 			}
+
+			if (IsSupportedFramework (framework))
+				return OnExecute (monitor, context, configuration, framework, runConfiguration);
+
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		/// <summary>
+		/// Used by SdkProjectExtensions to indicate they support the target framework. Called to check if
+		/// an action, such as OnExecute should be called for a particular target framework in a multi-target
+		/// framework project.
+		/// </summary>
+		protected virtual bool IsSupportedFramework (TargetFrameworkMoniker framework)
+		{
+			return true;
+		}
+
+		protected internal virtual Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			TargetFrameworkMoniker framework,
+			SolutionItemRunConfiguration runConfiguration)
+		{
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
 		}
 	}

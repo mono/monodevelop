@@ -191,13 +191,23 @@ namespace MonoDevelop.DotNetCore
 			return outputDirectory.Combine (configuration.OutputAssembly + ".dll");
 		}
 
-		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
 		{
-			if (Project.GetTargetFramework (configuration).IsNetCoreApp () && DotNetCoreRuntime.IsMissing) {
+			return framework.IsNetStandardOrNetCoreApp ();
+		}
+
+		protected override Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			TargetFrameworkMoniker framework,
+			SolutionItemRunConfiguration runConfiguration)
+		{
+			if (DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
-			return base.OnExecute (monitor, context, configuration, runConfiguration);
+			return base.OnExecute (monitor, context, configuration, framework, runConfiguration);
 		}
 
 		Task ShowCannotExecuteDotNetCoreApplicationDialog ()
