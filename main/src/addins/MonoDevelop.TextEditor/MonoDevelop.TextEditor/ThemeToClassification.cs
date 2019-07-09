@@ -153,7 +153,21 @@ namespace MonoDevelop.TextEditor
 			("add word", ""),
 			("bracehighlight", ""),
 			("BraceCompletionClosingBrace", ""),
-			("outlining.collapsehintadornment.background", "" )
+			("outlining.collapsehintadornment.background", "" ),
+			("CSS Comment", "CSS Comment"),
+			("CSS Property Name", "CSS Property Name"),
+			("CSS Property Value", "CSS Property Value"),
+			("CSS Selector", "CSS Selector"),
+			("CSS String Value", "CSS String Value"),
+			("CSS Keyword", "CSS Keyword"),
+			("HTML Attribute Name", "HTML Attribute Name"),
+			("HTML Attribute Value", "HTML Attribute Value"),
+			("HTML Comment", "HTML Comment"),
+			("HTML Element Name", "HTML Element Name"),
+			("HTML Entity", "HTML Entity"),
+			("HTML Operator", "HTML Operator"),
+			("HTML Server-Side Script", "HTML Server-Side Script"),
+			("HTML Tag Delimiter", "HTML Tag Delimiter"),
 		};
 
 		void UpdateEditorFormatMap (object sender, EventArgs args)
