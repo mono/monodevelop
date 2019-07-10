@@ -515,17 +515,32 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 
+					HashSet<ProjectId> oldProjectIds = null;
+					if (oldProject != null) {
+						oldProjectIds = ws.GetProjectIds (oldProject).ToHashSet ();
+					}
+
 					foreach (string framework in ws.GetFrameworks (project)) {
 						var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject, framework);
 						if (oldProject != null) {
-							projectInfo = ws.AddVirtualDocuments (projectInfo);
-							ws.OnProjectReloaded (projectInfo);
-						}
-						else {
+							if (oldProjectIds.Remove (projectInfo.Id)) {
+								projectInfo = ws.AddVirtualDocuments (projectInfo);
+								ws.OnProjectReloaded (projectInfo);
+							} else {
+								ws.OnProjectAdded (projectInfo);
+							}
+						} else {
 							ws.OnProjectAdded (projectInfo);
 						}
-						ws.ReloadModifiedProject (project);
 					}
+
+					if (oldProjectIds != null) {
+						foreach (var removedProjectId in oldProjectIds) {
+							ws.OnProjectRemoved (removedProjectId);
+						}
+					}
+
+					ws.ReloadModifiedProject (project);
 					Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore ();
 				}
 			} catch (Exception ex) {
