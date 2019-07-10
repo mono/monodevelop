@@ -45,7 +45,7 @@ namespace MonoDevelop.MacIntegration
 		bool CenterToParent { get; set; }
 	}
 
-	class OpenPanel : NSOpenPanel, ICentrablePanel
+	sealed class OpenPanel : NSOpenPanel, ICentrablePanel
 	{
 	    public bool CenterToParent { get; set; }
 
@@ -53,15 +53,7 @@ namespace MonoDevelop.MacIntegration
 		{
 		}
 
-		public OpenPanel (NSCoder coder) : base (coder)
-		{
-		}
-
-		protected OpenPanel (NSObjectFlag t) : base (t)
-		{
-		}
-
-		protected internal OpenPanel (IntPtr handle) : base (handle)
+		internal OpenPanel (IntPtr handle) : base (handle)
 		{
 		}
 
