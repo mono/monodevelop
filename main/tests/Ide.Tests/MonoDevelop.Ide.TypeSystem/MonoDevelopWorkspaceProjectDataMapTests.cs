@@ -71,16 +71,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			using (var workspace = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
-				var pid = map.GetId (project);
-				Assert.IsNull (pid);
-
-				pid = map.GetOrCreateId (project, null, "netcoreapp1.1");
+				var pid = map.GetOrCreateId (project, null, "netcoreapp1.1");
 				Assert.IsNotNull (pid);
 
 				var pid2 = map.GetOrCreateId (project, null, "netstandard1.0");
 				Assert.IsNotNull (pid2);
 
 				Assert.AreNotEqual (pid, pid2);
+
+				// Returns first project for first framework
+				var defaultPid = map.GetId (project);
+				Assert.IsNotNull (defaultPid);
+				Assert.AreEqual ("multi-target (netcoreapp1.1)", defaultPid.DebugName);
+				Assert.AreEqual (defaultPid, pid);
 
 				var pids = map.GetIds (project);
 				Assert.AreEqual (2, pids.Length);

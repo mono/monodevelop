@@ -53,7 +53,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (gate) {
 					if (projectIdMap.TryGetValue (p, out var frameworkMappings)) {
 						var map = frameworkMappings.FirstOrDefault (f => f.Framework == framework);
-						return map?.ProjectId;
+						if (map != null)
+							return map.ProjectId;
+						if (framework == null) {
+							// Ensure that code that is not multi-framework aware finds a ProjectId.
+							map = frameworkMappings.FirstOrDefault ();
+							return map?.ProjectId;
+						}
 					}
 					return null;
 				}

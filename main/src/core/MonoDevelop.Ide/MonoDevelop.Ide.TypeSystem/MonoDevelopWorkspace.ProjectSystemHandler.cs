@@ -521,7 +521,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 				}
-				var projectId = projectMap.GetId (p);
 				return Tuple.Create (documents, additionalDocuments);
 			}
 
