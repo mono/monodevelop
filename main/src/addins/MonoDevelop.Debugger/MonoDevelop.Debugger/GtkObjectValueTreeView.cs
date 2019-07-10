@@ -62,17 +62,9 @@ namespace MonoDevelop.Debugger
 		readonly Dictionary<IObjectValueNode, TreeRowReference> allNodes = new Dictionary<IObjectValueNode, TreeRowReference> ();
 
 		// move this lot to the controller...
-		readonly List<ObjectValue> enumerableLoading = new List<ObjectValue> ();
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 
-		// contains a dictionary of paths and display values to show values that have changed
-		// it also appears to get a list of nodes that are expanded
-		readonly Dictionary<string, string> oldValues = new Dictionary<string, string> ();
-
-		readonly List<ObjectValue> values = new List<ObjectValue> ();
-
-
-// keep this lot....
+		// keep this lot....
 		readonly Xwt.Drawing.Image noLiveIcon;
 		readonly Xwt.Drawing.Image liveIcon;
 
@@ -309,25 +301,11 @@ namespace MonoDevelop.Debugger
 			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
 			controller.NodeExpanded -= Controller_NodeExpanded;
 
-			values.Clear ();
-			Frame = null;
-
 			disposed = true;
 			cancellationTokenSource.Cancel ();
 
 			base.OnDestroyed ();
 		}
-
-// TODO: remove this
-public StackFrame Frame {
-	get {
-		return frame;
-	}
-	set {
-		frame = value;
-		Update ();
-	}
-}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
@@ -556,24 +534,23 @@ public StackFrame Frame {
 			}
 		}
 
-		// NOT SURE
-		public void SaveState ()
+		void SaveState ()
 		{
 			state.Save ();
 		}
 
-		public void LoadState ()
+		void LoadState ()
 		{
 			restoringState = true;
 			state.Load ();
 			restoringState = false;
 		}
 
-		public void Update ()
-		{
-			//cachedValues.Clear ();
-			Refresh (true);
-		}
+		//public void Update ()
+		//{
+		//	//cachedValues.Clear ();
+		//	Refresh (true);
+		//}
 
 		void Refresh (bool resetScrollPosition)
 		{
@@ -625,11 +602,6 @@ public StackFrame Frame {
 			}
 
 			return result;
-		}
-
-		public void Refresh ()
-		{
-			Refresh (true);
 		}
 
 		/// <summary>
@@ -709,9 +681,6 @@ public StackFrame Frame {
 				valPath = "/" + name;
 			else
 				valPath = GetIterPath (parent) + "/" + name;
-
-			string oldValue;
-			oldValues.TryGetValue (valPath, out oldValue);
 
 			if (val.IsUnknown) {
 				if (frame != null) {
@@ -1587,7 +1556,7 @@ public StackFrame Frame {
 			return name + expression;
 		}
 
-		public void CreatePinnedWatch (TreeIter it)
+		void CreatePinnedWatch (TreeIter it)
 		{
 			var expression = GetFullExpression (it);
 
@@ -2021,7 +1990,6 @@ public StackFrame Frame {
 		#region Cell renderers
 		class CellRendererTextWithIcon : CellRendererText
 		{
-
 			IconId icon;
 
 			[GLib.Property ("icon")]
