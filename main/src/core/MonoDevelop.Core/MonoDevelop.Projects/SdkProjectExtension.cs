@@ -346,5 +346,25 @@ namespace MonoDevelop.Projects
 		{
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
 		}
+
+		protected internal override ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			ProjectRunConfiguration runConfiguration)
+		{
+			if (IsSupportedFramework (configuration.TargetFramework.Id))
+				return OnCreateExecutionCommand (configSel, configuration, configuration.TargetFramework.Id, runConfiguration);
+
+			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+		}
+
+		protected internal virtual ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			TargetFrameworkMoniker framework,
+			ProjectRunConfiguration runConfiguration)
+		{
+			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+		}
 	}
 }

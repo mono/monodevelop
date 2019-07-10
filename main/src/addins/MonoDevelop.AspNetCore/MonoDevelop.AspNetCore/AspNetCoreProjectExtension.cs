@@ -55,14 +55,22 @@ namespace MonoDevelop.AspNetCore
 			return DotNetCoreSupportsObject (item) && IsWebProject ((DotNetProject)item);
 		}
 
-		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
 		{
-			if (configuration.TargetFramework.IsNetCoreApp ()) {
-				var result = CreateAspNetCoreExecutionCommand (configSel, configuration, runConfiguration);
-				if (result != null)
-					return result;
-			}
-			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+			return framework.IsNetCoreApp ();
+		}
+
+		protected override ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			TargetFrameworkMoniker framework,
+			ProjectRunConfiguration runConfiguration)
+		{
+			var result = CreateAspNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			if (result != null)
+				return result;
+
+			return base.OnCreateExecutionCommand (configSel, configuration, framework, runConfiguration);
 		}
 
 		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)

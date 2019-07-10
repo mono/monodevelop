@@ -132,12 +132,13 @@ namespace MonoDevelop.DotNetCore
 			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
 		}
 
-		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		protected override ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			TargetFrameworkMoniker framework,
+			ProjectRunConfiguration runConfiguration)
 		{
-			if (configuration.TargetFramework.IsNetCoreApp ()) {
-				return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
-			}
-			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+			return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
 		}
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
