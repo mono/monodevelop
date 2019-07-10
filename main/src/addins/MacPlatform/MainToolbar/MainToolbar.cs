@@ -70,11 +70,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void AttachToolbarEvents (SearchBar bar)
 		{
-			bar.Changed += (o, e) => {
-				SearchEntryChanged?.Invoke (o, e);
+			bar.PerformCommand += (o, e) => {
+				PerformCommand?.Invoke (o, e);
 			};
 			bar.KeyPressed += (o, e) => {
-				SearchEntryKeyPressed?.Invoke (o, e);
+				SearchEntryChanged?.Invoke (o, e);
 			};
 			bar.LostFocus += (o, e) => {
 				SearchEntryLostFocus?.Invoke (o, e);
@@ -209,6 +209,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public event EventHandler RunButtonClicked;
 		public event EventHandler SearchEntryChanged;
 		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
+		public event EventHandler<SearchEntryCommandArgs> PerformCommand;
 		public event EventHandler SearchEntryLostFocus;
 
 		#pragma warning disable 0067

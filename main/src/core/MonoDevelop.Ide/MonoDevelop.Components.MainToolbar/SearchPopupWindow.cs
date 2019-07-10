@@ -81,6 +81,11 @@ namespace MonoDevelop.Components.MainToolbar
 			Content.OpenFile ();
 		}
 
+		internal bool ProcessCommand (SearchPopupCommand command)
+		{
+			return Content.ProcessCommand (command);
+		}
+
 		internal bool ProcessKey (Key key, ModifierKeys state)
 		{
 			return Content.ProcessKey (key, state);
@@ -779,6 +784,31 @@ namespace MonoDevelop.Components.MainToolbar
 			);
 			ShowTooltip ();
 			QueueDraw ();
+		}
+
+		internal bool ProcessCommand (SearchPopupCommand command)
+		{
+			switch (command) {
+			case SearchPopupCommand.PreviousItem:
+				SelectItemUp ();
+				return true;
+			case SearchPopupCommand.NextItem:
+				SelectItemDown ();
+				return true;
+			case SearchPopupCommand.NextCategory:
+				SelectNextCategory ();
+				return true;
+			case SearchPopupCommand.PreviousCategory:
+				SelectPrevCategory ();
+				return true;
+			case SearchPopupCommand.Activate:
+				OnItemActivated (EventArgs.Empty);
+				return true;
+
+			default:
+				break;
+			}
+			return false;
 		}
 
 		internal bool ProcessKey (Xwt.Key key, Xwt.ModifierKeys state)
