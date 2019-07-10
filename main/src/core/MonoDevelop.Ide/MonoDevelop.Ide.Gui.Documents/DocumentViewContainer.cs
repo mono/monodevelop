@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			var result = base.GetActiveControllerHierarchy ();
 			if (ActiveView != null)
-				result = ActiveView.GetActiveControllerHierarchy ().Concat (result);
+				result = result.Concat (ActiveView.GetActiveControllerHierarchy ());
 			return result;
 		}
 

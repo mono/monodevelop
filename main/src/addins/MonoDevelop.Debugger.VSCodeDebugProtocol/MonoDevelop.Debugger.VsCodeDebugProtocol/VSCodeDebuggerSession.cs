@@ -173,7 +173,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnNextInstruction ()
 		{
-			protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
+			protocolClient.SendRequestSync (new NextRequest (currentThreadId));
 		}
 
 		protected override void OnNextLine ()
@@ -430,9 +430,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					});
 					break;
 				case "process":
-						var processEvent = (ProcessEvent)obj.Body;
-						processInfo.Add(new ProcessInfo(processEvent.SystemProcessId ?? 1, processEvent.Name));
-						OnStarted();
+					var processEvent = (ProcessEvent)obj.Body;
+					processInfo.Add(new ProcessInfo(processEvent.SystemProcessId ?? 1, processEvent.Name));
+					OnStarted();
 					break;
 				case "output":
 					var outputBody = (OutputEvent)obj.Body;

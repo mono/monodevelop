@@ -302,11 +302,9 @@ namespace MonoDevelop.Projects
 					}
 				}
 
-				var stopper = monitor.CancellationToken.Register (oper.Cancel);
-
-				await oper.Task;
-
-				stopper.Dispose ();
+				using (var stopper = monitor.CancellationToken.Register (oper.Cancel)) {
+					await oper.Task;
+				}
 
 				if (oper.ExitCode != 0) {
 					monitor.ReportError (GettextCatalog.GetString ("Custom command failed (exit code: {0})", oper.ExitCode), null);

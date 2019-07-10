@@ -449,9 +449,7 @@ namespace MonoDevelop.Projects
 		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
 		{
 			return BindTask<TargetEvaluationResult> (async cancelToken => {
-				var cancelSource = new CancellationTokenSource ();
-				cancelToken.Register (() => cancelSource.Cancel ());
-
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
 					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
 				}
@@ -474,12 +472,10 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (ImmutableArray<FilePath>.Empty);
 
-			return BindTask<ImmutableArray<FilePath>> (cancelToken => {
-				var cancelSource = new CancellationTokenSource ();
-				cancelToken.Register (() => cancelSource.Cancel ());
-
+			return BindTask<ImmutableArray<FilePath>> (async cancelToken => {
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return GetAnalyzerFilesAsync (monitor, configuration);
+					return await GetAnalyzerFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -500,12 +496,10 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (ImmutableArray<ProjectFile>.Empty);
 
-			return BindTask<ImmutableArray<ProjectFile>> (cancelToken => {
-				var cancelSource = new CancellationTokenSource ();
-				cancelToken.Register (() => cancelSource.Cancel ());
-
+			return BindTask<ImmutableArray<ProjectFile>> (async cancelToken => {
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return GetSourceFilesAsync (monitor, configuration);
+					return await GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}

@@ -913,16 +913,15 @@ namespace MonoDevelop.Projects
 
 		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration)
 		{
-			return BindTask (async ct => {
-				return await ProjectExtension.OnGetReferences (configuration, ct);
-			});
+			return BindTask (ct => ProjectExtension.OnGetReferences (configuration, ct));
 		}
 
 		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			return BindTask (ct => {
-				var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, token);
-				return ProjectExtension.OnGetReferences (configuration, tokenSource.Token);
+			return BindTask (async ct => {
+				using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, token)) {
+					return await ProjectExtension.OnGetReferences (configuration, tokenSource.Token).ConfigureAwait (false);
+				}
 			});
 		}
 
@@ -1103,8 +1102,9 @@ namespace MonoDevelop.Projects
 		public Task<IEnumerable<PackageDependency>> GetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			return BindTask<IEnumerable<PackageDependency>> (async ct => {
-				var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, cancellationToken);
-				return await OnGetPackageDependencies (configuration, tokenSource.Token);
+				using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, cancellationToken)) {
+					return await OnGetPackageDependencies (configuration, tokenSource.Token);
+				}
 			});
 		}
 

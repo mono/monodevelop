@@ -737,6 +737,9 @@
     <Compile Include="MonoDevelop.Projects.FileNesting\FileNestingService.cs" />
     <Compile Include="MonoDevelop.Projects.FileNesting\NestingRulesProvider.cs" />
     <Compile Include="MonoDevelop.Projects.FileNesting\NestingRule.cs" />
+    <Compile Include="CoreExtensions.IEnumerable.cs" />
+    <Compile Include="CoreExtensions.Memoize.cs" />
+    <Compile Include="CoreExtensions.EventHandlers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

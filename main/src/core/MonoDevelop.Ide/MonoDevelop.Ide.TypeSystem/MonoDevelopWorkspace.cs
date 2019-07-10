@@ -436,14 +436,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.ReloadModifiedProject (project);
 		}
 
-		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
+		async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+			using (var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token)) {
+				return await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, cts.Token);
+			}
 		}
 
-		Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
+		async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolutionFromCache (CancellationToken cancellationToken)
 		{
-			return ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+			using (var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token)) {
+				return await ProjectHandler.CreateSolutionInfoFromCache (MonoDevelopSolution, cts.Token);
+			}
 		}
 
 		internal async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> LoadSolution (CancellationToken cancellationToken)
@@ -477,7 +481,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
-				var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
+				using var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
 
 				await TypeSystemService.SafeFreezeLoad ().ConfigureAwait (false);
 				if (cancellationToken.IsCancellationRequested)

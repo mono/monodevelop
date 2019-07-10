@@ -192,9 +192,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			markup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, searchColor), trimStart, trimEnd, tabSize);
 			selectedMarkup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor), trimStart, trimEnd, tabSize);
 
-			var markupTimeoutSource = new CancellationTokenSource (150);
-			var newMarkup = await doc.GetMarkupAsync (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango), markupTimeoutSource.Token).ConfigureAwait (false);
-			newMarkup = widget.AdjustColors (newMarkup);
+			string newMarkup;
+			using (var markupTimeoutSource = new CancellationTokenSource (150)) {
+				newMarkup = await doc.GetMarkupAsync (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango), markupTimeoutSource.Token).ConfigureAwait (false);
+				newMarkup = widget.AdjustColors (newMarkup);
+			}
 
 			try {
 				double delta = Math.Abs (b1 - b2);
