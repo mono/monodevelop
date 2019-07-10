@@ -66,10 +66,20 @@
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\UrlTagger\UrlTagger.csproj" Private="true" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DragDrop\DragDropImpl.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ChangeTagger\ChangeTagger.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\TextMate\Core\Core.csproj" Private="True" />
     <Reference Include="MonoDevelop.DesignerSupport">
       <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\md-addins\external\vs-editor-core\bin\TextMate\Onig\libonig.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\..\..\md-addins\external\vs-editor-core\src\TextMate\VSWindows\Setup\**\*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />
@@ -90,6 +100,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.UrlTagger.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TextMate.Core.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="icons\vs-find-replace-close-16.png" />
@@ -135,4 +146,10 @@
     <EmbeddedResource Include="icons\go-down-16.png" />
     <EmbeddedResource Include="icons\go-down-16%402x.png" />
   </ItemGroup>
+  <Target Name="BuildTextMate" BeforeTargets="Compile">
+    <MSBuild Projects="$(VSEditorCoreDirectory)src\TextMate\TMRegEx\TMRegEx.proj" Targets="Build" Properties="Configuration=$(Configuration)" />
+  </Target>
+  <Target Name="CleanTextMate" BeforeTargets="Clean">
+    <MSBuild Projects="$(VSEditorCoreDirectory)src\TextMate\TMRegEx\TMRegEx.proj" Targets="Clean" Properties="Configuration=$(Configuration)" />
+  </Target>
 </Project>
