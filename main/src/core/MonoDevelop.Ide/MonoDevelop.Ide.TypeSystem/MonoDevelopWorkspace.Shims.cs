@@ -40,6 +40,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 			=> ProjectMap.GetId (project);
 
+		internal ProjectId[] GetProjectIds (MonoDevelop.Projects.Project project)
+			=> ProjectMap.GetIds (project);
+
 		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
 			=> GetMonoProject (project.Id);
 

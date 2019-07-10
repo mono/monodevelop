@@ -59,6 +59,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			internal ProjectId[] GetIds (MonoDevelop.Projects.Project p)
+			{
+				lock (gate) {
+					if (projectIdMap.TryGetValue (p, out var frameworkMappings))
+						return frameworkMappings.Select (f => f.ProjectId).ToArray ();
+					return null;
+				}
+			}
+
 			internal ProjectId GetOrCreateId (MonoDevelop.Projects.Project p, MonoDevelop.Projects.Project oldProject, string framework = null)
 			{
 				lock (gate) {

@@ -199,6 +199,42 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		[Test]
+		public async Task MultiTargetFramework_RemoveProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("multi-target-netframework", "multi-target.sln");
+
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				var project = sol.GetAllProjects ().Single ();
+
+				var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+				var projects = ws.CurrentSolution.Projects.ToArray ();
+
+				var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net472)");
+				var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+
+				// Should be two projects - one for each target framework.
+				Assert.AreEqual (2, projectIds.Length);
+				Assert.AreEqual (2, projects.Length);
+
+				Assert.IsNotNull (netframeworkProject);
+				Assert.IsNotNull (netstandardProject);
+
+				sol.RootFolder.Items.Remove (project);
+				await sol.SaveAsync (Util.GetMonitor ());
+
+				projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+				projects = ws.CurrentSolution.Projects.ToArray ();
+
+				Assert.AreEqual (0, projectIds.Length);
+				Assert.AreEqual (0, projects.Length);
+			}
+		}
+
+		[Test]
 		public async Task ProjectReference ()
 		{
 			FilePath solFile = Util.GetSampleProject ("netstandard-project", "NetStandardTest.sln");

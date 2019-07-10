@@ -82,6 +82,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				Assert.AreNotEqual (pid, pid2);
 
+				var pids = map.GetIds (project);
+				Assert.AreEqual (2, pids.Length);
+				Assert.That (pids, Contains.Item (pid));
+				Assert.That (pids, Contains.Item (pid2));
+
 				var projectInMap = map.GetMonoProject (pid);
 				Assert.AreSame (project, projectInMap);
 

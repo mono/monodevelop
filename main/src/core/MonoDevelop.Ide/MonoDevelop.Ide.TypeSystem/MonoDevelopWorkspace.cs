@@ -1468,8 +1468,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
-			var id = GetProjectId (project);
-			if (id != null) {
+			foreach (var id in GetProjectIds (project)) {
 				OnProjectRemoved (id);
 			}
 		}
