@@ -40,6 +40,7 @@ using MonoDevelop.Projects;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.CustomTools
 			static void DoUpdate (object sender, ProjectFileEventArgs args)
 			{
 				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, e.Project, false).Ignore ();
+					UpdateAsync (e.ProjectFile, e.Project, false).Ignore ();
 			}
 		}
 		
@@ -255,7 +256,12 @@ namespace MonoDevelop.Ide.CustomTools
 
 		static WeakReference<Pad> monitorPad;
 
-		public static async Task Update (ProjectFile file, Project project, bool force)
+		[Obsolete("Use UpdateAsync")]
+		[EditorBrowsable (EditorBrowsableState.Advanced)]
+		public static void Update (ProjectFile file, Project project, bool force)
+			 => UpdateAsync (file, project, force).Ignore ();
+
+		public static async Task UpdateAsync (ProjectFile file, Project project, bool force)
 		{
 			SingleProjectFileCustomTool tool;
 			ProjectFile genFile;
