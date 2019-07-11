@@ -313,6 +313,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		static readonly IntPtr selSetAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("setAccessibilityServesAsTitleForUIElements:");
 		static readonly IntPtr selAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("accessibilityServesAsTitleForUIElements:");
+		static readonly Selector selAccessibilityServesAsTitleForUIElements = new Selector ("accessibilityServesAsTitleForUIElements:");
+
 		public static void SetTitleFor (this Atk.Object o, params Atk.Object [] objects)
 		{
 			var nsa = GetNSAccessibilityElement (o);
@@ -356,6 +358,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			var nsa = GetNSAccessibilityElement (o);
 
 			if (nsa == null || titleNsa == null) {
+				return;
+			}
+
+			// bug #940756 suggests that some elements do not respond to this selector
+			// so check before sending so it doesn't throw an ObjC exception
+			if (!((NSObject)titleNsa).RespondsToSelector (selAccessibilityServesAsTitleForUIElements)) {
 				return;
 			}
 
