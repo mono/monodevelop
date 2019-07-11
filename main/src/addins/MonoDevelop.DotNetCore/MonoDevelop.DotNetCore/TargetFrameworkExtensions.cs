@@ -61,7 +61,7 @@ namespace MonoDevelop.DotNetCore
 		public static bool IsLowerThanNetStandard16 (this TargetFramework framework)
 		{
 			if (DotNetCoreVersion.TryParse (framework.Id.Version, out DotNetCoreVersion version)) {
-				return version < new DotNetCoreVersion (1, 6, 0);
+				return version.Major == 1 && version.Minor < 6;
 			}
 
 			return false;
