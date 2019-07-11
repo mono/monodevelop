@@ -27,5 +27,5 @@ NUGET
       System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
     System.ValueTuple (4.5)
   remote: https://www.myget.org/F/fantomas/api/v3/index.json
-    Fantomas (3.0.0-alpha-389)
+    Fantomas (3.0.0-alpha-394)
       FSharp.Compiler.Service (>= 28.0)
