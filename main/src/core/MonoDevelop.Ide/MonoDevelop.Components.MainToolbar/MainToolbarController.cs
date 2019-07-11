@@ -77,6 +77,7 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchEntryChanged += HandleSearchEntryChanged;
 			ToolbarView.SearchEntryActivated += HandleSearchEntryActivated;
 			ToolbarView.SearchEntryKeyPressed += HandleSearchEntryKeyPressed;
+			ToolbarView.PerformCommand += HandleSearchEntryCommand;
 			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
 			ToolbarView.SearchEntryLostFocus += (o, e) => {
 				ToolbarView.SearchText = "";
@@ -741,6 +742,21 @@ namespace MonoDevelop.Components.MainToolbar
 				popup.OpenFile ();
 		}
 
+		void HandleSearchEntryCommand (object sender, SearchEntryCommandArgs args)
+		{
+			if (args.Command == SearchPopupCommand.Cancel) {
+				DestroyPopup ();
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null)
+					doc.Select ();
+				return;
+			}
+
+			if (popup != null) {
+				args.Handled = popup.ProcessCommand (args.Command);
+			}
+		}
+
 		void HandleSearchEntryKeyPressed (object sender, Xwt.KeyEventArgs e)
 		{
 			if (e.Key == Xwt.Key.Escape) {
@@ -1179,6 +1195,16 @@ namespace MonoDevelop.Components.MainToolbar
 			public string DisplayString { get; private set; }
 			public string Category { get; set; }
 			public event EventHandler Activated;
+		}
+	}
+
+	public class SearchEntryCommandArgs : HandledEventArgs
+	{
+		public SearchPopupCommand Command { get; private set; }
+
+		public SearchEntryCommandArgs (SearchPopupCommand command)
+		{
+			Command = command;
 		}
 	}
 }

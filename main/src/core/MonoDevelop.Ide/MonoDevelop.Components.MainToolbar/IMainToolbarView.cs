@@ -39,6 +39,16 @@ namespace MonoDevelop.Components.MainToolbar
 		Stop
 	}
 
+	public enum SearchPopupCommand
+	{
+		PreviousItem,
+		NextItem,
+		PreviousCategory,
+		NextCategory,
+		Cancel,
+		Activate
+	};
+
 	/// <summary>
 	/// Event arguments which specify if the event succeeded in at least one handler.
 	/// </summary>
@@ -197,6 +207,7 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Occurs when a key is pressed in the search entry.
 		/// </summary>
 		event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
+		event EventHandler<SearchEntryCommandArgs> PerformCommand;
 
 		/// <summary>
 		/// Occurs when the search entry is resized.
