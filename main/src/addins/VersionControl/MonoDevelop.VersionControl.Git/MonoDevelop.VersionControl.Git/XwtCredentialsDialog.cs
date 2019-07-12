@@ -31,40 +31,78 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Xwt;
 using MonoDevelop.Ide;
+using Xwt.Drawing;
 
 namespace MonoDevelop.VersionControl.Git
 {
+	internal static class Styles
+	{
+		public static Color ErrorForegroundColor { get; internal set; }
+		public static int FontSize { get; internal set; }
+		public static int ErrorFontSize { get; internal set; }
+		public static int DefaultlLabelWidth { get; internal set; }
+		public static int InputContainerMargin { get; internal set; }
+		public static int InputContainerSpacing { get; internal set; }
+
+		static Styles ()
+		{
+			LoadStyles ();
+			Ide.Gui.Styles.Changed += (o, e) => LoadStyles ();
+		}
+
+		public static void LoadStyles ()
+		{
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
+				ErrorForegroundColor = Color.FromName ("#FF3B30");
+			} else {
+				ErrorForegroundColor = Color.FromName ("#FF453A");
+			}
+
+			FontSize = 12;
+			ErrorFontSize = 10;
+			DefaultlLabelWidth = 60;
+			InputContainerMargin = 120;
+			InputContainerSpacing = 8;
+		}
+	}
+
 	public class XwtCredentialsDialog : Xwt.Dialog
 	{
-		internal const int DefaultlLabelWidth = 100;
-		internal const int InputContainerContainerSpacing = 10;
+		readonly Label credentialsLabel;
+		readonly Label errorLabel;
 		readonly DialogButton okButton;
 
 		readonly ICredentialsWidget credentialsWidget;
 
 		const string credentialMarkupFormat = "<b>{0}</b>";
 
-		public XwtCredentialsDialog (string uri, SupportedCredentialTypes supportedCredential, Credentials credentials)
+		public XwtCredentialsDialog (string uri, SupportedCredentialTypes supportedCredential, Credentials credentials, bool hasError)
 		{
-			Title = GettextCatalog.GetString ("Git Credentials");
+			Title = GettextCatalog.GetString ("Sign In to Repository");
 			Resizable = false;
 
-			Width = 500;
+			Width = 600;
+			Padding = new WidgetSpacing (20, 24, 20, 20);
 
 			var mainContainer = new VBox ();
+
 			Content = mainContainer;
 
-			//Credentials
-			var credentialsLabel = new Label (GettextCatalog.GetString ("Credentials required for the repository:")) {
+			// Credentials
+			credentialsLabel = new Label (GettextCatalog.GetString ("Enter credentials for")) {
+				Font = Font.FromName (Ide.Gui.Styles.DefaultFontName).WithSize (Styles.FontSize),
 				Wrap = WrapMode.Word
 			};
 			mainContainer.PackStart (credentialsLabel);
 
 			var credentialValue = new Label {
+				Font = Font.FromName (Ide.Gui.Styles.DefaultFontName).WithSize (Styles.FontSize),
 				Markup = string.Format (credentialMarkupFormat, uri),
-				Wrap = WrapMode.Word
+				TooltipText = uri,
+				WidthRequest = 560,
+				Ellipsize = EllipsizeMode.End
 			};
-			mainContainer.PackStart (credentialValue);
+			mainContainer.PackStart (credentialValue, marginTop: -6);
 
 			if (supportedCredential.HasFlag (SupportedCredentialTypes.UsernamePassword))
 				credentialsWidget = new UserPasswordCredentialsWidget (credentials as UsernamePasswordCredentials);
@@ -72,14 +110,49 @@ namespace MonoDevelop.VersionControl.Git
 				credentialsWidget = new SshCredentialsWidget (credentials as SshUserKeyCredentials);
 
 			credentialsWidget.CredentialsChanged += OnCredentialsChanged;
-			mainContainer.PackStart (credentialsWidget.Widget, marginTop: InputContainerContainerSpacing);
+
+			mainContainer.PackStart (credentialsWidget.Widget, marginLeft: Styles.InputContainerMargin, marginTop: 20, marginRight: Styles.InputContainerMargin - 20);
+
+			// Error
+			errorLabel = new Label () {
+				Font = Font.FromName (Ide.Gui.Styles.DefaultFontName).WithSize (Styles.ErrorFontSize),
+				Margin = new WidgetSpacing (192, 0, 100, 0),
+				Visible = false,
+				Wrap = WrapMode.Word,
+				TextAlignment = Alignment.Start
+			};
+
+			if (supportedCredential.HasFlag (SupportedCredentialTypes.Ssh))
+				errorLabel.MarginLeft += 6;
+
+			mainContainer.PackStart (errorLabel);
 
 			//Buttons
 			Buttons.Add (new DialogButton (Command.Cancel));
-			Buttons.Add (okButton = new DialogButton (Command.Ok));
+			okButton = new DialogButton (Command.Ok) {
+				Label = GettextCatalog.GetString ("Sign In")
+			};
+			Buttons.Add (okButton);
 			DefaultCommand = Command.Ok;
 
 			okButton.Sensitive = credentialsWidget.CredentialsAreValid;
+
+			UpdateStatus (supportedCredential, hasError);
+		}
+
+		void UpdateStatus (SupportedCredentialTypes supportedCredential, bool hasError)
+		{
+			if (hasError) {
+				string errorMessage = GettextCatalog.GetString ("The credentials you entered weren't recognized. Please enter a valid username and password.");
+				if (supportedCredential.HasFlag (SupportedCredentialTypes.Ssh))
+					errorMessage = GettextCatalog.GetString ("The credentials you entered weren't recognized. Please enter a valid key.");
+
+				errorLabel.Markup = "<span color='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + errorMessage + "</span>";
+				errorLabel.Show ();
+				okButton.Label = GettextCatalog.GetString ("Retry");
+				okButton.Sensitive = false;
+			} else
+				errorLabel.Hide ();
 		}
 
 		void OnCredentialsChanged (object sender, EventArgs e)
@@ -87,13 +160,13 @@ namespace MonoDevelop.VersionControl.Git
 			okButton.Sensitive = credentialsWidget.CredentialsAreValid;
 		}
 
-		public static Task<bool> Run (string url, SupportedCredentialTypes types, Credentials cred, Components.Window parentWindow = null)
+		public static Task<bool> Run (string url, SupportedCredentialTypes types, Credentials cred, Components.Window parentWindow = null, bool hasError = false)
 		{
 			return Runtime.RunInMainThread (() => {
 				var engine = Platform.IsMac ? Toolkit.NativeEngine : Toolkit.CurrentEngine;
 				var response = false;
 				engine.Invoke (() => {
-					using (var xwtDialog = new XwtCredentialsDialog (url, types, cred)) {
+					using (var xwtDialog = new XwtCredentialsDialog (url, types, cred, hasError)) {
 						response = xwtDialog.Run (parentWindow ?? IdeServices.DesktopService.GetFocusedTopLevelWindow ()) == Command.Ok;
 					}
 				});
@@ -144,17 +217,17 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Credentials = creds ?? new UsernamePasswordCredentials ();
 
-			DefaultRowSpacing = XwtCredentialsDialog.InputContainerContainerSpacing;
+			DefaultRowSpacing = Styles.InputContainerSpacing;
 
 			int inputContainerCurrentRow = 0;
 			//user container
 			var userLabel = new Label (GettextCatalog.GetString ("Username:")) {
-				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth
+				MinWidth = Styles.DefaultlLabelWidth
 			};
-			Add (userLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+			Add (userLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center, marginRight: 0);
 			userLabel.TextAlignment = Alignment.End;
-			userTextEntry = new TextEntry { Text = Credentials.Username ?? string.Empty };
-			Add (userTextEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 10 : -1);
+			userTextEntry = new TextEntry { HeightRequest = 21, PlaceholderText = GettextCatalog.GetString ("Required"), Text = Credentials.Username ?? string.Empty };
+			Add (userTextEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 0 : -1);
 
 			userTextEntry.Changed += UserTextEntry_Changed;
 			inputContainerCurrentRow++;
@@ -163,13 +236,13 @@ namespace MonoDevelop.VersionControl.Git
 			var passwordLabel = new Label () {
 				TextAlignment = Alignment.End,
 				Text = GettextCatalog.GetString ("Password:"),
-				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth
+				MinWidth = Styles.DefaultlLabelWidth
 			};
-			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center, marginRight: 0);
 
-			passwordEntry = new PasswordEntry () { Password = Credentials.Password ?? string.Empty, MarginTop = 5 };
+			passwordEntry = new PasswordEntry () { HeightRequest = 21, PlaceholderText = GettextCatalog.GetString("Required"), Password = Credentials.Password ?? string.Empty};
 			passwordEntry.Accessible.LabelWidget = passwordLabel;
-			Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 10 : -1);
+			Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 0 : -1, marginLeft: 0);
 			passwordEntry.Changed += PasswordEntry_Changed;
 		}
 
@@ -218,12 +291,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Credentials = creds ?? new SshUserKeyCredentials ();
 
-			DefaultRowSpacing = XwtCredentialsDialog.InputContainerContainerSpacing;
+			DefaultRowSpacing = Styles.InputContainerSpacing;
 
 			int inputContainerCurrentRow = 0;
 
 			var privateKeyLocationLabel = new Label (GettextCatalog.GetString ("Private Key:")) {
-				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth,
+				MinWidth = Styles.DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
 			Add (privateKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
@@ -246,7 +319,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			//Public key location
 			var publicKeyLocationLabel = new Label (GettextCatalog.GetString ("Public Key:")) {
-				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth,
+				MinWidth = Styles.DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
 			Add (publicKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
@@ -271,7 +344,7 @@ namespace MonoDevelop.VersionControl.Git
 			var passwordLabel = new Label () {
 				TextAlignment = Alignment.End,
 				Text = GettextCatalog.GetString ("Passphrase:"),
-				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth
+				MinWidth = Styles.DefaultlLabelWidth
 			};
 			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 
