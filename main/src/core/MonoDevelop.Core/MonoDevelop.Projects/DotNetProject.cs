@@ -1230,6 +1230,9 @@ namespace MonoDevelop.Projects
 			referenceCacheNeedsRefresh = true;
 			packageDependenciesNeedRefresh = true;
 
+			lock (frameworkSpecificConfigurationsLock)
+				frameworkSpecificConfigurations.Clear ();
+
 			await base.OnClearCachedData ();
 		}
 
@@ -2094,6 +2097,9 @@ namespace MonoDevelop.Projects
 		/// <param name="framework">Short framework name (e.g. net472, netstandard2.0)</param>
 		public async Task<DotNetProjectConfiguration> GetConfigurationAsync (string name, string platform, string framework)
 		{
+			if (TryGetFrameworkSpecificConfiguration (name, platform, framework, out DotNetProjectConfiguration cachedConfig))
+				return cachedConfig;
+
 			DotNetProjectConfiguration newConfig = CloneConfiguration (name, platform);
 			if (newConfig == null)
 				return null;
@@ -2105,6 +2111,8 @@ namespace MonoDevelop.Projects
 			newConfig.Read (newConfig.Properties);
 			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
 			newConfig.Framework = framework;
+
+			CacheFrameworkSpecificConfiguration (name, platform, framework, newConfig);
 
 			return newConfig;
 		}
@@ -2133,6 +2141,9 @@ namespace MonoDevelop.Projects
 		/// <param name="framework">Short framework name (e.g. net472, netstandard2.0)</param>
 		public DotNetProjectConfiguration GetConfiguration (string name, string platform, string framework)
 		{
+			if (TryGetFrameworkSpecificConfiguration (name, platform, framework, out DotNetProjectConfiguration cachedConfig))
+				return cachedConfig;
+
 			DotNetProjectConfiguration newConfig = CloneConfiguration (name, platform);
 			if (newConfig == null)
 				return null;
@@ -2145,8 +2156,37 @@ namespace MonoDevelop.Projects
 			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
 			newConfig.Framework = framework;
 
+			CacheFrameworkSpecificConfiguration (name, platform, framework, newConfig);
+
 			return newConfig;
 		}
+
+		bool TryGetFrameworkSpecificConfiguration (string name, string platform, string framework, out DotNetProjectConfiguration configuration)
+		{
+			string key = CacheFrameworkSpecificConfigurationCacheKey (name, platform, framework);
+			lock (frameworkSpecificConfigurationsLock)
+				return frameworkSpecificConfigurations.TryGetValue (key, out configuration);
+		}
+
+		void CacheFrameworkSpecificConfiguration (string name, string platform, string framework, DotNetProjectConfiguration configuration)
+		{
+			string key = CacheFrameworkSpecificConfigurationCacheKey (name, platform, framework);
+			lock (frameworkSpecificConfigurationsLock)
+				frameworkSpecificConfigurations [key] = configuration;
+		}
+
+		static string CacheFrameworkSpecificConfigurationCacheKey (string name, string platform, string framework)
+		{
+			name = name ?? string.Empty;
+			platform = platform ?? string.Empty;
+			framework = framework ?? string.Empty;
+
+			return $"{name}-{platform}-{framework}";
+		}
+
+		object frameworkSpecificConfigurationsLock = new object ();
+		Dictionary<string, DotNetProjectConfiguration> frameworkSpecificConfigurations = new Dictionary<string, DotNetProjectConfiguration> ();
+
 
 		public TargetFramework GetTargetFramework (ConfigurationSelector configuration)
 		{
