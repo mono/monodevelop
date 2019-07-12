@@ -3,6 +3,8 @@ NUGET
   remote: https://www.nuget.org/api/v2
     ExtCore (0.8.46)
     FAKE (5.8.4)
+    Fantomas (3.0.0-beta-001)
+      FSharp.Compiler.Service (>= 28.0)
     FSharp.Compiler.CodeDom (0.9.2)
     FSharp.Compiler.Service (28.0)
       FSharp.Core (>= 4.6.2)
@@ -26,6 +28,3 @@ NUGET
     System.Threading.Tasks.Extensions (4.5.2)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
     System.ValueTuple (4.5)
-  remote: https://www.myget.org/F/fantomas/api/v3/index.json
-    Fantomas (3.0.0-alpha-394)
-      FSharp.Compiler.Service (>= 28.0)
