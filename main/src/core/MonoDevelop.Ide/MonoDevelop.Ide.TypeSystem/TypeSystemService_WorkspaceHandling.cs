@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var path = filePath.IsAbsolute ? filePath.CanonicalPath : filePath;
 			if (openDocuments.TryGetValue (path, out var reference)) {
 				reference.ReferenceCount++;
-				if (reference.Owner == null)
+				if (owner != null && reference.Owner != owner)
 					reference.Owner = owner;
 				return new DocumentRegistration { OpenDocument = reference };
 			}
