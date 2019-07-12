@@ -111,7 +111,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard21=true")]
 		public async Task NetStandard21 (string templateId, string parameters)
 		{
-			if (!IsDotNetCoreSdk2xInstalled ()) {
+			if (!IsDotNetCoreSdk30Installed ()) {
 				Assert.Ignore (".NET Core 3 SDK is not installed - required by project template.");
 			}
 
