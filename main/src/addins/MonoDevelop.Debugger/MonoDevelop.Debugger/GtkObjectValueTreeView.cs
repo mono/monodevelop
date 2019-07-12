@@ -734,7 +734,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			bool canEdit = controller.CanEditObject (val);
-			string icon = ObjectValueTreeView.GetIcon (val.Flags);
+			string icon = ObjectValueTreeViewController.GetIcon (val.Flags);
 
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
