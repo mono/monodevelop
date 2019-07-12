@@ -61,9 +61,6 @@ namespace MonoDevelop.Debugger
 		// mapping of a node to the node's location in the tree view
 		readonly Dictionary<IObjectValueNode, TreeRowReference> allNodes = new Dictionary<IObjectValueNode, TreeRowReference> ();
 
-		// move this lot to the controller...
-		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
-
 		// keep this lot....
 		readonly Xwt.Drawing.Image noLiveIcon;
 		readonly Xwt.Drawing.Image liveIcon;
@@ -302,7 +299,7 @@ namespace MonoDevelop.Debugger
 			controller.NodeExpanded -= Controller_NodeExpanded;
 
 			disposed = true;
-			cancellationTokenSource.Cancel ();
+			controller.CancellationTokenSource.Cancel ();
 
 			base.OnDestroyed ();
 		}
@@ -615,7 +612,7 @@ namespace MonoDevelop.Debugger
 
 			if (node.IsEnumerable) {
 				if (node is ShowMoreValuesObjectValueNode moreNode) {
-					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, cancellationTokenSource.Token).Ignore ();
+					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, controller.CancellationTokenSource.Token).Ignore ();
 				} else {
 					// use ExpandRow to expand so we see the loading message, expanding the node will trigger a fetch of the children
 					var treePath = GetTreePathForNode (node);
@@ -807,7 +804,7 @@ namespace MonoDevelop.Debugger
 				RecalculateWidth ();
 
 			HideValueButton (iter);
-			controller.ExpandNodeAsync (node, cancellationTokenSource.Token).Ignore();
+			controller.ExpandNodeAsync (node, controller.CancellationTokenSource.Token).Ignore();
 		}
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)

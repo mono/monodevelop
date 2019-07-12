@@ -70,6 +70,8 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
 
+		public readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource ();
+
 		public ObjectValueTreeViewController ()
 		{
 			AllowPopupMenu = true;
