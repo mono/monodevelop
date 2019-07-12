@@ -208,29 +208,33 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var project = sol.GetAllProjects ().Single ();
+				try {
+					var project = sol.GetAllProjects ().Single ();
 
-				var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
-				var projects = ws.CurrentSolution.Projects.ToArray ();
+					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+					var projects = ws.CurrentSolution.Projects.ToArray ();
 
-				var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net472)");
-				var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+					var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net472)");
+					var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
 
-				// Should be two projects - one for each target framework.
-				Assert.AreEqual (2, projectIds.Length);
-				Assert.AreEqual (2, projects.Length);
+					// Should be two projects - one for each target framework.
+					Assert.AreEqual (2, projectIds.Length);
+					Assert.AreEqual (2, projects.Length);
 
-				Assert.IsNotNull (netframeworkProject);
-				Assert.IsNotNull (netstandardProject);
+					Assert.IsNotNull (netframeworkProject);
+					Assert.IsNotNull (netstandardProject);
 
-				sol.RootFolder.Items.Remove (project);
-				await sol.SaveAsync (Util.GetMonitor ());
+					sol.RootFolder.Items.Remove (project);
+					await sol.SaveAsync (Util.GetMonitor ());
 
-				projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
-				projects = ws.CurrentSolution.Projects.ToArray ();
+					projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+					projects = ws.CurrentSolution.Projects.ToArray ();
 
-				Assert.AreEqual (0, projectIds.Length);
-				Assert.AreEqual (0, projects.Length);
+					Assert.AreEqual (0, projectIds.Length);
+					Assert.AreEqual (0, projects.Length);
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
 			}
 		}
 
@@ -244,51 +248,55 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var project = sol.GetAllProjects ().Single ();
+				try {
+					var project = sol.GetAllProjects ().Single ();
 
-				var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
-				var projects = ws.CurrentSolution.Projects.ToArray ();
+					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+					var projects = ws.CurrentSolution.Projects.ToArray ();
 
-				var netcoreProject = projects.FirstOrDefault (p => p.Name == "multi-target (netcoreapp1.1)");
-				var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+					var netcoreProject = projects.FirstOrDefault (p => p.Name == "multi-target (netcoreapp1.1)");
+					var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
 
-				// Should be two projects - one for each target framework.
-				Assert.AreEqual (2, projectIds.Length);
-				Assert.AreEqual (2, projects.Length);
+					// Should be two projects - one for each target framework.
+					Assert.AreEqual (2, projectIds.Length);
+					Assert.AreEqual (2, projects.Length);
 
-				Assert.IsNotNull (netcoreProject);
-				Assert.IsNotNull (netstandardProject);
+					Assert.IsNotNull (netcoreProject);
+					Assert.IsNotNull (netstandardProject);
 
-				var updatedProjectFileName = project.FileName.ChangeName ("multi-target-reload");
+					var updatedProjectFileName = project.FileName.ChangeName ("multi-target-reload");
 
-				string xml = File.ReadAllText (updatedProjectFileName);
-				File.WriteAllText (project.FileName, xml);
+					string xml = File.ReadAllText (updatedProjectFileName);
+					File.WriteAllText (project.FileName, xml);
 
-				await sol.RootFolder.ReloadItem (Util.GetMonitor (), project);
+					await sol.RootFolder.ReloadItem (Util.GetMonitor (), project);
 
-				// Try a few times since the type system needs time to reload
-				const int timeout = 10000; // ms
-				int howLong = 0;
-				const int interval = 200; // ms
+					// Try a few times since the type system needs time to reload
+					const int timeout = 10000; // ms
+					int howLong = 0;
+					const int interval = 200; // ms
 
-				while (true) {
-					var newProjectIds = ws.CurrentSolution.ProjectIds.ToArray ();
-					projects = ws.CurrentSolution.Projects.ToArray ();
+					while (true) {
+						var newProjectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+						projects = ws.CurrentSolution.Projects.ToArray ();
 
-					netcoreProject = projects.FirstOrDefault (p => p.Name == "multi-target (netcoreapp1.2)");
-					netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.3)");
-					if (netcoreProject != null && netstandardProject != null) {
-						Assert.AreEqual (2, newProjectIds.Length);
-						Assert.AreEqual (2, projects.Length);
-						return;
+						netcoreProject = projects.FirstOrDefault (p => p.Name == "multi-target (netcoreapp1.2)");
+						netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.3)");
+						if (netcoreProject != null && netstandardProject != null) {
+							Assert.AreEqual (2, newProjectIds.Length);
+							Assert.AreEqual (2, projects.Length);
+							return;
+						}
+
+						if (howLong >= timeout) {
+							Assert.Fail ("Timed out waiting for type system information to be updated.");
+						}
+
+						await Task.Delay (interval);
+						howLong += interval;
 					}
-
-					if (howLong >= timeout) {
-						Assert.Fail ("Timed out waiting for type system information to be updated.");
-					}
-
-					await Task.Delay (interval);
-					howLong += interval;
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
 			}
 		}
