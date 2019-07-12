@@ -26,6 +26,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text.Editor;
 using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -51,7 +52,11 @@ namespace MonoDevelop.VersionControl
 			
 			foreach (var item in items) {
 				var document = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				document?.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
+				if (document == null)
+					continue;
+				document.RunWhenContentAdded<ITextView> (tv => {
+					document.GetContent<VersionControlDocumentController> ()?.ShowDiffView ();
+				});
 			}
 
 			return true;
