@@ -140,7 +140,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			var bounds = view.TextViewLines.GetCharacterBounds (point);
 			view.LayoutChanged += LayoutChanged;
 #if CLOSE_ON_FOCUS_LOST
-				view.LostAggregateFocus += View_LostAggregateFocus;
+			view.LostAggregateFocus += View_LostAggregateFocus;
 #endif
 			RegisterForHiddenAsync (view).Ignore ();
 			window.LeaveNotifyEvent += LeaveNotifyEvent;
@@ -150,7 +150,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			cgPoint.Y = cocoaView.VisualElement.Superview.Frame.Height - cgPoint.Y;
 			window.ShowPopup (gtkParent, new Gdk.Rectangle ((int)cgPoint.X, (int)cgPoint.Y, (int)bounds.Width, (int)bounds.Height), Components.PopupPosition.TopLeft);
 #else
-				throw new NotImplementedException ();
+			throw new NotImplementedException ();
 #endif
 		}
 
