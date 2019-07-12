@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Projects
 
 			imageProvider.Dispose ();
 
-			return IsNewItemCreated;
+			return ProjectCreation != null && !(ProjectCreation.IsCompleted && !ProjectCreation.Result);
 		}
 
 		void GetVersionControlHandler ()
@@ -613,10 +613,13 @@ namespace MonoDevelop.Ide.Projects
 
 		public async Task Create ()
 		{
+			projectCreated = new TaskCompletionSource<bool> ();
+
 			if (wizardProvider.HasWizard)
 				wizardProvider.BeforeProjectIsCreated ();
 
 			if (!await CreateProject ()) {
+				projectCreated.SetResult (false);
 				ProjectCreationFailed?.Invoke (this, EventArgs.Empty);
 				return;
 			}
@@ -668,6 +671,7 @@ namespace MonoDevelop.Ide.Projects
 				if (File.Exists (solutionFileName)) {
 					if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", solutionFileName), AlertButton.OverwriteFile)) {
 						ParentFolder = null;//Reset process of creating solution
+						projectCreated.SetResult (false);
 						return;
 					}
 					File.Delete (solutionFileName);
@@ -675,7 +679,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			dialog.CloseDialog ();
-
+		
 			if (ParentFolder != null)
 				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
 			else
@@ -709,13 +713,15 @@ namespace MonoDevelop.Ide.Projects
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
 
-			var tcs = new TaskCompletionSource<bool> ();
 			Gtk.Application.Invoke ((sender, args) => {
+				projectCreated.SetResult (true);
 				ProjectCreated?.Invoke (this, EventArgs.Empty);
-				tcs.SetResult (true);
 			});
-			await tcs.Task;
+			await projectCreated.Task;
 		}
+
+		public Task<bool> ProjectCreation => projectCreated?.Task;
+		TaskCompletionSource<bool> projectCreated;
 
 		public WizardPage CurrentWizardPage {
 			get {
