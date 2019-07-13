@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -31,6 +32,7 @@ using UnitTests;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
+	[TestFixture]
 	public class OutputOptionsPanelTests
 	{
 		[Test]
@@ -38,10 +40,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			FilePath projFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-console", "dotnetcore-sdk-console.csproj");
 
-			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+			using (var p = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
 				var debug = (DotNetProjectConfiguration)p.Configurations [0]; //Debug
 				var release = (DotNetProjectConfiguration)p.Configurations [1]; //Release
-
+				
 				//gets the dir template for both configs
 				var configs = new ItemConfiguration [] { debug, release };
 				var outDirTemplate = configs.GetCommonOutDirTemplate ();
@@ -49,13 +51,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				Assert.That (outDirTemplate, Is.Not.Empty);
 
 				//modify it
-				outDirTemplate = outDirTemplate.Replace ("bin", "build");
+				outDirTemplate = outDirTemplate.Replace ("bin/$(Configuration)/$(TargetFramework)", "build-$(Configuration)/$(TargetFramework)/$(Configuration)/$(TargetFramework)");
 
 				// parses configs according to AppendTargetFrameworkToOutputPath
 				debug.OutputDirectory = debug.ParseOutDirectoryTemplate (outDirTemplate);
 				Assert.That (debug.OutputDirectory.FullPath.ToString (), Is.StringEnding (debug.TargetFrameworkShortName));
 
-				outDirTemplate = outDirTemplate.Replace ("$(TargetFramework)", string.Empty);
+				outDirTemplate = outDirTemplate.Replace ("/$(TargetFramework)", string.Empty);
 				release.OutputDirectory = release.ResolveOutDirectoryTemplate (outDirTemplate);
 				Assert.That (release.OutputDirectory.FullPath.ToString ().TrimEnd (System.IO.Path.DirectorySeparatorChar), Is.StringEnding (release.Name));
 				Assert.That (release.AppendTargetFrameworkToOutputPath, Is.False);
@@ -64,6 +66,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		[TestCase ("/output/$(Configuration)/$(TargetFramework)", "foo", "/output/foo")]
 		[TestCase ("/output/$(Configuration)", "foo", "/output/foo")]
+		[TestCase ("/output/$(TargetFramework)/$(Configuration)/$(TargetFramework)", "foo", "/output/netcore22/foo")]
+		[TestCase ("/output-$(Configuration)", "foo", "/output-foo")]
 		public void ResolveOutDirectoryTemplateTest (string template, string id, string expected)
 		{
 			var dotnetConfig = new DotNetProjectConfiguration (id) {
@@ -93,10 +97,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		[Test]
 		public void GetTemplateTest ()
 		{
-			string expectedTemplate = System.IO.Path.Combine ("Users", "ProjectFoo", "$(Configuration)", "$(TargetFramework)");
+			string expectedTemplate = System.IO.Path.Combine ("Users", "Project", "$(Configuration)", "$(TargetFramework)");
 			var conf = new DotNetProjectConfiguration ("Foo") {
 				TargetFrameworkShortName = "netcore22",
-				OutputDirectory = System.IO.Path.Combine ("Users", "ProjectFoo", "Foo", "netcore22"),
+				OutputDirectory = System.IO.Path.Combine ("Users", "Project", "Foo", "netcore22"),
 				AppendTargetFrameworkToOutputPath = true
 			};
 

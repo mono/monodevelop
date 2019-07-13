@@ -151,8 +151,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				if (!string.IsNullOrEmpty (dir)) {
 					conf.OutputDirectory = dir;
 				} else {
-					//in case output dir is empty, we set DefaultPath
-					conf.OutputDirectory = IO.Path.Combine (outputPathEntry.DefaultPath, "bin", conf.Name);
+					//in case output dir is empty and we are in All Configuration (that´s it conf.Length > 1) we set DefaultPath
+					if (configurations.Length > 1) {
+						conf.OutputDirectory = IO.Path.Combine (outputPathEntry.DefaultPath, "bin", conf.Name);
+					}
 					if (conf.AppendTargetFrameworkToOutputPath != null) { //if it is null is because of it's not a .NET Core project
 						conf.AppendTargetFrameworkToOutputPath = true;
 					}
@@ -191,13 +193,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (conf.AppendTargetFrameworkToOutputPath == null)
 				return dir;
 
-			var outputDirTemp = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
+			dir = dir.Replace ("$(TargetFramework)", conf.TargetFrameworkShortName);
 
 			// if outputDirectory does not contain the targetFramework.Id, AppendTargetFrameworkToOutputPath is false for that config
 			conf.AppendTargetFrameworkToOutputPath = dir.EndsWithTargetFramework (conf.TargetFrameworkShortName) || dir.EndsWithTargetFramework ();
 
 			// check if the outputDirectory has been modified
-			var outputModified = conf.OutputDirectory.FullPath.ToString ().IndexOf (outputDirTemp, StringComparison.InvariantCulture) != 0;
+			var outputModified = conf.OutputDirectory.FullPath.ToString ().IndexOf (dir, StringComparison.InvariantCulture) != 0;
 			if (outputModified) {
 				// if so, we have to remove $(TargetFramework) at the end since msbuild will add it due to AppendTargetFrameworkToOutputPath == true
 				if (dir.EndsWithTargetFramework ()) {
@@ -208,10 +210,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				if (dir.EndsWithTargetFramework (conf.TargetFrameworkShortName)) {
 					dir = dir.Remove (dir.Length - conf.TargetFrameworkShortName.Length);
 				}
-			} else {
-				// no changes, leaving it as it is
-				dir = outputDirTemp;
-			}
+			} 
 
 			return dir.TrimEnd (IO.Path.DirectorySeparatorChar);
 		}
@@ -279,12 +278,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					dirTemplate = IO.Path.Combine (dirTemplate, conf.TargetFrameworkShortName);
 				}
 
-				dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.TargetFrameworkShortName}", $"{IO.Path.DirectorySeparatorChar}$(TargetFramework)");
+				dirTemplate = dirTemplate.Replace ($"{conf.TargetFrameworkShortName}", $"$(TargetFramework)");
 			}
 
-			dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.Name}", $"{IO.Path.DirectorySeparatorChar}$(Configuration)");
+			dirTemplate = dirTemplate.Replace ($"{conf.Name}", $"$(Configuration)");
 			if (conf.Platform.Length > 0)
-				dirTemplate = dirTemplate.Replace ($"{IO.Path.DirectorySeparatorChar}{conf.Platform}", $"{IO.Path.DirectorySeparatorChar}$(Platform)");
+				dirTemplate = dirTemplate.Replace ($"{conf.Platform}", $"$(Platform)");
 
 			return dirTemplate;
 		}
