@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects
 		internal DotNetProjectConfiguration (string name, string platform, string framework)
 			: base (name, platform)
 		{
-			Framework = framework;
+			FrameworkShortName = framework;
 		}
 
 		internal protected override void Read (IPropertySet pset)
@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects
 
 		public override ConfigurationSelector Selector {
 			get {
-				if (string.IsNullOrEmpty (Framework))
+				if (string.IsNullOrEmpty (FrameworkShortName))
 					return base.Selector;
 
 				string id = Name;
@@ -231,11 +231,11 @@ namespace MonoDevelop.Projects
 					id += "|" + Platform;
 
 				var selector = new ItemConfigurationSelector (id);
-				return new DotNetProjectFrameworkConfigurationSelector (selector, Framework);
+				return new DotNetProjectFrameworkConfigurationSelector (selector, FrameworkShortName);
 			}
 		}
 
-		public string Framework { get; internal set; }
+		internal string FrameworkShortName { get; set; }
 
 		internal DotNetProjectConfiguration GetConfiguration (string framework)
 		{
@@ -247,14 +247,14 @@ namespace MonoDevelop.Projects
 		internal protected override string GetId ()
 		{
 			bool hasPlatform = !string.IsNullOrEmpty (Platform);
-			bool hasFramework = !string.IsNullOrEmpty (Framework);
+			bool hasFramework = !string.IsNullOrEmpty (FrameworkShortName);
 
 			if (hasPlatform && hasFramework)
-				return Name + "|" + Platform + "|" + Framework;
+				return Name + "|" + Platform + "|" + FrameworkShortName;
 			else if (hasPlatform)
 				return Name + "|" + Platform;
 			else if (hasFramework)
-				return Name + "||" + Framework;
+				return Name + "||" + FrameworkShortName;
 			else
 				return Name;
 		}

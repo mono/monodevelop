@@ -2110,7 +2110,7 @@ namespace MonoDevelop.Projects
 
 			newConfig.Read (newConfig.Properties);
 			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
-			newConfig.Framework = framework;
+			newConfig.FrameworkShortName = framework;
 
 			CacheFrameworkSpecificConfiguration (name, platform, framework, newConfig);
 
@@ -2154,7 +2154,7 @@ namespace MonoDevelop.Projects
 
 			newConfig.Read (newConfig.Properties);
 			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
-			newConfig.Framework = framework;
+			newConfig.FrameworkShortName = framework;
 
 			CacheFrameworkSpecificConfiguration (name, platform, framework, newConfig);
 
@@ -2216,8 +2216,8 @@ namespace MonoDevelop.Projects
 			var properties = base.CreateGlobalProperties (configuration, target);
 
 			var dotNetProjectConfiguration = GetConfiguration (configuration) as DotNetProjectConfiguration;
-			if (dotNetProjectConfiguration != null && !string.IsNullOrEmpty (dotNetProjectConfiguration.Framework))
-				properties ["TargetFramework"] = dotNetProjectConfiguration.Framework;
+			if (dotNetProjectConfiguration != null && !string.IsNullOrEmpty (dotNetProjectConfiguration.FrameworkShortName))
+				properties ["TargetFramework"] = dotNetProjectConfiguration.FrameworkShortName;
 
 			return properties;
 		}

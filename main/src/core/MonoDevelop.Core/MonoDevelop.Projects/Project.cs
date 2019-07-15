@@ -571,7 +571,7 @@ namespace MonoDevelop.Projects
 				var results = ImmutableArray.CreateBuilder<ProjectFile> ();
 
 				var dotNetProjectConfig = config as DotNetProjectConfiguration;
-				var pri = await CreateProjectInstanceForConfigurationAsync (config?.Name, config?.Platform, dotNetProjectConfig?.Framework, false);
+				var pri = await CreateProjectInstanceForConfigurationAsync (config?.Name, config?.Platform, dotNetProjectConfig?.FrameworkShortName, false);
 				foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 					results.Add (CreateProjectFile (it));
 
