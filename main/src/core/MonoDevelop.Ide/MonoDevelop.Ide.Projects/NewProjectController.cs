@@ -679,45 +679,46 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			dialog.CloseDialog ();
-		
-			if (ParentFolder != null)
-				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
-			else
-				await IdeApp.ProjectOperations.SaveAsync (processedTemplate.WorkspaceItems);
 
-			CreateVersionControlItems ();
-
-			if (OpenSolution) {
-				DisposeExistingNewItems ();
-				TemplateWizard wizard = wizardProvider.CurrentWizard;
-				if (await OpenCreatedSolution (processedTemplate)) {
-					var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
-					if (sol != null) {
-						if (wizard != null)
-							wizard.ItemsCreated (new [] { sol });
-						InstallProjectTemplatePackages (sol);
-					}
-				}
-			}
-			else {
-				// The item is not a solution being opened, so it is going to be added to
-				// an existing item. In this case, it must not be disposed by the dialog.
-				RunTemplateActions (processedTemplate);
-				if (wizardProvider.HasWizard)
-					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
+			try {
 				if (ParentFolder != null)
-					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
-			}
+					await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
+				else
+					await IdeApp.ProjectOperations.SaveAsync (processedTemplate.WorkspaceItems);
 
-			wizardProvider.Dispose ();
-			IsNewItemCreated = true;
-			UpdateDefaultSettings ();
+				CreateVersionControlItems ();
 
-			Gtk.Application.Invoke ((sender, args) => {
+				if (OpenSolution) {
+					DisposeExistingNewItems ();
+					TemplateWizard wizard = wizardProvider.CurrentWizard;
+					if (await OpenCreatedSolution (processedTemplate)) {
+						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
+						if (sol != null) {
+							if (wizard != null)
+								wizard.ItemsCreated (new [] { sol });
+							InstallProjectTemplatePackages (sol);
+						}
+					}
+				} else {
+					// The item is not a solution being opened, so it is going to be added to
+					// an existing item. In this case, it must not be disposed by the dialog.
+					RunTemplateActions (processedTemplate);
+					if (wizardProvider.HasWizard)
+						wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
+					if (ParentFolder != null)
+						InstallProjectTemplatePackages (ParentFolder.ParentSolution);
+				}
+
+				wizardProvider.Dispose ();
+				IsNewItemCreated = true;
+				UpdateDefaultSettings ();
+
 				projectCreated.SetResult (true);
-				ProjectCreated?.Invoke (this, EventArgs.Empty);
-			});
-			await projectCreated.Task;
+				await Runtime.RunInMainThread (() => ProjectCreated?.Invoke (this, EventArgs.Empty));
+			} catch (Exception ex) {
+				projectCreated.SetException (ex);
+				throw;
+			}
 		}
 
 		public Task<bool> ProjectCreation => projectCreated?.Task;
