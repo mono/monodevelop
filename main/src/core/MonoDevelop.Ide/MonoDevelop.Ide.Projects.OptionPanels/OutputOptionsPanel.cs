@@ -151,8 +151,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				if (!string.IsNullOrEmpty (dir)) {
 					conf.OutputDirectory = dir;
 				} else {
-					//in case output dir is empty and we are in All Configuration (that´s it conf.Length > 1) we set DefaultPath
-					if (configurations.Length > 1) {
+					//in case outputPathEntry.Path is empty we set DefaultPath
+					if (string.IsNullOrEmpty (outputPathEntry.Path) && configurations.Length == 1) {
 						conf.OutputDirectory = IO.Path.Combine (outputPathEntry.DefaultPath, "bin", conf.Name);
 					}
 					if (conf.AppendTargetFrameworkToOutputPath != null) { //if it is null is because of it's not a .NET Core project
