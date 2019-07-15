@@ -193,7 +193,7 @@ namespace MonoDevelop.AspNetCore
 			aspNetCoreRunConfs = null;
 		}
 
-		void FileService_FileChanged (object sender, FileEventArgs e)
+		async void FileService_FileChanged (object sender, FileEventArgs e)
 		{
 			var launchSettingsPath = launchProfileProvider?.LaunchSettingsJsonPath;
 			var launchSettings = e.FirstOrDefault (x => x.FileName == launchSettingsPath && !x.FileName.IsDirectory);
@@ -247,6 +247,8 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			Project.RunConfigurations.RemoveRange (itemsRemoved);
+
+			await IdeApp.ProjectOperations.SaveAsync (this.Project);
 
 			updating = false;
 		}
