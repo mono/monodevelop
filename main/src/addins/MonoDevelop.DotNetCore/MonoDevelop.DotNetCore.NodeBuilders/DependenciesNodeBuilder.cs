@@ -68,21 +68,29 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			var node = (DependenciesNode)dataObject;
 			node.PackageDependencyCache.Refresh ();
+		}
 
+		internal void BuildChildNodes (ITreeBuilder treeBuilder, DependenciesNode node)
+		{
 			var packagesNode = new PackageDependenciesNode (node);
 			if (packagesNode.HasChildNodes ())
-				treeBuilder.AddChild (packagesNode);
+				AddChild (treeBuilder, packagesNode);
 
 			var sdkNode = new SdkDependenciesNode (node);
-			treeBuilder.AddChild (sdkNode);
+			AddChild (treeBuilder, sdkNode);
 
 			var assembliesNode = new AssemblyDependenciesNode (node.Project);
 			if (assembliesNode.HasChildNodes ())
-				treeBuilder.AddChild (assembliesNode);
+				AddChild (treeBuilder, assembliesNode);
 
 			var projectsNode = new ProjectDependenciesNode (node.Project);
 			if (projectsNode.HasChildNodes ())
-				treeBuilder.AddChild (projectsNode);
+				AddChild (treeBuilder, projectsNode);
+		}
+
+		protected virtual void AddChild (ITreeBuilder treeBuilder, object dataObject)
+		{
+			treeBuilder.AddChild (dataObject);
 		}
 	}
 }

@@ -48,6 +48,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		SdkDependenciesNode sdkFolderNode;
 		PackageDependenciesNode nugetFolderNode;
 		TaskCompletionSource<bool> packageDependenciesChanged;
+		TestableDependenciesNodeBuilder dependenciesNodeBuilder;
 		// Ensure NuGet.Versioning assembly is loaded by the tests otherwise they fail
 		// when run from the command line with mdtool.
 		NuGetVersion nuGetVersion = new NuGetVersion ("1.0"); 
@@ -72,6 +73,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		async Task CreateDependenciesNode ()
 		{
+			dependenciesNodeBuilder = new TestableDependenciesNodeBuilder ();
 			dependenciesNode = new DependenciesNode (project);
 			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += PackageDependenciesChanged;
 			packageDependenciesChanged = new TaskCompletionSource<bool> ();
@@ -80,8 +82,9 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			await WaitForPackageDependenciesChanged ();
 
-			nugetFolderNode = new PackageDependenciesNode (dependenciesNode);
-			sdkFolderNode = new SdkDependenciesNode (dependenciesNode);
+			dependenciesNodeBuilder.BuildChildNodes (null, dependenciesNode);
+			nugetFolderNode = dependenciesNodeBuilder.PackageDependencies;
+			sdkFolderNode = dependenciesNodeBuilder.SdkDependencies;
 		}
 
 		void PackageDependenciesChanged (object sender, EventArgs e)
@@ -99,14 +102,16 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		List<PackageDependencyNode> GetSdkFolderChildDependencies ()
 		{
-			var frameworkNode = sdkFolderNode.GetTargetFrameworkNodes ().Single ();
-			return frameworkNode.GetDependencyNodes ().ToList ();
+			var nodeBuilder = new TestableSdkDependenciesNodeBuilder ();
+			nodeBuilder.BuildChildNodes (null, sdkFolderNode);
+			return nodeBuilder.ChildNodesAsPackageDependencyNodes ().ToList ();
 		}
 
 		List<PackageDependencyNode> GetNuGetFolderChildDependencies ()
 		{
-			var frameworkNode = nugetFolderNode.GetTargetFrameworkNodes ().Single ();
-			return frameworkNode.GetDependencyNodes ().ToList ();
+			var nodeBuilder = new TestablePackageDependenciesNodeBuilder ();
+			nodeBuilder.BuildChildNodes (null, nugetFolderNode);
+			return nodeBuilder.ChildNodesAsPackageDependencyNodes ().ToList ();
 		}
 
 		[Test]

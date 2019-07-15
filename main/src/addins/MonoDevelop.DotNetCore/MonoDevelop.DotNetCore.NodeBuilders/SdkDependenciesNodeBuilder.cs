@@ -26,6 +26,7 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
@@ -63,7 +64,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			if (dependenciesNode.LoadedDependencies) {
 				AddLoadedDependencyNodes (treeBuilder, dependenciesNode);
 			} else {
-				treeBuilder.AddChildren (dependenciesNode.GetDefaultNodes ());
+				AddChildren (treeBuilder, dependenciesNode.GetDefaultNodes ());
 			}
 		}
 
@@ -71,14 +72,14 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			var frameworkNodes = GetTargetFrameworkNodes (dependenciesNode).ToList ();
 			if (frameworkNodes.Count > 1) {
-				treeBuilder.AddChildren (frameworkNodes);
+				AddChildren (treeBuilder, frameworkNodes);
 			} else if (frameworkNodes.Any ()) {
 				var frameworkNode = frameworkNodes.First ();
-				treeBuilder.AddChildren (frameworkNode.GetDependencyNodes ());
+				AddChildren (treeBuilder, frameworkNode.GetDependencyNodes ());
 			} else {
 				// Projects sometimes return no dependencies from MSBuild initially so
 				// add the default nodes until the dependencies are updated.
-				treeBuilder.AddChildren (dependenciesNode.GetDefaultNodes ());
+				AddChildren (treeBuilder, dependenciesNode.GetDefaultNodes ());
 			}
 		}
 
@@ -113,6 +114,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 					builder.UpdateAll ();
 				}
 			}
+		}
+
+		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
+		{
+			treeBuilder.AddChildren (dataObjects);
 		}
 	}
 }

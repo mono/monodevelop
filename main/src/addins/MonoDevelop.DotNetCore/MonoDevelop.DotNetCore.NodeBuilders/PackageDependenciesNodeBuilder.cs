@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.DotNetCore.Commands;
@@ -76,10 +77,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			var frameworkNodes = GetTargetFrameworkNodes (dependenciesNode).ToList ();
 			if (frameworkNodes.Count > 1) {
-				treeBuilder.AddChildren (frameworkNodes);
+				AddChildren (treeBuilder, frameworkNodes);
 			} else if (frameworkNodes.Any ()) {
 				var frameworkNode = frameworkNodes.First ();
-				treeBuilder.AddChildren (frameworkNode.GetDependencyNodes ());
+				AddChildren (treeBuilder, frameworkNode.GetDependencyNodes ());
 			} else {
 				AddDependencyNodesFromPackageReferencesInProject (treeBuilder, dependenciesNode);
 			}
@@ -93,7 +94,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		void AddDependencyNodesFromPackageReferencesInProject (ITreeBuilder treeBuilder, PackageDependenciesNode dependenciesNode)
 		{
-			treeBuilder.AddChildren (dependenciesNode.GetProjectPackageReferencesAsDependencyNodes ());
+			AddChildren (treeBuilder, dependenciesNode.GetProjectPackageReferencesAsDependencyNodes ());
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -126,6 +127,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 					builder.UpdateAll ();
 				}
 			}
+		}
+
+		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
+		{
+			treeBuilder.AddChildren (dataObjects);
 		}
 	}
 }
