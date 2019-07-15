@@ -47,6 +47,7 @@ namespace MonoDevelop.Debugger
 
 	public class ObjectValueTreeViewController
 	{
+		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		public const int MaxEnumerableChildrenToFetch = 20;
 		IDebuggerService debuggerService;
 		PinnedWatch pinnedWatch;
@@ -69,8 +70,6 @@ namespace MonoDevelop.Debugger
 		/// Holds a dictionary of node paths and the values. Used to show values that have changed from one frame to the next.
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
-
-		public readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource ();
 
 		public ObjectValueTreeViewController ()
 		{
@@ -263,6 +262,11 @@ namespace MonoDevelop.Debugger
 		public object GetControl ()
 		{
 			return new GtkObjectValueTreeView (this);
+		}
+
+		public void CancelAsyncTasks ()
+		{
+			cancellationTokenSource.Cancel ();
 		}
 
 		/// <summary>
@@ -572,7 +576,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
 		/// </summary>
-		public async Task ExpandNodeAsync (IObjectValueNode node, CancellationToken cancellationToken)
+		public async Task ExpandNodeAsync (IObjectValueNode node)
 		{
 			// if we think the node is expanded already, no need to trigger this again
 			if (node.IsExpanded)
@@ -585,10 +589,10 @@ namespace MonoDevelop.Debugger
 				// if we already have some loaded, don't load more - that is a specific user gesture
 				if (node.Children.Count == 0) {
 					// page the children in, instead of loading them all at once
-					loadedCount = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationToken);
+					loadedCount = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 				}
 			} else {
-				loadedCount = await FetchChildrenAsync (node, 0, cancellationToken);
+				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
 			}
 
 			if (loadedCount > 0) {
@@ -606,7 +610,7 @@ namespace MonoDevelop.Debugger
 			node.IsExpanded = false;
 		}
 
-		public async Task<int> FetchMoreChildrenAsync (IObjectValueNode node, CancellationToken cancellationToken)
+		public async Task<int> FetchMoreChildrenAsync (IObjectValueNode node)
 		{
 			if (node.ChildrenLoaded) {
 				return 0;
@@ -619,7 +623,7 @@ namespace MonoDevelop.Debugger
 				} else {
 					try {
 						var oldCount = node.Children.Count;
-						var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationToken);
+						var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 
 						// if any of them are still evaluating register for
 						// a completion event so that we can tell the UI

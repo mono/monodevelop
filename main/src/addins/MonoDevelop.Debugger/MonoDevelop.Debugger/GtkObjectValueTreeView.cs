@@ -299,7 +299,7 @@ namespace MonoDevelop.Debugger
 			controller.NodeExpanded -= Controller_NodeExpanded;
 
 			disposed = true;
-			controller.CancellationTokenSource.Cancel ();
+			controller.CancelAsyncTasks ();
 
 			base.OnDestroyed ();
 		}
@@ -612,7 +612,7 @@ namespace MonoDevelop.Debugger
 
 			if (node.IsEnumerable) {
 				if (node is ShowMoreValuesObjectValueNode moreNode) {
-					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode, controller.CancellationTokenSource.Token).Ignore ();
+					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode).Ignore ();
 				} else {
 					// use ExpandRow to expand so we see the loading message, expanding the node will trigger a fetch of the children
 					var treePath = GetTreePathForNode (node);
@@ -804,7 +804,7 @@ namespace MonoDevelop.Debugger
 				RecalculateWidth ();
 
 			HideValueButton (iter);
-			controller.ExpandNodeAsync (node, controller.CancellationTokenSource.Token).Ignore();
+			controller.ExpandNodeAsync (node).Ignore();
 		}
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
