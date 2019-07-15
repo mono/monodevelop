@@ -1402,25 +1402,30 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.BeginTask ("Cloning...", 2);
 
 				RunOperation (() => RetryUntilSuccess (monitor, credType => {
-					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
-						CredentialsProvider = (url, userFromUrl, types) => {
-							transferProgress = checkoutProgress = 0;
-							return GitCredentials.TryGet (url, userFromUrl, types, credType);
-						},
-						RepositoryOperationStarting = ctx => {
-							Runtime.RunInMainThread (() => {
-								monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
-							});
-							return true;
-						},
-						OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
-						OnCheckoutProgress = (path, completedSteps, totalSteps) => {
-							OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
-							Runtime.RunInMainThread (() => {
-								monitor.Log.WriteLine ("Checking out file '{0}'", path);
-							});
-						},
-					});
+					try {
+						RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
+							CredentialsProvider = (url, userFromUrl, types) => {
+								transferProgress = checkoutProgress = 0;
+								return GitCredentials.TryGet (url, userFromUrl, types, credType);
+							},
+							RepositoryOperationStarting = ctx => {
+								Runtime.RunInMainThread (() => {
+									monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
+								});
+								return true;
+							},
+							OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
+							OnCheckoutProgress = (path, completedSteps, totalSteps) => {
+								OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
+								Runtime.RunInMainThread (() => {
+									monitor.Log.WriteLine ("Checking out file '{0}'", path);
+								});
+							},
+						});
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Error while cloning repository " + rev + " recuse: " + recurse, e);
+						throw e;
+					}
 				}), true);
 
 				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
@@ -1433,6 +1438,9 @@ namespace MonoDevelop.VersionControl.Git
 				InitFileWatcher ();
 
 				RunOperation (() => RecursivelyCloneSubmodules (RootRepository, monitor), true);
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error while cloning repository " + rev + " recuse: " + recurse, e);
+				throw e;
 			} finally {
 				monitor.EndTask ();
 			}
@@ -1442,40 +1450,45 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var submodules = new List<string> ();
 			RetryUntilSuccess (monitor, credType => {
-				int transferProgress = 0, checkoutProgress = 0;
-				SubmoduleUpdateOptions updateOptions = new SubmoduleUpdateOptions () {
-					Init = true,
-					CredentialsProvider = (url, userFromUrl, types) => {
-						transferProgress = checkoutProgress = 0;
-						return GitCredentials.TryGet (url, userFromUrl, types, credType);
-					},
-					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
-					OnCheckoutProgress = (file, completedSteps, totalSteps) => {
-						OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
+				try {
+					int transferProgress = 0, checkoutProgress = 0;
+					SubmoduleUpdateOptions updateOptions = new SubmoduleUpdateOptions () {
+						Init = true,
+						CredentialsProvider = (url, userFromUrl, types) => {
+							transferProgress = checkoutProgress = 0;
+							return GitCredentials.TryGet (url, userFromUrl, types, credType);
+						},
+						OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
+						OnCheckoutProgress = (file, completedSteps, totalSteps) => {
+							OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine ("Checking out file '{0}'", file);
+							});
+						},
+					};
+
+					// Iterate through the submodules (where the submodule is in the index),
+					// and clone them.
+					var submoduleArray = rootRepository.Submodules.Where (sm => sm.RetrieveStatus ().HasFlag (SubmoduleStatus.InIndex)).ToArray ();
+					monitor.BeginTask (submoduleArray.Length);
+					foreach (var sm in submoduleArray) {
+						if (monitor.CancellationToken.IsCancellationRequested) {
+							throw new UserCancelledException ("Recursive clone of submodules was cancelled.");
+						}
+
 						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine ("Checking out file '{0}'", file);
+							monitor.Log.WriteLine ("Checking out submodule at '{0}'", sm.Path);
 						});
-					},
-				};
+						rootRepository.Submodules.Update (sm.Name, updateOptions);
+						monitor.Step (1);
 
-				// Iterate through the submodules (where the submodule is in the index),
-				// and clone them.
-				var submoduleArray = rootRepository.Submodules.Where (sm => sm.RetrieveStatus ().HasFlag (SubmoduleStatus.InIndex)).ToArray ();
-				monitor.BeginTask (submoduleArray.Length);
-				foreach (var sm in submoduleArray) {
-					if (monitor.CancellationToken.IsCancellationRequested) {
-						throw new UserCancelledException ("Recursive clone of submodules was cancelled.");
+						submodules.Add (Path.Combine (rootRepository.Info.WorkingDirectory, sm.Path));
 					}
-
-					Runtime.RunInMainThread (() => {
-						monitor.Log.WriteLine ("Checking out submodule at '{0}'", sm.Path);
-					});
-					rootRepository.Submodules.Update (sm.Name, updateOptions);
-					monitor.Step (1);
-
-					submodules.Add (Path.Combine (rootRepository.Info.WorkingDirectory, sm.Path));
+					monitor.EndTask ();
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error RecursivelyCloneSubmodules " + rootRepository, e);
+					throw e;
 				}
-				monitor.EndTask ();
 			});
 
 			// If we are continuing the recursive operation, then
