@@ -57,14 +57,14 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
 		/// </summary>
-		readonly Dictionary<IObjectValueNode, Task<int>> childFetchTasks = new Dictionary<IObjectValueNode, Task<int>> ();
+		readonly Dictionary<AbstractObjectValueNode, Task<int>> childFetchTasks = new Dictionary<AbstractObjectValueNode, Task<int>> ();
 
 		// TODO: can we refactor this to a separate class?
 		/// <summary>
 		/// Holds a dictionary of arbitrary objects for nodes that are currently "Evaluating" by the debugger
 		/// When the node has completed evaluation ValueUpdated event will be fired, passing the given object
 		/// </summary>
-		readonly Dictionary<IObjectValueNode, object> evaluationWatches = new Dictionary<IObjectValueNode, object> ();
+		readonly Dictionary<AbstractObjectValueNode, object> evaluationWatches = new Dictionary<AbstractObjectValueNode, object> ();
 
 		/// <summary>
 		/// Holds a dictionary of node paths and the values. Used to show values that have changed from one frame to the next.
@@ -87,7 +87,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public IObjectValueNode Root { get; private set; }
+		public AbstractObjectValueNode Root { get; private set; }
 
 		public IStackFrame Frame { get; set; }
 
@@ -282,7 +282,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Adds values to the root node, eg locals or watch expressions
 		/// </summary>
-		public void AddValue (IObjectValueNode value)
+		public void AddValue (AbstractObjectValueNode value)
 		{
 			if (Root == null) {
 				Root = OnCreateRoot ();
@@ -297,7 +297,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Adds values to the root node, eg locals or watch expressions
 		/// </summary>
-		public void AddValues (IEnumerable<IObjectValueNode> values)
+		public void AddValues (IEnumerable<AbstractObjectValueNode> values)
 		{
 			if (Root == null) {
 				Root = OnCreateRoot ();
@@ -314,10 +314,10 @@ namespace MonoDevelop.Debugger
 			OnChildrenLoaded (Root, 0, Root.Children.Count);
 		}
 
-		public bool RemoveValue (IObjectValueNode node)
+		public bool RemoveValue (AbstractObjectValueNode node)
 		{
 			UnregisterNode (node);
-			OnEvaluationCompleted (node, new IObjectValueNode [0]);
+			OnEvaluationCompleted (node, new AbstractObjectValueNode[0]);
 
 			return true;
 		}
@@ -332,7 +332,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: can we improve this
-		public string GetDisplayValueWithVisualisers(IObjectValueNode node, out bool showViewerButton)
+		public string GetDisplayValueWithVisualisers (AbstractObjectValueNode node, out bool showViewerButton)
 		{
 			showViewerButton = false;
 			if (node == null)
@@ -376,7 +376,7 @@ namespace MonoDevelop.Debugger
 		/// at the last checkpoint. Returns false if the node was not scanned at the
 		/// last checkpoint
 		/// </summary>
-		public bool GetNodeHasChangedSinceLastCheckpoint (IObjectValueNode node)
+		public bool GetNodeHasChangedSinceLastCheckpoint (AbstractObjectValueNode node)
 		{
 			if (oldValues.TryGetValue (node.Path, out CheckpointState checkpointState)) {
 				return node.Value != checkpointState.Value;
@@ -388,7 +388,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Returns true if the node was expanded when the last checkpoint was made
 		/// </summary>
-		public bool GetNodeWasExpandedAtLastCheckpoint (IObjectValueNode node)
+		public bool GetNodeWasExpandedAtLastCheckpoint (AbstractObjectValueNode node)
 		{
 			if (oldValues.TryGetValue (node.Path, out CheckpointState checkpointState)) {
 				return checkpointState.Expanded;
@@ -420,7 +420,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public bool EditExpression(IObjectValueNode node, string newExpression)
+		public bool EditExpression(AbstractObjectValueNode node, string newExpression)
 		{
 			if (node.Name == newExpression)
 				return false;
@@ -428,13 +428,13 @@ namespace MonoDevelop.Debugger
 			UnregisterNode (node);
 			if (string.IsNullOrEmpty(newExpression)) {
 				// we want the expression removed from the tree
-				OnEvaluationCompleted (node, new IObjectValueNode [0]);
+				OnEvaluationCompleted (node, new AbstractObjectValueNode[0]);
 				return true;
 			}
 
 			var expressionNode = Frame.EvaluateExpression(newExpression);
 			RegisterNode (expressionNode);
-			OnEvaluationCompleted (node, new IObjectValueNode [1] { expressionNode });
+			OnEvaluationCompleted (node, new AbstractObjectValueNode[1] { expressionNode });
 
 			return true;
 		}
@@ -444,7 +444,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Returns true if the node can be edited
 		/// </summary>
-		public bool CanEditObject (IObjectValueNode node)
+		public bool CanEditObject (AbstractObjectValueNode node)
 		{
 			if (AllowEditing) {
 				// TODO: clean up
@@ -464,7 +464,7 @@ namespace MonoDevelop.Debugger
 		/// Edits the value of the node and returns a value indicating whether the node's value changed from
 		/// when the node was initially loaded from the debugger
 		/// </summary>
-		public bool EditNodeValue(IObjectValueNode node, string newValue)
+		public bool EditNodeValue (AbstractObjectValueNode node, string newValue)
 		{
 			if (node == null || !AllowEditing)
 				return false;
@@ -482,7 +482,7 @@ namespace MonoDevelop.Debugger
 				// so that the tree expands the node we just edited when refreshed
 				EnsureNodeIsExpandedInCheckpoint (node);
 
-				node.SetValue(newValue);
+				node.SetValue (newValue);
 			} catch (Exception ex) {
 				LoggingService.LogError ($"Could not set value for object '{node.Name}'", ex);
 				return false;
@@ -502,7 +502,7 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		public bool ShowNodeValueVisualizer (IObjectValueNode node)
+		public bool ShowNodeValueVisualizer (AbstractObjectValueNode node)
 		{
 			if (node != null) {
 
@@ -530,7 +530,7 @@ namespace MonoDevelop.Debugger
 			return false;
 		}
 
-		void EnsureNodeIsExpandedInCheckpoint(IObjectValueNode node)
+		void EnsureNodeIsExpandedInCheckpoint(AbstractObjectValueNode node)
 		{
 			var parent = node.Parent; /*FindNode (node.ParentId);*/
 
@@ -546,7 +546,7 @@ namespace MonoDevelop.Debugger
 		}
 		#endregion
 
-		public void RefreshNode(IObjectValueNode node)
+		public void RefreshNode (AbstractObjectValueNode node)
 		{
 			if (node == null)
 				return;
@@ -576,7 +576,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
 		/// </summary>
-		public async Task ExpandNodeAsync (IObjectValueNode node)
+		public async Task ExpandNodeAsync (AbstractObjectValueNode node)
 		{
 			// if we think the node is expanded already, no need to trigger this again
 			if (node.IsExpanded)
@@ -605,12 +605,12 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Marks a node as not expanded
 		/// </summary>
-		public void CollapseNode (IObjectValueNode node)
+		public void CollapseNode (AbstractObjectValueNode node)
 		{
 			node.IsExpanded = false;
 		}
 
-		public async Task<int> FetchMoreChildrenAsync (IObjectValueNode node)
+		public async Task<int> FetchMoreChildrenAsync (AbstractObjectValueNode node)
 		{
 			if (node.ChildrenLoaded) {
 				return 0;
@@ -651,7 +651,7 @@ namespace MonoDevelop.Debugger
 		/// Fetches the child nodes and returns the count of new children that were loaded.
 		/// The children will be in node.Children.
 		/// </summary>
-		async Task<int> FetchChildrenAsync (IObjectValueNode node, int count, CancellationToken cancellationToken)
+		async Task<int> FetchChildrenAsync (AbstractObjectValueNode node, int count, CancellationToken cancellationToken)
 		{
 			if (node.ChildrenLoaded) {
 				return 0;
@@ -702,7 +702,7 @@ namespace MonoDevelop.Debugger
 		/// Registers the ValueChanged event for a node where IsEvaluating is true. If the node is not evaluating, and
 		/// sendImmediatelyIfNotEvaulating is true, then fire OnEvaluatingNodeValueChanged immediately 
 		/// </summary>
-		void RegisterForEvaluationCompletion (IObjectValueNode node, bool sendImmediatelyIfNotEvaulating = false)
+		void RegisterForEvaluationCompletion (AbstractObjectValueNode node, bool sendImmediatelyIfNotEvaulating = false)
 		{
 			if (node.IsEvaluating) {
 				evaluationWatches [node] = null;
@@ -715,7 +715,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Removes the ValueChanged handler from the node
 		/// </summary>
-		void UnregisterForEvaluationCompletion (IObjectValueNode node)
+		void UnregisterForEvaluationCompletion (AbstractObjectValueNode node)
 		{
 			if (node != null) {
 				node.ValueChanged -= OnEvaluatingNodeValueChanged;
@@ -741,7 +741,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Called when clearing, by default sets the root to a new ObjectValueNode
 		/// </summary>
-		protected virtual IObjectValueNode OnCreateRoot ()
+		protected virtual AbstractObjectValueNode OnCreateRoot ()
 		{
 			return new RootObjectValueNode ();
 		}
@@ -754,14 +754,14 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Registers the node in the index and sets a watch for evaluating nodes
 		/// </summary>
-		void RegisterNode (IObjectValueNode node)
+		void RegisterNode (AbstractObjectValueNode node)
 		{
 			if (node != null) {
 				RegisterForEvaluationCompletion (node);
 			}
 		}
 
-		void UnregisterNode (IObjectValueNode node)
+		void UnregisterNode (AbstractObjectValueNode node)
 		{
 			if (node != null) {
 				UnregisterForEvaluationCompletion (node);
@@ -771,7 +771,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Creates a checkpoint of the value of the node and any children that are expanded
 		/// </summary>
-		void ChangeCheckpoint (IObjectValueNode node)
+		void ChangeCheckpoint (AbstractObjectValueNode node)
 		{
 			oldValues[node.Path] = new CheckpointState (node);
 
@@ -783,7 +783,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		#region Event triggers
-		void OnChildrenLoaded (IObjectValueNode node, int index, int count)
+		void OnChildrenLoaded (AbstractObjectValueNode node, int index, int count)
 		{
 			ChildrenLoaded?.Invoke (this, new ChildrenChangedEventArgs (node, index, count));
 		}
@@ -793,7 +793,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		void OnEvaluatingNodeValueChanged (object sender, EventArgs e)
 		{
-			if (sender is IObjectValueNode node) {
+			if (sender is AbstractObjectValueNode node) {
 				UnregisterForEvaluationCompletion (node);
 
 				if (sender is IEvaluatingGroupObjectValueNode evalGroupNode) {
@@ -805,22 +805,22 @@ namespace MonoDevelop.Debugger
 						}
 
 						// TODO: we could improve how we notify this and pass child indexes as well
-						OnEvaluationCompleted (sender as IObjectValueNode, replacementNodes);
+						OnEvaluationCompleted (sender as AbstractObjectValueNode, replacementNodes);
 					} else {
-						OnEvaluationCompleted (sender as IObjectValueNode);
+						OnEvaluationCompleted (sender as AbstractObjectValueNode);
 					}
 				} else {
-					OnEvaluationCompleted (sender as IObjectValueNode);
+					OnEvaluationCompleted (sender as AbstractObjectValueNode);
 				}
 			}
 		}
 
-		void OnEvaluationCompleted (IObjectValueNode node)
+		void OnEvaluationCompleted (AbstractObjectValueNode node)
 		{
-			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, new IObjectValueNode [1] { node }));
+			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, new AbstractObjectValueNode [1] { node }));
 		}
 
-		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode [] replacementNodes)
+		void OnEvaluationCompleted (AbstractObjectValueNode node, AbstractObjectValueNode [] replacementNodes)
 		{
 			// `node` returns us a set of new nodes that need to be replaced into the children
 			// of node.parent. This should only be applicable to direct children of the root since
@@ -832,7 +832,7 @@ namespace MonoDevelop.Debugger
 			EvaluationCompleted?.Invoke (this, new NodeEvaluationCompletedEventArgs (node, replacementNodes));
 		}
 
-		void OnNodeExpanded (IObjectValueNode node)
+		void OnNodeExpanded (AbstractObjectValueNode node)
 		{
 			NodeExpanded?.Invoke (this, new NodeExpandedEventArgs (node));
 		}
@@ -840,7 +840,7 @@ namespace MonoDevelop.Debugger
 
 		class CheckpointState
 		{
-			public CheckpointState (IObjectValueNode node)
+			public CheckpointState (AbstractObjectValueNode node)
 			{
 				Expanded = node.IsExpanded;
 				Value = node.Value;
@@ -889,7 +889,7 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	public static class ObjectValueTreeViewControllerExtensions
 	{
-		public static void SetStackFrame(this ObjectValueTreeViewController controller, StackFrame frame)
+		public static void SetStackFrame (this ObjectValueTreeViewController controller, StackFrame frame)
 		{
 			controller.Frame = new ProxyStackFrame (frame);
 		}
@@ -909,7 +909,7 @@ namespace MonoDevelop.Debugger
 			controller.AddValues (values.Select (value => new ObjectValueNode (value)));
 		}
 
-		public static string[] GetExpressions(this ObjectValueTreeViewController controller)
+		public static string[] GetExpressions (this ObjectValueTreeViewController controller)
 		{
 			// given that expressions are only supported by themselves (ie not mixed with locals for example)
 			// and they are all children of the root, we can mimic a list of expressions by just grabbing the
@@ -923,7 +923,7 @@ namespace MonoDevelop.Debugger
 
 	public static class ObjectValueNodeExtensions
 	{
-		public static string GetDisplayValue(this IObjectValueNode node)
+		public static string GetDisplayValue (this AbstractObjectValueNode node)
 		{
 			if (node.DisplayValue == null)
 				return "(null)";
@@ -938,7 +938,7 @@ namespace MonoDevelop.Debugger
 			return node.DisplayValue;
 		}
 
-		public static ObjectValue GetDebuggerObjectValue(this IObjectValueNode node)
+		public static ObjectValue GetDebuggerObjectValue (this AbstractObjectValueNode node)
 		{
 			if (node != null && node is ObjectValueNode val) {
 				return val.DebuggerObject;
@@ -947,12 +947,12 @@ namespace MonoDevelop.Debugger
 			return null;
 		}
 
-		public static bool GetIsEvaluatingGroup (this IObjectValueNode node)
+		public static bool GetIsEvaluatingGroup (this AbstractObjectValueNode node)
 		{
 			return (node is IEvaluatingGroupObjectValueNode evg && evg.IsEvaluatingGroup);
 		}
 
-		public static string GetInlineVisualisation(this IObjectValueNode node)
+		public static string GetInlineVisualisation (this AbstractObjectValueNode node)
 		{
 			// TODO: this is not possible to mock as it is
 			if (node is ObjectValueNode val) {

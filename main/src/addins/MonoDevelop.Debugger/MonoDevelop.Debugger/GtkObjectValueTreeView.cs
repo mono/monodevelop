@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger
 		readonly ObjectValueTreeViewController controller;
 
 		// mapping of a node to the node's location in the tree view
-		readonly Dictionary<IObjectValueNode, TreeRowReference> allNodes = new Dictionary<IObjectValueNode, TreeRowReference> ();
+		readonly Dictionary<AbstractObjectValueNode, TreeRowReference> allNodes = new Dictionary<AbstractObjectValueNode, TreeRowReference> ();
 
 		// keep this lot....
 		readonly Xwt.Drawing.Image noLiveIcon;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Debugger
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 			this.controller.NodeExpanded += Controller_NodeExpanded;
 
-			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (IObjectValueNode));
+			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (AbstractObjectValueNode));
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
@@ -388,7 +388,7 @@ namespace MonoDevelop.Debugger
 			}).Ignore ();
 		}
 
-		void OnChildrenLoaded (IObjectValueNode node, int index, int count)
+		void OnChildrenLoaded (AbstractObjectValueNode node, int index, int count)
 		{
 			if (disposed)
 				return;
@@ -417,7 +417,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: if we don't want the scrolling, we can probably get rid of this
-		void OnNodeExpanded (IObjectValueNode node)
+		void OnNodeExpanded (AbstractObjectValueNode node)
 		{
 			if (disposed)
 				return;
@@ -442,7 +442,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Merge the node's children as children of the node in the tree
 		/// </summary>
-		void MergeChildrenIntoTree(IObjectValueNode node, TreeIter nodeIter, int index, int count)
+		void MergeChildrenIntoTree (AbstractObjectValueNode node, TreeIter nodeIter, int index, int count)
 		{
 			var nodeChildren = node.Children.ToList ();
 
@@ -479,7 +479,7 @@ namespace MonoDevelop.Debugger
 		/// Updates or replaces the node with the given replacement nodes when the debugger notifies
 		/// that the node has completed evaulation
 		/// </summary>
-		void OnEvaluationCompleted (IObjectValueNode node, IObjectValueNode[] replacementNodes)
+		void OnEvaluationCompleted (AbstractObjectValueNode node, AbstractObjectValueNode[] replacementNodes)
 		{
 			if (disposed)
 				return;
@@ -488,7 +488,7 @@ namespace MonoDevelop.Debugger
 				// TODO we can use an expression node here
 				// Keep the expression name entered by the user
 				//if (store.IterDepth (iter) == 0)
-				//	val.Name = (string)store.GetValue (iter, NameColumn);
+				//	val.Name = (string) store.GetValue (iter, NameColumn);
 
 				RemoveChildren (iter);
 
@@ -577,7 +577,7 @@ namespace MonoDevelop.Debugger
 			LoadState ();
 		}
 
-		bool LoadNode(IObjectValueNode node, TreeIter parent)
+		bool LoadNode (AbstractObjectValueNode node, TreeIter parent)
 		{
 			var result = false;
 			foreach (var val in node.Children) {
@@ -635,7 +635,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (iter, ValueButtonTextColumn, string.Empty);
 		}
 
-		TreeIter AppendNodeToTreeModel (TreeIter parent, string name, IObjectValueNode valueNode)
+		TreeIter AppendNodeToTreeModel (TreeIter parent, string name, AbstractObjectValueNode valueNode)
 		{
 			TreeIter iter;
 
@@ -649,7 +649,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: refactor this so that we can update a node without needing to know the parent iter all the time
-		void SetValues (TreeIter parent, TreeIter it, string name, IObjectValueNode val, bool updateJustValue = false)
+		void SetValues (TreeIter parent, TreeIter it, string name, AbstractObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path
 
@@ -804,7 +804,7 @@ namespace MonoDevelop.Debugger
 				RecalculateWidth ();
 
 			HideValueButton (iter);
-			controller.ExpandNodeAsync (node).Ignore();
+			controller.ExpandNodeAsync (node).Ignore ();
 		}
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
@@ -826,7 +826,7 @@ namespace MonoDevelop.Debugger
 			var path = new StringBuilder ();
 
 			do {
-				string name = (string)store.GetValue (iter, NameColumn);
+				string name = (string) store.GetValue (iter, NameColumn);
 				path.Insert (0, "/" + name);
 			} while (store.IterParent (out iter, iter));
 
@@ -894,16 +894,15 @@ namespace MonoDevelop.Debugger
 		{
 			OnEndEditing ();
 
-			TreeIter it;
-			if (!store.GetIterFromString (out it, args.Path))
+			if (!store.GetIterFromString (out TreeIter iter, args.Path))
 				return;
 
 			// get the node that we just edited
-			var val = GetNodeAtIter (it);
+			var val = GetNodeAtIter (iter);
 			if (controller.EditNodeValue (val, args.NewText)) {
 				// update the store
 				//store.SetValue (it, ValueColumn, val.GetDisplayValue());
-				SetValues (TreeIter.Zero, it, null, val);
+				SetValues (TreeIter.Zero, iter, null, val);
 			}
 		}
 
@@ -938,7 +937,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!wasHandled) {
 				CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
-				PopupCompletion ((Entry)sender);
+				PopupCompletion ((Entry) sender);
 			}
 		}
 
@@ -1215,7 +1214,7 @@ namespace MonoDevelop.Debugger
 					using (var layout = new Pango.Layout (PangoContext)) {
 						layout.FontDescription = crtExp.FontDesc.Copy ();
 						layout.FontDescription.Family = crtExp.Family;
-						layout.SetText ((string)store.GetValue (it, NameColumn));
+						layout.SetText ((string) store.GetValue (it, NameColumn));
 						layout.GetPixelSize (out w, out h);
 					}
 					startPreviewCaret.X += (int)(w + cr.Xpad * 3);
@@ -1374,8 +1373,8 @@ namespace MonoDevelop.Debugger
 					str.AppendLine ();
 				needsNewLine = true;
 
-				string value = (string)store.GetValue (iter, ValueColumn);
-				string type = (string)store.GetValue (iter, TypeColumn);
+				string value = (string) store.GetValue (iter, ValueColumn);
+				string type = (string) store.GetValue (iter, TypeColumn);
 				if (type == "string") {
 					var objVal = GetDebuggerObjectValueAtIter (iter);
 					if (objVal != null) {
@@ -1395,7 +1394,7 @@ namespace MonoDevelop.Debugger
 		protected void OnDelete ()
 		{
 			// TODO: remove all nodes at once
-			var nodesToDelete = new List<IObjectValueNode> ();
+			var nodesToDelete = new List<AbstractObjectValueNode> ();
 			foreach (var path in Selection.GetSelectedRows ()) {
 				if (!store.GetIter (out TreeIter iter, path))
 					continue;
@@ -1510,15 +1509,15 @@ namespace MonoDevelop.Debugger
 					var visible = cr.Visible;
 					if (cr == crpViewer) {
 						if (store.GetIter (out var it, path)) {
-							visible = (bool)store.GetValue (it, ViewerButtonVisibleColumn);
+							visible = (bool) store.GetValue (it, ViewerButtonVisibleColumn);
 						}
 					} else if (cr == evaluateStatusCell) {
 						if (store.GetIter (out var it, path)) {
-							visible = (bool)store.GetValue (it, EvaluateStatusIconVisibleColumn);
+							visible = (bool) store.GetValue (it, EvaluateStatusIconVisibleColumn);
 						}
 					} else if (cr == crpButton) {
 						if (store.GetIter (out var it, path)) {
-							visible = (bool)store.GetValue (it, ValueButtonVisibleColumn);
+							visible = (bool) store.GetValue (it, ValueButtonVisibleColumn);
 						}
 					}
 					if (visible && x >= xo && x < xo + w) {
@@ -1548,7 +1547,7 @@ namespace MonoDevelop.Debugger
 				path = store.GetPath (it);
 			}
 
-			name = (string)store.GetValue (it, NameColumn);
+			name = (string) store.GetValue (it, NameColumn);
 
 			return name + expression;
 		}
@@ -1708,7 +1707,7 @@ namespace MonoDevelop.Debugger
 			Xwt.Drawing.Color? color;
 			ObjectValue val = null;
 
-			var node = (IObjectValueNode)model.GetValue (iter, ObjectNodeColumn);
+			var node = (AbstractObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
 			if (node != null) {
 				val = node.GetDebuggerObjectValue ();
 			}
@@ -1804,7 +1803,7 @@ namespace MonoDevelop.Debugger
 			if (!currentHoverIter.Equals (it)) {
 				if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
 					if (ValidObjectForPreviewIcon (currentHoverIter)) {
-						if ((string)store.GetValue (currentHoverIter, PreviewIconColumn) != "md-empty")
+						if ((string) store.GetValue (currentHoverIter, PreviewIconColumn) != "md-empty")
 							store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
 					}
 				}
@@ -1831,23 +1830,23 @@ namespace MonoDevelop.Debugger
 						store.SetValue (it, PreviewIconColumn, null);
 					break;
 				case PreviewButtonIcons.Hidden:
-					if ((string)store.GetValue (it, PreviewIconColumn) != "md-empty")
+					if ((string) store.GetValue (it, PreviewIconColumn) != "md-empty")
 						store.SetValue (it, PreviewIconColumn, "md-empty");
 					break;
 				case PreviewButtonIcons.RowHover:
-					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-normal")
+					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-normal")
 						store.SetValue (it, PreviewIconColumn, "md-preview-normal");
 					break;
 				case PreviewButtonIcons.Hover:
-					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-hover")
+					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-hover")
 						store.SetValue (it, PreviewIconColumn, "md-preview-hover");
 					break;
 				case PreviewButtonIcons.Active:
-					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-active")
+					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-active")
 						store.SetValue (it, PreviewIconColumn, "md-preview-active");
 					break;
 				case PreviewButtonIcons.Selected:
-					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-selected") {
+					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-selected") {
 						store.SetValue (it, PreviewIconColumn, "md-preview-selected");
 					}
 					break;
@@ -2167,9 +2166,9 @@ namespace MonoDevelop.Debugger
 		//==================================================================================================================
 
 		#region Locator methods
-		static IObjectValueNode GetNodeAtIter (TreeIter iter, TreeModel model)
+		static AbstractObjectValueNode GetNodeAtIter (TreeIter iter, TreeModel model)
 		{
-			return (IObjectValueNode)model.GetValue (iter, ObjectNodeColumn);
+			return (AbstractObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
 		}
 
 		static ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter, TreeModel model)
@@ -2180,9 +2179,9 @@ namespace MonoDevelop.Debugger
 			return node?.GetDebuggerObjectValue ();
 		}
 
-		IObjectValueNode GetNodeAtIter (TreeIter iter)
+		AbstractObjectValueNode GetNodeAtIter (TreeIter iter)
 		{
-			return (IObjectValueNode)store.GetValue (iter, ObjectNodeColumn);
+			return (AbstractObjectValueNode) store.GetValue (iter, ObjectNodeColumn);
 		}
 
 		ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter)
@@ -2190,7 +2189,7 @@ namespace MonoDevelop.Debugger
 			return GetDebuggerObjectValueAtIter (iter, store);
 		}
 
-		TreePath GetTreePathForNode (IObjectValueNode node)
+		TreePath GetTreePathForNode (AbstractObjectValueNode node)
 		{
 			if (allNodes.TryGetValue (node, out TreeRowReference treeRef)) {
 				if (treeRef.Valid ()) {
@@ -2204,7 +2203,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Returns true if the iter of a node and it's parent can be found given the path of the node
 		/// </summary>
-		bool GetTreeIterFromNode (IObjectValueNode node, out TreeIter iter, out TreeIter parentIter)
+		bool GetTreeIterFromNode (AbstractObjectValueNode node, out TreeIter iter, out TreeIter parentIter)
 		{
 			parentIter = TreeIter.Zero;
 			iter = TreeIter.Zero;
