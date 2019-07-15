@@ -31,6 +31,7 @@ namespace MonoDevelop.VersionControl
 
 			updating = true;
 			repositoryUrlEntry.Text = repo.Url;
+			repositoryPortSpin.Adjustment.Lower = -1.0;
 			Fill ();
 			UpdateControls ();
 			updating = false;
