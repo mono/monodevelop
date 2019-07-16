@@ -1538,7 +1538,6 @@ namespace MonoDevelop.Components
 			var sel_bundleIdentifier = ObjCRuntime.Selector.GetHandle ("bundleIdentifier");
 
 			result = objc_msgSend_IntPtr (mainBundle, sel_bundleIdentifier) != IntPtr.Zero;
-			Console.WriteLine (result);
 
 			static IntPtr GetMainBundle ()
 			{
