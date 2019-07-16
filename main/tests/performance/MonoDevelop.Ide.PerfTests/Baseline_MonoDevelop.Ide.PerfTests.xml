@@ -10,9 +10,9 @@
             <results>
               <test-suite type="Namespace" name="PerfTests" executed="True" result="Success" success="True" time="118.656" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="TestFileWatcherHandlers" executed="True" result="Success" success="True" time="30.738" asserts="0">
+                  <test-suite type="TestFixture" name="TestFileWatcherHandlers" executed="True" result="Success" success="True" time="113.921" asserts="0">
                     <results>
-                      <test-case name="MonoDevelop.Ide.PerfTests.TestFileWatcherHandlers.TestHandlers" executed="True" result="Success" success="True" time="30.738" asserts="1">
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestFileWatcherHandlers.TestHandlers" executed="True" result="Success" success="True" time="113.921" asserts="1">
                         <properties>
                           <property name="Tolerance" value="0.3" />
                         </properties>
