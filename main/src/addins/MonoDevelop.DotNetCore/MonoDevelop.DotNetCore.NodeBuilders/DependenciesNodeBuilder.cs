@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -67,30 +68,37 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var node = (DependenciesNode)dataObject;
-			node.PackageDependencyCache.Refresh ();
+			AddChildren (treeBuilder, node.GetChildNodes ());
 		}
 
-		internal void BuildChildNodes (ITreeBuilder treeBuilder, DependenciesNode node)
+		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
 		{
-			var packagesNode = new PackageDependenciesNode (node);
-			if (packagesNode.HasChildNodes ())
-				AddChild (treeBuilder, packagesNode);
-
-			var sdkNode = new SdkDependenciesNode (node);
-			AddChild (treeBuilder, sdkNode);
-
-			var assembliesNode = new AssemblyDependenciesNode (node.Project);
-			if (assembliesNode.HasChildNodes ())
-				AddChild (treeBuilder, assembliesNode);
-
-			var projectsNode = new ProjectDependenciesNode (node.Project);
-			if (projectsNode.HasChildNodes ())
-				AddChild (treeBuilder, projectsNode);
+			treeBuilder.AddChildren (dataObjects);
 		}
 
-		protected virtual void AddChild (ITreeBuilder treeBuilder, object dataObject)
+		public override void OnNodeAdded (object dataObject)
 		{
-			treeBuilder.AddChild (dataObject);
+			var dependenciesNode = (DependenciesNode)dataObject;
+			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += OnPackageDependenciesChanged;
+		}
+
+		public override void OnNodeRemoved (object dataObject)
+		{
+			var dependenciesNode = (DependenciesNode)dataObject;
+			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged -= OnPackageDependenciesChanged;
+		}
+
+		void OnPackageDependenciesChanged (object sender, EventArgs e)
+		{
+			var cache = (PackageDependencyNodeCache)sender;
+			var project = cache.Project;
+			ITreeBuilder builder = Context.GetTreeBuilder (project);
+			if (builder == null)
+				return;
+
+			if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
+				builder.UpdateAll ();
+			}
 		}
 	}
 }

@@ -24,11 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
@@ -55,65 +52,14 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			var dependenciesNode = (SdkDependenciesNode)dataObject;
+			return dependenciesNode.HasChildNodes ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var dependenciesNode = (SdkDependenciesNode)dataObject;
-			if (dependenciesNode.LoadedDependencies) {
-				AddLoadedDependencyNodes (treeBuilder, dependenciesNode);
-			} else {
-				AddChildren (treeBuilder, dependenciesNode.GetDefaultNodes ());
-			}
-		}
-
-		void AddLoadedDependencyNodes (ITreeBuilder treeBuilder, SdkDependenciesNode dependenciesNode)
-		{
-			var frameworkNodes = GetTargetFrameworkNodes (dependenciesNode).ToList ();
-			if (frameworkNodes.Count > 1) {
-				AddChildren (treeBuilder, frameworkNodes);
-			} else if (frameworkNodes.Any ()) {
-				var frameworkNode = frameworkNodes.First ();
-				AddChildren (treeBuilder, frameworkNode.GetDependencyNodes ());
-			} else {
-				// Projects sometimes return no dependencies from MSBuild initially so
-				// add the default nodes until the dependencies are updated.
-				AddChildren (treeBuilder, dependenciesNode.GetDefaultNodes ());
-			}
-		}
-
-		IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (object dataObject)
-		{
-			var dependenciesNode = (SdkDependenciesNode)dataObject;
-			return dependenciesNode.GetTargetFrameworkNodes ();
-		}
-
-		public override void OnNodeAdded (object dataObject)
-		{
-			var dependenciesNode = (SdkDependenciesNode)dataObject;
-			dependenciesNode.ParentNode.PackageDependencyCache.PackageDependenciesChanged += OnPackageDependenciesChanged;
-		}
-
-		public override void OnNodeRemoved (object dataObject)
-		{
-			var dependenciesNode = (SdkDependenciesNode)dataObject;
-			dependenciesNode.ParentNode.PackageDependencyCache.PackageDependenciesChanged -= OnPackageDependenciesChanged;
-		}
-
-		void OnPackageDependenciesChanged (object sender, EventArgs e)
-		{
-			var cache = (PackageDependencyNodeCache)sender;
-			var project = cache.Project;
-			ITreeBuilder builder = Context.GetTreeBuilder (project);
-			if (builder == null)
-				return;
-
-			if (builder.MoveToChild (DependenciesNode.NodeName, typeof(DependenciesNode))) {
-				if (builder.MoveToChild (SdkDependenciesNode.NodeName, typeof(SdkDependenciesNode))) {
-					builder.UpdateAll ();
-				}
-			}
+			AddChildren (treeBuilder, dependenciesNode.GetChildNodes ());
 		}
 
 		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)

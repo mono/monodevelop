@@ -100,18 +100,47 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Fail ("Timed out waiting for package dependencies to be updated.");
 		}
 
+		static SdkDependenciesNode GetSdkFolder (TargetFrameworkNode frameworkNode)
+		{
+			var nodeBuilder = new TestableTargetFrameworkNodeBuilder ();
+			nodeBuilder.BuildChildNodes (null, frameworkNode);
+			return nodeBuilder.SdkDependencies;
+		}
+
 		List<PackageDependencyNode> GetSdkFolderChildDependencies ()
 		{
+			return GetSdkFolderChildDependencies (sdkFolderNode);
+		}
+
+		static List<PackageDependencyNode> GetSdkFolderChildDependencies (SdkDependenciesNode node)
+		{
 			var nodeBuilder = new TestableSdkDependenciesNodeBuilder ();
-			nodeBuilder.BuildChildNodes (null, sdkFolderNode);
+			nodeBuilder.BuildChildNodes (null, node);
 			return nodeBuilder.ChildNodesAsPackageDependencyNodes ().ToList ();
+		}
+
+		static PackageDependenciesNode GetNuGetFolder (TargetFrameworkNode frameworkNode)
+		{
+			var nodeBuilder = new TestableTargetFrameworkNodeBuilder ();
+			nodeBuilder.BuildChildNodes (null, frameworkNode);
+			return nodeBuilder.PackageDependencies;
 		}
 
 		List<PackageDependencyNode> GetNuGetFolderChildDependencies ()
 		{
+			return GetNuGetFolderChildDependencies (nugetFolderNode);
+		}
+
+		static List<PackageDependencyNode> GetNuGetFolderChildDependencies (PackageDependenciesNode node)
+		{
 			var nodeBuilder = new TestablePackageDependenciesNodeBuilder ();
-			nodeBuilder.BuildChildNodes (null, nugetFolderNode);
+			nodeBuilder.BuildChildNodes (null, node);
 			return nodeBuilder.ChildNodesAsPackageDependencyNodes ().ToList ();
+		}
+
+		List<TargetFrameworkNode> GetFrameworkChildDependencies ()
+		{
+			return dependenciesNodeBuilder.TargetFrameworks;
 		}
 
 		[Test]
@@ -290,6 +319,69 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (diagnosticNode.CanBeRemoved);
 			Assert.AreEqual (TaskSeverity.Warning, diagnosticNode.GetStatusSeverity ());
 			Assert.AreEqual (diagnosticNode.GetStatusMessage (), diagnosticMessage);
+		}
+
+		[Test]
+		public async Task MultiTarget_NetStandardAndNetCoreApp_NewtonsoftJsonNuGetPackageReference ()
+		{
+			FilePath projectFileName = Util.GetSampleProject ("multi-target", "multi-target3.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			var frameworkNodes = GetFrameworkChildDependencies ();
+			var netstandardFrameworkNode = frameworkNodes.FirstOrDefault (node => node.Name == ".NETStandard");
+			var netframeworkNode = frameworkNodes.FirstOrDefault (node => node.Name == ".NETFramework");
+
+			Assert.IsNotNull (netstandardFrameworkNode);
+			Assert.IsNotNull (netframeworkNode);
+			Assert.AreEqual ("(1.0.0.0)", netstandardFrameworkNode.GetSecondaryLabel ());
+			Assert.AreEqual ("(4.7.2.0)", netframeworkNode.GetSecondaryLabel ());
+			Assert.AreEqual (2, frameworkNodes.Count);
+
+			// .NET Standard child nodes
+			var childSdkFolderNode = GetSdkFolder (netstandardFrameworkNode);
+			var sdkNode = GetSdkFolderChildDependencies (childSdkFolderNode).Single ();
+			Assert.AreEqual ("NETStandard.Library", sdkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", sdkNode.GetLabel ());
+			Assert.IsTrue (sdkNode.IsReadOnly);
+			Assert.IsFalse (sdkNode.CanBeRemoved);
+			Assert.IsTrue (sdkNode.IsTopLevel);
+
+			var childNodes = sdkNode.GetDependencyNodes ().ToList ();
+			var systemThreadingNode = childNodes.FirstOrDefault (node => node.Name == "System.Threading");
+			Assert.IsFalse (systemThreadingNode.CanBeRemoved);
+			Assert.IsFalse (systemThreadingNode.IsTopLevel);
+
+			var childNuGetFolderNode = GetNuGetFolder (netstandardFrameworkNode);
+			var newtonsoftNode = GetNuGetFolderChildDependencies (childNuGetFolderNode).Single ();
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.Name);
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.GetLabel ());
+			Assert.AreEqual ("(10.0.1)", newtonsoftNode.GetSecondaryLabel ());
+			Assert.IsTrue (newtonsoftNode.CanBeRemoved);
+			Assert.IsFalse (newtonsoftNode.IsReadOnly);
+			Assert.IsTrue (newtonsoftNode.IsTopLevel);
+			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
+			Assert.IsTrue (newtonsoftNode.HasDependencies ());
+
+			childNodes = newtonsoftNode.GetDependencyNodes ().ToList ();
+			var microsoftCSharpNode = childNodes.FirstOrDefault (node => node.Name == "Microsoft.CSharp");
+			Assert.IsFalse (microsoftCSharpNode.CanBeRemoved);
+			Assert.IsFalse (microsoftCSharpNode.IsTopLevel);
+
+			// .NET Framework child nodes.
+			childSdkFolderNode = GetSdkFolder (netframeworkNode);
+			Assert.IsNull (childSdkFolderNode); // Should not exist.
+
+			childNuGetFolderNode = GetNuGetFolder (netframeworkNode);
+			newtonsoftNode = GetNuGetFolderChildDependencies (childNuGetFolderNode).Single ();
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.Name);
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.GetLabel ());
+			Assert.AreEqual ("(10.0.3)", newtonsoftNode.GetSecondaryLabel ());
+			Assert.IsTrue (newtonsoftNode.CanBeRemoved);
+			Assert.IsFalse (newtonsoftNode.IsReadOnly);
+			Assert.IsTrue (newtonsoftNode.IsTopLevel);
+			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
 		}
 	}
 }

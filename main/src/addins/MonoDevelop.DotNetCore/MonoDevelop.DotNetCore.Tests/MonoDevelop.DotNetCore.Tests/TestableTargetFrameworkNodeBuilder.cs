@@ -1,5 +1,5 @@
 //
-// TestableDependenciesNodeBuilder.cs
+// TestableTargetFrameworkNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
-	class TestableDependenciesNodeBuilder : DependenciesNodeBuilder
+	class TestableTargetFrameworkNodeBuilder : TargetFrameworkNodeBuilder
 	{
 		public List<object> ChildNodes = new List<object> ();
 
@@ -39,7 +39,6 @@ namespace MonoDevelop.DotNetCore.Tests
 		public SdkDependenciesNode SdkDependencies;
 		public ProjectDependenciesNode ProjectDependencies;
 		public AssemblyDependenciesNode AssemblyDependencies;
-		public List<TargetFrameworkNode> TargetFrameworks = new List<TargetFrameworkNode> ();
 
 		void AddChild (ITreeBuilder treeBuilder, object dataObject)
 		{
@@ -53,8 +52,6 @@ namespace MonoDevelop.DotNetCore.Tests
 				ProjectDependencies = projectDependencies;
 			} else if (dataObject is SdkDependenciesNode sdkDependencies) {
 				SdkDependencies = sdkDependencies;
-			} else if (dataObject is TargetFrameworkNode targetFramework) {
-				TargetFrameworks.Add (targetFramework);
 			}
 		}
 
