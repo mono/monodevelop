@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui
 				statusBar.AutoPulse = true;
 			if (inProgress) {
 				if (progressImage != IconId.Null)
-					statusBar.BeginProgress (progressMessage, progressImage);
+					statusBar.BeginProgress (progressImage, progressMessage);
 				else
 					statusBar.BeginProgress (progressMessage);
 			}
