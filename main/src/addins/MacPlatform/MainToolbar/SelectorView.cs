@@ -696,7 +696,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 						var _configuration = configuration;
 						var menuitem = new NSMenuItem (configuration.DisplayString, (o2, e2) => {
-							ActiveRunConfiguration = runConfigurationModel.First (c => c.OriginalId == _configuration.OriginalId);
+							ActiveRunConfiguration = runConfigurationModel.FirstOrDefault (c => c.OriginalId == _configuration.OriginalId);
 						}) {
 							Enabled = true,
 							IndentationLevel = 1,
@@ -715,7 +715,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 						var _configuration = configuration;
 						var menuitem = new NSMenuItem (configuration.DisplayString, (o2, e2) => {
-							ActiveConfiguration = configurationModel.First (c => c.OriginalId == _configuration.OriginalId);
+							ActiveConfiguration = configurationModel.FirstOrDefault (c => c.OriginalId == _configuration.OriginalId);
 						}) {
 							Enabled = true,
 							IndentationLevel = 1,
