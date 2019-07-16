@@ -56,12 +56,6 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal DotNetProjectConfiguration (string name, string platform, string framework)
-			: base (name, platform)
-		{
-			FrameworkShortName = framework;
-		}
-
 		internal protected override void Read (IPropertySet pset)
 		{
 			base.Read (pset);
@@ -223,7 +217,8 @@ namespace MonoDevelop.Projects
 
 		public override ConfigurationSelector Selector {
 			get {
-				if (string.IsNullOrEmpty (FrameworkShortName))
+				string framework = GetMultiTargetFrameworkShortName ();
+				if (string.IsNullOrEmpty (framework))
 					return base.Selector;
 
 				string id = Name;
@@ -231,11 +226,9 @@ namespace MonoDevelop.Projects
 					id += "|" + Platform;
 
 				var selector = new ItemConfigurationSelector (id);
-				return new DotNetProjectFrameworkConfigurationSelector (selector, FrameworkShortName);
+				return new DotNetProjectFrameworkConfigurationSelector (selector, framework);
 			}
 		}
-
-		internal string FrameworkShortName { get; set; }
 
 		internal DotNetProjectConfiguration GetConfiguration (string framework)
 		{
@@ -244,17 +237,35 @@ namespace MonoDevelop.Projects
 			return ParentItem.GetConfiguration (Name, Platform, framework) as DotNetProjectConfiguration;
 		}
 
+		/// <summary>
+		/// Returns short name for TargetFramework only if the project is a multi-target framework project.
+		/// </summary>
+		internal string GetMultiTargetFrameworkShortName ()
+		{
+			if (IsMultiTarget)
+				return TargetFrameworkShortName;
+			return null;
+		}
+
+		/// <summary>
+		/// Do not want to change the Id for single framework since this is displayed in the UI. Only when getting
+		/// project information such as References for a specific framework do we want to change the Id since it is
+		/// used for caching.
+		/// </summary>
+		internal bool IsMultiTarget { get; set; }
+
 		internal protected override string GetId ()
 		{
 			bool hasPlatform = !string.IsNullOrEmpty (Platform);
-			bool hasFramework = !string.IsNullOrEmpty (FrameworkShortName);
+
+			bool hasFramework = IsMultiTarget && !string.IsNullOrEmpty (TargetFrameworkShortName);
 
 			if (hasPlatform && hasFramework)
-				return Name + "|" + Platform + "|" + FrameworkShortName;
+				return Name + "|" + Platform + "|" + TargetFrameworkShortName;
 			else if (hasPlatform)
 				return Name + "|" + Platform;
 			else if (hasFramework)
-				return Name + "||" + FrameworkShortName;
+				return Name + "||" + TargetFrameworkShortName;
 			else
 				return Name;
 		}
