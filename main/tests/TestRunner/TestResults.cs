@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Xml;
 
-namespace PerfTool.TestModel
+namespace MonoDevelop.Tests.TestRunner.TestModel
 {
 	[XmlRoot (ElementName = "environment")]
 	public class Environment

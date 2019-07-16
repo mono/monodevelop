@@ -49,6 +49,7 @@ using MDTextFile = MonoDevelop.Projects.Text.TextFile;
 namespace Mono.Debugging.PerfTests
 {
 	[TestFixture]
+	[BenchmarkCategory]
 	public abstract class PerfTestBase
 	{
 		const string TestAppProjectDirName = "MonoDevelop.Debugger.Tests.TestApp";

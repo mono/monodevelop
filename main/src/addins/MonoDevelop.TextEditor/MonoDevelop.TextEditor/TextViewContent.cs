@@ -378,8 +378,6 @@ namespace MonoDevelop.TextEditor
 			if (policyContainer != null)
 				policyContainer.PolicyChanged += PolicyChanged;
 
-			UpdateOptionsFromPolicy ();
-
 			var newEditorConfigContext = await EditorConfigService.GetEditorConfigContext (FilePath, default);
 			if (newEditorConfigContext != editorConfigContext) {
 				if (editorConfigContext != null)
@@ -425,6 +423,9 @@ namespace MonoDevelop.TextEditor
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
 		{
+			// Set base options first, then override with editorconfig values
+			UpdateOptionsFromPolicy ();
+
 			if (editorConfigContext == null)
 				return Task.FromResult (false);
 
@@ -442,21 +443,25 @@ namespace MonoDevelop.TextEditor
 			var setVerticalRulers = false;
 			int [] verticalRulers = null;
 
-			if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.RulersConvention, out var rulers)) {
-				setVerticalRulers = true;
-				if (!string.IsNullOrEmpty(rulers)) {
-					verticalRulers = Array.ConvertAll (rulers.Split (','), val => {
-						if (int.TryParse (val, out var col))
-							return col;
-						return 0;
-					});
-				}
-			} else if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out var maxLineLength)) {
-				if (maxLineLength != "off" && int.TryParse (maxLineLength, out var i)) {
+			// "Show column ruler" preference still needs to be checked, regardless of whether or not editorconfig
+			// has a setting for where rulers should appear
+			if (PropertyService.Get<bool> ("ShowRuler")) {
+				if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.RulersConvention, out var rulers)) {
 					setVerticalRulers = true;
-					verticalRulers = new [] { i };
-				} else
-					setVerticalRulers = false;
+					if (!string.IsNullOrEmpty (rulers)) {
+						verticalRulers = Array.ConvertAll (rulers.Split (','), val => {
+							if (int.TryParse (val, out var col))
+								return col;
+							return 0;
+						});
+					}
+				} else if (editorConfigContext.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out var maxLineLength)) {
+					if (maxLineLength != "off" && int.TryParse (maxLineLength, out var i)) {
+						setVerticalRulers = true;
+						verticalRulers = new [] { i };
+					} else
+						setVerticalRulers = false;
+				}
 			}
 
 #if !WINDOWS

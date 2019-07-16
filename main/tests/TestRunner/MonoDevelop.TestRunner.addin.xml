@@ -2,6 +2,7 @@
 
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "run-md-tests" class = "MonoDevelop.Tests.TestRunner.Runer" description = "Runs the MonoDevelop unit test suite"/>
+		<Application id = "update-perf-baseline" class = "MonoDevelop.Tests.TestRunner.PerfTool" description = "Update a perf test suite's baseline"/>
 	</Extension>
 
 </ExtensionModel>

@@ -49,7 +49,7 @@ namespace MonoDevelop.DotNetCore
 				return GenerateDotNetCoreUpdateInfo ();
 			return null;
 		}
-
+		
 		UpdateInfo GenerateDotNetCoreUpdateInfo ()
 		{
 			var latestSdkVersion = DotNetCoreSdk.Versions.FirstOrDefault ();
@@ -61,10 +61,7 @@ namespace MonoDevelop.DotNetCore
 			return null;
 		}
 
-		static bool IsSierraOrHigher ()
-		{
-			return Platform.IsMac && (Platform.OSVersion >= MacSystemInformation.Sierra);
-		}
+		static bool IsSierraOrHigher () => Platform.IsMac && (Platform.OSVersion >= MacSystemInformation.Sierra);
 
 		string GetDescription ()
 		{
@@ -94,8 +91,11 @@ namespace MonoDevelop.DotNetCore
 
 		static string GetDotNetSdkLocation ()
 		{
-			if (DotNetCoreSdk.IsInstalled)
-				return DotNetCoreSdk.MSBuildSDKsPath;
+			var dotNetCoreSdkPaths = new DotNetCoreSdkPaths ();
+			if (dotNetCoreSdkPaths.GetInstalledSdkVersions ().Any ()) {
+				dotNetCoreSdkPaths.ResolveSDK ();
+				return dotNetCoreSdkPaths.MSBuildSDKsPath;
+			}
 
 			return GetNotInstalledString ();
 		}

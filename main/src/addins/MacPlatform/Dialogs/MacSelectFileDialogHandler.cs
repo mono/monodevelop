@@ -96,7 +96,14 @@ namespace MonoDevelop.MacIntegration
 					return false;
 				
 				string path = url.Path;
-				
+
+				// According to the NSUrl documentation
+				// If the receiver contains a file reference URL,
+				// this property’s value provides the current path for the referenced resource, which may be nil if the resource no longer exists.
+				if (string.IsNullOrEmpty (path)) {
+					return false;
+				}
+
 				//always make directories selectable, unless they're app bundles
 				if (System.IO.Directory.Exists (path))
 					return !path.EndsWith (".app", StringComparison.OrdinalIgnoreCase);

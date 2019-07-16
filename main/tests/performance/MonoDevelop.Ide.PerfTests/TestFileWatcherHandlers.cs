@@ -37,6 +37,7 @@ using NUnit.Framework;
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture]
+	[BenchmarkCategory]
 	public class TestFileWatcherHandlers : UITestBase
 	{
 		public override void SetUp ()
@@ -45,10 +46,11 @@ namespace MonoDevelop.Ide.PerfTests
 			PreStart ();
 		}
 
-		[TestCase (1000)]
+		[Test]
 		[Benchmark (Tolerance = 0.20)]
-		public void TestHandlers (int fileCount)
+		public void TestHandlers ()
 		{
+			const int fileCount = 1000;
 			OpenApplicationAndWait ();
 
 			var solutionDirectory = Path.GetDirectoryName (OpenExampleSolutionAndWait (out _));
