@@ -47,6 +47,18 @@ namespace Mono.Debugging.PerfTests
 		}
 
 		[Test]
+		[Benchmark (Tolerance = 0.01)]
+		public void DebuggerStartup ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+
+			BenchmarkAction (() => {
+				StartTest ("OneLineProperty");
+			});
+		}
+
+		[Test]
 		[Benchmark (Tolerance = 0.1)]
 		public void OneLineProperty ()
 		{
