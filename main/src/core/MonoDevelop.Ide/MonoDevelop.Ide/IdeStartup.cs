@@ -32,7 +32,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -193,8 +192,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 
-			instanceConnection = new IdeInstanceConnection ();
-			instanceConnection.Initialize (options.IpcTcp);
+			instanceConnection = new IdeInstanceConnection (options.IpcTcp);
 
 			// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
 			if (!options.NewWindow && startupInfo.HasFiles && instanceConnection.TryConnect (startupInfo))
