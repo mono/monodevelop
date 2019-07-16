@@ -1530,6 +1530,27 @@ namespace MonoDevelop.Components
 #endif
 		}
 
+		internal static bool IsRunFromBundle ()
+		{
+			bool result = false;
+#if MAC
+			IntPtr mainBundle = GetMainBundle ();
+			var sel_bundleIdentifier = ObjCRuntime.Selector.GetHandle ("bundleIdentifier");
+
+			result = objc_msgSend_IntPtr (mainBundle, sel_bundleIdentifier) != IntPtr.Zero;
+			Console.WriteLine (result);
+
+			static IntPtr GetMainBundle ()
+			{
+				var class_runningApplication = ObjCRuntime.Class.GetHandle ("NSBundle");
+				var sel_mainBundle = ObjCRuntime.Selector.GetHandle ("mainBundle");
+
+				return objc_msgSend_IntPtr (class_runningApplication, sel_mainBundle);
+			}
+#endif
+			return result;
+		}
+
 		[DllImport ("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtk_get_current_event ();
 
