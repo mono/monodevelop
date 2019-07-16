@@ -130,6 +130,7 @@
     <Compile Include="MonoDevelop.Ide.FindInFiles\PatternMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\GLibLoggingTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\OutputOptionsPanelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -196,6 +197,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.Gui.DocumentModels\" />
     <Folder Include="MonoDevelop.Ide.Gui.Documents\" />
+    <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
