@@ -765,6 +765,22 @@ namespace MonoDevelop.MacIntegration
 		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public extern static IntPtr IntPtr_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1);
 
+		private static NSImage applicationIcon;
+		internal static NSImage ApplicationIcon {
+			get {
+				if (applicationIcon == null) {
+					// use the bundle icon by default
+					// if run from a bundle, this will be the icon from the bundle icon file.
+					// if not run from a bundle, this will be the default file icon of the mono framework folder.
+					applicationIcon = NSWorkspace.SharedWorkspace.IconForFile (NSBundle.MainBundle.BundlePath);
+				}
+				return applicationIcon;
+			}
+			set {
+				applicationIcon = value;
+			}
+		}
+
 		static void SetupDockIcon ()
 		{
 			NSObject initialBundleIconFileValue;
@@ -792,7 +808,7 @@ namespace MonoDevelop.MacIntegration
 				var imageFile = new NSString (iconFile);
 
 				IntPtr p = IntPtr_objc_msgSend_IntPtr (image.Handle, Selector.GetHandle ("initByReferencingFile:"), imageFile.Handle);
-				NSApplication.SharedApplication.ApplicationIconImage = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
+				NSApplication.SharedApplication.ApplicationIconImage = applicationIcon = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
 			}
 		}
 
