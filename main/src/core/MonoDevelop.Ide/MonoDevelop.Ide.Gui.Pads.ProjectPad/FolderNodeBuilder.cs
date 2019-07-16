@@ -553,13 +553,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			newFolder.Subtype = Subtype.Directory;
 			project.Files.Add (newFolder);
 
-			await IdeApp.ProjectOperations.SaveAsync (project);
-
 			Tree.AddNodeInsertCallback (new ProjectFolder (newFolderPath, project), nav => {
 				nav.Selected = true;
 				nav.Expanded = true;
 				Tree.StartLabelEdit ();
 			});
+
+			await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 
 		static bool AddNewFolder (FilePath directoryPath)

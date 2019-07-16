@@ -270,7 +270,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			void UpdateNode (NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
 				bool isNew = false;
-
+				if (pad.editingText && currentIter.Equals (pad.editingIter))
+					return;
 				var ni = (NodeInfo)store.GetValue (currentIter, ExtensibleTreeView.NodeInfoColumn);
 				if (ni == null || ni.IsShared) {
 					ni = new NodeInfo ();
