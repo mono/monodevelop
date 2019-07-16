@@ -713,7 +713,12 @@ namespace MonoDevelop.Ide
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
 			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
-			return newProjectDialog.Show ();
+			var show = newProjectDialog.Show ();
+			if (show) {
+				WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
+				return await newProjectDialog.ProjectCreation;
+			}
+			return false;
 		}
 		
 		public Task<WorkspaceItem> AddNewWorkspaceItem (Workspace parentWorkspace)
