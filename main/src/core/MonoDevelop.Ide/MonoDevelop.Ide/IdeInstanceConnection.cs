@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide
 
 		public IdeInstanceConnection (bool ipcTcp)
 		{
+			// macOS has native support for opening files in an open instance
+			// via AppleEvents for applications distributed as bundles, so disable
+			// this support.
 			if (Platform.IsMac && Components.GtkWorkarounds.IsRunFromBundle ()) {
 				return;
 			}
