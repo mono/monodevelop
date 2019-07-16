@@ -29,7 +29,6 @@ using NUnit.Framework;
 
 namespace Mono.Debugging.PerfTests.Soft
 {
-	[TestFixture]
 	public class SdbSteppingTests : SteppingTests
 	{
 		public SdbSteppingTests () : base ("Mono.Debugger.Soft")
