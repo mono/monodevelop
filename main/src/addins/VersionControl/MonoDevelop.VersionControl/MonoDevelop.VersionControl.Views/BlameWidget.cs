@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -115,7 +116,6 @@ namespace MonoDevelop.VersionControl.Views
 			GtkWorkarounds.FixContainerLeak (this);
 			
 			this.info = info;
-			var textView = info.Controller.GetContent<ITextView> ();
 
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
@@ -129,10 +129,19 @@ namespace MonoDevelop.VersionControl.Views
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 
-			var doc = new TextDocument (textView.TextSnapshot.GetText()) {
-				IsReadOnly = true,
-				MimeType = IdeServices.DesktopService.GetMimeTypeForContentType (textView.TextBuffer.ContentType)
-			};
+			var textView = info.Controller.GetContent<ITextView> ();
+			TextDocument doc;
+			if (textView != null) {
+				doc = new TextDocument (textView.TextSnapshot.GetText ()) {
+					IsReadOnly = true,
+					MimeType = IdeServices.DesktopService.GetMimeTypeForContentType (textView.TextBuffer.ContentType)
+				};
+			} else {
+				doc = new TextDocument (TextFileUtility.GetText (info.Item.Path)) {
+					IsReadOnly = true,
+					MimeType = IdeServices.DesktopService.GetMimeTypeForUri (info.Item.Path)
+				};
+			}
 			var options = new CustomEditorOptions (DefaultSourceEditorOptions.Instance);
 			options.TabsToSpaces = false;
 

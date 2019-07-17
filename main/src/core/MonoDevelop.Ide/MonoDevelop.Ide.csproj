@@ -4344,6 +4344,7 @@
     <InternalsVisibleTo Include="MonoDevelop.Xml" />
     <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.UserInterfaceTesting" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl" />
     <InternalsVisibleTo Include="WebToolingAddin" />
     <InternalsVisibleTo Include="WindowsPlatform" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
