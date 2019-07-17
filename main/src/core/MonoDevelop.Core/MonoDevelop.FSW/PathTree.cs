@@ -34,12 +34,13 @@ namespace MonoDevelop.FSW
 	class PathTree
 	{
 		internal readonly PathTreeNode rootNode;
+		internal readonly PathTreeNode pathRoot;
 
 		public PathTree ()
 		{
-			rootNode = new PathTreeNode ("", 0, 0);
+			pathRoot = rootNode = new PathTreeNode ("", 0, 0);
 			if (!Platform.IsWindows) {
-				rootNode.FirstChild = new PathTreeNode ("/", 0, 0) {
+				pathRoot = rootNode.FirstChild = new PathTreeNode ("/", 0, 0) {
 					Parent = rootNode,
 				};
 				rootNode.ChildrenCount = 1;
@@ -53,9 +54,13 @@ namespace MonoDevelop.FSW
 		}
 
 		public PathTreeNode FindNodeContaining (string path)
-			=> TryFind (path, out var result, out var parent, out _, out _)
-			? result
-			: parent != rootNode ? parent : null;
+		{
+			if (!TryFind (path, out var result, out var parent, out _, out _)) {
+				result = parent;
+			}
+
+			return result != pathRoot || result.IsLive ? result : null;
+		}
 
 		public IEnumerable<PathTreeNode> Normalize (int maxLeafs)
 		{
@@ -68,7 +73,7 @@ namespace MonoDevelop.FSW
 			var queue = new Queue<PathTreeNode>(maxLeafs);
 
 			int yielded = 0;
-			var child = rootNode.FirstChild;
+			var child = pathRoot;
 			while (child != null)
 			{
 				if (child.IsLive)
@@ -115,13 +120,10 @@ namespace MonoDevelop.FSW
 			lastIndex = 0;
 
 			parent = rootNode;
-			var currentNode = parent.FirstChild;
+			var currentNode = pathRoot;
 			previousNode = null;
-			result = null;
 
 			var remainingSegments = path.AsSpan ().TrimEnd (Path.DirectorySeparatorChar);
-			if (remainingSegments.Length == 0)
-				return false;
 
 			while (currentNode != null)
 			{
@@ -200,7 +202,7 @@ namespace MonoDevelop.FSW
 
 			if (result.UnregisterId (id) && !result.IsLive) {
 				var nodeToRemove = result;
-				var lastToRemove = Platform.IsWindows ? rootNode : rootNode.FirstChild;
+				var lastToRemove = pathRoot;
 
 				while (nodeToRemove != lastToRemove && IsDeadSubtree (nodeToRemove)) {
 					parent.ChildrenCount -= 1;

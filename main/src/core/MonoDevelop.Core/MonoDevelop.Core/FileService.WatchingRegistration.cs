@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
 using MonoDevelop.FSW;
 
 namespace MonoDevelop.Core
@@ -32,18 +33,25 @@ namespace MonoDevelop.Core
 	{
 		sealed class WatchingRegistration : IDisposable
 		{
+			ReaderWriterLockSlim readerWriterLock;
 			PathTree tree;
 			PathTreeNode node;
 
 			// TODO: Maybe just pass a FilePath, cause each arg will contain items we are not looking at.
 			Action<FileEventArgs> handler;
 
-			public WatchingRegistration (PathTree tree, string path, Action<FileEventArgs> handler)
+			public WatchingRegistration (PathTree tree, FilePath path, Action<FileEventArgs> handler, ReaderWriterLockSlim readerWriterLock)
 			{
 				this.tree = tree;
 				this.handler = handler;
+				this.readerWriterLock = readerWriterLock;
 
-				tree.AddNode (path, this);
+				readerWriterLock.EnterWriteLock ();
+				try {
+					node = tree.AddNode (path, this);
+				} finally {
+					readerWriterLock.ExitWriteLock ();
+				}
 			}
 
 			public void Notify (FileEventArgs args) => handler.Invoke (args);
@@ -51,11 +59,17 @@ namespace MonoDevelop.Core
 			public void Dispose ()
 			{
 				if (tree != null) {
-					tree.RemoveNode (node, this);
-					tree = null;
+					readerWriterLock.EnterWriteLock ();
+					try {
+						tree.RemoveNode (node, this);
+					} finally {
+						readerWriterLock.ExitWriteLock ();
+					}
 
+					tree = null;
 					node = null;
-					handler = null;
+					handler = args => {};
+					readerWriterLock = null;
 				}
 			}
 		}

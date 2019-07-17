@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
 using MonoDevelop.FSW;
 
 namespace MonoDevelop.Core
@@ -33,28 +34,41 @@ namespace MonoDevelop.Core
 		public sealed class WatchingHandler
 		{
 			readonly PathTree watchingTree = new PathTree ();
+			readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim (LockRecursionPolicy.NoRecursion);
 
 			internal WatchingHandler () {}
 
-			public IDisposable WatchForFilesCreated (string path, Action<FileEventArgs> handler)
+			public IDisposable WatchForFilesCreated (FilePath path, Action<FileEventArgs> handler)
 			{
 				// 2 options:
 				// * one tree per notification kind - more memory but fewer traversal iterations when checking whether to notify
 				// * use the same tree, register the notification kind in the registration/id.
-				return new WatchingRegistration (watchingTree, path, handler);
+				return new WatchingRegistration (watchingTree, path, handler, readerWriterLock);
 			}
 
-			internal void NotifyIfNeeded (string path)
+			internal void NotifyIfNeeded (FileEventArgs args)
 			{
-				// Find whether this path is being watched
-				// Algorithm options:
-				// Find child segment equal to ours - 1)
-				// - found	->
-				// - * still have children? advance segment, repeat 1)
-				// - * no children? notify
-				// - not found -> don't notify
+				readerWriterLock.EnterReadLock ();
+				try {
+					foreach (var arg in args) {
+						var path = arg.FileName;
 
-				// Worst case - O(N_edges)
+						// TODO: Optimize this so we do callback when looking up nodes, so we avoid useless work.
+
+						// Find if the node has any registration, and if it does, recursively notify parents
+						var node = watchingTree.FindNodeContaining (path);
+						while (node != null) {
+							if (node.IsLive) {
+								foreach (var id in node.Ids) {
+									((WatchingRegistration)id).Notify (args);
+								}
+							}
+							node = node.Parent;
+						}
+					}
+				} finally {
+					readerWriterLock.ExitReadLock ();
+				}
 			}
 		}
 	}
