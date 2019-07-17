@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.IO;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.Debugger
 {
@@ -90,11 +91,21 @@ namespace MonoDevelop.Debugger
 					}
 
 					if (frame.SourceLocation.SourceLink != null) {
-						var saveTo = await frame.SourceLocation.SourceLink.DownloadFile (frame.SourceLocation.FileName, symbolCachePath);
-						frame.UpdateSourceFile (saveTo);
-						var doc = await IdeApp.Workbench.OpenDocument (saveTo, null, line, 1, OpenDocumentOptions.Debugger);
-						if (doc != null)
-							return;
+						var downloadInfo = frame.SourceLocation.SourceLink.GetDownloadLocation (frame.SourceLocation.FileName, symbolCachePath);
+						// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
+						if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
+							Directory.GetParent (downloadInfo.LocalPath).Create ();
+							var client = HttpClientProvider.CreateHttpClient (downloadInfo.HttpBasePath);
+							using (var stream = await client.GetStreamAsync (downloadInfo.HttpBasePath)) {
+								using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
+									await stream.CopyToAsync (fs);
+								}
+							}
+							frame.UpdateSourceFile (downloadInfo.LocalPath);
+							var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
+							if (doc != null)
+								return;
+						}
 					}
 				}
 			}
