@@ -35,7 +35,7 @@ namespace MonoDevelop.FSW
 	[TestFixture]
 	public class PathTreeTests
 	{
-		static object id = new object ();
+		static readonly object id = new object ();
 
 		[Test]
 		public void CreateEmptyTree ()
@@ -46,6 +46,8 @@ namespace MonoDevelop.FSW
 			if (!Platform.IsWindows) {
 				node = node.FirstChild;
 				Assert.AreEqual ("", node.GetPath ().ToString ());
+
+				Assert.AreSame (tree.pathRoot, node);
 			}
 
 			Assert.IsNull (node.FirstChild);
@@ -575,7 +577,7 @@ namespace MonoDevelop.FSW
 			//   + g
 			//     + g1
 			//     + g2
-			Assert.IsNull (tree.FindNodeContaining ("non_existent"));
+			Assert.IsNull (tree.FindNodeContaining (MakePath ("non_existent")));
 			Assert.IsNull (tree.FindNodeContaining (""));
 
 			AssertNodeContaining (MakePath ("a"));
