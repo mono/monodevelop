@@ -1,6 +1,7 @@
 ﻿<ExtensionModel>
 	<Runtime>
 		<Import assembly="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Editor.Imaging.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
@@ -51,6 +52,7 @@
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 		<!-- these are coming from vs-editor-core (Cocoa implementations) -->
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Editor.Imaging.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
@@ -89,7 +91,7 @@
 	</Extension>
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
 	<!--
-		Don't re-add this! See bug 937834 for more details. Basically let native editor handle this. 
+		Don't re-add this! See bug 937834 for more details. Basically let native editor handle this.
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
 	-->
 		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Find" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindCommandArgs" />

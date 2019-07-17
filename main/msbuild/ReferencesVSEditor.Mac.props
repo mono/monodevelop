@@ -10,6 +10,7 @@
 
   <ItemGroup Condition=" '$(ReferencesVSEditorCopyToOutput)' == 'true' ">
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Editor.Imaging.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
