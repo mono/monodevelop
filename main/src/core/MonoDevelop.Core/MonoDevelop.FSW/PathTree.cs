@@ -171,8 +171,7 @@ namespace MonoDevelop.FSW
 			// At this point, we need to create a new node.
 			isModified = true;
 			var (first, leaf) = PathTreeNode.CreateSubTree (path, lastIndex);
-			if (id != null)
-				leaf.RegisterId (id);
+			leaf.RegisterId (id);
 
 			InsertNode (first, parent, previousNode);
 
