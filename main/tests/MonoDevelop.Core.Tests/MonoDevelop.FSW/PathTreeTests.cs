@@ -558,5 +558,47 @@ namespace MonoDevelop.FSW
 			Assert.AreSame (c, removed);
 			Assert.IsNull (tree.FindNode (MakePath ("a", "b", "c")));
 		}
+
+		[Test]
+		public void FindNodeContaining ()
+		{
+			var tree = CreateTree ();
+
+			// a
+			// + b
+			//   + c
+			//   + d
+			//   + e
+			//   + f
+			//     + f1
+			//     + f2
+			//   + g
+			//     + g1
+			//     + g2
+			Assert.IsNull (tree.FindNodeContaining ("non_existent"));
+			Assert.IsNull (tree.FindNodeContaining (""));
+
+			AssertNodeContaining (MakePath ("a"));
+			AssertNodeContaining (MakePath ("a", "b"));
+			AssertNodeContaining (MakePath ("a", "b", "c"));
+			AssertNodeContaining (MakePath ("a", "b", "d"));
+			AssertNodeContaining (MakePath ("a", "b", "e"));
+			AssertNodeContaining (MakePath ("a", "b", "f"));
+			AssertNodeContaining (MakePath ("a", "b", "f", "f1"));
+			AssertNodeContaining (MakePath ("a", "b", "f", "f2"));
+			AssertNodeContaining (MakePath ("a", "b", "g"));
+			AssertNodeContaining (MakePath ("a", "b", "g", "g1"));
+			AssertNodeContaining (MakePath ("a", "b", "g", "g2"));
+
+			void AssertNodeContaining (params string[] paths)
+			{
+				var path = MakePath (paths);
+				var node = tree.FindNode (path);
+
+				Assert.AreSame (node, tree.FindNodeContaining (path));
+				Assert.AreSame (node, tree.FindNodeContaining (MakePath (path, "non_existent_child")));
+				Assert.AreSame (node, tree.FindNodeContaining (MakePath (path, "non", "existent", "child")));
+			}
+		}
 	}
 }

@@ -52,6 +52,11 @@ namespace MonoDevelop.FSW
 			return result;
 		}
 
+		public PathTreeNode FindNodeContaining (string path)
+			=> TryFind (path, out var result, out var parent, out _, out _)
+			? result
+			: parent != rootNode ? parent : null;
+
 		public IEnumerable<PathTreeNode> Normalize (int maxLeafs)
 		{
 			// We want to use an algorithm similar to BFS by using the following logic:
@@ -112,8 +117,11 @@ namespace MonoDevelop.FSW
 			parent = rootNode;
 			var currentNode = parent.FirstChild;
 			previousNode = null;
+			result = null;
 
 			var remainingSegments = path.AsSpan ().TrimEnd (Path.DirectorySeparatorChar);
+			if (remainingSegments.Length == 0)
+				return false;
 
 			while (currentNode != null)
 			{
