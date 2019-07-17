@@ -36,7 +36,7 @@ namespace MonoDevelop.FSW
 			}
 		}
 
-		public PathTreeNode (string fullPath, int start, int length)
+		internal PathTreeNode (string fullPath, int start, int length)
 		{
 			this.fullPath = fullPath;
 			this.start = start;
