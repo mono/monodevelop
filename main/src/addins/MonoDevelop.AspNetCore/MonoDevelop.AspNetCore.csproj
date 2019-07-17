@@ -46,6 +46,7 @@
     <Compile Include="MonoDevelop.AspNetCore\LaunchProfileDataExtensions.cs" />
     <Compile Include="MonoDevelop.AspNetCore\LaunchProfileProvider.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreNestingRulesProvider.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\AspNetCoreExecutionTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
