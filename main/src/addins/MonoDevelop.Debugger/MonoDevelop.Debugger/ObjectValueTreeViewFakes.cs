@@ -32,7 +32,7 @@ using Mono.Debugging.Client;
 namespace MonoDevelop.Debugger
 {
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	abstract class DebugObjectValueNode : AbstractObjectValueNode
 	{
@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger
 	}
 
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeIndexedObjectValueNode : DebugObjectValueNode
 	{
@@ -65,7 +65,7 @@ namespace MonoDevelop.Debugger
 	}
 
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeIsImplicitNotSupportedObjectValueNode : DebugObjectValueNode
 	{
@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger
 	}
 
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeObjectValueNode : DebugObjectValueNode
 	{
@@ -109,7 +109,7 @@ namespace MonoDevelop.Debugger
 
 		public override bool HasChildren => true;
 
-		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<AbstractObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
@@ -118,7 +118,7 @@ namespace MonoDevelop.Debugger
 	}
 
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeEnumerableObjectValueNode : DebugObjectValueNode
 	{
@@ -135,10 +135,10 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => true;
 		public override bool IsEnumerable => true;
 
-		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<AbstractObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			await Task.Delay (1000);
-			var result = new List<IObjectValueNode> ();
+			var result = new List<AbstractObjectValueNode> ();
 			for (int i = 0; i < maxItems; i++) {
 				result.Add (new FakeIndexedObjectValueNode (i));
 			}
@@ -146,21 +146,21 @@ namespace MonoDevelop.Debugger
 			return result;
 		}
 
-		protected override async Task<Tuple<IEnumerable<IObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		protected override async Task<Tuple<IEnumerable<AbstractObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
 		{
 			await Task.Delay (1000);
 			var max = Math.Min (maxItems, index+count);
-			var result = new List<IObjectValueNode> ();
+			var result = new List<AbstractObjectValueNode> ();
 			for (int i = index; i < max; i++) {
 				result.Add (new FakeIndexedObjectValueNode (i));
 			}
 
-			return Tuple.Create<IEnumerable<IObjectValueNode>, bool> (result, result.Count < count);
+			return Tuple.Create<IEnumerable<AbstractObjectValueNode>, bool> (result, result.Count < count);
 		}
 	}
 
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeEvaluatingObjectValueNode : DebugObjectValueNode
 	{
@@ -179,7 +179,7 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => hasChildren;
 		public override bool IsEvaluating => isEvaluating;
 
-		protected override async Task<IEnumerable<IObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<AbstractObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
@@ -197,7 +197,7 @@ namespace MonoDevelop.Debugger
 	}
 
 	/// <summary>
-	/// An IObjectValueNode used for debugging
+	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
 	sealed class FakeEvaluatingGroupObjectValueNode : DebugObjectValueNode, IEvaluatingGroupObjectValueNode
 	{
@@ -219,9 +219,9 @@ namespace MonoDevelop.Debugger
 		#region IEvaluatingGroupObjectValueNode
 		bool IEvaluatingGroupObjectValueNode.IsEvaluatingGroup => true;
 
-		IObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
+		AbstractObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
 		{
-			var replacementNodes = new IObjectValueNode [evalNodes];
+			var replacementNodes = new AbstractObjectValueNode [evalNodes];
 
 			for (int i = 0; i < evalNodes; i++) {
 				replacementNodes [i] = new FakeObjectValueNode ($"child of {Name}", false) {
