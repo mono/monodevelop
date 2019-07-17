@@ -1670,7 +1670,7 @@ namespace MonoDevelop.Debugger
 
 		bool ValidObjectForPreviewIcon (TreeIter it)
 		{
-			var obj = Model.GetValue (it, ObjectColumn) as ObjectValue;
+			var obj = store.GetValue (it, ObjectColumn) as ObjectValue;
 			if (obj == null) {
 				return false;
 			} else {
