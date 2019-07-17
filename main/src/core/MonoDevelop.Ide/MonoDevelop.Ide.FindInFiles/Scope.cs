@@ -30,6 +30,7 @@ using System.Security;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -57,9 +58,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		protected static readonly Task<IReadOnlyList<FileProvider>> EmptyFileProviderTask = Task.FromResult<IReadOnlyList<FileProvider>> (new FileProvider [0]);
+		protected static readonly Task<ImmutableArray<FileProvider>> EmptyFileProviderTask = Task.FromResult(ImmutableArray<FileProvider>.Empty);
 
-		public abstract Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel model, CancellationToken cancellationToken = default);
+		public abstract Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel model, CancellationToken cancellationToken = default);
 
 		public abstract string GetDescription (FindInFilesModel model);
 

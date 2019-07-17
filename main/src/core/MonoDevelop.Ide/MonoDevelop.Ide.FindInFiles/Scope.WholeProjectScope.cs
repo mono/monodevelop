@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -48,9 +49,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				this.project = project;
 			}
 
-			public override async Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
+			public override async Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
-				var results = new List<FileProvider> ();
+				var results = ImmutableArray.CreateBuilder<FileProvider> ();
 				if (IdeApp.Workspace.IsOpen) {
 					var alreadyVisited = new HashSet<string> ();
 					var conf = project.DefaultConfiguration?.Selector;
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						results.Add (new FileProvider (file.Name, project));
 					}
 				}
-				return results;
+				return results.ToImmutable ();
 			}
 
 			public override string GetDescription (FindInFilesModel model)

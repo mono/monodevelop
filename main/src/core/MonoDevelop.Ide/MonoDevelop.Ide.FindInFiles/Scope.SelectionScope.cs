@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text.Editor;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -43,13 +44,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				get { return PathMode.Hidden; }
 			}
 
-			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
+			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
 			{
 				var doc = IdeApp.Workbench.ActiveDocument;
 				var textView = doc.GetContent<ITextView> (true);
 				if (textView != null) {
 					var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
-					return Task.FromResult<IReadOnlyList<FileProvider>> (new [] { new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End) });
+					return Task.FromResult(ImmutableArray<FileProvider>.Empty.Add (new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End)));
 				}
 				return EmptyFileProviderTask;
 			}

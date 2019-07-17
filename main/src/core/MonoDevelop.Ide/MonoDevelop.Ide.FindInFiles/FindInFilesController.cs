@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
@@ -44,7 +45,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		FindInFilesModel model;
 		Scope currentScope;
-		Task<IReadOnlyList<FileProvider>> fileProviderTask;
+		Task<ImmutableArray<FileProvider>> fileProviderTask;
 
 		public FindInFilesController (FindInFilesModel model)
 		{
@@ -78,7 +79,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileProviderTask = scope.GetFilesAsync (model);
 		}
 
-		internal static void SearchReplace (FindInFilesModel model, Scope scope, Task<IReadOnlyList<FileProvider>> getFilesTask, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
+		internal static void SearchReplace (FindInFilesModel model, Scope scope, Task<ImmutableArray<FileProvider>> getFilesTask, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
 		{
 			if (find != null && find.IsRunning) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))

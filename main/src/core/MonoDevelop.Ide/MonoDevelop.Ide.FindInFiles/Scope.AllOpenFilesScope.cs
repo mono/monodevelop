@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -39,9 +40,9 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		sealed class AllOpenFilesScope : Scope
 		{
-			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
+			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
-				var results = new List<FileProvider> ();
+				var results = ImmutableArray.CreateBuilder<FileProvider> ();
 				foreach (var document in IdeApp.Workbench.Documents) {
 					if (!filterOptions.IsFileNameMatching (document.FileName))
 						continue;
@@ -54,7 +55,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						results.Add (new FileProvider (document.FileName, document.Owner as Project));
 					}
 				}
-				return Task.FromResult ((IReadOnlyList<FileProvider>)results);
+				return Task.FromResult (results.ToImmutable ());
 			}
 
 			public override string GetDescription (FindInFilesModel model)

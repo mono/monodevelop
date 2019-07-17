@@ -34,6 +34,7 @@ using Gtk;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -83,7 +84,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			public FileProvider Provider;
 			public TextReader Reader;
-			public SearchResult[] Results;
+			public ImmutableArray<SearchResult> Results;
 			public string Text { get; internal set; }
 			public System.Text.Encoding Encoding { get; internal set; }
 
@@ -184,10 +185,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		SearchResult[] FindAll (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
+		ImmutableArray<SearchResult> FindAll (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			if (string.IsNullOrEmpty (model.FindPattern))
-				return Array.Empty<SearchResult> ();
+				return ImmutableArray<SearchResult>.Empty;
 
 			if (model.RegexSearch)
 				return RegexSearch (model, monitor, provider);
@@ -195,7 +196,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return Search (model, provider);
 		}
 
-		SearchResult[] RegexSearch (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
+		ImmutableArray<SearchResult> RegexSearch (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
 			var results = new List<SearchResult> ();
@@ -233,10 +234,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				provider.EndReplace ();
 			}
-			return results.ToArray ();
+			return results.ToImmutableArray ();
 		}
 
-		SearchResult[] Search (FindInFilesModel model, FileProvider provider)
+		ImmutableArray<SearchResult> Search (FindInFilesModel model, FileProvider provider)
 		{
 			string content = IdeApp.Workbench != null ? IdeApp.Workbench.GetDocumentText (provider.FileName) : File.ReadAllText (provider.FileName);
 			var findResults = model.PatternSearcher.FindAll (content);
@@ -244,10 +245,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			for (var i = 0; i < findResults.Length; i++) {
 				result[i] = new SearchResult (provider, findResults [i], model.FindPattern.Length);
 			}
-			return result;
+			return result.ToImmutableArray ();
 		}
 
-		public void Replace (FileProvider provider, SearchResult[] searchResult, string replacePattern)
+		public void Replace (FileProvider provider, ImmutableArray<SearchResult> searchResult, string replacePattern)
 		{
 			int delta = 0;
 			foreach (var sr in searchResult) {

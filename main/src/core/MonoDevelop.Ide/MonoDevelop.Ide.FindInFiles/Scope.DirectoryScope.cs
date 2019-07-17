@@ -33,6 +33,7 @@ using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Threading;
 using System.ComponentModel;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -54,14 +55,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				get;
 				set;
 			}
-
-			FileProvider [] fileNames;
+			bool fileNamesLoaded;
+			ImmutableArray<FileProvider> fileNames;
 
 			private void EnsureFileNamesLoaded (FindInFilesModel filterOptions)
 			{
-				if (fileNames != null)
+				if (fileNamesLoaded)
 					return;
-				fileNames = GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ();
+				fileNamesLoaded = true;
+				fileNames = ImmutableArray.Create (GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ());
 			}
 
 			public DirectoryScope (string path, bool recurse)
@@ -129,10 +131,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 
-			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
+			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
 				EnsureFileNamesLoaded (filterOptions);
-				return Task.FromResult<IReadOnlyList<FileProvider>> (fileNames);
+				return Task.FromResult (fileNames);
 			}
 
 			public override string GetDescription (FindInFilesModel model)

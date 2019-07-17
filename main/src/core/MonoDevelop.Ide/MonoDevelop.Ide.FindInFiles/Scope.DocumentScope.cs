@@ -43,12 +43,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				get { return PathMode.Hidden; }
 			}
 
-			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
+			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
 			{
 				var doc = IdeApp.Workbench.ActiveDocument;
 				var textBuffer = doc.GetContent<ITextBuffer> ();
 				if (textBuffer != null)
-					return Task.FromResult<IReadOnlyList<FileProvider>> (ImmutableArray.Create (new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName)));
+					return Task.FromResult(ImmutableArray.Create ((FileProvider)new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName)));
 				return EmptyFileProviderTask;
 			}
 

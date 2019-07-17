@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -41,14 +42,14 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		sealed class WholeSolutionScope : Scope
 		{
-			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
+			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
 			{
 				if (!IdeApp.Workspace.IsOpen) {
 					return EmptyFileProviderTask;
 				}
 
 				var alreadyVisited = new HashSet<string> ();
-				var results = new List<FileProvider> ();
+				var results = ImmutableArray.CreateBuilder<FileProvider> ();
 
 				var options = new ParallelOptions ();
 				options.MaxDegreeOfParallelism = 4;
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						});
 				}
 
-				return Task.FromResult ((IReadOnlyList<FileProvider>)results);
+				return Task.FromResult (results.ToImmutable ());
 			}
 
 			public override string GetDescription (FindInFilesModel model)
