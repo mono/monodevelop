@@ -61,6 +61,8 @@ namespace MonoDevelop.FSW
 		{
 			var tree = new PathTree ();
 
+			// All nodes under b have id registrations.
+
 			// a
 			// + b
 			//   + c
@@ -542,6 +544,19 @@ namespace MonoDevelop.FSW
 			Assert.IsNull (tree.FindNode (MakePath ("a", "a")));
 			Assert.IsNull (tree.FindNode (MakePath ("a", "b")));
 			Assert.IsNull (tree.FindNode (MakePath ("a", "c")));
+		}
+
+		[Test]
+		public void RemoveNodeDirectly ()
+		{
+			var tree = CreateTree ();
+
+			var c = tree.FindNode (MakePath ("a", "b", "c"));
+
+			var removed = tree.RemoveNode (c, id);
+
+			Assert.AreSame (c, removed);
+			Assert.IsNull (tree.FindNode (MakePath ("a", "b", "c")));
 		}
 	}
 }
