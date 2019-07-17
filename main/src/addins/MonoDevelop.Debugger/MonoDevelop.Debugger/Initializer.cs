@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.IO;
 using MonoDevelop.Core.Web;
+using Xwt;
 
 namespace MonoDevelop.Debugger
 {
@@ -91,20 +92,34 @@ namespace MonoDevelop.Debugger
 					}
 
 					if (frame.SourceLocation.SourceLink != null) {
-						var downloadInfo = frame.SourceLocation.SourceLink.GetDownloadLocation (frame.SourceLocation.FileName, symbolCachePath);
-						// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
-						if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
-							Directory.GetParent (downloadInfo.LocalPath).Create ();
-							var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
-							using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
-								using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
-									await stream.CopyToAsync (fs);
-								}
+						try {
+							var downloadInfo = frame.SourceLocation.SourceLink.GetDownloadLocation (frame.SourceLocation.FileName, symbolCachePath);
+							// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
+							if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
+								WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+								//await Toolkit.NativeEngine.Invoke (async delegate {
+
+										if (dialog.Run (parent) == SourceLinkDialog.GetAndOpenCommand) {
+											Directory.GetParent (downloadInfo.LocalPath).Create ();
+											var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
+											using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
+												using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
+													await stream.CopyToAsync (fs);
+												}
+											}
+											frame.UpdateSourceFile (downloadInfo.LocalPath);
+											var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
+											if (doc != null)
+												return;
+										}
+										// If we have source link info but the user presses cancel, don't go to disassembly
+										return;
+									}
+								//});
 							}
-							frame.UpdateSourceFile (downloadInfo.LocalPath);
-							var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
-							if (doc != null)
-								return;
+						} catch(Exception ex) {
+							LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
+							return;
 						}
 					}
 				}

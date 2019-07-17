@@ -175,6 +175,7 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
     <Compile Include="MonoDevelop.Debugger\IBreakpointSpanResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DefaultBreakpointSpanResolver.cs" />
+    <Compile Include="MonoDevelop.Debugger\SourceLinkDialog.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
