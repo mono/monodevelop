@@ -746,7 +746,7 @@ namespace MonoDevelop.Debugger
 
 		protected virtual IDebuggerService OnGetDebuggerService ()
 		{
-			return new ProxyDebuggerService ();
+			return new ObjectValueDebuggerService ();
 		}
 
 		/// <summary>

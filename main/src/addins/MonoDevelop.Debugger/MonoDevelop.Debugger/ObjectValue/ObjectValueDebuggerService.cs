@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.Debugger
 {
-	sealed class ProxyDebuggerService : IDebuggerService
+	sealed class ObjectValueDebuggerService : IDebuggerService
 	{
 		public bool IsConnected => DebuggingService.IsConnected;
 
