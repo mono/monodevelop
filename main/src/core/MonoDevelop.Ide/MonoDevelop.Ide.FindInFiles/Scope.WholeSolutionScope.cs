@@ -64,9 +64,8 @@ namespace MonoDevelop.Ide.FindInFiles
 									if (!IdeServices.DesktopService.GetFileIsText (file.FileName))
 										continue;
 									lock (alreadyVisited) {
-										if (alreadyVisited.Contains (file.FileName))
+										if (!alreadyVisited.Add (file.FileName))
 											continue;
-										alreadyVisited.Add (file.FileName);
 									}
 									providers.Add (new FileProvider (file.FileName));
 								}

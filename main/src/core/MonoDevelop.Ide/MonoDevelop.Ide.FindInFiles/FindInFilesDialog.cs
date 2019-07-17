@@ -139,21 +139,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			toggleReplaceInFiles.Active = model.InReplaceMode;
 			toggleFindInFiles.Active = !model.InReplaceMode;
-			
-			toggleFindInFiles.Toggled += delegate {
-				if (toggleFindInFiles.Active) {
-					Title = GettextCatalog.GetString ("Find in Files");
-					HideReplaceUI ();
-				}
-			};
-			
-			toggleReplaceInFiles.Toggled += delegate {
-				if (toggleReplaceInFiles.Active) {
-					Title = GettextCatalog.GetString ("Replace in Files");
-					ShowReplaceUI ();
-				}
-			};
-			
+
+			toggleFindInFiles.Toggled += ToggleFindInFiles_Toggled;
+			toggleReplaceInFiles.Toggled += ToggleReplaceInFiles_Toggled;
+
 			buttonSearch.Clicked += HandleSearchClicked;
 			buttonClose.Clicked += (sender, e) => Destroy ();
 			DeleteEvent += (o, args) => Destroy ();
@@ -184,9 +173,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			else
 				toggleFindInFiles.Toggle ();
 			comboboxentryFind.Entry.Text = model.FindPattern;
-			comboboxentryFind.Entry.Changed += delegate {
-				model.FindPattern = comboboxentryFind.Entry.Text;
-			};
+			comboboxentryFind.Entry.Changed += ComboboxEntryFind_Changed;
 
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextView>(true);
@@ -214,9 +201,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (!buttonSearch.Sensitive) {
 				comboboxScope.Active = (int)SearchScope.Directories;
 			}
-			searchentryFileMask.Entry.Changed += delegate {
-				model.FileMask = searchentryFileMask.Query;
-			};;
+			searchentryFileMask.Entry.Changed += SearchEntryFileMask_Changed;
 
 			Child.Show ();
 			updateTimer = GLib.Timeout.Add (750, delegate {
@@ -224,6 +209,32 @@ namespace MonoDevelop.Ide.FindInFiles
 				return true;
 			});
 			SetupAccessibility ();
+		}
+
+		void SearchEntryFileMask_Changed (object sender, EventArgs e)
+		{
+			model.FileMask = searchentryFileMask.Query;
+		}
+
+		void ComboboxEntryFind_Changed (object sender, EventArgs e)
+		{
+			model.FindPattern = comboboxentryFind.Entry.Text;
+		}
+
+		void ToggleReplaceInFiles_Toggled (object sender, EventArgs e)
+		{
+			if (toggleReplaceInFiles.Active) {
+				Title = GettextCatalog.GetString ("Replace in Files");
+				ShowReplaceUI ();
+			}
+		}
+
+		void ToggleFindInFiles_Toggled (object sender, EventArgs e)
+		{
+			if (toggleFindInFiles.Active) {
+				Title = GettextCatalog.GetString ("Find in Files");
+				HideReplaceUI ();
+			}
 		}
 
 		void SetupAccessibility ()
@@ -375,9 +386,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			Requisition req = SizeRequest ();
 			Resize (req.Width, req.Height);
-			comboboxentryReplace.Entry.Changed += delegate {
-				model.ReplacePattern = comboboxentryReplace.Entry.Text;
-			};
+			comboboxentryReplace.Entry.Changed += ComboboxEntryReplace_Changed;
+		}
+
+		void ComboboxEntryReplace_Changed (object sender, EventArgs e)
+		{
+			model.ReplacePattern = comboboxentryReplace.Entry.Text;
 		}
 
 		void HideReplaceUI ()
@@ -393,6 +407,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			StoreHistory ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", comboboxentryReplace);
 			TableRemoveRow (tableFindAndReplace, 1, labelReplace, comboboxentryReplace, true);
+			comboboxentryReplace.Entry.Changed -= ComboboxEntryReplace_Changed;
 			comboboxentryReplace = null;
 			labelReplace = null;
 			
@@ -419,9 +434,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			hboxPath = new HBox ();
 			comboboxentryPath = new ComboBoxEntry ();
 			comboboxentryPath.Destroyed += ComboboxentryPathDestroyed;
-			comboboxentryPath.Entry.Changed += delegate {
-				model.FindInFilesPath = comboboxentryPath.Entry.Text;
-			};
+			comboboxentryPath.Entry.Changed += ComboboxEntryPathChanged;
+
 
 			LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
 			comboboxentryPath.Show ();
@@ -445,12 +459,17 @@ namespace MonoDevelop.Ide.FindInFiles
 				UseUnderline = true
 			};
 			
-			checkbuttonRecursively.Activated += CheckbuttonRecursively_Activated;;
+			checkbuttonRecursively.Activated += CheckbuttonRecursively_Activated;
 			checkbuttonRecursively.Show ();
 			
 			TableAddRow (tableFindAndReplace, row, null, checkbuttonRecursively);
 
 			SetupAccessibilityForPath ();
+		}
+
+		void ComboboxEntryPathChanged (object sender, EventArgs e)
+		{
+			model.FindInFilesPath = comboboxentryPath.Entry.Text;
 		}
 
 		void CheckbuttonRecursively_Activated (object sender, EventArgs e)
@@ -471,11 +490,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			TableRemoveRow (tableFindAndReplace, row, labelPath, hboxPath, true);
 			// comboboxentryPath and buttonBrowsePaths are destroyed with hboxPath
 			buttonBrowsePaths = null;
+			comboboxentryPath.Entry.Changed -= ComboboxEntryPathChanged;
 			comboboxentryPath = null;
 			labelPath = null;
 			hboxPath = null;
 		}
-		
+
 		void ShowFileMaskUI ()
 		{
 			if (labelFileMask != null)
@@ -504,9 +524,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 
 			searchentryFileMask.Query = model.FileMask;
-			searchentryFileMask.Entry.Changed += delegate {
-				model.FileMask = searchentryFileMask.Query;
-			};
+			searchentryFileMask.Entry.Changed += SearchentryFileMask_Changed;
 
 			searchentryFileMask.Entry.ActivatesDefault = true;
 			searchentryFileMask.Show ();
@@ -515,7 +533,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			TableAddRow (tableFindAndReplace, row, labelFileMask, searchentryFileMask);
 		}
-		
+
+		void SearchentryFileMask_Changed (object sender, EventArgs e)
+		{
+			model.FileMask = searchentryFileMask.Query;
+		}
+
 		void HideFileMaskUI ()
 		{
 			if (labelFileMask == null)
@@ -523,6 +546,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			uint row = TableGetRowForItem (tableFindAndReplace, labelFileMask);
 			TableRemoveRow (tableFindAndReplace, row, labelFileMask, searchentryFileMask, true);
+			searchentryFileMask.Entry.Changed -= SearchentryFileMask_Changed;
 			searchentryFileMask = null;
 			labelFileMask = null;
 		}
@@ -622,23 +646,24 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			comboboxScope.Active = (int)model.SearchScope;
 			checkbuttonCaseSensitive.Active = model.CaseSensitive;
-			checkbuttonCaseSensitive.Toggled += delegate {
-				model.CaseSensitive = checkbuttonCaseSensitive.Active;
-			};
-
+			checkbuttonCaseSensitive.Toggled += CheckbuttonOptions_Toggled;
 			checkbuttonWholeWordsOnly.Active = model.WholeWordsOnly;
-			checkbuttonWholeWordsOnly.Toggled += delegate {
-				model.WholeWordsOnly = checkbuttonWholeWordsOnly.Active;
-			};
+			checkbuttonWholeWordsOnly.Toggled += CheckbuttonOptions_Toggled;
 
 			checkbuttonRegexSearch.Active = model.RegexSearch;
-			checkbuttonRegexSearch.Toggled += delegate {
-				model.RegexSearch = checkbuttonRegexSearch.Active;
-			};
+			checkbuttonRegexSearch.Toggled += CheckbuttonOptions_Toggled;
 
 			LoadHistory ("MonoDevelop.FindReplaceDialogs.FindHistory", comboboxentryFind);
 			model.FindPattern = comboboxentryFind.Entry.Text;
 		}
+
+		void CheckbuttonOptions_Toggled (object sender, EventArgs e)
+		{
+			model.CaseSensitive = checkbuttonCaseSensitive.Active;
+			model.WholeWordsOnly = checkbuttonWholeWordsOnly.Active;
+			model.RegexSearch = checkbuttonRegexSearch.Active;
+		}
+
 
 		static void LoadHistory (string propertyName, ComboBoxEntry entry)
 		{
@@ -697,6 +722,18 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		protected override void OnDestroyed ()
 		{
+			HideReplaceUI ();
+			HideDirectoryPathUI ();
+
+			checkbuttonCaseSensitive.Toggled -= CheckbuttonOptions_Toggled;
+			checkbuttonWholeWordsOnly.Toggled -= CheckbuttonOptions_Toggled;
+			checkbuttonRegexSearch.Toggled -= CheckbuttonOptions_Toggled;
+
+			searchentryFileMask.Entry.Changed -= SearchEntryFileMask_Changed; 
+			comboboxentryFind.Entry.Changed -= ComboboxEntryFind_Changed;
+			toggleFindInFiles.Toggled -= ToggleFindInFiles_Toggled;
+			toggleReplaceInFiles.Toggled -= ToggleReplaceInFiles_Toggled;
+
 			if (resultPad != null) {
 				var resultWidget = resultPad.Control.GetNativeWidget<SearchResultWidget> ();
 				if (resultWidget.ResultCount > 0) {

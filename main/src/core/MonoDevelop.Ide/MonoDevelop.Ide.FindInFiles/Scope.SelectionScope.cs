@@ -50,7 +50,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				var textView = doc.GetContent<ITextView> (true);
 				if (textView != null) {
 					var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
-					return Task.FromResult(ImmutableArray<FileProvider>.Empty.Add (new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End)));
+					if (selection == null)
+						return EmptyFileProviderTask;
+					return Task.FromResult(ImmutableArray.Create<FileProvider> (new OpenFileProvider (textView.TextBuffer, doc.Owner as Project, doc.FileName, selection.Start, selection.End)));
 				}
 				return EmptyFileProviderTask;
 			}

@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				Assert.IsNotNull (scope);
 				var files = await scope.GetFilesAsync (model);
 
-				Assert.AreEqual (2, files.Count);
+				Assert.AreEqual (2, files.Length);
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "a.cs"));
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "b.txt"));
 			});
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				Assert.IsNotNull (scope);
 				var files = await scope.GetFilesAsync (model);
 
-				Assert.AreEqual (3, files.Count);
+				Assert.AreEqual (3, files.Length);
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "a.cs"));
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "b.txt"));
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "c.cs"));
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				Assert.IsNotNull (scope);
 				var files = await scope.GetFilesAsync (model);
 
-				Assert.AreEqual (2, files.Count);
+				Assert.AreEqual (2, files.Length);
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "a.cs"));
 				Assert.IsTrue (files.Any (f => Path.GetFileName (f.FileName) == "c.cs"));
 			});

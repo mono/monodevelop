@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -64,21 +65,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			return result;
 		}
 
-		public int [] FindAll (string text)
+		public ImmutableArray<SearchResult> FindAll (FileProvider provider, string text)
 		{
-			return FindAll (text.AsSpan ());
+			return FindAll (provider, text.AsSpan ());
 		}
 
-		public int [] FindAll (ReadOnlySpan<char> text)
+		public ImmutableArray<SearchResult> FindAll (FileProvider provider, ReadOnlySpan<char> text)
 		{
-			var result = new List<int> ();
+			var result = ImmutableArray.CreateBuilder<SearchResult> ();
 			int index = 0;
 			int end = text.Length;
 			while ((index = Find (text, index, end)) > -1) {
-				result.Add (index);
+				result.Add (new SearchResult (provider, index, patternLength));
 				index++;
 			}
-			return result.ToArray ();
+			return result.ToImmutable ();
 		}
 
 		public int Find (string text, int startIndex, int endIndex)

@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			var searcher = new PatternSearcher ("foo", true, false);
 
-			var indices = searcher.FindAll (sb.ToString ());
+			var indices = searcher.FindAll (null, sb.ToString ());
 
 			Assert.AreEqual (100, indices.Length);
 		}
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searcher = new PatternSearcher ("foo", true, false);
 
 			string text = "fooFoofoo";
-			var indices = searcher.FindAll (text);
+			var indices = searcher.FindAll (null, text);
 
 			Assert.AreEqual (2, indices.Length);
 		}
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searcher = new PatternSearcher ("fOO", false, false);
 
 			string text = "fooFooFOO";
-			var indices = searcher.FindAll (text);
+			var indices = searcher.FindAll (null, text);
 
 			Assert.AreEqual (3, indices.Length);
 		}
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searcher = new PatternSearcher ("foo", true, true);
 
 			string text = "foo fooFoofoo foo foo";
-			var indices = searcher.FindAll (text);
+			var indices = searcher.FindAll (null, text);
 
 			Assert.AreEqual (3, indices.Length);
 		}

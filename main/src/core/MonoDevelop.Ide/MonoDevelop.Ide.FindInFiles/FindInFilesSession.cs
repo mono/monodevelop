@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			public FileSearchResult (FileProvider provider, TextReader reader)
 			{
-				Provider = provider;
+				Provider = provider ?? throw new ArgumentNullException (nameof (provider));
 				Reader = reader;
 			}
 		}
@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						try {
 							Interlocked.Increment (ref searchedFilesCount);
 							if (model.InReplaceMode) {
-								content.Text = content.Reader.ReadToEnd ();
+								content.Text = (content.Reader ?? content.Provider.ReadString ()).ReadToEnd ();
 								content.Encoding = content.Provider.CurrentEncoding;
 								content.Reader = new StringReader (content.Text);
 							}
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		ImmutableArray<SearchResult> RegexSearch (FindInFilesModel model, ProgressMonitor monitor, FileProvider provider)
 		{
 			string content = IdeApp.Workbench.GetDocumentText (provider.FileName);
-			var results = new List<SearchResult> ();
+			var results = ImmutableArray.CreateBuilder<SearchResult> ();
 			if (!model.InReplaceMode) {
 				foreach (Match match in regex.Matches (content)) {
 					if (monitor.CancellationToken.IsCancellationRequested)
@@ -234,18 +234,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				provider.EndReplace ();
 			}
-			return results.ToImmutableArray ();
+			return results.ToImmutable ();
 		}
 
 		ImmutableArray<SearchResult> Search (FindInFilesModel model, FileProvider provider)
 		{
 			string content = IdeApp.Workbench != null ? IdeApp.Workbench.GetDocumentText (provider.FileName) : File.ReadAllText (provider.FileName);
-			var findResults = model.PatternSearcher.FindAll (content);
-			var result = new SearchResult [findResults.Length];
-			for (var i = 0; i < findResults.Length; i++) {
-				result[i] = new SearchResult (provider, findResults [i], model.FindPattern.Length);
-			}
-			return result.ToImmutableArray ();
+			return model.PatternSearcher.FindAll (provider, content);
 		}
 
 		public void Replace (FileProvider provider, ImmutableArray<SearchResult> searchResult, string replacePattern)

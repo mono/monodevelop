@@ -58,12 +58,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			bool fileNamesLoaded;
 			ImmutableArray<FileProvider> fileNames;
 
-			private void EnsureFileNamesLoaded (FindInFilesModel filterOptions)
+			private async Task EnsureFileNamesLoaded (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
 				if (fileNamesLoaded)
 					return;
 				fileNamesLoaded = true;
-				fileNames = ImmutableArray.Create (GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ());
+				fileNames = await Task.Run (delegate {
+					return ImmutableArray.CreateRange (GetFileNames (filterOptions, cancellationToken).Select (file => new FileProvider (file)));
+				});
 			}
 
 			public DirectoryScope (string path, bool recurse)
@@ -81,7 +83,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return true;
 			}
 
-			IEnumerable<string> GetFileNames (FindInFilesModel filterOptions)
+			IEnumerable<string> GetFileNames (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
 				if (string.IsNullOrEmpty (path))
 					yield break;
@@ -90,6 +92,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				while (directoryStack.Count > 0) {
 					var curPath = directoryStack.Pop ();
+					if (cancellationToken.IsCancellationRequested)
+						yield break;
 					if (!Directory.Exists (curPath))
 						yield break;
 					try {
@@ -101,6 +105,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 
 					foreach (string fileName in Directory.EnumerateFiles (curPath)) {
+						if (cancellationToken.IsCancellationRequested)
+							yield break;
 						if (Platform.IsWindows) {
 							var attr = File.GetAttributes (fileName);
 							if (attr.HasFlag (FileAttributes.Hidden))
@@ -117,6 +123,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 					if (recurse) {
 						foreach (string directoryName in Directory.EnumerateDirectories (curPath)) {
+							if (cancellationToken.IsCancellationRequested)
+								yield break;
 							if (Platform.IsWindows) {
 								var attr = File.GetAttributes (directoryName);
 								if (attr.HasFlag (FileAttributes.Hidden))
@@ -131,10 +139,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 
-			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
+			public override async Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
-				EnsureFileNamesLoaded (filterOptions);
-				return Task.FromResult (fileNames);
+				await EnsureFileNamesLoaded (filterOptions, cancellationToken);
+				return fileNames;
 			}
 
 			public override string GetDescription (FindInFilesModel model)
