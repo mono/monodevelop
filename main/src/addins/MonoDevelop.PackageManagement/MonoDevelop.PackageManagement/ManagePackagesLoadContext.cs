@@ -1,10 +1,10 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// ManagePackagesLoadContext.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <ward.matt@gmail.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Matthew Ward
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using NuGet.PackageManagement.UI;
+using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	class ManagePackagesLoadContext : PackageLoadContext
 	{
-		public override void ActivateItem ()
+		readonly Task<PackageCollection> installedPackagesTask;
+
+		public ManagePackagesLoadContext (
+			IEnumerable<SourceRepository> sourceRepositories,
+			bool isSolution,
+			IEnumerable<NuGetProject> projects)
+			: base (sourceRepositories, isSolution, projects.First ())
 		{
-			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
+			var propertyInfo = typeof (PackageLoadContext).GetProperty ("Projects", BindingFlags.Instance | BindingFlags.Public);
+			propertyInfo.SetValue (this, projects.ToArray (), null);
+
+			installedPackagesTask = PackageCollection.FromProjectsAsync (Projects, CancellationToken.None);
 		}
+
+		public Task<PackageCollection> GetInstalledPackagesAsync () => installedPackagesTask;
 	}
 }

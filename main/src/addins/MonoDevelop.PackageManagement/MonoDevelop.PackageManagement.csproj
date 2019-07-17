@@ -347,6 +347,35 @@
     <Compile Include="MonoDevelop.PackageManagement\SdkProjectReloadMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SdkProjectBuilderMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SdkProjectFileRenamedHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\ManagePackagesHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\ManagePackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesDialog.UI.cs">
+      <DependentUpon>ManagePackagesDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesDialogRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\SelectProjectsDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\SelectProjectsDialog.UI.cs">
+      <DependentUpon>SelectProjectsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellView.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManagedPackagesSearchResultViewModelComparer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesLoadContext.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesPage.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesProjectInfo.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesSearchResultViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewModel.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\ConsolidatePackageFeed.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\InstalledPackageFeed.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageCollection.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageFeedEnumerator.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageSearchMetadataCache.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PlainPackageFeedBase.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\UpdatePackageFeed.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SelectedProjectViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SelectProjectsViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RecentManagedNuGetPackagesRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -191,7 +191,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
  			Runtime.RunInMainThread (delegate {
 				var project = IdeApp.Workbench.ActiveDocument?.Owner as DotNetProject;
 				if (project != null) {
-					var runner = new AddPackagesDialogRunner ();
+					var runner = new ManagePackagesDialogRunner ();
 					runner.Run (project, packageName);
 				}
 			});
