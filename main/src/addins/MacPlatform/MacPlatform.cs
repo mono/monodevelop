@@ -776,8 +776,8 @@ namespace MonoDevelop.MacIntegration
 				}
 				return applicationIcon;
 			}
-			set {
-				applicationIcon = value;
+			private set {
+				NSApplication.SharedApplication.ApplicationIconImage = applicationIcon = value;
 			}
 		}
 
@@ -808,7 +808,7 @@ namespace MonoDevelop.MacIntegration
 				var imageFile = new NSString (iconFile);
 
 				IntPtr p = IntPtr_objc_msgSend_IntPtr (image.Handle, Selector.GetHandle ("initByReferencingFile:"), imageFile.Handle);
-				NSApplication.SharedApplication.ApplicationIconImage = applicationIcon = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
+				ApplicationIcon = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
 			}
 		}
 
