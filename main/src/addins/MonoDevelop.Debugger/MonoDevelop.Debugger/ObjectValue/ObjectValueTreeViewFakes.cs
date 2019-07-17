@@ -34,7 +34,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	abstract class DebugObjectValueNode : AbstractObjectValueNode
+	abstract class DebugObjectValueNode : ObjectValueNode
 	{
 		protected DebugObjectValueNode (string name) : base (name)
 		{
@@ -109,7 +109,7 @@ namespace MonoDevelop.Debugger
 
 		public override bool HasChildren => true;
 
-		protected override async Task<IEnumerable<AbstractObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
@@ -135,10 +135,10 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => true;
 		public override bool IsEnumerable => true;
 
-		protected override async Task<IEnumerable<AbstractObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			await Task.Delay (1000);
-			var result = new List<AbstractObjectValueNode> ();
+			var result = new List<ObjectValueNode> ();
 			for (int i = 0; i < maxItems; i++) {
 				result.Add (new FakeIndexedObjectValueNode (i));
 			}
@@ -146,16 +146,16 @@ namespace MonoDevelop.Debugger
 			return result;
 		}
 
-		protected override async Task<Tuple<IEnumerable<AbstractObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		protected override async Task<Tuple<IEnumerable<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
 		{
 			await Task.Delay (1000);
 			var max = Math.Min (maxItems, index+count);
-			var result = new List<AbstractObjectValueNode> ();
+			var result = new List<ObjectValueNode> ();
 			for (int i = index; i < max; i++) {
 				result.Add (new FakeIndexedObjectValueNode (i));
 			}
 
-			return Tuple.Create<IEnumerable<AbstractObjectValueNode>, bool> (result, result.Count < count);
+			return Tuple.Create<IEnumerable<ObjectValueNode>, bool> (result, result.Count < count);
 		}
 	}
 
@@ -179,7 +179,7 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => hasChildren;
 		public override bool IsEvaluating => isEvaluating;
 
-		protected override async Task<IEnumerable<AbstractObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
@@ -219,9 +219,9 @@ namespace MonoDevelop.Debugger
 		#region IEvaluatingGroupObjectValueNode
 		bool IEvaluatingGroupObjectValueNode.IsEvaluatingGroup => true;
 
-		AbstractObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
+		ObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
 		{
-			var replacementNodes = new AbstractObjectValueNode [evalNodes];
+			var replacementNodes = new ObjectValueNode [evalNodes];
 
 			for (int i = 0; i < evalNodes; i++) {
 				replacementNodes [i] = new FakeObjectValueNode ($"child of {Name}", false) {

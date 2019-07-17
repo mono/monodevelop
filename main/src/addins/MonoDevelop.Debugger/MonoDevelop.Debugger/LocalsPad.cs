@@ -53,22 +53,21 @@ namespace MonoDevelop.Debugger
 				controller.ClearValues ();
 				controller.AddValues (locals);
 
-				var xx = new System.Collections.Generic.List<AbstractObjectValueNode> ();
+				//var xx = new System.Collections.Generic.List<ObjectValueNode> ();
 
+				//xx.Add (new FakeObjectValueNode ("f1"));
+				//xx.Add (new FakeIsImplicitNotSupportedObjectValueNode ());
 
-				xx.Add (new FakeObjectValueNode ("f1"));
-				xx.Add (new FakeIsImplicitNotSupportedObjectValueNode ());
+				//xx.Add (new FakeEvaluatingGroupObjectValueNode (1));
+				//xx.Add (new FakeEvaluatingGroupObjectValueNode (0));
+				//xx.Add (new FakeEvaluatingGroupObjectValueNode (5));
 
-				xx.Add (new FakeEvaluatingGroupObjectValueNode (1));
-				xx.Add (new FakeEvaluatingGroupObjectValueNode (0));
-				xx.Add (new FakeEvaluatingGroupObjectValueNode (5));
+				//xx.Add (new FakeEvaluatingObjectValueNode ());
+				//xx.Add (new FakeEnumerableObjectValueNode (10));
+				//xx.Add (new FakeEnumerableObjectValueNode (20));
+				//xx.Add (new FakeEnumerableObjectValueNode (23));
 
-				xx.Add (new FakeEvaluatingObjectValueNode ());
-				xx.Add (new FakeEnumerableObjectValueNode (10));
-				xx.Add (new FakeEnumerableObjectValueNode (20));
-				xx.Add (new FakeEnumerableObjectValueNode (23));
-
-				controller.AddValues (xx);
+				//controller.AddValues (xx);
 			} else {
 				tree.ClearValues ();
 				tree.AddValues (locals);

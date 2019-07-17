@@ -48,7 +48,6 @@ using MonoDevelop.Ide.Fonts;
 namespace MonoDevelop.Debugger
 {
 	// TODO: when we remove from store, remove from allNodes
-
 	[System.ComponentModel.ToolboxItem (true)]
 	public class GtkObjectValueTreeView : TreeView, ICompletionWidget
 	{
@@ -59,7 +58,7 @@ namespace MonoDevelop.Debugger
 		readonly ObjectValueTreeViewController controller;
 
 		// mapping of a node to the node's location in the tree view
-		readonly Dictionary<AbstractObjectValueNode, TreeRowReference> allNodes = new Dictionary<AbstractObjectValueNode, TreeRowReference> ();
+		readonly Dictionary<ObjectValueNode, TreeRowReference> allNodes = new Dictionary<ObjectValueNode, TreeRowReference> ();
 
 		// keep this lot....
 		readonly Xwt.Drawing.Image noLiveIcon;
@@ -140,7 +139,7 @@ namespace MonoDevelop.Debugger
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 			this.controller.NodeExpanded += Controller_NodeExpanded;
 
-			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (AbstractObjectValueNode));
+			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
@@ -359,7 +358,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Triggered when the children of a node have been loaded
 		/// </summary>
-		void Controller_NodeChildrenLoaded (object sender, ChildrenChangedEventArgs e)
+		void Controller_NodeChildrenLoaded (object sender, ObjectValueNodeChildrenChangedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
 				OnChildrenLoaded (e.Node, e.Index, e.Count);
@@ -371,7 +370,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		void Controller_NodeExpanded (object sender, NodeExpandedEventArgs e)
+		void Controller_NodeExpanded (object sender, ObjectValueNodeExpandedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
 				OnNodeExpanded (e.Node);
@@ -381,14 +380,14 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Triggered when a node has completed evaluation and we have data to show the user
 		/// </summary>
-		void Controller_EvaluationCompleted (object sender, NodeEvaluationCompletedEventArgs e)
+		void Controller_EvaluationCompleted (object sender, ObjectValueNodeEvaluationCompletedEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
 				OnEvaluationCompleted (e.Node, e.ReplacementNodes);
 			}).Ignore ();
 		}
 
-		void OnChildrenLoaded (AbstractObjectValueNode node, int index, int count)
+		void OnChildrenLoaded (ObjectValueNode node, int index, int count)
 		{
 			if (disposed)
 				return;
@@ -417,7 +416,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: if we don't want the scrolling, we can probably get rid of this
-		void OnNodeExpanded (AbstractObjectValueNode node)
+		void OnNodeExpanded (ObjectValueNode node)
 		{
 			if (disposed)
 				return;
@@ -442,7 +441,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Merge the node's children as children of the node in the tree
 		/// </summary>
-		void MergeChildrenIntoTree (AbstractObjectValueNode node, TreeIter nodeIter, int index, int count)
+		void MergeChildrenIntoTree (ObjectValueNode node, TreeIter nodeIter, int index, int count)
 		{
 			var nodeChildren = node.Children.ToList ();
 
@@ -479,7 +478,7 @@ namespace MonoDevelop.Debugger
 		/// Updates or replaces the node with the given replacement nodes when the debugger notifies
 		/// that the node has completed evaulation
 		/// </summary>
-		void OnEvaluationCompleted (AbstractObjectValueNode node, AbstractObjectValueNode[] replacementNodes)
+		void OnEvaluationCompleted (ObjectValueNode node, ObjectValueNode[] replacementNodes)
 		{
 			if (disposed)
 				return;
@@ -577,7 +576,7 @@ namespace MonoDevelop.Debugger
 			LoadState ();
 		}
 
-		bool LoadNode (AbstractObjectValueNode node, TreeIter parent)
+		bool LoadNode (ObjectValueNode node, TreeIter parent)
 		{
 			var result = false;
 			foreach (var val in node.Children) {
@@ -635,7 +634,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (iter, ValueButtonTextColumn, string.Empty);
 		}
 
-		TreeIter AppendNodeToTreeModel (TreeIter parent, string name, AbstractObjectValueNode valueNode)
+		TreeIter AppendNodeToTreeModel (TreeIter parent, string name, ObjectValueNode valueNode)
 		{
 			TreeIter iter;
 
@@ -649,7 +648,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: refactor this so that we can update a node without needing to know the parent iter all the time
-		void SetValues (TreeIter parent, TreeIter it, string name, AbstractObjectValueNode val, bool updateJustValue = false)
+		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path
 
@@ -1394,7 +1393,7 @@ namespace MonoDevelop.Debugger
 		protected void OnDelete ()
 		{
 			// TODO: remove all nodes at once
-			var nodesToDelete = new List<AbstractObjectValueNode> ();
+			var nodesToDelete = new List<ObjectValueNode> ();
 			foreach (var path in Selection.GetSelectedRows ()) {
 				if (!store.GetIter (out TreeIter iter, path))
 					continue;
@@ -1707,7 +1706,7 @@ namespace MonoDevelop.Debugger
 			Xwt.Drawing.Color? color;
 			ObjectValue val = null;
 
-			var node = (AbstractObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
+			var node = (ObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
 			if (node != null) {
 				val = node.GetDebuggerObjectValue ();
 			}
@@ -2166,9 +2165,9 @@ namespace MonoDevelop.Debugger
 		//==================================================================================================================
 
 		#region Locator methods
-		static AbstractObjectValueNode GetNodeAtIter (TreeIter iter, TreeModel model)
+		static ObjectValueNode GetNodeAtIter (TreeIter iter, TreeModel model)
 		{
-			return (AbstractObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
+			return (ObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
 		}
 
 		static ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter, TreeModel model)
@@ -2179,9 +2178,9 @@ namespace MonoDevelop.Debugger
 			return node?.GetDebuggerObjectValue ();
 		}
 
-		AbstractObjectValueNode GetNodeAtIter (TreeIter iter)
+		ObjectValueNode GetNodeAtIter (TreeIter iter)
 		{
-			return (AbstractObjectValueNode) store.GetValue (iter, ObjectNodeColumn);
+			return (ObjectValueNode) store.GetValue (iter, ObjectNodeColumn);
 		}
 
 		ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter)
@@ -2189,7 +2188,7 @@ namespace MonoDevelop.Debugger
 			return GetDebuggerObjectValueAtIter (iter, store);
 		}
 
-		TreePath GetTreePathForNode (AbstractObjectValueNode node)
+		TreePath GetTreePathForNode (ObjectValueNode node)
 		{
 			if (allNodes.TryGetValue (node, out TreeRowReference treeRef)) {
 				if (treeRef.Valid ()) {
@@ -2203,7 +2202,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Returns true if the iter of a node and it's parent can be found given the path of the node
 		/// </summary>
-		bool GetTreeIterFromNode (AbstractObjectValueNode node, out TreeIter iter, out TreeIter parentIter)
+		bool GetTreeIterFromNode (ObjectValueNode node, out TreeIter iter, out TreeIter parentIter)
 		{
 			parentIter = TreeIter.Zero;
 			iter = TreeIter.Zero;
