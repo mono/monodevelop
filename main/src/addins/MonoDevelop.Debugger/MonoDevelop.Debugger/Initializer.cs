@@ -95,8 +95,8 @@ namespace MonoDevelop.Debugger
 						// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
 						if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
 							Directory.GetParent (downloadInfo.LocalPath).Create ();
-							var client = HttpClientProvider.CreateHttpClient (downloadInfo.HttpBasePath);
-							using (var stream = await client.GetStreamAsync (downloadInfo.HttpBasePath)) {
+							var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
+							using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
 								using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
 									await stream.CopyToAsync (fs);
 								}
