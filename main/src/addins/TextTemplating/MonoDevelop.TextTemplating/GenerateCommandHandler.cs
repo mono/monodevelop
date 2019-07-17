@@ -45,19 +45,17 @@ namespace MonoDevelop.TextTemplating
 		{
 			var wob = IdeApp.ProjectOperations.CurrentSelectedItem;
 
-			var pf = wob as ProjectFile;
-			if (pf != null) {
-				CustomToolService.Update (pf, pf.Project, true);
+			if (wob is ProjectFile pf) {
+				await CustomToolService.UpdateAsync (pf, pf.Project, true);
 				return;
 			}
 
 			IEnumerable<ProjectFile> files;
 
-			var solution = wob as Solution;
-			if (solution != null) {
+			if (wob is Solution solution) {
 				files = solution.GetAllProjects ().SelectMany (GetFilesToUpdate);
-			} else if (wob is Project) {
-				files = GetFilesToUpdate ((Project)wob);
+			} else if (wob is Project proj) {
+				files = GetFilesToUpdate (proj);
 			} else {
 				return;
 			}

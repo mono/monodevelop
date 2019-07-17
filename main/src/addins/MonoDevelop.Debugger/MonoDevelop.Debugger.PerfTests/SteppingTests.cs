@@ -32,7 +32,6 @@ using MonoDevelop.PerformanceTesting;
 
 namespace Mono.Debugging.PerfTests
 {
-	[TestFixture]
 	public abstract class SteppingTests : PerfTestBase
 	{
 		protected SteppingTests (string de)

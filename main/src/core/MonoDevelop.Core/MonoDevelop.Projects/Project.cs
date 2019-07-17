@@ -1751,11 +1751,9 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public ProjectFile AddFile (string filename, string buildAction)
 		{
-			foreach (ProjectFile fInfo in Files) {
-				if (fInfo.Name == filename) {
-					return fInfo;
-				}
-			}
+			var fInfo = Files.GetFileFromFullPath (filename);
+			if (fInfo != null)
+				return fInfo;
 
 			ProjectFile newFile = CreateProjectFileForGlobItem (filename, buildAction);
 			if (newFile != null) {
@@ -1845,9 +1843,9 @@ namespace MonoDevelop.Projects
 		{
 			string newPath = Path.Combine (BaseDirectory, relativePath);
 
-			foreach (ProjectFile fInfo in Files)
-				if (fInfo.Name == newPath && fInfo.Subtype == Subtype.Directory)
-					return fInfo;
+			var fInfo = Files.GetFileFromFullPath (newPath);
+			if (fInfo != null && fInfo.Subtype == Subtype.Directory)
+				return fInfo;
 
 			if (!Directory.Exists (newPath)) {
 				if (File.Exists (newPath)) {

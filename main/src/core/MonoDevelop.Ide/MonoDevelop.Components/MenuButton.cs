@@ -39,7 +39,6 @@ namespace MonoDevelop.Components
 	[System.ComponentModel.ToolboxItem(true)]
 	public class MenuButton : Button
 	{
-		MenuCreator creator;
 		ContextMenuCreator contextMenuCreator;
 		Label label;
 		ImageView image;
@@ -72,12 +71,6 @@ namespace MonoDevelop.Components
 			: base (raw)
 		{
 			
-		}
-
-		[Obsolete ("Use ContextMenuRequested")]
-		public MenuCreator MenuCreator {
-			get { return creator; }
-			set { creator = value; }
 		}
 
 		public ContextMenuCreator ContextMenuRequested {
@@ -113,30 +106,7 @@ namespace MonoDevelop.Components
 				this.GrabFocus ();
 				// Offset the menu by the height of the rect
 				menu.Show (this, 0, rect.Height, () => MenuClosed (oldRelief)); 
-				return;
 			}
-
-			if (creator != null) {
-				Menu menu = creator (this);
-				
-				if (menu != null) {
-					var oldRelief = MenuOpened ();
-
-					//clean up after the menu's done
-					menu.Hidden += delegate {
-						MenuClosed (oldRelief);
-						
-						//FIXME: for some reason the menu's children don't get activated if we destroy 
-						//directly here, so use a timeout to delay it
-						GLib.Timeout.Add (100, delegate {
-							menu.Destroy ();
-							return false;
-						});
-					};
-					menu.Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
-				}
-			}
-			
 		}
 		
 		protected override void OnStateChanged(StateType previous_state)
@@ -188,7 +158,6 @@ namespace MonoDevelop.Components
 		
 		protected override void OnDestroyed ()
 		{
-			creator = null;
 			contextMenuCreator = null;
 
 			base.OnDestroyed ();
@@ -227,6 +196,5 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	public delegate Menu MenuCreator (MenuButton button);
 	public delegate ContextMenu ContextMenuCreator (MenuButton button);
 }

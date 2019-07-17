@@ -82,8 +82,7 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsNetCoreAppOrHigher (this TargetFramework framework, DotNetCoreVersion version)
 		{
-			DotNetCoreVersion dotNetCoreVersion;
-			DotNetCoreVersion.TryParse (framework.Id.Version, out dotNetCoreVersion);
+			DotNetCoreVersion.TryParse (framework.Id.Version, out var dotNetCoreVersion);
 			if (dotNetCoreVersion == null)
 				return false;
 

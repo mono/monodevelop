@@ -29,10 +29,9 @@ using System.Xml;
 using System.Linq;
 using System.Globalization;
 using System.Xml.Serialization;
-using PerfTool.TestModel;
 using System.IO;
 
-namespace PerfTool
+namespace MonoDevelop.Tests.TestRunner.TestModel
 {
 	public class TestSuiteResult
 	{
@@ -112,7 +111,7 @@ namespace PerfTool
 			return changed;
 		}
 
-		public List<TestCase> RegisterPerformanceRegressions (TestSuiteResult baseline, out List<TestCase> regressions, out List<TestCase> improvements, out List<TestCase> newTests)
+		public void RegisterPerformanceRegressions (TestSuiteResult baseline, out List<TestCase> regressions, out List<TestCase> improvements, out List<TestCase> newTests)
 		{
 			regressions = new List<TestCase> ();
 			improvements = new List<TestCase> ();
@@ -129,7 +128,7 @@ namespace PerfTool
 					testResult.Success = false;
 					testResult.Result = "Error";
 					testResult.Failure = new Failure {
-						Message = $"New performance test. With value: {testResult.Time})"
+						Message = $"New performance test. With value: {testResult.Time}"
 					};
 					newTests.Add (testResult);
 					results.Errors++;
@@ -153,7 +152,6 @@ namespace PerfTool
 					improvements.Add (testResult);
 				}
 			}
-			return regressions;
 		}
 
 		public bool IsRegression (TestCase baselineTestCase, TestCase testCase)

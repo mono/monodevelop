@@ -34,6 +34,7 @@ using Mono.Addins.Description;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Tests.TestRunner.TestModel;
 
 namespace MonoDevelop.Tests.TestRunner
 {
@@ -41,17 +42,33 @@ namespace MonoDevelop.Tests.TestRunner
 	{
 		public Task<int> Run (string[] arguments)
 		{
+			Func<List<string>, int> runTests = args => RunNUnit (args);
+
 			var args = new List<string> (arguments);
-			Assembly guiUnitAsm = null;
+			bool isPerformanceRun = false;
+			string resultsXmlFile = null;
+
 			foreach (var ar in args) {
+				if (ar == "--performance") {
+					isPerformanceRun = true;
+					continue;
+				}
+
+				if (ar.StartsWith ("-xml=", StringComparison.OrdinalIgnoreCase)) {
+					resultsXmlFile = ar.Substring ("-xml=".Length);
+					continue;
+				}
+
 				if ((ar.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) || ar.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) && File.Exists (ar)) {
 					try {
 						var path = Path.GetFullPath (ar);
+
 						var asm = Assembly.LoadFrom (path);
 						var ids = new HashSet<string> ();
 						foreach (var aname in asm.GetReferencedAssemblies ()) {
 							if (aname.Name == "GuiUnit") {
-								guiUnitAsm = Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
+								var guiUnitAsm = Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
+								runTests = args => RunGuiUnit (args, guiUnitAsm);
 								continue;
 							}
 							ids.UnionWith (GetAddinsFromReferences (aname));
@@ -66,20 +83,66 @@ namespace MonoDevelop.Tests.TestRunner
 				}
 			}
 
+			string baselineXmlFile = null;
+			if (isPerformanceRun) {
+				if (resultsXmlFile == null) {
+					Console.WriteLine ("Could not find the result xml file in the argument list (add -xml=TestResult_Assembly.dll.xml).");
+					return Task.FromResult (1);
+				}
+
+				if (!TryGetBaseline (resultsXmlFile, out baselineXmlFile)) {
+					Console.WriteLine ("Creating new baseline file at {0}", baselineXmlFile);
+				} else
+					Console.WriteLine ("Using baseline file '{0}'", baselineXmlFile);
+
+				args.Remove ("--performance");
+				args.Add ("--include=Performance");
+			}
+
 			// Make sure the updater is disabled while running tests
 			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 
-			if (guiUnitAsm != null) {
-				Xwt.XwtSynchronizationContext.AutoInstall = false;
-				SynchronizationContext.SetSynchronizationContext (new Xwt.XwtSynchronizationContext ());
-				Runtime.MainSynchronizationContext = SynchronizationContext.Current;
+			var result = runTests (args);
 
-				var method = guiUnitAsm.EntryPoint;
-				return Task.FromResult ((int)method.Invoke (null, new [] { args.ToArray () }));
+			// run performance analysis if the test suite passed
+			if (isPerformanceRun && result == 0) {
+				result = GenerateResults (baselineXmlFile, resultsXmlFile, resultsXmlFile + "_Report.dll.xml");
 			}
+
+			return Task.FromResult (result);
+		}
+
+		static bool TryGetBaseline (string resultsXmlFile, out string baselineXmlFile)
+		{
+			baselineXmlFile = "Baseline" + resultsXmlFile.Substring (resultsXmlFile.IndexOf ('_'));
+			if (File.Exists (baselineXmlFile)) {
+				return true;
+			}
+
+			var index = baselineXmlFile.LastIndexOf (".dll.xml", StringComparison.OrdinalIgnoreCase);
+			if (index != -1) {
+				baselineXmlFile = baselineXmlFile.Remove (index, ".dll.xml".Length) + ".xml";
+				return File.Exists (baselineXmlFile);
+			}
+
+			return false;
+		}
+
+		static int RunGuiUnit (List<string> args, Assembly guiUnitAsm)
+		{
+			Xwt.XwtSynchronizationContext.AutoInstall = false;
+			SynchronizationContext.SetSynchronizationContext (new Xwt.XwtSynchronizationContext ());
+			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
+
+			var method = guiUnitAsm.EntryPoint;
+			return (int)method.Invoke (null, new [] { args.ToArray () });
+		}
+
+		static int RunNUnit (List<string> args)
+		{
 			args.RemoveAll (a => a.StartsWith ("-port=", StringComparison.Ordinal));
 			args.Add ("-domain=None");
-			return Task.FromResult (NUnit.ConsoleRunner.Runner.Main (args.ToArray ()));
+			return NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
 		}
 
 		static IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)
@@ -99,6 +162,42 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
+		}
+
+		static int GenerateResults (string baseFile, string inputFile, string resultsFile)
+		{
+			var baseTestSuite = new TestSuiteResult ();
+			if (File.Exists (baseFile))
+				baseTestSuite.Read (baseFile);
+
+			var inputTestSuite = new TestSuiteResult ();
+			inputTestSuite.Read (inputFile);
+
+			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out var regressions, out var improvements, out var newTests);
+			inputTestSuite.Write (resultsFile);
+
+			PrintTestCases ("Performance Regressions:", regressions);
+			PrintTestCases ("Performance Improvements:", improvements);
+			PrintTestCases ("New Performance Tests:", newTests);
+
+			return inputTestSuite.HasErrors ? 1 : 0;
+		}
+
+		static void PrintTestCases (string header, List<TestCase> testCases)
+		{
+			if (testCases.Count <= 0)
+				return;
+
+			Console.WriteLine (header);
+			for (int n = 0; n < testCases.Count; n++) {
+				var imp = testCases [n];
+				var number = (n + 1) + ") ";
+				var messageToWrite = imp.Improvement?.Message ?? imp.Failure.Message;
+
+				Console.WriteLine (number + imp.Name);
+				Console.WriteLine (new string (' ', number.Length) + messageToWrite);
+			}
+			Console.WriteLine ();
 		}
 	}
 }

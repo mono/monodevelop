@@ -39,10 +39,11 @@ namespace MonoDevelop.VersionControl
 		
 		static bool CanShow (VersionControlItem item)
 		{
+			var controller = IdeApp.Workbench.GetDocument (item.Path)?.DocumentController;
 			return !item.IsDirectory
 				// FIXME: Review appending of Annotate support and use it.
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IVersionControlViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
+				&& AddinManager.GetExtensionObjects<IVersionControlViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, controller));
 		}
 		
 		public static async Task<bool> Show (VersionControlItemList items, bool test)
