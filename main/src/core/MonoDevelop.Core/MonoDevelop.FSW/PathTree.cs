@@ -192,15 +192,23 @@ namespace MonoDevelop.FSW
 			=> AddNode (path, id, out bool _);
 
 		public PathTreeNode RemoveNode (string path, object id)
-			=> TryFind (path, out PathTreeNode result, out _, out _, out _)
-			? RemoveNode (result, id)
-			: null;
+			=> RemoveNode (path, id, out _);
 
-		internal PathTreeNode RemoveNode(PathTreeNode result, object id)
+		public PathTreeNode RemoveNode (string path, object id, out bool isModified)
+		{
+			isModified = false;
+
+			return TryFind (path, out PathTreeNode result, out _, out _, out _)
+				? RemoveNode (result, id, out isModified)
+				: null;
+		}
+
+		internal PathTreeNode RemoveNode(PathTreeNode result, object id, out bool isModified)
 		{
 			var parent = result.Parent;
 
-			if (result.UnregisterId (id) && !result.IsLive) {
+			isModified = result.UnregisterId (id) && !result.IsLive;
+			if (isModified) {
 				var nodeToRemove = result;
 				var lastToRemove = pathRoot;
 

@@ -758,6 +758,7 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileCreated;
 		static void OnFileCreated (FileEventArgs args)
 		{
+			Registration.Notify (EventDataKind.Created, args);
 			AsyncEvents.OnFileCreated (args);
 
 			foreach (FileEventInfo fi in args) {
@@ -903,7 +904,7 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public static WatchingHandler Notifications { get; } = new WatchingHandler ();
+		public static RegistrationHandler Registration { get; } = new RegistrationHandler ();
 	}
 
 	abstract class EventQueue

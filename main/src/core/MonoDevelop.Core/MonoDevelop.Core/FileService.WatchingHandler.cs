@@ -1,5 +1,5 @@
 //
-// FileService.Watching.cs
+// FileService.RegistrationHandler.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,52 +24,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading;
-using MonoDevelop.FSW;
+using System.Collections.Immutable;
+using System.Diagnostics;
 
 namespace MonoDevelop.Core
 {
 	public static partial class FileService
 	{
-		public sealed class WatchingHandler
+		public sealed class RegistrationHandler
 		{
-			readonly PathTree watchingTree = new PathTree ();
-			readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim (LockRecursionPolicy.NoRecursion);
+			// Prefer one tree per notification kind, as opposed to batching them up, as it helps with dispatching events
+			readonly ImmutableArray<FileWatcherInformation> watchMaps;
 
-			internal WatchingHandler () {}
-
-			public IDisposable WatchForFilesCreated (FilePath path, Action<FileEventArgs> handler)
+			internal RegistrationHandler ()
 			{
-				// 2 options:
-				// * one tree per notification kind - more memory but fewer traversal iterations when checking whether to notify
-				// * use the same tree, register the notification kind in the registration/id.
-				return new WatchingRegistration (watchingTree, path, handler, readerWriterLock);
+				watchMaps = ImmutableArray.Create<FileWatcherInformation> (
+					new FileWatcherInformation<FileEventArgs> (),		// Created
+					new FileWatcherInformation<FileEventArgs> (),		// Changed
+					new FileWatcherInformation<FileCopyEventArgs> (),	// Copied
+					new FileWatcherInformation<FileCopyEventArgs> (),	// Moved
+					new FileWatcherInformation<FileEventArgs> (),		// Removed
+					new FileWatcherInformation<FileCopyEventArgs> ()	// Renamed
+				);
+
+				Debug.Assert (Enum.GetNames (typeof (EventDataKind)).Length == watchMaps.Length);
 			}
 
-			internal void NotifyIfNeeded (FileEventArgs args)
-			{
-				readerWriterLock.EnterReadLock ();
-				try {
-					foreach (var arg in args) {
-						var path = arg.FileName;
+			public IDisposable WatchCreated (FilePath path, Action<FileEventArgs> handler)
+				=> GetMap<FileEventArgs> (EventDataKind.Created).WatchDirectory (path, handler);
 
-						// TODO: Optimize this so we do callback when looking up nodes, so we avoid useless work.
+			public IDisposable WatchRemoved (FilePath path, Action<FileEventArgs> handler)
+				=> GetMap<FileEventArgs> (EventDataKind.Removed).WatchDirectory (path, handler);
 
-						// Find if the node has any registration, and if it does, recursively notify parents
-						var node = watchingTree.FindNodeContaining (path);
-						while (node != null) {
-							if (node.IsLive) {
-								foreach (var id in node.Ids) {
-									((WatchingRegistration)id).Notify (args);
-								}
-							}
-							node = node.Parent;
-						}
-					}
-				} finally {
-					readerWriterLock.ExitReadLock ();
-				}
-			}
+			public IDisposable WatchRenamed (FilePath path, Action<FileCopyEventArgs> handler)
+				=> GetMap<FileCopyEventArgs> (EventDataKind.Renamed).WatchDirectory (path, handler);
+
+			internal void Notify<T> (EventDataKind kind, T args) where T:FileEventArgs
+				=> GetMap<T> (kind).Notify (args);
+
+			FileWatcherInformation<T> GetMap<T> (EventDataKind kind) where T:FileEventArgs
+				=> (FileWatcherInformation<T>)watchMaps [(int)kind];
 		}
 	}
 }

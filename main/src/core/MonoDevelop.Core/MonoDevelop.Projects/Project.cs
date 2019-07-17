@@ -4469,6 +4469,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		readonly List<IDisposable> watcherRegistrations = new List<IDisposable> (3);
 		void CreateFileWatcher ()
 		{
 			DisposeFileWatcher ();
@@ -4478,24 +4479,29 @@ namespace MonoDevelop.Projects
 
 			// Use FileService.AsyncEvents for file created event since this does not run on the UI thread. This
 			// avoids blocking the UI thread when many files are created.
-			FileService.AsyncEvents.FileCreated += OnFileCreated;
+			watcherRegistrations.Add (FileService.Registration.WatchCreated (BaseDirectory, args => OnFileCreated (args)));
+
 			// Use FileService.AsyncEvents for file deleted events to be consistent. Without this a deletion event
 			// would not update the Solution window until the IDE gets focus again.
-			FileService.AsyncEvents.FileRemoved += OnFileDeleted;
+			watcherRegistrations.Add (FileService.Registration.WatchRemoved (BaseDirectory, args => OnFileDeleted (args)));
+
 			// Use FileService.AsyncEvents for file renamed events since generating the FileService.FileRenamed event
 			// would result in non SDK style projects renaming files in the project if changed externally.
-			FileService.AsyncEvents.FileRenamed += OnFileRenamed;
+			watcherRegistrations.Add (FileService.Registration.WatchRenamed (BaseDirectory, args => OnFileRenamed (args)));
 		}
 
 		void DisposeFileWatcher ()
 		{
-			FileService.AsyncEvents.FileCreated -= OnFileCreated;
-			FileService.AsyncEvents.FileRemoved -= OnFileDeleted;
-			FileService.AsyncEvents.FileRenamed -= OnFileRenamed;
+			foreach (var registration in watcherRegistrations)
+				registration.Dispose ();
+			watcherRegistrations.Clear ();
 		}
 
-		void OnFileRenamed (object sender, FileCopyEventArgs e)
+		void OnFileRenamed (FileCopyEventArgs e)
 		{
+			if (Runtime.IsMainThread)
+				return;
+
 			foreach (FileEventInfo info in e) {
 				OnFileRenamed (info.SourceFile, info.TargetFile);
 			}
@@ -4503,9 +4509,6 @@ namespace MonoDevelop.Projects
 
 		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
 		{
-			if (Runtime.IsMainThread)
-				return;
-
 			try {
 				if (Directory.Exists (targetFile)) {
 					OnDirectoryRenamedExternally (sourceFile, targetFile);
@@ -4524,7 +4527,7 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		void OnFileCreated (object sender, FileEventArgs e)
+		void OnFileCreated (FileEventArgs e)
 		{
 			if (Runtime.IsMainThread)
 				return;
@@ -4536,9 +4539,6 @@ namespace MonoDevelop.Projects
 
 		void OnFileCreated (FilePath filePath)
 		{
-			if (Runtime.IsMainThread)
-				return;
-
 			try {
 				if (Directory.Exists (filePath))
 					return;
@@ -4563,7 +4563,7 @@ namespace MonoDevelop.Projects
 
 		static readonly ObjectPool<List<FilePath>> filePathListPool = ObjectPool.Create (new PooledListPolicy<FilePath> ());
 
-		void OnFileDeleted (object sender, FileEventArgs e)
+		void OnFileDeleted (FileEventArgs e)
 		{
 			if (Runtime.IsMainThread)
 				return;

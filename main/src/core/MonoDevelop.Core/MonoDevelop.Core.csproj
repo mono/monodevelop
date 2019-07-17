@@ -741,7 +741,7 @@
     <Compile Include="CoreExtensions.Memoize.cs" />
     <Compile Include="CoreExtensions.EventHandlers.cs" />
     <Compile Include="MonoDevelop.Core\FileService.WatchingHandler.cs" />
-    <Compile Include="MonoDevelop.Core\FileService.WatchingRegistration.cs" />
+    <Compile Include="MonoDevelop.Core\FileService.FileWatcherInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
