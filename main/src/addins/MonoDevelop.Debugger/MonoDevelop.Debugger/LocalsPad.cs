@@ -53,7 +53,7 @@ namespace MonoDevelop.Debugger
 				controller.ClearValues ();
 				controller.AddValues (locals);
 
-				var xx = new System.Collections.Generic.List<IObjectValueNode> ();
+				var xx = new System.Collections.Generic.List<AbstractObjectValueNode> ();
 
 
 				xx.Add (new FakeObjectValueNode ("f1"));
