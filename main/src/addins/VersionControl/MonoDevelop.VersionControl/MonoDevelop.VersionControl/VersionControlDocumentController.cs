@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			return versionInfo.IsVersioned;
 		}
 
-		protected override async Task<DocumentView> OnInitializeView ()
+		protected internal override async Task<DocumentView> OnInitializeView ()
 		{
 			var mainView = await base.OnInitializeView ();
 			var controller = (FileDocumentController)Controller;
@@ -96,6 +96,8 @@ namespace MonoDevelop.VersionControl
 				.FirstOrDefault (h => h.CanHandle (info.Item, info.VersionControlExtension.Controller));
 			if (handler != null) {
 				var controller = handler.CreateView (info);
+				if (controller == null)
+					return null;
 				await controller.Initialize (null, null);
 				var item = await controller.GetDocumentView ();
 				item.Title = title;

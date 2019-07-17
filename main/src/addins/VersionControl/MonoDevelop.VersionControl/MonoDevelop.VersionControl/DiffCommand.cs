@@ -39,9 +39,10 @@ namespace MonoDevelop.VersionControl
 		
 		static bool CanShow (VersionControlItem item)
 		{
+			var controller = IdeApp.Workbench.GetDocument (item.Path)?.DocumentController;
 			return !item.IsDirectory 
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IVersionControlViewHandler> (DiffViewHandlers).Any (h => h.CanHandle (item, null));
+				&& AddinManager.GetExtensionObjects<IVersionControlViewHandler> (DiffViewHandlers).Any (h => h.CanHandle (item, controller));
 		}
 		
 		public static async Task<bool> Show (VersionControlItemList items, bool test)
