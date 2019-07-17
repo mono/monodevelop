@@ -1399,7 +1399,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Cloning…"), 2);
 				RunOperation (() => RetryUntilSuccess (monitor, credType => {
-				var options = new CloneOptions {
+					var options = new CloneOptions {
 						CredentialsProvider = (url, userFromUrl, types) => {
 							transferProgress = checkoutProgress = 0;
 							return GitCredentials.TryGet (url, userFromUrl, types, credType);
@@ -1416,7 +1416,7 @@ namespace MonoDevelop.VersionControl.Git
 							Runtime.RunInMainThread (() => {
 								monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out file '{0}'"), path);
 							});
-						},
+						}
 					};
 					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, options);
 
