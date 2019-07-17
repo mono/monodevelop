@@ -36,12 +36,12 @@ namespace MonoDevelop.Core
 
 			internal WatchingHandler () {}
 
-			public IDisposable WatchForFilesChanged (string path)
+			public IDisposable WatchForFilesCreated (string path, Action<FileEventArgs> handler)
 			{
 				// 2 options:
 				// * one tree per notification kind - more memory but fewer traversal iterations when checking whether to notify
 				// * use the same tree, register the notification kind in the registration/id.
-				return new WatchingRegistration (watchingTree, path);
+				return new WatchingRegistration (watchingTree, path, handler);
 			}
 
 			internal void NotifyIfNeeded (string path)

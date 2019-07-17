@@ -34,15 +34,24 @@ namespace MonoDevelop.Core
 		{
 			PathTree tree;
 
-			// TODO: Remove this and fix https://github.com/mono/monodevelop/issues/5316
+			// TODO: Maybe just pass a FilePath, cause each arg will contain items we are not looking at.
+			Action<FileEventArgs> handler;
+
+			// TODO: Remove this and fix https://github.com/mono/monodevelop/issues/5316.
 			string path;
 
-			public WatchingRegistration (PathTree tree, string path)
+			public WatchingRegistration (PathTree tree, string path, Action<FileEventArgs> handler)
 			{
 				this.path = path;
 				this.tree = tree;
+				this.handler = handler;
 
 				tree.AddNode (path, this);
+			}
+
+			public void Notify (FileEventArgs args)
+			{
+				handler?.Invoke (args);
 			}
 
 			public void Dispose ()
