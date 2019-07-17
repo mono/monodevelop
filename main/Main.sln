@@ -466,6 +466,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextUICocoa", "external\vs-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.PerfTests", "src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.PerfTests\MonoDevelop.Debugger.PerfTests.csproj", "{785F775C-9CA0-4411-86E6-B89D89F3E2ED}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imaging", "Imaging", "{8E19F797-D714-4C07-903F-97C76E247A03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Def", "Def", "{F16C4445-2277-4A08-9511-5BE611756CDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaging", "external\vs-editor-api\src\Editor\Imaging\Def\Imaging.csproj", "{1AE8E07F-E8B7-4179-8055-11D3AE404E01}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
@@ -2703,6 +2709,16 @@ Global
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2916,6 +2932,9 @@ Global
 		{FC412405-B907-473F-864A-657D8E98BB53} = {AA56E3AE-8E61-4101-B01A-2646DC1B0D7B}
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D} = {0E8F5B35-CB3C-4B83-B09C-0D5A66B38A6B}
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED} = {776872D9-76FA-407B-BA69-08E25A24E5CE}
+		{8E19F797-D714-4C07-903F-97C76E247A03} = {5A92B792-BF17-4748-B29E-34C99B2E8722}
+		{F16C4445-2277-4A08-9511-5BE611756CDA} = {8E19F797-D714-4C07-903F-97C76E247A03}
+		{1AE8E07F-E8B7-4179-8055-11D3AE404E01} = {F16C4445-2277-4A08-9511-5BE611756CDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}
