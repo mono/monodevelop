@@ -179,15 +179,19 @@ namespace MonoDevelop.FSW
 			return leaf;
 		}
 
-		public PathTreeNode AddNode (string path, object id) => AddNode (path, id, out bool _);
+		public PathTreeNode AddNode (string path, object id)
+			=> AddNode (path, id, out bool _);
 
-		public PathTreeNode RemoveNode(string path, object id)
+		public PathTreeNode RemoveNode (string path, object id)
+			=> TryFind (path, out PathTreeNode result, out _, out _, out _)
+			? RemoveNode (result, id)
+			: null;
+
+		internal PathTreeNode RemoveNode(PathTreeNode result, object id)
 		{
-			if (!TryFind (path, out PathTreeNode result, out var parent, out var previousNode, out _))
-				return null;
+			var parent = result.Parent;
 
-			if (result.UnregisterId(id) && !result.IsLive)
-			{
+			if (result.UnregisterId (id) && !result.IsLive) {
 				var nodeToRemove = result;
 				var lastToRemove = Platform.IsWindows ? rootNode : rootNode.FirstChild;
 
@@ -199,7 +203,7 @@ namespace MonoDevelop.FSW
 
 					if (nodeToRemove.Previous != null)
 						nodeToRemove.Previous.Next = nodeToRemove.Next;
-					
+
 					if (nodeToRemove.Next != null)
 						nodeToRemove.Next.Previous = nodeToRemove.Previous;
 
