@@ -914,7 +914,7 @@ namespace MonoDevelop.Debugger
 							["Debugger.EvaluationOptions.AllowDisplayStringEvaluation"] = args.EvaluationContext.Options.AllowDisplayStringEvaluation,
 							["Debugger.EvaluationOptions.AllowMethodEvaluation"] = args.EvaluationContext.Options.AllowMethodEvaluation,
 							["Debugger.EvaluationOptions.AllowTargetInvoke"] = args.EvaluationContext.Options.AllowTargetInvoke,
-							["Debugger.EvaluationOptions.AllowToString"] = args.EvaluationContext.Options.AllowToStringCalls,
+							["Debugger.EvaluationOptions.AllowToStringCalls"] = args.EvaluationContext.Options.AllowToStringCalls,
 							["Debugger.EvaluationOptions.ChunkRawStrings"] = args.EvaluationContext.Options.ChunkRawStrings,
 							["Debugger.EvaluationOptions.EvaluationTimeout"] = args.EvaluationContext.Options.EvaluationTimeout,
 						};
