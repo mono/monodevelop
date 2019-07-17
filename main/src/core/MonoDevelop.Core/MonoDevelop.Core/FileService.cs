@@ -46,7 +46,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Core
 {
-	public static class FileService
+	public static partial class FileService
 	{
 		internal enum EventDataKind
 		{
@@ -902,6 +902,8 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
+
+		public static WatchingHandler Notifications { get; } = new WatchingHandler ();
 	}
 
 	abstract class EventQueue
