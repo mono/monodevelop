@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	abstract partial class Scope
 	{
-		class AllOpenFilesScope : Scope
+		sealed class AllOpenFilesScope : Scope
 		{
 			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken)
 			{
@@ -59,9 +59,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			public override string GetDescription (FindInFilesModel model)
 			{
-				if (!model.InReplaceMode)
-					return GettextCatalog.GetString ("Looking for '{0}' in all open documents", model.FindPattern);
-				return GettextCatalog.GetString ("Replacing '{0}' in all open documents", model.FindPattern);
+				return model.InReplaceMode
+					? GettextCatalog.GetString ("Replacing '{0}' in all open documents", model.FindPattern)
+					: GettextCatalog.GetString ("Looking for '{0}' in all open documents", model.FindPattern);
 			}
 		}
 	}

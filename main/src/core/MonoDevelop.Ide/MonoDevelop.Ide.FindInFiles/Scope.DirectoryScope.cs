@@ -32,13 +32,14 @@ using MonoDevelop.Core;
 using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Threading;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 
 	abstract partial class Scope
 	{
-		class DirectoryScope : Scope
+		sealed class DirectoryScope : Scope
 		{
 			readonly string path;
 			readonly bool recurse;
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 
 			[Obsolete ("Unused - will be removed")]
+			[EditorBrowsable(EditorBrowsableState.Never)]
 			public bool IncludeHiddenFiles {
 				get;
 				set;
@@ -96,7 +98,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						yield break;
 					}
 
-					foreach (string fileName in Directory.EnumerateFiles (curPath, "*")) {
+					foreach (string fileName in Directory.EnumerateFiles (curPath)) {
 						if (Platform.IsWindows) {
 							var attr = File.GetAttributes (fileName);
 							if (attr.HasFlag (FileAttributes.Hidden))
@@ -135,9 +137,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			public override string GetDescription (FindInFilesModel model)
 			{
-				if (!model.InReplaceMode)
-					return GettextCatalog.GetString ("Looking for '{0}' in directory '{1}'", model.FindPattern, path);
-				return GettextCatalog.GetString ("Replacing '{0}' in directory '{1}'", model.FindPattern, path);
+				return model.InReplaceMode
+					? GettextCatalog.GetString ("Replacing '{0}' in directory '{1}'", model.FindPattern, path)
+					: GettextCatalog.GetString ("Looking for '{0}' in directory '{1}'", model.FindPattern, path);
 			}
 		}
 	}

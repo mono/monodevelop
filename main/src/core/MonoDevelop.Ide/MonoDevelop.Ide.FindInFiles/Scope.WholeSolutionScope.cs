@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	abstract partial class Scope
 	{
-		class WholeSolutionScope : Scope
+		sealed class WholeSolutionScope : Scope
 		{
 			public override Task<IReadOnlyList<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
 			{
@@ -53,68 +53,56 @@ namespace MonoDevelop.Ide.FindInFiles
 				var options = new ParallelOptions ();
 				options.MaxDegreeOfParallelism = 4;
 
-				Parallel.ForEach (IdeApp.Workspace.GetAllSolutionItems ().OfType<SolutionFolder> (),
-								  options,
-								  () => new List<FileProvider> (),
-								  (folder, loop, providers) => {
-									  foreach (var file in folder.Files.Where (f => filterOptions.IsFileNameMatching (f.FileName) && File.Exists (f.FullPath))) {
-										  if (!IdeServices.DesktopService.GetFileIsText (file.FullPath))
-											  continue;
-										  lock (alreadyVisited) {
-											  if (alreadyVisited.Contains (file.FullPath))
-												  continue;
-											  alreadyVisited.Add (file.FullPath);
-										  }
-										  providers.Add (new FileProvider (file.FullPath));
-									  }
-									  return providers;
-								  },
-								  (providers) => {
-									  lock (results) {
-										  results.AddRange (providers);
-									  }
-								  });
+				foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
+					Parallel.ForEach (solution.GetAllItems<SolutionFolderItem> (),
+						options,
+						() => new List<FileProvider> (),
+						(item, loop, providers) => {
+							if (item is SolutionFolder folder) {
+								foreach (var file in folder.Files.Where (f => filterOptions.IsFileNameMatching (f.FileName) && File.Exists (f.FileName))) {
+									if (!IdeServices.DesktopService.GetFileIsText (file.FileName))
+										continue;
+									lock (alreadyVisited) {
+										if (alreadyVisited.Contains (file.FileName))
+											continue;
+										alreadyVisited.Add (file.FileName);
+									}
+									providers.Add (new FileProvider (file.FileName));
+								}
+							}
 
-				Parallel.ForEach (IdeApp.Workspace.GetAllProjects (),
-								  options,
-								  () => new List<FileProvider> (),
-								  (project, loop, providers) => {
-									  var conf = project.DefaultConfiguration?.Selector;
-
-									  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result) {
-										  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
-											  continue;
-										  if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
-											  continue;
-										  if (!filterOptions.IsFileNameMatching (file.Name))
-											  continue;
-										  if (!IdeServices.DesktopService.GetFileIsText (file.FilePath))
-											  continue;
-
-										  lock (alreadyVisited) {
-											  if (alreadyVisited.Contains (file.FilePath.FullPath))
-												  continue;
-											  alreadyVisited.Add (file.FilePath.FullPath);
-										  }
-
-										  providers.Add (new FileProvider (file.Name, project));
-									  }
-									  return providers;
-								  },
-								  (providers) => {
-									  lock (results) {
-										  results.AddRange (providers);
-									  }
-								  });
+							if (item is Project project) {
+								var conf = project.DefaultConfiguration?.Selector;
+								foreach (var file in project.GetSourceFilesAsync (conf).Result) {
+									if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+										continue;
+									if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
+										continue;
+									if (!filterOptions.IsFileNameMatching (file.Name))
+										continue;
+									if (!IdeServices.DesktopService.GetFileIsText (file.Name))
+										continue;
+									if (!alreadyVisited.Add (file.Name))
+										continue;
+									providers.Add (new FileProvider (file.Name, project));
+								}
+							}
+							return providers;
+						}, (providers) => {
+							lock (results) {
+								results.AddRange (providers);
+							}
+						});
+				}
 
 				return Task.FromResult ((IReadOnlyList<FileProvider>)results);
 			}
 
 			public override string GetDescription (FindInFilesModel model)
 			{
-				if (!model.InReplaceMode)
-					return GettextCatalog.GetString ("Looking for '{0}' in all projects", model.FindPattern);
-				return GettextCatalog.GetString ("Replacing '{0}' in all projects", model.FindPattern);
+				return model.InReplaceMode
+					? GettextCatalog.GetString ("Replacing '{0}' in all projects", model.FindPattern)
+					: GettextCatalog.GetString ("Looking for '{0}' in all projects", model.FindPattern);
 			}
 		}
 	}

@@ -259,12 +259,11 @@ namespace MonoDevelop.Ide.Gui
 			if (fileName == null)
 				throw new ArgumentNullException (nameof (fileName));
 
-			foreach (var doc in documentManager.Documents) {
-				if (FilePath.PathComparer.Equals (doc.FileName, fileName)) {
-					var buffer = doc.GetContent<ITextBuffer> ();
-					if (buffer != null)
-						return buffer.CurrentSnapshot.GetText ();
-				}
+			var doc = documentManager.GetDocument (fileName);
+			if (doc != null) {
+				var buffer = doc.GetContent<ITextBuffer> ();
+				if (buffer != null)
+					return buffer.CurrentSnapshot.GetText ();
 			}
 
 			try {

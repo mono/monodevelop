@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	abstract partial class Scope
 	{
-		class WholeProjectScope : Scope
+		sealed class WholeProjectScope : Scope
 		{
 			readonly Project project;
 
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							continue;
 						if (!IdeServices.DesktopService.GetFileIsText (file.Name))
 							continue;
-						if (!alreadyVisited.Add (file.FilePath.FullPath))
+						if (!alreadyVisited.Add (file. Name))
 							continue;
 						results.Add (new FileProvider (file.Name, project));
 					}
@@ -73,9 +73,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			public override string GetDescription (FindInFilesModel model)
 			{
-				if (!model.InReplaceMode)
-					return GettextCatalog.GetString ("Looking for '{0}' in project '{1}'", model.FindPattern, project.Name);
-				return GettextCatalog.GetString ("Replacing '{0}' in project '{1}'", model.FindPattern, project.Name);
+				return model.InReplaceMode
+					? GettextCatalog.GetString ("Replacing '{0}' in project '{1}'", model.FindPattern, project.Name)
+					: GettextCatalog.GetString ("Looking for '{0}' in project '{1}'", model.FindPattern, project.Name);
 			}
 		}
 	}

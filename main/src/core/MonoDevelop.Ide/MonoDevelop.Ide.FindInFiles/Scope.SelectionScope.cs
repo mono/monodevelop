@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	abstract partial class Scope
 	{
-		class SelectionScope : Scope
+		sealed class SelectionScope : Scope
 		{
 			public override PathMode PathMode {
 				get { return PathMode.Hidden; }
@@ -56,9 +56,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			public override string GetDescription (FindInFilesModel model)
 			{
-				if (!model.InReplaceMode)
-					return GettextCatalog.GetString ("Looking for '{0}' in current selection", model.FindPattern);
-				return GettextCatalog.GetString ("Replacing '{0}' in current selection", model.FindPattern);
+				return model.InReplaceMode
+					? GettextCatalog.GetString ("Replacing '{0}' in current selection", model.FindPattern)
+					: GettextCatalog.GetString ("Looking for '{0}' in current selection", model.FindPattern);
 			}
 
 		}

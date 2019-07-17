@@ -30,13 +30,14 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 
 	abstract partial class Scope
 	{
-		class DocumentScope : Scope
+		sealed class DocumentScope : Scope
 		{
 			public override PathMode PathMode {
 				get { return PathMode.Hidden; }
@@ -47,15 +48,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = IdeApp.Workbench.ActiveDocument;
 				var textBuffer = doc.GetContent<ITextBuffer> ();
 				if (textBuffer != null)
-					return Task.FromResult<IReadOnlyList<FileProvider>> (new [] { new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName) });
+					return Task.FromResult<IReadOnlyList<FileProvider>> (ImmutableArray.Create (new OpenFileProvider (textBuffer, doc.Owner as Project, doc.FileName)));
 				return EmptyFileProviderTask;
 			}
 
 			public override string GetDescription (FindInFilesModel model)
 			{
-				if (!model.InReplaceMode)
-					return GettextCatalog.GetString ("Looking for '{0}' in current document", model.FindPattern);
-				return GettextCatalog.GetString ("Replacing '{0}' in current document", model.FindPattern);
+				return model.InReplaceMode
+					? GettextCatalog.GetString ("Replacing '{0}' in current document", model.FindPattern)
+					: GettextCatalog.GetString ("Looking for '{0}' in current document", model.FindPattern);
 			}
 
 		}
