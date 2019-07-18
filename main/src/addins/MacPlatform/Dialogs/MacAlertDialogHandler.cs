@@ -42,6 +42,23 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.MacIntegration
 {
+	sealed class AlertDelegate : NSAlertDelegate
+	{
+		readonly string HelpUrl;
+		public AlertDelegate (string helpUrl)
+		{
+			HelpUrl = helpUrl;
+		}
+
+		public override bool ShowHelp (NSAlert alert)
+		{
+			if (!string.IsNullOrEmpty (HelpUrl)) {
+				IdeServices.DesktopService.ShowUrl (HelpUrl);
+			}
+			return true;
+		}
+	}
+
 	class MacAlertDialogHandler : IAlertDialogHandler
 	{
 		public bool Run (AlertDialogData data)
@@ -77,6 +94,11 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				alert.MessageText = data.Message.Text;
+
+				if (!string.IsNullOrEmpty (data.Message.HelpUrl)) {
+					alert.Delegate = new AlertDelegate (data.Message.HelpUrl);
+					alert.ShowsHelp = true;
+				}
 
 				int accessoryViewItemsCount = data.Options.Count;
 
