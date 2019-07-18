@@ -28,9 +28,9 @@ using System;
 
 namespace MonoDevelop.Debugger
 {
-	public abstract class ObjectValueNodeEventArgs : EventArgs
+	public class ObjectValueNodeEventArgs : EventArgs
 	{
-		protected ObjectValueNodeEventArgs (ObjectValueNode node)
+		public ObjectValueNodeEventArgs (ObjectValueNode node)
 		{
 			Node = node;
 		}
@@ -56,16 +56,6 @@ namespace MonoDevelop.Debugger
 		public ObjectValueNode[] ReplacementNodes { get; }
 	}
 
-	/// <summary>
-	/// Event args for when a node has been expanded
-	/// </summary>
-	public sealed class ObjectValueNodeExpandedEventArgs : ObjectValueNodeEventArgs
-	{
-		public ObjectValueNodeExpandedEventArgs (ObjectValueNode node) : base (node)
-		{
-		}
-	}
-
 	public sealed class ObjectValueNodeChildrenChangedEventArgs : ObjectValueNodeEventArgs
 	{
 		public ObjectValueNodeChildrenChangedEventArgs (ObjectValueNode node, int index, int count) : base (node)
@@ -83,12 +73,5 @@ namespace MonoDevelop.Debugger
 		/// Gets the index of the first child that was loaded
 		/// </summary>
 		public int Index { get; }
-	}
-
-	public sealed class ObjectValueNodeChangedEventArgs : ObjectValueNodeEventArgs
-	{
-		public ObjectValueNodeChangedEventArgs (ObjectValueNode node) : base (node)
-		{
-		}
 	}
 }

@@ -248,7 +248,7 @@ namespace MonoDevelop.Debugger
 		/// NodeExpanded is fired when the node has expanded and the children
 		/// for the node have been loaded and are in the node's children collection
 		/// </summary>
-		public event EventHandler<ObjectValueNodeExpandedEventArgs> NodeExpanded;
+		public event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 
 		/// <summary>
 		/// EvaluationCompleted is fired when the debugger informs us that a node that
@@ -832,7 +832,7 @@ namespace MonoDevelop.Debugger
 
 		void OnNodeExpanded (ObjectValueNode node)
 		{
-			NodeExpanded?.Invoke (this, new ObjectValueNodeExpandedEventArgs (node));
+			NodeExpanded?.Invoke (this, new ObjectValueNodeEventArgs (node));
 		}
 		#endregion
 

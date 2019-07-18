@@ -370,7 +370,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		void Controller_NodeExpanded (object sender, ObjectValueNodeExpandedEventArgs e)
+		void Controller_NodeExpanded (object sender, ObjectValueNodeEventArgs e)
 		{
 			Runtime.RunInMainThread (() => {
 				OnNodeExpanded (e.Node);
