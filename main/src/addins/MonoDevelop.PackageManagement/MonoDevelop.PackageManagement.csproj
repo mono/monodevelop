@@ -102,10 +102,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\AddPackagesHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.UI.cs">
-      <DependentUpon>AddPackagesDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="MonoDevelop.PackageManagement\PackageRepositoryNodeExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateNuGetPackageInstaller.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventsMonitor.cs" />
@@ -127,9 +123,7 @@
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesSearchCategory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\ProjectPackagesFolderNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferenceNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceExtensions.cs" />
@@ -142,7 +136,6 @@
       <DependentUpon>AddPackageSourceDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement.Gui\DialogExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageLoader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageLoadedEventArgs.cs" />
@@ -153,7 +146,7 @@
     <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewCheckBox.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewCheckBox.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProject.cs" />
@@ -197,13 +190,11 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageNewImportsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageNewImportsHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\AllPackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryProvider.cs" />
     <Compile Include="NuGet.PackageManagement.UI\SearchResult.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageItemListViewModel.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageStatus.cs" />
     <Compile Include="NuGet.PackageManagement.UI\DisplayVersion.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\InstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopSolutionManager.cs" />
@@ -270,8 +261,6 @@
     <Compile Include="NuGet.PackageManagement.UI\IPackageMetadataProvider.cs" />
     <Compile Include="NuGet.PackageManagement.UI\DetailControlModel.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageDetailControlModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RecentNuGetPackagesRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModelComparer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageSourceProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SettingsLoader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageManager.cs" />

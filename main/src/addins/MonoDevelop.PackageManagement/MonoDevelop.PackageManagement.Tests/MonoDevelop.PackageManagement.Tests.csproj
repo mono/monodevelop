@@ -86,13 +86,11 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectContext.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageUninstallerTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\AllPackagesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSourceRepositoryProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FakePackageFeed.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableAllPackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ManagePackagesSearchResultViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSearchMetadata.cs" />
