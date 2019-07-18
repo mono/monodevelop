@@ -154,6 +154,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesCommandHandlerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ManagePackagesViewModelTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableManagePackagesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

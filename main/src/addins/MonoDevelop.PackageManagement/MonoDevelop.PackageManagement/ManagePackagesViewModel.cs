@@ -57,7 +57,6 @@ namespace MonoDevelop.PackageManagement
 		List<NuGetProject> nugetProjects;
 		List<IDotNetProject> dotNetProjects;
 		INuGetProjectContext projectContext;
-		List<PackageReference> packageReferences = new List<PackageReference> ();
 		AggregatePackageSourceErrorMessage aggregateErrorMessage;
 		NuGetPackageManager packageManager;
 		RecentManagedNuGetPackagesRepository recentPackagesRepository;
@@ -615,13 +614,18 @@ namespace MonoDevelop.PackageManagement
 
 		public bool IsOlderPackageInstalled (string id, NuGetVersion version)
 		{
-			return packageReferences.Any (packageReference => IsOlderPackageInstalled (packageReference, id, version));
+			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
+				if (projectInfo.Packages.Any (packageId => IsOlderPackageInstalled (packageId, id, version))) {
+					return true;
+				}
+			}
+			return false;
 		}
 
-		bool IsOlderPackageInstalled (PackageReference packageReference, string id, NuGetVersion version)
+		bool IsOlderPackageInstalled (PackageIdentity packageIdentity, string id, NuGetVersion version)
 		{
-			return packageReference.PackageIdentity.Id == id &&
-				packageReference.PackageIdentity.Version < version;
+			return packageIdentity.Id == id &&
+				packageIdentity.Version < version;
 		}
 
 		protected virtual Task GetPackagesInstalledInProjects ()
