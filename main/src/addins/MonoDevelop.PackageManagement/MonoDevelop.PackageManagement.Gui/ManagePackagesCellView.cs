@@ -127,7 +127,7 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdateTextColor (Context ctx)
 		{
-			if (UseStrongSelectionColor && Selected) {
+			if (Selected) {
 				ctx.SetColor (Styles.CellTextSelectionColor);
 			} else {
 				ctx.SetColor (Styles.CellTextColor);
