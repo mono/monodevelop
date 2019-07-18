@@ -431,18 +431,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			var parentSolution = project.ParentSolution;
 			var workspace = await GetWorkspaceAsync (parentSolution, cancellationToken);
 			var projectId = workspace.GetProjectId (project);
-			if (projectId == null)
-				return null;
-			var proj = workspace.CurrentSolution.GetProject (projectId);
-			if (proj != null)
-				return proj;
+			Microsoft.CodeAnalysis.Project proj = null;
+			if (projectId != null) {
+				proj = workspace.CurrentSolution.GetProject (projectId);
+				if (proj != null)
+					return proj;
+			}
 			//We assume that since we have projectId and project is not found in solution
 			//project is being loaded(waiting MSBuild to return list of source files)
 			var taskSource = new TaskCompletionSource<Microsoft.CodeAnalysis.Project> ();
 			var registration = cancellationToken.Register (() => taskSource.TrySetCanceled ());
 			EventHandler<WorkspaceChangeEventArgs> del = (s, e) => {
 				if (e.Kind == WorkspaceChangeKind.SolutionAdded || e.Kind == WorkspaceChangeKind.SolutionReloaded) {
-					proj = workspace.CurrentSolution.GetProject (projectId);
+					projectId = workspace.GetProjectId (project);
+					if (projectId == null)
+						return;
+					var proj = workspace.CurrentSolution.GetProject (projectId);
 					if (proj != null) {
 						registration.Dispose ();
 						taskSource.TrySetResult (proj);
