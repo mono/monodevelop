@@ -350,7 +350,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagedPackagesSearchResultViewModelComparer.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesLoadContext.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesPage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesProjectInfo.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesSearchResultViewModel.cs" />

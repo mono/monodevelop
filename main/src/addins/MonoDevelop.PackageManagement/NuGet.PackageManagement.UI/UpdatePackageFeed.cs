@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
@@ -21,10 +20,10 @@ namespace NuGet.PackageManagement.UI
 		IEnumerable<PackageIdentity> _installedPackages;
 		readonly IPackageMetadataProvider _metadataProvider;
 		readonly PackageSearchMetadataCache _cachedUpdates;
-		ManagePackagesLoadContext _context;
+		PackageLoadContext _context;
 
 		public UpdatePackageFeed (
-			ManagePackagesLoadContext context,
+			PackageLoadContext context,
 			IPackageMetadataProvider metadataProvider,
 			PackageSearchMetadataCache cachedUpdates,
 			Common.ILogger logger)

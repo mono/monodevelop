@@ -296,7 +296,7 @@ namespace MonoDevelop.PackageManagement
 
 		PackageItemLoader CreatePackageLoader ()
 		{
-			var context = new ManagePackagesLoadContext (
+			var context = new PackageLoadContext (
 				selectedPackageSource.GetSourceRepositories (),
 				true,
 				nugetProjects);
@@ -313,7 +313,7 @@ namespace MonoDevelop.PackageManagement
 			return loader;
 		}
 
-		protected virtual IPackageFeed CreatePackageFeed (ManagePackagesLoadContext context)
+		protected virtual IPackageFeed CreatePackageFeed (PackageLoadContext context)
 		{
 			if (PageSelected == ManagePackagesPage.Browse)
 				return new MultiSourcePackageFeed (context.SourceRepositories, this);

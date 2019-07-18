@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageFeed PackageFeed = new FakePackageFeed ();
 
-		protected override IPackageFeed CreatePackageFeed (ManagePackagesLoadContext context)
+		protected override IPackageFeed CreatePackageFeed (PackageLoadContext context)
 		{
 			return PackageFeed;
 		}

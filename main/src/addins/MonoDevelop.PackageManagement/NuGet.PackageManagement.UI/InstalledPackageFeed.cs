@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
 
@@ -19,10 +18,10 @@ namespace NuGet.PackageManagement.UI
 	{
 		IEnumerable<PackageIdentity> _installedPackages;
 		readonly IPackageMetadataProvider _metadataProvider;
-		ManagePackagesLoadContext _context;
+		PackageLoadContext _context;
 
 		public InstalledPackageFeed (
-			ManagePackagesLoadContext context,
+			PackageLoadContext context,
 			IPackageMetadataProvider metadataProvider,
 			Common.ILogger logger)
 			: this (new PackageIdentity[0], metadataProvider, logger)
