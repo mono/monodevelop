@@ -100,6 +100,12 @@ namespace MonoDevelop.Debugger
 								//await Toolkit.NativeEngine.Invoke (async delegate {
 								using (var dialog = new SourceLinkDialog (frame.FullStackframeText, downloadInfo.Uri, Path.GetFileName (downloadInfo.LocalPath))) {
 									if (dialog.Run (parent) == SourceLinkDialog.GetAndOpenCommand) {
+										var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+											GettextCatalog.GetString ("Downloading ") + downloadInfo.Uri, 
+											Stock.StatusWorking,
+											true
+										);
+
 										Directory.GetParent (downloadInfo.LocalPath).Create ();
 										var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
 										using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
@@ -108,6 +114,7 @@ namespace MonoDevelop.Debugger
 											}
 										}
 										frame.UpdateSourceFile (downloadInfo.LocalPath);
+										pm.Dispose ();
 										var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
 										if (doc != null)
 											return;
