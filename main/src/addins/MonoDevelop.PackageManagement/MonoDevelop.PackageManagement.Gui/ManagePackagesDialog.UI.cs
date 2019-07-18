@@ -114,6 +114,7 @@ namespace MonoDevelop.PackageManagement
 			topHBox.PackStart (consolidateLabel);
 
 			packageSearchEntry = new SearchTextEntry ();
+			packageSearchEntry.Name = "managePackagesDialogSearchEntry";
 			packageSearchEntry.WidthRequest = 187;
 			topHBox.PackEnd (packageSearchEntry);
 
@@ -221,6 +222,7 @@ namespace MonoDevelop.PackageManagement
 			packageNameLabel = new Label ();
 			packageNameLabel.Ellipsize = EllipsizeMode.End;
 			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (packageInfoFontSize);
+			Font packageInfoBoldFont = packageInfoSmallFont.WithWeight (FontWeight.Bold);
 			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
 
@@ -237,8 +239,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageIdHBox);
 
 			var packageIdLabel = new Label ();
-			packageIdLabel.Font = packageInfoSmallFont;
-			packageIdLabel.Markup = GettextCatalog.GetString ("<b>Id</b>");
+			packageIdLabel.Font = packageInfoBoldFont;
+			packageIdLabel.Text = GettextCatalog.GetString ("Id");
 			packageIdHBox.PackStart (packageIdLabel);
 
 			packageId = new Label ();
@@ -257,8 +259,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageAuthorHBox);
 
 			var packageAuthorLabel = new Label ();
-			packageAuthorLabel.Markup = GettextCatalog.GetString ("<b>Author</b>");
-			packageAuthorLabel.Font = packageInfoSmallFont;
+			packageAuthorLabel.Text = GettextCatalog.GetString ("Author");
+			packageAuthorLabel.Font = packageInfoBoldFont;
 			packageAuthorHBox.PackStart (packageAuthorLabel);
 
 			packageAuthor = new Label ();
@@ -272,8 +274,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packagePublishedHBox);
 
 			var packagePublishedLabel = new Label ();
-			packagePublishedLabel.Markup = GettextCatalog.GetString ("<b>Published</b>");
-			packagePublishedLabel.Font = packageInfoSmallFont;
+			packagePublishedLabel.Text = GettextCatalog.GetString ("Published");
+			packagePublishedLabel.Font = packageInfoBoldFont;
 			packagePublishedHBox.PackStart (packagePublishedLabel);
 
 			packagePublishedDate = new Label ();
@@ -285,8 +287,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageDownloadsHBox);
 
 			var packageDownloadsLabel = new Label ();
-			packageDownloadsLabel.Markup = GettextCatalog.GetString ("<b>Downloads</b>");
-			packageDownloadsLabel.Font = packageInfoSmallFont;
+			packageDownloadsLabel.Text = GettextCatalog.GetString ("Downloads");
+			packageDownloadsLabel.Font = packageInfoBoldFont;
 			packageDownloadsHBox.PackStart (packageDownloadsLabel);
 
 			packageDownloads = new Label ();
@@ -298,8 +300,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageLicenseHBox);
 
 			var packageLicenseLabel = new Label ();
-			packageLicenseLabel.Markup = GettextCatalog.GetString ("<b>License</b>");
-			packageLicenseLabel.Font = packageInfoSmallFont;
+			packageLicenseLabel.Text = GettextCatalog.GetString ("License");
+			packageLicenseLabel.Font = packageInfoBoldFont;
 			packageLicenseHBox.PackStart (packageLicenseLabel);
 
 			packageLicenseLink = new LinkLabel ();
@@ -312,8 +314,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageProjectPageHBox);
 
 			var packageProjectPageLabel = new Label ();
-			packageProjectPageLabel.Markup = GettextCatalog.GetString ("<b>Project Page</b>");
-			packageProjectPageLabel.Font = packageInfoSmallFont;
+			packageProjectPageLabel.Text = GettextCatalog.GetString ("Project Page");
+			packageProjectPageLabel.Font = packageInfoBoldFont;
 			packageProjectPageHBox.PackStart (packageProjectPageLabel);
 
 			packageProjectPageLink = new LinkLabel ();
@@ -326,8 +328,8 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageDependenciesHBox);
 
 			var packageDependenciesLabel = new Label ();
-			packageDependenciesLabel.Markup = GettextCatalog.GetString ("<b>Dependencies</b>");
-			packageDependenciesLabel.Font = packageInfoSmallFont;
+			packageDependenciesLabel.Text = GettextCatalog.GetString ("Dependencies");
+			packageDependenciesLabel.Font = packageInfoBoldFont;
 			packageDependenciesHBox.PackStart (packageDependenciesLabel);
 
 			packageDependenciesNoneLabel = new Label ();
@@ -352,8 +354,8 @@ namespace MonoDevelop.PackageManagement
 			packageVersionsHBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageVersionsHBox.Margin = new WidgetSpacing (15, 0, 15, 12);
 			var packageVersionsLabel = new Label ();
-			packageVersionsLabel.Font = packageInfoSmallFont;
-			packageVersionsLabel.Markup = GettextCatalog.GetString ("<b>Version</b>");
+			packageVersionsLabel.Font = packageInfoBoldFont;
+			packageVersionsLabel.Text = GettextCatalog.GetString ("Version");
 			packageVersionsHBox.PackStart (packageVersionsLabel);
 
 			packageVersionComboBox = new ComboBox ();
@@ -376,16 +378,19 @@ namespace MonoDevelop.PackageManagement
 			mainVBox.PackStart (bottomHBox);
 
 			showPrereleaseCheckBox = new CheckBox ();
+			showPrereleaseCheckBox.Name = "managePackagesDialogShowPreReleaseCheckBox";
 			showPrereleaseCheckBox.Label = GettextCatalog.GetString ("Show pre-release packages");
 			bottomHBox.PackStart (showPrereleaseCheckBox);
 
 			addPackagesButton = new Button ();
+			addPackagesButton.Name = "managePackagesDialogAddPackageButton";
 			addPackagesButton.MinWidth = 120;
 			addPackagesButton.MinHeight = 25;
 			addPackagesButton.Label = GettextCatalog.GetString ("Add Package");
 			bottomHBox.PackEnd (addPackagesButton);
 
 			var closeButton = new Button ();
+			closeButton.Name = "managePackagesDialogCloseButton";
 			closeButton.MinWidth = 120;
 			closeButton.MinHeight = 25;
 			closeButton.Label = GettextCatalog.GetString ("Close");

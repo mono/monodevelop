@@ -167,6 +167,11 @@ namespace MonoDevelop.PackageManagement
 			get { return viewModel.DownloadCount >= 0; }
 		}
 
+		public string GetIdMarkup ()
+		{
+			return GetBoldText (Id);
+		}
+
 		public string GetNameMarkup ()
 		{
 			return GetBoldText (Name);

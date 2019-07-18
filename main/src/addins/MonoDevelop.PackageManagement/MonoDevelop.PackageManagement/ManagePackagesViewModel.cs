@@ -120,7 +120,7 @@ namespace MonoDevelop.PackageManagement
 				.Select (dotNetProject => solutionManager.GetNuGetProject (dotNetProject))
 				.ToList ();
 
-			GetPackagesInstalledInProjects ();
+			GetPackagesInstalledInProjects ().Ignore ();
 		}
 
 		public bool IsManagingSolution { get; private set; }
@@ -525,7 +525,7 @@ namespace MonoDevelop.PackageManagement
 				};
 
 				firstInstall = false;
-			};
+			}
 		}
 
 		public IEnumerable<IPackageAction> CreateUninstallPackageActions (

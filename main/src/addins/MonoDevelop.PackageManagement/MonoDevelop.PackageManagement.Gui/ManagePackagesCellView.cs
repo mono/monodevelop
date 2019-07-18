@@ -86,7 +86,7 @@ namespace MonoDevelop.PackageManagement
 			double packageIdWidth = cellArea.Width - packageDescriptionPadding.HorizontalSpacing - packageDescriptionLeftOffset;
 
 			// Package download count.
-			if (packageViewModel.HasDownloadCount || packageViewModel.ShowVersionInsteadOfDownloadCount) {
+			if (packageViewModel.HasDownloadCount) {
 				var downloadCountTextLayout = new TextLayout ();
 				downloadCountTextLayout.Text = packageViewModel.GetDownloadCountOrVersionDisplayText ();
 				Size size = downloadCountTextLayout.GetSize ();
@@ -98,9 +98,11 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			// Package Id.
+			// Use the package id and not the package title to prevent a pango crash if the title
+			// contains Chinese characters.
 			var packageIdTextLayout = new TextLayout ();
 			packageIdTextLayout.Font = packageIdTextLayout.Font.WithSize (packageIdFontSize);
-			packageIdTextLayout.Markup = packageViewModel.GetNameMarkup ();
+			packageIdTextLayout.Markup = packageViewModel.GetIdMarkup ();
 			packageIdTextLayout.Trimming = TextTrimming.WordElipsis;
 			Size packageIdTextSize = packageIdTextLayout.GetSize ();
 			packageIdTextLayout.Width = packageIdWidth;
