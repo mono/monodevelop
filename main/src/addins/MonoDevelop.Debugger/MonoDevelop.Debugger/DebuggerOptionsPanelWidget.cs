@@ -55,6 +55,7 @@ namespace MonoDevelop.Debugger
 	{
 		DebuggerSessionOptions options;
 		CheckBox checkProjectCodeOnly;
+		ComboBox comboAutomaticSourceDownload;
 		CheckBox checkStepOverPropertiesAndOperators;
 		CheckBox checkAllowEval;
 		CheckBox checkAllowToString;
@@ -69,6 +70,11 @@ namespace MonoDevelop.Debugger
 		{
 			checkProjectCodeOnly = new CheckBox (GettextCatalog.GetString ("Enable Just My Code"));
 			PackStart (checkProjectCodeOnly);
+			comboAutomaticSourceDownload = new ComboBox ();
+			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Ask, GettextCatalog.GetString ("Ask"));
+			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Always, GettextCatalog.GetString ("Always"));
+			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Never, GettextCatalog.GetString ("Never"));
+			PackStart (comboAutomaticSourceDownload);
 			checkStepOverPropertiesAndOperators = new CheckBox (GettextCatalog.GetString ("Step over properties and operators"));
 			PackStart (checkStepOverPropertiesAndOperators);
 			checkAllowEval = new CheckBox (GettextCatalog.GetString ("Allow implicit property evaluation and method invocation"));
@@ -134,6 +140,8 @@ namespace MonoDevelop.Debugger
 
 			options = DebuggingService.GetUserOptions ();
 			checkProjectCodeOnly.Active = options.ProjectAssembliesOnly;
+			comboAutomaticSourceDownload.SelectedItem = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", AutomaticSourceDownload.Ask);
+
 			checkStepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
 			checkAllowEval.Active = options.EvaluationOptions.AllowTargetInvoke;
 			checkAllowToString.Active = options.EvaluationOptions.AllowToStringCalls;
@@ -143,6 +151,7 @@ namespace MonoDevelop.Debugger
 			checkAllowToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
 			enableLogging.Active = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false);
+
 		}
 
 		public void Store ()
@@ -158,6 +167,7 @@ namespace MonoDevelop.Debugger
 
 			options.StepOverPropertiesAndOperators = checkStepOverPropertiesAndOperators.Active;
 			options.ProjectAssembliesOnly = checkProjectCodeOnly.Active;
+			options.AutomaticSourceLinkDownload = (AutomaticSourceDownload)comboAutomaticSourceDownload.SelectedItem;
 			options.EvaluationOptions = ops;
 
 			DebuggingService.SetUserOptions (options);

@@ -90,40 +90,29 @@ namespace MonoDevelop.Debugger
 						if (doc != null)
 							return;
 					}
+					var automaticSourceDownload = DebuggingService.GetUserOptions ().AutomaticSourceLinkDownload;
 
-					if (frame.SourceLocation.SourceLink != null) {
+					if (frame.SourceLocation.SourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
 						try {
 							var downloadInfo = frame.SourceLocation.SourceLink.GetDownloadLocation (frame.SourceLocation.FileName, symbolCachePath);
 							// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
 							if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
-								WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
-								//await Toolkit.NativeEngine.Invoke (async delegate {
-								using (var dialog = new SourceLinkDialog (frame.FullStackframeText, downloadInfo.Uri, Path.GetFileName (downloadInfo.LocalPath))) {
-									if (dialog.Run (parent) == SourceLinkDialog.GetAndOpenCommand) {
-										var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-											GettextCatalog.GetString ("Downloading ") + downloadInfo.Uri, 
-											Stock.StatusWorking,
-											true
-										);
+								if (automaticSourceDownload == AutomaticSourceDownload.Always) {
+									await DownloadFileAsync (frame, downloadInfo);
+								} else {
+									WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
 
-										Directory.GetParent (downloadInfo.LocalPath).Create ();
-										var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
-										using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
-											using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
-												await stream.CopyToAsync (fs);
-											}
-										}
-										frame.UpdateSourceFile (downloadInfo.LocalPath);
-										pm.Dispose ();
-										var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
-										if (doc != null)
-											return;
+									//await Toolkit.NativeEngine.Invoke (async delegate {
+									using var dialog = new SourceLinkDialog (frame.FullStackframeText, downloadInfo.Uri, Path.GetFileName (downloadInfo.LocalPath));
+									if (dialog.Run (parent) == SourceLinkDialog.GetAndOpenCommand) {
+										await DownloadFileAsync (frame, downloadInfo);
 									}
-									// If we have source link info but the user presses cancel, don't go to disassembly
-									return;
 								}
+								var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
+								if (doc != null)
+									return;
 							}
-								//}
+							//}
 						} catch(Exception ex) {
 							LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
 							return;
@@ -164,7 +153,26 @@ namespace MonoDevelop.Debugger
 				disassemblyDoc.Select ();
 			}
 		}
-		
+
+		static async System.Threading.Tasks.Task DownloadFileAsync (StackFrame frame, SourceLinkDownloadInfo downloadInfo)
+		{
+			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Downloading ") + downloadInfo.Uri,
+				Stock.StatusWorking,
+				true
+			);
+
+			Directory.GetParent (downloadInfo.LocalPath).Create ();
+			var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
+			using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
+				using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
+					await stream.CopyToAsync (fs);
+				}
+			}
+			frame.UpdateSourceFile (downloadInfo.LocalPath);
+			pm.Dispose ();
+		}
+
 		async void OnShowDisassembly (object s, EventArgs a)
 		{
 			if (disassemblyDoc == null) {
