@@ -95,10 +95,11 @@ namespace MonoDevelop.Debugger
 
 					if (frame.SourceLocation.SourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
 						var downloadInfo = frame.SourceLocation.SourceLink.GetDownloadLocation (frame.SourceLocation.FileName, symbolCachePath);
+						Document doc = null;
 						// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
 						if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
 							if (automaticSourceDownload == AutomaticSourceDownload.Always) {
-								await DownloadFileAsync (frame, downloadInfo);
+								doc = await DownloadAndOpenFileAsync (frame, line, downloadInfo);
 							} else {
 								var hyperlink = $"<a href='{ downloadInfo.Uri }'>{  Path.GetFileName (downloadInfo.LocalPath) }</a>";
 								var stackframeText = $"<b>{frame.FullStackframeText}</b>";
@@ -120,10 +121,9 @@ namespace MonoDevelop.Debugger
 										debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
 										DebuggingService.SetUserOptions (debuggerOptions);
 									}
-									await DownloadFileAsync (frame, downloadInfo);
+									doc = await DownloadAndOpenFileAsync (frame, line, downloadInfo);
 								}
 							}
-							var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
 							if (doc != null)
 								return;
 						}
@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		static async System.Threading.Tasks.Task DownloadFileAsync (StackFrame frame, SourceLinkDownloadInfo downloadInfo)
+		static async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLinkDownloadInfo downloadInfo)
 		{
 			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				GettextCatalog.GetString ("Downloading ") + downloadInfo.Uri,
@@ -181,6 +181,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 				frame.UpdateSourceFile (downloadInfo.LocalPath);
+				return await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
 			} finally {
