@@ -98,6 +98,12 @@
 				insertafter="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
 				insertbefore="AddSectionEnd" />
 		</Condition>
+		<Condition id="ItemType" value="DotNetProject">
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="AddSectionEnd" />
+		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
