@@ -793,6 +793,8 @@ namespace MonoDevelop.Debugger
 			return base.OnTestExpandRow (iter, path);
 		}
 
+		public event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
+
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
 			var node = GetNodeAtIter (iter);
@@ -803,18 +805,22 @@ namespace MonoDevelop.Debugger
 				RecalculateWidth ();
 
 			HideValueButton (iter);
-			controller.ExpandNodeAsync (node).Ignore ();
+
+			NodeExpanded?.Invoke (this, new ObjectValueNodeEventArgs (node));
 		}
+
+		public event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
 			var node = GetNodeAtIter (iter);
-			controller.CollapseNode (node);
 
 			base.OnRowCollapsed (iter, path);
 
 			if (controller.CompactView)
 				RecalculateWidth ();
+
+			NodeCollapsed?.Invoke (this, new ObjectValueNodeEventArgs (node));
 
 			// TODO: all this scrolling kind of seems awkward
 			//ScrollToCell (path, expCol, true, 0f, 0f);

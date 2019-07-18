@@ -189,6 +189,7 @@
     <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueStackFrame.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueNodeEventArgs.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Gtk\GtkObjectValueTreeView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\IObjectValueTreeView.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />

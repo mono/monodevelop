@@ -259,7 +259,22 @@ namespace MonoDevelop.Debugger
 
 		public object GetControl ()
 		{
-			return new GtkObjectValueTreeView (this);
+			var view = new GtkObjectValueTreeView (this);
+
+			view.NodeExpanded += View_NodeExpanded;
+			view.NodeCollapsed += View_NodeCollapsed;
+
+			return view;
+		}
+
+		void View_NodeExpanded (object sender, ObjectValueNodeEventArgs e)
+		{
+			ExpandNodeAsync (e.Node).Ignore ();
+		}
+
+		void View_NodeCollapsed (object sender, ObjectValueNodeEventArgs e)
+		{
+			CollapseNode (e.Node);
 		}
 
 		public void CancelAsyncTasks ()
