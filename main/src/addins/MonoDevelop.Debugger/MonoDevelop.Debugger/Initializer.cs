@@ -98,25 +98,25 @@ namespace MonoDevelop.Debugger
 							if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
 								WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
 								//await Toolkit.NativeEngine.Invoke (async delegate {
-
-										if (dialog.Run (parent) == SourceLinkDialog.GetAndOpenCommand) {
-											Directory.GetParent (downloadInfo.LocalPath).Create ();
-											var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
-											using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
-												using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
-													await stream.CopyToAsync (fs);
-												}
+								using (var dialog = new SourceLinkDialog (frame.FullStackframeText, downloadInfo.Uri, Path.GetFileName (downloadInfo.LocalPath))) {
+									if (dialog.Run (parent) == SourceLinkDialog.GetAndOpenCommand) {
+										Directory.GetParent (downloadInfo.LocalPath).Create ();
+										var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
+										using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
+											using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
+												await stream.CopyToAsync (fs);
 											}
-											frame.UpdateSourceFile (downloadInfo.LocalPath);
-											var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
-											if (doc != null)
-												return;
 										}
-										// If we have source link info but the user presses cancel, don't go to disassembly
-										return;
+										frame.UpdateSourceFile (downloadInfo.LocalPath);
+										var doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
+										if (doc != null)
+											return;
 									}
-								//});
+									// If we have source link info but the user presses cancel, don't go to disassembly
+									return;
+								}
 							}
+								//}
 						} catch(Exception ex) {
 							LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
 							return;
