@@ -101,10 +101,10 @@ namespace MonoDevelop.Debugger
 								await DownloadFileAsync (frame, downloadInfo);
 							} else {
 								var hyperlink = $"<a href='{ downloadInfo.Uri }'>{  Path.GetFileName (downloadInfo.LocalPath) }</a>";
+								var stackframeText = $"<b>{frame.FullStackframeText}</b>";
 
-								var translation = GettextCatalog.GetString ("is a call to external source code. Would you like to get {0} and view it?");
-								var textWithLink = string.Format (translation, hyperlink);
-								var text = $"<b>{frame.FullStackframeText}</b> { textWithLink } ";
+								var text = GettextCatalog.GetString 
+									("{0} is a call to external source code. Would you like to get {1} and view it?", stackframeText, hyperlink);
 								var message = new Ide.GenericMessage {
 									Text = GettextCatalog.GetString ("External source code available"),
 									SecondaryText = text
@@ -114,8 +114,8 @@ namespace MonoDevelop.Debugger
 								message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Get and Open")));
 								message.DefaultButton = 1;
 
-								var result = MessageService.GenericAlert (message) != AlertButton.Cancel;
-								if (result) {
+								var didNotCancel = MessageService.GenericAlert (message) != AlertButton.Cancel;
+								if (didNotCancel) {
 									if (message.GetOptionValue (nameof (automaticSourceDownload))) {
 										debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
 										DebuggingService.SetUserOptions (debuggerOptions);
