@@ -1,5 +1,5 @@
 ﻿//
-// PackageSearchResultViewModelTests.cs
+// ManagePackagesSearchResultViewModelTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -43,11 +43,11 @@ using NUnit.Framework;
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
-	public class PackageSearchResultViewModelTests
+	public class ManagePackagesSearchResultViewModelTests
 	{
-		TestablePackageSearchResultViewModel viewModel;
+		TestableManagePackagesSearchResultViewModel viewModel;
 		PackageItemListViewModel packageItemListViewModel;
-		TestableAllPackagesViewModel parent;
+		TestableManagePackagesViewModel parent;
 		FakePackageMetadataProvider metadataProvider;
 		List<VersionInfo> packageVersions;
 		FakePackageSearchMetadata packageSearchMetadata;
@@ -78,8 +78,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSearchMetadata = metadataProvider.AddPackageMetadata (package.Id, package.Version.ToString ());
 			var solutionManager = new FakeSolutionManager ();
 			var project = new FakeDotNetProject ();
-			parent = new TestableAllPackagesViewModel (solutionManager, project);
-			viewModel = new TestablePackageSearchResultViewModel (parent, packageItemListViewModel);
+			parent = new TestableManagePackagesViewModel (solutionManager, project);
+			viewModel = new TestableManagePackagesSearchResultViewModel (parent, packageItemListViewModel);
 		}
 
 		Task LoadPackageMetadata ()

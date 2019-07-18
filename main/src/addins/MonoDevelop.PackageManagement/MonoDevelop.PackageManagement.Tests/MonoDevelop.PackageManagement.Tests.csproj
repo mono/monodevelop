@@ -93,10 +93,10 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FakePackageFeed.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableAllPackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSearchResultViewModelTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ManagePackagesSearchResultViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSearchMetadata.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageSearchResultViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableManagePackagesSearchResultViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataResource.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataResourceProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedNuGetPackagesInWorkspaceTests.cs" />
