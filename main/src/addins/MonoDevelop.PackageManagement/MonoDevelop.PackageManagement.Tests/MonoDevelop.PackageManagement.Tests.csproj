@@ -44,7 +44,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSourceViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageSourceCollectionAssert.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentNuGetPackagesRepositoryTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentManagedNuGetPackagesRepositoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectService.cs" />
