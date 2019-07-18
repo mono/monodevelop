@@ -261,20 +261,10 @@ namespace MonoDevelop.Debugger
 		{
 			var view = new GtkObjectValueTreeView (this);
 
-			view.NodeExpanded += View_NodeExpanded;
-			view.NodeCollapsed += View_NodeCollapsed;
+			view.NodeExpanded += OnViewNodeExpanded;
+			view.NodeCollapsed += OnViewNodeCollapsed;
 
 			return view;
-		}
-
-		void View_NodeExpanded (object sender, ObjectValueNodeEventArgs e)
-		{
-			ExpandNodeAsync (e.Node).Ignore ();
-		}
-
-		void View_NodeCollapsed (object sender, ObjectValueNodeEventArgs e)
-		{
-			CollapseNode (e.Node);
 		}
 
 		public void CancelAsyncTasks ()
@@ -589,7 +579,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
 		/// </summary>
-		public async Task ExpandNodeAsync (ObjectValueNode node)
+		async Task ExpandNodeAsync (IObjectValueTreeView view, ObjectValueNode node)
 		{
 			// if we think the node is expanded already, no need to trigger this again
 			if (node.IsExpanded)
@@ -612,15 +602,22 @@ namespace MonoDevelop.Debugger
 				OnChildrenLoaded (node, 0, node.Children.Count);
 			}
 
-			OnNodeExpanded (node);
+			Runtime.RunInMainThread (() => {
+				view.OnNodeExpanded (node);
+			}).Ignore ();
+		}
+
+		void OnViewNodeExpanded (object sender, ObjectValueNodeEventArgs e)
+		{
+			ExpandNodeAsync ((IObjectValueTreeView) sender, e.Node).Ignore ();
 		}
 
 		/// <summary>
 		/// Marks a node as not expanded
 		/// </summary>
-		public void CollapseNode (ObjectValueNode node)
+		void OnViewNodeCollapsed (object sender, ObjectValueNodeEventArgs e)
 		{
-			node.IsExpanded = false;
+			e.Node.IsExpanded = false;
 		}
 
 		public async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)

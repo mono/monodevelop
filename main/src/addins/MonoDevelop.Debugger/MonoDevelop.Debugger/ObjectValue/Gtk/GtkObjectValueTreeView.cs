@@ -137,7 +137,6 @@ namespace MonoDevelop.Debugger
 			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
 			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
 			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
-			this.controller.NodeExpanded += Controller_NodeExpanded;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
 			Model = store;
@@ -295,7 +294,6 @@ namespace MonoDevelop.Debugger
 			controller.PinnedWatchChanged -= Controller_PinnedWatchChanged;
 			controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
 			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
-			controller.NodeExpanded -= Controller_NodeExpanded;
 
 			disposed = true;
 			controller.CancelAsyncTasks ();
@@ -366,18 +364,6 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
-		/// Triggered when a node has completed expanding and we have children to show
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		void Controller_NodeExpanded (object sender, ObjectValueNodeEventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				OnNodeExpanded (e.Node);
-			}).Ignore ();
-		}
-
-		/// <summary>
 		/// Triggered when a node has completed evaluation and we have data to show the user
 		/// </summary>
 		void Controller_EvaluationCompleted (object sender, ObjectValueNodeEvaluationCompletedEventArgs e)
@@ -416,7 +402,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: if we don't want the scrolling, we can probably get rid of this
-		void OnNodeExpanded (ObjectValueNode node)
+		public void OnNodeExpanded (ObjectValueNode node)
 		{
 			if (disposed)
 				return;

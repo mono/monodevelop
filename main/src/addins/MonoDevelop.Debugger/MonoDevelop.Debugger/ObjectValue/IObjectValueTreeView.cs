@@ -32,5 +32,7 @@ namespace MonoDevelop.Debugger
 	{
 		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
+
+		void OnNodeExpanded (ObjectValueNode node);
 	}
 }
