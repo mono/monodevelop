@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public async Task CustomProject_SearchCanBeCanceled ()
+		public async Task CustomProject_StressSearchCanBeCanceled ()
 		{
 			BuildOutputNode firstMatch = null;
 
@@ -142,10 +142,27 @@ namespace MonoDevelop.Ide
 			for (int i = 0; i < 100; i++) {
 				await Task.WhenAll (Task.Run (async () => firstMatch = await search.FirstMatch ("Message ")),
 									Task.Delay (100).ContinueWith (t => search.Cancel ()));
-
-				Assert.Null (firstMatch, "Got a first match while search was canceled");
 				Assert.True (search.IsCanceled, "Search was not canceled");
 			}
+		}
+
+		[Test]
+		public async Task CustomProject_SearchCanBeCanceled ()
+		{
+			var bo = GenerateCustomBuild (10);
+			var search = new BuildOutputDataSearch (bo.GetRootNodes (true));
+
+			var searchTask = search.FirstMatch ("Message ");
+			search.Cancel ();
+
+			var firstMatch = await searchTask;
+			Assert.Null (firstMatch, "Got a first match, but the canceled search did not expect records");
+			Assert.True (search.IsCanceled, "Search was not canceled, but we expect cancel the operation");
+
+			searchTask = search.FirstMatch ("Message ");
+			firstMatch = await searchTask;
+			Assert.NotNull (firstMatch, "No record was found in the search, but one was expected to be found.");
+			Assert.False (search.IsCanceled, "Search was canceled for some unexpected reason");
 		}
 
 		[Test]
