@@ -73,7 +73,7 @@ namespace MonoDevelop.MacIntegration
 						alert.Icon = img.ToNSImage ();
 				} else {
 					//for some reason the NSAlert doesn't pick up the app icon by default
-					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
+					alert.Icon = MacPlatformService.ApplicationIcon;
 				}
 
 				alert.MessageText = data.Message.Text;
