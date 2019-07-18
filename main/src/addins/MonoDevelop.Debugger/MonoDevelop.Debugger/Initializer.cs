@@ -172,6 +172,7 @@ namespace MonoDevelop.Debugger
 				true
 			);
 
+			Document doc = null;
 			try {
 				Directory.GetParent (downloadInfo.LocalPath).Create ();
 				var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
@@ -181,12 +182,13 @@ namespace MonoDevelop.Debugger
 					}
 				}
 				frame.UpdateSourceFile (downloadInfo.LocalPath);
-				return await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
+				doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
 			} finally {
 				pm.Dispose ();
 			}
+			return doc;
 		}
 
 		async void OnShowDisassembly (object s, EventArgs a)

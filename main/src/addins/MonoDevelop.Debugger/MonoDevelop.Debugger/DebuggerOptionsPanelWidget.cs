@@ -31,6 +31,8 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Xwt;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -68,15 +70,39 @@ namespace MonoDevelop.Debugger
 
 		void Build ()
 		{
-			checkProjectCodeOnly = new CheckBox (GettextCatalog.GetString ("Enable Just My Code"));
+			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Scope") + "</b>" });
+			checkStepOverPropertiesAndOperators = new CheckBox (GettextCatalog.GetString ("Step over properties and operators"));
+			PackStart (checkStepOverPropertiesAndOperators);
+			checkProjectCodeOnly = new CheckBox (GettextCatalog.GetString ("Step into external code")) {
+				ExpandVertical = false,
+				MarginBottom = 0,
+				HeightRequest = 15
+			};
 			PackStart (checkProjectCodeOnly);
+
+			var label = new Label {
+				Text = GettextCatalog.GetString ("The debugger will step into code and hit exceptions in dependencies that aren’t considered part of your project, like packages and references."),
+				Font = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11).ToXwtFont (),
+				TextColor = Xwt.Drawing.Color.FromName ("gray"),
+				MarginLeft = 30,
+				Wrap = WrapMode.Word,
+				WidthRequest = 400,
+				HeightRequest = 20,
+				ExpandVertical = false
+			};
+
+			PackStart (label, hpos:WidgetPlacement.Start);
+			var autodownloadHBox = new HBox { MarginLeft = 50 };
+
+			var downloadLabel = new Label (GettextCatalog.GetString ("Download External Code:"));
+			autodownloadHBox.PackStart (downloadLabel);
 			comboAutomaticSourceDownload = new ComboBox ();
 			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Ask, GettextCatalog.GetString ("Ask"));
 			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Always, GettextCatalog.GetString ("Always"));
 			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Never, GettextCatalog.GetString ("Never"));
-			PackStart (comboAutomaticSourceDownload);
-			checkStepOverPropertiesAndOperators = new CheckBox (GettextCatalog.GetString ("Step over properties and operators"));
-			PackStart (checkStepOverPropertiesAndOperators);
+			autodownloadHBox.PackStart (comboAutomaticSourceDownload);
+			PackStart (autodownloadHBox);
+			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Inspection") + "</b>" });
 			checkAllowEval = new CheckBox (GettextCatalog.GetString ("Allow implicit property evaluation and method invocation"));
 			checkAllowEval.Toggled += OnCheckAllowEvalToggled;
 			PackStart (checkAllowEval);
@@ -103,9 +129,7 @@ namespace MonoDevelop.Debugger
 			evalBox.PackStart (spinTimeout);
 			evalBox.PackStart (new Label (GettextCatalog.GetString ("ms")));
 			PackStart (evalBox);
-			PackStart (new Label () {
-				Markup = "<b>" + GettextCatalog.GetString ("Advanced options") + "</b>"
-			});
+			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Advanced options") + "</b>" });
 			enableLogging = new CheckBox (GettextCatalog.GetString ("Enable diagnostic logging", BrandingService.ApplicationName));
 			PackStart (enableLogging);
 
@@ -115,7 +139,7 @@ namespace MonoDevelop.Debugger
 		void SetupAccessibility ()
 		{
 			checkProjectCodeOnly.SetCommonAccessibilityAttributes ("DebuggerPanel.projectCodeOnly", "",
-			                                                       GettextCatalog.GetString ("Check to only debug the project code and not step into framework code"));
+			                                                       GettextCatalog.GetString ("Check to step into framework code"));
 			checkStepOverPropertiesAndOperators.SetCommonAccessibilityAttributes ("DebuggerPanel.stepOverProperties", "",
 			                                                                      GettextCatalog.GetString ("Check to step over properties and operators"));
 			checkAllowEval.SetCommonAccessibilityAttributes ("DebuggerPanel.allowEval", "",
@@ -139,7 +163,7 @@ namespace MonoDevelop.Debugger
 			Build ();
 
 			options = DebuggingService.GetUserOptions ();
-			checkProjectCodeOnly.Active = options.ProjectAssembliesOnly;
+			checkProjectCodeOnly.Active = !options.ProjectAssembliesOnly;
 			comboAutomaticSourceDownload.SelectedItem = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", AutomaticSourceDownload.Ask);
 
 			checkStepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
@@ -166,7 +190,7 @@ namespace MonoDevelop.Debugger
 			ops.EvaluationTimeout = (int)spinTimeout.Value;
 
 			options.StepOverPropertiesAndOperators = checkStepOverPropertiesAndOperators.Active;
-			options.ProjectAssembliesOnly = checkProjectCodeOnly.Active;
+			options.ProjectAssembliesOnly = !checkProjectCodeOnly.Active;
 			options.AutomaticSourceLinkDownload = (AutomaticSourceDownload)comboAutomaticSourceDownload.SelectedItem;
 			options.EvaluationOptions = ops;
 
