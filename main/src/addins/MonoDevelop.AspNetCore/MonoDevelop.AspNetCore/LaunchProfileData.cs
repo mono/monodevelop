@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace MonoDevelop.AspNetCore
 {
 	[JsonObject (MemberSerialization.OptIn)]
-	public class LaunchProfileData
+	internal class LaunchProfileData
 	{
 		// Well known properties
 		private const string Prop_commandName = "commandName";
