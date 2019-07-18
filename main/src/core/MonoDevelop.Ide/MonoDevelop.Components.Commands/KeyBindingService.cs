@@ -211,8 +211,7 @@ namespace MonoDevelop.Components.Commands
 			get {
 				if (BrandingService.ApplicationName == "MonoDevelop")
 					return AddinManager.CurrentLocalizer.GetString ("Default");
-				else
-					return BrandingService.ApplicationName;
+				return BrandingService.DefaultKeybindingSchemeName;
 			}
 		}
 		
