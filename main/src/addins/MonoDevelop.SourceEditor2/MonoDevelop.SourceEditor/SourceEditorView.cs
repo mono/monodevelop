@@ -1384,7 +1384,7 @@ namespace MonoDevelop.SourceEditor
 			breakpointSegments.Clear ();
 
 			lock (breakpoints) {
-				foreach (Breakpoint bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
+				foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 					lineNumbers.Add (bp.Line);
 					AddBreakpoint (bp);
 				}
