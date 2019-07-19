@@ -66,7 +66,6 @@ namespace MonoDevelop.AspNetCore
 
 		public static async Task LaunchBrowserAsync (string appUrl, string launchUrl, ExecutionTarget target, Task processTask)
 		{
-			var aspNetCoreTarget = target as AspNetCoreExecutionTarget;
 			launchUrl = launchUrl ?? "";
 			Uri launchUri;
 			//Check if lanuchUrl is valid absolute url and use it if it is...
@@ -104,6 +103,7 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			// Process is still alive hence we succesfully connected inside loop to web server, launch browser
+			var aspNetCoreTarget = target as AspNetCoreExecutionTarget;
 			if (aspNetCoreTarget != null && !aspNetCoreTarget.DesktopApplication.IsDefault) {
 				aspNetCoreTarget.DesktopApplication.Launch (launchUri.AbsoluteUri);
 			} else {
