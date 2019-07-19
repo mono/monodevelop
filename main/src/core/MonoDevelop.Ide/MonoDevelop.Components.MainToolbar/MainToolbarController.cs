@@ -279,8 +279,14 @@ namespace MonoDevelop.Components.MainToolbar
 		void FillRuntimesForProject (List<RuntimeModel> list, SolutionItem project, ref int runtimes)
 		{
 			ExecutionTarget previous = null;
+			ConfigurationMerger merger;
 
-			foreach (var target in configurationMergers [project].GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, configurationMergers.Count < 2)) {
+			if (!configurationMergers.TryGetValue (project, out merger)) {
+				LoggingService.LogWarning ($"No configuration merger found for {project.Name}");
+				return;
+			}
+
+			foreach (var target in merger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, configurationMergers.Count < 2)) {
 				if (target is ExecutionTargetGroup) {
 					var devices = (ExecutionTargetGroup)target;
 
