@@ -1014,7 +1014,7 @@ namespace MonoDevelop.MacIntegration
 			public override void Launch (params string[] files)
 			{
 				NSWorkspace.SharedWorkspace.OpenUrls (
-					files.Select (NSUrl.FromString).ToArray (),
+					Array.ConvertAll (files, file => NSUrl.FromString (file)),
 					NSBundle.FromPath (Id).BundleIdentifier,
 					NSWorkspaceLaunchOptions.Default,
 					NSAppleEventDescriptor.DescriptorWithBoolean (true));
