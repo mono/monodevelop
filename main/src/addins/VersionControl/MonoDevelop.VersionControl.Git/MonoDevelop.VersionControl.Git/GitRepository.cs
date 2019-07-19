@@ -170,7 +170,7 @@ namespace MonoDevelop.VersionControl.Git
 				OnGitUnlocked ();
 		}
 
-		ManualResetEvent gitLock = new ManualResetEvent (true);
+		readonly ManualResetEvent gitLock = new ManualResetEvent (true);
 
 		void OnGitLocked ()
 		{
@@ -178,21 +178,25 @@ namespace MonoDevelop.VersionControl.Git
 			FileService.FreezeEvents ();
 		}
 
-		void WaitAndFreezeEvents ()
+		void OnGitUnlocked ()
 		{
-			gitLock.WaitOne ();
+			gitLock.Set ();
+			ThawEvents ();
+		}
+
+		bool WaitAndFreezeEvents (CancellationToken cancellationToken)
+		{
+			WaitHandle.WaitAny (new WaitHandle [] { gitLock, cancellationToken.WaitHandle });
+			if (cancellationToken.IsCancellationRequested)
+				return false;
+
 			FileService.FreezeEvents ();
+			return true;
 		}
 
 		void ThawEvents ()
 		{
 			FileService.ThawEvents ();
-		}
-
-		void OnGitUnlocked ()
-		{
-			gitLock.Set ();
-			ThawEvents ();
 		}
 
 		protected override void Dispose (bool disposing)
@@ -355,7 +359,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public StashApplyStatus ApplyStash (ProgressMonitor monitor, int stashIndex)
 		{
-			return RunBlockingOperation (() => ApplyStash (RootRepository, monitor, stashIndex), true);
+			return RunBlockingOperation (() => ApplyStash (RootRepository, monitor, stashIndex), true, monitor.CancellationToken);
 		}
 
 		StashApplyStatus ApplyStash (LibGit2Sharp.Repository repository, ProgressMonitor monitor, int stashIndex)
@@ -401,7 +405,7 @@ namespace MonoDevelop.VersionControl.Git
 						CheckoutNotifyFlags = refreshFlags,
 					},
 				});
-			}, true);
+			}, true, monitor.CancellationToken);
 
 			if (monitor != null)
 				monitor.EndTask ();
@@ -419,7 +423,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (monitor != null)
 				monitor.BeginTask (GettextCatalog.GetString ("Stashing changes"), 1);
 
-			stash = RunBlockingOperation (() => RootRepository.Stashes.Add (sig, message, StashModifiers.Default | StashModifiers.IncludeUntracked));
+			stash = RunBlockingOperation (() => RootRepository.Stashes.Add (sig, message, StashModifiers.Default | StashModifiers.IncludeUntracked), cancellationToken: monitor.CancellationToken);
 
 			if (monitor != null)
 				monitor.EndTask ();
@@ -538,51 +542,56 @@ namespace MonoDevelop.VersionControl.Git
 			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
 		}
 
-		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false)
+		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (!WaitAndFreezeEvents (cancellationToken))
+				return;
 			try {
-				WaitAndFreezeEvents ();
+
 				ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
 			}
 		}
 
-		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
+		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (!WaitAndFreezeEvents (cancellationToken))
+				return;
 			try {
-				WaitAndFreezeEvents ();
 				ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
 			}
 		}
 
-		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false)
+		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (!WaitAndFreezeEvents (cancellationToken))
+				return default;
 			try {
-				WaitAndFreezeEvents ();
 				return ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
 			}
 		}
 
-		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
+		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (!WaitAndFreezeEvents (cancellationToken))
+				return default;
 			try {
-				WaitAndFreezeEvents ();
 				return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
@@ -1051,8 +1060,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		bool CommonPreMergeRebase (ref GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
 		{
-			WaitAndFreezeEvents ();
 			stashIndex = -1;
+			if (!WaitAndFreezeEvents (monitor.CancellationToken))
+				return false;
 			monitor.Step (1);
 
 			if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
@@ -1143,7 +1153,7 @@ namespace MonoDevelop.VersionControl.Git
 						if (RootRepository.Index.Conflicts.Any () && !ConflictResolver (RootRepository, monitor, oldHead, string.Empty))
 							PopStash (monitor, stashIndex);
 						else
-							RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex));
+							RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex), cancellationToken: monitor.CancellationToken);
 						monitor.Step (1);
 					}
 				}
@@ -1192,7 +1202,7 @@ namespace MonoDevelop.VersionControl.Git
 							ConflictResolver (RootRepository, monitor, toApply.Last (), RootRepository.Info.Message ?? com.Message);
 						++i;
 					}
-				}, true);
+				}, true, cancellationToken: monitor.CancellationToken);
 			} finally {
 				CommonPostMergeRebase (stashIndex, options, monitor, oldHead);
 			}
@@ -1222,7 +1232,7 @@ namespace MonoDevelop.VersionControl.Git
 					RootRepository.Merge (branch, sig, new MergeOptions {
 						CheckoutNotifyFlags = refreshFlags,
 						OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
-					}), true);
+					}), true, monitor.CancellationToken);
 				if (mergeResult.Status == MergeStatus.Conflicts)
 						ConflictResolver (RootRepository, monitor, RootRepository.Head.Tip, RootRepository.Info.Message);
 			} finally {
@@ -1299,7 +1309,7 @@ namespace MonoDevelop.VersionControl.Git
 					if (addedFiles.Any ())
 						LibGit2Sharp.Commands.Stage (RootRepository, addedFiles.ToPathStrings ());
 				}
-			});
+			}, cancellationToken: monitor.CancellationToken);
 			return Task.CompletedTask;
 		}
 
@@ -1536,7 +1546,7 @@ namespace MonoDevelop.VersionControl.Git
 
 					if (toUnstage.Any ())
 						LibGit2Sharp.Commands.Unstage (repository, repository.ToGitPath (toUnstage).ToArray ());
-				}, true);
+				}, true, monitor.CancellationToken);
 				monitor.EndTask ();
 			}
 		}
@@ -1556,14 +1566,14 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (var group in GroupByRepository (localPaths)) {
 				var files = group.Where (f => !f.IsDirectory);
 				if (files.Any ())
-					RunBlockingOperation (() => LibGit2Sharp.Commands.Stage (group.Key, group.Key.ToGitPath (files)));
+					RunBlockingOperation (() => LibGit2Sharp.Commands.Stage (group.Key, group.Key.ToGitPath (files)), cancellationToken: monitor.CancellationToken);
 			}
 			return Task.CompletedTask;
 		}
 
 		protected override async Task OnDeleteFilesAsync (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
-			DeleteCore (localPaths, keepLocal);
+			DeleteCore (localPaths, keepLocal, monitor);
 
 			foreach (var path in localPaths) {
 				if (keepLocal) {
@@ -1583,7 +1593,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override async Task OnDeleteDirectoriesAsync (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
-			DeleteCore (localPaths, keepLocal);
+			DeleteCore (localPaths, keepLocal, monitor);
 
 			foreach (var path in localPaths) {
 				if (keepLocal) {
@@ -1603,7 +1613,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		void DeleteCore (FilePath[] localPaths, bool keepLocal)
+		void DeleteCore (FilePath[] localPaths, bool keepLocal, ProgressMonitor monitor)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				if (!keepLocal)
@@ -1617,7 +1627,7 @@ namespace MonoDevelop.VersionControl.Git
 				RunBlockingOperation (() => {
 					var files = group.Key.ToGitPath (group);
 					LibGit2Sharp.Commands.Remove (group.Key, files, !keepLocal, null);
-				});
+				}, cancellationToken: monitor.CancellationToken);
 			}
 		}
 
@@ -1691,7 +1701,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (branch.TrackedBranch == null) {
 					RootRepository.Branches.Update (branch, b => b.TrackedBranch = "refs/remotes/" + remote + "/" + remoteBranch);
 				}
-			}, true);
+			}, true, monitor.CancellationToken);
 
 			RunOperation (() => {
 				RetryUntilSuccess (monitor, credType =>
@@ -1858,7 +1868,7 @@ namespace MonoDevelop.VersionControl.Git
 				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 				OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
 				CheckoutNotifyFlags = refreshFlags,
-			}), true);
+			}), true, monitor.CancellationToken);
 			monitor.Step (1);
 
 			if (GitService.StashUnstashWhenSwitchingBranches) {
@@ -1886,7 +1896,8 @@ namespace MonoDevelop.VersionControl.Git
 			if (sig == null)
 				return false;
 
-			WaitAndFreezeEvents ();
+			if (!WaitAndFreezeEvents (monitor.CancellationToken))
+				return false;
 			try {
 				// try to switch without stashing
 				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 2);
@@ -1915,7 +1926,7 @@ namespace MonoDevelop.VersionControl.Git
 				string currentBranch = RootRepository.Head.FriendlyName;
 				stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, currentBranch));
 				if (stashIndex != -1)
-					RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex));
+					RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex), cancellationToken: monitor.CancellationToken);
 
 				if (!TryCreateStash (monitor, GetStashName (currentBranch), out stash))
 					return false;
@@ -2043,7 +2054,7 @@ namespace MonoDevelop.VersionControl.Git
 					LibGit2Sharp.Commands.Remove (srcRepo, localSrcPath, true);
 					LibGit2Sharp.Commands.Stage (dstRepo, localDestPath);
 				}
-			});
+			}, cancellationToken: monitor.CancellationToken);
 		}
 
 		protected override async Task OnMoveDirectoryAsync (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
