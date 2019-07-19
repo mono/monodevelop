@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GLib;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
