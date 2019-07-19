@@ -170,15 +170,29 @@ namespace MonoDevelop.VersionControl.Git
 				OnGitUnlocked ();
 		}
 
+		ManualResetEvent gitLock = new ManualResetEvent (true);
+
 		void OnGitLocked ()
 		{
-			// TODO: freeze all git operations
+			gitLock.Reset ();
 			FileService.FreezeEvents ();
+		}
+
+		void WaitAndFreezeEvents ()
+		{
+			gitLock.WaitOne ();
+			FileService.FreezeEvents ();
+		}
+
+		void ThawEvents ()
+		{
+			FileService.ThawEvents ();
 		}
 
 		void OnGitUnlocked ()
 		{
-			FileService.ThawEvents ();
+			gitLock.Set ();
+			ThawEvents ();
 		}
 
 		protected override void Dispose (bool disposing)
@@ -529,10 +543,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			try {
-				FileService.FreezeEvents ();
+				WaitAndFreezeEvents ();
 				ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 			} finally {
-				FileService.ThawEvents ();
+				ThawEvents ();
 			}
 		}
 
@@ -542,10 +556,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			try {
-				FileService.FreezeEvents ();
+				WaitAndFreezeEvents ();
 				ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 			} finally {
-				FileService.ThawEvents ();
+				ThawEvents ();
 			}
 		}
 
@@ -555,10 +569,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			try {
-				FileService.FreezeEvents ();
+				WaitAndFreezeEvents ();
 				return ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 			} finally {
-				FileService.ThawEvents ();
+				ThawEvents ();
 			}
 		}
 
@@ -568,10 +582,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			try {
-				FileService.FreezeEvents ();
+				WaitAndFreezeEvents ();
 				return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 			} finally {
-				FileService.ThawEvents ();
+				ThawEvents ();
 			}
 		}
 
@@ -1037,7 +1051,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		bool CommonPreMergeRebase (ref GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
 		{
-			FileService.FreezeEvents ();
+			WaitAndFreezeEvents ();
 			stashIndex = -1;
 			monitor.Step (1);
 
@@ -1134,7 +1148,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				}
 			} finally {
-				FileService.ThawEvents ();
+				ThawEvents ();
 				monitor.EndTask ();
 			}
 		}
@@ -1872,7 +1886,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (sig == null)
 				return false;
 
-			FileService.FreezeEvents ();
+			WaitAndFreezeEvents ();
 			try {
 				// try to switch without stashing
 				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 2);
@@ -1919,7 +1933,7 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
 			} finally {
 				monitor.EndTask ();
-				FileService.ThawEvents ();
+				ThawEvents ();
 			}
 			return false;
 		}
