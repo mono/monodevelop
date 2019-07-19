@@ -33,8 +33,9 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.IO;
-using MonoDevelop.Core.Web;
+
 using Xwt;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.Debugger
 {
@@ -90,43 +91,45 @@ namespace MonoDevelop.Debugger
 						if (doc != null)
 							return;
 					}
-					var debuggerOptions = DebuggingService.GetUserOptions ();
-					var automaticSourceDownload = debuggerOptions.AutomaticSourceLinkDownload;
+				}
+				var debuggerOptions = DebuggingService.GetUserOptions ();
+				var automaticSourceDownload = debuggerOptions.AutomaticSourceLinkDownload;
 
-					if (frame.SourceLocation.SourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
-						var downloadInfo = frame.SourceLocation.SourceLink.GetDownloadLocation (frame.SourceLocation.FileName, symbolCachePath);
-						Document doc = null;
-						// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
-						if (downloadInfo != null && !File.Exists (downloadInfo.LocalPath)) {
-							if (automaticSourceDownload == AutomaticSourceDownload.Always) {
-								doc = await DownloadAndOpenFileAsync (frame, line, downloadInfo);
-							} else {
-								var hyperlink = $"<a href='{ downloadInfo.Uri }'>{  Path.GetFileName (downloadInfo.LocalPath) }</a>";
-								var stackframeText = $"<b>{frame.FullStackframeText}</b>";
+				var sourceLink = frame.SourceLocation.SourceLink;
+				if (sourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
+					var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
+					Document doc = null;
+					// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
+					if (!File.Exists (downloadLocation)) {
 
-								var text = GettextCatalog.GetString 
-									("{0} is a call to external source code. Would you like to get {1} and view it?", stackframeText, hyperlink);
-								var message = new Ide.GenericMessage {
-									Text = GettextCatalog.GetString ("External source code available"),
-									SecondaryText = text
-								};
-								message.AddOption (nameof (automaticSourceDownload), GettextCatalog.GetString ("Always get source code automatically"), false);
-								message.Buttons.Add (AlertButton.Cancel);
-								message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Get and Open")));
-								message.DefaultButton = 1;
+						if (automaticSourceDownload == AutomaticSourceDownload.Always) {
+							doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
+						} else {
+							var hyperlink = $"<a href='{ sourceLink.Uri }'>{  Path.GetFileName (sourceLink.RelativeFilePath) }</a>";
+							var stackframeText = $"<b>{frame.FullStackframeText}</b>";
 
-								var didNotCancel = MessageService.GenericAlert (message) != AlertButton.Cancel;
-								if (didNotCancel) {
-									if (message.GetOptionValue (nameof (automaticSourceDownload))) {
-										debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
-										DebuggingService.SetUserOptions (debuggerOptions);
-									}
-									doc = await DownloadAndOpenFileAsync (frame, line, downloadInfo);
+							var text = GettextCatalog.GetString
+								("{0} is a call to external source code. Would you like to get {1} and view it?", stackframeText, hyperlink);
+							var message = new Ide.GenericMessage {
+								Text = GettextCatalog.GetString ("External source code available"),
+								SecondaryText = text
+							};
+							message.AddOption (nameof (automaticSourceDownload), GettextCatalog.GetString ("Always get source code automatically"), false);
+							message.Buttons.Add (AlertButton.Cancel);
+							message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Get and Open")));
+							message.DefaultButton = 1;
+
+							var didNotCancel = MessageService.GenericAlert (message) != AlertButton.Cancel;
+							if (didNotCancel) {
+								if (message.GetOptionValue (nameof (automaticSourceDownload))) {
+									debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
+									DebuggingService.SetUserOptions (debuggerOptions);
 								}
+								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
 							}
-							if (doc != null)
-								return;
 						}
+						if (doc != null)
+							return;
 					}
 				}
 			}
@@ -164,25 +167,26 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		static async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLinkDownloadInfo downloadInfo)
+		async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLink sourceLink)
 		{
 			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-				GettextCatalog.GetString ("Downloading ") + downloadInfo.Uri,
+				GettextCatalog.GetString ("Downloading ") + sourceLink.Uri,
 				Stock.StatusWorking,
 				true
 			);
 
 			Document doc = null;
 			try {
-				Directory.GetParent (downloadInfo.LocalPath).Create ();
-				var client = HttpClientProvider.CreateHttpClient (downloadInfo.Uri);
-				using (var stream = await client.GetStreamAsync (downloadInfo.Uri)) {
-					using (var fs = new FileStream (downloadInfo.LocalPath, FileMode.CreateNew)) {
+				var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
+				Directory.GetParent (downloadLocation).Create ();
+				var client = HttpClientProvider.CreateHttpClient (sourceLink.Uri);
+				using (var stream = await client.GetStreamAsync (sourceLink.Uri)) {
+					using (var fs = new FileStream (downloadLocation, FileMode.CreateNew)) {
 						await stream.CopyToAsync (fs);
 					}
 				}
-				frame.UpdateSourceFile (downloadInfo.LocalPath);
-				doc = await IdeApp.Workbench.OpenDocument (downloadInfo.LocalPath, null, line, 1, OpenDocumentOptions.Debugger);
+				frame.UpdateSourceFile (downloadLocation);
+				doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
 			} finally {
