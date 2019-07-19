@@ -53,8 +53,6 @@ namespace MonoDevelop.DotNetCore
 				console,
 				envVariables);
 
-			dotNetCoreCommand.PostLaunchAsync (process.Task).Ignore ();
-
 			return process;
 		}
 	}

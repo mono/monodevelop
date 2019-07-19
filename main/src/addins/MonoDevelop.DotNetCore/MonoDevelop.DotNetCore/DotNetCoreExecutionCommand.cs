@@ -24,14 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
 using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.DotNetCore
 {
-	public class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	public class DotNetCoreBaseExecutionCommand : ProcessExecutionCommand
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		public DotNetCoreBaseExecutionCommand (string directory, string outputPath, string arguments)
 		{
 			WorkingDirectory = directory;
 			OutputPath = outputPath;
@@ -50,10 +49,13 @@ namespace MonoDevelop.DotNetCore
 		public string LaunchURL { get; set; }
 		public string ApplicationURL { get; set; }
 		public PipeTransportSettings PipeTransport { get; set; }
+	}
 
-		public virtual Task PostLaunchAsync (Task processTask)
+	public class DotNetCoreExecutionCommand : DotNetCoreBaseExecutionCommand
+	{
+		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+			: base (directory, outputPath, arguments)
 		{
-			return Task.FromResult (0);
 		}
 	}
 }
