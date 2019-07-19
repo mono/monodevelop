@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Threading.Tasks;
 using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.DotNetCore
@@ -49,5 +50,10 @@ namespace MonoDevelop.DotNetCore
 		public string LaunchURL { get; set; }
 		public string ApplicationURL { get; set; }
 		public PipeTransportSettings PipeTransport { get; set; }
+
+		public virtual Task PostLaunchAsync (Task processTask)
+		{
+			return Task.FromResult (0);
+		}
 	}
 }
