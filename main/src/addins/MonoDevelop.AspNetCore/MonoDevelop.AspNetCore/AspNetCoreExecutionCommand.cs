@@ -24,36 +24,74 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using System;
+using System.Threading.Tasks;
+using System.Net.Sockets;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.DotNetCore;
 
 namespace MonoDevelop.AspNetCore
 {
-	public class AspNetCoreExecutionCommand : ProcessExecutionCommand
+	public class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
 	{
 		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+			: base (directory, outputPath, arguments)
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
-
-			Command = DotNetCoreRuntime.FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
-
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
-
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
-		public bool LaunchBrowser { get; set; }
-		public string LaunchURL { get; set; }
-		public string ApplicationURL { get; set; }
-		public PipeTransportSettings PipeTransport { get; set; }
 
 		// Since we are now supporting more than one url, we added this property
 		// so that it contains the raw value of AppUrl
 		// which might provide more than one url i.e. https://localhost:5000;http://localhost:5001
 		public string ApplicationURLs { get; set; }
+
+		public override async Task PostLaunchAsync (Task processTask)
+		{
+			await base.PostLaunchAsync (processTask).ConfigureAwait (false);
+
+			var aspNetCoreTarget = Target as AspNetCoreExecutionTarget;
+			var launchUrl = LaunchURL ?? "";
+			Uri launchUri;
+			//Check if lanuchUrl is valid absolute url and use it if it is...
+			if (!Uri.TryCreate (launchUrl, UriKind.Absolute, out launchUri)) {
+				//Otherwise check if appUrl is valid absolute and lanuchUrl is relative then concat them...
+				Uri appUri;
+				if (!Uri.TryCreate (ApplicationURL, UriKind.Absolute, out appUri)) {
+					LoggingService.LogWarning ("Failed to launch browser because invalid launch and app urls.");
+					return;
+				}
+				if (!Uri.TryCreate (launchUrl, UriKind.Relative, out launchUri)) {
+					LoggingService.LogWarning ("Failed to launch browser because invalid launch url.");
+					return;
+				}
+				launchUri = new Uri (appUri, launchUri);
+			}
+
+			//Try to connect every 50ms while process is running
+			while (!processTask.IsCompleted) {
+				await Task.Delay (50).ConfigureAwait (false);
+				using (var tcpClient = new TcpClient ()) {
+					try {
+						await tcpClient.ConnectAsync (launchUri.Host, launchUri.Port).ConfigureAwait (false);
+						// pause briefly to allow the server process to initialize
+						await Task.Delay (TimeSpan.FromSeconds (1)).ConfigureAwait (false);
+						break;
+					} catch {
+					}
+				}
+			}
+
+			if (processTask.IsCompleted) {
+				LoggingService.LogDebug ("Failed to launch browser because process exited before server started listening.");
+				return;
+			}
+
+			// Process is still alive hence we succesfully connected inside loop to web server, launch browser
+			if (aspNetCoreTarget != null && !aspNetCoreTarget.DesktopApplication.IsDefault) {
+				aspNetCoreTarget.DesktopApplication.Launch (launchUri.AbsoluteUri);
+			} else {
+				IdeServices.DesktopService.ShowUrl (launchUri.AbsoluteUri);
+			}
+		}
 	}
 }
