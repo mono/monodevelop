@@ -58,13 +58,14 @@ namespace MonoDevelop.AspNetCore
 				console,
 				envVariables);
 			if (dotNetCoreCommand.LaunchBrowser) {
-				LaunchBrowser (dotNetCoreCommand.ApplicationURL, dotNetCoreCommand.LaunchURL, process.Task).Ignore ();
+				LaunchBrowser (dotNetCoreCommand.ApplicationURL, dotNetCoreCommand.LaunchURL, dotNetCoreCommand.Target, process.Task).Ignore ();
 			}
 			return process;
 		}
 
-		public static async Task LaunchBrowser (string appUrl, string launchUrl, Task processTask)
+		public static async Task LaunchBrowser (string appUrl, string launchUrl, ExecutionTarget target, Task processTask)
 		{
+			var aspNetCoreTarget = target as AspNetCoreExecutionTarget;
 			launchUrl = launchUrl ?? "";
 			Uri launchUri;
 			//Check if lanuchUrl is valid absolute url and use it if it is...
@@ -102,7 +103,11 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			// Process is still alive hence we succesfully connected inside loop to web server, launch browser
-			IdeServices.DesktopService.ShowUrl (launchUri.AbsoluteUri);
+			if (aspNetCoreTarget != null && !aspNetCoreTarget.DesktopApplication.IsDefault) {
+				aspNetCoreTarget.DesktopApplication.Launch (launchUri.AbsoluteUri);
+			} else {
+				IdeServices.DesktopService.ShowUrl (launchUri.AbsoluteUri);
+			}
 		}
 	}
 }
