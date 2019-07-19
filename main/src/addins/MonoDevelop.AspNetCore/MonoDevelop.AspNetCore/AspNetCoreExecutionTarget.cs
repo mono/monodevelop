@@ -31,15 +31,15 @@ namespace MonoDevelop.AspNetCore
 {
 	class AspNetCoreExecutionTarget : ExecutionTarget
 	{
-		readonly DesktopApplication desktopApplication;
-
 		internal AspNetCoreExecutionTarget (DesktopApplication desktopApplication)
 		{
-			this.desktopApplication = desktopApplication;
+			DesktopApplication = desktopApplication;
 		}
 
-		public override string Name => desktopApplication.DisplayName;
+		public override string Name => DesktopApplication.DisplayName;
 
-		public override string Id => desktopApplication.Id;
+		public override string Id => DesktopApplication.Id;
+
+		public DesktopApplication DesktopApplication { get; }
 	}
 }

@@ -24,16 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
 
 namespace MonoDevelop.AspNetCore
 {
-	public class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
+	public class AspNetCoreExecutionCommand : ProcessExecutionCommand
 	{
 		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
-			: base (directory, outputPath, arguments)
 		{
+			WorkingDirectory = directory;
+			OutputPath = outputPath;
+			DotNetArguments = arguments;
+
+			Command = DotNetCoreRuntime.FileName;
+			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
+
+		public string OutputPath { get; private set; }
+		public string DotNetArguments { get; private set; }
+
+		public bool PauseConsoleOutput { get; set; }
+		public bool ExternalConsole { get; set; }
+		public bool LaunchBrowser { get; set; }
+		public string LaunchURL { get; set; }
+		public string ApplicationURL { get; set; }
+		public PipeTransportSettings PipeTransport { get; set; }
 
 		// Since we are now supporting more than one url, we added this property
 		// so that it contains the raw value of AppUrl
