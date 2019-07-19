@@ -1223,17 +1223,16 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override async Task OnClearCachedData ()
+		protected override Task OnClearCachedData ()
 		{
 			// Clean the reference and package cache
-
 			referenceCacheNeedsRefresh = true;
 			packageDependenciesNeedRefresh = true;
 
 			lock (frameworkSpecificConfigurationsLock)
 				frameworkSpecificConfigurations.Clear ();
 
-			await base.OnClearCachedData ();
+			return base.OnClearCachedData ();
 		}
 
 		internal protected virtual Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
@@ -2165,30 +2164,18 @@ namespace MonoDevelop.Projects
 
 		bool TryGetFrameworkSpecificConfiguration (string name, string platform, string framework, out DotNetProjectConfiguration configuration)
 		{
-			string key = CacheFrameworkSpecificConfigurationCacheKey (name, platform, framework);
 			lock (frameworkSpecificConfigurationsLock)
-				return frameworkSpecificConfigurations.TryGetValue (key, out configuration);
+				return frameworkSpecificConfigurations.TryGetValue ((name, platform, framework), out configuration);
 		}
 
 		void CacheFrameworkSpecificConfiguration (string name, string platform, string framework, DotNetProjectConfiguration configuration)
 		{
-			string key = CacheFrameworkSpecificConfigurationCacheKey (name, platform, framework);
 			lock (frameworkSpecificConfigurationsLock)
-				frameworkSpecificConfigurations [key] = configuration;
-		}
-
-		static string CacheFrameworkSpecificConfigurationCacheKey (string name, string platform, string framework)
-		{
-			name = name ?? string.Empty;
-			platform = platform ?? string.Empty;
-			framework = framework ?? string.Empty;
-
-			return $"{name}-{platform}-{framework}";
+				frameworkSpecificConfigurations [(name, platform, framework)] = configuration;
 		}
 
 		object frameworkSpecificConfigurationsLock = new object ();
-		Dictionary<string, DotNetProjectConfiguration> frameworkSpecificConfigurations = new Dictionary<string, DotNetProjectConfiguration> ();
-
+		Dictionary<(string, string, string), DotNetProjectConfiguration> frameworkSpecificConfigurations = new Dictionary<(string, string, string), DotNetProjectConfiguration> ();
 
 		public TargetFramework GetTargetFramework (ConfigurationSelector configuration)
 		{

@@ -297,7 +297,7 @@ namespace MonoDevelop.Projects
 			ConfigurationSelector configuration,
 			SolutionItemRunConfiguration runConfig)
 		{
-			var targets = new List<ExecutionTarget> ();
+			var targets = new List<ExecutionTarget> (Project.TargetFrameworkMonikers.Length);
 			foreach (TargetFrameworkMoniker framework in Project.TargetFrameworkMonikers) {
 				var target = new TargetFrameworkExecutionTarget (framework);
 				targets.Add (target);
