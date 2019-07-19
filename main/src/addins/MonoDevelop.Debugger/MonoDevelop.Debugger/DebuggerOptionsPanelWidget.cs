@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger
 			var label = new Label {
 				Text = GettextCatalog.GetString ("The debugger will step into code and hit exceptions in dependencies that aren’t considered part of your project, like packages and references."),
 				Font = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11).ToXwtFont (),
-				TextColor = Xwt.Drawing.Color.FromName ("gray"),
+				TextColor = Ide.Gui.Styles.SecondaryTextColor,
 				MarginLeft = 30,
 				Wrap = WrapMode.Word,
 				WidthRequest = 400,
@@ -102,7 +102,7 @@ namespace MonoDevelop.Debugger
 			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Never, GettextCatalog.GetString ("Never"));
 			autodownloadHBox.PackStart (comboAutomaticSourceDownload);
 			PackStart (autodownloadHBox);
-			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Inspection") + "</b>" });
+			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Inspection") + "</b>", MarginTop=25 });
 			checkAllowEval = new CheckBox (GettextCatalog.GetString ("Allow implicit property evaluation and method invocation"));
 			checkAllowEval.Toggled += OnCheckAllowEvalToggled;
 			PackStart (checkAllowEval);
@@ -129,7 +129,7 @@ namespace MonoDevelop.Debugger
 			evalBox.PackStart (spinTimeout);
 			evalBox.PackStart (new Label (GettextCatalog.GetString ("ms")));
 			PackStart (evalBox);
-			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Advanced options") + "</b>" });
+			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Advanced options") + "</b>", MarginTop=25 });
 			enableLogging = new CheckBox (GettextCatalog.GetString ("Enable diagnostic logging", BrandingService.ApplicationName));
 			PackStart (enableLogging);
 
