@@ -163,7 +163,7 @@ namespace MonoDevelop.AspNetCore.Commands
 
 		protected static bool ProjectSupportsFolderPublishing (DotNetProject project)
 		{
-			return project != null && project.GetProjectCapabilities ().Any (i => i == "Web" || i == "AzureFunctions");
+			return project != null && project.GetProjectCapabilities ().Any (i => i == "Web" || i == "AzureFunctions" || (project.TargetFramework.Id.IsNetStandardOrNetCoreApp () && i == "FolderPublish"));
 		}
 	}
 }
