@@ -91,8 +91,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		void OnPackageDependenciesChanged (object sender, EventArgs e)
 		{
 			var cache = (PackageDependencyNodeCache)sender;
-			var project = cache.Project;
-			ITreeBuilder builder = Context.GetTreeBuilder (project);
+			ITreeBuilder builder = Context.GetTreeBuilder (cache.Project);
 			if (builder == null)
 				return;
 
