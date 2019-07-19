@@ -619,7 +619,7 @@ namespace MonoDevelop.CSharp
 			src = new CancellationTokenSource ();
 		}
 
-		class OwnerProjectInfo
+		sealed class OwnerProjectInfo : IEquatable<OwnerProjectInfo>
 		{
 			public OwnerProjectInfo (Microsoft.CodeAnalysis.Project project, IconId iconId)
 			{
@@ -633,11 +633,15 @@ namespace MonoDevelop.CSharp
 
 			public override bool Equals (object obj)
 			{
-				var info = obj as OwnerProjectInfo;
-				if (info == null)
+				return Equals (obj as OwnerProjectInfo);
+			}
+
+			public bool Equals (OwnerProjectInfo other)
+			{
+				if (other == null)
 					return false;
 
-				return info.Project.Id == Project.Id;
+				return other.Project.Id == Project.Id;
 			}
 
 			public override int GetHashCode ()
