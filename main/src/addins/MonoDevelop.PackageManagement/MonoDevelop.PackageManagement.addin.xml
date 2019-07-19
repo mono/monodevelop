@@ -85,9 +85,13 @@
 	
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="Solution">
+			<SeparatorItem
+				id="MonoDevelop.PackageManagement.ProjectPad.Separator"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="AddSectionEnd" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.ManagePackages"
-				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertafter="MonoDevelop.PackageManagement.ProjectPad.Separator"
 				insertbefore="AddSectionEnd" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
@@ -99,9 +103,13 @@
 				insertbefore="AddSectionEnd" />
 		</Condition>
 		<Condition id="ItemType" value="DotNetProject">
+			<SeparatorItem
+				id="MonoDevelop.PackageManagement.ProjectPad.Separator"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="AddSectionEnd" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject"
-				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertafter="MonoDevelop.PackageManagement.ProjectPad.Separator"
 				insertbefore="AddSectionEnd" />
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
