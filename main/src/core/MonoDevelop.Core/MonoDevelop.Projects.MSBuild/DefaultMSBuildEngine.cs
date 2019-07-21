@@ -913,10 +913,10 @@ namespace MonoDevelop.Projects.MSBuild
 				if (baseRecursiveDir.IsNullOrEmpty)
 					baseRecursiveDir = basePath;
 
-				res = res.Concat (ExpandWildcardFilePath (project, basePath, baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
+				res = FastConcat (res, ExpandWildcardFilePath (project, basePath, baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
 
 				foreach (var dir in Directory.EnumerateDirectories (basePath, "*", SearchOption.AllDirectories))
-					res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
 
 				return res;
 			}
@@ -938,13 +938,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (path.IndexOfAny (wildcards) != -1) {
 					foreach (var dir in Directory.EnumerateDirectories (basePath, path)) {
-						res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
+						res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
 					}
 				} else
-					res = res.Concat (ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, filePath.Slice (1), func, directoryExcludeRegex));
 			}
 
 			return res;
+
+			static IEnumerable<T> FastConcat (IEnumerable<T> first, IEnumerable<T> maybeEmpty)
+				=> maybeEmpty == Enumerable.Empty<T> () ? first : first.Concat (maybeEmpty);
 		}
 
 		static string ExcludeToRegex (string exclude, bool excludeDirectoriesOnly = false)
