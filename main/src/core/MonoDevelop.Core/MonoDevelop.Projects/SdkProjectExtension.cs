@@ -38,6 +38,8 @@ namespace MonoDevelop.Projects
 	[ExportProjectModelExtension]
 	public class SdkProjectExtension : DotNetProjectExtension
 	{
+		HashSet<(string Name, string Include)> evaluatedItems;
+
 		MSBuildSdkProject msbuildSdkProject = new MSBuildSdkProject ();
 		string[] cachedBuildActions;
 
@@ -109,6 +111,7 @@ namespace MonoDevelop.Projects
 			Project.UseFileWatcher = true;
 
 			cachedBuildActions = null;
+			evaluatedItems = null;
 		}
 
 		internal protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -189,11 +192,15 @@ namespace MonoDevelop.Projects
 			if (IsFromSharedProject (buildItem))
 				return false;
 
-			// HACK: Remove any imported items that are not in the EvaluatedItems
-			// This may happen if a condition excludes the item. All items passed to the
-			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
-			return Project.MSBuildProject.EvaluatedItems
-				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
+			evaluatedItems ??= CreateEvaluatedItemsCache (Project.MSBuildProject);
+			return evaluatedItems.Contains ((buildItem.Name, buildItem.Include));
+
+			static HashSet<(string, string)> CreateEvaluatedItemsCache (MSBuildProject project)
+				=> new HashSet<(string Name, string Include)> (
+					project.EvaluatedItems
+					.Where (x => x.IsImported)
+					.Select (x => (x.Name, x.Include))
+				);
 		}
 
 		/// <summary>

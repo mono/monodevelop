@@ -1067,8 +1067,6 @@ namespace MonoDevelop.Projects
 	class SupportImportedProjectFilesDotNetProjectExtension : DotNetProjectExtension
 	{
 		internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
-		{
-			return BuildAction.DotNetActions.Contains (buildItem.Name);
-		}
+			=> BuildAction.DotNetActions.Contains (buildItem.Name);
 	}
 }
