@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide
 						await SavePreferencesAsync ();
 
 					if (closeProjectFiles && documentManager != null) {
-						foreach (Document doc in documentManager.Documents.ToArray ()) {
+						foreach (Document doc in documentManager.Documents) {
 							if (!await doc.Close (force))
 								return false;
 						}
