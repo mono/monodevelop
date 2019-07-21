@@ -148,7 +148,7 @@ namespace MonoDevelop.Core
 		{
 			return fileName.Length > name.Length
 				&& fileName.EndsWith (name, PathComparison)
-				&& fileName [fileName.Length - name.Length - 1] == Path.PathSeparator;
+				&& fileName [fileName.Length - name.Length - 1] == Path.DirectorySeparatorChar;
 		}
 
 		public string Extension {
@@ -161,8 +161,8 @@ namespace MonoDevelop.Core
 		public bool HasExtension (string extension)
 		{
 			return fileName.Length > extension.Length
-				&& fileName.EndsWith (extension, PathComparison)
-				&& fileName[fileName.Length - extension.Length - 1] != Path.PathSeparator;
+				&& extension.Length == 0
+				|| (extension[0] == '.' && fileName.EndsWith (extension, PathComparison));
 		}
 
 		public string FileNameWithoutExtension {

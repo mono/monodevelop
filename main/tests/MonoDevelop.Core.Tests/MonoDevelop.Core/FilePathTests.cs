@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -111,21 +112,52 @@ namespace MonoDevelop.Core
 			Assert.IsFalse (child.IsChildPathOf (child));
 		}
 
-		[Test]
-		public void FileExtensionIsProper ()
+		[TestCase("test.txt", "test")]
+		[TestCase(".gitignore", "")]
+		public void FileNameWithoutExtension (string fileName, string expected)
 		{
-			var path = new FilePath ("asdf.txt");
-			Assert.AreEqual ("asdf.txt", path.FileName);
-			Assert.IsTrue (path.HasExtension (".txt"));
-			Assert.AreEqual (FilePath.PathComparison == StringComparison.OrdinalIgnoreCase, path.HasExtension (".TXT"));
-			Assert.AreEqual (".txt", path.Extension);
-			Assert.AreEqual ("asdf", path.FileNameWithoutExtension);
+			var path = FilePath.Build ("dir", fileName);
 
-			path = new FilePath (".gitignore");
-			Assert.False (path.HasExtension (".gitignore"));
-			Assert.AreEqual (".gitignore", path.FileName);
-			Assert.AreEqual (".gitignore", path.Extension);
-			Assert.AreEqual ("", path.FileNameWithoutExtension);
+			Assert.AreEqual (expected, path.FileNameWithoutExtension);
+		}
+
+
+		[TestCase ("test.txt", ".txt", true)]
+		[TestCase ("test.txt", ".TxT", null)]
+		[TestCase ("test.txt", ".cs", false)]
+		[TestCase ("test.txt", ".longer", false)]
+		[TestCase (".gitignore", ".gitignore", true)]
+		[TestCase (".gitignore", ".git", false)]
+		public void HasExtensionChecks (string fileName, string assertExtension, bool? expected)
+		{
+			IEqualityComparer<string> comparer = FilePath.PathComparer;
+			var expectedValue = expected ?? FilePath.PathComparison == StringComparison.OrdinalIgnoreCase;
+
+			var path = FilePath.Build ("dir", fileName);
+
+			Assert.AreEqual (expectedValue, path.HasExtension (assertExtension));
+
+			var expectedConstraint = expectedValue ? Is.EqualTo (assertExtension) : Is.Not.EqualTo (assertExtension);
+			Assert.That (path.Extension, expectedConstraint.Using (comparer));
+		}
+
+		[TestCase ("test.txt", "test.txt", true)]
+		[TestCase ("test.txt", "Test.txT", null)]
+		[TestCase ("test.txt", "abc.txt", false)]
+		[TestCase ("test.txt", "something", false)]
+		[TestCase (".gitignore", ".gitignore", true)]
+		[TestCase (".gitignore", ".git", false)]
+		public void HasFileNameChecks (string fileName, string assertFileName, bool? expected)
+		{
+			IEqualityComparer<string> comparer = FilePath.PathComparer;
+			var expectedValue = expected ?? FilePath.PathComparison == StringComparison.OrdinalIgnoreCase;
+
+			var path = FilePath.Build ("dir", fileName);
+
+			Assert.AreEqual (expectedValue, path.HasFileName (assertFileName));
+
+			var expectedConstraint = expectedValue ? Is.EqualTo (assertFileName) : Is.Not.EqualTo (assertFileName);
+			Assert.That (path.FileName, expectedConstraint.Using (comparer));
 		}
 
 		[Test]
