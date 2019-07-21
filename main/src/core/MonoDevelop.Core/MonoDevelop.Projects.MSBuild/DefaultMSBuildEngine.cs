@@ -36,6 +36,7 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.BackEnd;
 using System.Collections.Immutable;
+using Microsoft.Build.Globbing;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -94,11 +95,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			public MSBuildItem Item;
 			public string Include;
+			public IMSBuildGlob IncludeGlob;
 			public Regex ExcludeRegex;
 			public Regex DirectoryExcludeRegex;
 			public Regex RemoveRegex;
 			public bool Condition;
-			public string [] IncludeSplit;
 
 			public List<GlobInfo> Updates;
 			public Regex UpdateRegex;
@@ -422,7 +423,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 					if (globInclude.Updates == null)
 						globInclude.Updates = new List<GlobInfo> ();
-					globInclude.Updates.Add (new GlobInfo { Include = update, IncludeSplit = SplitWildcardFilePath (update), Item = item, UpdateRegex = updateRegex });
+					globInclude.Updates.Add (new GlobInfo {
+						Include = update,
+						IncludeGlob = MSBuildGlob.Parse (project.Project.BaseDirectory, update),
+						Item = item,
+						UpdateRegex = updateRegex
+					});
 				}
 				project = project.Parent;
 			} while (project != null);
@@ -561,7 +567,14 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 			} else if (IsWildcardInclude (include)) {
-				project.GlobIncludes.Add (new GlobInfo { Item = item, Include = include, IncludeSplit = SplitWildcardFilePath (include), ExcludeRegex = excludeRegex, DirectoryExcludeRegex = directoryExcludeRegex, Condition = trueCond });
+				project.GlobIncludes.Add (new GlobInfo {
+					Item = item,
+					Include = include,
+					IncludeGlob = MSBuildGlob.Parse (project.Project.BaseDirectory,include),
+					ExcludeRegex = excludeRegex,
+					DirectoryExcludeRegex = directoryExcludeRegex,
+					Condition = trueCond
+				});
 				foreach (var eit in ExpandWildcardFilePath (project, context, item, include, directoryExcludeRegex)) {
 					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
 						continue;
@@ -1452,7 +1465,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (g.RemoveRegex.IsMatch (include))
 						continue;
 				}
-				if (IsIncludedInGlob (pi.Project.BaseDirectory, filePath, false, g.IncludeSplit))
+				if (g.IncludeGlob != null && g.IncludeGlob.IsMatch (filePath))
 					yield return g.Item;
 			}
 		}
@@ -1467,63 +1480,6 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 			}
-		}
-
-		bool IsIncludedInGlob (FilePath basePath, FilePath file, bool recursive, in ReadOnlySpan<string> filePath)
-		{
-			if (filePath.Length <= 0)
-				return false;
-
-			var path = filePath [0];
-
-			if (path == "..")
-				return IsIncludedInGlob (basePath.ParentDirectory, file, recursive, filePath.Slice (1));
-
-			if (path == ".")
-				return IsIncludedInGlob (basePath, file, recursive, filePath.Slice (1));
-
-			if (!Directory.Exists (basePath))
-				return false;
-
-			if (path == "**") {
-				// if this is the last component of the path, there isn't any file specifier, so there is no possible match
-				if (filePath.Length <= 1)
-					return false;
-				return IsIncludedInGlob (basePath, file, true, filePath.Slice (1));
-			}
-
-			if (filePath.Length == 1) {
-				// Last path component. It has to be a file specifier.
-				if (!file.IsChildPathOf (basePath))
-					return false;
-
-				foreach (var f in Directory.EnumerateFiles (basePath, path)) {
-					if (f == file)
-						return true;
-				}
-			} else {
-				// Directory specifier
-				// Look for matching directories.
-				// The search here is non-recursive, not matter what the 'recursive' parameter says, since we are trying to match a subpath.
-				// The recursive search is done below.
-
-				if (path.IndexOfAny (wildcards) != -1) {
-					foreach (var dir in Directory.EnumerateDirectories (basePath, path)) {
-						if (IsIncludedInGlob (dir, file, false, filePath.Slice (1)))
-							return true;
-					}
-				} else if (IsIncludedInGlob (basePath.Combine (path), file, false, filePath.Slice (1)))
-					return true;
-			}
-
-			if (recursive) {
-				// Recursive search. Try to match the remaining subpath in all subdirectories.
-				foreach (var dir in Directory.EnumerateDirectories (basePath))
-					if (IsIncludedInGlob (dir, file, true, filePath))
-						return true;
-			}
-
-			return false;
 		}
 
 		internal override IEnumerable<object> GetEvaluatedItemDefinitions (object projectInstance)
