@@ -129,36 +129,15 @@ namespace MonoDevelop.Projects
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
-			return AddMissingProjectFiles (sourceFiles, configuration);
-		}
-
-		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files, ConfigurationSelector configuration)
-		{
-			ImmutableArray<ProjectFile>.Builder missingFiles = null;
-			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
-				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
-					if (missingFiles == null)
-						missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
-					missingFiles.Add (existingFile);
-				}
-			}
-
 			// Ensure generated assembly info file is available to type system. It is created in the obj
 			// directory and is excluded from the project with a wildcard exclude but the type system needs it to
 			// ensure the project's assembly information is correct to prevent diagnostic errors.
 			var generatedAssemblyInfoFile = GetGeneratedAssemblyInfoFile (configuration);
 			if (generatedAssemblyInfoFile != null) {
-				if (missingFiles == null)
-					missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
-				missingFiles.Add (generatedAssemblyInfoFile);
+				return sourceFiles.Add (generatedAssemblyInfoFile);
 			}
 
-			if (missingFiles == null)
-				return files;
-
-			missingFiles.Capacity = missingFiles.Count + files.Length;
-			missingFiles.AddRange (files);
-			return missingFiles.MoveToImmutable ();
+			return sourceFiles;
 		}
 
 		ProjectFile GetGeneratedAssemblyInfoFile (ConfigurationSelector configuration)
