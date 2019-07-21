@@ -3998,7 +3998,7 @@ namespace MonoDevelop.Projects
 				if (p2 == null)
 					return false;
 				if (!p.ValueType.Equals (p.Value, p2.UnevaluatedValue)) {
-					if (p2.UnevaluatedValue != null && p2.UnevaluatedValue.Contains ('%')) {
+					if (p2.UnevaluatedValue != null && p2.UnevaluatedValue.IndexOf ('%') != -1) {
 						// Check evaluated value is a match.
 						if (!p.ValueType.Equals (p.Value, p2.Value))
 							return false;
