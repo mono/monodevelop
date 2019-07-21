@@ -861,7 +861,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include, file, recursiveDir);
 			};
 			MSBuildProject rootProject = pinfo.GetRootMSBuildProject ();
-			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath.AsSpan (), func, directoryExcludeRegex);
+			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, func, directoryExcludeRegex);
 		}
 
 		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path, Regex directoryExcludeRegex = null)
@@ -871,7 +871,7 @@ namespace MonoDevelop.Projects.MSBuild
 			WildcardExpansionFunc<string> func = delegate (string file, string include, string recursiveDir) {
 				return include;
 			};
-			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath.AsSpan (), func, directoryExcludeRegex);
+			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, func, directoryExcludeRegex);
 		}
 
 		static string[] SplitWildcardFilePath (string path)
@@ -884,7 +884,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		delegate T WildcardExpansionFunc<T> (string filePath, string include, string recursiveDir);
 
-		static IEnumerable<T> ExpandWildcardFilePath<T> (MSBuildProject project, FilePath basePath, FilePath baseRecursiveDir, bool recursive, Span<string> filePath, WildcardExpansionFunc<T> func, Regex directoryExcludeRegex)
+		static IEnumerable<T> ExpandWildcardFilePath<T> (MSBuildProject project, FilePath basePath, FilePath baseRecursiveDir, bool recursive, in ReadOnlySpan<string> filePath, WildcardExpansionFunc<T> func, Regex directoryExcludeRegex)
 		{
 			var res = Enumerable.Empty<T> ();
 
