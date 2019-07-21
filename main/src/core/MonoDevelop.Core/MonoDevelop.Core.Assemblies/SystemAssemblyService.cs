@@ -234,22 +234,26 @@ namespace MonoDevelop.Core.Assemblies
 			return aname;
 		}
 
+		static readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim ();
 		static readonly Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
 		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
 			AssemblyName name;
 
-			lock (assemblyNameCache) {
+			using (readerWriterLock.Read ()) {
 				if (assemblyNameCache.TryGetValue (file, out name))
 					return name;
 			}
 
 			try {
 				name = AssemblyName.GetAssemblyName (file);
-				lock (assemblyNameCache) {
-					assemblyNameCache [file] = name;
+
+				using (readerWriterLock.Write ()) {
+					if (assemblyNameCache.TryGetValue (file, out var alreadyAdded))
+						return alreadyAdded;
+
+					return assemblyNameCache [file] = name;
 				}
-				return name;
 			} catch (FileNotFoundException) {
 				// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
 				foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
