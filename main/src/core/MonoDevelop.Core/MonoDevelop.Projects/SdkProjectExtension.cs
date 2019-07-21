@@ -167,14 +167,23 @@ namespace MonoDevelop.Projects
 			// project file is being saved.
 		}
 
-		bool IsFSharpSdkProject ()
+		bool? isFSharpSdkProject;
+		bool IsLegacyFSharpSdkProject ()
 		{
-			var sdks = Project.MSBuildProject.GetReferencedSDKs ();
-			for (var i = 0; i < sdks.Length; i++) {
-				if (sdks [i].Contains ("FSharp"))
-					return true;
+			if (isFSharpSdkProject is null) {
+				isFSharpSdkProject = ContainsFSharpSdk (Project.MSBuildProject.GetReferencedSDKs ());
 			}
-			return false;
+
+			return isFSharpSdkProject.Value;
+
+			static bool ContainsFSharpSdk (string[] sdks)
+			{
+				for (var i = 0; i < sdks.Length; i++) {
+					if (sdks [i].Contains ("FSharp"))
+						return true;
+				}
+				return false;
+			}
 		}
 
 		internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
@@ -182,7 +191,7 @@ namespace MonoDevelop.Projects
 			if (!IsBuildActionSupported (buildItem.Name))
 				return false;
 
-			if (IsFSharpSdkProject ()) {
+			if (IsLegacyFSharpSdkProject ()) {
 				// Ignore imported F# files. F# files are defined in the main project.
 				// This prevents duplicate F# files when a new project is first created.
 				if (buildItem.Include.EndsWith (".fs", StringComparison.OrdinalIgnoreCase))
@@ -248,6 +257,8 @@ namespace MonoDevelop.Projects
 		internal protected override async Task OnReevaluateProject (ProgressMonitor monitor)
 		{
 			await base.OnReevaluateProject (monitor);
+
+			isFSharpSdkProject = null;
 			UpdateHiddenFiles (Project.Files);
 		}
 
