@@ -55,8 +55,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		internal static bool FileShouldBeHidden (FilePath file)
 		{
-			return file.HasExtension (".userprefs") ||
-				file.FileName == ".DS_Store";
+			return file.HasExtension (".userprefs") || file.HasFileName (".DS_Store");
 		}
 
 		public IEnumerable<string> TargetFrameworks {

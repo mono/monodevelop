@@ -143,6 +143,14 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		[Pure]
+		internal bool HasFileName (string name)
+		{
+			return fileName.Length > name.Length
+				&& fileName.EndsWith (name, PathComparison)
+				&& fileName [fileName.Length - name.Length - 1] == Path.PathSeparator;
+		}
+
 		public string Extension {
 			get {
 				return Path.GetExtension (fileName);
