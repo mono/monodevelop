@@ -47,7 +47,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		static SourceLocation GetSourceLocation (VsStackFrame frame)
 		{
-			var sourceLink = GetSourceLink (frame.Source.VsSourceLinkInfo);
+			var sourceLink = GetSourceLink (frame.Source?.VsSourceLinkInfo);
 			return new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source), sourceLink);
 		}
 
