@@ -126,8 +126,12 @@ namespace MonoDevelop.Core
 		[TestCase ("test.txt", ".TxT", null)]
 		[TestCase ("test.txt", ".cs", false)]
 		[TestCase ("test.txt", ".longer", false)]
+		[TestCase ("test.txt", "", false)]
 		[TestCase (".gitignore", ".gitignore", true)]
 		[TestCase (".gitignore", ".git", false)]
+		[TestCase (".gitignore", "", false)]
+		[TestCase ("a", "", true)]
+		[TestCase ("a.", "", true)]
 		public void HasExtensionChecks (string fileName, string assertExtension, bool? expected)
 		{
 			IEqualityComparer<string> comparer = FilePath.PathComparer;

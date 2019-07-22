@@ -161,8 +161,30 @@ namespace MonoDevelop.Core
 		public bool HasExtension (string extension)
 		{
 			return fileName.Length > extension.Length
-				&& extension.Length == 0
-				|| (extension[0] == '.' && fileName.EndsWith (extension, PathComparison));
+				&& (extension == string.Empty
+					? HasNoExtension (fileName, extension)
+					: fileName.EndsWith (extension, PathComparison) && fileName [fileName.Length - extension.Length] == '.');
+
+			static bool HasNoExtension (string path, string extension)
+			{
+				if (extension != string.Empty)
+					return false;
+
+				if (path [path.Length - 1] == '.')
+					return true;
+
+				// Look for the last dot that's after the last path separator
+				for (int i = path.Length - 1; i >= 0; --i) {
+					var ch = path [i];
+					if (ch == '.')
+						return false;
+
+					if (ch == Path.DirectorySeparatorChar)
+						return true;
+				}
+
+				return false;
+			}
 		}
 
 		public string FileNameWithoutExtension {
