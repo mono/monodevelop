@@ -519,7 +519,10 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var exclude = ExcludeToRegex (remove);
 			do {
-				foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+				foreach (var globInclude in project.GlobIncludes) {
+					if (globInclude.Item.Name != item.Name)
+						continue;
+
 					if (globInclude.RemoveRegex != null)
 						exclude = globInclude.RemoveRegex + "|" + exclude;
 					globInclude.RemoveRegex = new Regex (exclude);
@@ -867,10 +870,8 @@ namespace MonoDevelop.Projects.MSBuild
 		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path, Regex directoryExcludeRegex = null)
 		{
 			var subpath = SplitWildcardFilePath (path);
-		
-			WildcardExpansionFunc<string> func = delegate (string file, string include, string recursiveDir) {
-				return include;
-			};
+
+			WildcardExpansionFunc<string> func = (file, include, recursiveDir) => include;
 			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath.AsSpan (), func, directoryExcludeRegex);
 		}
 
@@ -1031,11 +1032,6 @@ namespace MonoDevelop.Projects.MSBuild
 				StoreProperty (project, prop.Name, prop.UnevaluatedValue, val);
 				context.SetPropertyValue (prop.Name, val);
 			}
-		}
-
-		MSBuildItemEvaluated Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
-		{
-			return CreateEvaluatedItem (context, project, project.Project, item, context.EvaluateString (item.Include));
 		}
 
 		IReadOnlyList<ProjectInfo> GetImportedProjects (ProjectInfo project, MSBuildImport import)
