@@ -694,14 +694,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 				navigator.JumpToLine (fileInfo.Line, fileInfo.Column);*/
 		}
 
-		Document FindDocument (IWorkbenchWindow window)
-		{
-			foreach (Document doc in Documents)
-				if (doc.Window == window)
-					return doc;
-			return null;
-		}
-
 		void WatchDocument (Document doc)
 		{
 			if (doc.IsFile) {
