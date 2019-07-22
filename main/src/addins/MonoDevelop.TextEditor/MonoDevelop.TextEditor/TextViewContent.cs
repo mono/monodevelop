@@ -440,6 +440,9 @@ namespace MonoDevelop.TextEditor
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
 				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
 
+			var foldMargin = PropertyService.Get<bool>("ShowFoldMargin");
+			Imports.OutliningManagerService.GetOutliningManager (this.TextView as ITextView).Enabled = foldMargin;
+
 			var setVerticalRulers = false;
 			int [] verticalRulers = null;
 
