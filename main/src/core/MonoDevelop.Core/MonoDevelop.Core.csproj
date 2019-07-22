@@ -740,6 +740,7 @@
     <Compile Include="CoreExtensions.IEnumerable.cs" />
     <Compile Include="CoreExtensions.Memoize.cs" />
     <Compile Include="CoreExtensions.EventHandlers.cs" />
+    <Compile Include="CoreExtensions.Array.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
