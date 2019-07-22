@@ -384,6 +384,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
+			// bug #940756 suggests that some elements do not respond to this selector
+			// so check before sending so it doesn't throw an ObjC exception
+			if (!((NSObject)titleNsa).RespondsToSelector (selAccessibilityServesAsTitleForUIElements)) {
+				return;
+			}
+
 			IntPtr ptr = Messaging.IntPtr_objc_msgSend (titleNsa.Handle, selAccessibilityServesAsTitleForUIElements_Handle);
 			using (var array = Runtime.GetNSObject<NSArray> (ptr)) {
 				if (array == null)
