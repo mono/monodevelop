@@ -369,6 +369,9 @@ namespace MonoDevelop.TextEditor
 		{
 			UpdateLineNumberMarginOption ();
 
+			var foldMargin = PropertyService.Get<bool> ("ShowFoldMargin");
+			Imports.OutliningManagerService.GetOutliningManager (TextView).Enabled = foldMargin;
+
 			var newPolicyContainer = (Owner as IPolicyProvider)?.Policies;
 			if (newPolicyContainer != policyContainer) {
 				if (policyContainer != null)
@@ -439,9 +442,6 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
 				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
-
-			var foldMargin = PropertyService.Get<bool>("ShowFoldMargin");
-			Imports.OutliningManagerService.GetOutliningManager (this.TextView as ITextView).Enabled = foldMargin;
 
 			var setVerticalRulers = false;
 			int [] verticalRulers = null;
