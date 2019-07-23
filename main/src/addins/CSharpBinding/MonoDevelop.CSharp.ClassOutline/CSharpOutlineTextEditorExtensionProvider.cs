@@ -35,6 +35,6 @@ namespace MonoDevelop.CSharp
 	[TextViewRole (PredefinedTextViewRoles.PrimaryDocument)]
 	class CSharpOutlineTextEditorExtensionProvider : EditorContentInstanceProvider<CSharpOutlineTextEditorExtension>
 	{
-		protected override CSharpOutlineTextEditorExtension CreateInstance (ITextView view) => new CSharpOutlineTextEditorExtension (view.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges ());
+		protected override CSharpOutlineTextEditorExtension CreateInstance (ITextView view) => new CSharpOutlineTextEditorExtension (view);
 	}
 }

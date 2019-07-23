@@ -41,6 +41,8 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CSharp.ClassOutline
 {
@@ -74,16 +76,37 @@ namespace MonoDevelop.CSharp.ClassOutline
 		bool outlineReady;
 
 		Document providedAnalysisDocument;
-
+		ITextView textView;
 
 		public CSharpOutlineTextEditorExtension ()
 		{
 			// does nothing, but is here for legacy editor support
 		}
 
-		public CSharpOutlineTextEditorExtension (Document document)
+		public CSharpOutlineTextEditorExtension (ITextView textView)
 		{
-			providedAnalysisDocument = document;
+			this.textView = textView ?? throw new ArgumentNullException (nameof (textView));
+
+			textView.Closed += TextView_Closed;
+			textView.TextBuffer.Changed += UpdateAnalysisDocument;
+
+			UpdateAnalysisDocument (this, null);
+		}
+
+		void UpdateAnalysisDocument (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
+		{
+			providedAnalysisDocument = textView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
+			outlineReady = true; // we need this to compensate for the old behaviour 
+			UpdateDocumentOutline (this, e);
+		}
+
+		void TextView_Closed (object sender, EventArgs e)
+		{
+			if (textView == null || textView.TextBuffer == null) return;
+
+			textView.Closed -= TextView_Closed;
+			textView.TextBuffer.Changed -= UpdateAnalysisDocument;
+			textView = null;
 		}
 
 		public override bool IsValidInContext (DocumentContext context)
@@ -110,6 +133,10 @@ namespace MonoDevelop.CSharp.ClassOutline
 			lastCU = null;
 			settings = null;
 			comparer = null;
+
+			// also, unsubscribe from text view events, if we're in the new editor
+			TextView_Closed (this, null);
+
 			base.Dispose ();
 		}
 
@@ -232,7 +259,15 @@ namespace MonoDevelop.CSharp.ClassOutline
 				var workspace = providedAnalysisDocument.Project.Solution.Workspace;
 				var navigationService = workspace.Services.GetService<Microsoft.CodeAnalysis.Navigation.IDocumentNavigationService> ();
 
-				navigationService.TryNavigateToSpan (workspace, providedAnalysisDocument.Id, syntaxNode?.Span ?? ((SyntaxTrivia)o).FullSpan);
+				try {
+					navigationService.TryNavigateToSpan (workspace, providedAnalysisDocument.Id, syntaxNode?.Span ?? ((SyntaxTrivia)o).FullSpan);
+				} catch {
+					// if this happens, there's a big chance that the document was updated and we didn't update our
+					// tree with the latest analysis. What we can do is try and update the analysis document again.
+					// Specific use case for this is when the enough code is removed, and we try navigating to the
+					// last span in the document.
+					UpdateAnalysisDocument (this, null);
+				}
 
 				return;
 			}
