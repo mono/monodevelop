@@ -924,7 +924,7 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (!baseDir.EndsWith ("\\", StringComparison.Ordinal))
 					baseDir += '\\';
 				var recursiveDir = baseRecursiveDir.IsNullOrEmpty ? FilePath.Null : basePath.ToRelative (baseRecursiveDir);
-				res = res.Concat (Directory.EnumerateFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
+				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
 			} else {
 				// Directory specifier
 				// Look for matching directories.
