@@ -364,6 +364,7 @@
     <Compile Include="MonoDevelop.PackageManagement\SelectedProjectViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SelectProjectsViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentManagedNuGetPackagesRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ManageProjectViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

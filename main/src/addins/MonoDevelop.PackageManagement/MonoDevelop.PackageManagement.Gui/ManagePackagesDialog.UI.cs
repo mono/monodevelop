@@ -38,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 		SearchTextEntry packageSearchEntry;
 		ListView packagesListView;
 		VBox packageInfoVBox;
+		HBox packageNameHBox;
 		Label packageNameLabel;
 		LinkLabel packageIdLink;
 		Label packageDescription;
@@ -64,6 +65,8 @@ namespace MonoDevelop.PackageManagement
 		Label installedLabel;
 		Label updatesLabel;
 		Label consolidateLabel;
+		ListView projectsListView;
+		CheckBox selectAllProjectsCheckBox;
 		int packageInfoFontSize = 11;
 
 		void Build ()
@@ -216,7 +219,7 @@ namespace MonoDevelop.PackageManagement
 			packageInfoScrollViewFrame.Content = packageInfoScrollView;
 
 			// Package name and version.
-			var packageNameHBox = new HBox ();
+			packageNameHBox = new HBox ();
 			packageInfoVBox.PackStart (packageNameHBox);
 
 			packageNameLabel = new Label ();
@@ -225,6 +228,15 @@ namespace MonoDevelop.PackageManagement
 			Font packageInfoBoldFont = packageInfoSmallFont.WithWeight (FontWeight.Bold);
 			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
+
+			// Projects list view.
+			projectsListView = new ListView ();
+			packageInfoVBox.PackStart (projectsListView, true, true);
+
+			selectAllProjectsCheckBox = new CheckBox ();
+			selectAllProjectsCheckBox.Label = GettextCatalog.GetString ("Select all projects");
+			selectAllProjectsCheckBox.Name = "selectAllProjectsCheckBox";
+			packageInfoVBox.PackStart (selectAllProjectsCheckBox);
 
 			// Package description.
 			packageDescription = new Label ();

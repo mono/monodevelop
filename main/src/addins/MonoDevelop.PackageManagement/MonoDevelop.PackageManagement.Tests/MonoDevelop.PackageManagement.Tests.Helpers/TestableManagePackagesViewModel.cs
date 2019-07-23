@@ -25,11 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.PackageManagement.UI;
-using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -55,6 +54,28 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakeNuGetProjectContext projectContext,
 			RecentManagedNuGetPackagesRepository recentPackagesRepository)
 			: base (solutionManager, dotNetProject.ParentSolution, projectContext, recentPackagesRepository, dotNetProject)
+		{
+			FakeNuGetProjectContext = projectContext;
+			RecentPackagesRepository = recentPackagesRepository;
+		}
+
+		public TestableManagePackagesViewModel (
+			IMonoDevelopSolutionManager solutionManager,
+			ISolution solution)
+			: this (
+				solutionManager,
+				solution,
+				new FakeNuGetProjectContext (),
+				new RecentManagedNuGetPackagesRepository ())
+		{
+		}
+
+		public TestableManagePackagesViewModel (
+			IMonoDevelopSolutionManager solutionManager,
+			ISolution solution,
+			FakeNuGetProjectContext projectContext,
+			RecentManagedNuGetPackagesRepository recentPackagesRepository)
+			: base (solutionManager, solution, projectContext, recentPackagesRepository, null)
 		{
 			FakeNuGetProjectContext = projectContext;
 			RecentPackagesRepository = recentPackagesRepository;

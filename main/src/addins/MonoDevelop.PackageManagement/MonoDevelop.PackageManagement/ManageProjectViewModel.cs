@@ -1,10 +1,10 @@
-﻿//
-// ManagePackagesProjectInfo.cs
+//
+// ManageProjectViewModel.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,35 +25,41 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using NuGet.Packaging.Core;
-using NuGet.Packaging;
 
 namespace MonoDevelop.PackageManagement
 {
-	class ManagePackagesProjectInfo : IComparable<ManagePackagesProjectInfo>
+	class ManageProjectViewModel
 	{
-		List<PackageReference> packages;
-
-		public ManagePackagesProjectInfo (IDotNetProject project, IEnumerable<PackageReference> packages)
+		public ManageProjectViewModel (ManagePackagesProjectInfo projectInfo, string packageId)
 		{
-			Project = project;
-			this.packages = packages.ToList ();
+			ProjectInfo = projectInfo;
+			Init (packageId);
 		}
 
-		public IDotNetProject Project { get; private set; }
-
-		public IEnumerable<PackageIdentity> Packages {
-			get { return packages.Select (p => p.PackageIdentity); }
-		}
-
-		public int CompareTo (ManagePackagesProjectInfo other)
+		void Init (string packageId)
 		{
-			if (other == null)
-				return 1;
-
-			return string.Compare (Project.Name, other.Project.Name, StringComparison.CurrentCulture);
+			var package = ProjectInfo.Packages.FirstOrDefault (package => StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId));
+			if (package != null) {
+				IsChecked = true;
+				PackageVersion = package.Version.ToString ();
+			} else {
+				PackageVersion = string.Empty;
+			}
 		}
+
+		public IDotNetProject Project {
+			get { return ProjectInfo.Project; }
+		}
+
+		public string ProjectName {
+			get { return Project.Name; }
+		}
+
+		public string PackageVersion { get; private set; }
+
+		public bool IsChecked { get; set; }
+
+		internal ManagePackagesProjectInfo ProjectInfo { get; private set; }
 	}
 }

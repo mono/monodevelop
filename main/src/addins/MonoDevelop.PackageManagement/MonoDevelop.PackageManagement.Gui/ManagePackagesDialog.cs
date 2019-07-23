@@ -61,6 +61,12 @@ namespace MonoDevelop.PackageManagement
 		int packageVersionsAddedCount;
 		IDisposable populatePackageVersionsTimer;
 		const int MaxVersionsToPopulate = 100;
+		DataField<bool> projectCheckedField = new DataField<bool> ();
+		DataField<string> projectNameField = new DataField<string> ();
+		DataField<string> packageVersionField = new DataField<string> ();
+		DataField<ManageProjectViewModel> projectField = new DataField<ManageProjectViewModel> ();
+		CheckBoxCellView projectCheckBoxCellView;
+		ListStore projectStore;
 
 		public ManagePackagesDialog (ManagePackagesViewModel viewModel, string initialSearch = null)
 			: this (
@@ -86,6 +92,7 @@ namespace MonoDevelop.PackageManagement
 			UpdatePackageResultsPageLabels ();
 
 			InitializeListView ();
+			InitializeProjectsListView ();
 			UpdateAddPackagesButton ();
 			ShowLoadingMessage ();
 			LoadViewModel (initialSearch);
@@ -102,6 +109,8 @@ namespace MonoDevelop.PackageManagement
 			installedLabel.ButtonPressed += InstalledLabelButtonPressed;
 			updatesLabel.ButtonPressed += UpdatesLabelButtonPressed;
 			consolidateLabel.ButtonPressed += ConsolidateLabelButtonPressed;
+
+			selectAllProjectsCheckBox.Toggled += SelectAllProjectsCheckBoxToggled;
 		}
 
 		public bool ShowPreferencesForPackageSources { get; private set; }
@@ -117,6 +126,7 @@ namespace MonoDevelop.PackageManagement
 			DisposeExistingTimer ();
 			DisposePopulatePackageVersionsTimer ();
 			packageStore.Clear ();
+			projectStore.Clear ();
 			viewModel = null;
 			base.Dispose (disposing);
 		}
@@ -166,6 +176,38 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.Columns.Add (textColumn);
 
 			packageCellView.PackageChecked += PackageCellViewPackageChecked;
+		}
+
+		void InitializeProjectsListView ()
+		{
+			projectStore = new ListStore (projectCheckedField, projectNameField, packageVersionField, projectField);
+			projectsListView.DataSource = projectStore;
+
+			// Selected project check box column.
+			projectCheckBoxCellView = new CheckBoxCellView ();
+			projectCheckBoxCellView.ActiveField = projectCheckedField;
+			projectCheckBoxCellView.Editable = true;
+			projectCheckBoxCellView.Toggled += ProjectCheckBoxCellViewToggled;
+			var column = new ListViewColumn (string.Empty, projectCheckBoxCellView);
+			projectsListView.Columns.Add (column);
+
+			// Project column.
+			var textCellView = new TextCellView ();
+			textCellView.TextField = projectNameField;
+			column = new ListViewColumn (GettextCatalog.GetString ("Project"), textCellView) {
+				CanResize = true,
+				SortDataField = projectNameField
+			};
+			projectsListView.Columns.Add (column);
+
+			// Package version column
+			textCellView = new TextCellView ();
+			textCellView.TextField = packageVersionField;
+			column = new ListViewColumn (GettextCatalog.GetString ("Version"), textCellView) {
+				CanResize = true,
+				SortDataField = packageVersionField
+			};
+			projectsListView.Columns.Add (column);
 		}
 
 		void ShowLoadingMessage ()
@@ -254,6 +296,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.packageInfoVBox.Visible = false;
 			this.packageVersionsHBox.Visible = false;
+			projectStore.Clear ();
 		}
 
 		void RemoveSelectedPackagePropertyChangedEventHandler ()
@@ -315,12 +358,12 @@ namespace MonoDevelop.PackageManagement
 			RemoveSelectedPackagePropertyChangedEventHandler ();
 
 			ManagePackagesSearchResultViewModel packageViewModel = GetSelectedPackageViewModel ();
+			viewModel.SelectedPackage = packageViewModel;
 			if (packageViewModel != null) {
 				ShowPackageInformation (packageViewModel);
 			} else {
 				ClearSelectedPackageInformation ();
 			}
-			viewModel.SelectedPackage = packageViewModel;
 			UpdateAddPackagesButton ();
 		}
 
@@ -334,22 +377,41 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowPackageInformation (ManagePackagesSearchResultViewModel packageViewModel)
 		{
+			bool consolidate = viewModel.IsConsolidatePageSelected;
+
 			// Use the package id and not the package title to prevent a pango crash if the title
 			// contains Chinese characters.
 			this.packageNameLabel.Markup = packageViewModel.GetIdMarkup ();
-			this.packageAuthor.Text = packageViewModel.Author;
-			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
-			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
-			this.packageDescription.Text = packageViewModel.Description;
-			this.packageId.Text = packageViewModel.Id;
-			this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
-			ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
-			ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
-			ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
 
-			PopulatePackageDependencies (packageViewModel);
+			if (!consolidate) {
+				this.packageAuthor.Text = packageViewModel.Author;
+				this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
+				this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
+				this.packageDescription.Text = packageViewModel.Description;
+				this.packageId.Text = packageViewModel.Id;
+				this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
+				ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
+				ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
+				ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
+
+				PopulatePackageDependencies (packageViewModel);
+			}
 
 			PopulatePackageVersions (packageViewModel);
+
+			foreach (Widget child in packageInfoVBox.Children) {
+				child.Visible = !consolidate;
+			}
+
+			if (consolidate) {
+				PopulateProjectList ();
+			} else {
+				projectStore.Clear ();
+			}
+
+			packageNameHBox.Visible = true;
+			projectsListView.Visible = consolidate;
+			selectAllProjectsCheckBox.Visible = consolidate;
 
 			this.packageInfoVBox.Visible = true;
 			this.packageVersionsHBox.Visible = true;
@@ -510,10 +572,16 @@ namespace MonoDevelop.PackageManagement
 		void AddPackagesButtonClicked (object sender, EventArgs e)
 		{
 			try {
-				var projects = SelectProjects ().ToList ();
-				if (projects.Any ()) {
-					List<IPackageAction> packageActions = CreatePackageActionsForSelectedPackages (projects);
+				if (viewModel.IsConsolidatePageSelected) {
+					List<ManagePackagesSearchResultViewModel> packageViewModels = GetSelectedPackageViewModels ();
+					List<IPackageAction> packageActions = CreateConsolidatePackageActions (packageViewModels);
 					RunPackageActions (packageActions);
+				} else {
+					var projects = SelectProjects ().ToList ();
+					if (projects.Any ()) {
+						List<IPackageAction> packageActions = CreatePackageActionsForSelectedPackages (projects);
+						RunPackageActions (packageActions);
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Adding packages failed.", ex);
@@ -691,8 +759,6 @@ namespace MonoDevelop.PackageManagement
 				return CreateUninstallPackageActions (packageViewModels, selectedProjects);
 			} else if (viewModel.PageSelected == ManagePackagesPage.Updates) {
 				return CreateUpdatePackageActions (packageViewModels, selectedProjects);
-			} else if (viewModel.PageSelected == ManagePackagesPage.Consolidate) {
-				return CreateConsolidatePackageActions (packageViewModels, selectedProjects);
 			}
 			return null;
 		}
@@ -731,12 +797,11 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		List<IPackageAction> CreateConsolidatePackageActions (
-			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
-			IEnumerable<IDotNetProject> selectedProjects)
+			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels)
 		{
 			var actions = new List<IPackageAction> ();
 			foreach (var packageViewModel in packageViewModels) {
-				actions.AddRange (viewModel.CreateConsolidatePackageActions (packageViewModel, selectedProjects));
+				actions.AddRange (viewModel.CreateConsolidatePackageActions (packageViewModel));
 			}
 			return actions;
 		}
@@ -784,14 +849,21 @@ namespace MonoDevelop.PackageManagement
 		{
 			try {
 				if (packageViewModel != null) {
-					var projects = SelectProjects (packageViewModel).ToList ();
-					if (!projects.Any ())
-						return;
+					if (viewModel.IsConsolidatePageSelected) {
+						List<IPackageAction> packageActions = CreateConsolidatePackageActions (
+							new ManagePackagesSearchResultViewModel [] { packageViewModel }
+						);
+						RunPackageActions (packageActions);
+					} else {
+						var projects = SelectProjects (packageViewModel).ToList ();
+						if (!projects.Any ())
+							return;
 
-					List<IPackageAction> packageActions = CreatePackageActions (
-						new ManagePackagesSearchResultViewModel [] { packageViewModel },
-						projects);
-					RunPackageActions (packageActions);
+						List<IPackageAction> packageActions = CreatePackageActions (
+							new ManagePackagesSearchResultViewModel [] { packageViewModel },
+							projects);
+						RunPackageActions (packageActions);
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("ManagePackage failed.", ex);
@@ -906,7 +978,16 @@ namespace MonoDevelop.PackageManagement
 
 		bool IsAddPackagesButtonEnabled ()
 		{
-			return !loadingMessageVisible && IsAtLeastOnePackageSelected ();
+			if (loadingMessageVisible)
+				return false;
+
+			if (!IsAtLeastOnePackageSelected ())
+				return false;
+
+			if (viewModel.IsConsolidatePageSelected)
+				return viewModel.CanConsolidate ();
+
+			return true;
 		}
 
 		bool IsAtLeastOnePackageSelected ()
@@ -924,8 +1005,11 @@ namespace MonoDevelop.PackageManagement
 				if (e.PropertyName == "Versions") {
 					PopulatePackageVersions (viewModel.SelectedPackage);
 				} else {
-					packagePublishedDate.Text = viewModel.SelectedPackage.GetLastPublishedDisplayText ();
-					PopulatePackageDependencies (viewModel.SelectedPackage);
+					if (viewModel.IsConsolidatePageSelected) {
+					} else {
+						packagePublishedDate.Text = viewModel.SelectedPackage.GetLastPublishedDisplayText ();
+						PopulatePackageDependencies (viewModel.SelectedPackage);
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading package versions.", ex);
@@ -1075,6 +1159,83 @@ namespace MonoDevelop.PackageManagement
 			ClearPackages ();
 			UpdateAddPackagesButton ();
 			Search ();
+		}
+
+		void PopulateProjectList ()
+		{
+			projectStore.Clear ();
+
+			int projectCount = 0;
+			int selectedCount = 0;
+			foreach (ManageProjectViewModel project in viewModel.ProjectViewModels) {
+				projectCount++;
+				if (project.IsChecked) {
+					selectedCount++;
+				}
+
+				int row = projectStore.AddRow ();
+				projectStore.SetValues (
+					row,
+					projectCheckedField,
+					project.IsChecked,
+					projectNameField,
+					project.ProjectName,
+					packageVersionField,
+					project.PackageVersion,
+					projectField,
+					project);
+			}
+
+			if (projectCount == selectedCount) {
+				selectAllProjectsCheckBox.State = CheckBoxState.On;
+			} else if (selectedCount > 0) {
+				selectAllProjectsCheckBox.State = CheckBoxState.Mixed;
+			} else {
+				selectAllProjectsCheckBox.State = CheckBoxState.Off;
+			}
+		}
+
+		void SelectAllProjectsCheckBoxToggled (object sender, EventArgs e)
+		{
+			bool selected = selectAllProjectsCheckBox.State == CheckBoxState.On;
+
+			for (int row = 0; row < projectStore.RowCount; row++) {
+				ManageProjectViewModel project = projectStore.GetValue (row, projectField);
+				project.IsChecked = selected;
+				projectStore.SetValue (row, projectCheckedField, selected);
+			}
+
+			UpdateAddPackagesButton ();
+		}
+
+		void ProjectCheckBoxCellViewToggled (object sender, WidgetEventArgs e)
+		{
+			int row = projectsListView.CurrentEventRow;
+			if (row == -1)
+				return;
+
+			ManageProjectViewModel selectedProject = projectStore.GetValue (row, projectField);
+			if (selectedProject == null)
+				return;
+
+			selectedProject.IsChecked = !selectedProject.IsChecked;
+
+			int selectedCount = 0;
+			foreach (ManageProjectViewModel project in viewModel.ProjectViewModels) {
+				if (project.IsChecked) {
+					selectedCount++;
+				}
+			}
+
+			if (selectedCount == 0) {
+				selectAllProjectsCheckBox.State = CheckBoxState.Off;
+			} else if (selectedCount == projectStore.RowCount) {
+				selectAllProjectsCheckBox.State = CheckBoxState.On;
+			} else {
+				selectAllProjectsCheckBox.State = CheckBoxState.Mixed;
+			}
+
+			UpdateAddPackagesButton ();
 		}
 	}
 }

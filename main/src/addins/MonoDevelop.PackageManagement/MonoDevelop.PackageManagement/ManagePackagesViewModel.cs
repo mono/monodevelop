@@ -36,7 +36,6 @@ using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.PackageManagement.UI;
-using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
@@ -47,6 +46,7 @@ namespace MonoDevelop.PackageManagement
 	internal class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, INuGetUILogger
 	{
 		SourceRepositoryViewModel selectedPackageSource;
+		ManagePackagesSearchResultViewModel selectedPackage;
 		IPackageSourceProvider packageSourceProvider;
 		PackageItemLoader currentLoader;
 		CancellationTokenSource cancellationTokenSource;
@@ -98,6 +98,7 @@ namespace MonoDevelop.PackageManagement
 			IsManagingSolution = project == null;
 			PackageViewModels = new ObservableCollection<ManagePackagesSearchResultViewModel> ();
 			CheckedPackageViewModels = new ObservableCollection<ManagePackagesSearchResultViewModel> ();
+			ProjectViewModels = new ObservableCollection<ManageProjectViewModel> ();
 			ErrorMessage = String.Empty;
 			PageSelected = ManagePackagesPage.Browse;
 
@@ -139,6 +140,10 @@ namespace MonoDevelop.PackageManagement
 		public string SearchTerms { get; set; }
 
 		public ManagePackagesPage PageSelected { get; set; }
+
+		public bool IsConsolidatePageSelected {
+			get { return PageSelected == ManagePackagesPage.Consolidate; }
+		}
 
 		public IEnumerable<SourceRepositoryViewModel> PackageSources {
 			get {
@@ -207,6 +212,7 @@ namespace MonoDevelop.PackageManagement
 
 		public ObservableCollection<ManagePackagesSearchResultViewModel> PackageViewModels { get; private set; }
 		public ObservableCollection<ManagePackagesSearchResultViewModel> CheckedPackageViewModels { get; private set; }
+		public ObservableCollection<ManageProjectViewModel> ProjectViewModels { get; private set; }
 
 		public bool HasError { get; private set; }
 		public string ErrorMessage { get; private set; }
@@ -568,26 +574,27 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public IEnumerable<IPackageAction> CreateConsolidatePackageActions (
-			ManagePackagesSearchResultViewModel packageViewModel,
-			IEnumerable<IDotNetProject> projects)
+			ManagePackagesSearchResultViewModel packageViewModel)
 		{
 			bool firstInstall = true;
-			foreach (IDotNetProject project in projects) {
-				if (IsPackageInstalledInProjectWithDifferentVersion (project, packageViewModel.Id, packageViewModel.SelectedVersion)) {
-					yield return new InstallNuGetPackageAction (
-						SelectedPackageSource.GetSourceRepositories (),
-						solutionManager,
-						project,
-						projectContext
-					) {
-						IncludePrerelease = IncludePrerelease,
-						PackageId = packageViewModel.Id,
-						Version = packageViewModel.SelectedVersion,
-						LicensesMustBeAccepted = firstInstall
-					};
-
-					firstInstall = false;
+			foreach (ManageProjectViewModel project in ProjectViewModels) {
+				if (!CanConsolidate (project, packageViewModel)) {
+					continue;
 				}
+
+				yield return new InstallNuGetPackageAction (
+					SelectedPackageSource.GetSourceRepositories (),
+					solutionManager,
+					project.Project,
+					projectContext
+				) {
+					IncludePrerelease = IncludePrerelease,
+					PackageId = packageViewModel.Id,
+					Version = packageViewModel.SelectedVersion,
+					LicensesMustBeAccepted = firstInstall
+				};
+
+				firstInstall = false;
 			}
 		}
 
@@ -597,20 +604,36 @@ namespace MonoDevelop.PackageManagement
 			return matchedProjectInfo.Packages.Any (package => StringComparer.OrdinalIgnoreCase.Equals (packageId, package.Id));
 		}
 
-		bool IsPackageInstalledInProjectWithDifferentVersion (IDotNetProject project, string packageId, NuGetVersion version)
+		bool CanConsolidate (ManageProjectViewModel projectViewModel, ManagePackagesSearchResultViewModel packageViewModel)
+		{
+			if (!projectViewModel.IsChecked)
+				return false;
+
+			if (IsPackageInstalledInProjectWithSameVersion (
+				projectViewModel.ProjectInfo,
+				packageViewModel.Id,
+				packageViewModel.SelectedVersion)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		bool IsPackageInstalledInProjectWithSameVersion (ManagePackagesProjectInfo projectInfo, string packageId, NuGetVersion version)
 		{
 			var matchPackageId = new PackageIdentity (packageId, version);
-			var matchedProjectInfo = projectInformation.FirstOrDefault (p => p.Project == project);
-			return matchedProjectInfo.Packages.Any (package => IsMatchWithDifferentVersion (package, matchPackageId));
+			return projectInfo.Packages.Any (package => PackageIdentityComparer.Default.Equals (package, matchPackageId));
 		}
 
-		bool IsMatchWithDifferentVersion (PackageIdentity x, PackageIdentity y)
-		{
-			return StringComparer.OrdinalIgnoreCase.Equals (x.Id, y.Id) &&
-				x.Version != y.Version;
+		public ManagePackagesSearchResultViewModel SelectedPackage {
+			get { return selectedPackage; }
+			set {
+				if (selectedPackage != value) {
+					selectedPackage = value;
+					OnSelectedPackageChanged ();
+				}
+			}
 		}
-
-		public ManagePackagesSearchResultViewModel SelectedPackage { get; set; }
 
 		public bool IsOlderPackageInstalled (string id, NuGetVersion version)
 		{
@@ -642,6 +665,7 @@ namespace MonoDevelop.PackageManagement
 				var packages = await nugetProject.GetInstalledPackagesAsync (CancellationToken.None);
 				projectInfo.Add (new ManagePackagesProjectInfo (dotNetProjects[i], packages));
 			}
+			projectInfo.Sort ();
 			return projectInfo;
 		}
 
@@ -771,6 +795,42 @@ namespace MonoDevelop.PackageManagement
 					yield return project;
 				}
 			}
+		}
+
+		void OnSelectedPackageChanged ()
+		{
+			if (!IsConsolidatePageSelected) {
+				return;
+			}
+
+			if (SelectedPackage == null) {
+				ProjectViewModels.Clear ();
+				return;
+			}
+
+			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
+				var projectViewModel = new ManageProjectViewModel (projectInfo, SelectedPackage.Id);
+				ProjectViewModels.Add (projectViewModel);
+			}
+		}
+
+		public bool CanConsolidate ()
+		{
+			if (!IsConsolidatePageSelected) {
+				return false;
+			}
+
+			if (SelectedPackage == null) {
+				return false;
+			}
+
+			foreach (ManageProjectViewModel projectViewModel in ProjectViewModels) {
+				if (CanConsolidate (projectViewModel, SelectedPackage)) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

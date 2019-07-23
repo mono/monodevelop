@@ -31,6 +31,8 @@ using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet.Configuration;
 using NuGet.PackageManagement.UI;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Versioning;
 using NUnit.Framework;
@@ -43,11 +45,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestableManagePackagesViewModel viewModel;
 		FakeSolutionManager solutionManager;
 		FakeDotNetProject project;
+		FakeSolution solution;
 		FakePackageSourceProvider packageSourceProvider;
 
 		void CreateProject ()
 		{
-			var solution = new FakeSolution ();
+			solution = new FakeSolution ();
 			project = new FakeDotNetProject ();
 			project.ParentSolution = solution;
 			solution.Projects.Add (project);
@@ -55,11 +58,25 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSourceProvider = solutionManager.SourceRepositoryProvider.FakePackageSourceProvider;
 		}
 
+		FakeDotNetProject AddProjectToSolution (string name)
+		{
+			var newProject = new FakeDotNetProject ();
+			newProject.Name = name;
+			solution.Projects.Add (newProject);
+			return newProject;
+		}
+
 		void CreateViewModel ()
 		{
 			viewModel = new TestableManagePackagesViewModel (
 				solutionManager,
 				project);
+			EnsurePackageSourcesLoaded ();
+		}
+
+		void CreateViewModelForSolution ()
+		{
+			viewModel = new TestableManagePackagesViewModel (solutionManager, solution);
 			EnsurePackageSourcesLoaded ();
 		}
 
@@ -134,8 +151,13 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		FakeNuGetProject CreateNuGetProjectForProject ()
 		{
-			var nugetProject = new FakeNuGetProject (project);
-			solutionManager.NuGetProjects[project] = nugetProject;
+			return CreateNuGetProjectForProject (project);
+		}
+
+		FakeNuGetProject CreateNuGetProjectForProject (IDotNetProject dotNetProject)
+		{
+			var nugetProject = new FakeNuGetProject (dotNetProject);
+			solutionManager.NuGetProjects [dotNetProject] = nugetProject;
 			return nugetProject;
 		}
 
@@ -1033,6 +1055,93 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("All Sources", selectedPackageSource.Name);
 			Assert.IsTrue (selectedPackageSource.IsAggregate);
+		}
+
+		[Test]
+		public async Task Consolidate_ThreeProjectsDifferentPackageVersionInTwoProjects_ProjectVersionAndSelectionInformationAvailable ()
+		{
+			CreateProject ();
+			project.Name = "LibC";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("Test", "0.1");
+
+			var project2 = AddProjectToSolution ("LibA");
+			nugetProject = CreateNuGetProjectForProject (project2);
+
+			var project3 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project3);
+			nugetProject.AddPackageReference ("Test", "0.2");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("Test", "0.2");
+			viewModel.PageSelected = ManagePackagesPage.Consolidate;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels.Single ();
+			viewModel.SelectedPackage = package;
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+
+			Assert.AreEqual (3, viewModel.ProjectViewModels.Count);
+
+			var projectViewModel = viewModel.ProjectViewModels [0];
+			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
+			Assert.AreEqual ("", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [1];
+			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
+			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
+			Assert.IsTrue (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
+			Assert.AreEqual ("0.1", projectViewModel.PackageVersion);
+			Assert.IsTrue (projectViewModel.IsChecked);
+
+			Assert.IsTrue (viewModel.CanConsolidate ());
+
+			// Expecting one action since Test 0.2 is already installed in LibB.
+			var actions = viewModel.CreateConsolidatePackageActions (package).ToList ();
+			Assert.AreEqual (1, actions.Count);
+			var action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibC", action.Project.Name);
+
+			// Check LibA, which does not have the package.
+			viewModel.ProjectViewModels [0].IsChecked = true;
+
+			// Uncheck LibC.
+			viewModel.ProjectViewModels [2].IsChecked = false;
+
+			Assert.IsTrue (viewModel.CanConsolidate ());
+
+			actions = viewModel.CreateConsolidatePackageActions (package).ToList ();
+			Assert.AreEqual (1, actions.Count);
+			action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			// Uncheck all projects. No items checked so cannot consolidate.
+			viewModel.ProjectViewModels [0].IsChecked = false;
+			viewModel.ProjectViewModels [1].IsChecked = false;
+			viewModel.ProjectViewModels [2].IsChecked = false;
+			Assert.IsFalse (viewModel.CanConsolidate ());
+
+			// Check LibB which has same package.
+			viewModel.ProjectViewModels [1].IsChecked = true;
+			Assert.IsFalse (viewModel.CanConsolidate ());
+
+			viewModel.SelectedPackage = null;
+			Assert.AreEqual (0, viewModel.ProjectViewModels.Count);
+			Assert.IsFalse (viewModel.CanConsolidate ());
 		}
 	}
 }
