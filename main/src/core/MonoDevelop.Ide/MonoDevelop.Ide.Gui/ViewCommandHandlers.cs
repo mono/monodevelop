@@ -523,6 +523,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 			info.Text = IsFoldMarkerMarginEnabled ? GettextCatalog.GetString ("Disable _Folding") : GettextCatalog.GetString ("Enable _Folding");
 			info.Enabled = GetContent<IFoldable> () != null;
+
+			// As we need to support both the new and the legacy editor, we need to check if perhaps
+			// we are running in the new one. The legacy editor already implements <see cref="ITextView"/>
+			// so we can't simply look for that and we do not want to import anything related to Cocoa. 
+			if (!info.Enabled) {
+				var textView = GetContent<Microsoft.VisualStudio.Text.Editor.ITextView3> ();
+				info.Enabled = textView != null;
+			}
 		}
 
 		[CommandUpdateHandler (EditCommands.ToggleAllFoldings)]
@@ -542,6 +550,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.FoldDefinitions)]
 		protected void FoldDefinitions ()
 		{
+			Microsoft.VisualStudio.Text.Editor.ITextView textView;
 			GetContent <IFoldable> ().FoldDefinitions ();
 		}
 
