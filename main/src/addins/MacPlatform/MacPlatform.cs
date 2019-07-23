@@ -990,7 +990,7 @@ namespace MonoDevelop.MacIntegration
 					if (string.IsNullOrEmpty (app.Path) || !checkUniquePath.Add (app.Path))
 						continue;
 					if (checkUniqueName.Add (app.LastPathComponent)) {
-						apps.Add (new MacDesktopApplication (app.Path, app.LastPathComponent, def != null && def == app));
+						apps.Add (new MacDesktopApplication (app.Path, Path.GetFileNameWithoutExtension (app.LastPathComponent), def != null && def == app));
 					}
 				}
 			}
