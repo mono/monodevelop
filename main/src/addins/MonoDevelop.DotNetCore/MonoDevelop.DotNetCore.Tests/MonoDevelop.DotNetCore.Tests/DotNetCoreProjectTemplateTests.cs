@@ -286,7 +286,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules);
+			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules, true);
 		}
 
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore22=true")]
@@ -311,10 +311,9 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules);
+			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules, true);
 		}
 
-		[Ignore ("Requires .NET Core App 3.0 runtime")]
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore30=true")]
@@ -337,7 +336,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters, CheckAspNetCoreNestingRules);
+			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters, CheckAspNetCoreNestingRules, true);
 		}
 
 		static bool IsDotNetCoreSdk2xInstalled ()
@@ -366,7 +365,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 3 && version.Minor == 0);
 		}
 
-		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters, Action<Solution> preBuildChecks = null)
+		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters, Action<Solution> preBuildChecks = null, bool checkExecutionTargets = false)
 		{
 			using (var ptt = new ProjectTemplateTest (basename, templateId)) {
 
@@ -377,6 +376,13 @@ namespace MonoDevelop.DotNetCore.Tests
 				var template = await ptt.CreateAndBuild (preBuildChecks);
 
 				CheckProjectTypeGuids (ptt.Solution, GetProjectTypeGuid (template));
+				if (checkExecutionTargets) {
+					foreach (var p in ptt.Solution.GetAllProjects ()) {
+						foreach (var config in p.Configurations) {
+							Assert.True (p.GetExecutionTargets (config.Selector)?.Any (x => x.Name.Contains ("Safari")) ?? false, $"Configuration {config.Name} didn't contain Safari");
+						}
+					}
+				}
 			}
 		}
 
