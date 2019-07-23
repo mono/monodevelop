@@ -64,22 +64,20 @@ namespace MonoDevelop.Projects.MSBuild
 			return obj is Solution;
 		}
 		
-		public Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
+		public async Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
 		{
-			return Task.Run (async delegate {
-				Solution sol = (Solution)obj;
+			Solution sol = (Solution)obj;
 
-				try {
-					monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
-					await WriteFileInternal (file, file, sol, saveProjects, monitor).ConfigureAwait (false);
-				} catch (Exception ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
-					LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
-					throw;
-				} finally {
-					monitor.EndTask ();
-				}
-			});
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
+				await WriteFileInternal (file, file, sol, saveProjects, monitor).ConfigureAwait (false);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
+				LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
+				throw;
+			} finally {
+				monitor.EndTask ();
+			}
 		}
 
 		async Task WriteFileInternal (string file, string sourceFile, Solution solution, bool saveProjects, ProgressMonitor monitor)
@@ -91,7 +89,7 @@ namespace MonoDevelop.Projects.MSBuild
 					try {
 						monitor.BeginStep ();
 						item.SavingSolution = true;
-						await item.SaveAsync (monitor);
+						await item.SaveAsync (monitor).ConfigureAwait (false);
 					} finally {
 						item.SavingSolution = false;
 					}
@@ -377,21 +375,19 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				monitor.BeginStep ();
-				await sol.OnBeginLoad ();
+				await sol.OnBeginLoad ().ConfigureAwait (false);
 				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
 					projectLoadMonitor.CurrentSolution = sol;
-				await Task.Run (() => {
-					sol.ReadSolution (monitor);
-				});
+				sol.ReadSolution (monitor);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
-				await sol.OnEndLoad ();
+				await sol.OnEndLoad ().ConfigureAwait (false);
 				sol.NotifyItemReady ();
 				monitor.EndTask ();
 				throw;
 			}
-			await sol.OnEndLoad ();
+			await sol.OnEndLoad ().ConfigureAwait (false);
 			sol.NotifyItemReady ();
 			monitor.EndTask ();
 			return sol;
