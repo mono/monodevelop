@@ -1232,12 +1232,12 @@ namespace MonoDevelop.Projects
 
 		protected virtual Task OnLoad (ProgressMonitor monitor)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		protected internal virtual Task OnSave (ProgressMonitor monitor)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public FilePath GetAbsoluteChildPath (FilePath relPath)
