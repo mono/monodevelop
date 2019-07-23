@@ -1018,7 +1018,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return it;
 		}
 
-		static char[] wildcards = { '*', '%' };
+		static char[] wildcards = { '*', '?' };
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
 		{
