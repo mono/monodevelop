@@ -533,7 +533,7 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 					}
 					monitor.Step (1);
-				});
+				}, TaskScheduler.Default);
 				loadTasks.Add (ft);
 
 				// Limit the number of concurrent tasks. Por solutions with many projects, spawning one thread per
