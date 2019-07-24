@@ -60,7 +60,10 @@ namespace MonoDevelop.Debugger
 		// mapping of a node to the node's location in the tree view
 		readonly Dictionary<ObjectValueNode, TreeRowReference> allNodes = new Dictionary<ObjectValueNode, TreeRowReference> ();
 
-		// keep this lot....
+		readonly bool compactView;
+		readonly bool allowPinning;
+		readonly bool allowPopupMenu;
+
 		readonly Xwt.Drawing.Image noLiveIcon;
 		readonly Xwt.Drawing.Image liveIcon;
 
@@ -131,8 +134,19 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
 
-		public GtkObjectValueTreeView (ObjectValueTreeViewController controller, bool allowEditing, bool headersVisible, bool allowWatchExpressions)
+		public GtkObjectValueTreeView (
+			ObjectValueTreeViewController controller,
+			bool allowEditing,
+			bool headersVisible,
+			bool allowWatchExpressions,
+			bool compactView,
+			bool allowPinning,
+			bool allowPopupMenu)
 		{
+			this.compactView = compactView;
+			this.allowPinning = allowPinning;
+			this.allowPopupMenu = allowPopupMenu;
+
 			// ensure this is set when we set up the view, don't try and refresh just yet
 			this.allowEditing = allowEditing;
 			this.allowWatchExpressions = allowWatchExpressions;
@@ -158,7 +172,7 @@ namespace MonoDevelop.Debugger
 
 			Pango.FontDescription newFont;
 
-			if (controller.CompactView) {
+			if (compactView) {
 				newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			} else {
 				newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
@@ -187,7 +201,7 @@ namespace MonoDevelop.Debugger
 
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
-			valueCol.MaxWidth = controller.CompactView ? 800 : int.MaxValue;
+			valueCol.MaxWidth = compactView ? 800 : int.MaxValue;
 			evaluateStatusCell = new CellRendererImage ();
 			valueCol.PackStart (evaluateStatusCell, false);
 			valueCol.AddAttribute (evaluateStatusCell, "visible", EvaluateStatusIconVisibleColumn);
@@ -201,7 +215,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
 			valueCol.AddAttribute (crpButton, "text", ValueButtonTextColumn);
 			crpViewer = new CellRendererImage ();
-			if (controller.CompactView)
+			if (compactView)
 				crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12, 12);
 			else
 				crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
@@ -209,7 +223,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
 			crtValue = new ValueCellRenderer ();
 			crtValue.Ellipsize = Pango.EllipsizeMode.End;
-			crtValue.Compact = controller.CompactView;
+			crtValue.Compact = compactView;
 			crtValue.FontDesc = newFont;
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "texturl", ValueColumn);
@@ -224,7 +238,7 @@ namespace MonoDevelop.Debugger
 
 			typeCol = new TreeViewColumn ();
 			typeCol.Title = GettextCatalog.GetString ("Type");
-			typeCol.Visible = !controller.CompactView;
+			typeCol.Visible = !compactView;
 			crtType = new CellRendererText ();
 			crtType.FontDesc = newFont;
 			typeCol.PackStart (crtType, true);
@@ -244,7 +258,7 @@ namespace MonoDevelop.Debugger
 			pinCol.PackStart (crpLiveUpdate, false);
 			pinCol.AddAttribute (crpLiveUpdate, "image", LiveUpdateIconColumn);
 			pinCol.Resizable = false;
-			pinCol.Visible = controller.AllowPinning;
+			pinCol.Visible = allowPinning;
 			pinCol.Expand = false;
 			pinCol.Sizing = TreeViewColumnSizing.Fixed;
 			pinCol.FixedWidth = 16;
@@ -352,7 +366,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnShown ();
 			AdjustColumnSizes ();
-			if (controller.CompactView)
+			if (compactView)
 				RecalculateWidth ();
 		}
 
@@ -436,7 +450,7 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			if (controller.CompactView) {
+			if (compactView) {
 				RecalculateWidth ();
 			}
 		}
@@ -455,7 +469,7 @@ namespace MonoDevelop.Debugger
 					ExpandRow (path, false);
 				}
 
-				if (controller.CompactView)
+				if (compactView)
 					RecalculateWidth ();
 
 				// TODO: all this scrolling kind of seems awkward
@@ -531,7 +545,7 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			if (controller.CompactView) {
+			if (compactView) {
 				RecalculateWidth ();
 			}
 		}
@@ -784,7 +798,7 @@ namespace MonoDevelop.Debugger
 				else
 					store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
 			}
-			if (controller.RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && controller.AllowPinning))
+			if (controller.RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && allowPinning))
 				store.SetValue (it, PinIconColumn, "md-pin-up");
 
 			if (val.HasChildren && val.Children.Count == 0) {
@@ -828,7 +842,7 @@ namespace MonoDevelop.Debugger
 
 			base.OnRowExpanded (iter, path);
 
-			if (controller.CompactView)
+			if (compactView)
 				RecalculateWidth ();
 
 			HideValueButton (iter);
@@ -844,7 +858,7 @@ namespace MonoDevelop.Debugger
 
 			base.OnRowCollapsed (iter, path);
 
-			if (controller.CompactView)
+			if (compactView)
 				RecalculateWidth ();
 
 			NodeCollapsed?.Invoke (this, new ObjectValueNodeEventArgs (node));
@@ -1089,7 +1103,7 @@ namespace MonoDevelop.Debugger
 						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
 					}
 
-					if (controller.AllowPinning) {
+					if (allowPinning) {
 						if (path.Depth > 1 || controller.PinnedWatch == null) {
 							if (!it.Equals (lastPinIter)) {
 								store.SetValue (it, PinIconColumn, "md-pin-up");
@@ -1257,7 +1271,7 @@ namespace MonoDevelop.Debugger
 					if (startPreviewCaret.X < evnt.X &&
 						startPreviewCaret.X + 16 > evnt.X) {
 						clickProcessed = true;
-						if (controller.CompactView) {
+						if (compactView) {
 							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 						} else {
 							SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
@@ -1352,7 +1366,7 @@ namespace MonoDevelop.Debugger
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			if (controller.AllowPopupMenu)
+			if (allowPopupMenu)
 				this.ShowContextMenu (evt, menuSet, this);
 		}
 
@@ -1938,7 +1952,7 @@ namespace MonoDevelop.Debugger
 										this.VisibleRect.Height);
 			if (treeViewRectangle.Contains (new Gdk.Point (
 					newCaret.X + newCaret.Width / 2,
-					newCaret.Y + newCaret.Height / 2 - (controller.CompactView ? 0 : 30)))) {
+					newCaret.Y + newCaret.Height / 2 - (compactView ? 0 : 30)))) {
 				PreviewWindowManager.RepositionWindow (newCaret);
 			} else {
 				PreviewWindowManager.DestroyWindow ();
@@ -1964,7 +1978,7 @@ namespace MonoDevelop.Debugger
 
 		void AdjustColumnSizes ()
 		{
-			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || controller.CompactView)
+			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || compactView)
 				return;
 
 			columnSizesUpdating = true;
@@ -1996,7 +2010,7 @@ namespace MonoDevelop.Debugger
 
 		void StoreColumnSizes ()
 		{
-			if (!IsRealized || !Visible || !columnsAdjusted || controller.CompactView)
+			if (!IsRealized || !Visible || !columnsAdjusted || compactView)
 				return;
 
 			double width = (double)Allocation.Width;
@@ -2163,7 +2177,7 @@ namespace MonoDevelop.Debugger
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
-						if (((GtkObjectValueTreeView)widget).controller.CompactView && !Platform.IsWindows)
+						if (((GtkObjectValueTreeView)widget).compactView && !Platform.IsWindows)
 							YOffset += 1;
 						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
 						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,

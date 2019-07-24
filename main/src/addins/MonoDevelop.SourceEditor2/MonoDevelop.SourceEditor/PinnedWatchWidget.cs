@@ -88,11 +88,9 @@ namespace MonoDevelop.SourceEditor
 			if (UseNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.AllowEditing = true;
-				controller.AllowPinning = true;
-				controller.CompactView = true;
 				controller.PinnedWatch = watch;
 
-				treeView = (TreeView) controller.GetControl (headersVisible: false);
+				treeView = (TreeView) controller.GetControl (headersVisible: false, compactView: true, allowPinning: true);
 				valueTree = null;
 
 				if (objectValue != null)

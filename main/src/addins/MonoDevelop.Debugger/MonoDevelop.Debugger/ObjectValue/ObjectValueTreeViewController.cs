@@ -54,6 +54,7 @@ namespace MonoDevelop.Debugger
 		bool allowWatchExpressions;
 		bool allowEditing;
 		bool allowExpanding;
+		bool allowPopupMenu;
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
@@ -74,7 +75,6 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeViewController ()
 		{
-			AllowPopupMenu = true;
 		}
 
 		public IDebuggerService Debugger {
@@ -130,25 +130,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public bool AllowPopupMenu {
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether or not the TreeView should compact the view.
-		/// </summary>
-		public bool CompactView {
-			get; set;
-		}
-
 		#region Pinned Watches
-
-		/// <summary>
-		/// Gets a value indicating whether the user should be able to pin the value to the text editor.
-		/// </summary>
-		public bool AllowPinning {
-			get; set;
-		}
 
 		public event EventHandler PinnedWatchChanged;
 
@@ -248,12 +230,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public event EventHandler<ObjectValueNodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
-		public object GetControl (bool headersVisible = true)
+		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true)
 		{
 			if (view == null) {
-				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible, AllowWatchExpressions) {
-					//AllowEditing = this.AllowEditing
-					//HeadersVisible = headersVisible,
+				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu) {
 					AllowExpanding = this.AllowExpanding,
 				};
 

@@ -96,8 +96,6 @@ namespace MonoDevelop.Debugger
 				controller.SetStackFrame (frame);
 				controller.RootPinAlwaysVisible = true;
 				controller.AllowEditing = true;
-				controller.AllowPinning = true;
-				controller.CompactView = true;
 				controller.PinnedWatch = watch;
 				controller.PinnedWatchLine = pinnedWatchLine;
 				controller.PinnedWatchFile = pinnedWatchFileName;
@@ -106,7 +104,7 @@ namespace MonoDevelop.Debugger
 				controller.StartEditing += OnStartEditing;
 				controller.EndEditing += OnEndEditing;
 
-				treeView = (TreeView) controller.GetControl (headersVisible: false);
+				treeView = (TreeView) controller.GetControl (headersVisible: false, allowPinning: true, compactView: true);
 
 				controller.AddValue (value);
 			} else {

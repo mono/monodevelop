@@ -186,7 +186,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				controller.SetStackFrame (DebuggingService.CurrentFrame);
 				controller.AllowExpanding = true;
 
-				exceptionValueTreeView = (TreeView) controller.GetControl ();
+				exceptionValueTreeView = (TreeView) controller.GetControl (allowPopupMenu: false);
 			} else {
 				var objValueTreeView = new ObjectValueTreeView ();
 				objValueTreeView.Frame = DebuggingService.CurrentFrame;
