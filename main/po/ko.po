@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-03 14:27:26+0200\n"
+"POT-Creation-Date: 2019-07-15 13:06:13+0200\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -433,13 +433,12 @@ msgstr "(사용할 수 없음)"
 msgid "(working copy)"
 msgstr "(작업 복사본)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:126
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
 #, fuzzy
-msgid "({0} installing)"
-msgstr "(설치하는 중)"
+msgid "({0} available)"
+msgstr "{0}개 사용 가능"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:132
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:75
 msgid "({0} update)"
 msgid_plural "({0} updates)"
 msgstr[0] "({0} 업데이트)"
@@ -547,6 +546,8 @@ msgid ""
 "installed. Install the latest update to the .NET Core {0} SDK by visiting "
 "{1}."
 msgstr ""
+"이 애플리케이션을 빌드하려면 .NET Core {0} SDK가 필요하지만 설치되지 않았습니"
+"다. {1}을(를) 방문하여 .NET Core {0} SDK에 최신 업데이트를 설치하세요."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:17
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:35
@@ -718,7 +719,7 @@ msgid "<b>Add a link</b> to the file"
 msgstr "파일에 <b>링크 추가</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:964
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:526
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:527
 msgid ""
 "<b>An autosave file has been found for this file.</b>\n"
 "This could mean that another instance of MonoDevelop is editing this file, "
@@ -989,7 +990,7 @@ msgid "<b>Task Priorities Foreground Colors</b>"
 msgstr "<b>작업 우선 순위 전경색</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:712
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:728
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:729
 msgid ""
 "<b>The file \"{0}\" has been changed outside of {1}.</b>\n"
 "Do you want to keep your changes, or reload the file from disk?"
@@ -1397,9 +1398,9 @@ msgstr "위 설정의 미리 보기"
 msgid "A profiling tool"
 msgstr "프로파일링 도구"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:178
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:321
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:464
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:176
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:319
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:462
 msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr ""
 ".NET Standard를 대상으로 하는 Razor 클래스 라이브러리를 만드는 데 사용되는 프"
@@ -1422,27 +1423,27 @@ msgstr ""
 "다중 플랫폼 라이브러리 프로젝트 및 해당 NuGet 패키지를 만들기 위한 프로젝트 "
 "템플릿입니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:191
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:334
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:477
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:189
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:332
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:475
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular"
 msgstr ""
 "Angular를 사용하여 ASP.NET Core 애플리케이션을 만드는 데 사용되는 프로젝트 템"
 "플릿"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:204
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:347
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:490
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:202
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:345
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:488
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js"
 msgstr ""
 "React.js를 사용하여 ASP.NET Core 애플리케이션을 만드는 데 사용되는 프로젝트 "
 "템플릿"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:217
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:360
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:503
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:215
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:501
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux"
@@ -1450,15 +1451,15 @@ msgstr ""
 "React.js 및 Redux를 사용하여 ASP.NET Core 애플리케이션을 만드는 데 사용되는 "
 "프로젝트 템플릿"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:113
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:125
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:268
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:411
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:554
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:111
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:254
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:266
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:397
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:409
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:540
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:552
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:628
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
@@ -1468,16 +1469,16 @@ msgstr ""
 "드는 데 사용되는 프로젝트 템플릿입니다. 이 템플릿은 ASP.NET Core MVC 뷰 및 컨"
 "트롤러에도 사용할 수 있습니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:152
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:165
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:438
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:451
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:581
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:594
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:653
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:150
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:163
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:436
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:449
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:579
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:592
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:639
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:651
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
@@ -1487,10 +1488,10 @@ msgstr ""
 "만드는 데 사용되는 프로젝트 템플릿입니다. 이 템플릿은 RESTful HTTP 서비스에"
 "도 사용할 수 있습니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:281
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:424
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:567
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:279
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:422
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:565
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1662,15 +1663,15 @@ msgstr ""
 "{0} 형식은 생성자, 상수, 필드, 메서드, 속성, 인덱서, 연산자, 이벤트 및 중첩 "
 "형식이 포함될 수 있는 값 형식입니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:112
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:267
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:410
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:553
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:629
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:122
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:253
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:265
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:396
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:408
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:539
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:551
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:627
 msgid "API"
 msgstr "API"
 
@@ -1691,7 +1692,7 @@ msgid "ASP.NET Controls"
 msgstr "ASP.NET 컨트롤"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:121
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:66
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:64
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:10
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:10
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:10
@@ -1869,7 +1870,7 @@ msgid "Abort Update"
 msgstr "업데이트 중단"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:603
+#: ../src/addins/MacPlatform/MacPlatform.cs:613
 msgid "About {0}"
 msgstr "{0} 정보"
 
@@ -2147,7 +2148,7 @@ msgid "Add New Repository"
 msgstr "새 리포지토리 추가"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:22
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:87
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:93
 msgid "Add NuGet _Packages..."
 msgstr "NuGet 패키지 추가(_P)..."
 
@@ -2429,9 +2430,9 @@ msgstr "무시 목록에 추가"
 msgid "Add to the project"
 msgstr "프로젝트에 추가"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:149
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:150
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:151
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:135
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:136
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:137
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:104
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:108
 msgid "Add toolbox items"
@@ -2775,16 +2776,16 @@ msgstr "웹 애플리케이션을 구성하는 데 사용되는 appsettings.json
 msgid "An audio application"
 msgstr "오디오 애플리케이션"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:89
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:101
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:244
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:375
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:387
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:518
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:530
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:608
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:230
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:242
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:373
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:385
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:516
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:528
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:606
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:617
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2897,9 +2898,9 @@ msgstr "그리고 다음 식이 변경될 경우"
 msgid "Android"
 msgstr "Android"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:188
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:331
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:474
 msgid "Angular"
 msgstr "Angular"
 
@@ -3021,7 +3022,7 @@ msgid "Application to record audio/video files"
 msgstr "오디오/비디오 파일 녹음/녹화 애플리케이션"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:791
+#: ../src/addins/MacPlatform/MacPlatform.cs:777
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3249,7 +3250,7 @@ msgid ""
 "Are you sure you want to remove the formatting policy for the type '{0}'?"
 msgstr "{0} 형식에 대한 서식 정책을 제거할까요?"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:438
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:290
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:227
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "선택한 항목을 제거할까요?"
@@ -3281,9 +3282,8 @@ msgid ""
 msgstr "이러한 리소스에서 선택한 수정 버전에서 변경 내용을 되돌릴까요?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:29
-#, fuzzy
 msgid "Are you sure you want to revert the changes made in the selected files?"
-msgstr "선택한 파일의 무시를 해제할까요?"
+msgstr "선택한 파일에 수행한 변경 내용을 되돌리시겠습니까?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:54
 msgid ""
@@ -3419,7 +3419,7 @@ msgstr "프레임워크 {0}에 대한 어셈블리를 찾을 수 없습니다(�
 msgid "Assembly:\t{0}"
 msgstr "어셈블리:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:383
+#: ../src/addins/MacPlatform/MacPlatform.cs:395
 msgid "Assistive Technology Detected"
 msgstr "보조 기술이 검색됨"
 
@@ -5636,8 +5636,8 @@ msgstr "커밋..."
 msgid "Committing {0}..."
 msgstr "{0}을(를) 커밋하는 중..."
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:136
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:369
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:124
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:221
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:98
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:171
 msgid "Compact Layout"
@@ -6119,7 +6119,7 @@ msgid "Copy to output directory"
 msgstr "출력 디렉터리에 복사"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:368
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
 msgid "Copying files..."
 msgstr "파일을 복사하는 중..."
@@ -6149,7 +6149,7 @@ msgstr "{0}을(를) 추가할 수 없습니다."
 msgid "Could not check package compatibility."
 msgstr "패키지 호환성을 확인할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:538
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:545
 msgid "Could not close solution '{0}'."
 msgstr "'{0}' 솔루션을 닫을 수 없습니다."
 
@@ -6257,6 +6257,8 @@ msgstr "URL {0}을(를) 열 수 없습니다."
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:606
 msgid "Could not open unmigrated project and no migrator was supplied"
 msgstr ""
+"마이그레이션이 해제된 프로젝트를 열 수 없으며, 마이그레이터가 제공되지 않았습"
+"니다."
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/TextTemplatingFilePreprocessor.cs:68
 msgid ""
@@ -7010,6 +7012,11 @@ msgstr "현재 문서"
 msgid "Current format:"
 msgstr "현재 형식:"
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:67
+#, fuzzy
+msgid "Current package version"
+msgstr "패키지 버전."
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:193
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:76
 msgid "Current project"
@@ -7205,7 +7212,7 @@ msgstr "날짜/시간"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -7309,7 +7316,7 @@ msgstr "거절"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -7562,15 +7569,9 @@ msgstr "파일을 삭제하는 중..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:303
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:60
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:49
 msgid "Dependencies"
 msgstr "종속성"
-
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:41
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:47
-#, fuzzy
-msgid "Dependency"
-msgstr "종속성 추가"
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:50
 msgid "Deploy directory:"
@@ -8118,7 +8119,7 @@ msgstr "문서 주석(_C)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:624
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:690
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:878
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:885
 msgid "Documents"
 msgstr "문서"
 
@@ -8371,16 +8372,16 @@ msgid "Emoji & Symbols"
 msgstr "이모지 및 기호"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:100
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:231
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:243
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:374
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:386
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:517
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:529
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:607
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:618
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:229
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:241
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:372
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:384
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:515
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:527
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:605
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:616
 msgid "Empty"
 msgstr "비어 있음"
 
@@ -8739,7 +8740,7 @@ msgstr "이 형식을 적용할 새 XPath 식을 입력합니다."
 msgid "Enter a search term to find it in the keybindings list"
 msgstr "키 바인딩 목록에서 찾을 검색어를 입력합니다."
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:109
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:101
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:80
 msgid "Enter a term to search for it in the toolbox"
 msgstr "도구 상자에 검색할 용어 입력"
@@ -9298,7 +9299,7 @@ msgstr "계산"
 msgid "Evaluating"
 msgstr "계산하는 중"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1198
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1203
 msgid "Evaluating..."
 msgstr "계산하는 중..."
 
@@ -9660,7 +9661,7 @@ msgstr "확장 메서드는 static으로 선언해야 합니다."
 msgid "Extension packages"
 msgstr "확장 패키지"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:547
+#: ../src/addins/MacPlatform/MacPlatform.cs:557
 msgid "Extensions..."
 msgstr "확장..."
 
@@ -10027,7 +10028,7 @@ msgstr "프로젝트 파일의 파일 형식입니다."
 msgid "File format:"
 msgstr "파일 형식:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:737
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:744
 msgid "File is not a project or solution: {0}"
 msgstr "파일이 프로젝트나 솔루션이 아닙니다. {0}"
 
@@ -10062,7 +10063,7 @@ msgstr "파일을 찾을 수 없습니다."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:118
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:212
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:731
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:738
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentManager.cs:394
 msgid "File not found: {0}"
 msgstr "파일을 찾을 수 없음: ({0})"
@@ -10567,7 +10568,7 @@ msgstr "다음 형식에서:\t{0}"
 msgid "Full"
 msgstr "최대"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:366
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:218
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:168
 msgid "Full Layout"
 msgstr "전체 레이아웃"
@@ -10637,7 +10638,7 @@ msgid "GTK# Widget Layout and Packing"
 msgstr "GTK# 위젯 레이아웃 및 압축"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:110
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:454
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:306
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:241
 msgid "GTK# Widgets"
 msgstr "GTK# 위젯"
@@ -10691,7 +10692,7 @@ msgstr "클래스 정보를 수집하는 중"
 #: ../src/addins/VBNetBinding/templates/EmptyVBFile.xft.xml:7
 #: ../src/addins/CSharpBinding/templates/EmptyCSharpFile.xft.xml:7
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:145
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:119
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:124
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:18
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
@@ -11036,9 +11037,8 @@ msgid "Go right one character"
 msgstr "한 문자 오른쪽으로 이동"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:67
-#, fuzzy
 msgid "Go to Base Member"
-msgstr "기본 메서드로 이동(_B)"
+msgstr "기본 멤버로 이동"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:81
 msgid "Go to Breakpoint"
@@ -11215,7 +11215,7 @@ msgstr "'{0}' 그룹을 찾을 수 없습니다."
 msgid "Group '{0}':'{1}'"
 msgstr "그룹 '{0}':'{1}'"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:77
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:74
 msgid "Group Width"
 msgstr "그룹 너비"
 
@@ -11355,7 +11355,7 @@ msgstr "도우미의 이름"
 msgid "HexEdit"
 msgstr "HexEdit"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:83
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:80
 msgid "Hexadecimal Text Editor"
 msgstr "16진수 텍스트 편집기"
 
@@ -11365,6 +11365,7 @@ msgstr "16진수 텍스트 편집기"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:64
 msgid "Hidden"
 msgstr "숨김"
 
@@ -11376,7 +11377,7 @@ msgstr "숨기기"
 msgid "Hide Application"
 msgstr "애플리케이션 숨기기"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:379
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:231
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:180
 msgid "Hide Categories"
 msgstr "범주 숨기기"
@@ -11393,7 +11394,7 @@ msgstr "세부 정보 숨기기"
 msgid "Hide other applications' windows"
 msgstr "다른 애플리케이션의 창 숨기기"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:608
+#: ../src/addins/MacPlatform/MacPlatform.cs:618
 msgid "Hide {0}"
 msgstr "{0} 숨기기"
 
@@ -11653,7 +11654,7 @@ msgid "If you chose this option the Git configuration will be overwritten."
 msgstr "이 옵션을 선택한 경우 Git 구성을 덮어씁니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:609
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:493
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:491
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "저장하지 않는 경우 모든 변경 내용이 영구적으로 손실됩니다."
 
@@ -11685,7 +11686,7 @@ msgstr "대/소문자 무시"
 msgid "Ignore operation completed."
 msgstr "무시 작업이 완료되었습니다."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:488
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:487
 msgid "Ignore spaces in declaration statements"
 msgstr "선언문의 공백 무시"
 
@@ -11972,11 +11973,11 @@ msgstr "세부 정보 표시 수준을 높입니다."
 msgid "Indent Selection"
 msgstr "선택 영역 들여쓰기"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:187
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:186
 msgid "Indent block contents"
 msgstr "블록 내용 들여쓰기"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:217
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:216
 msgid "Indent case sections"
 msgstr "case 섹션 들여쓰기"
 
@@ -11992,7 +11993,7 @@ msgstr "항목 들여쓰기"
 msgid "Indent on try/with"
 msgstr "try/with에서 들여쓰기"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:198
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:197
 msgid "Indent open and close braces"
 msgstr "여는 중괄호 및 닫는 중괄호 들여쓰기"
 
@@ -12000,7 +12001,7 @@ msgstr "여는 중괄호 및 닫는 중괄호 들여쓰기"
 msgid "Indent selected lines of code"
 msgstr "선택한 코드 줄 들여쓰기"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:206
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:205
 msgid "Indent switch sections"
 msgstr "switch 섹션 들여쓰기"
 
@@ -12076,7 +12077,7 @@ msgstr "기본값에 의한 필드 초기화가 중복됩니다."
 msgid "Initializing field with default value is redundant"
 msgstr "기본값이 있는 필드를 초기화하면 중복됩니다."
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:488
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:340
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:271
 msgid "Initializing..."
 msgstr "초기화하는 중..."
@@ -12174,7 +12175,7 @@ msgstr "디렉터리 항목에 사용자 지정 태그 삽입"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:77
 msgid "Insert carets at all matching"
-msgstr ""
+msgstr "일치하는 모든 항목에 캐럿 삽입"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddNewFormatItemCodeRefactoringProvider.cs:53
 msgid "Insert format argument"
@@ -12189,90 +12190,89 @@ msgid "Insert new line"
 msgstr "새 줄 삽입"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:73
-#, fuzzy
 msgid "Insert next matching caret"
-msgstr "일치하는 중괄호 삽입(_I)"
+msgstr "일치하는 다음 캐럿 삽입"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/InsertAnonymousMethodSignatureCodeRefactoringProvider.cs:37
 msgid "Insert signature"
 msgstr "시그니처 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:484
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:483
 msgid "Insert space after casts"
 msgstr "캐스트 뒤에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:508
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:507
 msgid "Insert space after colon for base or interface in type declaration"
 msgstr "형식 선언의 기본 또는 인터페이스에 대한 콜론 뒤에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:510
 msgid "Insert space after comma"
 msgstr "쉼표 뒤에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:515
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:514
 msgid "Insert space after dot"
 msgstr "점 뒤에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:462
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:461
 msgid "Insert space after keywords in control flow statements"
 msgstr "제어 흐름 문의 키워드 뒤에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:519
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:518
 msgid "Insert space after semicolon in \"for\" statement"
 msgstr "\"for\" 문의 세미콜론 뒤에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:525
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:524
 msgid "Insert space before colon for base or interface in type declaration"
 msgstr "형식 선언의 기본 또는 인터페이스에 대한 콜론 앞에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:528
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:527
 msgid "Insert space before comma"
 msgstr "쉼표 앞에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:532
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:531
 msgid "Insert space before dot"
 msgstr "점 앞에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:494
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:493
 msgid "Insert space before open square bracket"
 msgstr "여는 대괄호 앞에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:536
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:535
 msgid "Insert space before semicolon in \"for\" statement"
 msgstr "\"for\" 문의 세미콜론 앞에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:434
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:448
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:433
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:447
 msgid "Insert space between method name and its opening parenthesis"
 msgstr "메서드 이름과 여는 괄호 사이에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:439
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:452
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:438
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:451
 msgid "Insert space within argument list parentheses"
 msgstr "인수 목록 괄호의 내부에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:443
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:456
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:442
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:455
 msgid "Insert space within empty argument list parentheses"
 msgstr "빈 인수 목록 괄호 내부에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:498
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:497
 msgid "Insert space within empty square brackets"
 msgstr "빈 대괄호 안에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:477
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:476
 msgid "Insert space within parentheses of control flow statements"
 msgstr "제어 흐름 문의 괄호 내부에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:469
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:468
 msgid "Insert space within parentheses of expressions"
 msgstr "식의 괄호 내부에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:473
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:472
 msgid "Insert space within parentheses of type casts"
 msgstr "형식 캐스트의 괄호 내부에 공백 삽입"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:502
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:501
 msgid "Insert space within square brackets"
 msgstr "대괄호 안에 공백 삽입"
 
@@ -12546,7 +12546,7 @@ msgstr ""
 "젝트가 무시됩니다."
 
 # used for project model (not of C# term).
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:248
 msgid "Invariant"
 msgstr "고정"
 
@@ -12739,7 +12739,7 @@ msgstr "로캘(_O):"
 msgid "L_ocation:"
 msgstr "위치(_O):"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:228
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:227
 msgid "Label indentation"
 msgstr "레이블 들여쓰기"
 
@@ -12863,7 +12863,7 @@ msgstr "누출 추적기"
 msgid "Learn more about the New Editor"
 msgstr "새 편집기에 대한 자세한 정보"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:591
 msgid "Leave block on single line"
 msgstr "블록을 한 줄에 유지"
 
@@ -12871,7 +12871,7 @@ msgstr "블록을 한 줄에 유지"
 msgid "Leave line endings as is"
 msgstr "줄 끝을 그대로 유지"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:593
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
 msgid "Leave statements and member declarations on the same line"
 msgstr "문과 멤버 선언을 같은 줄에 유지"
 
@@ -13021,7 +13021,7 @@ msgstr "솔루션 파일 {0}을(를) 로드하는 중"
 msgid "Loading solution: {0}"
 msgstr "솔루션을 로드하는 중: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:889
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:887
 msgid "Loading workspace documents"
 msgstr "작업 영역 문서를 로드하는 중"
 
@@ -13039,7 +13039,7 @@ msgstr "{0} 추가 기능을 로드하는 중"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:274
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:66
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixMenuHandler.cs:48
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1268
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1273
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:634
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:767
 msgid "Loading..."
@@ -13705,7 +13705,7 @@ msgstr "방법 {0}"
 msgid "Methods"
 msgstr "메서드"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
@@ -13838,7 +13838,7 @@ msgstr "모듈 이름:"
 msgid "Monitor application/applet that monitors some resource or activity"
 msgstr "리소스 또는 활동을 모니터링하는 모니터 애플리케이션/애플릿"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Mono"
 msgstr "Mono"
 
@@ -13874,7 +13874,7 @@ msgstr "Mono 런타임을 찾을 수 없습니다."
 msgid "Mono runtime settings:"
 msgstr "Mono 런타임 설정:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:242
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -13978,9 +13978,8 @@ msgid "Move cursor to previous error or search match"
 msgstr "이전 오류 또는 검색 일치 항목으로 커서 이동"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:85
-#, fuzzy
 msgid "Move last caret down"
-msgstr "마지막 작업 실행 취소"
+msgstr "마지막 캐럿 아래로 이동"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 msgid "Move the line or highlighted selection down"
@@ -14094,6 +14093,9 @@ msgid ""
 "Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} "
 "SDK by visiting {3}."
 msgstr ""
+"NET Core {0}.{1} SDK 버전 {2}은(는) 이 버전의 Mac용 Visual Studio와 호환되지 "
+"않습니다. {3}을(를) 방문하여 .NET Core {0}.{1} SDK에 최신 업데이트를 설치하세"
+"요."
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitTestClass.xft.xml:7
 msgid "NUnit"
@@ -14158,7 +14160,6 @@ msgstr "이름(_A):"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:117
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:59
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:60
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:42
 msgid "Name"
 msgstr "이름"
 
@@ -14435,7 +14436,7 @@ msgstr "새 그룹"
 msgid "New Group..."
 msgstr "새 그룹..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:364
+#: ../src/addins/MacPlatform/MacPlatform.cs:366
 msgid "New Instance"
 msgstr "새 인스턴스"
 
@@ -14460,9 +14461,8 @@ msgid "New Project"
 msgstr "새 프로젝트"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewDisplayBinding.cs:58
-#, fuzzy
 msgid "New Source Code Editor"
-msgstr "소스 코드 편집기"
+msgstr "새 소스 코드 편집기"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:126
 msgid "New Task"
@@ -14518,15 +14518,15 @@ msgstr "새 파일"
 msgid "New format:"
 msgstr "새 형식:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:282
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:281
 msgid "New line options for braces"
 msgstr "중괄호에 대한 줄 바꿈 옵션"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:370
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:369
 msgid "New line options for expressions"
 msgstr "식에 대한 줄 바꿈 옵션"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:346
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:345
 msgid "New line options for keywords"
 msgstr "키워드에 대한 줄 바꿈 옵션"
 
@@ -14588,7 +14588,7 @@ msgstr "다음 문서"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:386
+#: ../src/addins/MacPlatform/MacPlatform.cs:398
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14729,10 +14729,10 @@ msgstr "실행 가능한 실행 파일을 찾을 수 없습니다."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:847
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:849
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:68
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:489
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:534
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:578
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:580
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:485
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:530
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:574
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:576
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:178
 msgid "No selection"
 msgstr "선택 항목 없음"
@@ -14811,7 +14811,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:308
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:138
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -14907,7 +14907,7 @@ msgstr ""
 "메이크파일의 집합이 생성되어야 합니다."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:18
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:118
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:123
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:42
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:42
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:94
@@ -15241,7 +15241,7 @@ msgstr "Option Strict:"
 msgid "OptionName"
 msgstr "OptionName"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:681
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:679
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:132
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:143
 msgid "Options"
@@ -15294,7 +15294,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:44
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:134
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:260
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:507
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:506
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:213
 msgid "Other"
 msgstr "기타"
@@ -15475,7 +15475,7 @@ msgstr "패키지 설정"
 msgid "Package is a development dependency."
 msgstr "패키지가 개발 종속성입니다."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:175
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:164
 msgid "Package is not restored"
 msgstr "패키지가 복원되지 않았습니다."
 
@@ -15483,7 +15483,7 @@ msgstr "패키지가 복원되지 않았습니다."
 msgid "Package name not provided."
 msgstr "패키지 이름이 제공되지 않았습니다."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:177
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:166
 msgid "Package needs retargeting"
 msgstr "패키지의 대상을 변경해야 합니다."
 
@@ -15495,7 +15495,7 @@ msgstr "{0} 프로젝트에 대한 패키지 복원 실패: {1}"
 msgid "Package restore failed."
 msgstr "패키지를 복원하지 못했습니다."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:277
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:241
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/MonoDevelop.DotNetCore.Tests/DependencyNodeTests.cs:229
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/MonoDevelop.DotNetCore.Tests/DependencyNodeTests.cs:273
 msgid "Package restored with warnings. Expand the package to see the warnings."
@@ -15818,15 +15818,15 @@ msgstr "출력 패드 고정"
 msgid "Pin results pad"
 msgstr "결과 패드 고정"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:355
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:354
 msgid "Place \"catch\" on new line"
 msgstr "새 줄에 \"catch\" 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:347
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:346
 msgid "Place \"else\" on new line"
 msgstr "새 줄에 \"else\" 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:362
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:361
 msgid "Place \"finally\" on new line"
 msgstr "새 줄에 \"finally\" 배치"
 
@@ -15834,51 +15834,51 @@ msgstr "새 줄에 \"finally\" 배치"
 msgid "Place 'System' directives first when sorting usings"
 msgstr "using 정렬 시 'System' 지시문 먼저 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:377
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:376
 msgid "Place members in anonymous types on new line"
 msgstr "새 줄에 무명 형식의 맴버 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:371
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:370
 msgid "Place members in object initializers on new line"
 msgstr "개체 이니셜라이저의 멤버를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:312
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:311
 msgid "Place open brace on new line for anonymous methods"
 msgstr "무명 메서드의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:323
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:322
 msgid "Place open brace on new line for anonymous types"
 msgstr "무명 형식의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:317
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:316
 msgid "Place open brace on new line for control blocks"
 msgstr "제어 블록의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:339
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:338
 msgid "Place open brace on new line for lambda expression"
 msgstr "람다 식의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:286
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:285
 msgid "Place open brace on new line for methods"
 msgstr "메서드의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:331
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:330
 msgid "Place open brace on new line for object initializers"
 msgstr "개체 이니셜라이저의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:289
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:288
 msgid "Place open brace on new line for properties"
 msgstr "속성의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:300
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:299
 msgid "Place open brace on new line for property accessors"
 msgstr "속성 접근자의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:283
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:282
 msgid "Place open brace on new line for types"
 msgstr "형식의 여는 중괄호를 새 줄에 배치"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:384
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:383
 msgid "Place query expression clauses on new line"
 msgstr "새 줄에 쿼리 식 절 배치"
 
@@ -15991,7 +15991,7 @@ msgstr "내보낼 정책:"
 msgid "Policies to set or replace:"
 msgstr "설정하거나 바꿀 정책:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:544
+#: ../src/addins/MacPlatform/MacPlatform.cs:554
 msgid "Policies..."
 msgstr "정책..."
 
@@ -16191,11 +16191,11 @@ msgstr "간단한 'default' 식을 기본으로 사용"
 msgid "Prefer throw-expression"
 msgstr "throw 식 기본 사용"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:682
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:680
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:543
+#: ../src/addins/MacPlatform/MacPlatform.cs:553
 msgid "Preferences..."
 msgstr "기본 설정..."
 
@@ -16372,7 +16372,7 @@ msgstr "T4 템플릿 처리..."
 msgid "Process all T4 templates."
 msgstr "모든 T4 템플릿을 처리합니다."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 msgid "Profile"
 msgstr "프로필"
@@ -16565,9 +16565,8 @@ msgstr "프로젝트 관리 애플리케이션"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:607
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:638
-#, fuzzy
 msgid "Project migration failed"
-msgstr "프로젝트 구성 이름"
+msgstr "프로젝트 마이그레이션 실패"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:190
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:216
@@ -16731,7 +16730,7 @@ msgstr "공개 키:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:235
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Dialogs/PublishToFolderDialog.cs:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:678
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:676
 msgid "Publish"
 msgstr "게시"
 
@@ -16744,7 +16743,7 @@ msgstr "게시 작업이 완료되었습니다."
 msgid "Publish to Folder"
 msgstr "폴더에 게시"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:674
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:672
 msgid "Publish to Folder..."
 msgstr "폴더에 게시..."
 
@@ -16898,9 +16897,8 @@ msgid "Quiet"
 msgstr "자동"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:246
-#, fuzzy
 msgid "Quit"
-msgstr "끝내기(_Q)"
+msgstr "끝내기"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:495
 msgid "Quit MonoDevelop"
@@ -16977,9 +16975,9 @@ msgstr "래스터 기반 그래픽 애플리케이션"
 msgid "Razor"
 msgstr "Razor"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:175
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:318
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:461
 msgid "Razor Class Library"
 msgstr "Razor 클래스 라이브러리"
 
@@ -17042,15 +17040,15 @@ msgstr "맨 아래에 도달, 맨 위에서 계속"
 msgid "Reached top, continued from bottom"
 msgstr "맨 위에 도달, 맨 아래에서 계속"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:201
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:344
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:487
 msgid "React.js"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:214
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:357
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:500
 msgid "React.js and Redux"
 msgstr "React.js 및 Redux"
 
@@ -17523,9 +17521,8 @@ msgid "Remove integer checks:"
 msgstr "정수 오류 검사 제거:"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:81
-#, fuzzy
 msgid "Remove last caret"
-msgstr "템플릿 제거"
+msgstr "마지막 캐럿 제거"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:137
 msgid "Remove operation completed."
@@ -17999,9 +17996,8 @@ msgid "Resources"
 msgstr "리소스"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:247
-#, fuzzy
 msgid "Restart"
-msgstr "{0} 다시 시작"
+msgstr "다시 시작"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:288
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:289
@@ -18016,7 +18012,7 @@ msgstr "디버그하고 다시 시작"
 msgid "Restart Without Debugging"
 msgstr "디버깅하지 않고 다시 시작"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:385
+#: ../src/addins/MacPlatform/MacPlatform.cs:397
 msgid "Restart and enable"
 msgstr "다시 시작 및 사용"
 
@@ -18292,14 +18288,14 @@ msgstr "루트 디렉터리:"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:89
 msgid "Rotate primary caret down"
-msgstr ""
+msgstr "기본 캐럿 아래로 회전"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:93
 msgid "Rotate primary caret up"
-msgstr ""
+msgstr "기본 캐럿 위로 회전"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -18814,7 +18810,7 @@ msgstr "활성 문서 저장"
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "닫기 전에 '{0}' 문서에 변경 내용을 저장할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:492
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:490
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "새 솔루션을 만들기 전에 '{0}' 문서에 변경 내용을 저장할까요?"
 
@@ -18984,7 +18980,7 @@ msgstr "검색 결과"
 msgid "Search Results"
 msgstr "검색 결과"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:108
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:100
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:79
 msgid "Search Toolbox"
 msgstr "검색 도구 상자"
@@ -19392,7 +19388,7 @@ msgstr "메서드를 생성할 이벤트를 선택하세요."
 msgid "Select files to add from {0}"
 msgstr "{0}에서 추가할 파일 선택"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:78
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:75
 msgid "Select how the hex data is grouped"
 msgstr "16진수 데이터를 그룹화하는 방법 선택"
 
@@ -19760,7 +19756,7 @@ msgstr "빌드가 완료된 후 이동할 결과 형식을 선택합니다."
 msgid "Select which type of tasks to display"
 msgstr "표시할 작업 형식 선택"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditor.cs:531
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditor.cs:540
 msgid "Selected '{0}' char:'{1}'"
 msgstr "선택한 '{0}' char:'{1}'"
 
@@ -19893,7 +19889,7 @@ msgstr "전체 화면 모드 설정"
 msgid "Set multiple startup projects"
 msgstr "여러 시작 프로젝트 설정"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:461
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:460
 msgid "Set other spacing options"
 msgstr "기타 간격 옵션 설정"
 
@@ -19901,19 +19897,19 @@ msgstr "기타 간격 옵션 설정"
 msgid "Set output caching behaviour."
 msgstr "출력 캐싱 동작을 설정합니다."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:493
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:492
 msgid "Set spacing for brackets"
 msgstr "대괄호의 간격 설정"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:447
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:446
 msgid "Set spacing for method calls"
 msgstr "메서드 호출의 간격 설정"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:433
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:432
 msgid "Set spacing for method declarations"
 msgstr "메서드 선언의 간격 설정"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:543
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:542
 msgid "Set spacing for operators"
 msgstr "연산자의 간격 설정"
 
@@ -19993,7 +19989,7 @@ msgstr "모두 표시"
 msgid "Show All Files"
 msgstr "모든 파일 표시"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:382
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:234
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:183
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeStatisticsView.cs:45
@@ -20069,7 +20065,7 @@ msgstr "MonoDevelop 옵션 창 표시"
 msgid "Show MonoDevelop preferences window"
 msgstr "MonoDevelop 기본 설정 창 표시"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1210
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1215
 msgid "Show More"
 msgstr "자세히 표시"
 
@@ -20130,9 +20126,8 @@ msgid "Show Scopes"
 msgstr "범위 표시"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:50
-#, fuzzy
 msgid "Show Start Window"
-msgstr "시작 윈도"
+msgstr "시작 창 표시"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:181
 msgid "Show Successful Tests"
@@ -20146,11 +20141,11 @@ msgstr "테스트 카운터 표시"
 msgid "Show Test Time"
 msgstr "테스트 시간 표시"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1195
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1200
 msgid "Show Value"
 msgstr "값 표시"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1212
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1217
 msgid "Show Values"
 msgstr "값 표시"
 
@@ -20164,9 +20159,8 @@ msgid "Show Warnings"
 msgstr "경고 표시"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:50
-#, fuzzy
 msgid "Show Welcome Page"
-msgstr "시작 페이지"
+msgstr "시작 페이지 표시"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:197
 msgid "Show _Authors prior to this change"
@@ -20192,21 +20186,19 @@ msgstr "모든 애플리케이션의 창 표시"
 msgid "Show built-in profile"
 msgstr "내장된 프로필 표시"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:121
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:122
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:111
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:112
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:87
 msgid "Show categories"
 msgstr "범주 표시"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:101
-#, fuzzy
 msgid "Show completion item filters"
-msgstr "문자가 입력된 후 완성 목록 표시(_S)"
+msgstr "완성 항목 필터 표시"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:105
-#, fuzzy
 msgid "Show completion list after a character is deleted"
-msgstr "문자가 입력된 후 완성 목록 표시(_S)"
+msgstr "문자를 삭제하면 완성 목록 표시"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:73
 msgid "Show error pad:"
@@ -20587,7 +20579,7 @@ msgstr "솔루션이 체크 아웃되었습니다."
 msgid "Solution could not be deployed: "
 msgstr "솔루션을 배포할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:826
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:833
 msgid "Solution loaded."
 msgstr "솔루션이 로드되었습니다."
 
@@ -20614,7 +20606,7 @@ msgstr "솔루션이 저장되었습니다."
 msgid "Solution template doesn't have any project templates"
 msgstr "솔루션 템플릿에 프로젝트 템플릿이 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1496
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1503
 msgid "Solution was deleted and will be closed. {0}"
 msgstr "솔루션이 삭제되고 닫힙니다. {0}"
 
@@ -20646,7 +20638,7 @@ msgstr "솔루션"
 msgid "Some additional changes on another file of the project."
 msgstr "프로젝트의 다른 파일에 추가 변경 내용이 있습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:223
+#: ../src/addins/MacPlatform/MacPlatform.cs:224
 msgid "Some dependencies need to be updated"
 msgstr "일부 종속성을 업데이트해야 합니다."
 
@@ -20658,7 +20650,7 @@ msgstr "일부 문서가 현재 열려 있습니다."
 msgid "Some files could not be saved."
 msgstr "일부 파일을 저장할 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1114
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1121
 msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
@@ -20762,7 +20754,7 @@ msgid ""
 msgstr "이 모듈에 대한 디버그 정보에 소스 정보가 없습니다."
 
 #  FIXME: make this a resource in the resource file
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:120
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:125
 msgid "Sources"
 msgstr "소스"
 
@@ -22705,7 +22697,7 @@ msgstr ""
 msgid "The minimum GTK# version required to use this component."
 msgstr "이 구성 요소를 사용하려면 최소 GTK# 버전이 필요합니다."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1175
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1180
 msgid "The name '{0}' does not exist in the current context."
 msgstr "'{0}' 이름이 현재 컨텍스트에 없습니다."
 
@@ -22854,7 +22846,7 @@ msgstr "포트 값이 허용되는 범위 외부에 있습니다."
 msgid "The project '{0}' has already been added."
 msgstr "'{0}' 프로젝트가 이미 추가되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1125
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:169
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
@@ -23091,9 +23083,8 @@ msgid "The uninstallation has completed with warnings."
 msgstr "제거가 완료되었지만 경고가 발생했습니다."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:616
-#, fuzzy
 msgid "The user choose not to migrate the project"
-msgstr "프로젝트를 게시할까요?"
+msgstr "사용자가 프로젝트를 마이그레이션하지 않도록 선택합니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs:41
 msgid ""
@@ -23683,7 +23674,7 @@ msgstr ""
 msgid "There are no changes to push."
 msgstr "푸시할 변경 내용이 없습니다."
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:514
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:366
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:221
 msgid "There are no tools available for the current document."
 msgstr "현재 문서에 사용할 수 있는 도구가 없습니다."
@@ -23765,6 +23756,8 @@ msgid ""
 "There was a problem loading one or more extensions and {0} needs to be "
 "restarted."
 msgstr ""
+"하나 이상의 확장을 로드하는 동안 문제가 발생했으므로 {0}을(를) 다시 시작해야 "
+"합니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:182
 msgid "There was an error renaming the directory."
@@ -23820,7 +23813,7 @@ msgid ""
 msgstr "이 파일에 정책 설정({1})과 다른 줄 끝({0})이 있습니다."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:746
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:630
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:631
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
@@ -24176,14 +24169,14 @@ msgstr "검색 및 바꾸기 모드 간 전환"
 msgid "Toggle bookmark"
 msgstr "책갈피 전환"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:137
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:370
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:125
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:222
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:99
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:172
 msgid "Toggle for toolbox to use compact layout"
 msgstr "압축 레이아웃을 사용하려면 도구 상자 토글"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:367
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:219
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:169
 msgid "Toggle for toolbox to use full layout"
 msgstr "전체 레이아웃을 사용하려면 도구 상자 토글"
@@ -24192,17 +24185,17 @@ msgstr "전체 레이아웃을 사용하려면 도구 상자 토글"
 msgid "Toggle profiling"
 msgstr "프로파일링 토글"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:380
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:232
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:181
 msgid "Toggle to hide toolbox categories"
 msgstr "도구 상자 범주를 숨기려면 토글"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:123
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:113
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:90
 msgid "Toggle to show categories"
 msgstr "범주를 표시하려면 토글"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:383
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:235
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:184
 msgid "Toggle to show toolbox categories"
 msgstr "도구 상자 범주를 표시하려면 토글"
@@ -24266,7 +24259,7 @@ msgstr "도구 상자 항목 선택기"
 msgid "Toolbox Items"
 msgstr "도구 상자 항목"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:164
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:148
 msgid "Toolbox Toolbar"
 msgstr "도구 상자 도구 모음"
 
@@ -24594,9 +24587,8 @@ msgid "Unable to find 'resgen' tool."
 msgstr "'resgen' 도구를 찾을 수 없습니다."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SdkResolution.cs:103
-#, fuzzy
 msgid "Unable to find SDK '{0}'"
-msgstr "'{0}'에서 configure.in을 찾을 수 없습니다."
+msgstr "SDK '{0}'을(를) 찾을 수 없습니다."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1714
 msgid "Unable to find configure.in at '{0}'."
@@ -24855,7 +24847,7 @@ msgstr "알 수 없는 위젯:"
 msgid "Unload"
 msgstr "언로드"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1477
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1484
 msgid "Unloading…"
 msgstr "언로드 중..."
 
@@ -24902,8 +24894,6 @@ msgid "Unversioned"
 msgstr "버전이 지정되지 않음"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Components.FolderListSelector.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:205
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:211
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinInfoView.cs:220
 msgid "Update"
 msgstr "업데이트"
@@ -24965,12 +24955,6 @@ msgstr "선택한 패키지 업데이트"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:179
 msgid "Update the binding for this command"
 msgstr "이 명령에 대한 바인딩을 업데이트합니다."
-
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:203
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:213
-#, fuzzy
-msgid "Update to {0}"
-msgstr "'{0}' 업데이트"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:49
 msgid "Update welcome page from internet"
@@ -25134,7 +25118,7 @@ msgstr "파일 선택기를 사용하여 사용자 지정 명령 선택"
 msgid "Use bullets"
 msgstr "글머리 기호 사용"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:135
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:123
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:96
 msgid "Use compact display"
 msgstr "간단한 표시 사용"
@@ -25444,7 +25428,7 @@ msgstr "버전 제어(_N)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:330
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:68
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
@@ -25581,13 +25565,17 @@ msgstr "버전 제어 명령이 실패했습니다."
 #  nb.AppendPage (aatp, new Label ("Authors"));
 #  nb.AppendPage (changelog, new Label ("ChangeLog"));
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:85
-#, fuzzy
 msgid "Version control operation failed"
-msgstr "버전 제어 작업 실패:"
+msgstr "버전 제어 작업 실패"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:105
 msgid "Version of the assembly."
 msgstr "어셈블리의 버전입니다."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:145
+#, fuzzy
+msgid "Version {0}"
+msgstr "버전: {0}"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:152
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:211
@@ -25695,7 +25683,7 @@ msgstr "시각적 스타일"
 msgid "WARNING: "
 msgstr "경고:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1104
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1111
 msgid ""
 "WARNING: Some documents may need to be closed, and unsaved data will be "
 "lost. You will be asked to save the unsaved documents."
@@ -25703,7 +25691,7 @@ msgstr ""
 "경고: 일부 문서를 닫아야 할 수 있으며 저장하지 않은 데이터는 손실됩니다. 저장"
 "하지 않은 문서를 저장하라는 메시지가 표시됩니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1106
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1113
 msgid ""
 "WARNING: Some documents may need to be reloaded or closed, and unsaved data "
 "will be lost. You will be asked to save the unsaved documents."
@@ -25711,7 +25699,7 @@ msgstr ""
 "경고: 일부 문서를 다시 로드하거나 닫아야 할 수 있으며 저장하지 않은 데이터는 "
 "손실됩니다. 저장하지 않은 문서를 저장하라는 메시지가 표시됩니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1108
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1115
 msgid ""
 "WARNING: Some files may need to be reloaded, and unsaved data will be lost. "
 "You will be asked to save the unsaved files."
@@ -25818,23 +25806,23 @@ msgstr "Web API"
 msgid "Web API Controller Class"
 msgstr "Web API 컨트롤러 클래스"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:278
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:421
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:564
 msgid "Web Application"
 msgstr "웹 애플리케이션"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:151
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:294
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:437
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:580
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:640
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:652
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:162
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:305
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:435
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:448
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:578
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:591
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:638
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:650
 msgid "Web Application (Model-View-Controller)"
 msgstr "웹 응용 프로그램(모델-뷰-컨트롤러)"
 
@@ -26185,7 +26173,7 @@ msgstr "작업 영역 이름"
 msgid "Workspace Name:"
 msgstr "작업 영역 이름:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1498
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1505
 msgid "Workspace item was deleted and will be closed. {0}"
 msgstr "작업 영역 항목이 삭제되고 닫힙니다. {0}"
 
@@ -26304,7 +26292,7 @@ msgstr "XSP 웹 서버"
 msgid "Xamarin News"
 msgstr "Xamarin 뉴스"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -26312,12 +26300,12 @@ msgstr ""
 "Xamarin.Mac 프로젝트는 Windows의 MonoDevelop에서 지원되지 않습니다. Mac에서 "
 "Xamarin Studio를 사용해야 합니다."
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -27189,7 +27177,7 @@ msgid "_Icon Name:"
 msgstr "아이콘 이름(_I):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:741
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:721
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:722
 msgid "_Ignore all"
 msgstr "모두 무시(_I)"
 
@@ -27251,7 +27239,7 @@ msgid "_Jump To {0}"
 msgstr "{0}(으)로 이동(_J)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:725
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:716
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:717
 msgid "_Keep changes"
 msgstr "변경 내용 유지(_K)"
 
@@ -27280,7 +27268,7 @@ msgid "_Line..."
 msgstr "줄(_L)..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:986
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:539
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:540
 msgid "_Load from autosave"
 msgstr "자동 저장에서 로드(_L)"
 
@@ -27330,9 +27318,8 @@ msgid "_Move to prev usage"
 msgstr "이전 사용으로 이동(_M)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:68
-#, fuzzy
 msgid "_Multiple Carets"
-msgstr "여러 프로젝트"
+msgstr "다중 캐럿(_M)"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:118
 msgid "_Name"
@@ -27557,12 +27544,12 @@ msgid "_Reload"
 msgstr "다시 로드(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:734
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:720
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:721
 msgid "_Reload all"
 msgstr "모두 다시 로드(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:717
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:715
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:716
 msgid "_Reload from disk"
 msgstr "디스크에서 다시 로드(_R)"
 
@@ -27916,7 +27903,7 @@ msgid "_Use custom author information for this solution"
 msgstr "이 솔루션에 사용자 지정 작성자 정보 사용(_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:970
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:536
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:537
 msgid "_Use original file"
 msgstr "원본 파일 사용(_U)"
 
@@ -28434,9 +28421,8 @@ msgstr ""
 "}}"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:132
-#, fuzzy
 msgid "{0} (Unknown Version)"
-msgstr "알 수 없는 오류"
+msgstr "{0}(알 수 없는 버전)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1154
 msgid "{0} ([initializers]; [expression]; [iterators]) statement"
@@ -28665,12 +28651,6 @@ msgid ""
 "{0} already exist for this solution.  Would you like to overwrite them? (Y/N)"
 msgstr "이 솔루션에 대한 {0}이(가) 이미 있습니다. 덮어쓸까요? (Y/N)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:179
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:184
-#, fuzzy
-msgid "{0} available"
-msgstr "({0} 사용 가능)"
-
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1051
 msgid ""
 "{0} block\n"
@@ -28786,7 +28766,7 @@ msgstr[1] ""
 "총 {0}개 파일이 처리되었습니다. {1}개가 성공적으로 생성되었으며 {2}개는 경고"
 "가, {3}개는 오류가 발생했습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:384
+#: ../src/addins/MacPlatform/MacPlatform.cs:396
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -28984,7 +28964,7 @@ msgstr "{0} 범위-변수2 {1} 범위2 {2} 문1 {3} 문2 [ {4} 그룹-이름 ]"
 msgid "{0} removed with warnings."
 msgstr "{0}이(가) 제거되었지만 경고가 발생했습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:225
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -29182,7 +29162,7 @@ msgstr "{0}m {1}s"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:615
 msgid "{1} cannot open the project '{0}' unless it is migrated."
-msgstr ""
+msgstr "프로젝트 '{0}'이(가) 마이그레이션되지 않으면 {1}에서 열 수 없습니다."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
 msgid "{n,m}"
@@ -29212,69 +29192,11 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid "Catalan"
-#~ msgstr "카탈로니아어"
+#~ msgid "({0} installing)"
+#~ msgstr "({0} 설치 중)"
 
-#~ msgid "Chinese - China"
-#~ msgstr "중국어 - 중국"
+#~ msgid "Dependency"
+#~ msgstr "종속성"
 
-#~ msgid "Chinese - Taiwan"
-#~ msgstr "중국어 - 대만"
-
-#~ msgid "Current package version"
-#~ msgstr "현재 패키지 버전"
-
-#~ msgid "Czech"
-#~ msgstr "체코어"
-
-#~ msgid "Danish"
-#~ msgstr "덴마크어"
-
-#~ msgid "Dutch"
-#~ msgstr "네덜란드어"
-
-#~ msgid "English"
-#~ msgstr "영어"
-
-#~ msgid "French"
-#~ msgstr "프랑스어"
-
-#~ msgid "Galician"
-#~ msgstr "갈리시아어"
-
-#~ msgid "German"
-#~ msgstr "독일어"
-
-# used for project model (not of C# term).
-#~ msgid "Hungarian"
-#~ msgstr "헝가리어"
-
-#~ msgid "Indonesian"
-#~ msgstr "인도네시아어"
-
-#~ msgid "Italian"
-#~ msgstr "이탈리아어"
-
-#~ msgid "Polish"
-#~ msgstr "폴란드어"
-
-#~ msgid "Portuguese"
-#~ msgstr "포르투갈어"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "포르투갈어 - 브라질"
-
-#~ msgid "Russian"
-#~ msgstr "러시아어"
-
-#~ msgid "Slovenian"
-#~ msgstr "슬로베니아어"
-
-#~ msgid "Spanish"
-#~ msgstr "스페인어"
-
-#~ msgid "Swedish"
-#~ msgstr "스웨덴어"
-
-#~ msgid "Version {0}"
-#~ msgstr "버전 {0}"
+#~ msgid "Update to {0}"
+#~ msgstr "{0}(으)로 업데이트"

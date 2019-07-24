@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-03 14:27:26+0200\n"
+"POT-Creation-Date: 2019-07-15 13:06:13+0200\n"
 "PO-Revision-Date: 2011-02-19 19:10+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese/Traditional <zh-l10n@linux.org.tw>\n"
@@ -426,13 +426,12 @@ msgstr "(無法使用)"
 msgid "(working copy)"
 msgstr "(工作複本)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:126
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
 #, fuzzy
-msgid "({0} installing)"
-msgstr "(正在安裝)"
+msgid "({0} available)"
+msgstr "可使用 {0} 個"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:132
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:75
 msgid "({0} update)"
 msgid_plural "({0} updates)"
 msgstr[0] "({0} 個更新)"
@@ -537,6 +536,8 @@ msgid ""
 "installed. Install the latest update to the .NET Core {0} SDK by visiting "
 "{1}."
 msgstr ""
+"需要 .NET Core {0} SDK，才能建立此應用程式，但其未安裝。請前往 {1}，為 .NET "
+"Core {0} SDK 安裝最新的更新。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:17
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:35
@@ -708,7 +709,7 @@ msgid "<b>Add a link</b> to the file"
 msgstr "<b>新增連結</b>至檔案"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:964
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:526
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:527
 msgid ""
 "<b>An autosave file has been found for this file.</b>\n"
 "This could mean that another instance of MonoDevelop is editing this file, "
@@ -978,7 +979,7 @@ msgid "<b>Task Priorities Foreground Colors</b>"
 msgstr "<b>工作優先順序前景色彩</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:712
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:728
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:729
 msgid ""
 "<b>The file \"{0}\" has been changed outside of {1}.</b>\n"
 "Do you want to keep your changes, or reload the file from disk?"
@@ -1378,9 +1379,9 @@ msgstr "上述設定的預覽"
 msgid "A profiling tool"
 msgstr "分析工具"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:178
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:321
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:464
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:176
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:319
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:462
 msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr "用於建立以 .NET Standard 為目標之 Razor 類別庫的專案"
 
@@ -1397,37 +1398,37 @@ msgid ""
 "corresponding NuGet package."
 msgstr "專案範本，可用於建立多平台程式庫專案及其對應 NuGet 套件。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:191
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:334
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:477
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:189
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:332
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:475
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular"
 msgstr "用於建立具有 Angular 之 ASP.NET Core 應用程式的專案範本"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:204
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:347
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:490
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:202
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:345
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:488
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js"
 msgstr "用於建立具有 React.js 之 ASP.NET Core 應用程式的專案範本"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:217
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:360
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:503
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:215
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:501
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux"
 msgstr "用於建立具有 React.js 與 Redux 之 ASP.NET Core 應用程式的專案範本"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:113
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:125
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:268
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:411
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:554
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:111
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:254
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:266
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:397
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:409
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:540
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:552
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:628
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
@@ -1436,16 +1437,16 @@ msgstr ""
 "可用於使用範例 RESTful HTTP 服務控制器建立 ASP.NET Core 應用程式的專案範本。"
 "ASP.NET Core MVC 檢視與控制器也可使用此範本。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:152
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:165
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:438
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:451
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:581
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:594
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:653
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:150
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:163
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:436
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:449
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:579
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:592
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:639
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:651
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
@@ -1454,10 +1455,10 @@ msgstr ""
 "可用於使用範例 ASP.NET Core MVC 檢視與控制器建立 ASP .NET Core 應用程式的專案"
 "範本。RESTful HTTP 服務也可使用此範本。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:281
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:424
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:567
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:279
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:422
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:565
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1622,15 +1623,15 @@ msgstr ""
 "{0} 類型是可包含建構函式、常數、欄位、方法、屬性、索引子、運算子、事件及巢狀"
 "型別的實值型別。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:112
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:267
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:410
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:553
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:629
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:122
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:253
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:265
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:396
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:408
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:539
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:551
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:627
 msgid "API"
 msgstr "API"
 
@@ -1651,7 +1652,7 @@ msgid "ASP.NET Controls"
 msgstr "ASP.NET 控制項"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:121
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:66
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:64
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:10
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:10
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:10
@@ -1829,7 +1830,7 @@ msgid "Abort Update"
 msgstr "中止更新"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:603
+#: ../src/addins/MacPlatform/MacPlatform.cs:613
 msgid "About {0}"
 msgstr "關於 {0}"
 
@@ -2107,7 +2108,7 @@ msgid "Add New Repository"
 msgstr "新增存放庫"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:22
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:87
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:93
 msgid "Add NuGet _Packages..."
 msgstr "新增 NuGet 套件(_P)..."
 
@@ -2388,9 +2389,9 @@ msgstr "新增至略過清單"
 msgid "Add to the project"
 msgstr "新增至專案"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:149
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:150
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:151
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:135
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:136
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:137
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:104
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:108
 msgid "Add toolbox items"
@@ -2733,16 +2734,16 @@ msgstr "用來設定 Web 應用程式的 appsettings.json 檔案。"
 msgid "An audio application"
 msgstr "音效應用程式"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:89
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:101
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:244
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:375
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:387
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:518
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:530
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:608
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:230
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:242
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:373
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:385
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:516
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:528
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:606
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:617
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2850,9 +2851,9 @@ msgstr "且下列運算式會變更"
 msgid "Android"
 msgstr "Android"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:188
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:331
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:474
 msgid "Angular"
 msgstr "Angular"
 
@@ -2973,7 +2974,7 @@ msgid "Application to record audio/video files"
 msgstr "錄製音訊/視訊檔案的應用程式"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:791
+#: ../src/addins/MacPlatform/MacPlatform.cs:777
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3200,7 +3201,7 @@ msgid ""
 "Are you sure you want to remove the formatting policy for the type '{0}'?"
 msgstr "確定要移除類型 '{0}' 的格式化原則嗎?"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:438
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:290
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:227
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "確定要移除選取的項目嗎?"
@@ -3232,9 +3233,8 @@ msgid ""
 msgstr "確定要從這些資源上選取的修訂版還原變更嗎?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:29
-#, fuzzy
 msgid "Are you sure you want to revert the changes made in the selected files?"
-msgstr "確定要取消略過選取的檔案嗎?"
+msgstr "確定要還原在所選檔案中的變更嗎?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:54
 msgid ""
@@ -3367,7 +3367,7 @@ msgstr "找不到架構 {0} 的組件 (於 {1})"
 msgid "Assembly:\t{0}"
 msgstr "組件:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:383
+#: ../src/addins/MacPlatform/MacPlatform.cs:395
 msgid "Assistive Technology Detected"
 msgstr "偵測到輔助技術"
 
@@ -5577,8 +5577,8 @@ msgstr "認可..."
 msgid "Committing {0}..."
 msgstr "正在認可 {0}..."
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:136
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:369
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:124
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:221
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:98
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:171
 msgid "Compact Layout"
@@ -6058,7 +6058,7 @@ msgid "Copy to output directory"
 msgstr "複製到輸出目錄"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:368
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
 msgid "Copying files..."
 msgstr "正在複製檔案..."
@@ -6088,7 +6088,7 @@ msgstr "無法新增 {0}。"
 msgid "Could not check package compatibility."
 msgstr "無法檢查封裝相容性。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:538
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:545
 msgid "Could not close solution '{0}'."
 msgstr "無法關閉解決方案 '{0}'。"
 
@@ -6192,7 +6192,7 @@ msgstr "無法開啟此 URL {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:606
 msgid "Could not open unmigrated project and no migrator was supplied"
-msgstr ""
+msgstr "無法開啟尚未移轉的專案，而且未提供移轉程式"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/TextTemplatingFilePreprocessor.cs:68
 msgid ""
@@ -6944,6 +6944,11 @@ msgstr "目前的文件"
 msgid "Current format:"
 msgstr "目前的格式:"
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:67
+#, fuzzy
+msgid "Current package version"
+msgstr "封裝版本。"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:193
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:76
 msgid "Current project"
@@ -7139,7 +7144,7 @@ msgstr "日期/時間"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -7243,7 +7248,7 @@ msgstr "拒絕"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -7496,15 +7501,9 @@ msgstr "正在刪除檔案..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:303
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:60
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:49
 msgid "Dependencies"
 msgstr "相依性"
-
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:41
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:47
-#, fuzzy
-msgid "Dependency"
-msgstr "新增相依性"
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:50
 msgid "Deploy directory:"
@@ -8038,7 +8037,7 @@ msgstr "文件註解(_C)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:624
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:690
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:878
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:885
 msgid "Documents"
 msgstr "文件"
 
@@ -8290,16 +8289,16 @@ msgid "Emoji & Symbols"
 msgstr "表情圖示與符號"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:100
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:231
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:243
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:374
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:386
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:517
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:529
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:607
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:618
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:229
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:241
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:372
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:384
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:515
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:527
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:605
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:616
 msgid "Empty"
 msgstr "空白"
 
@@ -8654,7 +8653,7 @@ msgstr "輸入此格式要套用的新 XPath 運算式"
 msgid "Enter a search term to find it in the keybindings list"
 msgstr "輸入搜尋字詞以在按鍵繫結關係清單中將其找出"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:109
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:101
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:80
 msgid "Enter a term to search for it in the toolbox"
 msgstr "輸入要在工具箱中搜尋的字詞"
@@ -9200,7 +9199,7 @@ msgstr "評估"
 msgid "Evaluating"
 msgstr "正在評估"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1198
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1203
 msgid "Evaluating..."
 msgstr "正在評估..."
 
@@ -9561,7 +9560,7 @@ msgstr "擴充方法必須宣告為靜態"
 msgid "Extension packages"
 msgstr "延伸模組套件"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:547
+#: ../src/addins/MacPlatform/MacPlatform.cs:557
 msgid "Extensions..."
 msgstr "延伸模組..."
 
@@ -9923,7 +9922,7 @@ msgstr "專案檔的檔案格式。"
 msgid "File format:"
 msgstr "檔案格式:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:737
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:744
 msgid "File is not a project or solution: {0}"
 msgstr "檔案不是專案或解決方案: {0}"
 
@@ -9958,7 +9957,7 @@ msgstr "找不到檔案。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:118
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:212
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:731
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:738
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentManager.cs:394
 msgid "File not found: {0}"
 msgstr "找不到檔案: {0}"
@@ -10461,7 +10460,7 @@ msgstr "來自類型:\t{0}"
 msgid "Full"
 msgstr "完整"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:366
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:218
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:168
 msgid "Full Layout"
 msgstr "完整版面配置"
@@ -10531,7 +10530,7 @@ msgid "GTK# Widget Layout and Packing"
 msgstr "GTK# 小工具配置與壓縮"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:110
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:454
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:306
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:241
 msgid "GTK# Widgets"
 msgstr "GTK# 小工具"
@@ -10583,7 +10582,7 @@ msgstr "正在收集類別資訊"
 #: ../src/addins/VBNetBinding/templates/EmptyVBFile.xft.xml:7
 #: ../src/addins/CSharpBinding/templates/EmptyCSharpFile.xft.xml:7
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:145
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:119
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:124
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:18
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
@@ -10926,9 +10925,8 @@ msgid "Go right one character"
 msgstr "往右一個字元"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:67
-#, fuzzy
 msgid "Go to Base Member"
-msgstr "前往基底方法(_B)"
+msgstr "移至基底成員"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:81
 msgid "Go to Breakpoint"
@@ -11105,7 +11103,7 @@ msgstr "找不到群組 '{0}'"
 msgid "Group '{0}':'{1}'"
 msgstr "群組 '{0}':'{1}'"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:77
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:74
 msgid "Group Width"
 msgstr "群組寬度"
 
@@ -11245,7 +11243,7 @@ msgstr "協助程式的名稱"
 msgid "HexEdit"
 msgstr "HexEdit"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:83
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:80
 msgid "Hexadecimal Text Editor"
 msgstr "十六進位文字編輯器"
 
@@ -11254,6 +11252,7 @@ msgstr "十六進位文字編輯器"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:64
 msgid "Hidden"
 msgstr "隱藏"
 
@@ -11265,7 +11264,7 @@ msgstr "隱藏"
 msgid "Hide Application"
 msgstr "隱藏應用程式"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:379
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:231
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:180
 msgid "Hide Categories"
 msgstr "隱藏分類"
@@ -11282,7 +11281,7 @@ msgstr "隱藏詳細資料"
 msgid "Hide other applications' windows"
 msgstr "隱藏其他應用程式的視窗"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:608
+#: ../src/addins/MacPlatform/MacPlatform.cs:618
 msgid "Hide {0}"
 msgstr "隱藏 {0}"
 
@@ -11531,7 +11530,7 @@ msgid "If you chose this option the Git configuration will be overwritten."
 msgstr "若您選擇此選項，則會覆寫 Git 組態。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:609
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:493
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:491
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "若您未儲存，所有變更將會永久遺失。"
 
@@ -11563,7 +11562,7 @@ msgstr "略過大小寫"
 msgid "Ignore operation completed."
 msgstr "已完成略過作業。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:488
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:487
 msgid "Ignore spaces in declaration statements"
 msgstr "略過宣告陳述式中的空白"
 
@@ -11849,11 +11848,11 @@ msgstr "提高詳細資訊層級。"
 msgid "Indent Selection"
 msgstr "縮排選取範圍"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:187
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:186
 msgid "Indent block contents"
 msgstr "縮排區塊內容"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:217
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:216
 msgid "Indent case sections"
 msgstr "縮排 case 區段"
 
@@ -11869,7 +11868,7 @@ msgstr "縮排項目"
 msgid "Indent on try/with"
 msgstr "在 try/with 縮排"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:198
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:197
 msgid "Indent open and close braces"
 msgstr "縮排左邊及右邊大括弧"
 
@@ -11877,7 +11876,7 @@ msgstr "縮排左邊及右邊大括弧"
 msgid "Indent selected lines of code"
 msgstr "縮排選取的程式碼"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:206
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:205
 msgid "Indent switch sections"
 msgstr "縮排 switch 區段"
 
@@ -11953,7 +11952,7 @@ msgstr "依預設值初始化欄位是冗餘的"
 msgid "Initializing field with default value is redundant"
 msgstr "以預設值初始化欄位是冗餘的"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:488
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:340
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:271
 msgid "Initializing..."
 msgstr "正在初始化..."
@@ -12051,7 +12050,7 @@ msgstr "將自訂標籤插入輸入的目錄"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:77
 msgid "Insert carets at all matching"
-msgstr ""
+msgstr "在所有相符處插入游標"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddNewFormatItemCodeRefactoringProvider.cs:53
 msgid "Insert format argument"
@@ -12066,90 +12065,89 @@ msgid "Insert new line"
 msgstr "插入新行"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:73
-#, fuzzy
 msgid "Insert next matching caret"
-msgstr "插入對稱的括號(_I)"
+msgstr "插入下一個相符的游標"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/InsertAnonymousMethodSignatureCodeRefactoringProvider.cs:37
 msgid "Insert signature"
 msgstr "插入特徵標記"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:484
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:483
 msgid "Insert space after casts"
 msgstr "在中斷點後插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:508
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:507
 msgid "Insert space after colon for base or interface in type declaration"
 msgstr "在類型宣告中的基底或介面冒號後面插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:510
 msgid "Insert space after comma"
 msgstr "在逗號後插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:515
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:514
 msgid "Insert space after dot"
 msgstr "在點號後插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:462
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:461
 msgid "Insert space after keywords in control flow statements"
 msgstr "在控制流程陳述式的關鍵字後插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:519
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:518
 msgid "Insert space after semicolon in \"for\" statement"
 msgstr "在 \"for\" 陳述式中的分號後面插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:525
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:524
 msgid "Insert space before colon for base or interface in type declaration"
 msgstr "在類型宣告中的基底或介面冒號前面插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:528
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:527
 msgid "Insert space before comma"
 msgstr "在逗號前插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:532
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:531
 msgid "Insert space before dot"
 msgstr "在點號前插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:494
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:493
 msgid "Insert space before open square bracket"
 msgstr "在左方括弧前插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:536
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:535
 msgid "Insert space before semicolon in \"for\" statement"
 msgstr "在 \"for\" 陳述式中的分號前面插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:434
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:448
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:433
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:447
 msgid "Insert space between method name and its opening parenthesis"
 msgstr "在方法名稱和左括弧之間插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:439
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:452
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:438
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:451
 msgid "Insert space within argument list parentheses"
 msgstr "在引數清單括弧內插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:443
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:456
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:442
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:455
 msgid "Insert space within empty argument list parentheses"
 msgstr "在空引數清單括弧內插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:498
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:497
 msgid "Insert space within empty square brackets"
 msgstr "在空方括弧中插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:477
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:476
 msgid "Insert space within parentheses of control flow statements"
 msgstr "在控制流程陳述式的括弧內插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:469
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:468
 msgid "Insert space within parentheses of expressions"
 msgstr "在運算式的括弧內插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:473
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:472
 msgid "Insert space within parentheses of type casts"
 msgstr "在類型轉換的括弧內插入空格"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:502
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:501
 msgid "Insert space within square brackets"
 msgstr "在方括弧間插入空格"
 
@@ -12415,7 +12413,7 @@ msgid ""
 "project {0} will be ignored."
 msgstr "解決方案檔案無效。有兩個具有相同 GUID 的專案。將會忽略專案 {0}。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:248
 msgid "Invariant"
 msgstr "不區分"
 
@@ -12608,7 +12606,7 @@ msgstr "地區設定(_O):"
 msgid "L_ocation:"
 msgstr "位置(_O):"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:228
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:227
 msgid "Label indentation"
 msgstr "標籤縮排"
 
@@ -12728,7 +12726,7 @@ msgstr "流失追蹤器"
 msgid "Learn more about the New Editor"
 msgstr "深入了解新增編輯器"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:591
 msgid "Leave block on single line"
 msgstr "讓區塊保留在單行"
 
@@ -12736,7 +12734,7 @@ msgstr "讓區塊保留在單行"
 msgid "Leave line endings as is"
 msgstr "讓行結尾保留原樣"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:593
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:592
 msgid "Leave statements and member declarations on the same line"
 msgstr "將陳述式和成員宣告保留在同一行"
 
@@ -12886,7 +12884,7 @@ msgstr "正在載入解決方案檔 {0} "
 msgid "Loading solution: {0}"
 msgstr "正在載入解決方案: {0} "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:889
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:887
 msgid "Loading workspace documents"
 msgstr "正在載入工作區文件"
 
@@ -12904,7 +12902,7 @@ msgstr "正在載入 {0} 增益集"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:274
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:66
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixMenuHandler.cs:48
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1268
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1273
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:634
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:767
 msgid "Loading..."
@@ -13558,7 +13556,7 @@ msgstr "方法 {0}"
 msgid "Methods"
 msgstr "方法"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
@@ -13691,7 +13689,7 @@ msgstr "模組名稱:"
 msgid "Monitor application/applet that monitors some resource or activity"
 msgstr "監視某些資源或活動的監視用應用程式/小程式"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Mono"
 msgstr "Mono"
 
@@ -13727,7 +13725,7 @@ msgstr "找不到 Mono 執行階段"
 msgid "Mono runtime settings:"
 msgstr "Mono 執行階段設定:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:242
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -13829,9 +13827,8 @@ msgid "Move cursor to previous error or search match"
 msgstr "將資料指標移到上個錯誤或符合搜尋處"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:85
-#, fuzzy
 msgid "Move last caret down"
-msgstr "復原上一個動作"
+msgstr "下移最後一個游標"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 msgid "Move the line or highlighted selection down"
@@ -13945,6 +13942,8 @@ msgid ""
 "Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} "
 "SDK by visiting {3}."
 msgstr ""
+"NET Core {0}.{1} SDK {2} 版與此版的 Visual Studio for Mac 不相容。請前往 "
+"{3}，為 .NET Core {0}.{1} SDK 安裝最新的更新。"
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitTestClass.xft.xml:7
 msgid "NUnit"
@@ -14009,7 +14008,6 @@ msgstr "名稱(_A):"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:117
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:59
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:60
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:42
 msgid "Name"
 msgstr "名稱"
 
@@ -14286,7 +14284,7 @@ msgstr "新增群組"
 msgid "New Group..."
 msgstr "新增群組..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:364
+#: ../src/addins/MacPlatform/MacPlatform.cs:366
 msgid "New Instance"
 msgstr "新執行個體"
 
@@ -14311,9 +14309,8 @@ msgid "New Project"
 msgstr "新增專案"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewDisplayBinding.cs:58
-#, fuzzy
 msgid "New Source Code Editor"
-msgstr "原始程式碼編輯器"
+msgstr "新的原始程式碼編輯器"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:126
 msgid "New Task"
@@ -14369,15 +14366,15 @@ msgstr "新增檔案"
 msgid "New format:"
 msgstr "新增格式:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:282
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:281
 msgid "New line options for braces"
 msgstr "括號的新行選項"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:370
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:369
 msgid "New line options for expressions"
 msgstr "運算式的新行選項"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:346
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:345
 msgid "New line options for keywords"
 msgstr "關鍵字的新行選項"
 
@@ -14439,7 +14436,7 @@ msgstr "下一份文件"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:386
+#: ../src/addins/MacPlatform/MacPlatform.cs:398
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14578,10 +14575,10 @@ msgstr "找不到任何可執行的可執行檔。"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:847
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:849
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:68
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:489
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:534
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:578
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:580
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:485
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:530
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:574
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpPathedDocumentExtension.cs:576
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:178
 msgid "No selection"
 msgstr "未選取範圍"
@@ -14660,7 +14657,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:308
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:138
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -14753,7 +14750,7 @@ msgstr ""
 "Makefile。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:18
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:118
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:123
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:42
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:42
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:94
@@ -15083,7 +15080,7 @@ msgstr "Option Strict:"
 msgid "OptionName"
 msgstr "OptionName"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:681
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:679
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:132
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:143
 msgid "Options"
@@ -15132,7 +15129,7 @@ msgstr "原始字串 '{0}' 未包含 '_'，翻譯則包含。"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:44
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:134
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:260
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:507
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:506
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:213
 msgid "Other"
 msgstr "其他"
@@ -15310,7 +15307,7 @@ msgstr "封裝設定"
 msgid "Package is a development dependency."
 msgstr "封裝為開發相依性。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:175
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:164
 msgid "Package is not restored"
 msgstr "未還原封裝"
 
@@ -15318,7 +15315,7 @@ msgstr "未還原封裝"
 msgid "Package name not provided."
 msgstr "未提供封裝名稱。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:177
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:166
 msgid "Package needs retargeting"
 msgstr "封裝需要重定目標"
 
@@ -15330,7 +15327,7 @@ msgstr "專案 {0} 的封裝還原失敗: {1}"
 msgid "Package restore failed."
 msgstr "封裝還原失敗。"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:277
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:241
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/MonoDevelop.DotNetCore.Tests/DependencyNodeTests.cs:229
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/MonoDevelop.DotNetCore.Tests/DependencyNodeTests.cs:273
 msgid "Package restored with warnings. Expand the package to see the warnings."
@@ -15648,15 +15645,15 @@ msgstr "釘選輸出板"
 msgid "Pin results pad"
 msgstr "釘選結果板"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:355
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:354
 msgid "Place \"catch\" on new line"
 msgstr "將 \"catch\" 放在新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:347
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:346
 msgid "Place \"else\" on new line"
 msgstr "將 \"else\" 放在新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:362
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:361
 msgid "Place \"finally\" on new line"
 msgstr "將 \"finally\" 放在新行"
 
@@ -15664,51 +15661,51 @@ msgstr "將 \"finally\" 放在新行"
 msgid "Place 'System' directives first when sorting usings"
 msgstr "排序 using 時，先放置 'System' 指示詞"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:377
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:376
 msgid "Place members in anonymous types on new line"
 msgstr "將匿名類型中的成員放在新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:371
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:370
 msgid "Place members in object initializers on new line"
 msgstr "將物件初始設定式中的成員放在新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:312
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:311
 msgid "Place open brace on new line for anonymous methods"
 msgstr "將左大括弧放在匿名方法的新行上"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:323
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:322
 msgid "Place open brace on new line for anonymous types"
 msgstr "將左大括弧放在匿名型別的新行上"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:317
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:316
 msgid "Place open brace on new line for control blocks"
 msgstr "將左大括號放在控制區塊的新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:339
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:338
 msgid "Place open brace on new line for lambda expression"
 msgstr "將左大括弧放在 Lambda 運算式的新行上"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:286
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:285
 msgid "Place open brace on new line for methods"
 msgstr "將左大括號放在方法的新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:331
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:330
 msgid "Place open brace on new line for object initializers"
 msgstr "將左大括號放在物件初始設定式的新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:289
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:288
 msgid "Place open brace on new line for properties"
 msgstr "將左大括弧放在屬性的新行上"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:300
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:299
 msgid "Place open brace on new line for property accessors"
 msgstr "將左大括弧放在屬性存取子的新行上"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:283
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:282
 msgid "Place open brace on new line for types"
 msgstr "將左大括號放在類型的新行"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:384
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:383
 msgid "Place query expression clauses on new line"
 msgstr "將查詢運算式放在新行"
 
@@ -15821,7 +15818,7 @@ msgstr "要匯出的原則:"
 msgid "Policies to set or replace:"
 msgstr "要設定或取代的原則:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:544
+#: ../src/addins/MacPlatform/MacPlatform.cs:554
 msgid "Policies..."
 msgstr "原則..."
 
@@ -16018,11 +16015,11 @@ msgstr "建議使用精簡的 'default' 運算式"
 msgid "Prefer throw-expression"
 msgstr "建議使用 throw 運算式"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:682
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:680
 msgid "Preferences"
 msgstr "喜好設定"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:543
+#: ../src/addins/MacPlatform/MacPlatform.cs:553
 msgid "Preferences..."
 msgstr "喜好設定..."
 
@@ -16199,7 +16196,7 @@ msgstr "處理 T4 範本..."
 msgid "Process all T4 templates."
 msgstr "處理所有 T4 範本。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 msgid "Profile"
 msgstr "設定檔"
@@ -16390,9 +16387,8 @@ msgstr "專案管理應用程式"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:607
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:638
-#, fuzzy
 msgid "Project migration failed"
-msgstr "專案組態名稱"
+msgstr "專案移轉失敗"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:190
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:216
@@ -16553,7 +16549,7 @@ msgstr "公開金鑰:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:235
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Dialogs/PublishToFolderDialog.cs:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:678
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:676
 msgid "Publish"
 msgstr "發佈"
 
@@ -16566,7 +16562,7 @@ msgstr "已完成發行作業。"
 msgid "Publish to Folder"
 msgstr "發佈至資料夾"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:674
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:672
 msgid "Publish to Folder..."
 msgstr "發佈至資料夾..."
 
@@ -16718,9 +16714,8 @@ msgid "Quiet"
 msgstr "無訊息"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:246
-#, fuzzy
 msgid "Quit"
-msgstr "結束(_Q)"
+msgstr "結束"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:495
 msgid "Quit MonoDevelop"
@@ -16797,9 +16792,9 @@ msgstr "點陣式圖形化應用程式"
 msgid "Razor"
 msgstr "Razor"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:175
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:318
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:461
 msgid "Razor Class Library"
 msgstr "Razor 類別庫"
 
@@ -16862,15 +16857,15 @@ msgstr "已到達底端，將從頂端繼續"
 msgid "Reached top, continued from bottom"
 msgstr "已到達頂端，將從底端繼續"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:201
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:344
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:487
 msgid "React.js"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:214
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:357
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:500
 msgid "React.js and Redux"
 msgstr "React.js 與 Redux"
 
@@ -17342,9 +17337,8 @@ msgid "Remove integer checks:"
 msgstr "移除整數檢查:"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:81
-#, fuzzy
 msgid "Remove last caret"
-msgstr "移除範本"
+msgstr "移除最後一個游標"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:137
 msgid "Remove operation completed."
@@ -17816,9 +17810,8 @@ msgid "Resources"
 msgstr "資源"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:247
-#, fuzzy
 msgid "Restart"
-msgstr "重新啟動 {0}"
+msgstr "重新啟動"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:288
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:289
@@ -17833,7 +17826,7 @@ msgstr "重新啟動，不進行偵錯"
 msgid "Restart Without Debugging"
 msgstr "重新啟動，不進行偵錯"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:385
+#: ../src/addins/MacPlatform/MacPlatform.cs:397
 msgid "Restart and enable"
 msgstr "重新啟動並啟用"
 
@@ -18107,14 +18100,14 @@ msgstr "根目錄: "
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:89
 msgid "Rotate primary caret down"
-msgstr ""
+msgstr "向下旋轉主要游標"
 
 #: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/Properties/MonoDevelop.TextEditor.addin.xml:93
 msgid "Rotate primary caret up"
-msgstr ""
+msgstr "向上旋轉主要游標"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -18560,7 +18553,7 @@ msgstr "儲存使用中的文件"
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "要先將變更儲存到文件 '{0}' 後再關閉嗎?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:492
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:490
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "要先將變更儲存到文件 '{0}' 後再建立新解決方案嗎?"
 
@@ -18730,7 +18723,7 @@ msgstr "搜尋結果"
 msgid "Search Results"
 msgstr "搜尋結果"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:108
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:100
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:79
 msgid "Search Toolbox"
 msgstr "搜尋工具箱"
@@ -19137,7 +19130,7 @@ msgstr "選取要產生方法的事件。"
 msgid "Select files to add from {0}"
 msgstr "選取要從 {0} 新增的檔案"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:78
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditorDebugger.cs:75
 msgid "Select how the hex data is grouped"
 msgstr "選取十六進位資料的分組方式"
 
@@ -19505,7 +19498,7 @@ msgstr "選取建置完成後要跳至的結果類型"
 msgid "Select which type of tasks to display"
 msgstr "選取要顯示的工作類型"
 
-#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditor.cs:531
+#: ../src/addins/MonoDevelop.HexEditor/Mono.MHex/HexEditor.cs:540
 msgid "Selected '{0}' char:'{1}'"
 msgstr "已選取 '{0}' Char: '{1}'"
 
@@ -19637,7 +19630,7 @@ msgstr "設定全螢幕模式"
 msgid "Set multiple startup projects"
 msgstr "設定多個啟始專案"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:461
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:460
 msgid "Set other spacing options"
 msgstr "設定其他間距選項"
 
@@ -19645,19 +19638,19 @@ msgstr "設定其他間距選項"
 msgid "Set output caching behaviour."
 msgstr "設定輸出快取行為。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:493
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:492
 msgid "Set spacing for brackets"
 msgstr "設定括號的間距"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:447
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:446
 msgid "Set spacing for method calls"
 msgstr "設定方法呼叫的間距"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:433
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:432
 msgid "Set spacing for method declarations"
 msgstr "設定方法宣告的間距"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:543
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:542
 msgid "Set spacing for operators"
 msgstr "設定運算子的間距"
 
@@ -19735,7 +19728,7 @@ msgstr "全部顯示"
 msgid "Show All Files"
 msgstr "顯示所有檔案"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:382
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:234
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:183
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeStatisticsView.cs:45
@@ -19811,7 +19804,7 @@ msgstr "顯示 MonoDevelop 選項視窗"
 msgid "Show MonoDevelop preferences window"
 msgstr "顯示 MonoDevelop 喜好設定視窗"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1210
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1215
 msgid "Show More"
 msgstr "顯示較多"
 
@@ -19872,9 +19865,8 @@ msgid "Show Scopes"
 msgstr "顯示範圍"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:50
-#, fuzzy
 msgid "Show Start Window"
-msgstr "開始視窗"
+msgstr "顯示 [開始]5D; 視窗"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:181
 msgid "Show Successful Tests"
@@ -19888,11 +19880,11 @@ msgstr "顯示測試計數"
 msgid "Show Test Time"
 msgstr "顯示測試時間"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1195
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1200
 msgid "Show Value"
 msgstr "顯示值"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1212
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1217
 msgid "Show Values"
 msgstr "顯示值 "
 
@@ -19906,9 +19898,8 @@ msgid "Show Warnings"
 msgstr "顯示警告"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:50
-#, fuzzy
 msgid "Show Welcome Page"
-msgstr "歡迎頁面"
+msgstr "顯示 [歡迎]5D; 頁面"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:197
 msgid "Show _Authors prior to this change"
@@ -19934,21 +19925,19 @@ msgstr "顯示所有應用程式的視窗"
 msgid "Show built-in profile"
 msgstr "顯示內建設定檔"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:121
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:122
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:111
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:112
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:87
 msgid "Show categories"
 msgstr "顯示分類"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:101
-#, fuzzy
 msgid "Show completion item filters"
-msgstr "輸入一個字元後顯示完成清單(_S)"
+msgstr "顯示完成項目篩選"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:105
-#, fuzzy
 msgid "Show completion list after a character is deleted"
-msgstr "輸入一個字元後顯示完成清單(_S)"
+msgstr "刪除字元後顯示自動完成清單"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:73
 msgid "Show error pad:"
@@ -20329,7 +20318,7 @@ msgstr "解決方案已簽出"
 msgid "Solution could not be deployed: "
 msgstr "無法部署的解決方案: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:826
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:833
 msgid "Solution loaded."
 msgstr "解決方案已載入。"
 
@@ -20355,7 +20344,7 @@ msgstr "解決方案已儲存。"
 msgid "Solution template doesn't have any project templates"
 msgstr "解決方案範本沒有任何專案範本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1496
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1503
 msgid "Solution was deleted and will be closed. {0}"
 msgstr "已刪除並將關閉解決方案。{0}"
 
@@ -20387,7 +20376,7 @@ msgstr "解決方案"
 msgid "Some additional changes on another file of the project."
 msgstr "對專案的另一個檔案進行一些額外變更。"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:223
+#: ../src/addins/MacPlatform/MacPlatform.cs:224
 msgid "Some dependencies need to be updated"
 msgstr "有一些相依性必須更新"
 
@@ -20399,7 +20388,7 @@ msgstr "目前已開啟部分文件"
 msgid "Some files could not be saved."
 msgstr "無法儲存某些檔案。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1114
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1121
 msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
@@ -20499,7 +20488,7 @@ msgid ""
 "Source information is missing from the debug information for this module"
 msgstr "此模組的偵錯資訊缺少來源資訊"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:120
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:125
 msgid "Sources"
 msgstr "來源"
 
@@ -22418,7 +22407,7 @@ msgstr ""
 msgid "The minimum GTK# version required to use this component."
 msgstr "使用此元件所需的最低 GTK# 版本。"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1175
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:1180
 msgid "The name '{0}' does not exist in the current context."
 msgstr "目前的內容中沒有名稱 '{0}'。"
 
@@ -22565,7 +22554,7 @@ msgstr "連接埠值超出允許的範圍"
 msgid "The project '{0}' has already been added."
 msgstr "專案 '{0}' 已新增。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1125
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:169
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
@@ -22786,9 +22775,8 @@ msgid "The uninstallation has completed with warnings."
 msgstr "解除安裝完成，但有警告。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:616
-#, fuzzy
 msgid "The user choose not to migrate the project"
-msgstr "確定要發佈專案嗎?"
+msgstr "使用者選擇不移轉專案"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs:41
 msgid ""
@@ -23316,7 +23304,7 @@ msgstr "有本機變更與在 <b>{0}</b> 分支中認可的變更相衝突。要
 msgid "There are no changes to push."
 msgstr "沒有要推送的變更。"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:514
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:366
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:221
 msgid "There are no tools available for the current document."
 msgstr "沒有工具可供目前的文件使用。"
@@ -23396,7 +23384,7 @@ msgstr "至少須有一個組態。"
 msgid ""
 "There was a problem loading one or more extensions and {0} needs to be "
 "restarted."
-msgstr ""
+msgstr "載入一或多個延伸模組時發生問題，{0} 必須重新啟動。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:182
 msgid "There was an error renaming the directory."
@@ -23451,7 +23439,7 @@ msgid ""
 msgstr "此檔案的行尾結束符號為 ({0})，其與原則設定 ({1}) 不同。"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:746
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:630
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:631
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
@@ -23801,14 +23789,14 @@ msgstr "切換搜尋或取代模式"
 msgid "Toggle bookmark"
 msgstr "切換書籤"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:137
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:370
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:125
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:222
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:99
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:172
 msgid "Toggle for toolbox to use compact layout"
 msgstr "切換工具箱，以使用精簡版面配置"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:367
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:219
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:169
 msgid "Toggle for toolbox to use full layout"
 msgstr "切換工具箱，以使用完整版面配置"
@@ -23817,17 +23805,17 @@ msgstr "切換工具箱，以使用完整版面配置"
 msgid "Toggle profiling"
 msgstr "切換分析"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:380
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:232
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:181
 msgid "Toggle to hide toolbox categories"
 msgstr "切換為隱藏工具箱分類"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:123
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:113
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:90
 msgid "Toggle to show categories"
 msgstr "切換顯示分類"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:383
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:235
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:184
 msgid "Toggle to show toolbox categories"
 msgstr "切換為顯示工具箱分類"
@@ -23891,7 +23879,7 @@ msgstr "工具箱項目選取器"
 msgid "Toolbox Items"
 msgstr "工具箱項目"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:164
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:148
 msgid "Toolbox Toolbar"
 msgstr "工具箱工具列"
 
@@ -24212,9 +24200,8 @@ msgid "Unable to find 'resgen' tool."
 msgstr "找不到 'resgen' 工具。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SdkResolution.cs:103
-#, fuzzy
 msgid "Unable to find SDK '{0}'"
-msgstr "在 '{0}' 找不到 configure.in。"
+msgstr "找不到 SDK '{0}'"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1714
 msgid "Unable to find configure.in at '{0}'."
@@ -24467,7 +24454,7 @@ msgstr "未知的 Widget: "
 msgid "Unload"
 msgstr "卸載"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1477
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1484
 msgid "Unloading…"
 msgstr "正在卸載..."
 
@@ -24512,8 +24499,6 @@ msgid "Unversioned"
 msgstr "未建立版本"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Components.FolderListSelector.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:205
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:211
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinInfoView.cs:220
 msgid "Update"
 msgstr "更新"
@@ -24575,12 +24560,6 @@ msgstr "更新選取的封裝"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:179
 msgid "Update the binding for this command"
 msgstr "更新此命令的繫結"
-
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:203
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:213
-#, fuzzy
-msgid "Update to {0}"
-msgstr "更新 '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:49
 msgid "Update welcome page from internet"
@@ -24742,7 +24721,7 @@ msgstr "使用檔案選取器選取自訂命令"
 msgid "Use bullets"
 msgstr "使用項目符號"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:135
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/MacToolbox.cs:123
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:96
 msgid "Use compact display"
 msgstr "使用精簡顯示"
@@ -25035,7 +25014,7 @@ msgstr "版本控制(_O)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:330
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:68
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
@@ -25124,13 +25103,17 @@ msgid "Version control command failed."
 msgstr "版本控制指令失敗。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlTask.cs:85
-#, fuzzy
 msgid "Version control operation failed"
-msgstr "版本控制作業失敗:"
+msgstr "版本控制作業失敗"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:105
 msgid "Version of the assembly."
 msgstr "組件的版本。"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:145
+#, fuzzy
+msgid "Version {0}"
+msgstr "版本: {0}"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:152
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:211
@@ -25238,7 +25221,7 @@ msgstr "視覺化樣式"
 msgid "WARNING: "
 msgstr "警告:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1104
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1111
 msgid ""
 "WARNING: Some documents may need to be closed, and unsaved data will be "
 "lost. You will be asked to save the unsaved documents."
@@ -25246,7 +25229,7 @@ msgstr ""
 "警告: 可能需要關閉一些文件，將會遺失未儲存的資料。系統將會要求您儲存未儲存的"
 "文件。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1106
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1113
 msgid ""
 "WARNING: Some documents may need to be reloaded or closed, and unsaved data "
 "will be lost. You will be asked to save the unsaved documents."
@@ -25254,7 +25237,7 @@ msgstr ""
 "警告: 可能需要重新載入或關閉一些文件，將會遺失未儲存的資料。系統將會要求您儲"
 "存未儲存的文件。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1108
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1115
 msgid ""
 "WARNING: Some files may need to be reloaded, and unsaved data will be lost. "
 "You will be asked to save the unsaved files."
@@ -25353,23 +25336,23 @@ msgstr "Web API"
 msgid "Web API Controller Class"
 msgstr "Web API 控制器類別"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:278
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:421
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:564
 msgid "Web Application"
 msgstr "Web 應用程式"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:151
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:294
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:437
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:580
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:640
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:652
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:162
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:305
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:435
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:448
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:578
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:591
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:638
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:650
 msgid "Web Application (Model-View-Controller)"
 msgstr "Web 應用程式 (模型-檢視-控制器)"
 
@@ -25706,7 +25689,7 @@ msgstr "工作區名稱"
 msgid "Workspace Name:"
 msgstr "工作區名稱:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1498
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:1505
 msgid "Workspace item was deleted and will be closed. {0}"
 msgstr "已刪除並將關閉工作區項目。{0}"
 
@@ -25823,7 +25806,7 @@ msgstr "XSP Web 伺服器"
 msgid "Xamarin News"
 msgstr "Xamarin 新聞"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -25831,12 +25814,12 @@ msgstr ""
 "在 Windows 上，MonoDevelop 中不支援 Xamarin.Mac 專案。在 Mac 上，您需要使用 "
 "Xamarin Studio。"
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -26701,7 +26684,7 @@ msgid "_Icon Name:"
 msgstr "圖示名稱(_I):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:741
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:721
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:722
 msgid "_Ignore all"
 msgstr "全部略過(_I)"
 
@@ -26763,7 +26746,7 @@ msgid "_Jump To {0}"
 msgstr "跳至 {0}(_J)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:725
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:716
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:717
 msgid "_Keep changes"
 msgstr "保存變更(_K)"
 
@@ -26792,7 +26775,7 @@ msgid "_Line..."
 msgstr "程式行(_L)..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:986
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:539
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:540
 msgid "_Load from autosave"
 msgstr "從自動儲存中載入(_L)"
 
@@ -26842,9 +26825,8 @@ msgid "_Move to prev usage"
 msgstr "移到上一個使用方式(_M)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:68
-#, fuzzy
 msgid "_Multiple Carets"
-msgstr "多個專案"
+msgstr "多個游標(_M)"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:118
 msgid "_Name"
@@ -27063,12 +27045,12 @@ msgid "_Reload"
 msgstr "重新載入(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:734
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:720
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:721
 msgid "_Reload all"
 msgstr "全部重新載入(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:717
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:715
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:716
 msgid "_Reload from disk"
 msgstr "從磁碟中重新載入(_R)"
 
@@ -27422,7 +27404,7 @@ msgid "_Use custom author information for this solution"
 msgstr "對此解決方案使用自訂作者資訊(_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:970
-#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:536
+#: ../src/addins/MonoDevelop.TextEditor/MonoDevelop.TextEditor/TextViewContent.cs:537
 msgid "_Use original file"
 msgstr "使用原始檔案(_U)"
 
@@ -27933,9 +27915,8 @@ msgstr ""
 "}}"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:132
-#, fuzzy
 msgid "{0} (Unknown Version)"
-msgstr "未知的錯誤"
+msgstr "{0} (未知的版本)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1154
 msgid "{0} ([initializers]; [expression]; [iterators]) statement"
@@ -28150,12 +28131,6 @@ msgid ""
 "{0} already exist for this solution.  Would you like to overwrite them? (Y/N)"
 msgstr "這個解決方案已經有 {0}。要加以覆寫嗎? (Y/N)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:179
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:184
-#, fuzzy
-msgid "{0} available"
-msgstr "({0} 個可用)"
-
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1051
 msgid ""
 "{0} block\n"
@@ -28259,7 +28234,7 @@ msgid_plural ""
 "{3} with errors"
 msgstr[0] "總計處理 {0} 個檔案。已成功產生 {1} 個，{2} 個有警告，{3} 個有錯誤"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:384
+#: ../src/addins/MacPlatform/MacPlatform.cs:396
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -28450,7 +28425,7 @@ msgstr "{0} 範圍變數 2 {1} 範圍 2 {2} 陳述式 1 {3} 陳述式 2 [ {4} �
 msgid "{0} removed with warnings."
 msgstr "已移除 {0}，但有警告。"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:225
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -28640,7 +28615,7 @@ msgstr "{0} 分鐘 {1} 秒"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:615
 msgid "{1} cannot open the project '{0}' unless it is migrated."
-msgstr ""
+msgstr "除非專案 '{0}' 已移轉，否則無法開啟 {1}。"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
 msgid "{n,m}"
@@ -28670,68 +28645,11 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid "Catalan"
-#~ msgstr "加泰蘭文"
+#~ msgid "({0} installing)"
+#~ msgstr "(正在安裝 {0})"
 
-#~ msgid "Chinese - China"
-#~ msgstr "中文 - 中國"
+#~ msgid "Dependency"
+#~ msgstr "相依性"
 
-#~ msgid "Chinese - Taiwan"
-#~ msgstr "中文 - 台灣"
-
-#~ msgid "Current package version"
-#~ msgstr "目前的封裝版本"
-
-#~ msgid "Czech"
-#~ msgstr "捷克文"
-
-#~ msgid "Danish"
-#~ msgstr "丹麥文"
-
-#~ msgid "Dutch"
-#~ msgstr "荷蘭文"
-
-#~ msgid "English"
-#~ msgstr "英文"
-
-#~ msgid "French"
-#~ msgstr "法文"
-
-#~ msgid "Galician"
-#~ msgstr "加利西亞文"
-
-#~ msgid "German"
-#~ msgstr "德文"
-
-#~ msgid "Hungarian"
-#~ msgstr "匈牙利文"
-
-#~ msgid "Indonesian"
-#~ msgstr "印尼文"
-
-#~ msgid "Italian"
-#~ msgstr "義大利文"
-
-#~ msgid "Polish"
-#~ msgstr "波蘭文"
-
-#~ msgid "Portuguese"
-#~ msgstr "葡萄牙文"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "葡萄牙文 - 巴西"
-
-#~ msgid "Russian"
-#~ msgstr "俄文"
-
-#~ msgid "Slovenian"
-#~ msgstr "斯洛維尼亞文"
-
-#~ msgid "Spanish"
-#~ msgstr "西班牙文"
-
-#~ msgid "Swedish"
-#~ msgstr "瑞典文"
-
-#~ msgid "Version {0}"
-#~ msgstr "{0} 版"
+#~ msgid "Update to {0}"
+#~ msgstr "更新至 {0}"
