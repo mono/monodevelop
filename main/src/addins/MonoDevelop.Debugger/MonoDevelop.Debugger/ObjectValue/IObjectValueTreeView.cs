@@ -39,11 +39,14 @@ namespace MonoDevelop.Debugger
 		bool AllowEditing { get; set; }
 
 		/// <summary>
-		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
+		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree
 		/// </summary>
-		public bool AllowExpanding {
-			get; set;
-		}
+		bool AllowExpanding { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
+		/// </summary>
+		bool AllowWatchExpressions { get; set; }
 
 		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;

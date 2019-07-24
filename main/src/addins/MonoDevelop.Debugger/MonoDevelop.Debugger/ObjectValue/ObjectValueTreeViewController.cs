@@ -123,14 +123,9 @@ namespace MonoDevelop.Debugger
 		public bool AllowWatchExpressions {
 			get => allowWatchExpressions;
 			set {
-				if (allowWatchExpressions == value)
-					return;
-
 				allowWatchExpressions = value;
-
-				// trigger a refresh
-				if (Root != null) {
-					OnChildrenLoaded (Root, 0, Root.Children.Count);
+				if (view != null) {
+					view.AllowWatchExpressions = value;
 				}
 			}
 		}
@@ -256,7 +251,7 @@ namespace MonoDevelop.Debugger
 		public object GetControl (bool headersVisible = true)
 		{
 			if (view == null) {
-				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible) {
+				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible, AllowWatchExpressions) {
 					//AllowEditing = this.AllowEditing
 					//HeadersVisible = headersVisible,
 					AllowExpanding = this.AllowExpanding,

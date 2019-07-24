@@ -131,10 +131,11 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
 
-		public GtkObjectValueTreeView (ObjectValueTreeViewController controller, bool allowEditing, bool headersVisible)
+		public GtkObjectValueTreeView (ObjectValueTreeViewController controller, bool allowEditing, bool headersVisible, bool allowWatchExpressions)
 		{
 			// ensure this is set when we set up the view, don't try and refresh just yet
 			this.allowEditing = allowEditing;
+			this.allowWatchExpressions = allowWatchExpressions;
 
 
 			this.controller = controller;
@@ -279,12 +280,10 @@ namespace MonoDevelop.Debugger
 		public bool AllowEditing {
 			get => allowEditing;
 			set {
-				if (allowEditing == value)
-					return;
-
-				allowEditing = value;
-
-				Refresh (false);
+				if (allowEditing != value) {
+					allowEditing = value;
+					Refresh (false);
+				}
 			}
 		}
 
@@ -292,6 +291,21 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
 		/// </summary>
 		public bool AllowExpanding { get; set; }
+
+		bool allowWatchExpressions;
+
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
+		/// </summary>
+		public bool AllowWatchExpressions {
+			get => allowWatchExpressions;
+			set {
+				if (allowWatchExpressions != value) {
+					allowWatchExpressions = value;
+					Refresh (false);
+				}
+			}
+		}
 
 		protected override void OnDestroyed ()
 		{
@@ -350,7 +364,7 @@ namespace MonoDevelop.Debugger
 
 		void OnDragDataReceived (object o, DragDataReceivedArgs args)
 		{
-			if (!controller.AllowWatchExpressions)
+			if (!AllowWatchExpressions)
 				return;
 
 			var text = args.SelectionData.Text;
@@ -571,7 +585,7 @@ namespace MonoDevelop.Debugger
 			CleanPinIcon ();
 			store.Clear ();
 
-			bool showExpanders = controller.AllowWatchExpressions;
+			bool showExpanders = AllowWatchExpressions;
 
 			if (controller.Root != null) {
 				if (LoadNode (controller.Root, TreeIter.Zero)) {
@@ -582,8 +596,9 @@ namespace MonoDevelop.Debugger
 			if (showExpanders)
 				ShowExpanders = true;
 
-			if (controller.AllowWatchExpressions)
+			if (AllowWatchExpressions) {
 				store.AppendValues (createMsg, "", "", true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
+			}
 
 			LoadState ();
 		}
@@ -747,7 +762,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectNodeColumn, val);
-			store.SetValue (it, NameEditableColumn, !hasParent && controller.AllowWatchExpressions);
+			store.SetValue (it, NameEditableColumn, !hasParent && AllowWatchExpressions);
 			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
@@ -1159,7 +1174,7 @@ namespace MonoDevelop.Debugger
 				ObjectValue val;
 				TreeIter iter;
 
-				if (!AllowEditing || !controller.AllowWatchExpressions)
+				if (!AllowEditing || !AllowWatchExpressions)
 					return base.OnKeyPressEvent (evnt);
 
 				// Note: since we'll be modifying the tree, we need to make changes from bottom to top
@@ -1433,7 +1448,7 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-			if (!controller.AllowWatchExpressions) {
+			if (!AllowWatchExpressions) {
 				cinfo.Visible = false;
 				return;
 			}
@@ -1489,7 +1504,7 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (EditCommands.Rename)]
 		protected void OnUpdateRename (CommandInfo cinfo)
 		{
-			cinfo.Visible = controller.AllowWatchExpressions;
+			cinfo.Visible = AllowWatchExpressions;
 			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 
