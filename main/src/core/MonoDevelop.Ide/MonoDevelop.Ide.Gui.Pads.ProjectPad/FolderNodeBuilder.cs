@@ -91,7 +91,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					continue;
 				
 				if (file.Subtype != Subtype.Directory) {
-					if (file.DependsOnFile != null)
+					// If file depends on something other than a directory, continue
+					if (file.DependsOnFile != null && file.DependsOnFile.Subtype != Subtype.Directory)
 						continue;
 					
 					dir = file.IsLink
