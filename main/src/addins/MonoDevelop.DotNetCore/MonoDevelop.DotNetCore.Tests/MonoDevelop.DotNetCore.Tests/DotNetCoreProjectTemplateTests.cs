@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Templates;
@@ -32,7 +33,7 @@ using MonoDevelop.Projects;
 using NUnit.Framework;
 using IdeUnitTests;
 using MonoDevelop.Projects.FileNesting;
-
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -376,10 +377,15 @@ namespace MonoDevelop.DotNetCore.Tests
 				var template = await ptt.CreateAndBuild (preBuildChecks);
 
 				CheckProjectTypeGuids (ptt.Solution, GetProjectTypeGuid (template));
-				if (checkExecutionTargets) {
-					foreach (var p in ptt.Solution.GetAllProjects ()) {
+				// Blacklist library projects, which don't get any execution target
+				if (checkExecutionTargets && templateId != "Microsoft.Web.Razor.Library.CSharp") {
+					foreach (var p in ptt.Solution.GetAllProjects ().OfType<DotNetProject> ()) {
 						foreach (var config in p.Configurations) {
-							Assert.True (p.GetExecutionTargets (config.Selector)?.Any (x => x.Name.Contains ("Safari")) ?? false, $"Configuration {config.Name} didn't contain Safari");
+							var targets = p.GetExecutionTargets (config.Selector)?.ToList () ?? new List<ExecutionTarget> ();
+							if (System.IO.Directory.Exists ("/Applications/Safari.app"))
+								Assert.True (targets.Any (x => x.Name.Contains ("Safari")), $"Configuration {config.Name} didn't contain Safari");
+							if (System.IO.Directory.Exists ("/Applications/Google Chrome.app"))
+								Assert.True (targets.Any (x => x.Name.Contains ("Google Chrome")), $"Configuration {config.Name} didn't contain Chrome");
 						}
 					}
 				}
