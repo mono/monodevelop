@@ -53,8 +53,7 @@ namespace MonoDevelop.Debugger
 		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
 		bool allowEditing;
-		bool allowExpanding;
-		bool allowPopupMenu;
+		bool allowExpanding = true;
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
