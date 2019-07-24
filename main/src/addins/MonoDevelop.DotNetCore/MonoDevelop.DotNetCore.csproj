@@ -26,7 +26,7 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizard.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledInfoBar.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkPaths.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreCanReferenceProjectExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
