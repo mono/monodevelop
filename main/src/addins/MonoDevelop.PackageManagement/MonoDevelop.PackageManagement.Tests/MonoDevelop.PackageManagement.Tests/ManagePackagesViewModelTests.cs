@@ -1286,6 +1286,87 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
 		}
+
+		[Test]
+		public async Task Consolidate_ThreeProjectsTwoPackages_PackagesChecked_CheckedPackagesCanBeConsolidated ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("Test", "0.1");
+
+			var project2 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project2);
+			nugetProject.AddPackageReference ("Other", "0.1");
+
+			var project3 = AddProjectToSolution ("LibC");
+			nugetProject = CreateNuGetProjectForProject (project3);
+			nugetProject.AddPackageReference ("Test", "0.2");
+			nugetProject.AddPackageReference ("Other", "0.3");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("Test", "0.2");
+			viewModel.PackageFeed.AddPackage ("Other", "0.3");
+			viewModel.PageSelected = ManagePackagesPage.Consolidate;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			// Select Test package.
+			var package = viewModel.PackageViewModels [0];
+			viewModel.SelectedPackage = package;
+
+			Assert.AreEqual (2, viewModel.PackageViewModels.Count);
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+			Assert.AreEqual ("Other", viewModel.PackageViewModels [1].Id);
+			Assert.AreEqual ("0.3", viewModel.PackageViewModels [1].Version.ToString ());
+
+			var projectViewModel = viewModel.ProjectViewModels [0];
+			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
+			Assert.AreEqual ("0.1", projectViewModel.PackageVersion);
+			Assert.IsTrue (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [1];
+			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
+			Assert.AreEqual ("", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
+			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
+			Assert.IsTrue (projectViewModel.IsChecked);
+
+			viewModel.ProjectViewModels [0].IsChecked = false;
+			viewModel.ProjectViewModels [1].IsChecked = false;
+			viewModel.ProjectViewModels [2].IsChecked = false;
+
+			Assert.IsFalse (viewModel.CanConsolidate ());
+
+			// Select other package, check it, then switch back to
+			// Test package
+			package = viewModel.PackageViewModels [1];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			viewModel.SelectedPackage = viewModel.PackageViewModels [0];
+
+			// Should be able to consolidate since Other package is checked even though
+			// Test package is selected and cannot be consolidated.
+			Assert.IsTrue (viewModel.CanConsolidate ());
+
+			// Check Test package too.
+			viewModel.SelectedPackage.IsChecked = true;
+			var actions = viewModel.CreateConsolidatePackageActions (viewModel.PackageViewModels [0]).ToList ();
+			// Should be no actions since all projects are unchecked for this package.
+			Assert.AreEqual (0, actions.Count);
+
+			actions = viewModel.CreateConsolidatePackageActions (viewModel.PackageViewModels [1]).ToList ();
+			var action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (1, actions.Count);
+			Assert.AreEqual ("Other", action.PackageId);
+			Assert.AreEqual ("0.3", action.Version.ToString ());
+			Assert.AreEqual ("LibB", action.Project.Name);
+		}
 	}
 }
-

@@ -589,7 +589,7 @@ namespace MonoDevelop.PackageManagement
 			ManagePackagesSearchResultViewModel packageViewModel)
 		{
 			bool firstInstall = true;
-			foreach (ManageProjectViewModel project in ProjectViewModels) {
+			foreach (ManageProjectViewModel project in GetProjectViewModelsForPackage (packageViewModel)) {
 				if (!CanConsolidate (project, packageViewModel)) {
 					continue;
 				}
@@ -843,6 +843,15 @@ namespace MonoDevelop.PackageManagement
 				return false;
 			}
 
+			if (CheckedPackageViewModels.Count == 0) {
+				return CanConsolidateSelectedPackage ();
+			}
+
+			return CanConsolidateCheckedPackages ();
+		}
+
+		bool CanConsolidateSelectedPackage ()
+		{
 			if (SelectedPackage == null) {
 				return false;
 			}
@@ -854,6 +863,28 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return false;
+		}
+
+		bool CanConsolidateCheckedPackages ()
+		{
+			foreach (ManagePackagesSearchResultViewModel packageViewModel in CheckedPackageViewModels) {
+				foreach (ManageProjectViewModel projectViewModel in GetProjectViewModelsForPackage (packageViewModel)) {
+					if (CanConsolidate (projectViewModel, packageViewModel)) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		IEnumerable<ManageProjectViewModel> GetProjectViewModelsForPackage (ManagePackagesSearchResultViewModel packageViewModel)
+		{
+			List<ManageProjectViewModel> projectViewModels;
+			if (cachedProjectViewModels.TryGetValue (packageViewModel.Id, out projectViewModels)) {
+				return projectViewModels;
+			}
+			return Enumerable.Empty<ManageProjectViewModel> ();
 		}
 	}
 }
