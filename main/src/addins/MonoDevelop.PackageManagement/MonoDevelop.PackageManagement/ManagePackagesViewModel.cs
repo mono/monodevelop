@@ -62,6 +62,8 @@ namespace MonoDevelop.PackageManagement
 		NuGetPackageManager packageManager;
 		RecentManagedNuGetPackagesRepository recentPackagesRepository;
 		List<ManagePackagesProjectInfo> projectInformation = new List<ManagePackagesProjectInfo> ();
+		Dictionary<string, List<ManageProjectViewModel>> cachedProjectViewModels =
+			new Dictionary<string, List<ManageProjectViewModel>> (StringComparer.OrdinalIgnoreCase);
 
 		public static ManagePackagesViewModel Create (
 			RecentManagedNuGetPackagesRepository recentPackagesRepository,
@@ -146,6 +148,7 @@ namespace MonoDevelop.PackageManagement
 				if (pageSelected != value) {
 					pageSelected = value;
 					CheckedPackageViewModels.Clear ();
+					cachedProjectViewModels.Clear ();
 				}
 			}
 		}
@@ -812,13 +815,24 @@ namespace MonoDevelop.PackageManagement
 				return;
 			}
 
+			ProjectViewModels.Clear ();
+
 			if (SelectedPackage == null) {
-				ProjectViewModels.Clear ();
 				return;
 			}
 
-			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
-				var projectViewModel = new ManageProjectViewModel (projectInfo, SelectedPackage.Id);
+			List<ManageProjectViewModel> projectViewModels;
+			if (!cachedProjectViewModels.TryGetValue (SelectedPackage.Id, out projectViewModels)) {
+				projectViewModels = new List<ManageProjectViewModel> ();
+				foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
+					var projectViewModel = new ManageProjectViewModel (projectInfo, SelectedPackage.Id);
+					projectViewModels.Add (projectViewModel);
+				}
+
+				cachedProjectViewModels [SelectedPackage.Id] = projectViewModels;
+			}
+
+			foreach (ManageProjectViewModel projectViewModel in projectViewModels) {
 				ProjectViewModels.Add (projectViewModel);
 			}
 		}
