@@ -93,7 +93,7 @@ namespace MonoDevelop.SourceEditor
 				controller.CompactView = true;
 				controller.PinnedWatch = watch;
 
-				treeView = (TreeView) controller.GetControl ();
+				treeView = (TreeView) controller.GetControl (headersVisible: false);
 				valueTree = null;
 
 				if (objectValue != null)

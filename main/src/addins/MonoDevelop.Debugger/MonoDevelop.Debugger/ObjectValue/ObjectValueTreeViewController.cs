@@ -47,6 +47,8 @@ namespace MonoDevelop.Debugger
 	{
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		public const int MaxEnumerableChildrenToFetch = 20;
+
+		IObjectValueTreeView view;
 		IDebuggerService debuggerService;
 		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
@@ -72,7 +74,6 @@ namespace MonoDevelop.Debugger
 		public ObjectValueTreeViewController ()
 		{
 			AllowPopupMenu = true;
-			HeadersVisible = true;
 		}
 
 		public IDebuggerService Debugger {
@@ -95,14 +96,9 @@ namespace MonoDevelop.Debugger
 		public bool AllowEditing {
 			get => allowEditing;
 			set {
-				if (allowEditing == value)
-					return;
-
 				allowEditing = value;
-
-				// trigger a refresh
-				if (Root != null) {
-					OnChildrenLoaded (Root, 0, Root.Children.Count);
+				if (view != null) {
+					view.AllowEditing = value;
 				}
 			}
 		}
@@ -140,13 +136,6 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether or not the TreeView should compact the view.
 		/// </summary>
 		public bool CompactView {
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether or not the table columns should be visible.
-		/// </summary>
-		public bool HeadersVisible {
 			get; set;
 		}
 
@@ -257,12 +246,17 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public event EventHandler<ObjectValueNodeEvaluationCompletedEventArgs> EvaluationCompleted;
 
-		public object GetControl ()
+		public object GetControl (bool headersVisible = true)
 		{
-			var view = new GtkObjectValueTreeView (this);
+			if (view == null) {
+				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible) {
+					//AllowEditing = this.AllowEditing
+					//HeadersVisible = headersVisible,
+				};
 
-			view.NodeExpanded += OnViewNodeExpanded;
-			view.NodeCollapsed += OnViewNodeCollapsed;
+				view.NodeExpanded += OnViewNodeExpanded;
+				view.NodeCollapsed += OnViewNodeCollapsed;
+			}
 
 			return view;
 		}

@@ -95,7 +95,6 @@ namespace MonoDevelop.Debugger
 				controller = new ObjectValueTreeViewController ();
 				controller.SetStackFrame (frame);
 				controller.RootPinAlwaysVisible = true;
-				controller.HeadersVisible = false;
 				controller.AllowEditing = true;
 				controller.AllowPinning = true;
 				controller.CompactView = true;
@@ -107,7 +106,7 @@ namespace MonoDevelop.Debugger
 				controller.StartEditing += OnStartEditing;
 				controller.EndEditing += OnEndEditing;
 
-				treeView = (TreeView) controller.GetControl ();
+				treeView = (TreeView) controller.GetControl (headersVisible: false);
 
 				controller.AddValue (value);
 			} else {

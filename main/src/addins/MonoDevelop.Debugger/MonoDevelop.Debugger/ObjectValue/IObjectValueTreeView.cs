@@ -28,8 +28,16 @@ using System;
 
 namespace MonoDevelop.Debugger
 {
+	/// <summary>
+	/// Defines the interface to the view that ObjectValueTreeViewController can interact with
+	/// </summary>
 	public interface IObjectValueTreeView
 	{
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to edit values in the tree
+		/// </summary>
+		bool AllowEditing { get; set; }
+
 		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 

@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger
 {
 	// TODO: when we remove from store, remove from allNodes
 	[System.ComponentModel.ToolboxItem (true)]
-	public class GtkObjectValueTreeView : TreeView, ICompletionWidget
+	public class GtkObjectValueTreeView : TreeView, ICompletionWidget, IObjectValueTreeView
 	{
 		static readonly Gtk.TargetEntry [] DropTargets = {
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
@@ -131,8 +131,12 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
 
-		public GtkObjectValueTreeView (ObjectValueTreeViewController controller)
+		public GtkObjectValueTreeView (ObjectValueTreeViewController controller, bool allowEditing, bool headersVisible)
 		{
+			// ensure this is set when we set up the view, don't try and refresh just yet
+			this.allowEditing = allowEditing;
+
+
 			this.controller = controller;
 			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
 			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
@@ -142,7 +146,7 @@ namespace MonoDevelop.Debugger
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
-			HeadersVisible = controller.HeadersVisible;
+			HeadersVisible = headersVisible;
 			EnableSearch = false;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			Selection.Changed += HandleSelectionChanged;
@@ -265,6 +269,23 @@ namespace MonoDevelop.Debugger
 			focus_line_width = (int) StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
 
 			AdjustColumnSizes ();
+		}
+
+		bool allowEditing;
+
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to edit values in the tree
+		/// </summary>
+		public bool AllowEditing {
+			get => allowEditing;
+			set {
+				if (allowEditing == value)
+					return;
+
+				allowEditing = value;
+
+				Refresh (false);
+			}
 		}
 
 		protected override void OnDestroyed ()
