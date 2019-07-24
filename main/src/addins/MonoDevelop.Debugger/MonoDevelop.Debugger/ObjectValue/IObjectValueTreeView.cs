@@ -38,6 +38,13 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		bool AllowEditing { get; set; }
 
+		/// <summary>
+		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
+		/// </summary>
+		public bool AllowExpanding {
+			get; set;
+		}
+
 		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 

@@ -288,6 +288,11 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
+		/// </summary>
+		public bool AllowExpanding { get; set; }
+
 		protected override void OnDestroyed ()
 		{
 			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
@@ -784,7 +789,7 @@ namespace MonoDevelop.Debugger
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
 		{
 			if (!restoringState) {
-				if (!controller.AllowExpanding)
+				if (!AllowExpanding)
 					return true;
 
 				if (GetRowExpanded (path))

@@ -53,6 +53,7 @@ namespace MonoDevelop.Debugger
 		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
 		bool allowEditing;
+		bool allowExpanding;
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
@@ -107,7 +108,13 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
 		/// </summary>
 		public bool AllowExpanding {
-			get; set;
+			get => allowExpanding;
+			set {
+				allowExpanding = value;
+				if (view != null) {
+					view.AllowExpanding = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -252,6 +259,7 @@ namespace MonoDevelop.Debugger
 				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible) {
 					//AllowEditing = this.AllowEditing
 					//HeadersVisible = headersVisible,
+					AllowExpanding = this.AllowExpanding,
 				};
 
 				view.NodeExpanded += OnViewNodeExpanded;
