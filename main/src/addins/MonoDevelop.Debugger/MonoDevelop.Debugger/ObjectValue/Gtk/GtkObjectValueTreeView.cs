@@ -1159,7 +1159,7 @@ namespace MonoDevelop.Debugger
 				ObjectValue val;
 				TreeIter iter;
 
-				if (!controller.AllowEditing || !controller.AllowWatchExpressions)
+				if (!AllowEditing || !controller.AllowWatchExpressions)
 					return base.OnKeyPressEvent (evnt);
 
 				// Note: since we'll be modifying the tree, we need to make changes from bottom to top
