@@ -1143,6 +1143,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (0, viewModel.ProjectViewModels.Count);
 			Assert.IsFalse (viewModel.CanConsolidate ());
 		}
+
+		[Test]
+		public async Task CheckedPackageViewModels_DifferentTabPageSelected_CheckedPackagesCleared ()
+		{
+			CreateProject ();
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			viewModel.PackageFeed.AddPackage ("A", "1.2");
+			viewModel.PackageFeed.AddPackage ("B", "1.3");
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			viewModel.PackageViewModels [0].IsChecked = true;
+
+			Assert.AreEqual (2, viewModel.PackageViewModels.Count);
+			Assert.AreEqual (1, viewModel.CheckedPackageViewModels.Count);
+			Assert.AreEqual ("A", viewModel.CheckedPackageViewModels [0].Id);
+
+			viewModel.PageSelected = ManagePackagesPage.Consolidate;
+
+			Assert.AreEqual (0, viewModel.CheckedPackageViewModels.Count);
+		}
 	}
 }
 

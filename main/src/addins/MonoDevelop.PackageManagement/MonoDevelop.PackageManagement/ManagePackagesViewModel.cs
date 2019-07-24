@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		SourceRepositoryViewModel selectedPackageSource;
 		ManagePackagesSearchResultViewModel selectedPackage;
+		ManagePackagesPage pageSelected;
 		IPackageSourceProvider packageSourceProvider;
 		PackageItemLoader currentLoader;
 		CancellationTokenSource cancellationTokenSource;
@@ -139,7 +140,15 @@ namespace MonoDevelop.PackageManagement
 
 		public string SearchTerms { get; set; }
 
-		public ManagePackagesPage PageSelected { get; set; }
+		public ManagePackagesPage PageSelected {
+			get { return pageSelected; }
+			set {
+				if (pageSelected != value) {
+					pageSelected = value;
+					CheckedPackageViewModels.Clear ();
+				}
+			}
+		}
 
 		public bool IsConsolidatePageSelected {
 			get { return PageSelected == ManagePackagesPage.Consolidate; }
