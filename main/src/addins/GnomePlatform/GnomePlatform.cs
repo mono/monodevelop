@@ -231,7 +231,7 @@ namespace MonoDevelop.Platform
 				? BashPause
 				: String.Empty;
 			
-			return String.Format (@" -title ""{4}"" -e bash -c ""cd {3} ; '{0}' {1} ; {2}""",
+			return String.Format (@" -title ""{4}"" -e bash -c ""cd {3} ; '""{0}""' {1} ; {2}""",
 				command,
 				EscapeArgs (args),
 				extra_commands,
@@ -259,7 +259,7 @@ namespace MonoDevelop.Platform
 				? BashPause.Replace ("'", "\"")
 					: String.Empty;
 
-			return String.Format (@" --nofork --workdir=""{3}"" -e ""bash"" -c '{0} {1} ; {2}'",
+			return String.Format (@" --nofork --workdir=""{3}"" -e ""bash"" -c '""{0}"" {1} ; {2}'",
 			                      command,
 			                      args,
 			                      extra_commands,
