@@ -576,11 +576,12 @@ namespace MonoDevelop.Components.Commands
 					// Not nice, but we need a synchronous result here
 					if (!cinfo.UpdateTask.Wait (SlowUpdateCommandTime)) {
 						cinfo.CancelAsyncUpdate ();
-						LoggingService.LogWarning ("Slow command update task: Command:{0}", commands [i].Id);
+						LoggingService.LogError ("Slow command update task timed out: Command:{0}", commands [i].Id);
 						var metadata = new UpdateCommandInfoCounterMetadata {
 							CommandId = commands [i].Id
 						};
 						Counters.UpdateCommandTimeoutInfo.Inc (metadata);
+						KeyBindingFailed?.Invoke (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("Initializing '{0}' ({1}) command failed.", commands [i].DisplayName, KeyBindingManager.BindingToDisplayLabel (binding.ToString (), false))));
 					}
 				}
 
