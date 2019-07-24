@@ -120,28 +120,28 @@ namespace MonoDevelop.Debugger
 
 		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value, CancellationToken cancellationToken)
 		{
-			return Task.Factory.StartNew (delegate (object arg) {
+			return Task.Run (() => {
 				try {
-					return ((ObjectValue)arg).GetAllChildren ();
+					return value.GetAllChildren ();
 				} catch (Exception ex) {
 					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
 					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
 					return new ObjectValue[0];
 				}
-			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+			}, cancellationToken);
 		}
 
 		static Task<ObjectValue []> GetChildrenAsync (ObjectValue value, int index, int count, CancellationToken cancellationToken)
 		{
-			return Task.Factory.StartNew (delegate (object arg) {
+			return Task.Run(() => {
 				try {
-					return ((ObjectValue)arg).GetRangeOfChildren (index, count);
+					return value.GetRangeOfChildren (index, count);
 				} catch (Exception ex) {
 					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
 					LoggingService.LogError ("Failed to get ObjectValue range of children.", ex);
 					return new ObjectValue[0];
 				}
-			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+			}, cancellationToken);
 		}
 
 		void OnDebuggerValueChanged (object sender, EventArgs e)
