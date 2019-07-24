@@ -152,6 +152,9 @@
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleAllOutliningCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningDefinitionsCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.EnableDisableFolding" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningEnabledCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelection" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ExpandSelectionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShrinkSelection" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ContractSelectionCommandArgs" />
 	</Extension>
 
 	<!--
