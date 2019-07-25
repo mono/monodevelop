@@ -78,7 +78,6 @@ namespace MonoDevelop.AspNetCore
 		{
 			if (launchProfileProvider == null) {
 				launchProfileProvider = new LaunchProfileProvider (this.Project.BaseDirectory, this.Project.DefaultNamespace);
-				launchProfileProvider.LoadLaunchSettings ();
 			}
 		}
 
@@ -156,30 +155,12 @@ namespace MonoDevelop.AspNetCore
 			FileService.FileChanged += FileService_FileChanged;
 
 			InitLaunchSettingsProvider ();
+			updating = true;
 
-			foreach (var profile in launchProfileProvider.Profiles) {
+			launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.SyncRunConfigurations (Project);
 
-				if (profile.Value.CommandName != "Project")
-					continue;
-
-				var key = string.Empty;
-
-				if (profile.Key == this.Project.DefaultNamespace) {
-					key = "Default";
-				} else {
-					key = profile.Key;
-				}
-
-				var runConfig = this.Project.RunConfigurations.FirstOrDefault (x => x.Name == key);
-				if (runConfig == null) {
-					var projectRunConfiguration = new AspNetCoreRunConfiguration (key, profile.Value) {
-						StartAction = "Project"
-					};
-					this.Project.RunConfigurations.Add (projectRunConfiguration);
-				} else if (runConfig is AspNetCoreRunConfiguration config) {
-					config.UpdateProfile (profile.Value);
-				}
-			}
+			updating = false;
 		}
 
 		public override void Dispose ()
@@ -203,52 +184,9 @@ namespace MonoDevelop.AspNetCore
 			updating = true;
 
 			launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.SyncRunConfigurations (Project);
 
-			foreach (var profile in launchProfileProvider.Profiles) {
-				if (profile.Value.CommandName != "Project")
-					continue;
-
-				var key = string.Empty;
-
-				if (profile.Key == this.Project.DefaultNamespace) {
-					key = "Default";
-				} else {
-					key = profile.Key;
-				}
-
-				var runConfig = this.Project.RunConfigurations.FirstOrDefault (x => x.Name == key);
-				if (runConfig == null) {
-					var projectRunConfiguration = new AspNetCoreRunConfiguration (key, profile.Value) {
-						StartAction = "Project"
-					};
-					this.Project.RunConfigurations.Add (projectRunConfiguration);
-				} else {
-					if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
-						var index = Project.RunConfigurations.IndexOf (runConfig);
-						aspNetCoreRunConfiguration.UpdateProfile (profile.Value);
-						this.Project.RunConfigurations [index] = runConfig;
-					}
-				}
-			}
-
-			var itemsRemoved = new RunConfigurationCollection ();
-
-			foreach (var config in Project.RunConfigurations) {
-				var key = config.Name;
-
-				if (config.Name == "Default") {
-					key = this.Project.DefaultNamespace;
-				}
-
-				if (launchProfileProvider.Profiles.TryGetValue (key, out var _))
-					continue;
-
-				itemsRemoved.Add (config);
-			}
-
-			Project.RunConfigurations.RemoveRange (itemsRemoved);
-
-			await IdeApp.ProjectOperations.SaveAsync (this.Project);
+			await IdeApp.ProjectOperations.SaveAsync (Project);
 
 			updating = false;
 		}

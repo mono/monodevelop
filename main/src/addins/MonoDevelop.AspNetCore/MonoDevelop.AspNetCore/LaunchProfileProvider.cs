@@ -27,8 +27,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -170,6 +172,57 @@ namespace MonoDevelop.AspNetCore
 			};
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (profiles);
 			SaveLaunchSettings ();
+		}
+
+		/// <summary>
+		/// Updates Project.RunConfigurations
+		/// </summary>
+		/// <param name="project"></param>
+		internal void SyncRunConfigurations (DotNetProject project)
+		{
+			foreach (var profile in this.Profiles) {
+
+				if (profile.Value.CommandName != "Project")
+					continue;
+
+				var key = string.Empty;
+
+				if (profile.Key == project.DefaultNamespace) {
+					key = "Default";
+				} else {
+					key = profile.Key;
+				}
+
+				var runConfig = project.RunConfigurations.FirstOrDefault (x => x.Name == key);
+				if (runConfig == null) {
+					var projectRunConfiguration = new AspNetCoreRunConfiguration (key, profile.Value) {
+						StartAction = "Project",
+						StoreInUserFile = false
+					};
+					project.RunConfigurations.Add (projectRunConfiguration);
+				} else if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
+					var index = project.RunConfigurations.IndexOf (runConfig);
+					aspNetCoreRunConfiguration.UpdateProfile (profile.Value);
+					project.RunConfigurations [index] = runConfig;
+				}
+			}
+
+			var itemsRemoved = new RunConfigurationCollection ();
+
+			foreach (var config in project.RunConfigurations) {
+				var key = config.Name;
+
+				if (config.Name == "Default") {
+					key = project.DefaultNamespace;
+				}
+
+				if (Profiles.TryGetValue (key, out var _))
+					continue;
+
+				itemsRemoved.Add (config);
+			}
+
+			project.RunConfigurations.RemoveRange (itemsRemoved);
 		}
 	}
 }
