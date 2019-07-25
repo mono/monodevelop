@@ -36,28 +36,29 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
 {
-	/*
-	 * Issues?
-	 *
-	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
-	 * refreshing a node (which may replace it's children nodes)
-	 * 
-	 */
-	public class ObjectValueTreeViewController
+	public interface IObjectValueDebuggerService
+	{
+		bool CanQueryDebugger { get; }
+		IStackFrame Frame { get; }
+		Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
+	}
+
+	public class ObjectValueTreeViewController : IObjectValueDebuggerService
 	{
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		public const int MaxEnumerableChildrenToFetch = 20;
+
+		IObjectValueTreeView view;
 		IDebuggerService debuggerService;
-		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
 		bool allowEditing;
+		bool allowExpanding = true;
 
 		/// <summary>
 		/// Holds a dictionary of tasks that are fetching children values of the given node
 		/// </summary>
 		readonly Dictionary<ObjectValueNode, Task<int>> childFetchTasks = new Dictionary<ObjectValueNode, Task<int>> ();
 
-		// TODO: can we refactor this to a separate class?
 		/// <summary>
 		/// Holds a dictionary of arbitrary objects for nodes that are currently "Evaluating" by the debugger
 		/// When the node has completed evaluation ValueUpdated event will be fired, passing the given object
@@ -71,8 +72,6 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeViewController ()
 		{
-			AllowPopupMenu = true;
-			HeadersVisible = true;
 		}
 
 		public IDebuggerService Debugger {
@@ -95,14 +94,9 @@ namespace MonoDevelop.Debugger
 		public bool AllowEditing {
 			get => allowEditing;
 			set {
-				if (allowEditing == value)
-					return;
-
 				allowEditing = value;
-
-				// trigger a refresh
-				if (Root != null) {
-					OnChildrenLoaded (Root, 0, Root.Children.Count);
+				if (view != null) {
+					view.AllowEditing = value;
 				}
 			}
 		}
@@ -111,7 +105,13 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
 		/// </summary>
 		public bool AllowExpanding {
-			get; set;
+			get => allowExpanding;
+			set {
+				allowExpanding = value;
+				if (view != null) {
+					view.AllowExpanding = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -120,56 +120,19 @@ namespace MonoDevelop.Debugger
 		public bool AllowWatchExpressions {
 			get => allowWatchExpressions;
 			set {
-				if (allowWatchExpressions == value)
-					return;
-
 				allowWatchExpressions = value;
-
-				// trigger a refresh
-				if (Root != null) {
-					OnChildrenLoaded (Root, 0, Root.Children.Count);
+				if (view != null) {
+					view.AllowWatchExpressions = value;
 				}
 			}
 		}
 
-		public bool AllowPopupMenu {
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether or not the TreeView should compact the view.
-		/// </summary>
-		public bool CompactView {
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether or not the table columns should be visible.
-		/// </summary>
-		public bool HeadersVisible {
-			get; set;
-		}
-
-		#region Pinned Watches
-
-		/// <summary>
-		/// Gets a value indicating whether the user should be able to pin the value to the text editor.
-		/// </summary>
-		public bool AllowPinning {
-			get; set;
-		}
-
-		public event EventHandler PinnedWatchChanged;
-
 		public PinnedWatch PinnedWatch {
-			get { return pinnedWatch; }
+			get { return view?.PinnedWatch; }
 			set {
-				if (pinnedWatch == value)
-					return;
-
-				pinnedWatch = value;
-
-				PinnedWatchChanged?.Invoke (this, EventArgs.Empty);
+				if (view != null) {
+					view.PinnedWatch = value;
+				}
 			}
 		}
 
@@ -181,26 +144,114 @@ namespace MonoDevelop.Debugger
 			get; set;
 		}
 
-		public bool RootPinAlwaysVisible {
-			get; set;
-		}
-
-		#endregion
-
 		public bool CanQueryDebugger {
 			get {
 				return Debugger.IsConnected && Debugger.IsPaused;
 			}
 		}
 
-		public event EventHandler PinStatusChanged;
-
-		void OnPinStatusChanged ()
+		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
 		{
-			PinStatusChanged?.Invoke (this, EventArgs.Empty);
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			view = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
+				AllowExpanding = this.AllowExpanding,
+				PinnedWatch = this.PinnedWatch,
+			};
+
+
+			view.NodeExpand += OnViewNodeExpand;
+			view.NodeCollapse += OnViewNodeCollapse;
+			view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
+			view.ExpressionAdded += OnViewExpressionAdded;
+			view.ExpressionEdited += OnViewExpressionEdited;
+			view.NodeRefresh += OnViewNodeRefresh;
+			view.NodeGetCanEdit += OnViewNodeCanEdit;
+			view.NodeEditValue += OnViewNodeEditValue;
+			view.NodeRemoved += OnViewNodeRemoved;
+			view.NodePinned += OnViewNodePinned;
+			view.NodeUnpinned += OnViewNodeUnpinned;
+			view.NodeShowVisualiser += OnViewNodeShowVisualiser;
+
+			return view;
 		}
 
-		public void CreatePinnedWatch (string expression, int height)
+		public void CancelAsyncTasks ()
+		{
+			cancellationTokenSource.Cancel ();
+		}
+
+		/// <summary>
+		/// Clears the controller of nodes and resets the root to a new empty node
+		/// </summary>
+		public void ClearValues ()
+		{
+			Root = OnCreateRoot ();
+
+			Runtime.RunInMainThread (() => {
+				view.Reload (Root);
+			}).Ignore ();
+		}
+
+		/// <summary>
+		/// Clear everything
+		/// </summary>
+		public void ClearAll ()
+		{
+			ClearEvaluationCompletionRegistrations ();
+			ClearValues ();
+		}
+
+		/// <summary>
+		/// Adds values to the root node, eg locals or watch expressions
+		/// </summary>
+		public void AddValue (ObjectValueNode value)
+		{
+			if (Root == null) {
+				Root = OnCreateRoot ();
+			}
+
+			((RootObjectValueNode)Root).AddValue (value);
+			RegisterNode (value);
+
+			Runtime.RunInMainThread (() => {
+				view.Reload (Root);
+			}).Ignore ();
+		}
+
+		/// <summary>
+		/// Adds values to the root node, eg locals or watch expressions
+		/// </summary>
+		public void AddValues (IEnumerable<ObjectValueNode> values)
+		{
+			if (Root == null) {
+				Root = OnCreateRoot ();
+			}
+
+			var nodes = values.ToList ();
+			((RootObjectValueNode)Root).AddValues (nodes);
+
+			foreach (var node in nodes) {
+				RegisterNode (node);
+			}
+
+			Runtime.RunInMainThread (() => {
+				view.Reload (Root);
+			}).Ignore ();
+		}
+
+		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
+		{
+			if (CanQueryDebugger && Frame != null) {
+				// TODO: improve how we get at the underlying real stack frame
+				return await DebuggingService.GetCompletionDataAsync (Frame.GetStackFrame (), expression, token);
+			}
+
+			return null;
+		}
+
+		void CreatePinnedWatch (string expression, int height)
 		{
 			var watch = new PinnedWatch ();
 
@@ -218,120 +269,17 @@ namespace MonoDevelop.Debugger
 
 			watch.Expression = expression;
 			DebuggingService.PinnedWatches.Add (watch);
-
-			OnPinStatusChanged ();
 		}
 
-		public void RemovePinnedWatch ()
+		void RemovePinnedWatch ()
 		{
 			DebuggingService.PinnedWatches.Remove (PinnedWatch);
-			OnPinStatusChanged ();
 		}
 
-		public event EventHandler StartEditing;
-
-		internal void OnStartEditing ()
-		{
-			StartEditing?.Invoke (this, EventArgs.Empty);
-		}
-
-		public event EventHandler EndEditing;
-
-		internal void OnEndEditing ()
-		{
-			EndEditing?.Invoke (this, EventArgs.Empty);
-		}
-
-		public event EventHandler<ObjectValueNodeChildrenChangedEventArgs> ChildrenLoaded;
-
-		/// <summary>
-		/// NodeExpanded is fired when the node has expanded and the children
-		/// for the node have been loaded and are in the node's children collection
-		/// </summary>
-		public event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
-
-		/// <summary>
-		/// EvaluationCompleted is fired when the debugger informs us that a node that
-		/// was IsEvaluating has finished evaluating and the values of the node can
-		/// be displaved
-		/// </summary>
-		public event EventHandler<ObjectValueNodeEvaluationCompletedEventArgs> EvaluationCompleted;
-
-		public object GetControl ()
-		{
-			var view = new GtkObjectValueTreeView (this);
-
-			view.NodeExpanded += OnViewNodeExpanded;
-			view.NodeCollapsed += OnViewNodeCollapsed;
-
-			return view;
-		}
-
-		public void CancelAsyncTasks ()
-		{
-			cancellationTokenSource.Cancel ();
-		}
-
-		/// <summary>
-		/// Clears the controller of nodes and resets the root to a new empty node
-		/// </summary>
-		public void ClearValues ()
-		{
-			Root = OnCreateRoot ();
-
-			OnChildrenLoaded (Root, 0, Root.Children.Count);
-		}
-
-		/// <summary>
-		/// Adds values to the root node, eg locals or watch expressions
-		/// </summary>
-		public void AddValue (ObjectValueNode value)
-		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
-			((RootObjectValueNode) Root).AddValue (value);
-			RegisterNode (value);
-
-			OnChildrenLoaded (Root, 0, Root.Children.Count);
-		}
-
-		/// <summary>
-		/// Adds values to the root node, eg locals or watch expressions
-		/// </summary>
-		public void AddValues (IEnumerable<ObjectValueNode> values)
-		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
-			var nodes = values.ToList ();
-			((RootObjectValueNode) Root).AddValues (nodes);
-
-			// TODO: we want to enumerate just the once
-			foreach (var node in nodes) {
-				RegisterNode (node);
-			}
-
-			OnChildrenLoaded (Root, 0, Root.Children.Count);
-		}
-
-		public bool RemoveValue (ObjectValueNode node)
+		void RemoveValue (ObjectValueNode node)
 		{
 			UnregisterNode (node);
-			OnEvaluationCompleted (node, new ObjectValueNode[0]);
-
-			return true;
-		}
-
-		/// <summary>
-		/// Clear everything
-		/// </summary>
-		public void ClearAll ()
-		{
-			ClearEvaluationCompletionRegistrations ();
-			ClearValues ();
+			OnEvaluationCompleted (node, new ObjectValueNode [0]);
 		}
 
 		// TODO: can we improve this
@@ -423,34 +371,32 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public bool EditExpression(ObjectValueNode node, string newExpression)
+		bool EditExpression (ObjectValueNode node, string newExpression)
 		{
 			if (node.Name == newExpression)
 				return false;
 
 			UnregisterNode (node);
-			if (string.IsNullOrEmpty(newExpression)) {
+			if (string.IsNullOrEmpty (newExpression)) {
 				// we want the expression removed from the tree
-				OnEvaluationCompleted (node, new ObjectValueNode[0]);
+				OnEvaluationCompleted (node, new ObjectValueNode [0]);
 				return true;
 			}
 
-			var expressionNode = Frame.EvaluateExpression(newExpression);
+			var expressionNode = Frame.EvaluateExpression (newExpression);
 			RegisterNode (expressionNode);
-			OnEvaluationCompleted (node, new ObjectValueNode[1] { expressionNode });
+			OnEvaluationCompleted (node, new ObjectValueNode [1] { expressionNode });
 
 			return true;
 		}
 		#endregion
 
-		#region Editing
 		/// <summary>
 		/// Returns true if the node can be edited
 		/// </summary>
-		public bool CanEditObject (ObjectValueNode node)
+		bool CanEditObject (ObjectValueNode node)
 		{
 			if (AllowEditing) {
-				// TODO: clean up
 				if (node.IsUnknown) {
 					if (Frame != null) {
 						return false;
@@ -467,7 +413,7 @@ namespace MonoDevelop.Debugger
 		/// Edits the value of the node and returns a value indicating whether the node's value changed from
 		/// when the node was initially loaded from the debugger
 		/// </summary>
-		public bool EditNodeValue (ObjectValueNode node, string newValue)
+		bool EditNodeValue (ObjectValueNode node, string newValue)
 		{
 			if (node == null || !AllowEditing)
 				return false;
@@ -478,7 +424,7 @@ namespace MonoDevelop.Debugger
 
 				// make sure we set an old value for this node so we can show that it has changed
 				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
-					oldValues[node.Path] = new CheckpointState (node);
+					oldValues [node.Path] = new CheckpointState (node);
 				}
 
 				// ensure the parent and node are in the checkpoint and expanded
@@ -505,13 +451,13 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		public bool ShowNodeValueVisualizer (ObjectValueNode node)
+		bool ShowNodeValueVisualizer (ObjectValueNode node)
 		{
 			if (node != null) {
 
 				// make sure we set an old value for this node so we can show that it has changed
 				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
-					oldValues[node.Path] = new CheckpointState (node);
+					oldValues [node.Path] = new CheckpointState (node);
 				}
 
 				// ensure the parent and node are in the checkpoint and expanded
@@ -533,7 +479,7 @@ namespace MonoDevelop.Debugger
 			return false;
 		}
 
-		void EnsureNodeIsExpandedInCheckpoint(ObjectValueNode node)
+		void EnsureNodeIsExpandedInCheckpoint (ObjectValueNode node)
 		{
 			var parent = node.Parent; /*FindNode (node.ParentId);*/
 
@@ -541,15 +487,14 @@ namespace MonoDevelop.Debugger
 				if (oldValues.TryGetValue (parent.Path, out CheckpointState state)) {
 					state.Expanded = true;
 				} else {
-					oldValues[parent.Path] = new CheckpointState (parent) { Expanded = true };
+					oldValues [parent.Path] = new CheckpointState (parent) { Expanded = true };
 				}
 
 				parent = parent.Parent; /*FindNode (parent.ParentId);*/
 			}
 		}
-		#endregion
 
-		public void RefreshNode (ObjectValueNode node)
+		void RefreshNode (ObjectValueNode node)
 		{
 			if (node == null)
 				return;
@@ -563,23 +508,80 @@ namespace MonoDevelop.Debugger
 				options.AllowTargetInvoke = true;
 				options.EllipsizeStrings = false;
 
-				//string oldName = val.Name;
 				node.Refresh (options);
-
-				// TODO: this is for watched expressions
-				// Don't update the name for the values entered by the user
-				//if (store.IterDepth (iter) == 0)
-				//	val.Name = oldName;
 
 				RegisterForEvaluationCompletion (node);
 			}
 		}
 
+		#region View event handlers
+		void OnViewNodeExpand (object sender, ObjectValueNodeEventArgs e)
+		{
+			ExpandNodeAsync (e.Node).Ignore ();
+		}
+
+		void OnViewNodeCollapse (object sender, ObjectValueNodeEventArgs e)
+		{
+			e.Node.IsExpanded = false;
+		}
+
+		void OnViewNodeLoadMoreChildren (object sender, ObjectValueNodeEventArgs e)
+		{
+			FetchMoreChildrenAsync (e.Node).Ignore ();
+		}
+
+		void OnViewExpressionAdded (object sender, ObjectValueExpressionEventArgs e)
+		{
+			AddExpression (e.Expression);
+		}
+
+		void OnViewExpressionEdited (object sender, ObjectValueExpressionEventArgs e)
+		{
+			EditExpression (e.Node, e.Expression);
+		}
+
+		void OnViewNodeRefresh (object sender, ObjectValueNodeEventArgs e)
+		{
+			RefreshNode (e.Node);
+		}
+
+		void OnViewNodeCanEdit (object sender, ObjectValueNodeEventArgs e)
+		{
+			e.Response = CanEditObject (e.Node);
+		}
+
+		void OnViewNodeEditValue (object sender, ObjectValueEditEventArgs e)
+		{
+			e.Response = EditNodeValue (e.Node, e.NewValue);
+		}
+
+		void OnViewNodeRemoved (object sender, ObjectValueNodeEventArgs e)
+		{
+			RemoveValue (e.Node);
+		}
+
+		void OnViewNodeShowVisualiser (object sender, ObjectValueNodeEventArgs e)
+		{
+			e.Response = ShowNodeValueVisualizer (e.Node);
+		}
+
+		void OnViewNodePinned (object sender, ObjectValueNodeEventArgs e)
+		{
+			CreatePinnedWatch (e.Node.Expression, view.PinnedWatchOffset);
+		}
+
+		void OnViewNodeUnpinned (object sender, EventArgs e)
+		{
+			RemovePinnedWatch ();
+		}
+
+		#endregion
+
 		#region Fetching and loading children
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
 		/// </summary>
-		async Task ExpandNodeAsync (IObjectValueTreeView view, ObjectValueNode node)
+		async Task ExpandNodeAsync (ObjectValueNode node)
 		{
 			// if we think the node is expanded already, no need to trigger this again
 			if (node.IsExpanded)
@@ -598,29 +600,16 @@ namespace MonoDevelop.Debugger
 				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
 			}
 
-			if (loadedCount > 0) {
-				OnChildrenLoaded (node, 0, node.Children.Count);
-			}
+			await Runtime.RunInMainThread (() => {
+				if (loadedCount > 0) {
+					view.LoadNodeChildren (node, 0, node.Children.Count);
+				}
 
-			Runtime.RunInMainThread (() => {
 				view.OnNodeExpanded (node);
-			}).Ignore ();
+			});
 		}
 
-		void OnViewNodeExpanded (object sender, ObjectValueNodeEventArgs e)
-		{
-			ExpandNodeAsync ((IObjectValueTreeView) sender, e.Node).Ignore ();
-		}
-
-		/// <summary>
-		/// Marks a node as not expanded
-		/// </summary>
-		void OnViewNodeCollapsed (object sender, ObjectValueNodeEventArgs e)
-		{
-			e.Node.IsExpanded = false;
-		}
-
-		public async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)
+		async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)
 		{
 			if (node.ChildrenLoaded) {
 				return 0;
@@ -651,7 +640,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			} catch (Exception ex) {
-				// TODO: log or fail?
+				LoggingService.LogInternalError (ex);
 			}
 
 			return 0;
@@ -700,7 +689,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			} catch (Exception ex) {
-				// TODO: log or fail?
+				LoggingService.LogInternalError (ex);
 			}
 
 			return 0;
@@ -783,7 +772,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		void ChangeCheckpoint (ObjectValueNode node)
 		{
-			oldValues[node.Path] = new CheckpointState (node);
+			oldValues [node.Path] = new CheckpointState (node);
 
 			if (node.IsExpanded) {
 				foreach (var child in node.Children) {
@@ -795,7 +784,9 @@ namespace MonoDevelop.Debugger
 		#region Event triggers
 		void OnChildrenLoaded (ObjectValueNode node, int index, int count)
 		{
-			ChildrenLoaded?.Invoke (this, new ObjectValueNodeChildrenChangedEventArgs (node, index, count));
+			Runtime.RunInMainThread (() => {
+				view.LoadNodeChildren (node, index, count);
+			}).Ignore ();
 		}
 
 		/// <summary>
@@ -814,7 +805,6 @@ namespace MonoDevelop.Debugger
 							RegisterNode (newNode);
 						}
 
-						// TODO: we could improve how we notify this and pass child indexes as well
 						OnEvaluationCompleted (sender as ObjectValueNode, replacementNodes);
 					} else {
 						OnEvaluationCompleted (sender as ObjectValueNode);
@@ -827,7 +817,9 @@ namespace MonoDevelop.Debugger
 
 		void OnEvaluationCompleted (ObjectValueNode node)
 		{
-			EvaluationCompleted?.Invoke (this, new ObjectValueNodeEvaluationCompletedEventArgs (node, new ObjectValueNode [1] { node }));
+			Runtime.RunInMainThread (() => {
+				view.LoadEvaluatedNode (node, new ObjectValueNode [1] { node });
+			}).Ignore ();
 		}
 
 		void OnEvaluationCompleted (ObjectValueNode node, ObjectValueNode [] replacementNodes)
@@ -839,12 +831,9 @@ namespace MonoDevelop.Debugger
 				replacerParent.ReplaceChildNode (node, replacementNodes);
 			}
 
-			EvaluationCompleted?.Invoke (this, new ObjectValueNodeEvaluationCompletedEventArgs (node, replacementNodes));
-		}
-
-		void OnNodeExpanded (ObjectValueNode node)
-		{
-			NodeExpanded?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			Runtime.RunInMainThread (() => {
+				view.LoadEvaluatedNode (node, replacementNodes);
+			}).Ignore ();
 		}
 		#endregion
 
@@ -907,6 +896,11 @@ namespace MonoDevelop.Debugger
 		public static StackFrame GetStackFrame (this ObjectValueTreeViewController controller)
 		{
 			return (controller.Frame as ProxyStackFrame)?.StackFrame;
+		}
+
+		public static StackFrame GetStackFrame (this IStackFrame frame)
+		{
+			return (frame as ProxyStackFrame)?.StackFrame;
 		}
 
 		public static void AddValue (this ObjectValueTreeViewController controller, ObjectValue value)

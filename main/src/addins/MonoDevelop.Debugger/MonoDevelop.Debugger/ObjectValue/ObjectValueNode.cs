@@ -69,6 +69,15 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
+		/// Gets the expression for the node that can be used when pinning node
+		/// </summary>
+		public virtual string Expression {
+			get {
+				return Name;
+			}
+		}
+
+		/// <summary>
 		/// Gets the collection of children that have been loaded from the debugger
 		/// </summary>
 		public IReadOnlyList<ObjectValueNode> Children => children;

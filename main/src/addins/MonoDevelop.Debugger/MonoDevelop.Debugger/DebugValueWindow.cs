@@ -94,20 +94,19 @@ namespace MonoDevelop.Debugger
 			if (UseNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.SetStackFrame (frame);
-				controller.RootPinAlwaysVisible = true;
-				controller.HeadersVisible = false;
 				controller.AllowEditing = true;
-				controller.AllowPinning = true;
-				controller.CompactView = true;
+
+				treeView = (TreeView) controller.GetControl (headersVisible: false, allowPinning: true, compactView: true, rootPinVisible: true);
+
 				controller.PinnedWatch = watch;
 				controller.PinnedWatchLine = pinnedWatchLine;
 				controller.PinnedWatchFile = pinnedWatchFileName;
 
-				controller.PinStatusChanged += OnPinStatusChanged;
-				controller.StartEditing += OnStartEditing;
-				controller.EndEditing += OnEndEditing;
-
-				treeView = (TreeView) controller.GetControl ();
+				if (treeView is IObjectValueTreeView ovtv) {
+					ovtv.StartEditing += OnStartEditing;
+					ovtv.EndEditing += OnEndEditing;
+					ovtv.NodePinned += OnPinStatusChanged;
+				}
 
 				controller.AddValue (value);
 			} else {
@@ -170,9 +169,11 @@ namespace MonoDevelop.Debugger
 		protected override void OnDestroyed ()
 		{
 			if (UseNewTreeView) {
-				controller.PinStatusChanged -= OnPinStatusChanged;
-				controller.StartEditing -= OnStartEditing;
-				controller.EndEditing -= OnEndEditing;
+				if (treeView is IObjectValueTreeView ovtv) {
+					ovtv.StartEditing -= OnStartEditing;
+					ovtv.EndEditing -= OnEndEditing;
+					ovtv.NodePinned -= OnPinStatusChanged;
+				}
 			} else {
 				objValueTreeView.PinStatusChanged -= OnPinStatusChanged;
 				objValueTreeView.StartEditing -= OnStartEditing;

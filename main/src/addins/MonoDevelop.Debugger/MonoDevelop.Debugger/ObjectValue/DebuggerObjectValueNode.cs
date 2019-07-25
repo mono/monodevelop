@@ -51,6 +51,25 @@ namespace MonoDevelop.Debugger
 		// TODO: try and make this private
 		public ObjectValue DebuggerObject { get; }
 
+		/// <summary>
+		/// Gets the expression for the node that can be used when pinning node
+		/// </summary>
+		public override string Expression {
+			get {
+				string expression = "";
+
+				var node = this;
+				var name = node.Name;
+				while (node != null && node.Parent is DebuggerObjectValueNode) {
+					expression = node.DebuggerObject.ChildSelector + expression;
+					node = (DebuggerObjectValueNode)node.Parent;
+					name = node.Name;
+				}
+
+				return name + expression;
+			}
+		}
+
 		public override bool HasChildren => DebuggerObject.HasChildren;
 		public override bool IsEnumerable => DebuggerObject.Flags.HasFlag (ObjectValueFlags.IEnumerable);
 		public override bool IsEvaluating => DebuggerObject.IsEvaluating;
@@ -120,28 +139,28 @@ namespace MonoDevelop.Debugger
 
 		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value, CancellationToken cancellationToken)
 		{
-			return Task.Factory.StartNew (delegate (object arg) {
+			return Task.Run (() => {
 				try {
-					return ((ObjectValue)arg).GetAllChildren ();
+					return value.GetAllChildren ();
 				} catch (Exception ex) {
 					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
 					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
 					return new ObjectValue[0];
 				}
-			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+			}, cancellationToken);
 		}
 
 		static Task<ObjectValue []> GetChildrenAsync (ObjectValue value, int index, int count, CancellationToken cancellationToken)
 		{
-			return Task.Factory.StartNew (delegate (object arg) {
+			return Task.Run(() => {
 				try {
-					return ((ObjectValue)arg).GetRangeOfChildren (index, count);
+					return value.GetRangeOfChildren (index, count);
 				} catch (Exception ex) {
 					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
 					LoggingService.LogError ("Failed to get ObjectValue range of children.", ex);
 					return new ObjectValue[0];
 				}
-			}, value, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+			}, cancellationToken);
 		}
 
 		void OnDebuggerValueChanged (object sender, EventArgs e)

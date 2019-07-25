@@ -47,20 +47,34 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
-	// TODO: when we remove from store, remove from allNodes
 	[System.ComponentModel.ToolboxItem (true)]
-	public class GtkObjectValueTreeView : TreeView, ICompletionWidget
+	public class GtkObjectValueTreeView : TreeView, ICompletionWidget, IObjectValueTreeView
 	{
 		static readonly Gtk.TargetEntry [] DropTargets = {
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
 
+		readonly IObjectValueDebuggerService debuggerService;
 		readonly ObjectValueTreeViewController controller;
+
+		/// <summary>
+		/// The root node
+		/// </summary>
+		ObjectValueNode root;
+
+		/// <summary>
+		/// If we allow pinning, this is the single pinned value that a view can support
+		/// </summary>
+		PinnedWatch pinnedWatch;
 
 		// mapping of a node to the node's location in the tree view
 		readonly Dictionary<ObjectValueNode, TreeRowReference> allNodes = new Dictionary<ObjectValueNode, TreeRowReference> ();
 
-		// keep this lot....
+		readonly bool compactView;
+		readonly bool allowPinning;
+		readonly bool allowPopupMenu;
+		readonly bool rootPinVisible;
+
 		readonly Xwt.Drawing.Image noLiveIcon;
 		readonly Xwt.Drawing.Image liveIcon;
 
@@ -68,7 +82,6 @@ namespace MonoDevelop.Debugger
 		readonly TreeStore store;
 		readonly string createMsg;
 		bool restoringState;
-		StackFrame frame;
 		bool disposed;
 
 		bool columnsAdjusted;
@@ -77,6 +90,30 @@ namespace MonoDevelop.Debugger
 		double expColWidth;
 		double valueColWidth;
 		double typeColWidth;
+
+		int expanderSize;
+		int horizontal_separator;
+		int grid_line_width;
+		int focus_line_width;
+		Gdk.Rectangle startPreviewCaret;
+		double startHAdj;
+		double startVAdj;
+		TreeIter lastPinIter;
+		bool editing;
+
+		bool allowEditing;
+		bool allowWatchExpressions;
+		bool wasHandled;
+		CodeCompletionContext ctx;
+		Gdk.Key key;
+		char keyChar;
+		Gdk.ModifierType modifierState;
+		uint keyValue;
+		PreviewButtonIcons iconBeforeSelected;
+		PreviewButtonIcons currentIcon;
+		TreeIter currentHoverIter = TreeIter.Zero;
+		Adjustment oldHadjustment;
+		Adjustment oldVadjustment;
 
 		readonly CellRendererTextWithIcon crtExp;
 		readonly ValueCellRenderer crtValue;
@@ -131,18 +168,34 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
 
-		public GtkObjectValueTreeView (ObjectValueTreeViewController controller)
+		public GtkObjectValueTreeView (
+			IObjectValueDebuggerService debuggerService,
+			ObjectValueTreeViewController controller,
+			bool allowEditing,
+			bool headersVisible,
+			bool allowWatchExpressions,
+			bool compactView,
+			bool allowPinning,
+			bool allowPopupMenu,
+			bool rootPinVisible)
 		{
+			this.compactView = compactView;
+			this.allowPinning = allowPinning;
+			this.allowPopupMenu = allowPopupMenu;
+			this.rootPinVisible = rootPinVisible;
+
+			// ensure this is set when we set up the view, don't try and refresh just yet
+			this.allowEditing = allowEditing;
+			this.allowWatchExpressions = allowWatchExpressions;
+
+			this.debuggerService = debuggerService;
 			this.controller = controller;
-			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
-			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
-			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
-			HeadersVisible = controller.HeadersVisible;
+			HeadersVisible = headersVisible;
 			EnableSearch = false;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			Selection.Changed += HandleSelectionChanged;
@@ -153,7 +206,7 @@ namespace MonoDevelop.Debugger
 
 			Pango.FontDescription newFont;
 
-			if (controller.CompactView) {
+			if (compactView) {
 				newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			} else {
 				newFont = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
@@ -182,7 +235,7 @@ namespace MonoDevelop.Debugger
 
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
-			valueCol.MaxWidth = controller.CompactView ? 800 : int.MaxValue;
+			valueCol.MaxWidth = compactView ? 800 : int.MaxValue;
 			evaluateStatusCell = new CellRendererImage ();
 			valueCol.PackStart (evaluateStatusCell, false);
 			valueCol.AddAttribute (evaluateStatusCell, "visible", EvaluateStatusIconVisibleColumn);
@@ -196,7 +249,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
 			valueCol.AddAttribute (crpButton, "text", ValueButtonTextColumn);
 			crpViewer = new CellRendererImage ();
-			if (controller.CompactView)
+			if (compactView)
 				crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12, 12);
 			else
 				crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
@@ -204,7 +257,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
 			crtValue = new ValueCellRenderer ();
 			crtValue.Ellipsize = Pango.EllipsizeMode.End;
-			crtValue.Compact = controller.CompactView;
+			crtValue.Compact = compactView;
 			crtValue.FontDesc = newFont;
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "texturl", ValueColumn);
@@ -219,7 +272,7 @@ namespace MonoDevelop.Debugger
 
 			typeCol = new TreeViewColumn ();
 			typeCol.Title = GettextCatalog.GetString ("Type");
-			typeCol.Visible = !controller.CompactView;
+			typeCol.Visible = !compactView;
 			crtType = new CellRendererText ();
 			crtType.FontDesc = newFont;
 			typeCol.PackStart (crtType, true);
@@ -239,7 +292,7 @@ namespace MonoDevelop.Debugger
 			pinCol.PackStart (crpLiveUpdate, false);
 			pinCol.AddAttribute (crpLiveUpdate, "image", LiveUpdateIconColumn);
 			pinCol.Resizable = false;
-			pinCol.Visible = controller.AllowPinning;
+			pinCol.Visible = allowPinning;
 			pinCol.Expand = false;
 			pinCol.Sizing = TreeViewColumnSizing.Fixed;
 			pinCol.FixedWidth = 16;
@@ -259,13 +312,144 @@ namespace MonoDevelop.Debugger
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
 
-			expanderSize = (int) StyleGetProperty ("expander-size") + 4; //+4 is hardcoded in gtk.c code
-			horizontal_separator = (int) StyleGetProperty ("horizontal-separator");
-			grid_line_width = (int) StyleGetProperty ("grid-line-width");
-			focus_line_width = (int) StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
+			expanderSize = (int)StyleGetProperty ("expander-size") + 4; //+4 is hardcoded in gtk.c code
+			horizontal_separator = (int)StyleGetProperty ("horizontal-separator");
+			grid_line_width = (int)StyleGetProperty ("grid-line-width");
+			focus_line_width = (int)StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
 
 			AdjustColumnSizes ();
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to edit values in the tree
+		/// </summary>
+		public bool AllowEditing {
+			get => allowEditing;
+			set {
+				if (allowEditing != value) {
+					allowEditing = value;
+					Refresh (false);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree.
+		/// </summary>
+		public bool AllowExpanding { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
+		/// </summary>
+		public bool AllowWatchExpressions {
+			get => allowWatchExpressions;
+			set {
+				if (allowWatchExpressions != value) {
+					allowWatchExpressions = value;
+					Refresh (false);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the pinned watch for the view. When a watch is pinned, the view should display only this value
+		/// </summary>
+		public PinnedWatch PinnedWatch {
+			get => pinnedWatch;
+			set {
+				if (pinnedWatch != value) {
+					pinnedWatch = value;
+					Runtime.RunInMainThread (() => {
+						if (value == null) {
+							pinCol.FixedWidth = 16;
+						} else {
+							pinCol.FixedWidth = 38;
+						}
+					}).Ignore();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating the offset required for pinned watches
+		/// </summary>
+		public int PinnedWatchOffset {
+			get {
+				return SizeRequest ().Height;
+			}
+		}
+
+		/// <summary>
+		/// Triggered when the view tries to expand a node. This may trigger a load of
+		/// the node's children
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeExpand;
+
+		/// <summary>
+		/// Triggered when the view tries to collapse a node.
+		/// </summary>
+
+		public event EventHandler<ObjectValueNodeEventArgs> NodeCollapse;
+
+		/// <summary>
+		/// Triggered when the view requests a node to fetch more of it's children
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeLoadMoreChildren;
+
+		/// <summary>
+		/// Triggered when the view needs the node to be refreshed
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeRefresh;
+
+		/// <summary>
+		/// Triggered when the view needs to know if the node can be edited
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeGetCanEdit;
+
+		/// <summary>
+		/// Triggered when the node's value has been edited by the user
+		/// </summary>
+		public event EventHandler<ObjectValueEditEventArgs> NodeEditValue;
+
+		/// <summary>
+		/// Triggered when the user removes a node (an expression)
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeRemoved;
+
+		/// <summary>
+		/// Triggered when the user pins the node
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodePinned;
+
+		/// <summary>
+		/// Triggered when the pinned watch is removed by the user
+		/// </summary>
+		public event EventHandler<EventArgs> NodeUnpinned;
+
+		/// <summary>
+		/// Triggered when the visualiser for the node should be shown
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeShowVisualiser;
+
+		/// <summary>
+		/// Triggered when an expression is added to the tree by the user
+		/// </summary>
+		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionAdded;
+
+		/// <summary>
+		/// Triggered when an expression is edited by the user
+		/// </summary>
+		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
+
+		/// <summary>
+		/// Triggered when the user starts editing a node
+		/// </summary>
+		public event EventHandler StartEditing;
+
+		/// <summary>
+		/// Triggered when the user stops editing a node
+		/// </summary>
+		public event EventHandler EndEditing;
 
 		protected override void OnDestroyed ()
 		{
@@ -291,10 +475,6 @@ namespace MonoDevelop.Debugger
 				oldVadjustment = null;
 			}
 
-			controller.PinnedWatchChanged -= Controller_PinnedWatchChanged;
-			controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
-			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
-
 			disposed = true;
 			controller.CancelAsyncTasks ();
 
@@ -312,7 +492,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnShown ();
 			AdjustColumnSizes ();
-			if (controller.CompactView)
+			if (compactView)
 				RecalculateWidth ();
 		}
 
@@ -324,7 +504,7 @@ namespace MonoDevelop.Debugger
 
 		void OnDragDataReceived (object o, DragDataReceivedArgs args)
 		{
-			if (!controller.AllowWatchExpressions)
+			if (!AllowWatchExpressions)
 				return;
 
 			var text = args.SelectionData.Text;
@@ -338,39 +518,36 @@ namespace MonoDevelop.Debugger
 				if (string.IsNullOrWhiteSpace (expression))
 					continue;
 
-				controller.AddExpression (expression.Trim ());
+				ExpressionAdded?.Invoke (this, new ObjectValueExpressionEventArgs(null, expression.Trim ()));
 			}
 		}
 
-		void Controller_PinnedWatchChanged (object sender, EventArgs e)
+		/// <summary>
+		/// Reloads the tree from the root node
+		/// </summary>
+		public void Reload (ObjectValueNode root)
 		{
-			Runtime.RunInMainThread (() => {
-				if (controller.PinnedWatch == null) {
-					pinCol.FixedWidth = 16;
-				} else {
-					pinCol.FixedWidth = 38;
-				}
-			}).Ignore ();
+			// TODO: how to tell whether to reset scroll position or not?
+			this.root = root;
+			Refresh (false);
 		}
 
 		/// <summary>
-		/// Triggered when the children of a node have been loaded
+		/// Informs the view to load the children of the given node
 		/// </summary>
-		void Controller_NodeChildrenLoaded (object sender, ObjectValueNodeChildrenChangedEventArgs e)
+		public void LoadNodeChildren (ObjectValueNode node, int startIndex, int count)
 		{
-			Runtime.RunInMainThread (() => {
-				OnChildrenLoaded (e.Node, e.Index, e.Count);
-			}).Ignore ();
+			OnChildrenLoaded (node, startIndex, count);
 		}
 
 		/// <summary>
-		/// Triggered when a node has completed evaluation and we have data to show the user
+		/// Informs the view to load the new values into the given node, optionally replacing that node with
+		/// the set of replacement nodes. Handles the case where, for example, the "locals" is replaced
+		/// with the set of local values
 		/// </summary>
-		void Controller_EvaluationCompleted (object sender, ObjectValueNodeEvaluationCompletedEventArgs e)
+		public void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes)
 		{
-			Runtime.RunInMainThread (() => {
-				OnEvaluationCompleted (e.Node, e.ReplacementNodes);
-			}).Ignore ();
+			OnEvaluationCompleted (node, replacementNodes);
 		}
 
 		void OnChildrenLoaded (ObjectValueNode node, int index, int count)
@@ -378,30 +555,28 @@ namespace MonoDevelop.Debugger
 			if (disposed)
 				return;
 
-			if (node == controller.Root) {
-				// TODO: how to tell whether to reset scroll position or not?
-				Refresh (false);
-			} else {
-				// the children of a specific node changed
-				// remove the children for that node, then reload the children
-				if (GetTreeIterFromNode (node, out TreeIter iter, out TreeIter parent)) {
-					// rather than simply replacing the children of this node we will merge
-					// them in so that the tree does not collapse the row when the last child is removed
-					MergeChildrenIntoTree (node, iter, index, count);
+			// the children of a specific node changed
+			// remove the children for that node, then reload the children
+			if (GetTreeIterFromNode (node, out TreeIter iter, out TreeIter parent)) {
+				// rather than simply replacing the children of this node we will merge
+				// them in so that the tree does not collapse the row when the last child is removed
+				MergeChildrenIntoTree (node, iter, index, count);
 
-					// if we did not load all the children, add a More node
-					if (!node.ChildrenLoaded) {
-						AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
-					}
+				// if we did not load all the children, add a More node
+				if (!node.ChildrenLoaded) {
+					AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
 				}
 			}
 
-			if (controller.CompactView) {
+			if (compactView) {
 				RecalculateWidth ();
 			}
 		}
 
 		// TODO: if we don't want the scrolling, we can probably get rid of this
+		/// <summary>
+		/// Informs the view that the node was expanded and children have been loaded.
+		/// </summary>
 		public void OnNodeExpanded (ObjectValueNode node)
 		{
 			if (disposed)
@@ -415,7 +590,7 @@ namespace MonoDevelop.Debugger
 					ExpandRow (path, false);
 				}
 
-				if (controller.CompactView)
+				if (compactView)
 					RecalculateWidth ();
 
 				// TODO: all this scrolling kind of seems awkward
@@ -470,11 +645,6 @@ namespace MonoDevelop.Debugger
 				return;
 
 			if (GetTreeIterFromNode (node, out TreeIter iter, out TreeIter parent)) {
-				// TODO we can use an expression node here
-				// Keep the expression name entered by the user
-				//if (store.IterDepth (iter) == 0)
-				//	val.Name = (string) store.GetValue (iter, NameColumn);
-
 				RemoveChildren (iter);
 
 				if (replacementNodes.Length == 0) {
@@ -491,7 +661,7 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			if (controller.CompactView) {
+			if (compactView) {
 				RecalculateWidth ();
 			}
 		}
@@ -545,10 +715,10 @@ namespace MonoDevelop.Debugger
 			CleanPinIcon ();
 			store.Clear ();
 
-			bool showExpanders = controller.AllowWatchExpressions;
+			bool showExpanders = AllowWatchExpressions;
 
-			if (controller.Root != null) {
-				if (LoadNode (controller.Root, TreeIter.Zero)) {
+			if (root != null) {
+				if (LoadNode (root, TreeIter.Zero)) {
 					showExpanders = true;
 				}
 			}
@@ -556,8 +726,9 @@ namespace MonoDevelop.Debugger
 			if (showExpanders)
 				ShowExpanders = true;
 
-			if (controller.AllowWatchExpressions)
+			if (AllowWatchExpressions) {
 				store.AppendValues (createMsg, "", "", true, true, null, Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText), Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText));
+			}
 
 			LoadState ();
 		}
@@ -589,7 +760,6 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Fired when the user clicks on the value button, eg "Show Value", 'More Values", "Show Values"
 		/// </summary>
-		/// <param name="it"></param>
 		void HandleValueButton (TreeIter it)
 		{
 			var node = GetNodeAtIter (it);
@@ -597,15 +767,16 @@ namespace MonoDevelop.Debugger
 
 			if (node.IsEnumerable) {
 				if (node is ShowMoreValuesObjectValueNode moreNode) {
-					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode).Ignore ();
+					NodeLoadMoreChildren?.Invoke (this, new ObjectValueNodeEventArgs (moreNode.EnumerableNode));
 				} else {
 					// use ExpandRow to expand so we see the loading message, expanding the node will trigger a fetch of the children
 					var treePath = GetTreePathForNode (node);
 					ExpandRow (treePath, false);
 				}
 			} else {
-				// this is likely to support IsImplicitNotSupported 
-				controller.RefreshNode (node);
+				// this is likely to support IsImplicitNotSupported
+				NodeRefresh?.Invoke (this, new ObjectValueNodeEventArgs (node));
+
 				// update the tree
 				if (store.IterParent (out TreeIter parentIter, it)) {
 					SetValues (parentIter, it, null, node);
@@ -637,12 +808,6 @@ namespace MonoDevelop.Debugger
 		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path
-
-			// TODO: test if the link to the node we have is the same as the link we want to set or remove the invalid link
-			//if (allNodes.TryGetValue (val, out TreeRowReference row)) {
-			//	allNodes.Remove (val);
-			//	row.Dispose ();
-			//}
 			allNodes [val] = new TreeRowReference (store, store.GetPath (it));
 
 
@@ -665,7 +830,7 @@ namespace MonoDevelop.Debugger
 				valPath = GetIterPath (parent) + "/" + name;
 
 			if (val.IsUnknown) {
-				if (frame != null) {
+				if (debuggerService.Frame != null) {
 					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
 					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				} else {
@@ -715,13 +880,13 @@ namespace MonoDevelop.Debugger
 			if (updateJustValue)
 				return;
 
-			bool canEdit = controller.CanEditObject (val);
+			bool canEdit = GetCanEditNode (val);
 			string icon = ObjectValueTreeViewController.GetIcon (val.Flags);
 
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectNodeColumn, val);
-			store.SetValue (it, NameEditableColumn, !hasParent && controller.AllowWatchExpressions);
+			store.SetValue (it, NameEditableColumn, !hasParent && AllowWatchExpressions);
 			store.SetValue (it, ValueEditableColumn, canEdit);
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
@@ -736,14 +901,14 @@ namespace MonoDevelop.Debugger
 			if (ValidObjectForPreviewIcon (it))
 				store.SetValue (it, PreviewIconColumn, "md-empty");
 
-			if (!hasParent && controller.PinnedWatch != null) {
+			if (!hasParent && PinnedWatch != null) {
 				store.SetValue (it, PinIconColumn, "md-pin-down");
-				if (controller.PinnedWatch.LiveUpdate)
+				if (PinnedWatch.LiveUpdate)
 					store.SetValue (it, LiveUpdateIconColumn, liveIcon);
 				else
 					store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
 			}
-			if (controller.RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && controller.AllowPinning))
+			if (rootPinVisible && (!hasParent && PinnedWatch == null && allowPinning))
 				store.SetValue (it, PinIconColumn, "md-pin-up");
 
 			if (val.HasChildren && val.Children.Count == 0) {
@@ -760,10 +925,17 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		bool GetCanEditNode(ObjectValueNode node)
+		{
+			var args = new ObjectValueNodeEventArgs (node);
+			NodeGetCanEdit?.Invoke (this, args);
+			return args.Response is bool b && b;
+		}
+
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
 		{
 			if (!restoringState) {
-				if (!controller.AllowExpanding)
+				if (!AllowExpanding)
 					return true;
 
 				if (GetRowExpanded (path))
@@ -779,23 +951,19 @@ namespace MonoDevelop.Debugger
 			return base.OnTestExpandRow (iter, path);
 		}
 
-		public event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
-
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
 			var node = GetNodeAtIter (iter);
 
 			base.OnRowExpanded (iter, path);
 
-			if (controller.CompactView)
+			if (compactView)
 				RecalculateWidth ();
 
 			HideValueButton (iter);
 
-			NodeExpanded?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			NodeExpand?.Invoke (this, new ObjectValueNodeEventArgs (node));
 		}
-
-		public event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
@@ -803,10 +971,10 @@ namespace MonoDevelop.Debugger
 
 			base.OnRowCollapsed (iter, path);
 
-			if (controller.CompactView)
+			if (compactView)
 				RecalculateWidth ();
 
-			NodeCollapsed?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			NodeCollapse?.Invoke (this, new ObjectValueNodeEventArgs (node));
 
 			// TODO: all this scrolling kind of seems awkward
 			//ScrollToCell (path, expCol, true, 0f, 0f);
@@ -846,14 +1014,13 @@ namespace MonoDevelop.Debugger
 			var node = GetNodeAtIter (iter);
 
 			if (node == null) {
-				if (args.NewText.Length > 0)
-					controller.AddExpression (args.NewText);
+				if (args.NewText.Length > 0) {
+					ExpressionAdded?.Invoke (this, new ObjectValueExpressionEventArgs (null, args.NewText));
+				}
 			} else {
-				controller.EditExpression (node, args.NewText);
+				ExpressionEdited?.Invoke (this, new ObjectValueExpressionEventArgs (node, args.NewText));
 			}
 		}
-
-		bool editing;
 
 		void OnValueEditing (object s, EditingStartedArgs args)
 		{
@@ -867,7 +1034,8 @@ namespace MonoDevelop.Debugger
 			string strVal = null;
 			if (val != null) {
 				if (val.TypeName == "string") {
-					var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+					// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
+					var opt = debuggerService.Frame.GetStackFrame().DebuggerSession.Options.EvaluationOptions.Clone ();
 					opt.EllipsizeStrings = false;
 					strVal = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)val.GetRawValue (opt)) + '"';
 				} else {
@@ -890,9 +1058,9 @@ namespace MonoDevelop.Debugger
 
 			// get the node that we just edited
 			var val = GetNodeAtIter (iter);
-			if (controller.EditNodeValue (val, args.NewText)) {
-				// update the store
-				//store.SetValue (it, ValueColumn, val.GetDisplayValue());
+			var editArgs = new ObjectValueEditEventArgs (val, args.NewText);
+			NodeEditValue?.Invoke (this, editArgs);
+			if (editArgs.Response is bool b && b) {
 				SetValues (TreeIter.Zero, iter, null, val);
 			}
 		}
@@ -909,7 +1077,7 @@ namespace MonoDevelop.Debugger
 			editEntry.KeyPressEvent += OnEditKeyPress;
 			editEntry.KeyReleaseEvent += OnEditKeyRelease;
 
-			controller.OnStartEditing ();
+			StartEditing?.Invoke(this, EventArgs.Empty);
 		}
 
 		void OnEndEditing ()
@@ -921,7 +1089,7 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.HideWindow ();
 			currentCompletionData = null;
 
-			controller.OnEndEditing ();
+			EndEditing?.Invoke (this, EventArgs.Empty);
 		}
 
 		void OnEditKeyRelease (object sender, EventArgs e)
@@ -931,13 +1099,6 @@ namespace MonoDevelop.Debugger
 				PopupCompletion ((Entry) sender);
 			}
 		}
-
-		bool wasHandled;
-		CodeCompletionContext ctx;
-		Gdk.Key key;
-		char keyChar;
-		Gdk.ModifierType modifierState;
-		uint keyValue;
 
 		[GLib.ConnectBeforeAttribute]
 		void OnEditKeyPress (object s, KeyPressEventArgs args)
@@ -968,7 +1129,7 @@ namespace MonoDevelop.Debugger
 					string expr = entry.Text.Substring (0, entry.CursorPosition);
 					cts.Cancel ();
 					cts = new CancellationTokenSource ();
-					currentCompletionData = await GetCompletionDataAsync (expr, cts.Token);
+					currentCompletionData = await debuggerService.GetCompletionDataAsync (expr, cts.Token);
 					if (currentCompletionData != null) {
 						var dataList = new DebugCompletionDataList (currentCompletionData);
 						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
@@ -980,8 +1141,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		TreeIter lastPinIter;
-
 		enum PreviewButtonIcons
 		{
 			None,
@@ -991,10 +1150,6 @@ namespace MonoDevelop.Debugger
 			Active,
 			Selected,
 		}
-
-		PreviewButtonIcons iconBeforeSelected;
-		PreviewButtonIcons currentIcon;
-		TreeIter currentHoverIter = TreeIter.Zero;
 
 		bool ValidObjectForPreviewIcon (TreeIter it)
 		{
@@ -1048,12 +1203,12 @@ namespace MonoDevelop.Debugger
 						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
 					}
 
-					if (controller.AllowPinning) {
-						if (path.Depth > 1 || controller.PinnedWatch == null) {
+					if (allowPinning) {
+						if (path.Depth > 1 || PinnedWatch == null) {
 							if (!it.Equals (lastPinIter)) {
 								store.SetValue (it, PinIconColumn, "md-pin-up");
 								CleanPinIcon ();
-								if (path.Depth > 1 || !controller.RootPinAlwaysVisible)
+								if (path.Depth > 1 || !rootPinVisible)
 									lastPinIter = it;
 							}
 						}
@@ -1133,7 +1288,7 @@ namespace MonoDevelop.Debugger
 				ObjectValue val;
 				TreeIter iter;
 
-				if (!controller.AllowEditing || !controller.AllowWatchExpressions)
+				if (!AllowEditing || !AllowWatchExpressions)
 					return base.OnKeyPressEvent (evnt);
 
 				// Note: since we'll be modifying the tree, we need to make changes from bottom to top
@@ -1144,8 +1299,8 @@ namespace MonoDevelop.Debugger
 						continue;
 
 					var node = GetNodeAtIter (iter);
-					if (controller.RemoveValue (node))
-						changed = true;
+					NodeRemoved?.Invoke (this, new ObjectValueNodeEventArgs (node));
+					changed = true;
 
 					//val = GetDebuggerObjectValueAtIter (iter);
 					//expression = GetFullExpression (iter);
@@ -1174,10 +1329,6 @@ namespace MonoDevelop.Debugger
 			return new Gdk.Rectangle (rect.X + x, rect.Y, width, rect.Height);
 		}
 
-		Gdk.Rectangle startPreviewCaret;
-		double startHAdj;
-		double startVAdj;
-
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = true;
@@ -1189,11 +1340,14 @@ namespace MonoDevelop.Debugger
 			bool clickProcessed = false;
 
 			TreeIter it;
-			if (this.controller.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
+			if (this.debuggerService.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					clickProcessed = true;
 					var node = GetNodeAtIter (it);
-					if (controller.ShowNodeValueVisualizer (node)) {
+
+					var nodeArgs = new ObjectValueNodeEventArgs (node);
+					NodeShowVisualiser?.Invoke (this, nodeArgs);
+					if (nodeArgs.Response is bool b && b) {
 						SetValues (TreeIter.Zero, it, null, node);
 					}
 				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {
@@ -1216,7 +1370,7 @@ namespace MonoDevelop.Debugger
 					if (startPreviewCaret.X < evnt.X &&
 						startPreviewCaret.X + 16 > evnt.X) {
 						clickProcessed = true;
-						if (controller.CompactView) {
+						if (compactView) {
 							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 						} else {
 							SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
@@ -1251,16 +1405,17 @@ namespace MonoDevelop.Debugger
 					} else if (cr == crpPin) {
 						clickProcessed = true;
 						TreeIter pi;
-						if (controller.PinnedWatch != null && !store.IterParent (out pi, it))
-							controller.RemovePinnedWatch ();
-						else
+						if (PinnedWatch != null && !store.IterParent (out pi, it)) {
+							NodeUnpinned?.Invoke (this, EventArgs.Empty);
+						} else {
 							CreatePinnedWatch (it);
+						}
 					} else if (cr == crpLiveUpdate) {
 						clickProcessed = true;
 						TreeIter pi;
-						if (controller.PinnedWatch != null && !store.IterParent (out pi, it)) {
-							DebuggingService.SetLiveUpdateMode (controller.PinnedWatch, !controller.PinnedWatch.LiveUpdate);
-							if (controller.PinnedWatch.LiveUpdate)
+						if (PinnedWatch != null && !store.IterParent (out pi, it)) {
+							DebuggingService.SetLiveUpdateMode (PinnedWatch, !PinnedWatch.LiveUpdate);
+							if (PinnedWatch.LiveUpdate)
 								store.SetValue (it, LiveUpdateIconColumn, liveIcon);
 							else
 								store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
@@ -1311,7 +1466,7 @@ namespace MonoDevelop.Debugger
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			if (controller.AllowPopupMenu)
+			if (allowPopupMenu)
 				this.ShowContextMenu (evt, menuSet, this);
 		}
 
@@ -1369,7 +1524,8 @@ namespace MonoDevelop.Debugger
 				if (type == "string") {
 					var objVal = GetDebuggerObjectValueAtIter (iter);
 					if (objVal != null) {
-						var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+						// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
+						var opt = debuggerService.Frame.GetStackFrame().DebuggerSession.Options.EvaluationOptions.Clone ();
 						opt.EllipsizeStrings = false;
 						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
 					}
@@ -1384,7 +1540,6 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDelete ()
 		{
-			// TODO: remove all nodes at once
 			var nodesToDelete = new List<ObjectValueNode> ();
 			foreach (var path in Selection.GetSelectedRows ()) {
 				if (!store.GetIter (out TreeIter iter, path))
@@ -1394,8 +1549,9 @@ namespace MonoDevelop.Debugger
 				nodesToDelete.Add (node);
 			}
 
-			foreach (var node in nodesToDelete) 
-				controller.RemoveValue (node);
+			foreach (var node in nodesToDelete) {
+				NodeRemoved?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			}
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -1407,7 +1563,7 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-			if (!controller.AllowWatchExpressions) {
+			if (!AllowWatchExpressions) {
 				cinfo.Visible = false;
 				return;
 			}
@@ -1435,7 +1591,8 @@ namespace MonoDevelop.Debugger
 				TreeIter it;
 
 				if (store.GetIter (out it, tp)) {
-					var expression = GetFullExpression (it);
+					var node = GetNodeAtIter (it);
+					var expression = node.Expression;
 
 					if (!string.IsNullOrEmpty (expression))
 						expressions.Add (expression);
@@ -1463,7 +1620,7 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (EditCommands.Rename)]
 		protected void OnUpdateRename (CommandInfo cinfo)
 		{
-			cinfo.Visible = controller.AllowWatchExpressions;
+			cinfo.Visible = AllowWatchExpressions;
 			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 
@@ -1471,7 +1628,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnRowActivated (path, column);
 
-			if (!controller.CanQueryDebugger)
+			if (!debuggerService.CanQueryDebugger)
 				return;
 
 			TreePath [] selected = Selection.GetSelectedRows ();
@@ -1521,41 +1678,18 @@ namespace MonoDevelop.Debugger
 			return false;
 		}
 
-		string GetFullExpression (TreeIter it)
-		{
-			var path = store.GetPath (it);
-			string name, expression = "";
-
-			while (path.Depth != 1) {
-				var val = GetDebuggerObjectValueAtIter (it);
-				if (val == null)
-					return null;
-
-				expression = val.ChildSelector + expression;
-				if (!store.IterParent (out it, it))
-					break;
-
-				path = store.GetPath (it);
-			}
-
-			name = (string) store.GetValue (it, NameColumn);
-
-			return name + expression;
-		}
-
 		void CreatePinnedWatch (TreeIter it)
 		{
-			var expression = GetFullExpression (it);
+			var node = GetNodeAtIter (it);
+			var expression = node.Expression;
 
 			if (string.IsNullOrEmpty (expression))
 				return;
 
-			var height = SizeRequest ().Height;
-
-			if (controller.PinnedWatch != null)
+			if (PinnedWatch != null)
 				CollapseAll ();
 
-			controller.CreatePinnedWatch (expression, height);
+			NodePinned?.Invoke (this, new ObjectValueNodeEventArgs(node));
 		}
 
 		#region ICompletionWidget implementation 
@@ -1678,14 +1812,6 @@ namespace MonoDevelop.Debugger
 
 		#endregion
 
-		async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
-		{
-			if (controller.CanQueryDebugger && frame != null)
-				return await DebuggingService.GetCompletionDataAsync (frame, expression, token);
-
-			return null;
-		}
-
 		internal void SetCustomFont (Pango.FontDescription font)
 		{
 			crpButton.FontDesc = crtExp.FontDesc = crtType.FontDesc = crtValue.FontDesc = font;
@@ -1724,11 +1850,6 @@ namespace MonoDevelop.Debugger
 				cell.Visible = false;
 			}
 		}
-
-		int expanderSize;
-		int horizontal_separator;
-		int grid_line_width;
-		int focus_line_width;
 
 		int GetMaxWidth (TreeViewColumn column, TreeIter iter)
 		{
@@ -1861,8 +1982,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		Adjustment oldHadjustment;
-		Adjustment oldVadjustment;
 		//Don't convert this event handler to override OnSetScrollAdjustments as it causes problems
 		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
 		{
@@ -1897,7 +2016,7 @@ namespace MonoDevelop.Debugger
 										this.VisibleRect.Height);
 			if (treeViewRectangle.Contains (new Gdk.Point (
 					newCaret.X + newCaret.Width / 2,
-					newCaret.Y + newCaret.Height / 2 - (controller.CompactView ? 0 : 30)))) {
+					newCaret.Y + newCaret.Height / 2 - (compactView ? 0 : 30)))) {
 				PreviewWindowManager.RepositionWindow (newCaret);
 			} else {
 				PreviewWindowManager.DestroyWindow ();
@@ -1923,7 +2042,7 @@ namespace MonoDevelop.Debugger
 
 		void AdjustColumnSizes ()
 		{
-			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || controller.CompactView)
+			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || compactView)
 				return;
 
 			columnSizesUpdating = true;
@@ -1955,7 +2074,7 @@ namespace MonoDevelop.Debugger
 
 		void StoreColumnSizes ()
 		{
-			if (!IsRealized || !Visible || !columnsAdjusted || controller.CompactView)
+			if (!IsRealized || !Visible || !columnsAdjusted || compactView)
 				return;
 
 			double width = (double)Allocation.Width;
@@ -2122,7 +2241,7 @@ namespace MonoDevelop.Debugger
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
-						if (((GtkObjectValueTreeView)widget).controller.CompactView && !Platform.IsWindows)
+						if (((GtkObjectValueTreeView)widget).compactView && !Platform.IsWindows)
 							YOffset += 1;
 						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
 						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
@@ -2162,9 +2281,9 @@ namespace MonoDevelop.Debugger
 			return (ObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
 		}
 
+		// TODO: clean up, maybe even remove this method
 		static ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter, TreeModel model)
 		{
-			// TODO: clean up, maybe even remove this method
 			var node = GetNodeAtIter (iter, model);
 
 			return node?.GetDebuggerObjectValue ();
