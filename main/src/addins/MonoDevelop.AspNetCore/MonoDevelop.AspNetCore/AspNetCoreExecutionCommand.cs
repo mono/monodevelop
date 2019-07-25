@@ -28,7 +28,7 @@ using MonoDevelop.DotNetCore;
 
 namespace MonoDevelop.AspNetCore
 {
-	public class AspNetCoreExecutionCommand : DotNetCoreExecutionCommand
+	public class AspNetCoreExecutionCommand : DotNetCoreBaseExecutionCommand
 	{
 		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
 			: base (directory, outputPath, arguments)

@@ -43,69 +43,6 @@ namespace MacPlatform.Tests
 
 			MonoDevelop.MacInterop.CoreFoundation.Release (testString);
 		}
-
-		[Test]
-		public static void TestURL ()
-		{
-			string test = "http://www.monodevelop.org";
-			IntPtr testUrl = MonoDevelop.MacInterop.CoreFoundation.CreatePathUrl (test);
-
-			Assert.AreEqual (MonoDevelop.MacInterop.CoreFoundation.UrlToPath (testUrl), test);
-
-			MonoDevelop.MacInterop.CoreFoundation.Release (testUrl);
-		}
-
-		static string plistFile = Path.Combine (Util.TestsRootDir, "test-projects", "mac-platform", "Info.plist.in");
-
-		[Test]
-		public void TestApplicationUrls ()
-		{
-			using (var helper = new PListFile ()) {
-				string [] results = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (helper.FilePath, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
-
-				Assert.Greater (results.Length, 0);
-			}
-		}
-
-		[Test]
-		public void TestApplicationUrl ()
-		{
-			using (var helper = new PListFile ()) {
-				string result = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (helper.FilePath, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
-
-				Assert.NotNull (result);
-			}
-		}
-
-		[Test]
-		public void TestApplicationUrlOnPListIn ()
-		{
-			string [] results = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (plistFile, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
-
-			Assert.AreEqual (0, results.Length);
-
-			string result = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (plistFile, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
-
-			Assert.Null (result);
-		}
-
-		class PListFile : IDisposable
-		{
-			readonly string dir = MonoDevelop.Core.FileService.CreateTempDirectory ();
-			public string FilePath { get; }
-
-			public PListFile ()
-			{
-				FilePath = Path.Combine (dir, "Info.plist");
-				File.Copy (plistFile, FilePath, true);
-			}
-
-			public void Dispose ()
-			{
-				if (Directory.Exists (dir))
-					Directory.Delete (dir, true);
-			}
-		}
 	}
 }
 
