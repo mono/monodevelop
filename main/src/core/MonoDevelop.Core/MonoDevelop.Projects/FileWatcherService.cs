@@ -426,9 +426,9 @@ namespace MonoDevelop.Projects
 			using (readerWriterLock.Read ()) {
 				var sw = FileWatcherService.Timings.Get ();
 				sw.Restart ();
-				NotifyNode (rootNode, e.OldFullPath, e.FullPath, (id, oldPath, newPath) => {
+				NotifyNode (rootNode, (e.OldFullPath, e.FullPath), (id, state) => {
 					if (id is Project project)
-						project.OnFileRenamed (oldPath, newPath);
+						project.OnFileRenamed (state.OldFullPath, state.FullPath);
 				});
 				sw.Stop ();
 				FileWatcherService.Timings.Add (sw, FileService.EventDataKind.Renamed);
@@ -458,25 +458,14 @@ namespace MonoDevelop.Projects
 			LoggingService.LogError ("FileService.FileWatcher error", e.GetException ());
 		}
 
-		static void NotifyNode (PathTreeNode node, string oldPath, string newPath, Action<object, string, string> handler)
+		static void NotifyNode<T> (PathTreeNode node, T value, Action<object, T> handler)
 		{
 			foreach (var id in node.Ids) {
-				handler (id, oldPath, newPath);
+				handler (id, value);
 			}
 
 			for (node = node.FirstChild; node != null; node = node.Next) {
-				NotifyNode (node, oldPath, newPath, handler);
-			}
-		}
-
-		static void NotifyNode (PathTreeNode node, string path, Action<object, string> handler)
-		{
-			foreach (var id in node.Ids) {
-				handler (id, path);
-			}
-
-			for (node = node.FirstChild; node != null; node = node.Next) {
-				NotifyNode (node, path, handler);
+				NotifyNode (node, value, handler);
 			}
 		}
 	}
