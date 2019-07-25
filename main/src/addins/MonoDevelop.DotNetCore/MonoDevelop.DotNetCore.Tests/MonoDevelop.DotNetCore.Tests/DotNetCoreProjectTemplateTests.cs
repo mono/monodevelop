@@ -265,18 +265,18 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
 		}
 
-		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore21=true")]
-		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore21=true")]
-		public async Task AspNetCore21 (string templateId, string parameters)
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore21=true", false)]
+		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore21=true", true)]
+		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore21=true", true)]
+		public async Task AspNetCore21 (string templateId, string parameters, bool checkExecutionTargets)
 		{
 			if (!IsDotNetCoreSdk21Installed ()) {
 				Assert.Ignore (".NET Core 2.1 SDK is not installed - required by project template.");
@@ -287,21 +287,21 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules, true);
+			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules, checkExecutionTargets);
 		}
 
-		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore22=true")]
-		public async Task AspNetCore22 (string templateId, string parameters)
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore22=true", false)]
+		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore22=true", true)]
+		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore22=true", true)]
+		public async Task AspNetCore22 (string templateId, string parameters, bool checkExecutionTargets)
 		{
 			if (!IsDotNetCoreSdk22Installed ()) {
 				Assert.Ignore (".NET Core 2.2 SDK is not installed - required by project template.");
@@ -312,21 +312,21 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules, true);
+			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters, CheckAspNetCoreNestingRules, checkExecutionTargets);
 		}
 
-		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore30=true")]
-		public async Task AspNetCore30 (string templateId, string parameters)
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore30=true", false)]
+		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore30=true", true)]
+		public async Task AspNetCore30 (string templateId, string parameters, bool checkExecutionTargets)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {
 				Assert.Ignore (".NET Core 3.0 SDK is not installed - required by project template.");
@@ -337,7 +337,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters, CheckAspNetCoreNestingRules, true);
+			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters, CheckAspNetCoreNestingRules, checkExecutionTargets);
 		}
 
 		static bool IsDotNetCoreSdk2xInstalled ()
@@ -378,7 +378,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 				CheckProjectTypeGuids (ptt.Solution, GetProjectTypeGuid (template));
 				// Blacklist library projects, which don't get any execution target
-				if (checkExecutionTargets && templateId != "Microsoft.Web.Razor.Library.CSharp") {
+				if (checkExecutionTargets) {
 					foreach (var p in ptt.Solution.GetAllProjects ().OfType<DotNetProject> ()) {
 						foreach (var config in p.Configurations) {
 							var targets = p.GetExecutionTargets (config.Selector)?.ToList () ?? new List<ExecutionTarget> ();
