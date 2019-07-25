@@ -158,7 +158,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public void CreatePinnedWatch (string expression, int height)
+		void CreatePinnedWatch (string expression, int height)
 		{
 			var watch = new PinnedWatch ();
 
@@ -571,7 +571,7 @@ namespace MonoDevelop.Debugger
 
 		void OnViewNodePinned (object sender, ObjectValueNodeEventArgs e)
 		{
-			//CreatePinnedWatch (e.Node.Name, );
+			CreatePinnedWatch (e.Node.Expression, view.PinnedWatchOffset);
 		}
 
 		void OnViewNodeUnpinned (object sender, EventArgs e)

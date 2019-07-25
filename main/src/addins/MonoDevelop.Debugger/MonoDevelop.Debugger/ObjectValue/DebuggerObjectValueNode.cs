@@ -51,6 +51,25 @@ namespace MonoDevelop.Debugger
 		// TODO: try and make this private
 		public ObjectValue DebuggerObject { get; }
 
+		/// <summary>
+		/// Gets the expression for the node that can be used when pinning node
+		/// </summary>
+		public override string Expression {
+			get {
+				string expression = "";
+
+				var node = this;
+				var name = node.Name;
+				while (node != null && node.Parent is DebuggerObjectValueNode) {
+					expression = node.DebuggerObject.ChildSelector + expression;
+					node = (DebuggerObjectValueNode)node.Parent;
+					name = node.Name;
+				}
+
+				return name + expression;
+			}
+		}
+
 		public override bool HasChildren => DebuggerObject.HasChildren;
 		public override bool IsEnumerable => DebuggerObject.Flags.HasFlag (ObjectValueFlags.IEnumerable);
 		public override bool IsEvaluating => DebuggerObject.IsEvaluating;

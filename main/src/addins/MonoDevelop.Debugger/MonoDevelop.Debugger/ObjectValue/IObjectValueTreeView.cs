@@ -54,6 +54,11 @@ namespace MonoDevelop.Debugger
 		PinnedWatch PinnedWatch { get; set; }
 
 		/// <summary>
+		/// Gets a value indicating the offset required for pinned watches
+		/// </summary>
+		int PinnedWatchOffset { get; }
+
+		/// <summary>
 		/// Reloads the tree from the root node
 		/// </summary>
 		void Reload (ObjectValueNode root);

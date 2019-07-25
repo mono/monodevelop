@@ -345,6 +345,14 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating the offset required for pinned watches
+		/// </summary>
+		public int PinnedWatchOffset {
+			get {
+				return SizeRequest ().Height;
+			}
+		}
 
 		/// <summary>
 		/// Triggered when the view requests a node to fetch more of it's children
@@ -1571,7 +1579,8 @@ namespace MonoDevelop.Debugger
 				TreeIter it;
 
 				if (store.GetIter (out it, tp)) {
-					var expression = GetFullExpression (it);
+					var node = GetNodeAtIter (it);
+					var expression = node.Expression;
 
 					if (!string.IsNullOrEmpty (expression))
 						expressions.Add (expression);
@@ -1657,43 +1666,18 @@ namespace MonoDevelop.Debugger
 			return false;
 		}
 
-		string GetFullExpression (TreeIter it)
-		{
-			var path = store.GetPath (it);
-			string name, expression = "";
-
-			while (path.Depth != 1) {
-				var val = GetDebuggerObjectValueAtIter (it);
-				if (val == null)
-					return null;
-
-				expression = val.ChildSelector + expression;
-				if (!store.IterParent (out it, it))
-					break;
-
-				path = store.GetPath (it);
-			}
-
-			name = (string) store.GetValue (it, NameColumn);
-
-			return name + expression;
-		}
-
 		void CreatePinnedWatch (TreeIter it)
 		{
-			var expression = GetFullExpression (it);
+			var node = GetNodeAtIter (it);
+			var expression = node.Expression;
 
 			if (string.IsNullOrEmpty (expression))
 				return;
 
-			var height = SizeRequest ().Height;
-
 			if (PinnedWatch != null)
 				CollapseAll ();
 
-			// TODO: move this to NodePinned?.Invoke
-			NodePinned?.Invoke (this, null);
-			controller.CreatePinnedWatch (expression, height);
+			NodePinned?.Invoke (this, new ObjectValueNodeEventArgs(node));
 		}
 
 		#region ICompletionWidget implementation 
