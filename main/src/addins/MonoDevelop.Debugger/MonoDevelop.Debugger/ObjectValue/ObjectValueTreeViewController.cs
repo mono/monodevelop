@@ -204,8 +204,8 @@ namespace MonoDevelop.Debugger
 			};
 
 			
-			view.NodeExpanded += OnViewNodeExpanded;
-			view.NodeCollapsed += OnViewNodeCollapsed;
+			view.NodeExpand += OnViewNodeExpand;
+			view.NodeCollapse += OnViewNodeCollapse;
 			view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
 			view.ExpressionAdded += OnViewExpressionAdded;
 			view.ExpressionEdited += OnViewExpressionEdited;
@@ -543,7 +543,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		#region View event handlers
-		void OnViewNodeExpanded (object sender, ObjectValueNodeEventArgs e)
+		void OnViewNodeExpand (object sender, ObjectValueNodeEventArgs e)
 		{
 			ExpandNodeAsync (e.Node).Ignore ();
 		}
@@ -551,7 +551,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Marks a node as not expanded
 		/// </summary>
-		void OnViewNodeCollapsed (object sender, ObjectValueNodeEventArgs e)
+		void OnViewNodeCollapse (object sender, ObjectValueNodeEventArgs e)
 		{
 			e.Node.IsExpanded = false;
 		}

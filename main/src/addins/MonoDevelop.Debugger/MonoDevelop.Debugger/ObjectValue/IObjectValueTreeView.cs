@@ -77,12 +77,20 @@ namespace MonoDevelop.Debugger
 		void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes);
 
 		/// <summary>
+		/// Triggered when the view tries to expand a node. This may trigger a load of
+		/// the node's children
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodeExpand;
+
+		/// <summary>
+		/// Triggered when the view tries to collapse a node.
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodeCollapse;
+
+		/// <summary>
 		/// Triggered when the view requests a node to fetch more of it's children
 		/// </summary>
 		event EventHandler<ObjectValueNodeEventArgs> NodeLoadMoreChildren;
-
-		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
-		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 
 		/// <summary>
 		/// Triggered when the view needs the node to be refreshed
@@ -131,6 +139,9 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
 
+		/// <summary>
+		/// Informs the view that the node was expanded and children have been loaded.
+		/// </summary>
 		void OnNodeExpanded (ObjectValueNode node);
 
 		/// <summary>

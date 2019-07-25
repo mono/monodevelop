@@ -356,6 +356,18 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
+		/// Triggered when the view tries to expand a node. This may trigger a load of
+		/// the node's children
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeExpand;
+
+		/// <summary>
+		/// Triggered when the view tries to collapse a node.
+		/// </summary>
+
+		public event EventHandler<ObjectValueNodeEventArgs> NodeCollapse;
+
+		/// <summary>
 		/// Triggered when the view requests a node to fetch more of it's children
 		/// </summary>
 		public event EventHandler<ObjectValueNodeEventArgs> NodeLoadMoreChildren;
@@ -538,6 +550,9 @@ namespace MonoDevelop.Debugger
 		}
 
 		// TODO: if we don't want the scrolling, we can probably get rid of this
+		/// <summary>
+		/// Informs the view that the node was expanded and children have been loaded.
+		/// </summary>
 		public void OnNodeExpanded (ObjectValueNode node)
 		{
 			if (disposed)
@@ -924,8 +939,6 @@ namespace MonoDevelop.Debugger
 			return base.OnTestExpandRow (iter, path);
 		}
 
-		public event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
-
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
 			var node = GetNodeAtIter (iter);
@@ -937,10 +950,8 @@ namespace MonoDevelop.Debugger
 
 			HideValueButton (iter);
 
-			NodeExpanded?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			NodeExpand?.Invoke (this, new ObjectValueNodeEventArgs (node));
 		}
-
-		public event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
@@ -951,7 +962,7 @@ namespace MonoDevelop.Debugger
 			if (compactView)
 				RecalculateWidth ();
 
-			NodeCollapsed?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			NodeCollapse?.Invoke (this, new ObjectValueNodeEventArgs (node));
 
 			// TODO: all this scrolling kind of seems awkward
 			//ScrollToCell (path, expCol, true, 0f, 0f);
