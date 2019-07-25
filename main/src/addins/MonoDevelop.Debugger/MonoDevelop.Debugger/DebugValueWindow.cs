@@ -101,10 +101,13 @@ namespace MonoDevelop.Debugger
 				controller.PinnedWatchFile = pinnedWatchFileName;
 
 				controller.PinStatusChanged += OnPinStatusChanged;
-				controller.StartEditing += OnStartEditing;
-				controller.EndEditing += OnEndEditing;
 
 				treeView = (TreeView) controller.GetControl (headersVisible: false, allowPinning: true, compactView: true);
+
+				if (treeView is IObjectValueTreeView ovtv) {
+					ovtv.StartEditing += OnStartEditing;
+					ovtv.EndEditing += OnEndEditing;
+				}
 
 				controller.AddValue (value);
 			} else {
@@ -168,8 +171,11 @@ namespace MonoDevelop.Debugger
 		{
 			if (UseNewTreeView) {
 				controller.PinStatusChanged -= OnPinStatusChanged;
-				controller.StartEditing -= OnStartEditing;
-				controller.EndEditing -= OnEndEditing;
+
+				if (treeView is IObjectValueTreeView ovtv) {
+					ovtv.StartEditing -= OnStartEditing;
+					ovtv.EndEditing -= OnEndEditing;
+				}
 			} else {
 				objValueTreeView.PinStatusChanged -= OnPinStatusChanged;
 				objValueTreeView.StartEditing -= OnStartEditing;

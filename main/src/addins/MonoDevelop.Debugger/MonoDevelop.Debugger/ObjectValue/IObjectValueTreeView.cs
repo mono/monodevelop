@@ -34,17 +34,17 @@ namespace MonoDevelop.Debugger
 	public interface IObjectValueTreeView
 	{
 		/// <summary>
-		/// Gets a value indicating whether the user should be able to edit values in the tree
+		/// Gets or sets a value indicating whether the user should be able to edit values in the tree
 		/// </summary>
 		bool AllowEditing { get; set; }
 
 		/// <summary>
-		/// Gets a value indicating whether or not the user should be able to expand nodes in the tree
+		/// Gets or sets a value indicating whether or not the user should be able to expand nodes in the tree
 		/// </summary>
 		bool AllowExpanding { get; set; }
 
 		/// <summary>
-		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
+		/// Gets or sets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
 		bool AllowWatchExpressions { get; set; }
 
@@ -66,11 +66,59 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes);
 
-
+		/// <summary>
+		/// Triggered when the view requests a node to fetch more of it's children
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodeLoadMoreChildren;
 
 		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 
+		/// <summary>
+		/// Triggered when the view needs the node to be refreshed
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodeRefresh;
+
+		/// <summary>
+		/// Triggered when the view needs to know if the node can be edited
+		/// </summary>
+		event EventHandler<ObjectValueCanEditEventArgs> NodeGetCanEdit;
+
+		/// <summary>
+		/// Triggered when the node's value has been edited by the user
+		/// </summary>
+		event EventHandler<ObjectValueEditEventArgs> NodeEditValue;
+
+		/// <summary>
+		/// Triggered when the user removes a node (an expression)
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodeRemoved;
+
+		event EventHandler<ObjectValueDisplayEventArgs> NodeGetDisplayText;
+
+		/// <summary>
+		/// Triggered when an expression is added to the tree by the user
+		/// </summary>
+		event EventHandler<ObjectValueExpressionEventArgs> ExpressionAdded;
+
+		/// <summary>
+		/// Triggered when an expression is edited by the user
+		/// </summary>
+		event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
+
+
 		void OnNodeExpanded (ObjectValueNode node);
+
+
+
+		/// <summary>
+		/// Triggered when the user starts editing a node
+		/// </summary>
+		event EventHandler StartEditing;
+
+		/// <summary>
+		/// Triggered when the user stops editing a node
+		/// </summary>
+		event EventHandler EndEditing;
 	}
 }

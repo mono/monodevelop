@@ -40,38 +40,61 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public sealed class ObjectValueNodeEvaluationCompletedEventArgs : ObjectValueNodeEventArgs
+	public sealed class ObjectValueCanEditEventArgs : ObjectValueNodeEventArgs
 	{
-		public ObjectValueNodeEvaluationCompletedEventArgs (ObjectValueNode node, ObjectValueNode [] replacementNodes) : base (node)
+		public ObjectValueCanEditEventArgs (ObjectValueNode node) : base (node)
 		{
-			ReplacementNodes = replacementNodes;
 		}
 
-		/// <summary>
-		/// Gets an array of nodes that should be used to replace the node that finished evaluating.
-		/// Some sets of values, like local variables, frame locals and the like are fetched asynchronously
-		/// and may take some time to fetch. In this case, a single object is returned that is a place holder
-		/// for 0 or more values that should be expanded in the place of the evaluating node.
-		/// </summary>
-		public ObjectValueNode[] ReplacementNodes { get; }
+		public bool CanEdit {
+			get; set;
+		}
 	}
 
-	public sealed class ObjectValueNodeChildrenChangedEventArgs : ObjectValueNodeEventArgs
+	public sealed class ObjectValueEditEventArgs : ObjectValueNodeEventArgs
 	{
-		public ObjectValueNodeChildrenChangedEventArgs (ObjectValueNode node, int index, int count) : base (node)
+		public ObjectValueEditEventArgs (ObjectValueNode node, string newValue) : base (node)
 		{
-			Index = index;
-			Count = count;
+			NewValue = newValue;
 		}
 
-		/// <summary>
-		/// Gets the count of child nodes that were loaded
-		/// </summary>
-		public int Count { get; }
+		public string NewValue {
+			get; private set;
+		}
 
-		/// <summary>
-		/// Gets the index of the first child that was loaded
-		/// </summary>
-		public int Index { get; }
+		public bool Edited {
+			get; set;
+		}
+	}
+
+	public sealed class ObjectValueDisplayEventArgs : ObjectValueNodeEventArgs
+	{
+		public ObjectValueDisplayEventArgs (ObjectValueNode node) : base (node)
+		{
+		}
+
+		public string DisplayValue {
+			get; private set;
+		}
+
+		public bool HasVisualisers {
+			get; set;
+		}
+
+		public bool HasChangedSinceLastCheckpoint {
+			get; set;
+		}
+	}
+
+	public sealed class ObjectValueExpressionEventArgs : ObjectValueNodeEventArgs
+	{
+		public ObjectValueExpressionEventArgs (ObjectValueNode node, string expression) : base(node)
+		{
+			Expression = expression;
+		}
+
+		public string Expression {
+			get; private set;
+		}
 	}
 }

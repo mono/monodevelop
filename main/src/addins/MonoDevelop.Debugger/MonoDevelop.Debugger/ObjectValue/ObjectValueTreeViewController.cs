@@ -200,20 +200,6 @@ namespace MonoDevelop.Debugger
 			OnPinStatusChanged ();
 		}
 
-		public event EventHandler StartEditing;
-
-		internal void OnStartEditing ()
-		{
-			StartEditing?.Invoke (this, EventArgs.Empty);
-		}
-
-		public event EventHandler EndEditing;
-
-		internal void OnEndEditing ()
-		{
-			EndEditing?.Invoke (this, EventArgs.Empty);
-		}
-
 		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true)
 		{
 			if (view == null) {
@@ -223,6 +209,13 @@ namespace MonoDevelop.Debugger
 
 				view.NodeExpanded += OnViewNodeExpanded;
 				view.NodeCollapsed += OnViewNodeCollapsed;
+				view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
+				view.ExpressionAdded += OnViewExpressionAdded;
+				view.ExpressionEdited += OnViewExpressionEdited;
+				view.NodeRefresh += OnViewNodeRefresh;
+				view.NodeGetCanEdit += OnViewNodeCanEdit;
+				view.NodeEditValue += OnViewNodeEditValue;
+				view.NodeRemoved += OnViewNodeRemoved;
 			}
 
 			return view;
@@ -284,12 +277,10 @@ namespace MonoDevelop.Debugger
 			}).Ignore ();
 		}
 
-		public bool RemoveValue (ObjectValueNode node)
+		void RemoveValue (ObjectValueNode node)
 		{
 			UnregisterNode (node);
 			OnEvaluationCompleted (node, new ObjectValueNode [0]);
-
-			return true;
 		}
 
 		/// <summary>
@@ -414,7 +405,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Returns true if the node can be edited
 		/// </summary>
-		public bool CanEditObject (ObjectValueNode node)
+		bool CanEditObject (ObjectValueNode node)
 		{
 			if (AllowEditing) {
 				// TODO: clean up
@@ -434,7 +425,7 @@ namespace MonoDevelop.Debugger
 		/// Edits the value of the node and returns a value indicating whether the node's value changed from
 		/// when the node was initially loaded from the debugger
 		/// </summary>
-		public bool EditNodeValue (ObjectValueNode node, string newValue)
+		bool EditNodeValue (ObjectValueNode node, string newValue)
 		{
 			if (node == null || !AllowEditing)
 				return false;
@@ -542,6 +533,57 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		#region View event handlers
+		void OnViewNodeExpanded (object sender, ObjectValueNodeEventArgs e)
+		{
+			ExpandNodeAsync (e.Node).Ignore ();
+		}
+
+		/// <summary>
+		/// Marks a node as not expanded
+		/// </summary>
+		void OnViewNodeCollapsed (object sender, ObjectValueNodeEventArgs e)
+		{
+			e.Node.IsExpanded = false;
+		}
+
+		void OnViewNodeLoadMoreChildren (object sender, ObjectValueNodeEventArgs e)
+		{
+			FetchMoreChildrenAsync (e.Node).Ignore ();
+		}
+
+		void OnViewExpressionAdded (object sender, ObjectValueExpressionEventArgs e)
+		{
+			AddExpression (e.Expression);
+		}
+
+		void OnViewExpressionEdited (object sender, ObjectValueExpressionEventArgs e)
+		{
+			EditExpression (e.Node, e.Expression);
+		}
+
+		void OnViewNodeRefresh (object sender, ObjectValueNodeEventArgs e)
+		{
+			RefreshNode (e.Node);
+		}
+
+		void OnViewNodeCanEdit (object sender, ObjectValueCanEditEventArgs e)
+		{
+			e.CanEdit = CanEditObject (e.Node);
+		}
+
+		void OnViewNodeEditValue (object sender, ObjectValueEditEventArgs e)
+		{
+			e.Edited = EditNodeValue (e.Node, e.NewValue);
+		}
+
+		void OnViewNodeRemoved (object sender, ObjectValueNodeEventArgs e)
+		{
+			RemoveValue (e.Node);
+		}
+
+		#endregion
+
 		#region Fetching and loading children
 		/// <summary>
 		/// Marks a node as expanded and fetches children for the node if they have not been already fetched
@@ -574,20 +616,7 @@ namespace MonoDevelop.Debugger
 			});
 		}
 
-		void OnViewNodeExpanded (object sender, ObjectValueNodeEventArgs e)
-		{
-			ExpandNodeAsync (e.Node).Ignore ();
-		}
-
-		/// <summary>
-		/// Marks a node as not expanded
-		/// </summary>
-		void OnViewNodeCollapsed (object sender, ObjectValueNodeEventArgs e)
-		{
-			e.Node.IsExpanded = false;
-		}
-
-		public async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)
+		async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)
 		{
 			if (node.ChildrenLoaded) {
 				return 0;

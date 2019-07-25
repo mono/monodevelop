@@ -279,10 +279,10 @@ namespace MonoDevelop.Debugger
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
 
-			expanderSize = (int) StyleGetProperty ("expander-size") + 4; //+4 is hardcoded in gtk.c code
-			horizontal_separator = (int) StyleGetProperty ("horizontal-separator");
-			grid_line_width = (int) StyleGetProperty ("grid-line-width");
-			focus_line_width = (int) StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
+			expanderSize = (int)StyleGetProperty ("expander-size") + 4; //+4 is hardcoded in gtk.c code
+			horizontal_separator = (int)StyleGetProperty ("horizontal-separator");
+			grid_line_width = (int)StyleGetProperty ("grid-line-width");
+			focus_line_width = (int)StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
 
 			AdjustColumnSizes ();
 		}
@@ -321,6 +321,51 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
+
+		/// <summary>
+		/// Triggered when the view requests a node to fetch more of it's children
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeLoadMoreChildren;
+
+		/// <summary>
+		/// Triggered when the view needs the node to be refreshed
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeRefresh;
+
+		/// <summary>
+		/// Triggered when the view needs to know if the node can be edited
+		/// </summary>
+		public event EventHandler<ObjectValueCanEditEventArgs> NodeGetCanEdit;
+
+		/// <summary>
+		/// Triggered when the node's value has been edited by the user
+		/// </summary>
+		public event EventHandler<ObjectValueEditEventArgs> NodeEditValue;
+
+		/// <summary>
+		/// Triggered when the user removes a node (an expression)
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeRemoved;
+
+		/// <summary>
+		/// Triggered when an expression is added to the tree by the user
+		/// </summary>
+		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionAdded;
+
+		/// <summary>
+		/// Triggered when an expression is edited by the user
+		/// </summary>
+		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
+
+		/// <summary>
+		/// Triggered when the user starts editing a node
+		/// </summary>
+		public event EventHandler StartEditing;
+
+		/// <summary>
+		/// Triggered when the user stops editing a node
+		/// </summary>
+		public event EventHandler EndEditing;
 
 		protected override void OnDestroyed ()
 		{
@@ -391,7 +436,7 @@ namespace MonoDevelop.Debugger
 				if (string.IsNullOrWhiteSpace (expression))
 					continue;
 
-				controller.AddExpression (expression.Trim ());
+				ExpressionAdded?.Invoke (this, new ObjectValueExpressionEventArgs(null, expression.Trim ()));
 			}
 		}
 
@@ -654,15 +699,16 @@ namespace MonoDevelop.Debugger
 
 			if (node.IsEnumerable) {
 				if (node is ShowMoreValuesObjectValueNode moreNode) {
-					controller.FetchMoreChildrenAsync (moreNode.EnumerableNode).Ignore ();
+					NodeLoadMoreChildren?.Invoke (this, new ObjectValueNodeEventArgs (moreNode.EnumerableNode));
 				} else {
 					// use ExpandRow to expand so we see the loading message, expanding the node will trigger a fetch of the children
 					var treePath = GetTreePathForNode (node);
 					ExpandRow (treePath, false);
 				}
 			} else {
-				// this is likely to support IsImplicitNotSupported 
-				controller.RefreshNode (node);
+				// this is likely to support IsImplicitNotSupported
+				NodeRefresh?.Invoke (this, new ObjectValueNodeEventArgs (node));
+
 				// update the tree
 				if (store.IterParent (out TreeIter parentIter, it)) {
 					SetValues (parentIter, it, null, node);
@@ -772,7 +818,7 @@ namespace MonoDevelop.Debugger
 			if (updateJustValue)
 				return;
 
-			bool canEdit = controller.CanEditObject (val);
+			bool canEdit = GetCanEditNode (val);
 			string icon = ObjectValueTreeViewController.GetIcon (val.Flags);
 
 			store.SetValue (it, NameColumn, name);
@@ -815,6 +861,13 @@ namespace MonoDevelop.Debugger
 					ExpandRow (store.GetPath (it), false);
 				}
 			}
+		}
+
+		bool GetCanEditNode(ObjectValueNode node)
+		{
+			var args = new ObjectValueCanEditEventArgs (node);
+			NodeGetCanEdit?.Invoke (this, args);
+			return args.CanEdit;
 		}
 
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
@@ -903,10 +956,11 @@ namespace MonoDevelop.Debugger
 			var node = GetNodeAtIter (iter);
 
 			if (node == null) {
-				if (args.NewText.Length > 0)
-					controller.AddExpression (args.NewText);
+				if (args.NewText.Length > 0) {
+					ExpressionAdded?.Invoke (this, new ObjectValueExpressionEventArgs (null, args.NewText));
+				}
 			} else {
-				controller.EditExpression (node, args.NewText);
+				ExpressionEdited?.Invoke (this, new ObjectValueExpressionEventArgs (null, args.NewText));
 			}
 		}
 
@@ -947,7 +1001,9 @@ namespace MonoDevelop.Debugger
 
 			// get the node that we just edited
 			var val = GetNodeAtIter (iter);
-			if (controller.EditNodeValue (val, args.NewText)) {
+			var editArgs = new ObjectValueEditEventArgs (val, args.NewText);
+			NodeEditValue?.Invoke (this, editArgs);
+			if (editArgs.Edited) {
 				// update the store
 				//store.SetValue (it, ValueColumn, val.GetDisplayValue());
 				SetValues (TreeIter.Zero, iter, null, val);
@@ -966,7 +1022,7 @@ namespace MonoDevelop.Debugger
 			editEntry.KeyPressEvent += OnEditKeyPress;
 			editEntry.KeyReleaseEvent += OnEditKeyRelease;
 
-			controller.OnStartEditing ();
+			StartEditing?.Invoke(this, EventArgs.Empty);
 		}
 
 		void OnEndEditing ()
@@ -978,7 +1034,7 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.HideWindow ();
 			currentCompletionData = null;
 
-			controller.OnEndEditing ();
+			EndEditing?.Invoke (this, EventArgs.Empty);
 		}
 
 		void OnEditKeyRelease (object sender, EventArgs e)
@@ -1201,8 +1257,8 @@ namespace MonoDevelop.Debugger
 						continue;
 
 					var node = GetNodeAtIter (iter);
-					if (controller.RemoveValue (node))
-						changed = true;
+					NodeRemoved?.Invoke (this, new ObjectValueNodeEventArgs (node));
+					changed = true;
 
 					//val = GetDebuggerObjectValueAtIter (iter);
 					//expression = GetFullExpression (iter);
@@ -1451,8 +1507,9 @@ namespace MonoDevelop.Debugger
 				nodesToDelete.Add (node);
 			}
 
-			foreach (var node in nodesToDelete) 
-				controller.RemoveValue (node);
+			foreach (var node in nodesToDelete) {
+				NodeRemoved?.Invoke (this, new ObjectValueNodeEventArgs (node));
+			}
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
