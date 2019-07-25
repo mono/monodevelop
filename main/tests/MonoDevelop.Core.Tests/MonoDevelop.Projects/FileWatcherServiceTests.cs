@@ -186,6 +186,23 @@ namespace MonoDevelop.Projects
 			await FileWatcherService.Remove (workspace);
 		}
 
+		[Test]
+		public async Task TestTimings ()
+		{
+			using var workspace = SetupWorkspace (1);
+
+			await FileWatcherService.Add (workspace);
+
+			var project = workspace.GetAllItems<MockProject> ().Single ();
+
+			await TestAll (project);
+
+			Assert.That (FileWatcherService.Timings.GetTimings (FileService.EventDataKind.Created), Is.GreaterThan (TimeSpan.Zero));
+			Assert.That (FileWatcherService.Timings.GetTimings (FileService.EventDataKind.Removed), Is.GreaterThan (TimeSpan.Zero));
+
+			await FileWatcherService.Remove (workspace);
+		}
+
 		class MockWorkspaceItem : WorkspaceItem
 		{
 			public List<MockProject> Children { get; } = new List<MockProject> ();

@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.ObjectPool;
 using MonoDevelop.Core;
 using MonoDevelop.FSW;
 
@@ -300,6 +301,25 @@ namespace MonoDevelop.Projects
 				return UpdateWatchersAsync ();
 			}
 		}
+
+		internal static FileChangeTimings Timings { get; } = new FileChangeTimings ();
+	}
+
+	internal class FileChangeTimings
+	{
+		readonly ObjectPool<Stopwatch> watchPool = ObjectPool.Create<Stopwatch> ();
+		readonly long [] timings = new long [Enum.GetNames (typeof (FileService.EventDataKind)).Length];
+
+		internal TimeSpan GetTimings (FileService.EventDataKind kind)
+			=> TimeSpan.FromTicks (timings [(int)kind]);
+
+		internal Stopwatch Get () => watchPool.Get ();
+
+		internal void Add (Stopwatch sw, FileService.EventDataKind kind)
+		{
+			Interlocked.Add (ref timings [(int)kind], sw.Elapsed.Ticks);
+			watchPool.Return (sw);
+		}
 	}
 
 	sealed class FileWatcherWrapper : IDisposable
@@ -354,10 +374,15 @@ namespace MonoDevelop.Projects
 		void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
 			using (readerWriterLock.Read ()) {
+				var sw = FileWatcherService.Timings.Get ();
+				sw.Restart ();
 				NotifyNode (rootNode, e.FullPath, (id, path) => {
-					if (id is Project project)
+					if (id is Project project) {
 						project.OnFileCreated (path);
+					}
 				});
+				sw.Stop ();
+				FileWatcherService.Timings.Add (sw, FileService.EventDataKind.Created);
 			}
 
 			FileService.NotifyFileCreated (e.FullPath);
@@ -375,10 +400,14 @@ namespace MonoDevelop.Projects
 			// a FileRemoved event.
 			if (!File.Exists (e.FullPath) && !Directory.Exists (e.FullPath)) {
 				using (readerWriterLock.Read ()) {
+					var sw = FileWatcherService.Timings.Get ();
+					sw.Restart ();
 					NotifyNode (rootNode, e.FullPath, (id, path) => {
 						if (id is Project project)
 							project.OnFileDeleted (path);
 					});
+					sw.Stop ();
+					FileWatcherService.Timings.Add (sw, FileService.EventDataKind.Removed);
 				}
 
 				FileService.NotifyFileRemoved (e.FullPath);
@@ -395,10 +424,14 @@ namespace MonoDevelop.Projects
 		void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
 			using (readerWriterLock.Read ()) {
+				var sw = FileWatcherService.Timings.Get ();
+				sw.Restart ();
 				NotifyNode (rootNode, e.OldFullPath, e.FullPath, (id, oldPath, newPath) => {
 					if (id is Project project)
 						project.OnFileRenamed (oldPath, newPath);
 				});
+				sw.Stop ();
+				FileWatcherService.Timings.Add (sw, FileService.EventDataKind.Renamed);
 			}
 
 			FileService.NotifyFileRenamedExternally (e.OldFullPath, e.FullPath);
