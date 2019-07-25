@@ -4,7 +4,8 @@
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
     <MdAddinsDirectory>$(MSBuildThisFileDirectory)..\..\md-addins\</MdAddinsDirectory>
-    <VSEditorCoreDirectory>$(MdAddinsDirectory)external\vs-editor-core\</VSEditorCoreDirectory>
+    <VSEditorCoreDirectory Condition="'$(VSEditorCoreDirectory)' == ''">$(MdAddinsDirectory)external\vs-editor-core\</VSEditorCoreDirectory>
+    <VSEditorApiDirectory Condition="'$(VSEditorApiDirectory)' == ''">$(MSBuildThisFileDirectory)external\vs-editor-api\</VSEditorApiDirectory>
     <ReferencesVSEditor Condition=" '$(OS)' == 'Windows_NT' ">$(RootDirectory)\msbuild\ReferencesVSEditor.Windows.props</ReferencesVSEditor>
     <ReferencesVSEditor Condition=" '$(OS)' != 'Windows_NT' ">$(RootDirectory)\msbuild\ReferencesVSEditor.Mac.props</ReferencesVSEditor>
     <ReferencesGtk>$(RootDirectory)\msbuild\ReferencesGtk.props</ReferencesGtk>

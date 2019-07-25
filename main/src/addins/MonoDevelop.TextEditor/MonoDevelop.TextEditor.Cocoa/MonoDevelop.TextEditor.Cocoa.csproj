@@ -73,10 +73,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\..\md-addins\external\vs-editor-core\bin\TextMate\Onig\libonig.dylib">
+    <None Include="$(VSEditorCoreDirectory)bin\TextMate\Onig\libonig.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\..\..\..\md-addins\external\vs-editor-core\src\TextMate\VSWindows\Setup\**\*">
+    <None Include="$(VSEditorCoreDirectory)src\TextMate\VSWindows\Setup\**\*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
