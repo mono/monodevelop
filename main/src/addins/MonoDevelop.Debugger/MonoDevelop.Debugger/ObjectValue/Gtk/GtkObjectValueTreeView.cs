@@ -367,7 +367,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Triggered when the view needs to know if the node can be edited
 		/// </summary>
-		public event EventHandler<ObjectValueCanEditEventArgs> NodeGetCanEdit;
+		public event EventHandler<ObjectValueNodeEventArgs> NodeGetCanEdit;
 
 		/// <summary>
 		/// Triggered when the node's value has been edited by the user
@@ -380,16 +380,6 @@ namespace MonoDevelop.Debugger
 		public event EventHandler<ObjectValueNodeEventArgs> NodeRemoved;
 
 		/// <summary>
-		/// Triggered when an expression is added to the tree by the user
-		/// </summary>
-		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionAdded;
-
-		/// <summary>
-		/// Triggered when an expression is edited by the user
-		/// </summary>
-		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
-
-		/// <summary>
 		/// Triggered when the user pins the node
 		/// </summary>
 		public event EventHandler<ObjectValueNodeEventArgs> NodePinned;
@@ -398,6 +388,21 @@ namespace MonoDevelop.Debugger
 		/// Triggered when the pinned watch is removed by the user
 		/// </summary>
 		public event EventHandler<EventArgs> NodeUnpinned;
+
+		/// <summary>
+		/// Triggered when the visualiser for the node should be shown
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodeShowVisualiser;
+
+		/// <summary>
+		/// Triggered when an expression is added to the tree by the user
+		/// </summary>
+		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionAdded;
+
+		/// <summary>
+		/// Triggered when an expression is edited by the user
+		/// </summary>
+		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
 
 		/// <summary>
 		/// Triggered when the user starts editing a node
@@ -894,9 +899,9 @@ namespace MonoDevelop.Debugger
 
 		bool GetCanEditNode(ObjectValueNode node)
 		{
-			var args = new ObjectValueCanEditEventArgs (node);
+			var args = new ObjectValueNodeEventArgs (node);
 			NodeGetCanEdit?.Invoke (this, args);
-			return args.CanEdit;
+			return args.Response is bool b && b;
 		}
 
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
@@ -989,7 +994,7 @@ namespace MonoDevelop.Debugger
 					ExpressionAdded?.Invoke (this, new ObjectValueExpressionEventArgs (null, args.NewText));
 				}
 			} else {
-				ExpressionEdited?.Invoke (this, new ObjectValueExpressionEventArgs (null, args.NewText));
+				ExpressionEdited?.Invoke (this, new ObjectValueExpressionEventArgs (node, args.NewText));
 			}
 		}
 
@@ -1032,9 +1037,7 @@ namespace MonoDevelop.Debugger
 			var val = GetNodeAtIter (iter);
 			var editArgs = new ObjectValueEditEventArgs (val, args.NewText);
 			NodeEditValue?.Invoke (this, editArgs);
-			if (editArgs.Edited) {
-				// update the store
-				//store.SetValue (it, ValueColumn, val.GetDisplayValue());
+			if (editArgs.Response is bool b && b) {
 				SetValues (TreeIter.Zero, iter, null, val);
 			}
 		}
@@ -1335,7 +1338,10 @@ namespace MonoDevelop.Debugger
 				if (cr == crpViewer) {
 					clickProcessed = true;
 					var node = GetNodeAtIter (it);
-					if (controller.ShowNodeValueVisualizer (node)) {
+
+					var nodeArgs = new ObjectValueNodeEventArgs (node);
+					NodeShowVisualiser?.Invoke (this, nodeArgs);
+					if (nodeArgs.Response is bool b && b) {
 						SetValues (TreeIter.Zero, it, null, node);
 					}
 				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {

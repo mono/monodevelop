@@ -92,7 +92,7 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Triggered when the view needs to know if the node can be edited
 		/// </summary>
-		event EventHandler<ObjectValueCanEditEventArgs> NodeGetCanEdit;
+		event EventHandler<ObjectValueNodeEventArgs> NodeGetCanEdit;
 
 		/// <summary>
 		/// Triggered when the node's value has been edited by the user
@@ -103,6 +103,21 @@ namespace MonoDevelop.Debugger
 		/// Triggered when the user removes a node (an expression)
 		/// </summary>
 		event EventHandler<ObjectValueNodeEventArgs> NodeRemoved;
+
+		/// <summary>
+		/// Triggered when the user pins the node
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodePinned;
+
+		/// <summary>
+		/// Triggered when the pinned watch is removed by the user
+		/// </summary>
+		event EventHandler<EventArgs> NodeUnpinned;
+
+		/// <summary>
+		/// Triggered when the visualiser for the node should be shown
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodeShowVisualiser;
 
 		//event EventHandler<ObjectValueDisplayEventArgs> NodeGetDisplayText;
 
@@ -115,16 +130,6 @@ namespace MonoDevelop.Debugger
 		/// Triggered when an expression is edited by the user
 		/// </summary>
 		event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
-
-		/// <summary>
-		/// Triggered when the user pins the node
-		/// </summary>
-		event EventHandler<ObjectValueNodeEventArgs> NodePinned;
-
-		/// <summary>
-		/// Triggered when the pinned watch is removed by the user
-		/// </summary>
-		event EventHandler<EventArgs> NodeUnpinned;
 
 		void OnNodeExpanded (ObjectValueNode node);
 

@@ -38,15 +38,11 @@ namespace MonoDevelop.Debugger
 		public ObjectValueNode Node {
 			get; private set;
 		}
-	}
 
-	public sealed class ObjectValueCanEditEventArgs : ObjectValueNodeEventArgs
-	{
-		public ObjectValueCanEditEventArgs (ObjectValueNode node) : base (node)
-		{
-		}
-
-		public bool CanEdit {
+		/// <summary>
+		/// Gets or sets a value indicating a response to the caller of the event
+		/// </summary>
+		public object Response {
 			get; set;
 		}
 	}
@@ -60,10 +56,6 @@ namespace MonoDevelop.Debugger
 
 		public string NewValue {
 			get; private set;
-		}
-
-		public bool Edited {
-			get; set;
 		}
 	}
 

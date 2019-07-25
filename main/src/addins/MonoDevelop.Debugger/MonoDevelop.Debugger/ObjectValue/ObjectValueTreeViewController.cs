@@ -204,6 +204,7 @@ namespace MonoDevelop.Debugger
 			view.NodeRemoved += OnViewNodeRemoved;
 			view.NodePinned += OnViewNodePinned;
 			view.NodeUnpinned += OnViewNodeUnpinned;
+			view.NodeShowVisualiser += OnViewNodeShowVisualiser;
 
 			return view;
 		}
@@ -450,7 +451,7 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		public bool ShowNodeValueVisualizer (ObjectValueNode node)
+		bool ShowNodeValueVisualizer (ObjectValueNode node)
 		{
 			if (node != null) {
 
@@ -554,19 +555,24 @@ namespace MonoDevelop.Debugger
 			RefreshNode (e.Node);
 		}
 
-		void OnViewNodeCanEdit (object sender, ObjectValueCanEditEventArgs e)
+		void OnViewNodeCanEdit (object sender, ObjectValueNodeEventArgs e)
 		{
-			e.CanEdit = CanEditObject (e.Node);
+			e.Response = CanEditObject (e.Node);
 		}
 
 		void OnViewNodeEditValue (object sender, ObjectValueEditEventArgs e)
 		{
-			e.Edited = EditNodeValue (e.Node, e.NewValue);
+			e.Response = EditNodeValue (e.Node, e.NewValue);
 		}
 
 		void OnViewNodeRemoved (object sender, ObjectValueNodeEventArgs e)
 		{
 			RemoveValue (e.Node);
+		}
+
+		void OnViewNodeShowVisualiser (object sender, ObjectValueNodeEventArgs e)
+		{
+			e.Response = ShowNodeValueVisualizer (e.Node);
 		}
 
 		void OnViewNodePinned (object sender, ObjectValueNodeEventArgs e)
