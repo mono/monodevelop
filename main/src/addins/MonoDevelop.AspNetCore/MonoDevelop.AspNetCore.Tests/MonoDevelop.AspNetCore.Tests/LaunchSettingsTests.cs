@@ -183,6 +183,28 @@ namespace MonoDevelop.AspNetCore.Tests
 			Assert.That (config.Name, Is.EqualTo ("Default"));
 		}
 
+		[Test]
+		public async Task SyncRunConfigurations_syncs_RunConfigs ()
+		{
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = (DotNetProject)solution.GetAllProjects ().Single ();
+
+			project.RunConfigurations.Clear ();
+			Assert.That (project.RunConfigurations, Is.Empty);
+			
+			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
+			launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.SyncRunConfigurations (project);
+
+			Assert.That (project.RunConfigurations, Has.Count.EqualTo (2));
+			Assert.That (project.RunConfigurations [0].Name, Is.EqualTo ("Kestrel Staging"));
+			Assert.False (project.RunConfigurations [0].StoreInUserFile);
+			Assert.That (project.RunConfigurations [1].Name, Is.EqualTo ("EnvironmentsSample"));
+			Assert.False (project.RunConfigurations [1].StoreInUserFile);
+		}
+
 		[TearDown]
 		public override void TearDown ()
 		{
