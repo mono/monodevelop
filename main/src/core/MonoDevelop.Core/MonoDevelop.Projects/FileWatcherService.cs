@@ -50,24 +50,95 @@ namespace MonoDevelop.Projects
 		public static Task Add (WorkspaceItem item)
 		{
 			lock (watchers) {
-				item.RootDirectoriesChanged += OnRootDirectoriesChanged;
-				return WatchDirectories (item, item.GetRootDirectories ());
+				return Watch_NoLock (item, registerEvent: true);
+			}
+		}
+
+		static Task Watch_NoLock (WorkspaceObject item, bool registerEvent)
+		{
+			Debug.Assert (Monitor.IsEntered (watchers));
+
+			var toWatch = ComputeItems (item, registerEvent);
+
+			bool modified = false;
+			foreach (var (id, set) in toWatch) {
+				modified |= RegisterDirectoriesInTree_NoLock (id, set);
+			}
+
+			return modified ? UpdateWatchersAsync () : Task.CompletedTask;
+		}
+
+		static List<(object id, HashSet<FilePath> set)> ComputeItems (WorkspaceObject item, bool registerEvent)
+		{
+			var toAdd = new List<(object, HashSet<FilePath>)> ();
+
+			foreach (var toRegister in item.GetAllItems<WorkspaceObject> ()) {
+				if (registerEvent && item is WorkspaceItem workspaceItem) {
+					workspaceItem.RootDirectoriesChanged += OnRootDirectoriesChanged;
+				}
+
+				toAdd.Add ((toRegister, GetPathsToWatch (toRegister)));
+			}
+
+			return toAdd;
+		}
+
+		internal static HashSet<FilePath> GetPathsToWatch (WorkspaceObject item)
+		{
+			var set = new HashSet<FilePath> ();
+			AddToSet (set, item.ItemDirectory);
+
+			if (item is IWorkspaceFileObject container) {
+				foreach (var file in container.GetItemFiles (true)) {
+					AddToSet (set, file.ParentDirectory);
+				}
+			}
+
+			return set;
+
+			static void AddToSet (HashSet<FilePath> set, FilePath path)
+			{
+				if (!path.IsNullOrEmpty) {
+					foreach (var directory in set) {
+						if (path.IsChildPathOf (directory))
+							return;
+					}
+					set.Add (path);
+				}
 			}
 		}
 
 		public static Task Remove (WorkspaceItem item)
 		{
 			lock (watchers) {
-				item.RootDirectoriesChanged -= OnRootDirectoriesChanged;
-				return WatchDirectories (item, null);
+				return Remove_NoLock (item);
 			}
 		}
 
-		static void OnRootDirectoriesChanged (object sender, EventArgs args)
+		static Task Remove_NoLock (WorkspaceObject item)
+		{
+			Debug.Assert (Monitor.IsEntered (watchers));
+
+			bool modified = false;
+			foreach (var child in item.GetAllItems<WorkspaceObject> ()) {
+				modified |= RegisterDirectoriesInTree_NoLock (child, null);
+
+				if (child is WorkspaceItem workspaceItem)
+					workspaceItem.RootDirectoriesChanged -= OnRootDirectoriesChanged;
+			}
+			return modified ? UpdateWatchersAsync () : Task.CompletedTask;
+		}
+
+		static void OnRootDirectoriesChanged (object sender, WorkspaceItem.RootDirectoriesChangedEventArgs args)
 		{
 			lock (watchers) {
-				var item = (WorkspaceItem)sender;
-				WatchDirectories (item, item.GetRootDirectories ()).Ignore ();
+				if (args.SourceItem is WorkspaceObject item) {
+					if (args.IsRemove) {
+						Remove_NoLock (item).Ignore ();
+					} else {
+						Watch_NoLock (item, args.IsAdd).Ignore ();
+					}
+				}
 			}
 		}
 
@@ -79,7 +150,7 @@ namespace MonoDevelop.Projects
 
 			return Task.Run (() => UpdateWatchers (token));
 		}
-		static HashSet<FilePath> newWatchers = new HashSet<FilePath>();
+		static Dictionary<FilePath, PathTreeNode> newWatchers = new Dictionary<FilePath, PathTreeNode>();
 		static List<FilePath> toRemove = new List<FilePath> ();
 
 		static void UpdateWatchers (CancellationToken token)
@@ -95,7 +166,7 @@ namespace MonoDevelop.Projects
 						return;
 					var dir = node.GetPath ().ToString ();
 					if (Directory.Exists (dir))
-						newWatchers.Add (dir);
+						newWatchers.Add (dir, node);
 				}
 				if (newWatchers.Count == 0 && watchers.Count == 0) {
 					// Unchanged.
@@ -104,7 +175,7 @@ namespace MonoDevelop.Projects
 				toRemove.Clear ();
 				foreach (var kvp in watchers) {
 					var directory = kvp.Key;
-					if (!newWatchers.Contains (directory))
+					if (!newWatchers.ContainsKey (directory))
 						toRemove.Add (directory);
 				}
 
@@ -118,12 +189,13 @@ namespace MonoDevelop.Projects
 				}
 
 				// Add the new ones.
-				foreach (var path in newWatchers) {
+				foreach (var kvp in newWatchers) {
+					var path = kvp.Key;
 					// Don't modify a watcher that already exists.
 					if (watchers.ContainsKey (path)) {
 						continue;
 					}
-					var watcher = new FileWatcherWrapper (path);
+					var watcher = new FileWatcherWrapper (path, kvp.Value, watchers);
 					watchers.Add (path, watcher);
 					try {
 						watcher.EnableRaisingEvents = true;
@@ -151,14 +223,21 @@ namespace MonoDevelop.Projects
 		public static Task WatchDirectories (object id, IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
-				HashSet<FilePath> set = null; 
-				if (directories != null)
-					set = new HashSet<FilePath> (directories.Where (x => !x.IsNullOrEmpty));
-
-				if (RegisterDirectoriesInTree_NoLock (id, set))
-					return UpdateWatchersAsync ();
-				return Task.CompletedTask;
+				return WatchDirectories_NoLock (id, directories);
 			}
+		}
+
+		static Task WatchDirectories_NoLock (object id, IEnumerable<FilePath> directories)
+		{
+			Debug.Assert (Monitor.IsEntered (watchers));
+
+			HashSet<FilePath> set = null;
+			if (directories != null)
+				set = new HashSet<FilePath> (directories.Where (x => !x.IsNullOrEmpty));
+
+			if (RegisterDirectoriesInTree_NoLock (id, set))
+				return UpdateWatchersAsync ();
+			return Task.CompletedTask;
 		}
 
 		static bool RegisterDirectoriesInTree_NoLock (object id, HashSet<FilePath> set)
@@ -225,10 +304,16 @@ namespace MonoDevelop.Projects
 	sealed class FileWatcherWrapper : IDisposable
 	{
 		readonly FileSystemWatcher watcher;
+		readonly PathTreeNode rootNode;
+		readonly object lockObject;
 
-		public FileWatcherWrapper (FilePath path)
+		public FileWatcherWrapper (FilePath path, PathTreeNode rootNode, object lockObject)
 		{
 			Path = path;
+
+			this.rootNode = rootNode;
+			this.lockObject = lockObject;
+
 			watcher = new FileSystemWatcher (path) {
 				// Need LastWrite otherwise no file change events are generated by the native file watcher.
 				NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
@@ -265,8 +350,15 @@ namespace MonoDevelop.Projects
 			FileService.NotifyFileChanged (e.FullPath);
 		}
 
-		static void OnFileCreated (object sender, FileSystemEventArgs e)
+		void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
+			lock (lockObject) {
+				NotifyNode (rootNode, e.FullPath, (id, path) => {
+					if (id is Project project)
+						project.OnFileCreated (path);
+				});
+			}
+
 			FileService.NotifyFileCreated (e.FullPath);
 
 			// The native file watcher sometimes generates a single Created event for a file when it is renamed
@@ -275,13 +367,21 @@ namespace MonoDevelop.Projects
 			FileService.NotifyFileChanged (e.FullPath);
 		}
 
-		static void OnFileDeleted (object sender, FileSystemEventArgs e)
+		void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
 			// The native file watcher sometimes generates a Changed, Created and Deleted event in
 			// that order from a single native file event. So check the file has been deleted before raising
 			// a FileRemoved event.
-			if (!File.Exists (e.FullPath) && !Directory.Exists (e.FullPath))
+			if (!File.Exists (e.FullPath) && !Directory.Exists (e.FullPath)) {
+				lock (lockObject) {
+					NotifyNode (rootNode, e.FullPath, (id, path) => {
+						if (id is Project project)
+							project.OnFileDeleted (path);
+					});
+				}
+
 				FileService.NotifyFileRemoved (e.FullPath);
+			}
 		}
 
 		/// <summary>
@@ -291,8 +391,15 @@ namespace MonoDevelop.Projects
 		/// 3. Some applications use a rename to update the original file so these are turned into
 		/// a change event and a remove event.
 		/// </summary>
-		static void OnFileRenamed (object sender, RenamedEventArgs e)
+		void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
+			lock (lockObject) {
+				NotifyNode (rootNode, e.OldFullPath, e.FullPath, (id, oldPath, newPath) => {
+					if (id is Project project)
+						project.OnFileRenamed (oldPath, newPath);
+				});
+			}
+
 			FileService.NotifyFileRenamedExternally (e.OldFullPath, e.FullPath);
 			// Some applications, such as TextEdit.app, will create a backup file
 			// and then rename that to the original file. This results in no file
@@ -315,6 +422,28 @@ namespace MonoDevelop.Projects
 		static void OnFileWatcherError (object sender, ErrorEventArgs e)
 		{
 			LoggingService.LogError ("FileService.FileWatcher error", e.GetException ());
+		}
+
+		static void NotifyNode (PathTreeNode node, string oldPath, string newPath, Action<object, string, string> handler)
+		{
+			foreach (var id in node.Ids) {
+				handler (id, oldPath, newPath);
+			}
+
+			for (node = node.FirstChild; node != null; node = node.Next) {
+				NotifyNode (node, oldPath, newPath, handler);
+			}
+		}
+
+		static void NotifyNode (PathTreeNode node, string path, Action<object, string> handler)
+		{
+			foreach (var id in node.Ids) {
+				handler (id, path);
+			}
+
+			for (node = node.FirstChild; node != null; node = node.Next) {
+				NotifyNode (node, path, handler);
+			}
 		}
 	}
 }

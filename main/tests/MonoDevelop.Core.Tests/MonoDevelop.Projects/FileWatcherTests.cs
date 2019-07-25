@@ -879,7 +879,7 @@ namespace MonoDevelop.Projects
 			var reference = ProjectReference.CreateAssemblyFileReference (fileName);
 			p.References.Add (reference);
 
-			var directories = sol.GetRootDirectories ();
+			var directories = FileWatcherService.GetPathsToWatch (sol);
 			Assert.IsFalse (directories.Contains (FilePath.Empty));
 			Assert.IsFalse (directories.Contains (FilePath.Null));
 			Assert.AreEqual (1, directories.Count);

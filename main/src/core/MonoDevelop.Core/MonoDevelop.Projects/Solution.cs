@@ -1207,7 +1207,8 @@ namespace MonoDevelop.Projects
 				SetupNewItem (args.SolutionItem, args.ReplacedItem);
 			}
 
-			OnRootDirectoriesChanged ();
+			OnRootDirectoriesChanged (args.SolutionItem as IWorkspaceFileObject, isRemove: false, isAdd: true);
+			OnRootDirectoriesChanged (args.ReplacedItem as IWorkspaceFileObject, isRemove: true, isAdd: false);
 
 			SolutionItemAdded?.Invoke (this, args);
 		}
@@ -1252,7 +1253,7 @@ namespace MonoDevelop.Projects
 					DetachItem (item, args.Reloading);
 			}
 
-			OnRootDirectoriesChanged ();
+			OnRootDirectoriesChanged (args.SolutionItem as IWorkspaceFileObject, isRemove: true, isAdd: false);
 
 			SolutionItemRemoved?.Invoke (this, args);
 		}
