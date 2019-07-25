@@ -57,6 +57,9 @@ namespace MonoDevelop.Debugger
 
 		readonly ObjectValueTreeViewController controller;
 
+		// the root node
+		ObjectValueNode root;
+
 		// mapping of a node to the node's location in the tree view
 		readonly Dictionary<ObjectValueNode, TreeRowReference> allNodes = new Dictionary<ObjectValueNode, TreeRowReference> ();
 
@@ -154,8 +157,6 @@ namespace MonoDevelop.Debugger
 
 			this.controller = controller;
 			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
-			this.controller.ChildrenLoaded += Controller_NodeChildrenLoaded;
-			this.controller.EvaluationCompleted += Controller_EvaluationCompleted;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
 			Model = store;
@@ -346,8 +347,6 @@ namespace MonoDevelop.Debugger
 			}
 
 			controller.PinnedWatchChanged -= Controller_PinnedWatchChanged;
-			controller.ChildrenLoaded -= Controller_NodeChildrenLoaded;
-			controller.EvaluationCompleted -= Controller_EvaluationCompleted;
 
 			disposed = true;
 			controller.CancelAsyncTasks ();
@@ -408,23 +407,31 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
-		/// Triggered when the children of a node have been loaded
+		/// Reloads the tree from the root node
 		/// </summary>
-		void Controller_NodeChildrenLoaded (object sender, ObjectValueNodeChildrenChangedEventArgs e)
+		public void Reload (ObjectValueNode root)
 		{
-			Runtime.RunInMainThread (() => {
-				OnChildrenLoaded (e.Node, e.Index, e.Count);
-			}).Ignore ();
+			// TODO: how to tell whether to reset scroll position or not?
+			this.root = root;
+			Refresh (false);
 		}
 
 		/// <summary>
-		/// Triggered when a node has completed evaluation and we have data to show the user
+		/// Informs the view to load the children of the given node
 		/// </summary>
-		void Controller_EvaluationCompleted (object sender, ObjectValueNodeEvaluationCompletedEventArgs e)
+		public void LoadNodeChildren (ObjectValueNode node, int startIndex, int count)
 		{
-			Runtime.RunInMainThread (() => {
-				OnEvaluationCompleted (e.Node, e.ReplacementNodes);
-			}).Ignore ();
+			OnChildrenLoaded (node, startIndex, count);
+		}
+
+		/// <summary>
+		/// Informs the view to load the new values into the given node, optionally replacing that node with
+		/// the set of replacement nodes. Handles the case where, for example, the "locals" is replaced
+		/// with the set of local values
+		/// </summary>
+		public void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes)
+		{
+			OnEvaluationCompleted (node, replacementNodes);
 		}
 
 		void OnChildrenLoaded (ObjectValueNode node, int index, int count)
@@ -432,21 +439,16 @@ namespace MonoDevelop.Debugger
 			if (disposed)
 				return;
 
-			if (node == controller.Root) {
-				// TODO: how to tell whether to reset scroll position or not?
-				Refresh (false);
-			} else {
-				// the children of a specific node changed
-				// remove the children for that node, then reload the children
-				if (GetTreeIterFromNode (node, out TreeIter iter, out TreeIter parent)) {
-					// rather than simply replacing the children of this node we will merge
-					// them in so that the tree does not collapse the row when the last child is removed
-					MergeChildrenIntoTree (node, iter, index, count);
+			// the children of a specific node changed
+			// remove the children for that node, then reload the children
+			if (GetTreeIterFromNode (node, out TreeIter iter, out TreeIter parent)) {
+				// rather than simply replacing the children of this node we will merge
+				// them in so that the tree does not collapse the row when the last child is removed
+				MergeChildrenIntoTree (node, iter, index, count);
 
-					// if we did not load all the children, add a More node
-					if (!node.ChildrenLoaded) {
-						AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
-					}
+				// if we did not load all the children, add a More node
+				if (!node.ChildrenLoaded) {
+					AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
 				}
 			}
 
@@ -601,8 +603,8 @@ namespace MonoDevelop.Debugger
 
 			bool showExpanders = AllowWatchExpressions;
 
-			if (controller.Root != null) {
-				if (LoadNode (controller.Root, TreeIter.Zero)) {
+			if (root != null) {
+				if (LoadNode (root, TreeIter.Zero)) {
 					showExpanders = true;
 				}
 			}

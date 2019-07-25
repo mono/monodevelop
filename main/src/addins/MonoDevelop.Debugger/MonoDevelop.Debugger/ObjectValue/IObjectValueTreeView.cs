@@ -48,6 +48,26 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		bool AllowWatchExpressions { get; set; }
 
+		/// <summary>
+		/// Reloads the tree from the root node
+		/// </summary>
+		void Reload (ObjectValueNode root);
+
+		/// <summary>
+		/// Informs the view to load the children of the given node. startIndex and count may specify a range of
+		/// the children of the node to load (for when children are being paged in from an enumerable for example).
+		/// </summary>
+		void LoadNodeChildren (ObjectValueNode node, int startIndex, int count);
+
+		/// <summary>
+		/// Informs the view to load the new values into the given node, optionally replacing that node with
+		/// the set of replacement nodes. Handles the case where, for example, the "locals" is replaced
+		/// with the set of local values
+		/// </summary>
+		void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes);
+
+
+
 		event EventHandler<ObjectValueNodeEventArgs> NodeExpanded;
 		event EventHandler<ObjectValueNodeEventArgs> NodeCollapsed;
 
