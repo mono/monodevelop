@@ -43,16 +43,6 @@ namespace MonoDevelop.Debugger
 		Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
 	}
 
-
-
-
-	/*
-	 * Issues?
-	 *
-	 * - RemoveChildren did an unregister of events for child nodes that were removed, we might need to do the same for
-	 * refreshing a node (which may replace it's children nodes)
-	 * 
-	 */
 	public class ObjectValueTreeViewController : IObjectValueDebuggerService
 	{
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
@@ -60,7 +50,6 @@ namespace MonoDevelop.Debugger
 
 		IObjectValueTreeView view;
 		IDebuggerService debuggerService;
-		PinnedWatch pinnedWatch;
 		bool allowWatchExpressions;
 		bool allowEditing;
 		bool allowExpanding = true;
@@ -70,7 +59,6 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<ObjectValueNode, Task<int>> childFetchTasks = new Dictionary<ObjectValueNode, Task<int>> ();
 
-		// TODO: can we refactor this to a separate class?
 		/// <summary>
 		/// Holds a dictionary of arbitrary objects for nodes that are currently "Evaluating" by the debugger
 		/// When the node has completed evaluation ValueUpdated event will be fired, passing the given object
@@ -139,10 +127,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		#region Pinned Watches
-
-		public event EventHandler PinnedWatchChanged;
-
 		public PinnedWatch PinnedWatch {
 			get { return view?.PinnedWatch; }
 			set {
@@ -160,37 +144,10 @@ namespace MonoDevelop.Debugger
 			get; set;
 		}
 
-		#endregion
-
 		public bool CanQueryDebugger {
 			get {
 				return Debugger.IsConnected && Debugger.IsPaused;
 			}
-		}
-
-		void CreatePinnedWatch (string expression, int height)
-		{
-			var watch = new PinnedWatch ();
-
-			if (PinnedWatch != null) {
-				watch.File = PinnedWatch.File;
-				watch.Line = PinnedWatch.Line;
-				watch.OffsetX = PinnedWatch.OffsetX;
-				watch.OffsetY = PinnedWatch.OffsetY + height + 5;
-			} else {
-				watch.File = PinnedWatchFile;
-				watch.Line = PinnedWatchLine;
-				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
-				watch.OffsetY = -1;
-			}
-
-			watch.Expression = expression;
-			DebuggingService.PinnedWatches.Add (watch);
-		}
-
-		public void RemovePinnedWatch ()
-		{
-			DebuggingService.PinnedWatches.Remove (PinnedWatch);
 		}
 
 		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
@@ -203,7 +160,7 @@ namespace MonoDevelop.Debugger
 				PinnedWatch = this.PinnedWatch,
 			};
 
-			
+
 			view.NodeExpand += OnViewNodeExpand;
 			view.NodeCollapse += OnViewNodeCollapse;
 			view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
@@ -225,16 +182,6 @@ namespace MonoDevelop.Debugger
 			cancellationTokenSource.Cancel ();
 		}
 
-		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
-		{
-			if (CanQueryDebugger && Frame != null) {
-				// TODO: improve how we get at the underlying real stack frame
-				return await DebuggingService.GetCompletionDataAsync (Frame.GetStackFrame (), expression, token);
-			}
-
-			return null;
-		}
-
 		/// <summary>
 		/// Clears the controller of nodes and resets the root to a new empty node
 		/// </summary>
@@ -245,6 +192,15 @@ namespace MonoDevelop.Debugger
 			Runtime.RunInMainThread (() => {
 				view.Reload (Root);
 			}).Ignore ();
+		}
+
+		/// <summary>
+		/// Clear everything
+		/// </summary>
+		public void ClearAll ()
+		{
+			ClearEvaluationCompletionRegistrations ();
+			ClearValues ();
 		}
 
 		/// <summary>
@@ -276,7 +232,6 @@ namespace MonoDevelop.Debugger
 			var nodes = values.ToList ();
 			((RootObjectValueNode)Root).AddValues (nodes);
 
-			// TODO: we want to enumerate just the once
 			foreach (var node in nodes) {
 				RegisterNode (node);
 			}
@@ -286,19 +241,45 @@ namespace MonoDevelop.Debugger
 			}).Ignore ();
 		}
 
+		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
+		{
+			if (CanQueryDebugger && Frame != null) {
+				// TODO: improve how we get at the underlying real stack frame
+				return await DebuggingService.GetCompletionDataAsync (Frame.GetStackFrame (), expression, token);
+			}
+
+			return null;
+		}
+
+		void CreatePinnedWatch (string expression, int height)
+		{
+			var watch = new PinnedWatch ();
+
+			if (PinnedWatch != null) {
+				watch.File = PinnedWatch.File;
+				watch.Line = PinnedWatch.Line;
+				watch.OffsetX = PinnedWatch.OffsetX;
+				watch.OffsetY = PinnedWatch.OffsetY + height + 5;
+			} else {
+				watch.File = PinnedWatchFile;
+				watch.Line = PinnedWatchLine;
+				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
+				watch.OffsetY = -1;
+			}
+
+			watch.Expression = expression;
+			DebuggingService.PinnedWatches.Add (watch);
+		}
+
+		void RemovePinnedWatch ()
+		{
+			DebuggingService.PinnedWatches.Remove (PinnedWatch);
+		}
+
 		void RemoveValue (ObjectValueNode node)
 		{
 			UnregisterNode (node);
 			OnEvaluationCompleted (node, new ObjectValueNode [0]);
-		}
-
-		/// <summary>
-		/// Clear everything
-		/// </summary>
-		public void ClearAll ()
-		{
-			ClearEvaluationCompletionRegistrations ();
-			ClearValues ();
 		}
 
 		// TODO: can we improve this
@@ -390,7 +371,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public bool EditExpression (ObjectValueNode node, string newExpression)
+		bool EditExpression (ObjectValueNode node, string newExpression)
 		{
 			if (node.Name == newExpression)
 				return false;
@@ -410,14 +391,12 @@ namespace MonoDevelop.Debugger
 		}
 		#endregion
 
-		#region Editing
 		/// <summary>
 		/// Returns true if the node can be edited
 		/// </summary>
 		bool CanEditObject (ObjectValueNode node)
 		{
 			if (AllowEditing) {
-				// TODO: clean up
 				if (node.IsUnknown) {
 					if (Frame != null) {
 						return false;
@@ -514,9 +493,8 @@ namespace MonoDevelop.Debugger
 				parent = parent.Parent; /*FindNode (parent.ParentId);*/
 			}
 		}
-		#endregion
 
-		public void RefreshNode (ObjectValueNode node)
+		void RefreshNode (ObjectValueNode node)
 		{
 			if (node == null)
 				return;
@@ -530,13 +508,7 @@ namespace MonoDevelop.Debugger
 				options.AllowTargetInvoke = true;
 				options.EllipsizeStrings = false;
 
-				//string oldName = val.Name;
 				node.Refresh (options);
-
-				// TODO: this is for watched expressions
-				// Don't update the name for the values entered by the user
-				//if (store.IterDepth (iter) == 0)
-				//	val.Name = oldName;
 
 				RegisterForEvaluationCompletion (node);
 			}
@@ -548,9 +520,6 @@ namespace MonoDevelop.Debugger
 			ExpandNodeAsync (e.Node).Ignore ();
 		}
 
-		/// <summary>
-		/// Marks a node as not expanded
-		/// </summary>
 		void OnViewNodeCollapse (object sender, ObjectValueNodeEventArgs e)
 		{
 			e.Node.IsExpanded = false;
@@ -671,7 +640,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			} catch (Exception ex) {
-				// TODO: log or fail?
+				LoggingService.LogInternalError (ex);
 			}
 
 			return 0;
@@ -720,7 +689,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			} catch (Exception ex) {
-				// TODO: log or fail?
+				LoggingService.LogInternalError (ex);
 			}
 
 			return 0;
@@ -836,7 +805,6 @@ namespace MonoDevelop.Debugger
 							RegisterNode (newNode);
 						}
 
-						// TODO: we could improve how we notify this and pass child indexes as well
 						OnEvaluationCompleted (sender as ObjectValueNode, replacementNodes);
 					} else {
 						OnEvaluationCompleted (sender as ObjectValueNode);

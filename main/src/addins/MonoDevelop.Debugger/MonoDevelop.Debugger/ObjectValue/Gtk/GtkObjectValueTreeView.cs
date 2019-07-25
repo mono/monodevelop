@@ -47,7 +47,6 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
-	// TODO: when we remove from store, remove from allNodes
 	[System.ComponentModel.ToolboxItem (true)]
 	public class GtkObjectValueTreeView : TreeView, ICompletionWidget, IObjectValueTreeView
 	{
@@ -58,8 +57,15 @@ namespace MonoDevelop.Debugger
 		readonly IObjectValueDebuggerService debuggerService;
 		readonly ObjectValueTreeViewController controller;
 
-		// the root node
+		/// <summary>
+		/// The root node
+		/// </summary>
 		ObjectValueNode root;
+
+		/// <summary>
+		/// If we allow pinning, this is the single pinned value that a view can support
+		/// </summary>
+		PinnedWatch pinnedWatch;
 
 		// mapping of a node to the node's location in the tree view
 		readonly Dictionary<ObjectValueNode, TreeRowReference> allNodes = new Dictionary<ObjectValueNode, TreeRowReference> ();
@@ -84,6 +90,30 @@ namespace MonoDevelop.Debugger
 		double expColWidth;
 		double valueColWidth;
 		double typeColWidth;
+
+		int expanderSize;
+		int horizontal_separator;
+		int grid_line_width;
+		int focus_line_width;
+		Gdk.Rectangle startPreviewCaret;
+		double startHAdj;
+		double startVAdj;
+		TreeIter lastPinIter;
+		bool editing;
+
+		bool allowEditing;
+		bool allowWatchExpressions;
+		bool wasHandled;
+		CodeCompletionContext ctx;
+		Gdk.Key key;
+		char keyChar;
+		Gdk.ModifierType modifierState;
+		uint keyValue;
+		PreviewButtonIcons iconBeforeSelected;
+		PreviewButtonIcons currentIcon;
+		TreeIter currentHoverIter = TreeIter.Zero;
+		Adjustment oldHadjustment;
+		Adjustment oldVadjustment;
 
 		readonly CellRendererTextWithIcon crtExp;
 		readonly ValueCellRenderer crtValue;
@@ -158,7 +188,7 @@ namespace MonoDevelop.Debugger
 			this.allowEditing = allowEditing;
 			this.allowWatchExpressions = allowWatchExpressions;
 
-
+			this.debuggerService = debuggerService;
 			this.controller = controller;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
@@ -290,8 +320,6 @@ namespace MonoDevelop.Debugger
 			AdjustColumnSizes ();
 		}
 
-		bool allowEditing;
-
 		/// <summary>
 		/// Gets a value indicating whether the user should be able to edit values in the tree
 		/// </summary>
@@ -310,8 +338,6 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public bool AllowExpanding { get; set; }
 
-		bool allowWatchExpressions;
-
 		/// <summary>
 		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
@@ -324,8 +350,6 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
-
-		PinnedWatch pinnedWatch;
 
 		/// <summary>
 		/// Gets or sets the pinned watch for the view. When a watch is pinned, the view should display only this value
@@ -621,11 +645,6 @@ namespace MonoDevelop.Debugger
 				return;
 
 			if (GetTreeIterFromNode (node, out TreeIter iter, out TreeIter parent)) {
-				// TODO we can use an expression node here
-				// Keep the expression name entered by the user
-				//if (store.IterDepth (iter) == 0)
-				//	val.Name = (string) store.GetValue (iter, NameColumn);
-
 				RemoveChildren (iter);
 
 				if (replacementNodes.Length == 0) {
@@ -741,7 +760,6 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Fired when the user clicks on the value button, eg "Show Value", 'More Values", "Show Values"
 		/// </summary>
-		/// <param name="it"></param>
 		void HandleValueButton (TreeIter it)
 		{
 			var node = GetNodeAtIter (it);
@@ -790,12 +808,6 @@ namespace MonoDevelop.Debugger
 		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValueNode val, bool updateJustValue = false)
 		{
 			// create a link to the node in the tree view and it's path
-
-			// TODO: test if the link to the node we have is the same as the link we want to set or remove the invalid link
-			//if (allNodes.TryGetValue (val, out TreeRowReference row)) {
-			//	allNodes.Remove (val);
-			//	row.Dispose ();
-			//}
 			allNodes [val] = new TreeRowReference (store, store.GetPath (it));
 
 
@@ -1010,8 +1022,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		bool editing;
-
 		void OnValueEditing (object s, EditingStartedArgs args)
 		{
 			TreeIter it;
@@ -1090,13 +1100,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		bool wasHandled;
-		CodeCompletionContext ctx;
-		Gdk.Key key;
-		char keyChar;
-		Gdk.ModifierType modifierState;
-		uint keyValue;
-
 		[GLib.ConnectBeforeAttribute]
 		void OnEditKeyPress (object s, KeyPressEventArgs args)
 		{
@@ -1138,8 +1141,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		TreeIter lastPinIter;
-
 		enum PreviewButtonIcons
 		{
 			None,
@@ -1149,10 +1150,6 @@ namespace MonoDevelop.Debugger
 			Active,
 			Selected,
 		}
-
-		PreviewButtonIcons iconBeforeSelected;
-		PreviewButtonIcons currentIcon;
-		TreeIter currentHoverIter = TreeIter.Zero;
 
 		bool ValidObjectForPreviewIcon (TreeIter it)
 		{
@@ -1331,10 +1328,6 @@ namespace MonoDevelop.Debugger
 			col.CellGetPosition (cr, out x, out width);
 			return new Gdk.Rectangle (rect.X + x, rect.Y, width, rect.Height);
 		}
-
-		Gdk.Rectangle startPreviewCaret;
-		double startHAdj;
-		double startVAdj;
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
@@ -1547,7 +1540,6 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDelete ()
 		{
-			// TODO: remove all nodes at once
 			var nodesToDelete = new List<ObjectValueNode> ();
 			foreach (var path in Selection.GetSelectedRows ()) {
 				if (!store.GetIter (out TreeIter iter, path))
@@ -1859,11 +1851,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		int expanderSize;
-		int horizontal_separator;
-		int grid_line_width;
-		int focus_line_width;
-
 		int GetMaxWidth (TreeViewColumn column, TreeIter iter)
 		{
 			var path = Model.GetPath (iter);
@@ -1995,8 +1982,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		Adjustment oldHadjustment;
-		Adjustment oldVadjustment;
 		//Don't convert this event handler to override OnSetScrollAdjustments as it causes problems
 		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
 		{
@@ -2296,9 +2281,9 @@ namespace MonoDevelop.Debugger
 			return (ObjectValueNode) model.GetValue (iter, ObjectNodeColumn);
 		}
 
+		// TODO: clean up, maybe even remove this method
 		static ObjectValue GetDebuggerObjectValueAtIter (TreeIter iter, TreeModel model)
 		{
-			// TODO: clean up, maybe even remove this method
 			var node = GetNodeAtIter (iter, model);
 
 			return node?.GetDebuggerObjectValue ();
