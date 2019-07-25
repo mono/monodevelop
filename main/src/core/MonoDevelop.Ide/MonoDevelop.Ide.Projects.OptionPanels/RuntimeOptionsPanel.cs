@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				for (int i = 0; i < frameworks.Count; i++) {
 					var fx = frameworks[i];
 					if (project.TargetFramework.Id == fx.Id) {
-						string name = notInstalled? GettextCatalog.GetString ("{0} (Not installed)", fx.Name) : fx.Name;
+						string name = notInstalled ? GettextCatalog.GetString ("{0} (Not installed)", fx.Name) : fx.Name;
 						runtimeVersionCombo.AppendText (name);
 						runtimeVersionCombo.Active = i;
 					} else {

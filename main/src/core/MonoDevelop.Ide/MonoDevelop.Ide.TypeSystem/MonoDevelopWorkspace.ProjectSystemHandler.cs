@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> ();
 			}
 
-			internal IEnumerable<string> GetFrameworks (MonoDevelop.Projects.Project p)
+			internal static IEnumerable<string> GetFrameworks (MonoDevelop.Projects.Project p)
 			{
 				if (p.HasMultipleTargetFrameworks && p is DotNetProject dotNetProject) {
 					var frameworks = dotNetProject.TargetFrameworkMonikers;
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var projectId = projectMap.GetOrCreateId (p, oldProject, framework);
 
-				var config = await GetDotNetProjectConfiguration (p, framework);
+				var config = await GetDotNetProjectConfiguration (p, framework).ConfigureAwait (false);
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
 				FilePath fileName = IdeApp.IsInitialized ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (config == null || string.IsNullOrEmpty (framework))
 					return config;
 
-				return await dotNetProject.GetConfigurationAsync (config.Name, config.Platform, framework);
+				return await dotNetProject.GetConfigurationAsync (config.Name, config.Platform, framework).ConfigureAwait (false);
 			}
 
 			async Task<ProjectCacheInfo> LoadProjectCacheInfo (

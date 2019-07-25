@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						oldProjectIds = ws.GetProjectIds (oldProject).ToHashSet ();
 					}
 
-					foreach (string framework in ws.GetFrameworks (project)) {
+					foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
 						var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject, framework);
 						if (oldProject != null) {
 							if (oldProjectIds.Remove (projectInfo.Id)) {

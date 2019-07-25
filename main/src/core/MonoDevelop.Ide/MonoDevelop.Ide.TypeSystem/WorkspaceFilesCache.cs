@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				List<ProjectCache> cacheList = null;
 
-				foreach (string framework in GetFrameworks (project)) {
+				foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
 					try {
 						cacheFilePath = GetProjectCacheFile (project, config, framework);
 

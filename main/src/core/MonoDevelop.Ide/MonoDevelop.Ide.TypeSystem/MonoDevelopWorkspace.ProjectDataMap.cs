@@ -52,12 +52,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				lock (gate) {
 					if (projectIdMap.TryGetValue (p, out var frameworkMappings)) {
-						var map = frameworkMappings.FirstOrDefault (f => f.Framework == framework);
-						if (map != null)
-							return map.ProjectId;
+						foreach (var map in frameworkMappings) {
+							if (map.Framework == framework)
+								return map.ProjectId;
+						}
 						if (framework == null) {
 							// Ensure that code that is not multi-framework aware finds a ProjectId.
-							map = frameworkMappings.FirstOrDefault ();
+							var map = frameworkMappings.FirstOrDefault ();
 							return map?.ProjectId;
 						}
 					}
@@ -79,9 +80,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (gate) {
 					var frameworkMappings = MigrateOldProjectInfo ();
 					if (frameworkMappings != null) {
-						var map = frameworkMappings.FirstOrDefault (f => f.Framework == framework);
-						if (map != null)
-							return map.ProjectId;
+						foreach (var map in frameworkMappings) {
+							if (map.Framework == framework)
+								return map.ProjectId;
+						}
 					} else {
 						frameworkMappings = new List<FrameworkMap> ();
 						projectIdMap [p] = frameworkMappings;
@@ -215,7 +217,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			class FrameworkMap
+			sealed class FrameworkMap
 			{
 				public FrameworkMap (string framework, ProjectId projectId)
 				{

@@ -2174,7 +2174,7 @@ namespace MonoDevelop.Projects
 				frameworkSpecificConfigurations [(name, platform, framework)] = configuration;
 		}
 
-		object frameworkSpecificConfigurationsLock = new object ();
+		readonly object frameworkSpecificConfigurationsLock = new object ();
 		Dictionary<(string, string, string), DotNetProjectConfiguration> frameworkSpecificConfigurations = new Dictionary<(string, string, string), DotNetProjectConfiguration> ();
 
 		public TargetFramework GetTargetFramework (ConfigurationSelector configuration)

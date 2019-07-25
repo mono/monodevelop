@@ -493,7 +493,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!ProjectHandler.CanLoadProject (project))
 						continue;
 
-					foreach (string framework in ProjectHandler.GetFrameworks (project)) {
+					foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
 						var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, framework, cts.Token).ConfigureAwait (false);
 						if (projectInfo == null)
 							continue;
@@ -1498,10 +1498,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					cts = new CancellationTokenSource ();
 					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						foreach (string framework in ProjectHandler.GetFrameworks (project)) {
+						foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
 							var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null, framework).ContinueWith (t => {
-								if (t.IsCanceled)
-									return;
 								if (t.IsFaulted) {
 									LoggingService.LogError ("Failed to reload project", t.Exception);
 									return;
@@ -1516,7 +1514,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								} catch (Exception e) {
 									LoggingService.LogError ("Error while reloading project " + project.Name, e);
 								}
-							}, cts.Token);
+							}, cts.Token, TaskContinuationOptions.NotOnCanceled, TaskScheduler.Default);
 						}
 					} else {
 						modifiedProjects.Add (project);
