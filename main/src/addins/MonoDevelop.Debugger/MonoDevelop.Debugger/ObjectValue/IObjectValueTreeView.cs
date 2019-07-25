@@ -49,6 +49,11 @@ namespace MonoDevelop.Debugger
 		bool AllowWatchExpressions { get; set; }
 
 		/// <summary>
+		/// Gets or sets the pinned watch for the view. When a watch is pinned, the view should display only this value
+		/// </summary>
+		PinnedWatch PinnedWatch { get; set; }
+
+		/// <summary>
 		/// Reloads the tree from the root node
 		/// </summary>
 		void Reload (ObjectValueNode root);
@@ -94,7 +99,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		event EventHandler<ObjectValueNodeEventArgs> NodeRemoved;
 
-		event EventHandler<ObjectValueDisplayEventArgs> NodeGetDisplayText;
+		//event EventHandler<ObjectValueDisplayEventArgs> NodeGetDisplayText;
 
 		/// <summary>
 		/// Triggered when an expression is added to the tree by the user
@@ -106,10 +111,17 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
 
+		/// <summary>
+		/// Triggered when the user pins the node
+		/// </summary>
+		event EventHandler<ObjectValueNodeEventArgs> NodePinned;
+
+		/// <summary>
+		/// Triggered when the pinned watch is removed by the user
+		/// </summary>
+		event EventHandler<EventArgs> NodeUnpinned;
 
 		void OnNodeExpanded (ObjectValueNode node);
-
-
 
 		/// <summary>
 		/// Triggered when the user starts editing a node

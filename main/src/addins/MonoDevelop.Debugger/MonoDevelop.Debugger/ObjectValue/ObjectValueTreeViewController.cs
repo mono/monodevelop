@@ -134,14 +134,11 @@ namespace MonoDevelop.Debugger
 		public event EventHandler PinnedWatchChanged;
 
 		public PinnedWatch PinnedWatch {
-			get { return pinnedWatch; }
+			get { return view?.PinnedWatch; }
 			set {
-				if (pinnedWatch == value)
-					return;
-
-				pinnedWatch = value;
-
-				PinnedWatchChanged?.Invoke (this, EventArgs.Empty);
+				if (view != null) {
+					view.PinnedWatch = value;
+				}
 			}
 		}
 
@@ -153,23 +150,12 @@ namespace MonoDevelop.Debugger
 			get; set;
 		}
 
-		public bool RootPinAlwaysVisible {
-			get; set;
-		}
-
 		#endregion
 
 		public bool CanQueryDebugger {
 			get {
 				return Debugger.IsConnected && Debugger.IsPaused;
 			}
-		}
-
-		public event EventHandler PinStatusChanged;
-
-		void OnPinStatusChanged ()
-		{
-			PinStatusChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		public void CreatePinnedWatch (string expression, int height)
@@ -190,33 +176,34 @@ namespace MonoDevelop.Debugger
 
 			watch.Expression = expression;
 			DebuggingService.PinnedWatches.Add (watch);
-
-			OnPinStatusChanged ();
 		}
 
 		public void RemovePinnedWatch ()
 		{
 			DebuggingService.PinnedWatches.Remove (PinnedWatch);
-			OnPinStatusChanged ();
 		}
 
-		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true)
+		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
 		{
-			if (view == null) {
-				view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu) {
-					AllowExpanding = this.AllowExpanding,
-				};
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
 
-				view.NodeExpanded += OnViewNodeExpanded;
-				view.NodeCollapsed += OnViewNodeCollapsed;
-				view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
-				view.ExpressionAdded += OnViewExpressionAdded;
-				view.ExpressionEdited += OnViewExpressionEdited;
-				view.NodeRefresh += OnViewNodeRefresh;
-				view.NodeGetCanEdit += OnViewNodeCanEdit;
-				view.NodeEditValue += OnViewNodeEditValue;
-				view.NodeRemoved += OnViewNodeRemoved;
-			}
+			view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
+				AllowExpanding = this.AllowExpanding,
+				PinnedWatch = this.PinnedWatch,
+			};
+
+			view.NodeExpanded += OnViewNodeExpanded;
+			view.NodeCollapsed += OnViewNodeCollapsed;
+			view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
+			view.ExpressionAdded += OnViewExpressionAdded;
+			view.ExpressionEdited += OnViewExpressionEdited;
+			view.NodeRefresh += OnViewNodeRefresh;
+			view.NodeGetCanEdit += OnViewNodeCanEdit;
+			view.NodeEditValue += OnViewNodeEditValue;
+			view.NodeRemoved += OnViewNodeRemoved;
+			view.NodePinned += OnViewNodePinned;
+			view.NodeUnpinned += OnViewNodeUnpinned;
 
 			return view;
 		}
@@ -580,6 +567,16 @@ namespace MonoDevelop.Debugger
 		void OnViewNodeRemoved (object sender, ObjectValueNodeEventArgs e)
 		{
 			RemoveValue (e.Node);
+		}
+
+		void OnViewNodePinned (object sender, ObjectValueNodeEventArgs e)
+		{
+			//CreatePinnedWatch (e.Node.Name, );
+		}
+
+		void OnViewNodeUnpinned (object sender, EventArgs e)
+		{
+			RemovePinnedWatch ();
 		}
 
 		#endregion

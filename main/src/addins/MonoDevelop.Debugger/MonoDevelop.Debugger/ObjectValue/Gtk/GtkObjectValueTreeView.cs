@@ -66,6 +66,7 @@ namespace MonoDevelop.Debugger
 		readonly bool compactView;
 		readonly bool allowPinning;
 		readonly bool allowPopupMenu;
+		readonly bool rootPinVisible;
 
 		readonly Xwt.Drawing.Image noLiveIcon;
 		readonly Xwt.Drawing.Image liveIcon;
@@ -144,11 +145,13 @@ namespace MonoDevelop.Debugger
 			bool allowWatchExpressions,
 			bool compactView,
 			bool allowPinning,
-			bool allowPopupMenu)
+			bool allowPopupMenu,
+			bool rootPinVisible)
 		{
 			this.compactView = compactView;
 			this.allowPinning = allowPinning;
 			this.allowPopupMenu = allowPopupMenu;
+			this.rootPinVisible = rootPinVisible;
 
 			// ensure this is set when we set up the view, don't try and refresh just yet
 			this.allowEditing = allowEditing;
@@ -156,7 +159,6 @@ namespace MonoDevelop.Debugger
 
 
 			this.controller = controller;
-			this.controller.PinnedWatchChanged += Controller_PinnedWatchChanged;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
 			Model = store;
@@ -322,6 +324,28 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		PinnedWatch pinnedWatch;
+
+		/// <summary>
+		/// Gets or sets the pinned watch for the view. When a watch is pinned, the view should display only this value
+		/// </summary>
+		public PinnedWatch PinnedWatch {
+			get => pinnedWatch;
+			set {
+				if (pinnedWatch != value) {
+					pinnedWatch = value;
+					Runtime.RunInMainThread (() => {
+						if (value == null) {
+							pinCol.FixedWidth = 16;
+						} else {
+							pinCol.FixedWidth = 38;
+						}
+					}).Ignore();
+				}
+			}
+		}
+
+
 		/// <summary>
 		/// Triggered when the view requests a node to fetch more of it's children
 		/// </summary>
@@ -358,6 +382,16 @@ namespace MonoDevelop.Debugger
 		public event EventHandler<ObjectValueExpressionEventArgs> ExpressionEdited;
 
 		/// <summary>
+		/// Triggered when the user pins the node
+		/// </summary>
+		public event EventHandler<ObjectValueNodeEventArgs> NodePinned;
+
+		/// <summary>
+		/// Triggered when the pinned watch is removed by the user
+		/// </summary>
+		public event EventHandler<EventArgs> NodeUnpinned;
+
+		/// <summary>
 		/// Triggered when the user starts editing a node
 		/// </summary>
 		public event EventHandler StartEditing;
@@ -390,8 +424,6 @@ namespace MonoDevelop.Debugger
 				oldHadjustment = null;
 				oldVadjustment = null;
 			}
-
-			controller.PinnedWatchChanged -= Controller_PinnedWatchChanged;
 
 			disposed = true;
 			controller.CancelAsyncTasks ();
@@ -438,17 +470,6 @@ namespace MonoDevelop.Debugger
 
 				ExpressionAdded?.Invoke (this, new ObjectValueExpressionEventArgs(null, expression.Trim ()));
 			}
-		}
-
-		void Controller_PinnedWatchChanged (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				if (controller.PinnedWatch == null) {
-					pinCol.FixedWidth = 16;
-				} else {
-					pinCol.FixedWidth = 38;
-				}
-			}).Ignore ();
 		}
 
 		/// <summary>
@@ -839,14 +860,14 @@ namespace MonoDevelop.Debugger
 			if (ValidObjectForPreviewIcon (it))
 				store.SetValue (it, PreviewIconColumn, "md-empty");
 
-			if (!hasParent && controller.PinnedWatch != null) {
+			if (!hasParent && PinnedWatch != null) {
 				store.SetValue (it, PinIconColumn, "md-pin-down");
-				if (controller.PinnedWatch.LiveUpdate)
+				if (PinnedWatch.LiveUpdate)
 					store.SetValue (it, LiveUpdateIconColumn, liveIcon);
 				else
 					store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
 			}
-			if (controller.RootPinAlwaysVisible && (!hasParent && controller.PinnedWatch == null && allowPinning))
+			if (rootPinVisible && (!hasParent && PinnedWatch == null && allowPinning))
 				store.SetValue (it, PinIconColumn, "md-pin-up");
 
 			if (val.HasChildren && val.Children.Count == 0) {
@@ -1162,11 +1183,11 @@ namespace MonoDevelop.Debugger
 					}
 
 					if (allowPinning) {
-						if (path.Depth > 1 || controller.PinnedWatch == null) {
+						if (path.Depth > 1 || PinnedWatch == null) {
 							if (!it.Equals (lastPinIter)) {
 								store.SetValue (it, PinIconColumn, "md-pin-up");
 								CleanPinIcon ();
-								if (path.Depth > 1 || !controller.RootPinAlwaysVisible)
+								if (path.Depth > 1 || !rootPinVisible)
 									lastPinIter = it;
 							}
 						}
@@ -1364,16 +1385,17 @@ namespace MonoDevelop.Debugger
 					} else if (cr == crpPin) {
 						clickProcessed = true;
 						TreeIter pi;
-						if (controller.PinnedWatch != null && !store.IterParent (out pi, it))
-							controller.RemovePinnedWatch ();
-						else
+						if (PinnedWatch != null && !store.IterParent (out pi, it)) {
+							NodeUnpinned?.Invoke (this, EventArgs.Empty);
+						} else {
 							CreatePinnedWatch (it);
+						}
 					} else if (cr == crpLiveUpdate) {
 						clickProcessed = true;
 						TreeIter pi;
-						if (controller.PinnedWatch != null && !store.IterParent (out pi, it)) {
-							DebuggingService.SetLiveUpdateMode (controller.PinnedWatch, !controller.PinnedWatch.LiveUpdate);
-							if (controller.PinnedWatch.LiveUpdate)
+						if (PinnedWatch != null && !store.IterParent (out pi, it)) {
+							DebuggingService.SetLiveUpdateMode (PinnedWatch, !PinnedWatch.LiveUpdate);
+							if (PinnedWatch.LiveUpdate)
 								store.SetValue (it, LiveUpdateIconColumn, liveIcon);
 							else
 								store.SetValue (it, LiveUpdateIconColumn, noLiveIcon);
@@ -1666,9 +1688,11 @@ namespace MonoDevelop.Debugger
 
 			var height = SizeRequest ().Height;
 
-			if (controller.PinnedWatch != null)
+			if (PinnedWatch != null)
 				CollapseAll ();
 
+			// TODO: move this to NodePinned?.Invoke
+			NodePinned?.Invoke (this, null);
 			controller.CreatePinnedWatch (expression, height);
 		}
 
