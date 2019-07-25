@@ -39,7 +39,6 @@
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DummyMSBuildOptionsPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkMonikerExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\FilePathExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore\ProjectReferenceExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNodeBuilder.cs" />

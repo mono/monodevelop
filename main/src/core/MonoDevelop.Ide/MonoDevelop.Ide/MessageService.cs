@@ -661,6 +661,7 @@ namespace MonoDevelop.Ide
 		
 		public string Text { get; set; }
 		public string SecondaryText { get; set; }
+		public string HelpUrl { get; set; }
 		public bool AllowApplyToAll { get; set; }
 		public int DefaultButton { get; set; }
 		public CancellationToken CancellationToken { get; private set; }

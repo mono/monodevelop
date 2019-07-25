@@ -1,10 +1,10 @@
 //
-// FilePathExtensions.cs
+// CoreExtensions.Array.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,27 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using MonoDevelop.Core;
-
-namespace MonoDevelop.DotNetCore
+using System;
+namespace System
 {
-	static class FilePathExtensions
+	public static partial class CoreExtensions
 	{
-		public static bool HasSupportedDotNetCoreProjectFileExtension (this FilePath file)
-		{
-			return file.HasExtension (".csproj") || file.HasExtension (".fsproj") || file.HasExtension (".vbproj");
-		}
-
-		/// <summary>
-		/// HACK: Hide certain files in Solution window. The solution's .userprefs
-		/// file is the only file is included properly with the .NET Core MSBuild
-		/// targets.
-		/// </summary>
-		public static bool ShouldBeHidden (this FilePath file)
-		{
-			return file.HasExtension (".userprefs") ||
-				file.FileName == ".DS_Store";
-		}
+		internal static bool Contains<T> (this T [] arr, T value) => Array.IndexOf (arr, value) != -1;
 	}
 }
