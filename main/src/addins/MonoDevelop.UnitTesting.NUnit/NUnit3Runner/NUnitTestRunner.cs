@@ -56,6 +56,7 @@ namespace NUnit3Runner
 		{
 			engine = TestEngineActivator.CreateInstance ();
 			filterService = engine.Services.GetService<ITestFilterService>();
+			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 		}
 
 		[MessageHandler]
@@ -223,7 +224,13 @@ namespace NUnit3Runner
 				}
 			}
 		}
-		
+
+		Assembly CurrentDomain_AssemblyResolve (object sender, ResolveEventArgs args)
+		{
+			var name = new AssemblyName (args.Name);
+			return AppDomain.CurrentDomain.GetAssemblies ().FirstOrDefault (a => AssemblyName.ReferenceMatchesDefinition (name, a.GetName ()));
+		}
+
 		private TestFilter CreateTestFilter (string[] nameFilter)
 		{
 			ITestFilterBuilder builder = filterService.GetTestFilterBuilder();
