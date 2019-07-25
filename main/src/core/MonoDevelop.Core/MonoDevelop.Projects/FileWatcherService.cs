@@ -68,12 +68,12 @@ namespace MonoDevelop.Projects
 			return modified ? UpdateWatchersAsync () : Task.CompletedTask;
 		}
 
-		static List<(object id, HashSet<FilePath> set)> ComputeItems (WorkspaceObject item, bool registerEvent)
+		internal static List<(object id, HashSet<FilePath> set)> ComputeItems (WorkspaceObject item, bool registerEvent)
 		{
 			var toAdd = new List<(object, HashSet<FilePath>)> ();
 
 			foreach (var toRegister in item.GetAllItems<WorkspaceObject> ()) {
-				if (registerEvent && item is WorkspaceItem workspaceItem) {
+				if (registerEvent && toRegister is WorkspaceItem workspaceItem) {
 					workspaceItem.RootDirectoriesChanged += OnRootDirectoriesChanged;
 				}
 

@@ -124,6 +124,8 @@
     <Compile Include="MonoDevelop.Core\FileServiceAsyncEventsTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileNestingTests.cs" />
     <Compile Include="MonoDevelop.Projects\MultiTargetProjectTests.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherServiceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

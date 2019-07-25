@@ -4550,9 +4550,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		static readonly ObjectPool<List<FilePath>> filePathListPool = ObjectPool.Create (new PooledListPolicy<FilePath> ());
-
-		internal virtual void OnFileDeleted (string path)
+		internal virtual void OnFileDeleted (FilePath filePath)
 		{
 			if (!eventsEnabled)
 				return;
@@ -4560,7 +4558,7 @@ namespace MonoDevelop.Projects
 			Debug.Assert (!Runtime.IsMainThread);
 
 			Runtime.RunInMainThread (() => {
-				OnFileDeletedExternally (path);
+				OnFileDeletedExternally (filePath);
 			});
 		}
 
