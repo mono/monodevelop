@@ -55,6 +55,7 @@ namespace MonoDevelop.Debugger
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
 
+		readonly IObjectValueDebuggerService debuggerService;
 		readonly ObjectValueTreeViewController controller;
 
 		// the root node
@@ -75,7 +76,6 @@ namespace MonoDevelop.Debugger
 		readonly TreeStore store;
 		readonly string createMsg;
 		bool restoringState;
-		StackFrame frame;
 		bool disposed;
 
 		bool columnsAdjusted;
@@ -139,6 +139,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		public GtkObjectValueTreeView (
+			IObjectValueDebuggerService debuggerService,
 			ObjectValueTreeViewController controller,
 			bool allowEditing,
 			bool headersVisible,
@@ -802,7 +803,7 @@ namespace MonoDevelop.Debugger
 				valPath = GetIterPath (parent) + "/" + name;
 
 			if (val.IsUnknown) {
-				if (frame != null) {
+				if (debuggerService.Frame != null) {
 					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
 					nameColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				} else {
@@ -1012,7 +1013,8 @@ namespace MonoDevelop.Debugger
 			string strVal = null;
 			if (val != null) {
 				if (val.TypeName == "string") {
-					var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+					// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
+					var opt = debuggerService.Frame.GetStackFrame().DebuggerSession.Options.EvaluationOptions.Clone ();
 					opt.EllipsizeStrings = false;
 					strVal = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)val.GetRawValue (opt)) + '"';
 				} else {
@@ -1113,7 +1115,7 @@ namespace MonoDevelop.Debugger
 					string expr = entry.Text.Substring (0, entry.CursorPosition);
 					cts.Cancel ();
 					cts = new CancellationTokenSource ();
-					currentCompletionData = await GetCompletionDataAsync (expr, cts.Token);
+					currentCompletionData = await debuggerService.GetCompletionDataAsync (expr, cts.Token);
 					if (currentCompletionData != null) {
 						var dataList = new DebugCompletionDataList (currentCompletionData);
 						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
@@ -1334,7 +1336,7 @@ namespace MonoDevelop.Debugger
 			bool clickProcessed = false;
 
 			TreeIter it;
-			if (this.controller.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
+			if (this.debuggerService.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					clickProcessed = true;
 					var node = GetNodeAtIter (it);
@@ -1518,7 +1520,8 @@ namespace MonoDevelop.Debugger
 				if (type == "string") {
 					var objVal = GetDebuggerObjectValueAtIter (iter);
 					if (objVal != null) {
-						var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+						// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
+						var opt = debuggerService.Frame.GetStackFrame().DebuggerSession.Options.EvaluationOptions.Clone ();
 						opt.EllipsizeStrings = false;
 						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
 					}
@@ -1622,7 +1625,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnRowActivated (path, column);
 
-			if (!controller.CanQueryDebugger)
+			if (!debuggerService.CanQueryDebugger)
 				return;
 
 			TreePath [] selected = Selection.GetSelectedRows ();
@@ -1805,14 +1808,6 @@ namespace MonoDevelop.Debugger
 		}
 
 		#endregion
-
-		async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
-		{
-			if (controller.CanQueryDebugger && frame != null)
-				return await DebuggingService.GetCompletionDataAsync (frame, expression, token);
-
-			return null;
-		}
 
 		internal void SetCustomFont (Pango.FontDescription font)
 		{

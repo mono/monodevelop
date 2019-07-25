@@ -36,6 +36,16 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
 {
+	public interface IObjectValueDebuggerService
+	{
+		bool CanQueryDebugger { get; }
+		IStackFrame Frame { get; }
+		Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
+	}
+
+
+
+
 	/*
 	 * Issues?
 	 *
@@ -43,7 +53,7 @@ namespace MonoDevelop.Debugger
 	 * refreshing a node (which may replace it's children nodes)
 	 * 
 	 */
-	public class ObjectValueTreeViewController
+	public class ObjectValueTreeViewController : IObjectValueDebuggerService
 	{
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		public const int MaxEnumerableChildrenToFetch = 20;
@@ -188,11 +198,12 @@ namespace MonoDevelop.Debugger
 			if (view != null)
 				throw new InvalidOperationException ("You can only get the control once for each controller instance");
 
-			view = new GtkObjectValueTreeView (this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
+			view = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
 				AllowExpanding = this.AllowExpanding,
 				PinnedWatch = this.PinnedWatch,
 			};
 
+			
 			view.NodeExpanded += OnViewNodeExpanded;
 			view.NodeCollapsed += OnViewNodeCollapsed;
 			view.NodeLoadMoreChildren += OnViewNodeLoadMoreChildren;
@@ -212,6 +223,16 @@ namespace MonoDevelop.Debugger
 		public void CancelAsyncTasks ()
 		{
 			cancellationTokenSource.Cancel ();
+		}
+
+		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
+		{
+			if (CanQueryDebugger && Frame != null) {
+				// TODO: improve how we get at the underlying real stack frame
+				return await DebuggingService.GetCompletionDataAsync (Frame.GetStackFrame (), expression, token);
+			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -907,6 +928,11 @@ namespace MonoDevelop.Debugger
 		public static StackFrame GetStackFrame (this ObjectValueTreeViewController controller)
 		{
 			return (controller.Frame as ProxyStackFrame)?.StackFrame;
+		}
+
+		public static StackFrame GetStackFrame (this IStackFrame frame)
+		{
+			return (frame as ProxyStackFrame)?.StackFrame;
 		}
 
 		public static void AddValue (this ObjectValueTreeViewController controller, ObjectValue value)
