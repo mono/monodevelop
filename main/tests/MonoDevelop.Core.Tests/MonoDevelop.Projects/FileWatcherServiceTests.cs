@@ -98,6 +98,8 @@ namespace MonoDevelop.Projects
 			// Check we have data for project0, but not project 1
 			AssertData (projects [0], Is.GreaterThan (0));
 			AssertData (projects [1], Is.EqualTo (0));
+
+			await FileWatcherService.Remove (workspace);
 		}
 
 		[Test]
@@ -131,6 +133,8 @@ namespace MonoDevelop.Projects
 			await WaitForFileChanged (createFile);
 
 			Assert.AreEqual (1, project.Created.Count);
+
+			await FileWatcherService.Remove (workspace);
 		}
 
 		[Test]
@@ -143,6 +147,22 @@ namespace MonoDevelop.Projects
 			var solution = workspace.GetAllItems<MockWorkspaceItem> ().Single ();
 			var project = workspace.GetAllItems<MockProject> ().Single ();
 			solution.OnRootDirectoriesChanged (project, isRemove: true, isAdd: false);
+
+			await TestAll (project);
+			AssertData (project, Is.EqualTo (0));
+
+			await FileWatcherService.Remove (workspace);
+		}
+
+		[Test]
+		public async Task TestUnsubscribeWorkspace ()
+		{
+			using var workspace = SetupWorkspace (1);
+
+			await FileWatcherService.Add (workspace);
+			await FileWatcherService.Remove (workspace);
+
+			var project = workspace.GetAllItems<MockProject> ().Single ();
 
 			await TestAll (project);
 			AssertData (project, Is.EqualTo (0));
@@ -162,6 +182,8 @@ namespace MonoDevelop.Projects
 
 			await TestAll (project);
 			AssertData (project, Is.GreaterThan (0));
+
+			await FileWatcherService.Remove (workspace);
 		}
 
 		class MockWorkspaceItem : WorkspaceItem
