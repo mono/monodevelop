@@ -440,20 +440,22 @@ namespace MonoDevelop.Projects
 			var otherFile = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			await FileWatcherService.Add (sol);
 			var libraryProjectFile = rootProject.ParentDirectory.Combine ("Library", "Library.csproj");
-			var p2 = (DotNetProject) await sol.RootFolder.AddItem (Util.GetMonitor (), libraryProjectFile);
-			await sol.SaveAsync (Util.GetMonitor ());
-			var file = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
-			await FileWatcherService.Update ();
-			ClearFileEventsCaptured ();
 
-			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (file.FilePath);
+			ProjectFile file;
+			using (var p2 = (DotNetProject)await sol.RootFolder.AddItem (Util.GetMonitor (), libraryProjectFile)) {
+				await sol.SaveAsync (Util.GetMonitor ());
+				file = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+				await FileWatcherService.Update ();
+				ClearFileEventsCaptured ();
 
-			AssertFileChanged (file.FilePath);
-			Assert.IsFalse (file.FilePath.IsChildPathOf (sol.BaseDirectory));
+				TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+				await WaitForFileChanged (file.FilePath);
 
-			sol.RootFolder.Items.Remove (p2);
-			p2.Dispose ();
+				AssertFileChanged (file.FilePath);
+				Assert.IsFalse (file.FilePath.IsChildPathOf (sol.BaseDirectory));
+
+				sol.RootFolder.Items.Remove (p2);
+			}
 			await sol.SaveAsync (Util.GetMonitor ());
 			await FileWatcherService.Update ();
 			ClearFileEventsCaptured ();
