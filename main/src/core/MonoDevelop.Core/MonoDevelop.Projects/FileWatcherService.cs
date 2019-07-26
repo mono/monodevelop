@@ -260,9 +260,7 @@ namespace MonoDevelop.Projects
 					toRemove = oldDirectories;
 
 				foreach (var dir in toRemove) {
-					var node = tree.RemoveNode (dir, id);
-
-					bool wasRemoved = node != null && !node.IsLive;
+					var node = tree.RemoveNode (dir, id, out bool wasRemoved);
 					modified |= wasRemoved;
 				}
 			}

@@ -554,9 +554,18 @@ namespace MonoDevelop.FSW
 			var tree = CreateTree ();
 
 			var c = tree.FindNode (MakePath ("a", "b", "c"));
+			var id2 = new object ();
+			tree.AddNode (MakePath ("a", "b", "c"), id2);
 
-			var removed = tree.RemoveNode (c, id);
+			var removed = tree.RemoveNode (c, id, out bool isModified);
 
+			Assert.IsFalse (isModified);
+			Assert.AreSame (c, removed);
+			Assert.IsNotNull (tree.FindNode (MakePath ("a", "b", "c")));
+
+			removed = tree.RemoveNode (c, id2, out isModified);
+
+			Assert.IsTrue (isModified);
 			Assert.AreSame (c, removed);
 			Assert.IsNull (tree.FindNode (MakePath ("a", "b", "c")));
 		}
