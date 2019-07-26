@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects
 
 			if (item is IWorkspaceFileObject container) {
 				foreach (var file in container.GetItemFiles (true)) {
-					AddToSet (set, file.ParentDirectory);
+					AddToSet (set, file);
 				}
 			}
 
@@ -100,13 +100,15 @@ namespace MonoDevelop.Projects
 
 			static void AddToSet (HashSet<FilePath> set, FilePath path)
 			{
-				if (!path.IsNullOrEmpty) {
-					foreach (var directory in set) {
-						if (path.IsChildPathOf (directory))
-							return;
-					}
-					set.Add (path);
+				// Do a double lookup instead of iterating everything first, if we already added a project.
+				if (path.IsNullOrEmpty)
+					return;
+
+				foreach (var directory in set) {
+					if (path.IsChildPathOf (directory))
+						return;
 				}
+				set.Add (path.ParentDirectory);
 			}
 		}
 
