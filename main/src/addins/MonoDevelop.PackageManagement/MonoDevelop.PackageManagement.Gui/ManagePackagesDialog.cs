@@ -398,11 +398,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			bool consolidate = viewModel.IsConsolidatePageSelected;
 
-			// Use the package id and not the package title to prevent a pango crash if the title
-			// contains Chinese characters.
-			this.packageNameLabel.Markup = packageViewModel.GetIdMarkup ();
-
-			if (!consolidate) {
+			if (consolidate) {
+				projectsListViewLabel.Text = GettextCatalog.GetString ("Select projects and a version for a consolidation.");
+			} else {
+				// Use the package id and not the package title to prevent a pango crash if the title
+				// contains Chinese characters.
+				this.packageNameLabel.Markup = packageViewModel.GetIdMarkup ();
 				this.packageAuthor.Text = packageViewModel.Author;
 				this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 				this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
@@ -433,7 +434,13 @@ namespace MonoDevelop.PackageManagement
 				projectStore?.Clear ();
 			}
 
-			packageNameHBox.Visible = true;
+			if (viewModel.IsBrowsePageSelected) {
+				packageVersionsLabel.Text = GettextCatalog.GetString ("Version:");
+			} else {
+				packageVersionsLabel.Text = GettextCatalog.GetString ("New Version:");
+			}
+
+			projectsListViewLabel.Visible = consolidate;
 			projectsListViewVBox.Visible = consolidate;
 			this.packageInfoVBox.Visible = true;
 

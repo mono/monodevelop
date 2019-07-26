@@ -61,11 +61,13 @@ namespace MonoDevelop.PackageManagement
 		FrameBox noPackagesFoundFrame;
 		ComboBox packageVersionComboBox;
 		HBox packageVersionsHBox;
+		Label packageVersionsLabel;
 		Label browseLabel;
 		Label installedLabel;
 		Label updatesLabel;
 		Label consolidateLabel;
 		VBox projectsListViewVBox;
+		Label projectsListViewLabel;
 		ListView projectsListView;
 		int packageInfoFontSize = 11;
 
@@ -229,6 +231,12 @@ namespace MonoDevelop.PackageManagement
 			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
 
+			// Projects list view label.
+			projectsListViewLabel = new Label ();
+			projectsListViewLabel.Wrap = WrapMode.Word;
+			projectsListViewLabel.BackgroundColor = Styles.PackageInfoBackgroundColor;
+			packageInfoVBox.PackStart (projectsListViewLabel);
+
 			// Projects list view.
 			projectsListViewVBox = new VBox ();
 			projectsListViewVBox.Margin = new WidgetSpacing ();
@@ -361,9 +369,9 @@ namespace MonoDevelop.PackageManagement
 			packageVersionsHBox.Visible = false;
 			packageVersionsHBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageVersionsHBox.Margin = new WidgetSpacing (15, 0, 15, 12);
-			var packageVersionsLabel = new Label ();
-			packageVersionsLabel.Font = packageInfoBoldFont;
-			packageVersionsLabel.Text = GettextCatalog.GetString ("Version");
+			packageVersionsLabel = new Label ();
+			packageVersionsLabel.Font = packageInfoSmallFont;
+			packageVersionsLabel.Text = GettextCatalog.GetString ("Version:");
 			packageVersionsHBox.PackStart (packageVersionsLabel);
 
 			packageVersionComboBox = new ComboBox ();
