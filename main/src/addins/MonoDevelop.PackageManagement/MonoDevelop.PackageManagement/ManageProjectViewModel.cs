@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 				IsChecked = true;
 				PackageVersion = package.Version.ToString ();
 			} else {
-				PackageVersion = string.Empty;
+				PackageVersion = "–";
 			}
 		}
 

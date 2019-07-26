@@ -1087,20 +1087,21 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (3, viewModel.ProjectViewModels.Count);
 
+			// Checked projects first.
 			var projectViewModel = viewModel.ProjectViewModels [0];
-			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
-			Assert.AreEqual ("", projectViewModel.PackageVersion);
-			Assert.IsFalse (projectViewModel.IsChecked);
-
-			projectViewModel = viewModel.ProjectViewModels [1];
 			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
 
-			projectViewModel = viewModel.ProjectViewModels [2];
+			projectViewModel = viewModel.ProjectViewModels [1];
 			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.1", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
+			Assert.AreEqual ("–", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
 
 			Assert.IsTrue (viewModel.CanConsolidate ());
 
@@ -1114,10 +1115,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("LibC", action.Project.Name);
 
 			// Check LibA, which does not have the package.
-			viewModel.ProjectViewModels [0].IsChecked = true;
+			viewModel.ProjectViewModels [2].IsChecked = true;
 
 			// Uncheck LibC.
-			viewModel.ProjectViewModels [2].IsChecked = false;
+			viewModel.ProjectViewModels [1].IsChecked = false;
 
 			Assert.IsTrue (viewModel.CanConsolidate ());
 
@@ -1136,7 +1137,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (viewModel.CanConsolidate ());
 
 			// Check LibB which has same package.
-			viewModel.ProjectViewModels [1].IsChecked = true;
+			viewModel.ProjectViewModels [0].IsChecked = true;
 			Assert.IsFalse (viewModel.CanConsolidate ());
 
 			viewModel.SelectedPackage = null;
@@ -1210,18 +1211,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (projectViewModel.IsChecked);
 
 			projectViewModel = viewModel.ProjectViewModels [1];
-			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
-			Assert.AreEqual ("", projectViewModel.PackageVersion);
-			Assert.IsFalse (projectViewModel.IsChecked);
-
-			projectViewModel = viewModel.ProjectViewModels [2];
 			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
 
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
+			Assert.AreEqual ("–", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
+
 			// Check LibB, Uncheck LibC
-			viewModel.ProjectViewModels [1].IsChecked = true;
-			viewModel.ProjectViewModels [2].IsChecked = false;
+			viewModel.ProjectViewModels [2].IsChecked = true;
+			viewModel.ProjectViewModels [1].IsChecked = false;
 
 			// Select Other package
 			package = viewModel.PackageViewModels [1];
@@ -1230,19 +1231,19 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (3, viewModel.ProjectViewModels.Count);
 
 			projectViewModel = viewModel.ProjectViewModels [0];
-			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
-			Assert.AreEqual ("", projectViewModel.PackageVersion);
-			Assert.IsFalse (projectViewModel.IsChecked);
-
-			projectViewModel = viewModel.ProjectViewModels [1];
 			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.1", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
 
-			projectViewModel = viewModel.ProjectViewModels [2];
+			projectViewModel = viewModel.ProjectViewModels [1];
 			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.3", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
+			Assert.AreEqual ("–", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
 
 			// Select Test package again.
 			package = viewModel.PackageViewModels [0];
@@ -1254,14 +1255,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (projectViewModel.IsChecked);
 
 			projectViewModel = viewModel.ProjectViewModels [1];
-			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
-			Assert.AreEqual ("", projectViewModel.PackageVersion);
-			Assert.IsTrue (projectViewModel.IsChecked);
-
-			projectViewModel = viewModel.ProjectViewModels [2];
 			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
 			Assert.IsFalse (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
+			Assert.AreEqual ("–", projectViewModel.PackageVersion);
+			Assert.IsTrue (projectViewModel.IsChecked);
 
 			// Check that the cached project information is cleared after selecting a different
 			// tab and going back to the consolidate tab.
@@ -1277,14 +1278,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (projectViewModel.IsChecked);
 
 			projectViewModel = viewModel.ProjectViewModels [1];
-			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
-			Assert.AreEqual ("", projectViewModel.PackageVersion);
-			Assert.IsFalse (projectViewModel.IsChecked);
-
-			projectViewModel = viewModel.ProjectViewModels [2];
 			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
+			Assert.AreEqual ("–", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
 		}
 
 		[Test]
@@ -1323,20 +1324,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("Other", viewModel.PackageViewModels [1].Id);
 			Assert.AreEqual ("0.3", viewModel.PackageViewModels [1].Version.ToString ());
 
+			// Checked packages first.
 			var projectViewModel = viewModel.ProjectViewModels [0];
 			Assert.AreEqual ("LibA", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.1", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
 
 			projectViewModel = viewModel.ProjectViewModels [1];
-			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
-			Assert.AreEqual ("", projectViewModel.PackageVersion);
-			Assert.IsFalse (projectViewModel.IsChecked);
-
-			projectViewModel = viewModel.ProjectViewModels [2];
 			Assert.AreEqual ("LibC", projectViewModel.ProjectName);
 			Assert.AreEqual ("0.2", projectViewModel.PackageVersion);
 			Assert.IsTrue (projectViewModel.IsChecked);
+
+			projectViewModel = viewModel.ProjectViewModels [2];
+			Assert.AreEqual ("LibB", projectViewModel.ProjectName);
+			Assert.AreEqual ("–", projectViewModel.PackageVersion);
+			Assert.IsFalse (projectViewModel.IsChecked);
 
 			viewModel.ProjectViewModels [0].IsChecked = false;
 			viewModel.ProjectViewModels [1].IsChecked = false;

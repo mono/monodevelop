@@ -828,10 +828,16 @@ namespace MonoDevelop.PackageManagement
 			List<ManageProjectViewModel> projectViewModels;
 			if (!cachedProjectViewModels.TryGetValue (SelectedPackage.Id, out projectViewModels)) {
 				projectViewModels = new List<ManageProjectViewModel> ();
+				var uncheckedProjectViewModels = new List<ManageProjectViewModel> ();
 				foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
 					var projectViewModel = new ManageProjectViewModel (projectInfo, SelectedPackage.Id);
-					projectViewModels.Add (projectViewModel);
+					if (projectViewModel.IsChecked)
+						projectViewModels.Add (projectViewModel);
+					else
+						uncheckedProjectViewModels.Add (projectViewModel);
 				}
+				// Show projects that have the package installed before the other projects.
+				projectViewModels.AddRange (uncheckedProjectViewModels);
 
 				cachedProjectViewModels [SelectedPackage.Id] = projectViewModels;
 			}
