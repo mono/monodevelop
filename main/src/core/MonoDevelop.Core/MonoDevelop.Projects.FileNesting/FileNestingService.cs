@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public static ProjectFile GetParentFile (ProjectFile inputFile)
 		{
-			if (!inputFile.Project.UserProperties.GetValue<bool> ("FileNesting")) {
+			if (inputFile.Project.UserProperties.HasValue ("FileNesting") && !inputFile.Project.UserProperties.GetValue<bool> ("FileNesting")) {
 				return null;
 			}
 
