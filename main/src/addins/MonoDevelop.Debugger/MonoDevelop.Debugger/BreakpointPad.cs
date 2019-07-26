@@ -292,8 +292,7 @@ namespace MonoDevelop.Debugger
 						continue;
 
 					var bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
-					lock (breakpoints)
-						breakpoints.Remove (bp);
+					breakpoints.Remove (bp);
 					deleted = true;
 				}
 			} finally {
@@ -421,33 +420,33 @@ namespace MonoDevelop.Debugger
 			
 			store.Clear ();
 			if (breakpoints != null) {	
-				lock (breakpoints) {
-					foreach (BreakEvent be in breakpoints) {
-						if (be.NonUserBreakpoint)
-							continue;
+				foreach (BreakEvent be in breakpoints) {
+					if (be.NonUserBreakpoint)
+						continue;
 
-						string hitCount = be.HitCountMode != HitCountMode.None ? be.CurrentHitCount.ToString () : "";
-						string traceExp = (be.HitAction & HitAction.PrintExpression) != HitAction.None ? be.TraceExpression : "";
-						string traceVal = (be.HitAction & HitAction.PrintExpression) != HitAction.None ? be.LastTraceValue : "";
-						string name, condition = null;
+					string hitCount = be.HitCountMode != HitCountMode.None ? be.CurrentHitCount.ToString () : "";
+					string traceExp = (be.HitAction & HitAction.PrintExpression) != HitAction.None ? be.TraceExpression : "";
+					string traceVal = (be.HitAction & HitAction.PrintExpression) != HitAction.None ? be.LastTraceValue : "";
+					string name, condition = null;
 
-						if (be is FunctionBreakpoint fb) {
-							if (fb.ParamTypes != null)
-								name = fb.FunctionName + "(" + string.Join (", ", fb.ParamTypes) + ")";
-							else
-								name = fb.FunctionName;
-						} else if (be is Breakpoint bp) {
-							name = string.Format ("{0}:{1},{2}", bp.FileName, bp.Line, bp.Column);
-							condition = bp.ConditionExpression;
-						} else if (be is Catchpoint cp) {
-							name = cp.ExceptionName;
-						} else {
-							name = "";
-						}
-
-						store.AppendValues (GetIconId (be), be.Enabled, name, be, condition, traceExp, hitCount, traceVal);
+					if (be is FunctionBreakpoint fb) {
+						if (fb.ParamTypes != null)
+							name = fb.FunctionName + "(" + string.Join (", ", fb.ParamTypes) + ")";
+						else
+							name = fb.FunctionName;
+					} else if (be is Breakpoint bp) {
+						name = string.Format ("{0}:{1},{2}", bp.FileName, bp.Line, bp.Column);
+						condition = bp.ConditionExpression;
+					} else if (be is Catchpoint cp) {
+						name = cp.ExceptionName;
+					} else {
+						name = "";
 					}
+
+					store.AppendValues (GetIconId (be), be.Enabled, name, be, condition, traceExp, hitCount, traceVal);
 				}
+
+				store.AppendValues (GetIconId (be), be.Enabled, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
 			}
 
 			treeState.Load ();

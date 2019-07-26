@@ -725,20 +725,18 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			var breakpointStore = parentStrip.SourceEditorView.Breakpoints;
 
-			lock (breakpointStore) {
-				var breakPoints = breakpointStore.GetBreakpointsAtFile (TextEditor.FileName);
+			var breakPoints = breakpointStore.GetBreakpointsAtFile (TextEditor.FileName);
 
-				if (breakPoints == null)
-					return;
+			if (breakPoints == null)
+				return;
 
-				foreach (var point in breakPoints) {
-					int y = (int)GetYPosition (point.Line);
+			foreach (var point in breakPoints) {
+				int y = (int)GetYPosition (point.Line);
 
-					cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.BreakpointMarker));
-					int r = 4;
-					cr.Rectangle (0, y - r / 2, r, r);
-					cr.Fill ();
-				}
+				cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.BreakpointMarker));
+				int r = 4;
+				cr.Rectangle (0, y - r / 2, r, r);
+				cr.Fill ();
 			}
 		}
 
