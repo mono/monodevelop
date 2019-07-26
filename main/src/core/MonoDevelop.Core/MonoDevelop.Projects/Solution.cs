@@ -586,12 +586,13 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnDispose ()
 		{
-			FileWatcherService.Remove (this).Ignore ();
-
-			RootFolder.Dispose ();
-			Counters.SolutionsLoaded--;
 			msbuildEngineManager.Dispose ();
 			base.OnDispose ();
+
+			// Dispose the root folder after we dispose the base item, as we need the root folder
+			// to contain the items when unregistering from the file watcher service.
+			RootFolder.Dispose ();
+			Counters.SolutionsLoaded--;
 		}
 
 		internal bool IsSolutionItemEnabled (string solutionItemPath)
