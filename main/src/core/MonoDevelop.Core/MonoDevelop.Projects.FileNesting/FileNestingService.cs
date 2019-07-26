@@ -25,16 +25,17 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Mono.Addins;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.FileNesting
 {
 	public static class FileNestingService
 	{
+		static readonly ConcurrentDictionary<Project, ProjectNestingInfo> loadedProjects = new ConcurrentDictionary<Project, ProjectNestingInfo> ();
 		static ImmutableList<NestingRulesProvider> rulesProviders = ImmutableList<NestingRulesProvider>.Empty;
 
 		static FileNestingService ()
@@ -56,7 +57,16 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public static bool HasParent (ProjectFile inputFile) => GetParentFile (inputFile) != null;
 
-		public static ProjectFile GetParentFile (ProjectFile inputFile)
+		static ProjectNestingInfo GetProjectNestingInfo (Project project)
+		{
+			if (!loadedProjects.TryGetValue (project, out var nestingInfo)) {
+				nestingInfo = loadedProjects [project] = new ProjectNestingInfo (project);
+			}
+
+			return nestingInfo;
+		}
+
+		internal static ProjectFile InternalGetParentFile (ProjectFile inputFile)
 		{
 			if (inputFile.Project.UserProperties.HasValue ("FileNesting") && !inputFile.Project.UserProperties.GetValue<bool> ("FileNesting")) {
 				return null;
@@ -72,14 +82,110 @@ namespace MonoDevelop.Projects.FileNesting
 			return null;
 		}
 
+		public static ProjectFile GetParentFile (ProjectFile inputFile)
+		{
+			return GetProjectNestingInfo (inputFile.Project).GetParentForFile (inputFile);
+		}
+
 		public static bool HasChildren (ProjectFile inputFile)
 		{
-			return inputFile.Project.Files.Any (x => GetParentFile (x) == inputFile);
+			var children = GetProjectNestingInfo (inputFile.Project).GetChidlrenForFile (inputFile);
+			return (children?.Count ?? 0) > 0;
 		}
 
 		public static IEnumerable<ProjectFile> GetChildren (ProjectFile inputFile)
 		{
-			return inputFile.Project.Files.Where (x => x.FilePath.ParentDirectory == inputFile.FilePath.ParentDirectory && GetParentFile (x) == inputFile);
+			return GetProjectNestingInfo (inputFile.Project).GetChidlrenForFile (inputFile);
 		}
 	}
+
+	class ProjectNestingInfo : IDisposable
+	{
+		class ProjectFileNestingInfo
+		{
+			public ProjectFile File { get; }
+			public ProjectFile Parent { get; set; }
+			public ProjectFileCollection Children { get; set; }
+
+			public ProjectFileNestingInfo (ProjectFile projectFile)
+			{
+				File = projectFile;
+			}
+		}
+
+		readonly ConcurrentDictionary<ProjectFile, ProjectFileNestingInfo> projectFiles = new ConcurrentDictionary<ProjectFile, ProjectFileNestingInfo> ();
+
+		public Project Project { get; }
+
+		public ProjectNestingInfo (Project project)
+		{
+			Project = project;
+			Project.FileAddedToProject += OnFileAddedToProject;
+			Project.FileRemovedFromProject += OnFileRemovedFromProject;
+		}
+
+		bool initialized = false;
+		void EnsureInitialized ()
+		{
+			if (!initialized) {
+				initialized = true;
+
+				foreach (var file in Project.Files) {
+					AddFile (file);
+				}
+			}
+		}
+
+		void AddFile (ProjectFile projectFile)
+		{
+			var tmp = projectFiles.GetOrAdd (projectFile, new ProjectFileNestingInfo (projectFile));
+			tmp.Parent = FileNestingService.InternalGetParentFile (projectFile);
+			if (tmp.Parent != null) {
+				var parent = projectFiles.GetOrAdd (tmp.Parent, new ProjectFileNestingInfo (tmp.Parent));
+				if (parent.Children == null) {
+					parent.Children = new ProjectFileCollection ();
+				}
+				if (!parent.Children.Contains (projectFile)) {
+					parent.Children.Add (projectFile);
+				}
+			}
+
+			projectFiles [projectFile] = tmp;
+		}
+
+		void OnFileAddedToProject (object sender, ProjectFileEventArgs e)
+		{
+			foreach (var file in e) {
+				AddFile (file.ProjectFile);
+			}
+		}
+
+		void OnFileRemovedFromProject (object sender, ProjectFileEventArgs e)
+		{
+			foreach (var file in e) {
+				projectFiles.TryRemove (file.ProjectFile, out _);
+			}
+		}
+
+		public ProjectFile GetParentForFile (ProjectFile inputFile)
+		{
+			EnsureInitialized ();
+			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Parent : null;
+		}
+
+		public ProjectFileCollection GetChidlrenForFile (ProjectFile inputFile)
+		{
+			EnsureInitialized ();
+			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Children : null;
+		}
+
+		public void Dispose ()
+		{
+			if (initialized) {
+				Project.FileAddedToProject -= OnFileAddedToProject;
+				Project.FileRemovedFromProject -= OnFileRemovedFromProject;
+			}
+		}
+	}
+
 }
