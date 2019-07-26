@@ -850,7 +850,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static bool IsWildcardInclude (string include)
 		{
-			return include.IndexOf ('*') != -1;
+			return include.IndexOfAny (wildcards) != -1;
 		}
 
 		IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildEvaluationContext context, MSBuildItem sourceItem, string path, Regex directoryExcludeRegex)
@@ -1174,7 +1174,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var fileName = Path.GetFileName (path);
 
-			if (fileName.IndexOfAny (new [] { '*', '?' }) == -1) {
+			if (fileName.IndexOfAny (wildcards) == -1) {
 				// Not a wildcard. Keep searching if the file doesn't exist.
 				var result = File.Exists (path) ? new [] { path } : null;
 				keepSearching = result == null;
