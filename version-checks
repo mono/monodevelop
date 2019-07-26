@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=02b8644e95f364d6a6aaaa59f0edf95272df6d94
-DEP_BRANCH_AND_REMOTE[0]="master origin/master"
+DEP_NEEDED_VERSION[0]=c97d9a1cf2aac5d229e39f11b1b7e2491e8273b7
+DEP_BRANCH_AND_REMOTE[0]="enable-notarization origin/enable-notarization"
 
 # heap-shot
 DEP[1]=heap-shot
