@@ -66,7 +66,6 @@ namespace MonoDevelop.PackageManagement
 		Label updatesLabel;
 		Label consolidateLabel;
 		ListView projectsListView;
-		CheckBox selectAllProjectsCheckBox;
 		int packageInfoFontSize = 11;
 
 		void Build ()
@@ -232,11 +231,6 @@ namespace MonoDevelop.PackageManagement
 			// Projects list view.
 			projectsListView = new ListView ();
 			packageInfoVBox.PackStart (projectsListView, true, true);
-
-			selectAllProjectsCheckBox = new CheckBox ();
-			selectAllProjectsCheckBox.Label = GettextCatalog.GetString ("Select all projects");
-			selectAllProjectsCheckBox.Name = "selectAllProjectsCheckBox";
-			packageInfoVBox.PackStart (selectAllProjectsCheckBox);
 
 			// Package description.
 			packageDescription = new Label ();

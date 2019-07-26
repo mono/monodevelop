@@ -109,8 +109,6 @@ namespace MonoDevelop.PackageManagement
 			installedLabel.ButtonPressed += InstalledLabelButtonPressed;
 			updatesLabel.ButtonPressed += UpdatesLabelButtonPressed;
 			consolidateLabel.ButtonPressed += ConsolidateLabelButtonPressed;
-
-			selectAllProjectsCheckBox.Toggled += SelectAllProjectsCheckBoxToggled;
 		}
 
 		public bool ShowPreferencesForPackageSources { get; private set; }
@@ -411,7 +409,6 @@ namespace MonoDevelop.PackageManagement
 
 			packageNameHBox.Visible = true;
 			projectsListView.Visible = consolidate;
-			selectAllProjectsCheckBox.Visible = consolidate;
 
 			this.packageInfoVBox.Visible = true;
 			this.packageVersionsHBox.Visible = true;
@@ -1165,14 +1162,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			projectStore.Clear ();
 
-			int projectCount = 0;
-			int selectedCount = 0;
 			foreach (ManageProjectViewModel project in viewModel.ProjectViewModels) {
-				projectCount++;
-				if (project.IsChecked) {
-					selectedCount++;
-				}
-
 				int row = projectStore.AddRow ();
 				projectStore.SetValues (
 					row,
@@ -1185,27 +1175,6 @@ namespace MonoDevelop.PackageManagement
 					projectField,
 					project);
 			}
-
-			if (projectCount == selectedCount) {
-				selectAllProjectsCheckBox.State = CheckBoxState.On;
-			} else if (selectedCount > 0) {
-				selectAllProjectsCheckBox.State = CheckBoxState.Mixed;
-			} else {
-				selectAllProjectsCheckBox.State = CheckBoxState.Off;
-			}
-		}
-
-		void SelectAllProjectsCheckBoxToggled (object sender, EventArgs e)
-		{
-			bool selected = selectAllProjectsCheckBox.State == CheckBoxState.On;
-
-			for (int row = 0; row < projectStore.RowCount; row++) {
-				ManageProjectViewModel project = projectStore.GetValue (row, projectField);
-				project.IsChecked = selected;
-				projectStore.SetValue (row, projectCheckedField, selected);
-			}
-
-			UpdateAddPackagesButton ();
 		}
 
 		void ProjectCheckBoxCellViewToggled (object sender, WidgetEventArgs e)
@@ -1219,21 +1188,6 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			selectedProject.IsChecked = !selectedProject.IsChecked;
-
-			int selectedCount = 0;
-			foreach (ManageProjectViewModel project in viewModel.ProjectViewModels) {
-				if (project.IsChecked) {
-					selectedCount++;
-				}
-			}
-
-			if (selectedCount == 0) {
-				selectAllProjectsCheckBox.State = CheckBoxState.Off;
-			} else if (selectedCount == projectStore.RowCount) {
-				selectAllProjectsCheckBox.State = CheckBoxState.On;
-			} else {
-				selectAllProjectsCheckBox.State = CheckBoxState.Mixed;
-			}
 
 			UpdateAddPackagesButton ();
 		}
