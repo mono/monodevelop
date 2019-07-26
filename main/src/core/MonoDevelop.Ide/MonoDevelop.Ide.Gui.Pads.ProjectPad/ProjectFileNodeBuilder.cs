@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
-			return file.HasChildren ? true : FileNestingService.HasChildren (file);
+			return file.HasChildren || FileNestingService.HasChildren (file);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				treeBuilder.AddChildren (file.DependentChildren);
 			else {
 				var children = FileNestingService.GetChildren (file);
-				if (children != null) {
+				if (children?.Any () ?? false) {
 					treeBuilder.AddChildren (children);
 				}
 			}
