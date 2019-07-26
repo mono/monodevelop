@@ -930,11 +930,11 @@ namespace MonoDevelop.PackageManagement
 				}
 				return label;
 			} else if (viewModel.PageSelected == ManagePackagesPage.Installed) {
-				return GettextCatalog.GetPluralString ("Remove Package", "Remove Packages", packagesSelectedCount);
+				return GettextCatalog.GetPluralString ("Uninstall Package", "Uninstall Packages", packagesSelectedCount);
 			} else if (viewModel.PageSelected == ManagePackagesPage.Updates) {
 				return GettextCatalog.GetPluralString ("Update Package", "Update Packages", packagesSelectedCount);
 			} else if (viewModel.PageSelected == ManagePackagesPage.Consolidate) {
-				return GettextCatalog.GetString ("Consolidate");
+				return GettextCatalog.GetPluralString ("Consolidate Package", "Consolidate Packages", packagesSelectedCount);
 			}
 
 			throw new NotImplementedException ("Unknown package results page");
