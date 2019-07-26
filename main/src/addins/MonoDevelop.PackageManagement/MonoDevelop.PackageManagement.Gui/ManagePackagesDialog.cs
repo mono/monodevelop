@@ -61,10 +61,10 @@ namespace MonoDevelop.PackageManagement
 		int packageVersionsAddedCount;
 		IDisposable populatePackageVersionsTimer;
 		const int MaxVersionsToPopulate = 100;
-		DataField<bool> projectCheckedField = new DataField<bool> ();
-		DataField<string> projectNameField = new DataField<string> ();
-		DataField<string> packageVersionField = new DataField<string> ();
-		DataField<ManageProjectViewModel> projectField = new DataField<ManageProjectViewModel> ();
+		DataField<bool> projectCheckedField;
+		DataField<string> projectNameField;
+		DataField<string> packageVersionField;
+		DataField<ManageProjectViewModel> projectField;
 		CheckBoxCellView projectCheckBoxCellView;
 		ListStore projectStore;
 
@@ -92,7 +92,6 @@ namespace MonoDevelop.PackageManagement
 			UpdatePackageResultsPageLabels ();
 
 			InitializeListView ();
-			InitializeProjectsListView ();
 			UpdateAddPackagesButton ();
 			ShowLoadingMessage ();
 			LoadViewModel (initialSearch);
@@ -124,7 +123,7 @@ namespace MonoDevelop.PackageManagement
 			DisposeExistingTimer ();
 			DisposePopulatePackageVersionsTimer ();
 			packageStore.Clear ();
-			projectStore.Clear ();
+			projectStore?.Clear ();
 			viewModel = null;
 			base.Dispose (disposing);
 		}
@@ -178,10 +177,29 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeProjectsListView ()
 		{
+			projectStore?.Clear ();
+
+			// Recreate the list view each time. This is a workaround for the
+			// list view not displaying items on re-populating if it has been sorted.
+			if (projectsListView != null) {
+				projectsListViewVBox.Remove (projectsListView);
+				projectsListView.Dispose ();
+			}
+
+			projectStore?.Dispose ();
+
+			projectCheckedField = new DataField<bool> ();
+			projectNameField = new DataField<string> ();
+			packageVersionField = new DataField<string> ();
+			projectField = new DataField<ManageProjectViewModel> ();
 			projectStore = new ListStore (projectCheckedField, projectNameField, packageVersionField, projectField);
+
+			projectsListView = new ListView ();
 			projectsListView.DataSource = projectStore;
 
 			// Selected project check box column.
+			if (projectCheckBoxCellView != null)
+				projectCheckBoxCellView.Toggled -= ProjectCheckBoxCellViewToggled;
 			projectCheckBoxCellView = new CheckBoxCellView ();
 			projectCheckBoxCellView.ActiveField = projectCheckedField;
 			projectCheckBoxCellView.Editable = true;
@@ -206,6 +224,9 @@ namespace MonoDevelop.PackageManagement
 				SortDataField = packageVersionField
 			};
 			projectsListView.Columns.Add (column);
+
+			// Add list view to dialog.
+			projectsListViewVBox.PackStart (projectsListView, true, true);
 		}
 
 		void ShowLoadingMessage ()
@@ -294,7 +315,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.packageInfoVBox.Visible = false;
 			this.packageVersionsHBox.Visible = false;
-			projectStore.Clear ();
+			projectStore?.Clear ();
 		}
 
 		void RemoveSelectedPackagePropertyChangedEventHandler ()
@@ -409,12 +430,11 @@ namespace MonoDevelop.PackageManagement
 			if (consolidate) {
 				PopulateProjectList ();
 			} else {
-				projectStore.Clear ();
+				projectStore?.Clear ();
 			}
 
 			packageNameHBox.Visible = true;
-			projectsListView.Visible = consolidate;
-
+			projectsListViewVBox.Visible = consolidate;
 			this.packageInfoVBox.Visible = true;
 
 			packageViewModel.PropertyChanged += SelectedPackageViewModelChanged;
@@ -1164,7 +1184,7 @@ namespace MonoDevelop.PackageManagement
 
 		void PopulateProjectList ()
 		{
-			projectStore.Clear ();
+			InitializeProjectsListView ();
 
 			foreach (ManageProjectViewModel project in viewModel.ProjectViewModels) {
 				int row = projectStore.AddRow ();

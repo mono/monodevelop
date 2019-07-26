@@ -65,6 +65,7 @@ namespace MonoDevelop.PackageManagement
 		Label installedLabel;
 		Label updatesLabel;
 		Label consolidateLabel;
+		VBox projectsListViewVBox;
 		ListView projectsListView;
 		int packageInfoFontSize = 11;
 
@@ -229,8 +230,9 @@ namespace MonoDevelop.PackageManagement
 			packageNameHBox.PackStart (packageNameLabel, true);
 
 			// Projects list view.
-			projectsListView = new ListView ();
-			packageInfoVBox.PackStart (projectsListView, true, true);
+			projectsListViewVBox = new VBox ();
+			projectsListViewVBox.Margin = new WidgetSpacing ();
+			packageInfoVBox.PackStart (projectsListViewVBox, true, true);
 
 			// Package description.
 			packageDescription = new Label ();
