@@ -260,7 +260,7 @@ main (int argc, char **argv)
 		}
 
 		// can be overridden with plist string MonoMinVersion
-		NSString *req_mono_version = @"6.0.0.296";
+		NSString *req_mono_version = @"6.4.0.94";
 
 		NSDictionary *plist = [mainBundle infoDictionary];
 		if (plist) {
