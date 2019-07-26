@@ -128,6 +128,9 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 					installedPackages.ContainsKey (packageName);
 			}
 
+			public bool CanShowManagePackagesDialog ()
+				=> true;
+
 			public void ShowManagePackagesDialog (string packageName)
 			{
 				PackageServices.ShowManagePackagesDialog (packageName);
