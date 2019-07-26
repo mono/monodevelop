@@ -122,7 +122,7 @@ namespace MonoDevelop.MacIntegration
 						var okButton = alert.AddButton (GettextCatalog.GetString ("OK"));
 						var cancelButton = alert.AddButton (GettextCatalog.GetString ("Cancel"));
 
-						alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
+						alert.Icon = MacPlatformService.ApplicationIcon;
 
 						var view = new NSView (new CGRect (0, 0, 313, 91));
 
