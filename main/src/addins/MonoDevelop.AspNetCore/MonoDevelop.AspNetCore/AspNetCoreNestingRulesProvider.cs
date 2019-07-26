@@ -24,8 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
+using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore
@@ -36,6 +39,12 @@ namespace MonoDevelop.AspNetCore
 		public AspNetCoreNestingRulesProvider ()
 		{
 			SourceFile = AddinManager.CurrentAddin.GetFilePath (Path.Combine ("Resources", "AspNetCore.filenesting.json"));
+		}
+
+		protected override bool AppliesToProject (Project project)
+		{
+			var dotnetProj = project as DotNetProject;
+			return dotnetProj != null && dotnetProj.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) != -1) != null;
 		}
 	}
 }

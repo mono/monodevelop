@@ -121,8 +121,14 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
+		protected virtual bool AppliesToProject (Project project) => true;
+
 		public ProjectFile GetParentFile (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return null;
+			}
+
 			lock (loadingLock) {
 				if (nestingRules == null) {
 					// Create the list here, so that we don't get this path called
