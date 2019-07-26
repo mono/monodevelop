@@ -40,10 +40,6 @@ namespace MonoDevelop.Projects
 	[TestFixture]
 	public class FileWatcherTests : FileWatcherTestBase
 	{
-		Solution sol;
-
-		protected override void OnTestTearDown () => sol?.Dispose ();
-
 		/// <summary>
 		/// Original code seems to generate the FileChanged event twice for the project file.
 		/// </summary>
@@ -51,7 +47,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveProject_AfterModifying ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
@@ -70,7 +66,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveProjectFileExternally ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
@@ -96,7 +92,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveSolutionFileExternally ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			ClearFileEventsCaptured ();
 			// Ensure FileService.FileChanged event is handled after the solution handles it.
 			ResetFileServiceChangedEventHandler ();
@@ -119,7 +115,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveFileInProjectExternally ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
@@ -136,13 +132,13 @@ namespace MonoDevelop.Projects
 		public async Task SaveFileInProjectExternallyAfterSolutionNotWatched_NoFileChangeEventsFired ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var p = (DotNetProject) sol.Items [0];
-			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
-			ClearFileEventsCaptured ();
-			await FileWatcherService.Add (sol);
-			sol.Dispose ();
-			sol = null;
+			ProjectFile file;
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+				ClearFileEventsCaptured ();
+				await FileWatcherService.Add (sol);
+			}
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 
@@ -155,7 +151,7 @@ namespace MonoDevelop.Projects
 		public async Task DeleteProjectFileUsingFileService ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			ClearFileEventsCaptured ();
 			await FileWatcherService.Add (sol);
@@ -172,7 +168,7 @@ namespace MonoDevelop.Projects
 		public async Task DeleteProjectFileExternally ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			ClearFileEventsCaptured ();
 			await FileWatcherService.Add (sol);
@@ -190,7 +186,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p1 = (DotNetProject) sol.Items [0];
 			var p2 = (DotNetProject) sol.Items [1];
 			var file1 = p1.Files.First (f => f.FilePath.FileName == "MyClass.cs");
@@ -211,7 +207,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			ClearFileEventsCaptured ();
@@ -229,7 +225,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveProjectFileExternally_TwoSolutionsOpened_NoCommonDirectories ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file1 = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
@@ -254,7 +250,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p1 = (DotNetProject) sol.Items [0];
 			var file1 = p1.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
@@ -278,7 +274,7 @@ namespace MonoDevelop.Projects
 		public async Task DeleteProjectFileExternally_TwoSolutionsOpen_FileDeletedFromCommonDirectory ()
 		{
 			string solFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			solFile = sol.BaseDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (DotNetProject) sol2.Items [0];
@@ -311,7 +307,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
 			string solFile = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), rootSolFile)) {
 				var p = (DotNetProject) sol.Items [0];
 				ClearFileEventsCaptured ();
@@ -339,7 +335,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
 			string solFile = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			ProjectFile file;
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), rootSolFile)) {
 				var p = (DotNetProject) sol.Items [0];
@@ -407,7 +403,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
 			string solFile = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var file1 = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "MyClass.cs");
 			var file2 = rootSolFile.ParentDirectory.Combine ("Library", "Properties", "AssemblyInfo.cs");
 			var directories = new [] {
@@ -439,7 +435,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest3.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			var otherFile = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			await FileWatcherService.Add (sol);
@@ -476,7 +472,7 @@ namespace MonoDevelop.Projects
 			using (var workspace = (Workspace) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), workspaceFile)) {
 				await FileWatcherService.Add (workspace);
 				string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest3.sln");
-				sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 				var p = (DotNetProject)sol.Items [0];
 				var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 				workspace.Items.Add (sol);
@@ -511,7 +507,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest3.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file2 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			ClearFileEventsCaptured ();
@@ -553,7 +549,7 @@ namespace MonoDevelop.Projects
 		public async Task ExternalRenameTemporaryFileToFileInProject ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			var tempFile = file.FilePath.ChangeExtension (".cs-temp");
@@ -582,7 +578,7 @@ namespace MonoDevelop.Projects
 			var tempFile = tempDirectory.Combine ("Program.cs-temp");
 			File.WriteAllText (tempFile, "test");
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
@@ -608,7 +604,7 @@ namespace MonoDevelop.Projects
 		public async Task TemporaryFileOutsideMonitoredDirectoriesRenamedToFileInProject2 ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			var newFile = file.FilePath.ChangeName ("Test");
@@ -703,7 +699,7 @@ namespace MonoDevelop.Projects
 		public async Task MoveFileToTrash_RenamesFile ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			var tempFile = file.FilePath.ChangeExtension (".cs-temp");
@@ -721,7 +717,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveProjectFileExternally_ProjectInSolutionFolder ()
 		{
 			string solFile = Util.GetSampleProject ("ProjectInSolutionFolder", "ProjectInSolutionFolder.sln");
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
@@ -750,7 +746,7 @@ namespace MonoDevelop.Projects
 				Assert.Ignore ("Not valid on Windows");
 
 			FilePath solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			var fileName = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\MSBuild\MSBuild.dll";
 			var reference = ProjectReference.CreateAssemblyFileReference (fileName);
@@ -768,7 +764,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			p.UseAdvancedGlobSupport = true;
 			p.UseFileWatcher = true;

@@ -586,6 +586,8 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnDispose ()
 		{
+			FileWatcherService.Remove (this).Ignore ();
+
 			RootFolder.Dispose ();
 			Counters.SolutionsLoaded--;
 			msbuildEngineManager.Dispose ();

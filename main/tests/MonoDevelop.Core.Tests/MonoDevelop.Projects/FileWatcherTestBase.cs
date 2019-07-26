@@ -58,14 +58,8 @@ namespace MonoDevelop.Projects
 		[TearDown]
 		public void TestTearDown ()
 		{
-			OnTestTearDown ();
-
 			FileService.FileChanged -= OnFileChanged;
 			FileService.FileRemoved -= OnFileRemoved;
-		}
-
-		protected virtual void OnTestTearDown ()
-		{
 		}
 
 		protected void ClearFileEventsCaptured ()
