@@ -10,7 +10,7 @@ using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.Stac
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
-	class VsCodeStackFrame : Mono.Debugging.Client.StackFrame
+	public class VsCodeStackFrame : Mono.Debugging.Client.StackFrame
 	{
 		public static VsFormat GetStackFrameFormat (EvaluationOptions evalOptions)
 		{
@@ -72,7 +72,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			throw new ArgumentException ();
 		}
 
-		static byte[] HexToByteArray (string hex)
+		public static byte[] HexToByteArray (string hex)
 		{
 			if (hex.Length % 2 == 1)
 				return null;
