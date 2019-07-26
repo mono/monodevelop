@@ -395,7 +395,12 @@ namespace MonoDevelop.PackageManagement
 				PopulatePackageDependencies (packageViewModel);
 			}
 
-			PopulatePackageVersions (packageViewModel);
+			if (viewModel.IsInstalledPageSelected) {
+				packageVersionsHBox.Visible = false;
+			} else {
+				PopulatePackageVersions (packageViewModel);
+				packageVersionsHBox.Visible = true;
+			}
 
 			foreach (Widget child in packageInfoVBox.Children) {
 				child.Visible = !consolidate;
@@ -411,7 +416,6 @@ namespace MonoDevelop.PackageManagement
 			projectsListView.Visible = consolidate;
 
 			this.packageInfoVBox.Visible = true;
-			this.packageVersionsHBox.Visible = true;
 
 			packageViewModel.PropertyChanged += SelectedPackageViewModelChanged;
 			viewModel.LoadPackageMetadata (packageViewModel);

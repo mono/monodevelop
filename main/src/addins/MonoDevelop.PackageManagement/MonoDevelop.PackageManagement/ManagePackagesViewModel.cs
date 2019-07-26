@@ -157,6 +157,10 @@ namespace MonoDevelop.PackageManagement
 			get { return PageSelected == ManagePackagesPage.Consolidate; }
 		}
 
+		public bool IsInstalledPageSelected {
+			get { return PageSelected == ManagePackagesPage.Installed; }
+		}
+
 		public IEnumerable<SourceRepositoryViewModel> PackageSources {
 			get {
 				if (packageSources == null) {
