@@ -47,7 +47,7 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = master
+	branch = wpf-sdk-project
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
 	url = https://github.com/xamarin/Xamarin.PropertyEditing
