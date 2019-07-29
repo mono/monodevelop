@@ -765,7 +765,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var versions = new List<VersionInfo> ();
 
-			return ConcurrentOperationFactory.StartNew (() => {
+			return ExclusiveOperationFactory.StartNew (() => {
 				if (localFileNames != null) {
 					var localFiles = new List<FilePath> ();
 					var groups = GroupByRepository (localFileNames);
