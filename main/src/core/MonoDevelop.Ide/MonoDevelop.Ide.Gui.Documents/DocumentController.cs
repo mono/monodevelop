@@ -39,6 +39,17 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
+	public static class DocumentControllerExtensions
+	{
+		public static bool ContainsRole (this DocumentController sender, DocumentControllerRole documentControllerRole)
+		{
+			var controllerType = sender.GetType ();
+			var exportFileDocumentControllerAttribute = Attribute.GetCustomAttribute (controllerType, typeof (ExportFileDocumentControllerAttribute)) as ExportFileDocumentControllerAttribute;
+			var hasRole = exportFileDocumentControllerAttribute?.Role.HasFlag (documentControllerRole) ?? false;
+			return hasRole;
+		}
+	}
+
 	/// <summary>
 	/// A controller is a class that implements the logic for loading,
 	/// displaying and interacting with the contents of a document.

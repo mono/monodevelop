@@ -798,8 +798,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void Workbench_WindowReordered (object sender, WindowReorderedEventArgs e)
 		{
-			Document doc = documents [e.OldPosition];
-			documents = documents.RemoveAt (e.OldPosition).Insert (e.NewPosition, doc);
+			if (e.OldPosition.Content is SdiWorkspaceWindow oldPositionWorkspaceWindow && e.NewPosition.Content is SdiWorkspaceWindow newPositionWorkspaceWindow) {
+				var oldPlacement = documents.IndexOf (oldPositionWorkspaceWindow.Document);
+				var newPlacement = documents.IndexOf (newPositionWorkspaceWindow.Document);
+				documents.RemoveAt (oldPlacement).Insert (newPlacement, oldPositionWorkspaceWindow.Document);
+			}
 		}
 
 		void Workbench_NotebookClosed (object sender, NotebookEventArgs e)

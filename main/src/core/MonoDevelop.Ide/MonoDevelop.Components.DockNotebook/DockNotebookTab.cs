@@ -70,6 +70,8 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
+		internal bool IsPreview { get; set; }
+
 		Cairo.Rectangle closeButtonActiveArea;
 		internal Cairo.Rectangle CloseButtonActiveArea {
 			get {
