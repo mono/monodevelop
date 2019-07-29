@@ -124,11 +124,10 @@ namespace MonoDevelop.Components.DockNotebook
 			set {
 				if (isPinned == value)
 				   return;
-				if (OnChangingPinned != null)
-					OnChangingPinned (this, value);
+				OnChangingPinned?.Invoke (this, value);
 				isPinned = value;
-				if (OnChangedPinned != null)
-					OnChangedPinned (this, value);
+				strip.Update ();
+				OnChangedPinned?.Invoke (this, value);
 			}
 		}
 
