@@ -82,7 +82,7 @@ namespace MonoDevelop.Debugger
 					needsUpdate = true;
 
 				var line = snapshot.GetLineFromLineNumber (breakpoint.Line - 1);
-				var position = line.Start.Position + breakpoint.Column;
+				var position = line.Start.Position + breakpoint.Column - 1;
 				var span = await DebuggingService.GetBreakpointSpanAsync (textDocument, position);
 
 				if (breakpoints.TryGetValue (breakpoint, out var existingBreakpoint)) {
