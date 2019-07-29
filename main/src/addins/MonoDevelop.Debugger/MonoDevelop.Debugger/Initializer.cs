@@ -85,7 +85,7 @@ namespace MonoDevelop.Debugger
 				}
 				if (frame.SourceLocation.FileHash != null) {
 					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
-					if (newFilePath != null) {
+					if (newFilePath != null && File.Exists (newFilePath)) {
 						frame.UpdateSourceFile (newFilePath);
 						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
 						if (doc != null)
