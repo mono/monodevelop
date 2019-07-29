@@ -73,7 +73,7 @@ namespace MonoDevelop.PackageManagement
 
 		void Build ()
 		{
-			Title = GettextCatalog.GetString ("Manage Packages for Solution");
+			Title = GettextCatalog.GetString ("Manage NuGet Packages (Solution)");
 			Width = 820;
 			Height = 520;
 			Padding = new WidgetSpacing ();
