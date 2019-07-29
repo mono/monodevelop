@@ -1051,6 +1051,7 @@ namespace MonoDevelop.PackageManagement
 			try {
 				packageVersionComboBox.Items.Clear ();
 				if (packageViewModel.Versions.Any ()) {
+					NuGetVersion latestStableVersion = packageViewModel.Versions.FirstOrDefault (v => !v.IsPrerelease);
 					int count = 0;
 					foreach (NuGetVersion version in packageViewModel.Versions) {
 						count++;
@@ -1062,7 +1063,7 @@ namespace MonoDevelop.PackageManagement
 							PopulatePackageVersionsAfterDelay ();
 							break;
 						}
-						AddPackageVersionToComboBox (version);
+						AddPackageVersionToComboBox (version, latestStableVersion == version);
 					}
 				} else {
 					AddPackageVersionToComboBox (packageViewModel.Version);
@@ -1073,9 +1074,12 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void AddPackageVersionToComboBox (NuGetVersion version)
+		void AddPackageVersionToComboBox (NuGetVersion version, bool latestStable = false)
 		{
-			packageVersionComboBox.Items.Add (version, version.ToString ());
+			string versionLabel = version.ToString ();
+			if (latestStable)
+				versionLabel += " " + GettextCatalog.GetString ("(latest stable)");
+			packageVersionComboBox.Items.Add (version, versionLabel);
 		}
 
 		void PackageVersionChanged (object sender, EventArgs e)
