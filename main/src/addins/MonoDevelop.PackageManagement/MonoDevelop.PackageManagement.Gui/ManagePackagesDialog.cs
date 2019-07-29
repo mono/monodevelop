@@ -167,7 +167,7 @@ namespace MonoDevelop.PackageManagement
 				HasBackgroundColorField = packageHasBackgroundColorField,
 				CheckBoxAlphaField = packageCheckBoxAlphaField,
 				ImageField = packageImageField,
-				CellWidth = 535
+				CellWidth = 467
 			};
 			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);

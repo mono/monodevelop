@@ -74,8 +74,8 @@ namespace MonoDevelop.PackageManagement
 		void Build ()
 		{
 			Title = GettextCatalog.GetString ("Manage NuGet Packages (Solution)");
-			Width = 820;
-			Height = 520;
+			Width = 840;
+			Height = 528;
 			Padding = new WidgetSpacing ();
 
 			if (Platform.IsWindows) {
@@ -206,7 +206,7 @@ namespace MonoDevelop.PackageManagement
 			packageInfoFrame.Content = packageInfoVBox;
 			packageInfoVBox.Margin = new WidgetSpacing (15, 12, 15, 12);
 			var packageInfoContainerVBox = new VBox ();
-			packageInfoContainerVBox.WidthRequest = 240;
+			packageInfoContainerVBox.WidthRequest = 328;
 			packageInfoContainerVBox.PackStart (packageInfoFrame, true, true);
 
 			var packageInfoScrollView = new ScrollView ();
