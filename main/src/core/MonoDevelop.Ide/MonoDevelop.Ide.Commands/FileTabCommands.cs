@@ -120,19 +120,11 @@ namespace MonoDevelop.Ide.Commands
 
  	abstract class TabCommandHandler : CommandHandler
 	{
-		protected DockNotebookTab GetTabFromDocument (Document document)
-		{
-			var activeWindow = (SdiWorkspaceWindow)document.Window;
-			var tabControl = activeWindow.TabControl;
-			return tabControl.Tabs.FirstOrDefault (item => (item.Content as SdiWorkspaceWindow).Equals (activeWindow));
-		}
-
-		protected DockNotebookTab GetTabFromActiveDocument () 
-		{
-			var active = IdeApp.Workbench.ActiveDocument;
-			if (active == null)
+		protected DockNotebookTab GetTabFromActiveDocument () {
+			var document = IdeApp.Workbench.ActiveDocument;
+			if (document == null)
 				return null;
-			return GetTabFromDocument (active);
+			return ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
 		}
 	}
 
@@ -148,13 +140,14 @@ namespace MonoDevelop.Ide.Commands
 			var active = IdeApp.Workbench.ActiveDocument;
 			if (active == null)
 				return ImmutableArray<Document>.Empty;
+
 			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
 
 			var contents = Microsoft.CodeAnalysis
 				.ImmutableArrayExtensions
 				.WhereAsArray (
 					IdeApp.Workbench.Documents.ToImmutableArray (),
-					doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && GetTabFromDocument (doc).IsPinned
+					doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && (((SdiWorkspaceWindow)doc.Window).DockNotebookTab?.IsPinned ?? false)
 				);
 			return contents;
 		}
