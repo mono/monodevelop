@@ -1567,22 +1567,24 @@ namespace MonoDevelop.Components.Commands
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									var t = DateTime.Now;
+									var t = Stopwatch.StartNew ();
 									try {
 										chi.Run (localTarget, cmd, dataItem);
 									} finally {
-										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+										t.Stop ();
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, t.Elapsed);
 									}
 								});
 							}
 							else {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									var t = DateTime.Now;
+									var t = Stopwatch.StartNew ();
 									try {
 										chi.Run (localTarget, cmd);
 									} finally {
-										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+										t.Stop ();
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, t.Elapsed);
 									}
 								});
 							}
@@ -1603,7 +1605,40 @@ namespace MonoDevelop.Components.Commands
 					UpdateToolbars ();
 					return true;
 				}
-	
+
+
+				// There is a special case, where some commands get called when we are running in the new editor. For
+				// example, if the user would be focused on a node in Solution Explorer and press Ctrl + I. Our walk
+				// across the controls wouldn't ever land us on the new editor itself, which is a command target. In
+				// those instances, we want to try and get that target and see if we can actually run the command in
+				// the new editor. If not, we'll revert to the old way. This is the same problem (and solution)
+				// that we use in <see cref="DefaultUpdateCommandInfo"/>. 
+				if (IdeApp.Workbench?.ActiveDocument?.GetContent<ICustomCommandTarget> () is ICustomCommandTarget customCommandTarget) {
+					var updater = customCommandTarget.GetCommandUpdater (commandId);
+					var handler = customCommandTarget.GetCommandHandler (commandId);
+
+					if(updater != null) {
+						updater?.Run (cmdTarget, info);
+						info.CancelAsyncUpdate ();
+					}
+
+					if (info.Enabled && handler != null) {
+						var stopwatch = Stopwatch.StartNew ();
+						OnCommandActivating (commandId, info, dataItem, cmdTarget, source);
+						try {
+							handler.Run (cmdTarget, CurrentCommand);
+							return true;
+						} catch (Exception ex) {
+							// if we got here, something went wrong
+							LoggingService.LogInternalError (ex);
+							return false;
+						} finally {
+							stopwatch.Stop ();
+							OnCommandActivated (commandId, info, dataItem, cmdTarget, source, stopwatch.Elapsed);
+						}
+					}
+				}
+
 				if (DefaultDispatchCommand (cmd, info, dataItem, cmdTarget, source)) {
 					UpdateToolbars ();
 					return true;
@@ -1639,11 +1674,12 @@ namespace MonoDevelop.Components.Commands
 			}
 			OnCommandActivating (cmd.Id, info, dataItem, target, source);
 
-			var t = DateTime.Now;
+			var t = Stopwatch.StartNew ();
 			try {
 				cmd.DefaultHandler.InternalRun (dataItem);
 			} finally {
-				OnCommandActivated (cmd.Id, info, dataItem, target, source, DateTime.Now - t);
+				t.Stop ();
+				OnCommandActivated (cmd.Id, info, dataItem, target, source, t.Elapsed);
 			}
 			return true;
 		}
@@ -1825,9 +1861,23 @@ namespace MonoDevelop.Components.Commands
 				info.ArrayInfo = new CommandArrayInfo (info);
 				if (IsEnabled)
 					cmd.DefaultHandler.InternalUpdate (info.ArrayInfo);
+			} else if (IsEnabled) {
+				// There is a special case, where some commands get called when we are running in the new editor. For
+				// example, if the user would be focused on a node in Solution Explorer and press Ctrl + I. Our walk
+				// across the controls wouldn't ever land us on the new editor itself, which is a command target. In
+				// those instances, we want to try and get that target and see if we can actually run the command in
+				// the new editor. If not, we'll revert to the old way.
+				if (IdeApp.Workbench?.ActiveDocument?.GetContent<ICustomCommandTarget> () is ICustomCommandTarget customCommandTarget) {
+					var updater = customCommandTarget.GetCommandUpdater (cmd.Id);
+					if (updater != null) {
+						updater.Run (info.SourceTarget, info);
+					} else {
+						cmd.DefaultHandler.InternalUpdate (info);
+					}
+				} else {
+					cmd.DefaultHandler.InternalUpdate (info);
+				}
 			}
-			else if (IsEnabled)
-				cmd.DefaultHandler.InternalUpdate (info);
 			info.Enabled &= IsEnabled;
 		}
 		
