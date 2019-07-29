@@ -145,13 +145,13 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 
-				var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
+				var evalItems = new Dictionary<(string, string),MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItems (project)) {
 					var xit = it as MSBuildItemEvaluated;
 					if (xit == null) {
 						xit = CreateEvaluatedItem (e, it);
 						var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
-						var key = itemId + " " + xit.Include;
+						var key = (itemId, xit.Include);
 						if (evalItems.ContainsKey (key))
 							continue; // xbuild seems to return duplicate items when using wildcards. This is a workaround to avoid the duplicates.
 						MSBuildItem pit;
@@ -164,14 +164,14 @@ namespace MonoDevelop.Projects.MSBuild
 					evaluatedItems.Add (xit);
 				}
 
-				var evalItemsNoCond = new Dictionary<string,MSBuildItemEvaluated> ();
+				var evalItemsNoCond = new Dictionary<(string, string),MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItemsIgnoringCondition (project)) {
 					var xit = it as MSBuildItemEvaluated;
 					if (xit == null) {
 						xit = CreateEvaluatedItem (e, it);
 						var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
 						MSBuildItemEvaluated evItem;
-						var key = itemId + " " + xit.Include;
+						var key = (itemId, xit.Include);
 						if (evalItemsNoCond.ContainsKey (key))
 							continue; // xbuild seems to return duplicate items when using wildcards. This is a workaround to avoid the duplicates.
 						if (!string.IsNullOrEmpty (itemId) && evalItems.TryGetValue (key, out evItem)) {

@@ -206,6 +206,18 @@ namespace MacPlatform.Tests
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService.HandleUncaughtException"));
 
 		}
+
+		[Test]
+		public void GetBrowsers ()
+		{
+			var browsers = IdeServices.DesktopService.GetApplications ("https://localhost");
+			Assert.NotNull (browsers);
+			Assert.That (browsers.Count (), Is.AtLeast (1));
+			if (Directory.Exists ("/Applications/Safari.app"))
+				Assert.True (browsers.Any (x => x.DisplayName.Contains ("Safari")), "Safari is installed but wasn't returned by GetApplications()");
+			if (Directory.Exists ("/Applications/Google Chrome.app"))
+				Assert.True (browsers.Any (x => x.DisplayName.Contains ("Google Chrome")), "Google Chrome is installed but wasn't returned by GetApplications()");
+		}
 	}
 }
 

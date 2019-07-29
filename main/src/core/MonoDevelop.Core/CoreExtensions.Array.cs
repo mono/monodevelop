@@ -1,10 +1,10 @@
-﻿//
-// DotNetCoreExecutionHandler.cs
+//
+// CoreExtensions.Array.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Linq;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-
-namespace MonoDevelop.DotNetCore
+namespace System
 {
-	class DotNetCoreExecutionHandler : IExecutionHandler
+	public static partial class CoreExtensions
 	{
-		public bool CanExecute (ExecutionCommand command)
-		{
-			return command is DotNetCoreExecutionCommand;
-		}
-
-		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
-		{
-			var dotNetCoreCommand = (DotNetCoreExecutionCommand)command;
-
-			// ApplicationURL is passed to ASP.NET Core server via ASPNETCORE_URLS enviorment variable
-			var envVariables = dotNetCoreCommand.EnvironmentVariables.ToDictionary ((arg) => arg.Key, (arg) => arg.Value);
-			envVariables ["ASPNETCORE_URLS"] = dotNetCoreCommand.ApplicationURL;
-
-			var process = Runtime.ProcessService.StartConsoleProcess (
-				dotNetCoreCommand.Command,
-				dotNetCoreCommand.Arguments,
-				dotNetCoreCommand.WorkingDirectory,
-				console,
-				envVariables);
-
-			return process;
-		}
+		internal static bool Contains<T> (this T [] arr, T value) => Array.IndexOf (arr, value) != -1;
 	}
 }

@@ -26,7 +26,7 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizard.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledInfoBar.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkPaths.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreCanReferenceProjectExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
@@ -39,7 +39,6 @@
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DummyMSBuildOptionsPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkMonikerExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\FilePathExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore\ProjectReferenceExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNodeBuilder.cs" />

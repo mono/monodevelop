@@ -35,6 +35,7 @@ namespace MonoDevelop.Debugger
 		public static Counter EvaluationStats = InstrumentationService.CreateCounter ("Evaluation Statistics", "Debugger", id: "Debugger.EvaluationStatistics");
 		public static TimerCounter<DebuggerStartMetadata> DebuggerStart = InstrumentationService.CreateTimerCounter<DebuggerStartMetadata> ("Debugger Start", "Debugger", id: "Debugger.Start");
 		public static TimerCounter<DebuggerActionMetadata> DebuggerAction = InstrumentationService.CreateTimerCounter<DebuggerActionMetadata> ("Debugger Action", "Debugger", id: "Debugger.Action");
+		public static Counter DebuggerBusy = InstrumentationService.CreateCounter ("Debugger Busy", "Debugger", id: "Debugger.Busy");
 	}
 
 	class DebuggerStartMetadata : CounterMetadata

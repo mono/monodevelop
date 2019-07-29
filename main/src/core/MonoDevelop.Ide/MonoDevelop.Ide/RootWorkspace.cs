@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide
 						await SavePreferencesAsync ();
 
 					if (closeProjectFiles && documentManager != null) {
-						foreach (Document doc in documentManager.Documents.ToArray ()) {
+						foreach (Document doc in documentManager.Documents) {
 							if (!await doc.Close (force))
 								return false;
 						}
@@ -565,8 +565,11 @@ namespace MonoDevelop.Ide
 
 			if (RequestItemUnload (item)) {
 				if (closeItemFiles && documentManager != null) {
-					var projects = item.GetAllItems<Project> ();
-					foreach (Document doc in documentManager.Documents.Where (d => d.Owner != null && projects.Contains (d.Owner)).ToArray ()) {
+					var projects = new Lazy<List<Project>> (() => item.GetAllItems<Project> ().ToList ());
+					foreach (Document doc in documentManager.Documents) {
+						if (doc.Owner is null || !projects.Value.Contains (doc.Owner))
+							continue;
+
 						if (!await doc.Close ())
 							return;
 					}

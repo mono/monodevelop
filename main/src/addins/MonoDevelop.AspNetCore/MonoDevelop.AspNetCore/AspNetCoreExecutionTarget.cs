@@ -1,10 +1,10 @@
 //
-// FilePathExtensions.cs
+// AspNetCoreExecutionTarget.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft, Inc. (http://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.Desktop;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.AspNetCore
 {
-	static class FilePathExtensions
+	class AspNetCoreExecutionTarget : ExecutionTarget
 	{
-		public static bool HasSupportedDotNetCoreProjectFileExtension (this FilePath file)
+		internal AspNetCoreExecutionTarget (DesktopApplication desktopApplication)
 		{
-			return file.HasExtension (".csproj") || file.HasExtension (".fsproj") || file.HasExtension (".vbproj");
+			DesktopApplication = desktopApplication;
 		}
 
-		/// <summary>
-		/// HACK: Hide certain files in Solution window. The solution's .userprefs
-		/// file is the only file is included properly with the .NET Core MSBuild
-		/// targets.
-		/// </summary>
-		public static bool ShouldBeHidden (this FilePath file)
-		{
-			return file.HasExtension (".userprefs") ||
-				file.FileName == ".DS_Store";
-		}
+		public override string Name => DesktopApplication.DisplayName;
+
+		public override string Id => DesktopApplication.Id;
+
+		public DesktopApplication DesktopApplication { get; }
 	}
 }

@@ -95,7 +95,6 @@ namespace MonoDevelop.TextEditor
 			[TextEditorCommands.MovePrevWord] = op => op.MoveToPreviousWord (extendSelection: false),
 			[TextEditorCommands.MoveNextWord] = op => op.MoveToNextWord (extendSelection: false),
 
-			[TextEditorCommands.ExpandSelection] = op => op.SelectEnclosing (),
 			[TextEditorCommands.ExpandSelectionToLine] = op => op.MoveToEndOfLine (extendSelection: true),
 
 			[TextEditorCommands.SelectionMoveLeft] = op => op.MoveToPreviousCharacter (extendSelection: true),

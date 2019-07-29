@@ -184,10 +184,10 @@ namespace MonoDevelop.DotNetCore
 		{
 			string GetMessage (DotNetCoreVersion currentVersion)
 			{
-				return GettextCatalog.GetString ("NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} SDK by visiting {3}.", currentVersion.Major, currentVersion.Minor, currentVersion.ToString (), DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (currentVersion));
+				return GettextCatalog.GetString (".NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} SDK by visiting {3}", currentVersion.Major, currentVersion.Minor, currentVersion.ToString (), DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (currentVersion));
 			}
 
-			var installedVersion = Versions.OrderByDescending (x => x).FirstOrDefault ();
+			var installedVersion = Versions?.OrderByDescending (x => x).FirstOrDefault ();
 			if (installedVersion != null) {
 				if (installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion) {
 					return GetMessage (installedVersion);
@@ -198,7 +198,7 @@ namespace MonoDevelop.DotNetCore
 				}
 			}
 
-			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core {0} SDK by visiting {1}.", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
+			return GettextCatalog.GetString (".NET Core {0} SDK is required to build this application, and is not installed. Install the latest update to the .NET Core {0} SDK by visiting {1}", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
 		}
 	}
 }

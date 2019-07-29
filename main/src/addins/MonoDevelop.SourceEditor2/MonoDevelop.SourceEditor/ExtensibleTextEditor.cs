@@ -550,8 +550,12 @@ namespace MonoDevelop.SourceEditor
 				LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
 				return false;
 			}
-
-			return DoInsertTemplate (EditorExtension.Editor, doc.DocumentContext);
+			try {
+				return DoInsertTemplate (doc.Editor, doc.DocumentContext);
+			} catch (Exception e) {
+				LoggingService.LogInternalError ($"Error while trying to insert template: Editor={doc.Editor}, Ctx={doc.DocumentContext}.", e);
+				return false;
+			}
 		}
 
 		public bool DoInsertTemplate (TextEditor editor, DocumentContext ctx)
