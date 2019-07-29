@@ -1039,6 +1039,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, viewModel.PackageViewModels.Count);
 			Assert.AreEqual ("Recent1", viewModel.PackageViewModels[0].Id);
 			Assert.AreEqual (4, recentPackage.Versions.Count);
+			Assert.IsFalse (viewModel.PackageViewModels[0].SelectLatestVersion);
 		}
 
 		[Test]
@@ -1161,6 +1162,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (2, viewModel.PackageViewModels.Count);
 			Assert.AreEqual (1, viewModel.CheckedPackageViewModels.Count);
 			Assert.AreEqual ("A", viewModel.CheckedPackageViewModels [0].Id);
+			Assert.IsFalse (viewModel.PackageViewModels [0].SelectLatestVersion);
+			Assert.IsFalse (viewModel.PackageViewModels [1].SelectLatestVersion);
 
 			viewModel.PageSelected = ManagePackagesPage.Consolidate;
 
@@ -1200,8 +1203,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (2, viewModel.PackageViewModels.Count);
 			Assert.AreEqual ("Test", package.Id);
 			Assert.AreEqual ("0.2", package.Version.ToString ());
+			Assert.IsTrue (package.SelectLatestVersion);
 			Assert.AreEqual ("Other", viewModel.PackageViewModels [1].Id);
 			Assert.AreEqual ("0.3", viewModel.PackageViewModels [1].Version.ToString ());
+			Assert.IsTrue (viewModel.PackageViewModels [1].SelectLatestVersion);
 
 			Assert.AreEqual (3, viewModel.ProjectViewModels.Count);
 

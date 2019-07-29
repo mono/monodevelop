@@ -1033,8 +1033,7 @@ namespace MonoDevelop.PackageManagement
 				if (e.PropertyName == "Versions") {
 					PopulatePackageVersions (viewModel.SelectedPackage);
 				} else {
-					if (viewModel.IsConsolidatePageSelected) {
-					} else {
+					if (!viewModel.IsConsolidatePageSelected) {
 						packagePublishedDate.Text = viewModel.SelectedPackage.GetLastPublishedDisplayText ();
 						PopulatePackageDependencies (viewModel.SelectedPackage);
 					}

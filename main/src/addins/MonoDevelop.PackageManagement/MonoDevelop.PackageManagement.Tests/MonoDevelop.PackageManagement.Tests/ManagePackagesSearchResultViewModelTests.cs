@@ -630,5 +630,59 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("1.2-beta1", viewModel.Versions[0].ToString ());
 			Assert.AreEqual ("1.0-beta2", viewModel.Versions[1].ToString ());
 		}
+
+		[Test]
+		public async Task ReadVersions_LatestVersionNotSelectedWhenConsolidating_SelectedVersionChangedToLatestVersion ()
+		{
+			CreateViewModel ();
+			viewModel.SelectLatestVersion = true;
+			AddVersionsToPackageItemListViewModel ("2.0", "1.2.3", "0.2", "0.1");
+
+			await ReadVersions ();
+
+			Assert.AreEqual (4, viewModel.Versions.Count);
+			Assert.AreEqual ("2.0", viewModel.Versions [0].ToString ());
+			Assert.AreEqual ("1.2.3", viewModel.Versions [1].ToString ());
+			Assert.AreEqual ("0.2", viewModel.Versions [2].ToString ());
+			Assert.AreEqual ("0.1", viewModel.Versions [3].ToString ());
+			Assert.AreEqual ("2.0", viewModel.SelectedVersion.ToString ());
+		}
+
+		[Test]
+		public async Task ReadVersions_LatestVersionNotSelectedWhenNotConsolidating_SelectedVersionNotChanged ()
+		{
+			CreateViewModel ();
+			viewModel.SelectLatestVersion = false;
+			AddVersionsToPackageItemListViewModel ("2.0", "1.2.3", "0.2", "0.1");
+
+			await ReadVersions ();
+
+			Assert.AreEqual (4, viewModel.Versions.Count);
+			Assert.AreEqual ("2.0", viewModel.Versions [0].ToString ());
+			Assert.AreEqual ("1.2.3", viewModel.Versions [1].ToString ());
+			Assert.AreEqual ("0.2", viewModel.Versions [2].ToString ());
+			Assert.AreEqual ("0.1", viewModel.Versions [3].ToString ());
+			Assert.AreEqual ("1.2.3", viewModel.SelectedVersion.ToString ());
+		}
+
+		[Test]
+		public async Task UpdateFromPreviouslyCheckedViewModel_VersionSelectedWasNotLatestVersion_VersionPreviouslySelectedIsReusedAfterReadingPackages ()
+		{
+			var package = CreatePackageItemListViewModel ();
+			package.Version = new NuGetVersion ("1.2.3");
+			CreateViewModel (package);
+			var checkedViewModel = viewModel;
+			checkedViewModel.IsChecked = true;
+			package = CreatePackageItemListViewModel ();
+			package.Version = new NuGetVersion ("1.2.3");
+			CreateViewModel (package);
+			viewModel.SelectLatestVersion = true;
+			AddVersionsToPackageItemListViewModel ("2.0", "1.2.3", "0.2", "0.1");
+			viewModel.UpdateFromPreviouslyCheckedViewModel (checkedViewModel);
+			await ReadVersions ();
+
+			Assert.IsTrue (viewModel.IsChecked);
+			Assert.AreEqual ("1.2.3", viewModel.SelectedVersion.ToString ());
+		}
 	}
 }

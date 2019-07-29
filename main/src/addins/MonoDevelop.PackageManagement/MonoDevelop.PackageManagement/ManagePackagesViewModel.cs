@@ -473,7 +473,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			bool showVersion = ShowPackageVersionInsteadOfDownloadCount ();
 			return new ManagePackagesSearchResultViewModel (this, viewModel) {
-				ShowVersionInsteadOfDownloadCount = showVersion
+				ShowVersionInsteadOfDownloadCount = showVersion,
+				SelectLatestVersion = IsConsolidatePageSelected
 			};
 		}
 

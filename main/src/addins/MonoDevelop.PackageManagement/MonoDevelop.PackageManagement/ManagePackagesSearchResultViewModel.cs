@@ -217,6 +217,11 @@ namespace MonoDevelop.PackageManagement
 			return String.Empty;
 		}
 
+		/// <summary>
+		/// Consolidating a package should select the latest version.
+		/// </summary>
+		internal bool SelectLatestVersion { get; set; }
+
 		public NuGetVersion SelectedVersion { get; set; }
 		public ObservableCollection<NuGetVersion> Versions { get; private set; }
 
@@ -292,6 +297,9 @@ namespace MonoDevelop.PackageManagement
 					foreach (NuGetVersion version in packageDetailModel.AllPackageVersions.OrderByDescending (v => v.Version)) {
 						Versions.Add (version);
 					}
+					if (SelectLatestVersion && Versions.Any ()) {
+						SelectedVersion = Versions [0];
+					}
 					OnPropertyChanged (viewModel => viewModel.Versions);
 				}
 			} catch (Exception ex) {
@@ -320,6 +328,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void UpdateFromPreviouslyCheckedViewModel (ManagePackagesSearchResultViewModel packageViewModel)
 		{
+			SelectLatestVersion = false;
 			IsChecked = packageViewModel.IsChecked;
 			SelectedVersion = packageViewModel.SelectedVersion;
 			if (SelectedVersion != Version) {
