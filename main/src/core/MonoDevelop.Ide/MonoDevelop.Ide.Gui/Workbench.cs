@@ -869,9 +869,13 @@ namespace MonoDevelop.Ide.Gui
 				dp.Column = pos.Position - line.Start + 1;
 			}
 
-			var tab = ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
-			if (tab != null) {
-				dp.IsPinned = tab.IsPinned;
+			try {
+				var tab = ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
+				if (tab != null) {
+					dp.IsPinned = tab.IsPinned;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 
 			return dp;
@@ -961,9 +965,13 @@ namespace MonoDevelop.Ide.Gui
 
 					if (document != null) {
 
-						var tab = ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
-						if (tab != null) {
-							tab.IsPinned = doc.IsPinned;
+						try {
+							var tab = ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
+							if (tab != null) {
+								tab.IsPinned = doc.IsPinned;
+							}
+						} catch (Exception ex) {
+							LoggingService.LogInternalError (ex);
 						}
 
 						var t = new Tuple<Document,string> (document, fileName);
