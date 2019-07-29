@@ -49,9 +49,9 @@ namespace MonoDevelop.Components.DockNotebook
 		static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
 		static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
+		static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
 		static Xwt.Drawing.Image tabPinnedImage = Xwt.Drawing.Image.FromResource ("tab-pinned-9.png");
 		static Xwt.Drawing.Image tabUnPinnedImage = Xwt.Drawing.Image.FromResource ("tab-unpinned-9.png");
-		static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
 
 		HBox innerBox;
 
@@ -1186,8 +1186,8 @@ namespace MonoDevelop.Components.DockNotebook
 			tab.CloseButtonActiveArea = closeButtonAlloation.Inflate (2, 2);
 
 			var spinButtonAllocation = new Cairo.Rectangle (closeButtonAlloation.X - rightPadding - PinButtonMarginRight,
-									 closeButtonAlloation.Y,
-									 tabPinnedImage.Width, tabPinnedImage.Height);
+									closeButtonAlloation.Y,
+									tabPinnedImage.Width, tabPinnedImage.Height);
 
 			tab.PinButtonActiveArea = spinButtonAllocation.Inflate (2, 2);
 
