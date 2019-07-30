@@ -1400,6 +1400,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Cloning…"), 2);
+				bool skipSubmodules = false;
 				RunOperation (() => RetryUntilSuccess (monitor, credType => {
 					var options = new CloneOptions {
 						CredentialsProvider = (url, userFromUrl, types) => {
@@ -1429,8 +1430,14 @@ namespace MonoDevelop.VersionControl.Git
 						OnCheckoutProgress = options.OnCheckoutProgress,
 					};
 					monitor.Step (1);
-
-					RecursivelyCloneSubmodules (RootPath, updateOptions, monitor);
+					try {
+						if (!skipSubmodules)
+							RecursivelyCloneSubmodules (RootPath, updateOptions, monitor);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while cloning sub modules", e);
+						Directory.Delete (RootPath, true);
+						skipSubmodules = true;
+					}
 				}), true);
 
 				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
@@ -1440,6 +1447,9 @@ namespace MonoDevelop.VersionControl.Git
 
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
 				InitFileWatcher ();
+				if (skipSubmodules) {
+					MessageService.ShowError (GettextCatalog.GetString("Can't clone sub modules. Please use the command line client to init the sub modules."));
+				}
 				return Task.CompletedTask;
 			} catch (Exception e) {
 				LoggingService.LogInternalError ("Error while cloning repository " + rev + " recuse: " + recurse, e);
