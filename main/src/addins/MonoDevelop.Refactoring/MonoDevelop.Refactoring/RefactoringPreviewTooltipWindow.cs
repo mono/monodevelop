@@ -40,6 +40,7 @@ using Pango;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Gdk;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Refactoring
 {
@@ -64,7 +65,8 @@ namespace MonoDevelop.Refactoring
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
-			if (IdeServices.FontService.TryParsePangoFont (DefaultSourceEditorOptions.Instance.FontName, out fontDescription)) {
+			if (IdeServices.FontService.TryGetFont (DefaultSourceEditorOptions.Instance.FontName, out var font)) {
+				fontDescription = font.ToPangoFont ();
 				fontDescription.Size = (int)(fontDescription.Size * 0.8f);
 			} else {
 				LoggingService.LogError ("Error loading font : " + DefaultSourceEditorOptions.Instance.FontName);

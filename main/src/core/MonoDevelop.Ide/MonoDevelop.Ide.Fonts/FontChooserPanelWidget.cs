@@ -71,22 +71,6 @@ namespace MonoDevelop.Ide.Fonts
 			base.OnDestroyed ();
 		}
 
-#if MAC
-		class FontPanelDelegate : NSWindowDelegate
-		{
-			[Export ("validModesForFontPanel:")]
-			NSFontPanelMode ValidModesForFontPanel (NSFontPanel panel)
-			{
-				return NSFontPanelMode.CollectionMask | NSFontPanelMode.FaceMask | NSFontPanelMode.SizeMask;
-			}
-
-			public override void WillClose (NSNotification notification)
-			{
-				NSApplication.SharedApplication.StopModal ();
-			}
-		}
-
-#endif
 		public FontChooserPanelWidget ()
 		{
 			this.Build ();
@@ -104,51 +88,33 @@ namespace MonoDevelop.Ide.Fonts
 				var descStr = GettextCatalog.GetString ("Set the font options for {0}", desc.DisplayName);
 				setFontButton.Accessible.Description = descStr;
 				setFontButton.Clicked += delegate {
-#if MAC
-					var fontPanel = NSFontPanel.SharedFontPanel;
-					fontPanel.ParentWindow = IdeServices.DesktopService.GetParentForModalWindow ();
-					fontPanel.Delegate = new FontPanelDelegate ();
-					var fontDescription = GetFont (desc.Name);
-					if (IdeServices.FontService.TryParseNSFont (fontDescription, out var outFont)) {
-						NSFontManager.SharedFontManager.SetSelectedFont (outFont, false);
-					}
-					IdeTheme.ApplyTheme (fontPanel);
-					NSApplication.SharedApplication.RunModalForWindow (fontPanel);
 
-					var font = NSFontPanel.SharedFontPanel.PanelConvertFont (NSFont.SystemFontOfSize (0));
-					fontDescription = IdeServices.FontService.GetFontDescription (font);
-					SetFont (desc.Name, fontDescription);
-					setFontButton.Label = fontDescription;
-#else
-					var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
-						Modal = true,
-						DestroyWithParent = true,
-						TransientFor = this.Toplevel as Gtk.Window
-					};
-					MonoDevelop.Components.IdeTheme.ApplyTheme (selectionDialog);
-					try {
+					// var xwtParent = Xwt.Toolkit.CurrentEngine.WrapWindow (this.Toplevel);
+					Xwt.Toolkit.NativeEngine.Invoke (() => {
+						var selectionDialog = new Xwt.SelectFontDialog (GettextCatalog.GetString ("Select Font"));
 						string fontValue = IdeServices.FontService.FilterFontName (GetFont (desc.Name));
-						selectionDialog.SetFontName (fontValue);
-						if (MessageService.RunCustomDialog (selectionDialog) != (int)Gtk.ResponseType.Ok) {
+						selectionDialog.SelectedFont = Xwt.Drawing.Font.FromName (fontValue);
+
+//						var window = (NSWindow)Xwt.Toolkit.NativeEngine.GetNativeWidget (selectionDialog.);
+//						IdeTheme.ApplyTheme (window);
+
+						if (!selectionDialog.Run ()) {
 							return;
 						}
-						fontValue = selectionDialog.FontName;
-						if (fontValue == IdeServices.FontService.FilterFontName (IdeServices.FontService.GetFont (desc.Name).FontDescription))
-							fontValue = IdeServices.FontService.GetFont (desc.Name).FontDescription;
+						fontValue = selectionDialog.SelectedFont.ToString ();
+						if (fontValue == IdeServices.FontService.FilterFontName (IdeServices.FontService.GetFontDescriptionCodon (desc.Name).FontDescription))
+							fontValue = IdeServices.FontService.GetFontDescriptionCodon (desc.Name).FontDescription;
+						Console.WriteLine ("set font: " + fontValue);
 						SetFont (desc.Name, fontValue);
-						setFontButton.Label = selectionDialog.FontName;
-					} finally {
-						selectionDialog.Destroy ();
-						selectionDialog.Dispose ();
-					}
-#endif
+						setFontButton.Label = selectionDialog.SelectedFont.ToString ();
+					});
 				};
 				hBox.PackStart (setFontButton, true, true, 0);
 
 				var setDefaultFontButton = new Button ();
 				setDefaultFontButton.Label = GettextCatalog.GetString ("Set To Default");
 				setDefaultFontButton.Clicked += delegate {
-					SetFont (desc.Name, IdeServices.FontService.GetFont (desc.Name).FontDescription);
+					SetFont (desc.Name, IdeServices.FontService.GetFontDescriptionCodon (desc.Name).FontDescription);
 					setFontButton.Label = IdeServices.FontService.FilterFontName (GetFont (desc.Name));
 				};
 				hBox.PackStart (setDefaultFontButton, false, false, 0);

@@ -29,6 +29,7 @@ using System.IO;
 using AppKit;
 using CoreImage;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -64,10 +65,10 @@ namespace MonoDevelop.Ide.Editor
 
 		public static double GetLineHeight(string fontName)
 		{
-			if (!IdeServices.FontService.TryParseNSFont (fontName, out var nsFont))
+			if (!IdeServices.FontService.TryGetFont (fontName, out var font))
 				return -1;
 			using (var lm = new NSLayoutManager ())
-				return lm.DefaultLineHeightForFont (nsFont);
+				return lm.DefaultLineHeightForFont (font.ToNSFont ());
 		}
 	}
 }

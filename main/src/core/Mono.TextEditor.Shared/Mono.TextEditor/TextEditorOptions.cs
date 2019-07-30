@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Fonts;
 
 namespace Mono.TextEditor
 {
@@ -403,8 +404,11 @@ namespace Mono.TextEditor
 			get {
 				if (font == null) {
 					try {
-						if (!IdeServices.FontService.TryParsePangoFont (FontName, out font))
+						if (!IdeServices.FontService.TryGetFont (FontName, out var xwtFont)) {
 							font = Pango.FontDescription.FromString (DEFAULT_FONT);
+						} else {
+							font = xwtFont.ToPangoFont ();
+						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not load font: " + FontName, e);
 					}
