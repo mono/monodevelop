@@ -70,7 +70,7 @@ namespace MonoDevelop.DesignerSupport
 			frame = new InvisibleFrame ();
 
 #if MAC
-			isNative = FeatureSwitchService.IsFeatureEnabled ("NativePropertyPanel") ?? false;
+			isNative = true;
 
 			if (isNative) {
 
