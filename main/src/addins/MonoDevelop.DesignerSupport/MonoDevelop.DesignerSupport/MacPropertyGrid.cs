@@ -49,7 +49,6 @@ namespace MonoDevelop.DesignerSupport
 	class MacPropertyGrid : NSStackView, IPropertyGrid
 	{
 		MacPropertyEditorPanel propertyEditorPanel;
-
 		PropertyPadEditorProvider editorProvider;
 
 		NSScrollView scrollView;
@@ -80,17 +79,8 @@ namespace MonoDevelop.DesignerSupport
 
 			AddArrangedSubview (scrollView);
 		
-			propertyEditorPanel.Focused += PropertyEditorPanel_Focused;
-
 			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
 		}
-
-		void Widget_Focused (object o, Gtk.FocusedArgs args)
-		{
-			propertyEditorPanel.Window.MakeFirstResponder (propertyEditorPanel);
-		}
-
-		void PropertyEditorPanel_Focused (object sender, EventArgs e) => Focused?.Invoke (this, EventArgs.Empty);
 
 		public override void SetFrameSize (CGSize newSize)
 		{
@@ -111,7 +101,7 @@ namespace MonoDevelop.DesignerSupport
 			if (editorProvider == null) {
 				editorProvider = new PropertyPadEditorProvider ();
 				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
-					AutoExpandGroups = new string [] { "Build", "Misc", "NuGet", "Reference" }
+					AutoExpandAll = true
 				};
 				propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
 			}
@@ -133,9 +123,6 @@ namespace MonoDevelop.DesignerSupport
 
 		protected override void Dispose (bool disposing)
 		{
-			if (propertyEditorPanel != null) {
-				propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
-			}
 			base.Dispose (disposing);
 		}
 
