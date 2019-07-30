@@ -67,8 +67,9 @@ namespace MonoDevelop.DesignerSupport
 			Spacing = 10;
 			Distribution = NSStackViewDistribution.Fill;
 
-			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ());
-
+			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ()) {
+				ShowHeader = false
+			};
 			scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
