@@ -139,17 +139,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (dotNetCoreSdk == null)
 				return null;
 
-			string templatesDirectory = Path.Combine (
-				DotNetCoreSdk.SdkRootPath,
-				dotNetCoreSdk.OriginalString,
-				"Templates"
-			);
-
-			if (DirectoryExists (templatesDirectory)) {
-				return templatesDirectory;
-			}
-
-			return string.Empty;
+			return dotNetCoreSdk.GetTemplatesDirectory (DirectoryExists);
 		}
 
 		DotNetCoreVersion GetDotNetCoreSdkVersion (DotNetCoreVersion version)

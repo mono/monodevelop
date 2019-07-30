@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 
@@ -196,6 +197,37 @@ namespace MonoDevelop.DotNetCore
 		public static bool operator >= (DotNetCoreVersion x, DotNetCoreVersion y)
 		{
 			return Compare (x, y) >= 0;
+		}
+
+		public string GetTemplatesDirectory (Func<string, bool> directoryExists)
+		{
+			string templatesDirectory = Path.Combine (
+				DotNetCoreSdk.SdkRootPath,
+				OriginalString,
+				"Templates"
+			);
+
+			if (!directoryExists (templatesDirectory)) {
+				// .NET Core 3.0 Preview 8 and higher place templates in the root dir
+				// and versioned by runtime, not SDK
+				var baseTemplatesDir = Path.Combine (Directory.GetParent (DotNetCoreSdk.SdkRootPath).FullName, "templates");
+				if (directoryExists (baseTemplatesDir)) {
+					var availableTemplates = new Dictionary<DotNetCoreVersion, string> ();
+					foreach (var dir in Directory.EnumerateDirectories (baseTemplatesDir)) {
+						if (TryParse (Path.GetFileName (dir), out var version)) {
+							availableTemplates [version] = dir;
+						}
+					}
+
+					templatesDirectory = availableTemplates.Keys
+						.Where (v => v.Major < Major || (v.Major == Major && v.Minor <= Minor))
+						.OrderByDescending (v => v)
+						.Select (v => availableTemplates [v])
+						.FirstOrDefault ();
+				}
+			}
+
+			return directoryExists (templatesDirectory) ? templatesDirectory : string.Empty;
 		}
 
 		public static DotNetCoreVersion GetDotNetCoreVersionFromDirectory (string directory)
