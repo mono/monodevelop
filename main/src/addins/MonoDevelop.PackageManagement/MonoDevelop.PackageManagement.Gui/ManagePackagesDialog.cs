@@ -314,6 +314,7 @@ namespace MonoDevelop.PackageManagement
 		void ClearSelectedPackageInformation ()
 		{
 			this.packageInfoVBox.Visible = false;
+			this.currentPackageVersionHBox.Visible = false;
 			this.packageVersionsHBox.Visible = false;
 			projectStore?.Clear ();
 		}
@@ -418,8 +419,16 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			if (viewModel.IsInstalledPageSelected) {
+				packageVersionsLabel.WidthRequest = -1;
+				currentPackageVersionHBox.Visible = false;
 				packageVersionsHBox.Visible = false;
+			} else if (viewModel.IsUpdatesPageSelected) {
+				PopulatePackageVersions (packageViewModel);
+				ShowCurrentPackageVersion (packageViewModel);
+				packageVersionsHBox.Visible = true;
 			} else {
+				packageVersionsLabel.WidthRequest = -1;
+				currentPackageVersionHBox.Visible = false;
 				PopulatePackageVersions (packageViewModel);
 				packageVersionsHBox.Visible = true;
 			}
@@ -434,18 +443,27 @@ namespace MonoDevelop.PackageManagement
 				projectStore?.Clear ();
 			}
 
-			if (viewModel.IsBrowsePageSelected) {
-				packageVersionsLabel.Text = GettextCatalog.GetString ("Version:");
-			} else {
-				packageVersionsLabel.Text = GettextCatalog.GetString ("New Version:");
-			}
-
 			projectsListViewLabel.Visible = consolidate;
 			projectsListViewVBox.Visible = consolidate;
 			this.packageInfoVBox.Visible = true;
 
 			packageViewModel.PropertyChanged += SelectedPackageViewModelChanged;
 			viewModel.LoadPackageMetadata (packageViewModel);
+		}
+
+		void ShowCurrentPackageVersion (ManagePackagesSearchResultViewModel packageViewModel)
+		{
+			if (maxPackageVersionLabelWidth.HasValue) {
+				currentPackageVersionLabel.WidthRequest = maxPackageVersionLabelWidth.Value;
+				packageVersionsLabel.WidthRequest = maxPackageVersionLabelWidth.Value;
+			}
+
+			currentPackageVersion.Text = packageViewModel.GetCurrentPackageVersionText ();
+
+			currentPackageVersionInfoPopoverWidget.Message = packageViewModel.GetCurrentPackageVersionAdditionalText ();
+			currentPackageVersionInfoPopoverWidget.Visible = !string.IsNullOrEmpty (currentPackageVersionInfoPopoverWidget.Message);
+
+			currentPackageVersionHBox.Visible = !string.IsNullOrEmpty (currentPackageVersion.Text);
 		}
 
 		void ShowUri (LinkLabel linkLabel, Uri uri, string label)

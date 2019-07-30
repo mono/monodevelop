@@ -457,6 +457,16 @@ namespace MonoDevelop.PackageManagement
 				Versions.Remove (prereleaseVersion);
 			}
 		}
+
+		public string GetCurrentPackageVersionText ()
+		{
+			return parent.GetCurrentPackageVersionText (Id);
+		}
+
+		public string GetCurrentPackageVersionAdditionalText ()
+		{
+			return parent.GetCurrentPackageVersionAdditionalText (Id);
+		}
 	}
 }
 

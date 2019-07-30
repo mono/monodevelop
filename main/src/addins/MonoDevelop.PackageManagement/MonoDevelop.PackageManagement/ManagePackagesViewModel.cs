@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
@@ -163,6 +164,10 @@ namespace MonoDevelop.PackageManagement
 
 		public bool IsBrowsePageSelected {
 			get { return PageSelected == ManagePackagesPage.Browse; }
+		}
+
+		public bool IsUpdatesPageSelected {
+			get { return PageSelected == ManagePackagesPage.Updates; }
 		}
 
 		public IEnumerable<SourceRepositoryViewModel> PackageSources {
@@ -900,6 +905,68 @@ namespace MonoDevelop.PackageManagement
 				return projectViewModels;
 			}
 			return Enumerable.Empty<ManageProjectViewModel> ();
+		}
+
+		public string GetCurrentPackageVersionText (string packageId)
+		{
+			PackageIdentity currentPackage = null;
+			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
+				PackageIdentity foundPackage = projectInfo.Packages.FirstOrDefault (package => IsPackageIdMatch (package, packageId));
+				if (foundPackage != null) {
+					if (currentPackage == null) {
+						currentPackage = foundPackage;
+					} else {
+						return GettextCatalog.GetString ("Multiple");
+					}
+				}
+			}
+
+			if (currentPackage != null) {
+				return currentPackage.Version.ToString ();
+			}
+
+			return string.Empty;
+		}
+
+		static bool IsPackageIdMatch (PackageIdentity package, string packageId)
+		{
+			return StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId);
+		}
+
+		public string GetCurrentPackageVersionAdditionalText (string packageId)
+		{
+			if (!IsManagingSolution)
+				return string.Empty;
+
+			StringBuilder additionalText = null;
+			(PackageIdentity package, ManagePackagesProjectInfo projectInfo) previousMatch = (null, null);
+			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
+				PackageIdentity foundPackage = projectInfo.Packages.FirstOrDefault (package => IsPackageIdMatch (package, packageId));
+				if (foundPackage != null) {
+					if (previousMatch.package == null) {
+						previousMatch.package = foundPackage;
+						previousMatch.projectInfo = projectInfo;
+					} else {
+						if (additionalText == null) {
+							additionalText = new StringBuilder ();
+							AppendAdditionalText (additionalText, previousMatch.projectInfo, previousMatch.package);
+						}
+						additionalText.Append (", ");
+						AppendAdditionalText (additionalText, projectInfo, foundPackage);
+					}
+				}
+			}
+
+			if (additionalText != null) {
+				return additionalText.ToString ();
+			}
+
+			return string.Empty;
+		}
+
+		static void AppendAdditionalText (StringBuilder additionalText, ManagePackagesProjectInfo projectInfo, PackageIdentity foundPackage)
+		{
+			additionalText.AppendFormat ("{0}: {1}", projectInfo.Project.Name, foundPackage.Version);
 		}
 	}
 }

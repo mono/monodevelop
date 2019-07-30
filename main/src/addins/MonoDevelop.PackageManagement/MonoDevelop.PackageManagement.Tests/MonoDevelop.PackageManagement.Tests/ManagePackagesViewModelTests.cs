@@ -1375,5 +1375,59 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("0.3", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
 		}
+
+		[Test]
+		public async Task CurrentVersion_OneUpdate_PackageVersionInstalledInProjectReturned ()
+		{
+			CreateProject ();
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("Test", "0.1");
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			viewModel.PackageFeed.AddPackage ("Test", "0.2");
+			viewModel.PageSelected = ManagePackagesPage.Browse;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels.Single ();
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+			Assert.AreEqual ("0.1", package.GetCurrentPackageVersionText ());
+			Assert.AreEqual (string.Empty, package.GetCurrentPackageVersionAdditionalText ());
+		}
+
+		[Test]
+		public async Task CurrentVersion_DifferentPackageVersionInstalledInProjects_MultipleReturned ()
+		{
+			CreateProject ();
+			CreateProject ();
+			project.Name = "LibC";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("Test", "0.1");
+
+			var project2 = AddProjectToSolution ("LibA");
+			CreateNuGetProjectForProject (project2);
+
+			var project3 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project3);
+			nugetProject.AddPackageReference ("Test", "0.2");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("Test", "0.2");
+
+			viewModel.PageSelected = ManagePackagesPage.Browse;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			string expectedAdditionalText = "LibB: 0.2, LibC: 0.1";
+			var package = viewModel.PackageViewModels.Single ();
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+			Assert.AreEqual ("Multiple", package.GetCurrentPackageVersionText ());
+			Assert.AreEqual (expectedAdditionalText, package.GetCurrentPackageVersionAdditionalText ());
+		}
 	}
 }

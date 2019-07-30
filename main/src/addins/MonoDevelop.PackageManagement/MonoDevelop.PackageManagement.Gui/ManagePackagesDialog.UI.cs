@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using ExtendedTitleBarDialog = MonoDevelop.Components.ExtendedTitleBarDialog;
+using InformationPopoverWidget = MonoDevelop.Components.InformationPopoverWidget;
+using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt;
@@ -69,6 +71,10 @@ namespace MonoDevelop.PackageManagement
 		VBox projectsListViewVBox;
 		Label projectsListViewLabel;
 		ListView projectsListView;
+		HBox currentPackageVersionHBox;
+		Label currentPackageVersionLabel;
+		Label currentPackageVersion;
+		InformationPopoverWidget currentPackageVersionInfoPopoverWidget;
 		int packageInfoFontSize = 11;
 
 		void Build ()
@@ -364,6 +370,34 @@ namespace MonoDevelop.PackageManagement
 			packageDependenciesList.Font = packageInfoSmallFont;
 			packageDependenciesListHBox.PackStart (packageDependenciesList, true);
 
+			// Current package version.
+			currentPackageVersionHBox = new HBox ();
+			currentPackageVersionHBox.Spacing = 15;
+			currentPackageVersionHBox.Visible = false;
+			currentPackageVersionHBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
+			currentPackageVersionHBox.Margin = new WidgetSpacing (15, 0, 15, 0);
+			currentPackageVersionLabel = new Label ();
+			currentPackageVersionLabel.BoundsChanged += PackageVersionLabelBoundsChanged;
+			currentPackageVersionLabel.Font = packageInfoSmallFont;
+			currentPackageVersionLabel.Text = GettextCatalog.GetString ("Current Version:");
+			currentPackageVersionLabel.TextAlignment = Alignment.End;
+			currentPackageVersionHBox.PackStart (currentPackageVersionLabel);
+
+			var currentPackageVersionWithInfoPopoverHBox = new HBox ();
+			currentPackageVersionWithInfoPopoverHBox.Margin = new WidgetSpacing ();
+			currentPackageVersionWithInfoPopoverHBox.Spacing = 0;
+
+			currentPackageVersion = new Label ();
+			currentPackageVersion.Font = packageInfoSmallFont;
+			currentPackageVersionWithInfoPopoverHBox.PackStart (currentPackageVersion);
+
+			currentPackageVersionInfoPopoverWidget = new InformationPopoverWidget ();
+			currentPackageVersionInfoPopoverWidget.Severity = Ide.Tasks.TaskSeverity.Information;
+			currentPackageVersionInfoPopoverWidget.Margin = new WidgetSpacing (5, 0, 0, 2);
+			currentPackageVersionWithInfoPopoverHBox.PackStart (currentPackageVersionInfoPopoverWidget);
+
+			currentPackageVersionHBox.PackStart (currentPackageVersionWithInfoPopoverHBox);
+
 			// Package versions.
 			packageVersionsHBox = new HBox ();
 			packageVersionsHBox.Visible = false;
@@ -371,7 +405,8 @@ namespace MonoDevelop.PackageManagement
 			packageVersionsHBox.Margin = new WidgetSpacing (15, 0, 15, 12);
 			packageVersionsLabel = new Label ();
 			packageVersionsLabel.Font = packageInfoSmallFont;
-			packageVersionsLabel.Text = GettextCatalog.GetString ("Version:");
+			packageVersionsLabel.Text = GettextCatalog.GetString ("New Version:");
+			packageVersionsLabel.TextAlignment = Alignment.End;
 			packageVersionsHBox.PackStart (packageVersionsLabel);
 
 			packageVersionComboBox = new ComboBox ();
@@ -383,6 +418,7 @@ namespace MonoDevelop.PackageManagement
 			packageInfoAndVersionsVBox.Margin = new WidgetSpacing ();
 			packageInfoAndVersionsVBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageInfoAndVersionsVBox.PackStart (packageInfoScrollViewFrame, true, true);
+			packageInfoAndVersionsVBox.PackStart (currentPackageVersionHBox, false, false);
 			packageInfoAndVersionsVBox.PackStart (packageVersionsHBox, false, false);
 			middleHBox.PackEnd (packageInfoAndVersionsVBox);
 
@@ -415,6 +451,25 @@ namespace MonoDevelop.PackageManagement
 
 			packageSearchEntry.SetFocus ();
 			packageInfoVBox.Visible = false;
+		}
+
+		double? maxPackageVersionLabelWidth;
+
+		void PackageVersionLabelBoundsChanged (object sender, EventArgs e)
+		{
+			if (!viewModel.IsUpdatesPageSelected)
+				return;
+
+			double currentPackageVersionLabelWidth = currentPackageVersionLabel.Size.Width;
+			double packageVersionsLabelWidth = packageVersionsLabel.Size.Width;
+
+			if (currentPackageVersionLabelWidth > packageVersionsLabelWidth) {
+				packageVersionsLabel.WidthRequest = currentPackageVersionLabelWidth;
+				maxPackageVersionLabelWidth = currentPackageVersionLabelWidth;
+			} else if (packageVersionsLabelWidth > currentPackageVersionLabelWidth) {
+				currentPackageVersionLabel.WidthRequest = packageVersionsLabelWidth;
+				maxPackageVersionLabelWidth = packageVersionsLabelWidth;
+			}
 		}
 	}
 }
