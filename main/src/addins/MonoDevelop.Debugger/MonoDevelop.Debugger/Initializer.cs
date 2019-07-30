@@ -127,14 +127,14 @@ namespace MonoDevelop.Debugger
 								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
 							}
 						}
-						if (doc != null)
-							return;
 					} else {
 						// The file has previously been downloaded for a different solution.
 						// We need to map the cached location
 						frame.UpdateSourceFile (downloadLocation);
 						doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
 					}
+					if (doc != null)
+						return;
 				}
 			}
 
