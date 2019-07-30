@@ -84,9 +84,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
-    <Compile Include="..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
-    <Compile Include="..\..\..\external\vs-editor-api\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" Link="Util\UIExtensionSelector.cs" />
+    <Compile Include="$(VSEditorApiDirectory)src\Editor\Text\Util\TextUIUtil\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
+    <Compile Include="$(VSEditorApiDirectory)src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
+    <Compile Include="$(VSEditorApiDirectory)src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" Link="Util\UIExtensionSelector.cs" />
     <None Include="MonoDevelop.SourceEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

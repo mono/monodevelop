@@ -32,7 +32,7 @@
 		<Import assembly="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
 	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
-		<!-- These are coming from vs-editor-api (no Cocoa dependency) -->
+		<!-- these are coming from vs-editor-core (Cocoa implementations) -->
 		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
@@ -49,8 +49,9 @@
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Logic.Text.TaskTagger.Implementation.dll" />
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
-		<!-- these are coming from vs-editor-core (Cocoa implementations) -->
+		<!-- These are coming from vs-editor-api (no Cocoa dependency) -->
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Editor.Imaging.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Implementation.dll" />

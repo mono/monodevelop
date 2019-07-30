@@ -19,8 +19,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Language" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
-    <ProjectReference Include="..\..\..\..\external\vs-editor-api\src\Editor\Imaging\Def\Imaging.csproj" />
-    <ProjectReference Include="..\..\..\..\external\vs-editor-api\src\Editor\Text\Def\Extras\Extras.csproj" />
+    <ProjectReference Include="$(VSEditorApiDirectory)src\Editor\Imaging\Def\Imaging.csproj" />
+    <ProjectReference Include="$(VSEditorApiDirectory)src\Editor\Text\Def\Extras\Extras.csproj" />
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj" Private="False" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Find;
 using Microsoft.VisualStudio.Text.Projection;
+using Microsoft.VisualStudio.Text.Outlining;
 
 namespace MonoDevelop.TextEditor
 {
@@ -78,5 +79,8 @@ namespace MonoDevelop.TextEditor
 
 		[Import(AllowDefault = true)]
 		internal IInfoBarPresenterFactory InfoBarPresenterFactory { get; set; }
+
+		[Import]
+		internal IOutliningManagerService OutliningManagerService { get; set; }
 	}
 }

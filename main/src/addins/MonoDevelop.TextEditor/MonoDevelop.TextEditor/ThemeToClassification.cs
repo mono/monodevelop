@@ -168,6 +168,7 @@ namespace MonoDevelop.TextEditor
 			("HTML Operator", "HTML Operator"),
 			("HTML Server-Side Script", "HTML Server-Side Script"),
 			("HTML Tag Delimiter", "HTML Tag Delimiter"),
+			("taskformat", "Comment Tags"),
 		};
 
 		void UpdateEditorFormatMap (object sender, EventArgs args)
