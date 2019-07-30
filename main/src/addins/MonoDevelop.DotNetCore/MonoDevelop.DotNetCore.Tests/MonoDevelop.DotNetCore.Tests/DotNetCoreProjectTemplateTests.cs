@@ -53,6 +53,10 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			// Set environment variable to enable VB.NET support
 			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
+
+			// Set $PATH to point to the .NET Core SDK we provision, as in VSTS bots are
+			// setup with lots of old and incompatible SDK versions under $HOME/.dotnet
+			Environment.SetEnvironmentVariable ("PATH", $"/usr/local/share/dotnet:{Environment.GetEnvironmentVariable ("PATH")}");
 		}
 
 		[Test]
