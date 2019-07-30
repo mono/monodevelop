@@ -15,6 +15,11 @@
                     <results>
                       <test-suite type="TestFixture" name="SdbSteppingTests" executed="True" result="Success" success="True" time="11.5" asserts="0">
                         <results>
+                          <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.DebuggerStartup" executed="True" result="Success" success="True" time="0.05" asserts="1">
+                            <properties>
+                              <property name="Tolerance" value="0.01" />
+                            </properties>
+                          </test-case>
                           <test-case name="Mono.Debugging.PerfTests.Soft.SdbSteppingTests.SteppingTests.OneLineProperty" executed="True" result="Success" success="True" time="0.1" asserts="1">
                             <properties>
                               <property name="Tolerance" value="0.1" />
