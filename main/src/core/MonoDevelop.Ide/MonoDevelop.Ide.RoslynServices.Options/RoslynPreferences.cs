@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			public readonly ConfigurationProperty<bool> SuggestForTypesInNuGetPackages;
 			public readonly ConfigurationProperty<bool> SolutionCrawlerClosedFileDiagnostic;
 			public readonly ConfigurationProperty<bool?> TriggerOnDeletion;
+			readonly Lazy<ConfigurationProperty<bool>> triggerOnTypingLetters;
+			public ConfigurationProperty<bool> TriggerOnTypingLetters => triggerOnTypingLetters.Value;
 
 			internal PerLanguagePreferences (string language, RoslynPreferences preferences)
 			{
@@ -141,6 +143,12 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					new OptionKey (CompletionOptions.TriggerOnDeletion, language),
 					language + ".TriggerOnDeletion"
 				);
+
+				triggerOnTypingLetters = new Lazy<ConfigurationProperty<bool>> (() => preferences.Wrap<bool> (
+					new OptionKey (CompletionOptions.TriggerOnTypingLetters, language),
+					MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion,
+					language + ".TriggerOnTypingLetters"
+				));
 			}
 
 			class ClosedFileDiagnosticProperty : ConfigurationProperty<bool>

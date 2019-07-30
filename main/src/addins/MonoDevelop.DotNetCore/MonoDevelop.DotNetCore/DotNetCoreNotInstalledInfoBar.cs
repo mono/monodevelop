@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreNotInstalledDialog.cs
+// DotNetCoreNotInstalledInfoBar.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,70 +26,38 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using System;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreNotInstalledDialog : IDisposable
+	class DotNetCoreNotInstalledInfoBar
 	{
-		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
-
-		GenericMessage message;
-		AlertButton downloadButton;
 		string downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl ();
 
-		public DotNetCoreNotInstalledDialog ()
+		public string Message { get; set; }
+		public bool IsUnsupportedVersion { get; set; }
+		public bool IsNetStandard { get; set; }
+		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
+		public string CurrentDotNetCorePath { get; set; }
+
+		public void Prompt ()
 		{
-			Build ();
-		}
-
-		void Build ()
-		{
-			message = new GenericMessage {
-				Text = defaultMessage,
-				DefaultButton = 1,
-				Icon = Stock.Information
-			};
-
-			downloadButton = new AlertButton (GettextCatalog.GetString ("Download .NET Core..."));
-			message.Buttons.Add (AlertButton.Cancel);
-			message.Buttons.Add (downloadButton);
-
-			message.AlertButtonClicked += AlertButtonClicked;
-		}
-
-		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
-		{
-			if (e.Button == downloadButton)
-				IdeServices.DesktopService.ShowUrl (downloadUrl);
-		}
-
-		public void Dispose ()
-		{
-			message.AlertButtonClicked -= AlertButtonClicked;
-		}
-
-		public void Show ()
-		{
-			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
+			var items = new InfoBarItem [] {
+				new InfoBarItem (GettextCatalog.GetString ("Download .NET Core"), InfoBarItemKind.Button, DownloadButtonClicked, true)
+				};
+			
+			if (IsUnsupportedVersion || IsNetStandard || RequiredDotNetCoreVersion == null) //for .net standard we'll show generic message
 				Message = DotNetCoreSdk.GetNotSupportedVersionMessage ();
 			else {
 				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (RequiredDotNetCoreVersion.OriginalString);
 				downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
 			}
 
-			MessageService.GenericAlert (message);
+			IdeApp.Workbench.ShowInfoBar (false, new InfoBarOptions (Message) {
+				Items = items
+			});
 		}
 
-		public string Message {
-			get { return message.Text; }
-			set { message.Text = value; }
-		}
-
-		public bool IsUnsupportedVersion { get; set; }
-		public bool IsNetStandard { get; set; }
-		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
-		public string CurrentDotNetCorePath { get; set; }
+		void DownloadButtonClicked () => IdeServices.DesktopService.ShowUrl (downloadUrl);
 	}
 }

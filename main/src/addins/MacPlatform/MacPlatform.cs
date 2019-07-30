@@ -980,18 +980,19 @@ namespace MonoDevelop.MacIntegration
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
 
-			string def = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (filename,
-				MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
+			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (NSUrl.FromString (filename));
 
 			var apps = new List<DesktopApplication> ();
 
-			foreach (var app in MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (filename,
-				MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All)) {
-				if (string.IsNullOrEmpty (app) || !checkUniquePath.Add (app))
-					continue;
-				var name = NSFileManager.DefaultManager.DisplayName (app);
-				if (checkUniqueName.Add (name))
-					apps.Add (new MacDesktopApplication (app, name, def != null && def == app));
+			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (NSUrl.FromString (filename), global::CoreServices.LSRoles.All);
+			if (retrievedApps != null) {
+				foreach (var app in retrievedApps) {
+					if (string.IsNullOrEmpty (app.Path) || !checkUniquePath.Add (app.Path))
+						continue;
+					if (checkUniqueName.Add (app.LastPathComponent)) {
+						apps.Add (new MacDesktopApplication (app.Path, Path.GetFileNameWithoutExtension (app.LastPathComponent), def != null && def == app));
+					}
+				}
 			}
 
 			apps.Sort ((DesktopApplication a, DesktopApplication b) => {
@@ -1012,8 +1013,11 @@ namespace MonoDevelop.MacIntegration
 
 			public override void Launch (params string[] files)
 			{
-				foreach (var file in files)
-					NSWorkspace.SharedWorkspace.OpenFile (file, Id);
+				NSWorkspace.SharedWorkspace.OpenUrls (
+					Array.ConvertAll (files, file => NSUrl.FromString (file)),
+					NSBundle.FromPath (Id).BundleIdentifier,
+					NSWorkspaceLaunchOptions.Default,
+					NSAppleEventDescriptor.DescriptorWithBoolean (true));
 			}
 		}
 

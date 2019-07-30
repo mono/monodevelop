@@ -1,10 +1,10 @@
-﻿//
-// DotNetCoreExecutionHandler.cs
+//
+// AspNetCoreExecutionTarget.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft, Inc. (http://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.Desktop;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.AspNetCore
 {
-	class DotNetCoreExecutionHandler : IExecutionHandler
+	class AspNetCoreExecutionTarget : ExecutionTarget
 	{
-		public bool CanExecute (ExecutionCommand command)
+		internal AspNetCoreExecutionTarget (DesktopApplication desktopApplication)
 		{
-			return command is DotNetCoreExecutionCommand;
+			DesktopApplication = desktopApplication;
 		}
 
-		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
-		{
-			var dotNetCoreCommand = (DotNetCoreExecutionCommand)command;
+		public override string Name => DesktopApplication.DisplayName;
 
-			// ApplicationURL is passed to ASP.NET Core server via ASPNETCORE_URLS enviorment variable
-			var envVariables = dotNetCoreCommand.EnvironmentVariables.ToDictionary ((arg) => arg.Key, (arg) => arg.Value);
-			envVariables ["ASPNETCORE_URLS"] = dotNetCoreCommand.ApplicationURL;
+		public override string Id => DesktopApplication.Id;
 
-			var process = Runtime.ProcessService.StartConsoleProcess (
-				dotNetCoreCommand.Command,
-				dotNetCoreCommand.Arguments,
-				dotNetCoreCommand.WorkingDirectory,
-				console,
-				envVariables);
-
-			return process;
-		}
+		public DesktopApplication DesktopApplication { get; }
 	}
 }

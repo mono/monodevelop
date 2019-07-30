@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
@@ -98,6 +99,20 @@ namespace MonoDevelop.AspNetCore
 				return CheckCertificateThenExecute (monitor, context, configuration, runConfiguration);
 			}
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		{
+			var result = new List<ExecutionTarget> ();
+			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost")) {
+				if (browser.IsDefault) {
+					result.Insert (0, new AspNetCoreExecutionTarget (browser));
+				} else {
+					result.Add (new AspNetCoreExecutionTarget (browser));
+				}
+			}
+
+			return result.Count > 0 ? result : base.OnGetExecutionTargets (configuration);
 		}
 
 		async Task CheckCertificateThenExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)

@@ -905,6 +905,23 @@ namespace MonoDevelop.Debugger
 			await Runtime.RunInMainThread (delegate {
 				busyEvaluator.UpdateBusyState (args);
 				if (args.IsBusy) {
+					var session = (DebuggerSession) s;
+
+					if (sessions.TryGetValue (session, out var manager)) {
+						var metadata = new Dictionary<string, object> {
+							["DebuggerType"] = manager.Engine.Id,
+							["Debugger.AsyncOperation.Description"] = args.Description,
+							["Debugger.EvaluationOptions.AllowDisplayStringEvaluation"] = args.EvaluationContext.Options.AllowDisplayStringEvaluation,
+							["Debugger.EvaluationOptions.AllowMethodEvaluation"] = args.EvaluationContext.Options.AllowMethodEvaluation,
+							["Debugger.EvaluationOptions.AllowTargetInvoke"] = args.EvaluationContext.Options.AllowTargetInvoke,
+							["Debugger.EvaluationOptions.AllowToStringCalls"] = args.EvaluationContext.Options.AllowToStringCalls,
+							["Debugger.EvaluationOptions.ChunkRawStrings"] = args.EvaluationContext.Options.ChunkRawStrings,
+							["Debugger.EvaluationOptions.EvaluationTimeout"] = args.EvaluationContext.Options.EvaluationTimeout,
+						};
+
+						Counters.DebuggerBusy.Inc (1, null, metadata);
+					}
+
 					if (busyStatusIcon == null) {
 						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-bug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
