@@ -101,7 +101,6 @@ namespace MonoDevelop.Debugger
 					Document doc = null;
 					// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
 					if (!File.Exists (downloadLocation)) {
-
 						if (automaticSourceDownload == AutomaticSourceDownload.Always) {
 							doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
 						} else {
@@ -130,6 +129,11 @@ namespace MonoDevelop.Debugger
 						}
 						if (doc != null)
 							return;
+					} else {
+						// The file has previously been downloaded for a different solution.
+						// We need to map the cached location
+						frame.UpdateSourceFile (downloadLocation);
+						doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
 					}
 				}
 			}
