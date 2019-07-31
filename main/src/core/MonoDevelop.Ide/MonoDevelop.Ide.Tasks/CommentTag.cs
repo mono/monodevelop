@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public static event EventHandler SpecialCommentTagsChanged;
 		
-		const string defaultTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
+		const string defaultTags = "FIXME:2;TODO:1;HACK:1";
 		static List<CommentTag> specialCommentTags;
 		
 		public static List<CommentTag> SpecialCommentTags {
