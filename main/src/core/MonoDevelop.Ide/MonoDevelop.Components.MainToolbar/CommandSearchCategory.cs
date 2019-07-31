@@ -77,7 +77,8 @@ namespace MonoDevelop.Components.MainToolbar
 				try {
 					if (pattern.HasLineNumber)
 						return;
-					CommandTargetRoute route = new CommandTargetRoute (MainToolbar.LastCommandTarget);
+					var route = new CommandTargetRoute (IdeApp.CommandService.LastCommandTarget);
+
 					var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 
 					foreach (var cmdTuple in allCommands) {

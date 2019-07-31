@@ -409,14 +409,21 @@ namespace MonoDevelop.Ide.Desktop
 
 		internal virtual IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
+			// This is overridden by MacPlatform
+#if MAC
+			return null;
+#else
 			return new MainToolbar ();
+#endif
 		}
 
 		internal virtual void AttachMainToolbar (Gtk.VBox parent, IMainToolbarView toolbar)
 		{
+#if !MAC
 			var toolbarBox = new Gtk.HBox ();
 			parent.PackStart (toolbarBox, false, false, 0);
 			toolbarBox.PackStart ((MainToolbar)toolbar, true, true, 0);
+#endif
 		}
 
 		public virtual bool GetIsFullscreen (Window window)
