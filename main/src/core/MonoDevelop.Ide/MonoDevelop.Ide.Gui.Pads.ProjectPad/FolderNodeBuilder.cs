@@ -435,7 +435,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.Select ();
 		}
-		
+
+		[CommandHandler (ProjectCommands.AddEmptyClass)]
+		protected void OnAddCSharpClass ()
+		{
+			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
+			if (IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem), "EmptyClass")) {
+				CurrentNode.Expanded = true;
+			}
+		}
+
+		[CommandUpdateHandler (ProjectCommands.AddEmptyClass)]
+		protected void UpdateAddEmptyClass (CommandInfo info)
+		{
+			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
+			info.Visible = project.SupportedLanguages.Contains ("C#");
+		}
+
+
 		void OnFileInserted (ITreeNavigator nav)
 		{
 			nav.Selected = true;

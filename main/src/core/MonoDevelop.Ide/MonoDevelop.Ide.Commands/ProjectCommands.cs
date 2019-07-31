@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		AddReference,
 		AddNewFiles,
+		AddEmptyClass,
 		AddFiles,
 		NewFolder,
 		AddFilesFromFolder,
