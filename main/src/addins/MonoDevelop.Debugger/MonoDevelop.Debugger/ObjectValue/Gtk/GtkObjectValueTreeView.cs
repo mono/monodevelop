@@ -388,7 +388,6 @@ namespace MonoDevelop.Debugger
 		/// <summary>
 		/// Triggered when the view tries to collapse a node.
 		/// </summary>
-
 		public event EventHandler<ObjectValueNodeEventArgs> NodeCollapse;
 
 		/// <summary>
@@ -2334,4 +2333,3 @@ namespace MonoDevelop.Debugger
 
 	}
 }
-
