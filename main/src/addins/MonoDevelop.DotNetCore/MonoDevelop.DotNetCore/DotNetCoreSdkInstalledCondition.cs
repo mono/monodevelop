@@ -58,12 +58,34 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (DotNetCoreSdk.IsInstalled && SdkVersionSupported (conditionNode, DotNetCoreSdk.Versions))
 				return true;
+			if (DotNetCoreRuntime.IsInstalled && RuntimeVersionSupported (conditionNode, DotNetCoreRuntime.Versions))
+				return true;
 
 			// Mono's MSBuild SDKs currently includes .NET Core SDK 1.0.
 			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, MinimumSupportedVersion))
 				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
 
 			return false;
+		}
+
+		/// <summary>
+		/// Supports simple wildcards. 1.* => 1.0, 1.2, up to but not including 2.0.
+		/// Wildcards such as 1.*.3 are not supported.
+		/// </summary>
+		static bool RuntimeVersionSupported (NodeElement conditionNode, params DotNetCoreVersion [] versions)
+		{
+			string requiredRuntimeVersion = conditionNode.GetAttribute ("runtimeVersion");
+			if (string.IsNullOrEmpty (requiredRuntimeVersion))
+				return false;
+
+			requiredRuntimeVersion = requiredRuntimeVersion.Replace ("*", string.Empty);
+			DotNetCoreVersion requiredDotNetCoreVersion;
+			DotNetCoreVersion.TryParse (requiredRuntimeVersion, out requiredDotNetCoreVersion);
+
+			if (requiredDotNetCoreVersion == null)
+				return versions.Any (version => version.ToString ().StartsWith (requiredRuntimeVersion, StringComparison.OrdinalIgnoreCase));
+
+			return versions.Any (version => version.Major == requiredDotNetCoreVersion.Major && version.Minor == requiredDotNetCoreVersion.Minor);
 		}
 
 		/// <summary>
