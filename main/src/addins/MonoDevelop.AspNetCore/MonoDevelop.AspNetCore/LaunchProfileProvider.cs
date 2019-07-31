@@ -66,6 +66,7 @@ namespace MonoDevelop.AspNetCore
 			this.baseDirectory = baseDirectory;
 			this.defaultNamespace = defaultNamespace;
 			GlobalSettings = new Dictionary<string, JToken> ();
+			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 		}
 
 		public void LoadLaunchSettings ()
