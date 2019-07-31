@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 
 <ExtensionNodeSet id="MonoDevelop.Components.Commands.CommandSet">
 	<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
@@ -58,7 +58,7 @@
 			shortcut = "Control|V"
 			macShortcut = "Meta|V" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Delete"
-			_label = "_Delete"
+			_label = "_Remove"
 			_description = "Delete the selection"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultDeleteHandler"
 			icon  = "gtk-delete"
