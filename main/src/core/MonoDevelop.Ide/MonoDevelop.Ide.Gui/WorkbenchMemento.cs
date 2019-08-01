@@ -127,6 +127,9 @@ namespace MonoDevelop.Ide.Gui
 
 		[ItemProperty (DefaultValue = 0)]
 		public int NotebookId;
+
+		[ItemProperty (DefaultValue = false)]
+		public bool IsPinned;
 	}
 	
 	[DataItem ("Pad")]

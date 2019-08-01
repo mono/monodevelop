@@ -850,6 +850,7 @@ namespace MonoDevelop.Ide.Gui
 				if (!String.IsNullOrEmpty (document.FileName)) {
 					var dp = CreateDocumentPrefs (args, document);
 					dp.NotebookId = notebookId;
+					dp.IsPinned = tab.IsPinned;
 					files.Add (dp);
 				}
 			}
@@ -867,6 +868,16 @@ namespace MonoDevelop.Ide.Gui
 				dp.Line = line.LineNumber + 1;
 				dp.Column = pos.Position - line.Start + 1;
 			}
+
+			try {
+				var tab = ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
+				if (tab != null) {
+					dp.IsPinned = tab.IsPinned;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
 			return dp;
 		}
 
@@ -953,6 +964,16 @@ namespace MonoDevelop.Ide.Gui
 					var document = await documentManager.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
 
 					if (document != null) {
+
+						try {
+							var tab = ((SdiWorkspaceWindow)document.Window).DockNotebookTab;
+							if (tab != null) {
+								tab.IsPinned = doc.IsPinned;
+							}
+						} catch (Exception ex) {
+							LoggingService.LogInternalError (ex);
+						}
+
 						var t = new Tuple<Document,string> (document, fileName);
 						docViews.Add (t);
 					}
