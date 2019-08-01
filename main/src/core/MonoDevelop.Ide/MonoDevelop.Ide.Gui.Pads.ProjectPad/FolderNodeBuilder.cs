@@ -440,8 +440,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		protected void OnAddCSharpClass ()
 		{
 			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
-			if (IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem), "EmptyClass")) {
-				CurrentNode.Expanded = true;
+			if (project != null) {
+				if (IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem), "EmptyClass")) {
+					CurrentNode.Expanded = true;
+				}
 			}
 		}
 
@@ -449,7 +451,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		protected void UpdateAddEmptyClass (CommandInfo info)
 		{
 			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
-			info.Visible = project.SupportedLanguages.Contains ("C#");
+			if (project != null) {
+				info.Visible = project.SupportedLanguages.Contains ("C#");
+			}
 		}
 
 
