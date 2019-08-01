@@ -917,31 +917,36 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
-			Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
-				// At least one of them failed.
-				if (d.IsFaulted) {
-					LoggingService.LogError ("Failed to load assemblies", d.Exception);
+			try {
+				Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
+					// At least one of them failed.
+					if (d.IsFaulted) {
+						LoggingService.LogError ("Failed to load assemblies", d.Exception);
 
-					// It's possible the assembly in which the type we're looking for exists
-					// so try probing for it regardless.
-				}
-
-				suspendNavigation = false;
-				ITreeNavigator nav = SearchMember (url, expandNode);
-				if (definitions.Count == 0) // we've been disposed
-					return;
-				if (nav != null)
-					return;
-				try {
-					if (currentAssembly != null) {
-						OpenFromAssembly (url, currentAssembly);
-					} else {
-						OpenFromAssemblyNames (url);
+						// It's possible the assembly in which the type we're looking for exists
+						// so try probing for it regardless.
 					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e);
-				}
-			}, Runtime.MainTaskScheduler).Ignore ();
+
+					suspendNavigation = false;
+					ITreeNavigator nav = SearchMember (url, expandNode);
+					if (definitions.Count == 0) // we've been disposed
+						return;
+					if (nav != null)
+						return;
+					try {
+						if (currentAssembly != null) {
+							OpenFromAssembly (url, currentAssembly);
+						} else {
+							OpenFromAssemblyNames (url);
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e);
+					}
+				}, Runtime.MainTaskScheduler).Ignore ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while opening assembly :" + url);
+				MessageService.ShowError (GettextCatalog.GetString ("Error while opening assembly {0}.", url), e);
+			}
 		}
 
 		void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
