@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTabIndex < 0 || DockNotebook.ActiveNotebook.CurrentTabIndex >= DockNotebook.ActiveNotebook.TabCount)  {
+				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTab == null)  {
 					return null;
 				}
 				return (IWorkbenchWindow) DockNotebook.ActiveNotebook.CurrentTab.Content;
@@ -366,7 +366,8 @@ namespace MonoDevelop.Ide.Gui
 			var mimeimage = controller.DocumentIcon?.WithSize (Gtk.IconSize.Menu);
 
 			var addToControl = (DockNotebook) notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
-			var tab = addToControl.AddTab ();
+			var previewRole = controller.ContainsRole (DocumentControllerRole.Preview);
+			var tab = addToControl.AddTab (isPreview: previewRole);
 
 			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, controller, addToControl, tab);
 			sdiWorkspaceWindow.ViewCommandHandler = viewCommandHandler;
@@ -388,7 +389,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var window = (SdiWorkspaceWindow)view;
 			viewContentCollection.Remove (window);
-			RemoveTab (window.TabControl, window.DockNotebookTab.Index, animate);
+			RemoveTab (window.TabControl, window.DockNotebookTab, animate);
 			if (window.DocumentController == subscribedController)
 				UnsubscribeControllerEvents ();
 			window.Close ();
@@ -1034,14 +1035,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal void ShowPopup (DockNotebook notebook, int tabIndex, Gdk.EventButton evt)
+		internal void ShowPopup (DockNotebook notebook, DockNotebookTab tab, Gdk.EventButton evt)
 		{
-			notebook.CurrentTabIndex = tabIndex;
+			notebook.CurrentTab = tab;
 			var entrySet = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/Ide/ContextMenu/DocumentTab");
 			IdeApp.CommandService.ShowContextMenu (notebook, evt, entrySet, notebook.CurrentTab.Content);
 		}
 		
-		internal void OnTabsReordered (DockNotebookTab widget, int oldPlacement, int newPlacement)
+		internal void OnTabsReordered (DockNotebookTab oldPlacement, DockNotebookTab newPlacement)
 		{
 			WindowReordered?.Invoke (this, new WindowReorderedEventArgs { OldPosition = oldPlacement, NewPosition = newPlacement });
 		}
@@ -1243,7 +1244,17 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (number >= DockNotebook.ActiveNotebook.TabCount || number < 0)
 				return;
-			var window = DockNotebook.ActiveNotebook.Tabs [number].Content as IWorkbenchWindow;
+
+			System.Collections.ObjectModel.ReadOnlyCollection<DockNotebookTab> tabs = null;
+
+			if (number < DockNotebook.ActiveNotebook.NormalTabCount) {
+				tabs = DockNotebook.ActiveNotebook.NormalTabs;
+			} else {
+				number = number - DockNotebook.ActiveNotebook.NormalTabCount;
+				tabs = DockNotebook.ActiveNotebook.PreviewTabs;
+			}
+
+			var window = tabs [number].Content as IWorkbenchWindow;
 			if (window != null)
 				window.SelectWindow ();
 		}
@@ -1286,14 +1297,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)
+		internal void RemoveTab (DockNotebook tabControl, DockNotebookTab tab, bool animate)
 		{
 			try {
 				// Weird switch page events are fired when a tab is removed.
 				// This flag avoids unneeded events.
 				LockActiveWindowChangeEvent ();
 				IWorkbenchWindow w = ActiveWorkbenchWindow;
-				tabControl.RemoveTab (pageNum, animate);
+				tabControl.RemoveTab (tab, animate);
 			} finally {
 				UnlockActiveWindowChangeEvent ();
 			}

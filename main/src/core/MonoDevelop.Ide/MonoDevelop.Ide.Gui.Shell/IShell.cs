@@ -50,8 +50,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 	internal class WindowReorderedEventArgs: EventArgs
 	{
-		public int OldPosition { get; set; }
-		public int NewPosition { get; set; }
+		public DockNotebookTab OldPosition { get; set; }
+		public DockNotebookTab NewPosition { get; set; }
 	}
 
 	internal class NotebookEventArgs : EventArgs

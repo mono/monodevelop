@@ -360,7 +360,7 @@ namespace MonoDevelop.Ide.Commands
 			var container = DockNotebook.ActiveNotebook.Container;
 			var tab = DockNotebook.ActiveNotebook.CurrentTab;
 			var window = (SdiWorkspaceWindow)tab.Content;
-			DockNotebook.ActiveNotebook.RemoveTab (tab.Index, false);
+			DockNotebook.ActiveNotebook.RemoveTab (tab, false);
 			container.InsertRight (window);
 			window.SelectWindow ();
 			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
