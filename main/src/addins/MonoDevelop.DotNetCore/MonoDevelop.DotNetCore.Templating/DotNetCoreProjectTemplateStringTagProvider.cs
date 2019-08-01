@@ -140,7 +140,33 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (dotNetCoreSdk == null)
 				return null;
 
-			return dotNetCoreSdk.GetTemplatesDirectory (DirectoryExists, EnumerateDirectories);
+			string templatesDirectory = Path.Combine (
+					DotNetCoreSdk.SdkRootPath,
+					dotNetCoreSdk.OriginalString,
+					"Templates"
+				);
+
+			if (!DirectoryExists (templatesDirectory)) {
+				// .NET Core 3.0 Preview 8 and higher place templates in the root dir
+				// and versioned by runtime, not SDK
+				var baseTemplatesDir = Path.Combine (Directory.GetParent (DotNetCoreSdk.SdkRootPath).FullName, "templates");
+				if (DirectoryExists (baseTemplatesDir)) {
+					var availableTemplates = new Dictionary<DotNetCoreVersion, string> ();
+					foreach (var dir in EnumerateDirectories (baseTemplatesDir)) {
+						if (DotNetCoreVersion.TryParse (Path.GetFileName (dir), out var version)) {
+							availableTemplates [version] = dir;
+						}
+					}
+
+					templatesDirectory = availableTemplates.Keys
+						.Where (v => v.Major < dotNetCoreSdk.Major || (v.Major == dotNetCoreSdk.Major && v.Minor <= dotNetCoreSdk.Minor))
+						.OrderByDescending (v => v)
+						.Select (v => availableTemplates [v])
+						.FirstOrDefault ();
+				}
+			}
+
+			return DirectoryExists (templatesDirectory) ? templatesDirectory : string.Empty;
 		}
 
 		DotNetCoreVersion GetDotNetCoreSdkVersion (DotNetCoreVersion version)
