@@ -400,7 +400,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
 		<!-- NOTE: we explicitly do no call this "RazorGenerator" to avoid conflicts with http://razorgenerator.codeplex.com/ -->
-		<Tool name="RazorTemplatePreprocessor" type="MonoDevelop.AspNet.Razor.Generator.RazorTemplatePreprocessor"/>
+		<Tool name="RazorTemplatePreprocessor" type="MonoDevelop.AspNet.Razor.Generator.RazorTemplatePreprocessor" extensions=".cshtml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">

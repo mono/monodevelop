@@ -38,56 +38,89 @@ namespace MonoDevelop.DesignerSupport
 		{
 			public override ICollection GetStandardStrings (ITypeDescriptorContext context)
 			{
+				var file = (context?.Instance as ProjectFileDescriptor)?.file;
+
+				// determine which registered tools are valid for this file
+				var registeredTools = AddinManager.GetExtensionNodes<CustomToolExtensionNode> (
+					"/MonoDevelop/Ide/CustomTools"
+				);
+
+				// this shouldn't ever happen, but handle it just in case
+				if (file == null) {
+					var arr = registeredTools.Select (n => n.Name).Distinct ().ToArray ();
+					Array.Sort (arr, StringComparer.Ordinal);
+					return arr;
+				}
+
+				var extension = file.FilePath.Extension;
 				var dedup = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 				var values = new List<string> ();
-
-				var file = (context?.Instance as ProjectFileDescriptor)?.file;
+				var toolsMap = registeredTools.ToDictionary (n => n.Name, StringComparer.OrdinalIgnoreCase);
 
 				//add sections with values that other files in the project have
 				//first, a section with values that files with this file's extension have
 				//then,  a section with  values that other files have
 				if (file?.Project != null) {
-					var extension = file.FilePath.Extension;
-					var defer = new HashSet<string> ();
+					var otherExtTools = new HashSet<string> ();
+
+					// first, add all the tools that other files with this extension have
+					// as these are the most likely to be the the ones that the user wants
 					foreach (var f in file.Project.Files) {
 						if (!string.IsNullOrEmpty (f.Generator)) {
 							if (f.FilePath.HasExtension (extension)) {
 								if (dedup.Add (f.Generator)) {
 									values.Add (f.Generator);
+									toolsMap.Remove (f.Generator);
 								}
 							} else {
-								defer.Add (f.Generator);
+								otherExtTools.Add (f.Generator);
 							}
 						}
 					}
-					if (defer.Count > 0) {
-						bool addSep = values.Count > 0;
-						foreach (var v in defer) {
-							if (dedup.Add (v)) {
-								if (addSep) {
-									values.Add ("--");
-									addSep = false;
-								}
-								values.Add (v);
+
+					// next, add all the tools that other files with this extension have, as there may be custom
+					// tools used in the project that we're not aware of.
+					if (otherExtTools.Count > 0) {
+						foreach (var toolName in otherExtTools) {
+							// however, skip them if they match one of the registered tools and are not marked
+							// as compatible with this file's extension.
+							if (toolsMap.TryGetValue (toolName, out var t) && !IsCompatible (t)) {
+								continue;
+							}
+							if (dedup.Add (toolName)) {
+								values.Add (toolName);
+								toolsMap.Remove (toolName);
 							}
 						}
+					}
+					values.Sort (StringComparer.OrdinalIgnoreCase);
+				}
+
+				//add a section with any remaining registered tools that can handle the file
+				if (toolsMap.Count > 0) {
+					var tools = registeredTools
+						.Where (t => dedup.Add (t.Name) && IsCompatible (t))
+						.Select (t => t.Name)
+						.ToList ();
+
+					if (tools.Count > 0) {
+						tools.Sort (StringComparer.OrdinalIgnoreCase);
+						values.Add ("--");
+						values.AddRange (tools);
 					}
 				}
 
-				//add a section with values that extensions can handle
-				var nodes = AddinManager.GetExtensionNodes<CustomToolExtensionNode> ("/MonoDevelop/Ide/CustomTools");
-				if (nodes.Count > 0) {
-					bool addSep = values.Count > 0;
-					foreach (var n in nodes) {
-						if (dedup.Add (n.Name)) {
-							if (addSep) {
-								values.Add ("--");
-								addSep = false;
-							}
-							values.Add (n.Name);
+				bool IsCompatible (CustomToolExtensionNode node)
+				{
+					if (node.Extensions == null || node.Extensions.Length == 0) {
+						return true;
+					}
+					foreach (var ext in node.Extensions) {
+						if (string.Equals (extension, ext, StringComparison.OrdinalIgnoreCase)) {
+							return true;
 						}
 					}
-
+					return false;
 				}
 
 				return values;

@@ -403,8 +403,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
-		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
-		<Tool name="PublicResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.PublicResXFileCodeGenerator" />
+		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" extensions=".resx" />
+		<Tool name="PublicResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.PublicResXFileCodeGenerator" extensions=".resx" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
