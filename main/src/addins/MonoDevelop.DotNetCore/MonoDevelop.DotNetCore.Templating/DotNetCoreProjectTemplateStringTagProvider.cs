@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -139,7 +140,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (dotNetCoreSdk == null)
 				return null;
 
-			return dotNetCoreSdk.GetTemplatesDirectory (DirectoryExists);
+			return dotNetCoreSdk.GetTemplatesDirectory (DirectoryExists, EnumerateDirectories);
 		}
 
 		DotNetCoreVersion GetDotNetCoreSdkVersion (DotNetCoreVersion version)
@@ -162,5 +163,10 @@ namespace MonoDevelop.DotNetCore.Templating
 		/// Used by unit tests.
 		/// </summary>
 		internal Func<string, IEnumerable<string>> EnumerateFiles = Directory.EnumerateFiles;
+
+		/// <summary>
+		/// Used by unit tests.
+		/// </summary>
+		internal Func<string, IEnumerable<string>> EnumerateDirectories = Directory.EnumerateDirectories;
 	}
 }

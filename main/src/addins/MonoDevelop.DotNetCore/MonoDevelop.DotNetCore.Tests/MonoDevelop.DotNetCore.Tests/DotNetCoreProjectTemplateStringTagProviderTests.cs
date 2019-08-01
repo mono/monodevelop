@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MonoDevelop.DotNetCore.Templating;
 using NUnit.Framework;
 
@@ -52,6 +53,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			provider = new DotNetCoreProjectTemplateStringTagProvider ();
 			provider.DirectoryExists = DirectoryExists;
 			provider.EnumerateFiles = EnumerateFiles;
+			provider.EnumerateDirectories = EnumerateDirectories;
 		}
 
 		bool DirectoryExists (string directory)
@@ -62,6 +64,11 @@ namespace MonoDevelop.DotNetCore.Tests
 		IEnumerable<string> EnumerateFiles (string directory)
 		{
 			return templateFiles;
+		}
+
+		IEnumerable<string> EnumerateDirectories (string directory)
+		{
+			return directories.Where (dir => Directory.GetParent (dir).FullName == directory);
 		}
 
 		static string ToNativePath (string filePath)
@@ -75,6 +82,34 @@ namespace MonoDevelop.DotNetCore.Tests
 			}
 
 			return filePath.Replace ('\\', Path.DirectorySeparatorChar);
+		}
+
+		protected void DotNetCoreSdksInstalled (string sdkVersion, string templatesVersion, bool globalTemplates)
+		{
+			DotNetCoreSdksInstalled (sdkVersion);
+			if (globalTemplates) {
+				AddGlobalProjectTemplateFile (
+					templatesVersion,
+					$"microsoft.dotnet.common.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.common.projecttemplates.{templatesVersion}.nupkg",
+					$"microsoft.dotnet.test.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.test.projecttemplates.{templatesVersion}.nupkg",
+					$"microsoft.dotnet.web.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.web.projecttemplates.{templatesVersion}.nupkg",
+					$"microsoft.dotnet.web.spa.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.web.spa.projecttemplates.{templatesVersion}.nupkg");
+			} else {
+				AddProjectTemplateFile (
+					sdkVersion,
+					$"microsoft.dotnet.common.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.common.projecttemplates.{templatesVersion}.nupkg",
+					$"microsoft.dotnet.test.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.test.projecttemplates.{templatesVersion}.nupkg",
+					$"microsoft.dotnet.web.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.web.projecttemplates.{templatesVersion}.nupkg",
+					$"microsoft.dotnet.web.spa.projecttemplates.{templatesVersion}.aaa",
+					$"microsoft.dotnet.web.spa.projecttemplates.{templatesVersion}.nupkg");
+			}
 		}
 
 		string GetTagValue (string tag)
@@ -100,6 +135,35 @@ namespace MonoDevelop.DotNetCore.Tests
 		string GetDotNetCoreSdkSpaWebProjectTemplatesTagValue (string version)
 		{
 			return GetTagValue ($"DotNetCoreSdk.{version}.Templates.Web.Spa.ProjectTemplates.nupkg");
+		}
+
+		string GetExpectedTemplateTagValue (string sdkVersion, string templatesVersion, string filePrefix, bool globalTemplates)
+		{
+			if (globalTemplates) {
+				return Path.Combine (
+					Directory.GetParent (sdkRootPath).FullName,
+					"templates",
+					templatesVersion,
+					$"{filePrefix}.{templatesVersion}.nupkg");
+			} else {
+				return Path.Combine (
+					sdkRootPath,
+					sdkVersion,
+					"Templates",
+					$"{filePrefix}.{templatesVersion}.nupkg");
+			}
+		}
+
+		void AddGlobalProjectTemplateFile (string sdkVersion, params string [] fileNames)
+		{
+			string directory = Path.Combine (Directory.GetParent (sdkRootPath).FullName, "templates");
+			directories.Add (directory);
+			directory = Path.Combine (directory, sdkVersion);
+			directories.Add (directory);
+			foreach (string fileName in fileNames) {
+				string fullPath = Path.Combine (directory, fileName);
+				templateFiles.Add (fullPath);
+			}
 		}
 
 		void AddProjectTemplateFile (string sdkVersion, params string[] fileNames)
@@ -129,6 +193,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.AreEqual (string.Empty, GetDotNetCoreSdkCommonProjectTemplatesTagValue ("2.1"));
 			Assert.AreEqual (string.Empty, GetDotNetCoreSdkCommonProjectTemplatesTagValue ("2.2"));
+			Assert.AreEqual (string.Empty, GetDotNetCoreSdkCommonProjectTemplatesTagValue ("3.0"));
 		}
 
 		[TestCase ("2.1", "2.1.300-preview1-008174")]
@@ -142,182 +207,56 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (string.Empty, result);
 		}
 
-		[Test]
-		public void NetCore22Installed_CommonProjectTemplates ()
+		[TestCase ("3.0.100-preview8-013592", "3.0.0-preview8-013592", true)]
+		[TestCase ("3.0.100-preview7-012821", "3.0.2.0.0-preview7.19365.3", false)]
+		[TestCase ("2.2.100-preview2-009404", "2.2.1.0.2-beta4-20180904-2003790", false)]
+		[TestCase ("2.1.701", "2.1.1.0.2-beta3", false)]
+		[TestCase ("2.1.300-preview1-008174", "2.1.1.0.1-beta3-20180215-1392068", false)]
+		public void NetCoreInstalled_CommonProjectTemplates (string sdkVersion, string templatesVersion, bool globalTemplates)
 		{
-			DotNetCoreSdksInstalled ("2.2.100-preview2-009404");
-			AddProjectTemplateFile (
-				"2.2.100-preview2-009404",
-				"microsoft.dotnet.common.projecttemplates.2.2.1.0.2-beta4-20180904-2003790.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.2.1.0.2-beta4-20180821-1966911.nupkg",
-				"microsoft.dotnet.web.projecttemplates.2.2.2.2.0-preview2-35157.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.2.100-preview2-009404",
-				"Templates",
-				"microsoft.dotnet.common.projecttemplates.2.2.1.0.2-beta4-20180904-2003790.nupkg");
-
-			string result = GetDotNetCoreSdkCommonProjectTemplatesTagValue ("2.2");
-
-			Assert.AreEqual (expectedResult, result);
+			DotNetCoreSdksInstalled (sdkVersion, templatesVersion, globalTemplates);
+			Assert.AreEqual (
+				GetExpectedTemplateTagValue (sdkVersion, templatesVersion, "microsoft.dotnet.common.projecttemplates", globalTemplates),
+				GetDotNetCoreSdkCommonProjectTemplatesTagValue (sdkVersion.Substring (0, 3)));
 		}
 
-		[Test]
-		public void NetCore22Installed_TestProjectTemplates ()
+		[TestCase ("3.0.100-preview8-013592", "3.0.0-preview8-013592", true)]
+		[TestCase ("3.0.100-preview7-012821", "3.0.1.0.2-beta4.19155.2", false)]
+		[TestCase ("2.2.100-preview2-009404", "2.2.1.0.2-beta4-20180904-2003790", false)]
+		[TestCase ("2.1.701", "2.1.1.0.2-beta4-20181009-2100240", false)]
+		[TestCase ("2.1.300-preview1-008174", "2.1.1.0.1-beta3-20180215-1392068", false)]
+		public void NetCoreInstalled_TestProjectTemplates (string sdkVersion, string templatesVersion, bool globalTemplates)
 		{
-			DotNetCoreSdksInstalled ("2.2.100-preview2-009404");
-			AddProjectTemplateFile (
-				"2.2.100-preview2-009404",
-				"microsoft.dotnet.common.projecttemplates.2.2.1.0.2-beta4-20180904-2003790.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.2.1.0.2-beta4-20180821-1966911.nupkg",
-				"microsoft.dotnet.web.projecttemplates.2.2.2.2.0-preview2-35157.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.2.100-preview2-009404",
-				"Templates",
-				"microsoft.dotnet.test.projecttemplates.2.2.1.0.2-beta4-20180821-1966911.nupkg");
-
-			string result = GetDotNetCoreSdkTestProjectTemplatesTagValue ("2.2");
-
-			Assert.AreEqual (expectedResult, result);
+			DotNetCoreSdksInstalled (sdkVersion, templatesVersion, globalTemplates);
+			Assert.AreEqual (
+				GetExpectedTemplateTagValue (sdkVersion, templatesVersion, "microsoft.dotnet.test.projecttemplates", globalTemplates),
+				GetDotNetCoreSdkTestProjectTemplatesTagValue (sdkVersion.Substring (0, 3)));
 		}
 
-		[Test]
-		public void NetCore22Installed_WebProjectTemplates ()
+		[TestCase ("3.0.100-preview8-013592", "3.0.0-preview8-013592", true)]
+		[TestCase ("3.0.100-preview7-012821", "3.0.0-preview7.19365.7", false)]
+		[TestCase ("2.2.100-preview2-009404", "2.2.2.2.0-preview2-35157", false)]
+		[TestCase ("2.1.701", "2.1.2.1.12", false)]
+		[TestCase ("2.1.300-preview1-008174", "2.1.2.1.0-preview1-final", false)]
+		public void NetCoreInstalled_WebProjectTemplates (string sdkVersion, string templatesVersion, bool globalTemplates)
 		{
-			DotNetCoreSdksInstalled ("2.2.100-preview2-009404");
-			AddProjectTemplateFile (
-				"2.2.100-preview2-009404",
-				"microsoft.dotnet.common.projecttemplates.2.2.1.0.2-beta4-20180904-2003790.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.2.1.0.2-beta4-20180821-1966911.nupkg",
-				"microsoft.dotnet.web.projecttemplates.2.2.2.2.0-preview2-35157.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.2.100-preview2-009404",
-				"Templates",
-				"microsoft.dotnet.web.projecttemplates.2.2.2.2.0-preview2-35157.nupkg");
-
-			string result = GetDotNetCoreSdkWebProjectTemplatesTagValue ("2.2");
-
-			Assert.AreEqual (expectedResult, result);
+			DotNetCoreSdksInstalled (sdkVersion, templatesVersion, globalTemplates);
+			Assert.AreEqual (
+				GetExpectedTemplateTagValue (sdkVersion, templatesVersion, "microsoft.dotnet.web.projecttemplates", globalTemplates),
+				GetDotNetCoreSdkWebProjectTemplatesTagValue (sdkVersion.Substring (0, 3)));
 		}
 
-		[Test]
-		public void NetCore22Installed_MatchingFileWithDifferentExtension_CommonProjectTemplates ()
+		[TestCase ("3.0.100-preview8-013592", "3.0.0-preview8-013592", true)]
+		[TestCase ("3.0.100-preview7-012821", "3.0.0-preview7.19365.7", false)]
+		[TestCase ("2.2.100-preview2-009404", "2.2.2.2.0-preview2-35157", false)]
+		[TestCase ("2.1.701", "2.1.12", false)]
+		[TestCase ("2.1.300-preview1-008174", "2.1.2.1.0-preview1-final", false)]
+		public void NetCoreInstalled_SpaWebProjectTemplates (string sdkVersion, string templatesVersion, bool globalTemplates)
 		{
-			DotNetCoreSdksInstalled ("2.2.100-preview2-009404");
-			AddProjectTemplateFile (
-				"2.2.100-preview2-009404",
-				"microsoft.dotnet.common.projecttemplates.2.0.1.0.0-beta3-20171110-312.aaa",
-				"microsoft.dotnet.common.projecttemplates.2.2.1.0.2-beta4-20180904-2003790.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.2.100-preview2-009404",
-				"Templates",
-				"microsoft.dotnet.common.projecttemplates.2.2.1.0.2-beta4-20180904-2003790.nupkg");
-
-			string result = GetDotNetCoreSdkCommonProjectTemplatesTagValue ("2.2");
-
-			Assert.AreEqual (expectedResult, result);
-		}
-
-		[Test]
-		public void NetCore21Installed_CommonProjectTemplates ()
-		{
-			DotNetCoreSdksInstalled ("2.1.300-preview1-008174");
-			AddProjectTemplateFile (
-				"2.1.300-preview1-008174",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.web.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.1.300-preview1-008174",
-				"Templates",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg");
-
-			string result = GetDotNetCoreSdkCommonProjectTemplatesTagValue ("2.1");
-
-			Assert.AreEqual (expectedResult, result);
-		}
-
-		[Test]
-		public void NetCore21Installed_TestProjectTemplates ()
-		{
-			DotNetCoreSdksInstalled ("2.1.300-preview1-008174");
-			AddProjectTemplateFile (
-				"2.1.300-preview1-008174",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.web.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.1.300-preview1-008174",
-				"Templates",
-				"microsoft.dotnet.test.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg");
-
-			string result = GetDotNetCoreSdkTestProjectTemplatesTagValue ("2.1");
-
-			Assert.AreEqual (expectedResult, result);
-		}
-
-		[Test]
-		public void NetCore21Installed_WebProjectTemplates ()
-		{
-			DotNetCoreSdksInstalled ("2.1.300-preview1-008174");
-			AddProjectTemplateFile (
-				"2.1.300-preview1-008174",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.web.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.1.300-preview1-008174",
-				"Templates",
-				"microsoft.dotnet.web.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
-
-			string result = GetDotNetCoreSdkWebProjectTemplatesTagValue ("2.1");
-
-			Assert.AreEqual (expectedResult, result);
-		}
-
-		[Test]
-		public void NetCore21Installed_SpaWebProjectTemplates ()
-		{
-			DotNetCoreSdksInstalled ("2.1.300-preview1-008174");
-			AddProjectTemplateFile (
-				"2.1.300-preview1-008174",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.test.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg",
-				"microsoft.dotnet.web.spa.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.1.300-preview1-008174",
-				"Templates",
-				"microsoft.dotnet.web.spa.projecttemplates.2.1.2.1.0-preview1-final.nupkg");
-
-			string result = GetDotNetCoreSdkSpaWebProjectTemplatesTagValue ("2.1");
-
-			Assert.AreEqual (expectedResult, result);
-		}
-
-		[Test]
-		public void NetCore21Installed_MatchingFileWithDifferentExtension_CommonProjectTemplates ()
-		{
-			DotNetCoreSdksInstalled ("2.1.300-preview1-008174");
-			AddProjectTemplateFile (
-				"2.1.300-preview1-008174",
-				"microsoft.dotnet.common.projecttemplates.2.0.1.0.0-beta3-20171110-312.aaa",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg");
-			string expectedResult = Path.Combine (
-				sdkRootPath,
-				"2.1.300-preview1-008174",
-				"Templates",
-				"microsoft.dotnet.common.projecttemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg");
-
-			string result = GetDotNetCoreSdkCommonProjectTemplatesTagValue ("2.1");
-
-			Assert.AreEqual (expectedResult, result);
+			DotNetCoreSdksInstalled (sdkVersion, templatesVersion, globalTemplates);
+			Assert.AreEqual (
+				GetExpectedTemplateTagValue (sdkVersion, templatesVersion, "microsoft.dotnet.web.spa.projecttemplates", globalTemplates),
+				GetDotNetCoreSdkSpaWebProjectTemplatesTagValue (sdkVersion.Substring (0, 3)));
 		}
 
 		[TestCase ("DotNetCoreSdk.2.1.Templates.Common.ProjectTemplates.txt")]

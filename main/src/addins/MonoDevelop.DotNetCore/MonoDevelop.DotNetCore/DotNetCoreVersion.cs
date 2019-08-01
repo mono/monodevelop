@@ -199,7 +199,7 @@ namespace MonoDevelop.DotNetCore
 			return Compare (x, y) >= 0;
 		}
 
-		public string GetTemplatesDirectory (Func<string, bool> directoryExists)
+		public string GetTemplatesDirectory (Func<string, bool> directoryExists, Func<string, IEnumerable<string>> enumerateDirectories)
 		{
 			string templatesDirectory = Path.Combine (
 				DotNetCoreSdk.SdkRootPath,
@@ -213,7 +213,7 @@ namespace MonoDevelop.DotNetCore
 				var baseTemplatesDir = Path.Combine (Directory.GetParent (DotNetCoreSdk.SdkRootPath).FullName, "templates");
 				if (directoryExists (baseTemplatesDir)) {
 					var availableTemplates = new Dictionary<DotNetCoreVersion, string> ();
-					foreach (var dir in Directory.EnumerateDirectories (baseTemplatesDir)) {
+					foreach (var dir in enumerateDirectories (baseTemplatesDir)) {
 						if (TryParse (Path.GetFileName (dir), out var version)) {
 							availableTemplates [version] = dir;
 						}
