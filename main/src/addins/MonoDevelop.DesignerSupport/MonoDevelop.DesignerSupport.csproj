@@ -66,6 +66,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TextToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolbox.cs" />
