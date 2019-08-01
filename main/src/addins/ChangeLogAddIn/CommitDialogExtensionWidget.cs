@@ -158,7 +158,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					if (!cset.ContainsFile (ce.File)) {
 						Task.Run (async () => {
 							if (!(await cset.Repository.GetVersionInfoAsync (ce.File)).IsVersioned)
-								cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitor ());
+								await cset.Repository.AddAsync (ce.File, false, new MonoDevelop.Core.ProgressMonitor ());
 							await cset.AddFileAsync (ce.File);
 						}).Wait ();
 					}

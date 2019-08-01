@@ -1269,7 +1269,7 @@ namespace MonoDevelop.VersionControl.Git
 			return res;
 		}
 
-		protected override Task OnCommitAsync (ChangeSet changeSet, ProgressMonitor monitor)
+		protected override async Task OnCommitAsync (ChangeSet changeSet, ProgressMonitor monitor)
 		{
 			string message = changeSet.GlobalComment;
 			if (string.IsNullOrEmpty (message))
@@ -1277,10 +1277,10 @@ namespace MonoDevelop.VersionControl.Git
 
 			Signature sig = GetSignature ();
 			if (sig == null)
-				return Task.CompletedTask;
+				return;
 
 			var repo = (GitRepository)changeSet.Repository;
-			var addedFiles = GetAddedLocalPathItems (changeSet);
+			var addedFiles = await GetAddedLocalPathItems (changeSet);
 
 			RunBlockingOperation (() => {
 				try {
@@ -1310,27 +1310,24 @@ namespace MonoDevelop.VersionControl.Git
 						LibGit2Sharp.Commands.Stage (RootRepository, addedFiles.ToPathStrings ());
 				}
 			}, cancellationToken: monitor.CancellationToken);
-			return Task.CompletedTask;
 		}
 
-		HashSet<FilePath> GetAddedLocalPathItems (ChangeSet changeSet)
+		async Task<HashSet<FilePath>> GetAddedLocalPathItems (ChangeSet changeSet)
 		{
-			return ConcurrentOperationFactory.StartNew (() => {
-				var addedLocalPathItems = new HashSet<FilePath> ();
-				try {
-					var directoryVersionInfo = GetDirectoryVersionInfoAsync (changeSet.BaseLocalPath, false, true).Result;
-					const VersionStatus addedStatus = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-					var directoryVersionInfoItems = directoryVersionInfo.Where (vi => vi.Status == addedStatus);
+			var addedLocalPathItems = new HashSet<FilePath> ();
+			try {
+				var directoryVersionInfo = await GetDirectoryVersionInfoAsync (changeSet.BaseLocalPath, false, true);
+				const VersionStatus addedStatus = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+				var directoryVersionInfoItems = directoryVersionInfo.Where (vi => vi.Status == addedStatus);
 
-					foreach (var item in directoryVersionInfoItems)
-						foreach (var changeSetItem in changeSet.Items)
-							if (item.LocalPath != changeSetItem.LocalPath)
-								addedLocalPathItems.Add (item.LocalPath);
-				} catch (Exception ex) {
-					LoggingService.LogInternalError ("Could not get added VersionInfo items.", ex);
-				}
-				return addedLocalPathItems;
-			}).RunWaitAndCapture ();
+				foreach (var item in directoryVersionInfoItems)
+					foreach (var changeSetItem in changeSet.Items)
+						if (item.LocalPath != changeSetItem.LocalPath)
+							addedLocalPathItems.Add (item.LocalPath);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Could not get added VersionInfo items.", ex);
+			}
+			return addedLocalPathItems;
 		}
 
 		public bool IsUserInfoDefault ()
@@ -2066,7 +2063,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (vif.IsDirectory)
 					continue;
 				FilePath newDestPath = vif.LocalPath.ToRelative (localSrcPath).ToAbsolute (localDestPath);
-				Add (newDestPath, false, monitor);
+				await AddAsync (newDestPath, false, monitor);
 				monitor.Step (1);
 			}
 			monitor.EndTask ();

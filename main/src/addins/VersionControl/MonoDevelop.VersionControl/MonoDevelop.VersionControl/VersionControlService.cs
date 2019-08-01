@@ -629,7 +629,7 @@ namespace MonoDevelop.VersionControl
 						var status = await repo.GetDirectoryVersionInfoAsync (file, false, false);
 						foreach (var v in status) {
 							if (!v.IsVersioned && files.Contains (v.LocalPath))
-								repo.Add (v.LocalPath, false, monitor);
+								await repo.AddAsync (v.LocalPath, false, monitor);
 						}
 					}
 				}

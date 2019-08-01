@@ -48,25 +48,25 @@ namespace VersionControl.Subversion.Unix.Tests
 		}
 
 		[SetUp]
-		public override void Setup ()
+		public override Task Setup ()
 		{
 			RemotePath = new FilePath (FileService.CreateTempDirectory ());
 			RemoteUrl = "file://" + RemotePath + "/repo";
-			base.Setup ();
+			return base.Setup ();
 		}
 
 		[Test]
-		public void ListUrls ()
+		public async Task ListUrls ()
 		{
-			AddFile ("test", "data", true, true);
-			AddDirectory ("foo", true, true);
+			await AddFileAsync ("test", "data", true, true);
+			await AddDirectoryAsync ("foo", true, true);
 			var items = SvnClient.ListUrl (Repo.Url, false).ToArray ();
 			Assert.AreEqual (2, items.Length, "#1");
 			Assert.IsTrue (items.Any (item => item.Name == "test" && !item.IsDirectory), "#2a");
 			Assert.IsTrue (items.Any (item => item.Name == "foo" && item.IsDirectory), "#2b");
 		}
 
-		protected override void TestDiff ()
+		protected override async Task TestDiff ()
 		{
 			string difftext = @"--- testfile	(revision 1)
 +++ testfile	(working copy)
@@ -74,29 +74,29 @@ namespace VersionControl.Subversion.Unix.Tests
 +text
 \ No newline at end of file
 ";
-			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache).Result).Content);
+			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", await Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
 		}
 
 		// Tests that fail due to Subversion giving wrong data.
 		[Test]
 		[Ignore ("Fix Subversion")]
-		public override void MovesDirectory ()
+		public override Task MovesDirectory ()
 		{
-			base.MovesDirectory ();
+			return base.MovesDirectory ();
 		}
 
 		[Test]
 		[Ignore ("Fix Subversion")]
-		public override void DeletesDirectory ()
+		public override Task DeletesDirectory ()
 		{
-			base.DeletesDirectory ();
+			return base.DeletesDirectory ();
 		}
 
 		[Test]
 		[Ignore ("Test fails on Lock")]
-		public override void LocksEntities ()
+		public override Task LocksEntities ()
 		{
-			base.UnlocksEntities ();
+			return base.UnlocksEntities ();
 		}
 
 		protected override void PostLock ()
@@ -109,9 +109,9 @@ namespace VersionControl.Subversion.Unix.Tests
 
 		[Test]
 		[Ignore ("Test fails on Unlock")]
-		public override void UnlocksEntities ()
+		public override Task UnlocksEntities ()
 		{
-			base.UnlocksEntities ();
+			return base.UnlocksEntities ();
 		}
 
 		[Test]

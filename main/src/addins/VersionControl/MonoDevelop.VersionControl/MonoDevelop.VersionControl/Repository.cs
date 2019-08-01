@@ -325,7 +325,7 @@ namespace MonoDevelop.VersionControl
 //				Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
 			}
 			if (pathsToQuery.Count > 0) {
-				concurrentOperationFactory.StartNew (async delegate {
+				ConcurrentOperationFactory.StartNew (async delegate {
 					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
@@ -361,7 +361,7 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			if (pathsToQuery.Count > 0) {
-				concurrentOperationFactory.StartNew (async delegate {
+				ConcurrentOperationFactory.StartNew (async delegate {
 					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
@@ -655,7 +655,12 @@ namespace MonoDevelop.VersionControl
 			AddAsync (new FilePath [] { localPath }, recurse, monitor).Ignore ();
 		}
 
-		public async Task AddAsync (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
+		public Task AddAsync (FilePath localPath, bool recurse, ProgressMonitor monitor)
+		{
+			return AddAsync (new FilePath [] { localPath }, recurse, monitor);
+		}
+
+		public async Task AddAsync (FilePath [] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			var metadata = new MultipathOperationMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse };
 			using (var tracker = Instrumentation.AddCounter.BeginTiming (metadata, monitor.CancellationToken)) {
