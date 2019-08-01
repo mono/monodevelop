@@ -130,7 +130,11 @@ namespace MonoDevelop.Components.Commands
 		/// </summary>
 		public void LoadCommands (string addinPath)
 		{
-			AddinManager.AddExtensionNodeHandler (addinPath, OnExtensionChange);
+			try {
+				AddinManager.AddExtensionNodeHandler (addinPath, OnExtensionChange);
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error while loading commands from path: " + addinPath, e);
+			}
 		}
 
 		/// <summary>
