@@ -159,18 +159,21 @@ namespace MonoDevelop.Debugger
 			if (process != null) { //User right-clicked on thread and not process
 				context_menu.Items.Add (new SeparatorContextMenuItem ());
 				var session = store.GetValue (selected, (int)Columns.Session) as DebuggerSession;
-				var continueExecution = new ContextMenuItem (GettextCatalog.GetString ("Resume"));
-				continueExecution.Sensitive = !session.IsRunning;
-				continueExecution.Clicked += delegate {
-					session.Continue ();
-				};
-				context_menu.Items.Add (continueExecution);
-				var pauseExecution = new ContextMenuItem (GettextCatalog.GetString ("Pause"));
-				pauseExecution.Sensitive = session.IsRunning;
-				pauseExecution.Clicked += delegate {
-					session.Stop ();
-				};
-				context_menu.Items.Add (pauseExecution);
+
+				if (session != null) {
+					var continueExecution = new ContextMenuItem (GettextCatalog.GetString ("Resume"));
+					continueExecution.Sensitive = !session.IsRunning;
+					continueExecution.Clicked += delegate {
+						session.Continue ();
+					};
+					context_menu.Items.Add (continueExecution);
+					var pauseExecution = new ContextMenuItem (GettextCatalog.GetString ("Pause"));
+					pauseExecution.Sensitive = session.IsRunning;
+					pauseExecution.Clicked += delegate {
+						session.Stop ();
+					};
+					context_menu.Items.Add (pauseExecution);
+				} 
 			}
 			context_menu.Show (this, evt);
 		}

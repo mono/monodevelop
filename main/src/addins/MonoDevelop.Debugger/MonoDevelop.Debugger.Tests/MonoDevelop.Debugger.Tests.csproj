@@ -21,6 +21,7 @@
     <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\Win32\*.cs" />
     <Compile Include="DebugTests.MonoDevelop.cs" />
     <Compile Include="TextFile.cs" />
+    <Compile Include="VsCodeStackFrameTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">
@@ -62,6 +63,10 @@
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
       <Name>Mono.Debugging.Soft</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.Debugger.VSCodeDebugProtocol\MonoDevelop.Debugger.VsCodeDebugProtocol\MonoDevelop.Debugger.VsCodeDebugProtocol.csproj">
+      <Project>{10F5BBD5-8A1D-4563-BCE4-DE681DFD82FD}</Project>
+      <Name>MonoDevelop.Debugger.VsCodeDebugProtocol</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

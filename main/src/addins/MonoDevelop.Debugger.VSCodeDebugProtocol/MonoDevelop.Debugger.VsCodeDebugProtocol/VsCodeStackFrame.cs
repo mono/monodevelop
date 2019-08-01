@@ -10,7 +10,7 @@ using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.Stac
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
-	class VsCodeStackFrame : Mono.Debugging.Client.StackFrame
+	public class VsCodeStackFrame : Mono.Debugging.Client.StackFrame
 	{
 		public static VsFormat GetStackFrameFormat (EvaluationOptions evalOptions)
 		{
@@ -58,25 +58,58 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			this.frameId = frame.Id;
 		}
 
-		static byte [] HexToByteArray (string hex)
+		static byte ToXDigit (char c)
 		{
-			if (hex.Length % 2 == 1)
-				throw new ArgumentException ();
-			byte [] bytes = new byte [hex.Length / 2];
-			for (int i = 0; i < bytes.Length; i++) {
-				bytes [i] = Convert.ToByte (hex.Substring (i * 2, 2), 16);
-			}
-			return bytes;
+			if (c >= 'A' && c <= 'F')
+				return (byte) ((c - 'A') + 10);
+
+			if (c >= 'a' && c <= 'f')
+				return (byte) ((c - 'a') + 10);
+
+			if (c >= '0' && c <= '9')
+				return (byte) (c - '0');
+
+			throw new ArgumentException ();
 		}
 
-		static byte [] GetHashBytes (Source source)
+		public static byte[] HexToByteArray (string hex)
+		{
+			if (hex.Length % 2 == 1)
+				return null;
+
+			try {
+				var bytes = new byte[hex.Length / 2];
+				for (int i = 0, j = 0; i < bytes.Length; i++, j += 2) {
+					var x1 = ToXDigit (hex[j]);
+					var x2 = ToXDigit (hex[j + 1]);
+
+					bytes[i] = (byte) ((x1 << 4) | x2);
+				}
+
+				return bytes;
+			} catch {
+				return null;
+			}
+		}
+
+		static byte[] GetHashBytes (Source source)
 		{
 			if (source == null)
 				return null;
-			var checkSum = source.Checksums.FirstOrDefault (c => c.Algorithm == ChecksumAlgorithm.SHA1);
-			if (checkSum == null)
-				return null;
-			return HexToByteArray (checkSum.ChecksumValue);
+
+			foreach (var checksum in source.Checksums) {
+				switch (checksum.Algorithm) {
+				case ChecksumAlgorithm.SHA256:
+				case ChecksumAlgorithm.SHA1:
+				case ChecksumAlgorithm.MD5:
+					var hash = HexToByteArray (checksum.ChecksumValue);
+					if (hash != null)
+						return hash;
+					break;
+				}
+			}
+
+			return null;
 		}
 
 		public override string FullStackframeText {

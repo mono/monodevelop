@@ -369,6 +369,9 @@ namespace MonoDevelop.TextEditor
 		{
 			UpdateLineNumberMarginOption ();
 
+			var foldMargin = PropertyService.Get<bool> ("ShowFoldMargin");
+			Imports.OutliningManagerService.GetOutliningManager (TextView).Enabled = foldMargin;
+
 			var newPolicyContainer = (Owner as IPolicyProvider)?.Policies;
 			if (newPolicyContainer != policyContainer) {
 				if (policyContainer != null)
