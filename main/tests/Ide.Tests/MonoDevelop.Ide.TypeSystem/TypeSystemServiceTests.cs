@@ -302,6 +302,27 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		[Test]
+		public async Task CSharpFile_BuildActionNone_FileNotUsed ()
+		{
+			FilePath solFile = Util.GetSampleProject ("build-action-none", "build-action-none.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var projects = ws.CurrentSolution.Projects.ToArray ();
+
+					var project = projects.Single ();
+
+					// Check that build action none .cs file is not used by the type system.
+					Assert.IsFalse (project.Documents.Any (d => d.Name == "DoNotCompile.cs"));
+					Assert.IsTrue (project.Documents.Any (d => d.Name == "Program.cs"));
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
+		[Test]
 		public async Task ProjectReference ()
 		{
 			FilePath solFile = Util.GetSampleProject ("netstandard-project", "NetStandardTest.sln");

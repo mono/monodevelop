@@ -506,7 +506,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 						continue;
 
-					if (p.IsCompileable (f.FilePath) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
+					if (CanCompile (p, f) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
 						var filePath = (FilePath)f.Name;
 						var id = projectData.DocumentData.GetOrCreate (filePath.ResolveLinks (), oldProjectData?.DocumentData);
 						if (!duplicates.Add (id))
@@ -522,6 +522,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				return Tuple.Create (documents, additionalDocuments);
+			}
+
+			static bool CanCompile (MonoDevelop.Projects.Project project, ProjectFile file)
+			{
+				return project.IsCompileable (file.FilePath) && project.IsCompileBuildAction (file.BuildAction);
 			}
 
 			async Task<List<DocumentInfo>> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, CancellationToken token, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
