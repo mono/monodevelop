@@ -1295,7 +1295,22 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var currentSolution = CurrentSolution;
 			var document = currentSolution.GetDocument (id);
-			FailIfDocumentInfoChangesNotSupported (document, info);
+
+			try {
+				// Generally, we'd never want to use exceptions to control the
+				// flow of code, however, we suspect this has something to do
+				// with occurrences of documents landing outside of our workspace
+				// which we suspect might be related to this function and generated
+				// files
+
+				// See bugs:
+				// - https://devdiv.visualstudio.com/DevDiv/_workitems/edit/951324
+				// - https://devdiv.visualstudio.com/DevDiv/_workitems/edit/948004
+				FailIfDocumentInfoChangesNotSupported (document, info);
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+				return;
+			}
 
 			// abort if the name is the same, as there's nothing to do
 			if (document.Name == info.Name
