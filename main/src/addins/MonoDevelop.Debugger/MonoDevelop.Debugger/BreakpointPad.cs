@@ -445,8 +445,6 @@ namespace MonoDevelop.Debugger
 
 					store.AppendValues (GetIconId (be), be.Enabled, name, be, condition, traceExp, hitCount, traceVal);
 				}
-
-				store.AppendValues (GetIconId (be), be.Enabled, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
 			}
 
 			treeState.Load ();
