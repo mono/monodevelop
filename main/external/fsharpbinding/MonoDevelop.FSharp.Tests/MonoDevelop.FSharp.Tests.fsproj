@@ -59,7 +59,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Xamarin.Mac">
-      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
+      <HintPath>..\..\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
