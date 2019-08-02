@@ -685,6 +685,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 						LoggingService.LogError ("Missing editor operations");
 					}
 				}
+				// Run grab focus on next iteration.
+				Gtk.Application.Invoke (delegate {
+					doc.GrabFocus ();
+				});
 			});
 
 /*			var navigator = (ISourceFileNavigator)newContent.GetContent (typeof (ISourceFileNavigator));
