@@ -46,16 +46,16 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		DiffWidget widget;
 
-		void CreateWiget ()
+		async void CreateWiget ()
 		{
 			if (widget == null) {
 				widget = new DiffWidget (info);
-
 				try {
-					ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseTextAsync (info.Item.Path).Result;
+					ComparisonWidget.DiffEditor.Document.Text = await info.Item.Repository.GetBaseTextAsync (info.Item.Path);
 				} catch (Exception ex) {
 					LoggingService.LogInternalError ("Error fetching text from repository ", ex);
 				}
+
 				ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
 				widget.ShowAll ();
 			}

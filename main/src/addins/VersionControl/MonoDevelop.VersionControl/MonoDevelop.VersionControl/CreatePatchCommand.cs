@@ -68,12 +68,12 @@ namespace MonoDevelop.VersionControl
 			foreach (VersionControlItem item in items) {
 				await cset.AddFileAsync (item.Path);
 			}
-			return CreatePatch (cset, test);
+			return await CreatePatch (cset, test);
 		}
 		
-		public static bool CreatePatch (ChangeSet items, bool test)
+		public static async Task<bool> CreatePatch (ChangeSet items, bool test)
 		{
-			bool can = CanCreatePatch (items);
+			bool can = await CanCreatePatch (items);
 			if (test || !can){ return can; }
 			
 			Repository repo = items.Repository;
@@ -110,11 +110,11 @@ namespace MonoDevelop.VersionControl
 		/// Determines whether a patch can be created 
 		/// from a ChangeSet.
 		/// </summary>
-		static bool CanCreatePatch (ChangeSet items)
+		static async Task<bool> CanCreatePatch (ChangeSet items)
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			
-			var vinfos = items.Repository.GetVersionInfoAsync (items.Items.Select (i => i.LocalPath)).Result;
+			var vinfos = await items.Repository.GetVersionInfoAsync (items.Items.Select (i => i.LocalPath));
 			return vinfos.All (i => i.CanRevert);
 		}
 		
