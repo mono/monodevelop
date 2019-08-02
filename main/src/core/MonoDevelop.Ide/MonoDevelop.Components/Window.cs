@@ -37,6 +37,12 @@ namespace MonoDevelop.Components
 		{
 		}
 
+		/// <summary>
+		/// If the wrapped (native) control is a GTK Window, this method will return
+		/// true, for when that window is realized (which will be true if the window
+		/// is visible, but can also be true even if it isn't). If the native control
+		/// is an NSWindow, this will return the value of the IsVisible property. 
+		/// </summary>
 		public bool IsRealized {
 			get {
 				if (nativeWidget is Gtk.Window)

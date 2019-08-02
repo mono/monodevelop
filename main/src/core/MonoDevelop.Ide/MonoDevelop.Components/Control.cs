@@ -55,7 +55,7 @@ namespace MonoDevelop.Components
 			throw new NotSupportedException ();
 		}
 
-		public T GetNativeWidget<T> ()
+		public T GetNativeWidget<T> () where T : class
 		{
 			if (nativeWidget == null) {
 				var toCache = this;
@@ -87,8 +87,10 @@ namespace MonoDevelop.Components
 			}
 			if (nativeWidget is T resultWidget)
 				return resultWidget;
-			else
-				throw new NotSupportedException ();
+
+			// we used to throw a NotSupportedException, however, that prevented us from
+			// doing anything with native controls, see: https://devdiv.visualstudio.com/DevDiv/_workitems/edit/945987
+			return null; 
 		}
 
 		void OnGtkDestroyed (object sender, EventArgs args)
