@@ -26,31 +26,27 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Core.Text;
-using Gtk;
 using System.Linq;
+using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class CommandSearchCategory : SearchCategory
 	{
 		static readonly List<Tuple<Command, string>> allCommands;
-
+		private static readonly Mono.Addins.RuntimeAddin currentRuntimeAddin;
 		static CommandSearchCategory ()
 		{
+			currentRuntimeAddin = Mono.Addins.AddinManager.CurrentAddin;
 			var hiddenCategory = GettextCatalog.GetString ("Hidden");
 			allCommands = IdeApp.CommandService.GetCommands ()
 			                    .Where (cmd => (cmd as ActionCommand)?.CommandArray != true && cmd.Category != hiddenCategory)
 			                    .Select(cmd => Tuple.Create (cmd, cmd.DisplayName))
+								.OrderByDescending(cmd => (cmd.Item1 as ActionCommand)?.RuntimeAddin == currentRuntimeAddin)
 			                    .ToList();
 		}
 
@@ -86,10 +82,12 @@ namespace MonoDevelop.Components.MainToolbar
 							break;
 						var cmd = cmdTuple.Item1;
 						var matchString = cmdTuple.Item2;
-						int rank;
 
-						if (matcher.CalcMatchRank (matchString, out rank))
+						if (matcher.CalcMatchRank (matchString, out var rank)) {
+							if ((cmd as ActionCommand)?.RuntimeAddin == currentRuntimeAddin)
+								rank += 100; // we prefer commands comming from the addin
 							searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
+						}
 					}
 				} catch (OperationCanceledException) {
 				}
