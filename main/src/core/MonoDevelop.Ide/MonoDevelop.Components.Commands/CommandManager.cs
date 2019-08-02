@@ -335,8 +335,13 @@ namespace MonoDevelop.Components.Commands
 					// If the window is a gtk window and is registered in the command manager
 					// process the events through the handler.
 					var gtkWindow = Mac.GtkMacInterop.GetGtkWindow(window);
-					if (gtkWindow != null && !TopLevelWindowStack.Any (w => w.nativeWidget == gtkWindow))
+					if (gtkWindow != null &&
+						!TopLevelWindowStack.Select (x => x.nativeWidget).Contains (gtkWindow)) {
+						// the above is slightly more contrived than using a simple .Any statement
+						// because of a Roslyn bug that could potentially affect our performance
+						// see here: https://github.com/dotnet/roslyn/issues/20777
 						return null;
+					}
 				}
 			}
 
@@ -2218,8 +2223,8 @@ namespace MonoDevelop.Components.Commands
 		
 		Window GetActiveWindow (Window win)
 		{
-			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
-			
+			Gtk.Window [] wins = Gtk.Window.ListToplevels ();
+
 			bool hasFocus = false;
 			bool lastFocusedExists = lastFocused == null;
 			Gtk.Window newFocused = null;
@@ -2243,7 +2248,7 @@ namespace MonoDevelop.Components.Commands
 			if (!hasFocus) {
 				var nsWindow = AppKit.NSApplication.SharedApplication.KeyWindow;
 				hasFocus = nsWindow != null;
-                if (hasFocus) {
+				if (hasFocus) {
 					lastFocused = win = nsWindow;
 				}
 			} else {
@@ -2329,15 +2334,21 @@ namespace MonoDevelop.Components.Commands
 		}
 #endif
 
-		Gtk.Widget GetFocusedChild (Gtk.Widget widget)
+		Gtk.Widget GetFocusedChild (Control widget)
 		{
-			while (widget is Gtk.Container) {
-				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-				if (child != null)
-					widget = child;
-				else
-					break;
-			}
+			Gtk.Container container;
+
+			do {
+				container = widget.GetNativeWidget<Gtk.Container> ();
+				if (container != null) {
+					Gtk.Widget child = container.FocusChild;
+					if (child != null)
+						widget = child;
+					else
+						break;
+				}
+			} while (container != null);
+
 			return widget;
 		}
 
