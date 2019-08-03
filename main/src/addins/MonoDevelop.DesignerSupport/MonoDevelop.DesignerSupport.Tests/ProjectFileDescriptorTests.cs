@@ -28,7 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 
-namespace MonoDevelop.DesignerSupport.Projects
+namespace MonoDevelop.DesignerSupport
 {
 	[TestFixture]
 	public class ProjectFileDescriptorTests : IdeTestBase

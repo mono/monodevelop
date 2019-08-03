@@ -31,8 +31,8 @@
         <Project>{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}</Project>
         <Name>Xamarin.PropertyEditing</Name>
       </ProjectReference>
-      <IncludeCopyLocal Include="Xamarin.PropertyEditing.Mac.dll"/>
-      <IncludeCopyLocal Include="Xamarin.PropertyEditing.dll"/>
+      <IncludeCopyLocal Include="Xamarin.PropertyEditing.Mac.dll" />
+      <IncludeCopyLocal Include="Xamarin.PropertyEditing.dll" />
   </ItemGroup>
    <ItemGroup>
     <Reference Include="System" />
@@ -66,7 +66,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.DesignerSupport.Tests" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />

@@ -131,7 +131,6 @@
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\GLibLoggingTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\OutputOptionsPanelTests.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -193,10 +192,6 @@
       <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
       <Name>IdeUnitTests</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
-      <Name>MonoDevelop.DesignerSupport</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
