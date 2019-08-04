@@ -108,7 +108,7 @@ namespace MonoDevelop.Debugger
 							var stackframeText = $"<b>{frame.FullStackframeText}</b>";
 
 							var text = GettextCatalog.GetString
-								("{0} is a call to external source code. Would you like to get {1} and view it?", stackframeText, hyperlink);
+								("{0} is a call to external source code. Would you like to get '{1}' and view it?", stackframeText, hyperlink);
 							var message = new Ide.GenericMessage {
 								Text = GettextCatalog.GetString ("External source code available"),
 								SecondaryText = text
