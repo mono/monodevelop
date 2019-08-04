@@ -182,7 +182,7 @@ namespace MonoDevelop.Debugger
 			Document doc = null;
 			try {
 				var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
-				Directory.GetParent (downloadLocation).Create ();
+				Directory.CreateDirectory (Path.GetDirectoryName (downloadLocation));
 				DocumentRegistry.SkipNextChange (downloadLocation);
 				var client = HttpClientProvider.CreateHttpClient (sourceLink.Uri);
 				using (var stream = await client.GetStreamAsync (sourceLink.Uri)) {
