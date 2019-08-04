@@ -56,7 +56,7 @@ namespace MonoDevelop.Debugger
 	public class DebuggerOptionsPanelWidget : VBox
 	{
 		DebuggerSessionOptions options;
-		CheckBox checkProjectCodeOnly;
+		CheckBox checkStepIntoExternalCode;
 		ComboBox comboAutomaticSourceDownload;
 		CheckBox checkStepOverPropertiesAndOperators;
 		CheckBox checkAllowEval;
@@ -73,12 +73,12 @@ namespace MonoDevelop.Debugger
 			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Scope") + "</b>" });
 			checkStepOverPropertiesAndOperators = new CheckBox (GettextCatalog.GetString ("Step over properties and operators"));
 			PackStart (checkStepOverPropertiesAndOperators);
-			checkProjectCodeOnly = new CheckBox (GettextCatalog.GetString ("Step into external code")) {
+			checkStepIntoExternalCode = new CheckBox (GettextCatalog.GetString ("Step into external code")) {
 				ExpandVertical = false,
 				MarginBottom = 0,
 				HeightRequest = 15
 			};
-			PackStart (checkProjectCodeOnly);
+			PackStart (checkStepIntoExternalCode);
 
 			var label = new Label {
 				Text = GettextCatalog.GetString ("The debugger will step into code and hit exceptions in dependencies that aren’t considered part of your project, like packages and references."),
@@ -138,7 +138,7 @@ namespace MonoDevelop.Debugger
 
 		void SetupAccessibility ()
 		{
-			checkProjectCodeOnly.SetCommonAccessibilityAttributes ("DebuggerPanel.projectCodeOnly", "",
+			checkStepIntoExternalCode.SetCommonAccessibilityAttributes ("DebuggerPanel.projectCodeOnly", "",
 			                                                       GettextCatalog.GetString ("Check to step into framework code"));
 			checkStepOverPropertiesAndOperators.SetCommonAccessibilityAttributes ("DebuggerPanel.stepOverProperties", "",
 			                                                                      GettextCatalog.GetString ("Check to step over properties and operators"));
@@ -163,7 +163,7 @@ namespace MonoDevelop.Debugger
 			Build ();
 
 			options = DebuggingService.GetUserOptions ();
-			checkProjectCodeOnly.Active = !options.ProjectAssembliesOnly;
+			checkStepIntoExternalCode.Active = !options.ProjectAssembliesOnly;
 			comboAutomaticSourceDownload.SelectedItem = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", AutomaticSourceDownload.Ask);
 
 			checkStepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
@@ -190,7 +190,7 @@ namespace MonoDevelop.Debugger
 			ops.EvaluationTimeout = (int)spinTimeout.Value;
 
 			options.StepOverPropertiesAndOperators = checkStepOverPropertiesAndOperators.Active;
-			options.ProjectAssembliesOnly = !checkProjectCodeOnly.Active;
+			options.ProjectAssembliesOnly = !checkStepIntoExternalCode.Active;
 			options.AutomaticSourceLinkDownload = (AutomaticSourceDownload)comboAutomaticSourceDownload.SelectedItem;
 			options.EvaluationOptions = ops;
 
