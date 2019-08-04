@@ -174,7 +174,7 @@ namespace MonoDevelop.Debugger
 		async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLink sourceLink)
 		{
 			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-				GettextCatalog.GetString ("Downloading ") + sourceLink.Uri,
+				GettextCatalog.GetString ("Downloading {0}", sourceLink.Uri),
 				Stock.StatusWorking,
 				true
 			);
