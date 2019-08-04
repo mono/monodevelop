@@ -175,7 +175,7 @@ namespace MonoDevelop.Debugger
 		{
 			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				GettextCatalog.GetString ("Downloading {0}", sourceLink.Uri),
-				Stock.StatusWorking,
+				Stock.StatusDownload,
 				true
 			);
 
