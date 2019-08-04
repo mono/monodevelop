@@ -185,13 +185,12 @@ namespace MonoDevelop.Debugger
 				Directory.CreateDirectory (Path.GetDirectoryName (downloadLocation));
 				DocumentRegistry.SkipNextChange (downloadLocation);
 				var client = HttpClientProvider.CreateHttpClient (sourceLink.Uri);
-				using (var stream = await client.GetStreamAsync (sourceLink.Uri)) {
-					using (var fs = new FileStream (downloadLocation, FileMode.CreateNew)) {
-						await stream.CopyToAsync (fs);
-					}
+				using (var stream = await client.GetStreamAsync (sourceLink.Uri).ConfigureAwait (false))
+				using (var fs = new FileStream (downloadLocation, FileMode.CreateNew)) {
+					await stream.CopyToAsync (fs).ConfigureAwait (false);
 				}
 				frame.UpdateSourceFile (downloadLocation);
-				doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
+				doc = await Runtime.RunInMainThread (() => IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger));
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
 			} finally {
