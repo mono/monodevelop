@@ -630,7 +630,7 @@ namespace MonoDevelop.PackageManagement
 			try {
 				if (viewModel.IsConsolidatePageSelected) {
 					List<ManagePackagesSearchResultViewModel> packageViewModels = GetSelectedPackageViewModels ();
-					List<IPackageAction> packageActions = CreateConsolidatePackageActions (packageViewModels);
+					List<IPackageAction> packageActions = viewModel.CreateConsolidatePackageActions (packageViewModels);
 					RunPackageActions (packageActions);
 				} else {
 					var projects = SelectProjects ().ToList ();
@@ -707,7 +707,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			List<ManagePackagesSearchResultViewModel> packageViewModels = GetSelectedPackageViewModels ();
 			if (packageViewModels.Count > 0) {
-				return CreatePackageActions (packageViewModels, selectedProjects);
+				return viewModel.CreatePackageActions (packageViewModels, selectedProjects);
 			}
 			return new List<IPackageAction> ();
 		}
@@ -805,63 +805,6 @@ namespace MonoDevelop.PackageManagement
 			return packageViewModels;
 		}
 
-		List<IPackageAction> CreatePackageActions (
-			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
-			IEnumerable<IDotNetProject> selectedProjects)
-		{
-			if (viewModel.PageSelected == ManagePackagesPage.Browse) {
-				return CreateInstallPackageActions (packageViewModels, selectedProjects);
-			} else if (viewModel.PageSelected == ManagePackagesPage.Installed) {
-				return CreateUninstallPackageActions (packageViewModels, selectedProjects);
-			} else if (viewModel.PageSelected == ManagePackagesPage.Updates) {
-				return CreateUpdatePackageActions (packageViewModels, selectedProjects);
-			}
-			return null;
-		}
-
-		List<IPackageAction> CreateInstallPackageActions (
-			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
-			IEnumerable<IDotNetProject> selectedProjects)
-		{
-			var actions = new List<IPackageAction> ();
-			foreach (var packageViewModel in packageViewModels) {
-				actions.AddRange (viewModel.CreateInstallPackageActions (packageViewModel, selectedProjects));
-			}
-			return actions;
-		}
-
-		List<IPackageAction> CreateUninstallPackageActions (
-			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
-			IEnumerable<IDotNetProject> selectedProjects)
-		{
-			var actions = new List<IPackageAction> ();
-			foreach (var packageViewModel in packageViewModels) {
-				actions.AddRange (viewModel.CreateUninstallPackageActions (packageViewModel, selectedProjects));
-			}
-			return actions;
-		}
-
-		List<IPackageAction> CreateUpdatePackageActions (
-			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
-			IEnumerable<IDotNetProject> selectedProjects)
-		{
-			var actions = new List<IPackageAction> ();
-			foreach (var packageViewModel in packageViewModels) {
-				actions.AddRange (viewModel.CreateUpdatePackageActions (packageViewModel, selectedProjects));
-			}
-			return actions;
-		}
-
-		List<IPackageAction> CreateConsolidatePackageActions (
-			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels)
-		{
-			var actions = new List<IPackageAction> ();
-			foreach (var packageViewModel in packageViewModels) {
-				actions.AddRange (viewModel.CreateConsolidatePackageActions (packageViewModel));
-			}
-			return actions;
-		}
-
 		void PackageSearchEntryChanged (object sender, EventArgs e)
 		{
 			ClearErrorMessage ();
@@ -906,7 +849,7 @@ namespace MonoDevelop.PackageManagement
 			try {
 				if (packageViewModel != null) {
 					if (viewModel.IsConsolidatePageSelected) {
-						List<IPackageAction> packageActions = CreateConsolidatePackageActions (
+						List<IPackageAction> packageActions = viewModel.CreateConsolidatePackageActions (
 							new ManagePackagesSearchResultViewModel [] { packageViewModel }
 						);
 						RunPackageActions (packageActions);
@@ -915,7 +858,7 @@ namespace MonoDevelop.PackageManagement
 						if (!projects.Any ())
 							return;
 
-						List<IPackageAction> packageActions = CreatePackageActions (
+						List<IPackageAction> packageActions = viewModel.CreatePackageActions (
 							new ManagePackagesSearchResultViewModel [] { packageViewModel },
 							projects);
 						RunPackageActions (packageActions);

@@ -624,6 +624,41 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public List<IPackageAction> CreatePackageActions (
+			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
+			IEnumerable<IDotNetProject> selectedProjects)
+		{
+			if (PageSelected == ManagePackagesPage.Browse) {
+				return CreatePackageActions (packageViewModels, selectedProjects, CreateInstallPackageActions);
+			} else if (PageSelected == ManagePackagesPage.Installed) {
+				return CreatePackageActions (packageViewModels, selectedProjects, CreateUninstallPackageActions);
+			} else if (PageSelected == ManagePackagesPage.Updates) {
+				return CreatePackageActions (packageViewModels, selectedProjects, CreateUpdatePackageActions);
+			}
+			return null;
+		}
+
+		List<IPackageAction> CreatePackageActions (
+			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
+			IEnumerable<IDotNetProject> selectedProjects,
+			Func<ManagePackagesSearchResultViewModel, IEnumerable<IDotNetProject>, IEnumerable<IPackageAction>> transform)
+		{
+			var actions = new List<IPackageAction> ();
+			foreach (var packageViewModel in packageViewModels) {
+				actions.AddRange (transform (packageViewModel, selectedProjects));
+			}
+			return actions;
+		}
+
+		public List<IPackageAction> CreateConsolidatePackageActions (IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels)
+		{
+			var actions = new List<IPackageAction> ();
+			foreach (var packageViewModel in packageViewModels) {
+				actions.AddRange (CreateConsolidatePackageActions (packageViewModel));
+			}
+			return actions;
+		}
+
 		bool IsPackageInstalledInProject (IDotNetProject project, string packageId)
 		{
 			var matchedProjectInfo = projectInformation.FirstOrDefault (p => p.Project == project);
