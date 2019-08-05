@@ -27,6 +27,10 @@ EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
 export MACOSX_DEPLOYMENT_TARGET=10.12
 
+# With the hardened runtime, we need to specify the location of all libraries
+# that we dlopen
+MONOSTUB_RPATH=-Wl,-rpath,/Library/Frameworks/Mono.framework/Libraries/ -Wl,-rpath,@executable_path/../Resources/lib/monodevelop/bin/
+
 all: monostub monostub-nogui monostub-test
 
 render.exe: render.cs
@@ -42,12 +46,12 @@ monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
