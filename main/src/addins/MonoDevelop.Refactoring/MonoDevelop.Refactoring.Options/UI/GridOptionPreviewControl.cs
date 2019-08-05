@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring.Options
 		DataField<string> propertyNameField = new DataField<string> ();
 		DataField<ItemCollection> propertiesField = new DataField<ItemCollection> ();
 
-		DataField<string> notificationPreferenceField     = new DataField<string> ();
+		DataField<string> severityField     = new DataField<string> ();
 		DataField<ItemCollection> notificationPreferencesField = new DataField<ItemCollection> ();
 
 		TreeStore store;
@@ -74,7 +74,7 @@ namespace MonoDevelop.Refactoring.Options
 
 		void CreateView ()
 		{
-			store = new TreeStore (itemField, descriptionField, propertyNameField, propertiesField, notificationPreferenceField, notificationPreferencesField);
+			store = new TreeStore (itemField, descriptionField, propertyNameField, propertiesField, severityField, notificationPreferencesField);
 
 			treeView = new TreeView (store);
 			treeView.SelectionChanged += (object sender, EventArgs e) => {
@@ -118,10 +118,31 @@ namespace MonoDevelop.Refactoring.Options
 			col.Expands = true;
 			treeView.Columns.Add (col);
 
-			var severityCellView = new ComboBoxCellView (notificationPreferenceField);
+			var severityCellView = new ComboBoxCellView (severityField);
 			severityCellView.Editable = true;
 			severityCellView.ItemsField = notificationPreferencesField;
+			severityCellView.SelectionChanged += delegate (object sender, WidgetEventArgs e) {
+				var treeNavigator = store.GetNavigatorAt (treeView.CurrentEventRow);
+				if (treeNavigator == null)
+					return;
+				var item = treeNavigator.GetValue (itemField);
+				if (item == null)
+					return;
+				var oldSeverity = treeNavigator.GetValue (severityField);
+
+				GLib.Timeout.Add (10, delegate {
+					var newSeverity = treeNavigator.GetValue (severityField);
+					foreach (var pref in item.NotificationPreferences) {
+						if (pref.Name == newSeverity) {
+							item.SelectedNotificationPreference = pref;
+							this.viewModel.SetOptionAndUpdatePreview (pref.Notification, item.Option, item.GetPreview ());
+						}
+					}
+					return false;
+				});
+			};
 			col = new ListViewColumn (GettextCatalog.GetString ("Severity"), severityCellView);
+			col.Expands = true;
 			treeView.Columns.Add (col);
 
 			this.PackStart (treeView, true, true);
@@ -140,7 +161,7 @@ namespace MonoDevelop.Refactoring.Options
 					groupNode.SetValue (itemField, null);
 					groupNode.SetValue (propertyNameField, "");
 					groupNode.SetValue (propertiesField, new ItemCollection ());
-					groupNode.SetValue (notificationPreferenceField, "");
+					groupNode.SetValue (severityField, "");
 					groupNode.SetValue (notificationPreferencesField, new ItemCollection ());
 
 					groupNodes [item.GroupName] = groupNode;
@@ -154,7 +175,7 @@ namespace MonoDevelop.Refactoring.Options
 					itemCollection.Add (pref.Name);
 				childNode.SetValue (propertiesField, itemCollection);
 
-				childNode.SetValue (notificationPreferenceField, item.SelectedNotificationPreference.Name);
+				childNode.SetValue (severityField, item.SelectedNotificationPreference.Name);
 				itemCollection = new ItemCollection ();
 				foreach (var pref in item.NotificationPreferences)
 					itemCollection.Add (pref.Name);
