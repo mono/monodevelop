@@ -79,6 +79,7 @@ namespace MonoDevelop.Ide
 			}
 
 			StartupCompleted (startupInfo, result);
+			sectionTimings = null;
 		}
 
 		internal void StartupCompleted (StartupInfo startupInfo, IPlatformTelemetryDetails platformTelemetryDetails)
