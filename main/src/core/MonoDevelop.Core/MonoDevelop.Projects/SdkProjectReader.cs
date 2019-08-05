@@ -96,15 +96,13 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
+		public override async Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			return Task.Run (() => {
-				if (CanRead (fileName, typeof (SolutionItem))) {
-					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2012, typeGuid, itemGuid, ctx);
-				}
+			if (CanRead (fileName, typeof (SolutionItem))) {
+				return await MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2012, typeGuid, itemGuid, ctx);
+			}
 
-				throw new NotSupportedException ();
-			});
+			throw new NotSupportedException ();
 		}
 	}
 }
