@@ -456,7 +456,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project prj = CurrentNode.DataItem as Project;
 			IdeApp.ProjectOperations.RemoveSolutionItem (prj);
 		}
-		
+
+		[CommandUpdateHandler (EditCommands.Delete)]
+		public void UpdateRemoveItem (CommandInfo info)
+		{
+			info.Text = GettextCatalog.GetString ("Remove");
+		}
+
 		[CommandHandler (ProjectCommands.AddReference)]
 		public async void AddReferenceToProject ()
 		{
