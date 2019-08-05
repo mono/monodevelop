@@ -97,7 +97,10 @@ namespace MonoDevelop.Projects
 				foreach (var file in container.GetItemFiles (true)) {
 					if (ShouldAddToSet (set, file)) {
 						set ??= new HashSet<FilePath> ();
-						set.Add (file.ParentDirectory);
+
+						var directory = file.ParentDirectory;
+						if (!directory.IsNullOrEmpty)
+							set.Add (file.ParentDirectory);
 					}
 				}
 			}
