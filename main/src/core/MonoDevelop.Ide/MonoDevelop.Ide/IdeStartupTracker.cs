@@ -43,12 +43,12 @@ namespace MonoDevelop.Ide
 		const long ttcDuration = 3 * TimeSpan.TicksPerSecond; // Wait 3 seconds before ignoring TTC events
 
 		Stopwatch startupTimer = new Stopwatch ();
-		Stopwatch startupSectionTimer = new Stopwatch ();
+		Stopwatch startupSectionTimer;
 		Stopwatch timeToCodeTimer = new Stopwatch ();
 		Stopwatch timeToCodeSolutionTimer = new Stopwatch ();
 		Stopwatch timeToCodeWorkspaceTimer;
 
-		Dictionary<string, long> sectionTimings = new Dictionary<string, long> ();
+		Dictionary<string, long> sectionTimings;
 		TimeToCodeMetadata ttcMetadata;
 
 		IdeStartupTracker ()
@@ -62,8 +62,9 @@ namespace MonoDevelop.Ide
 			// TimerCounter.BeginTiming here would occur before any timer
 			// handlers can be registered. So instead the startup duration is
 			// set as a metadata property on the Counters.Startup counter.
-			startupTimer.Start ();
-			startupSectionTimer.Start ();
+			startupTimer = Stopwatch.StartNew ();
+			startupSectionTimer = Stopwatch.StartNew();
+			sectionTimings = new Dictionary<string, long> ();
 			timeToCodeTimer.Start ();
 		}
 
@@ -78,6 +79,7 @@ namespace MonoDevelop.Ide
 			}
 
 			StartupCompleted (startupInfo, result);
+			startupSectionTimer = null;
 			sectionTimings = null;
 		}
 
