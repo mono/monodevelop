@@ -87,28 +87,36 @@ namespace MonoDevelop.Projects
 
 		internal static HashSet<FilePath> GetPathsToWatch (WorkspaceObject item)
 		{
-			var set = new HashSet<FilePath> ();
-			AddToSet (set, item.ItemDirectory);
+			HashSet<FilePath> set = null;
+			if (ShouldAddToSet (set, item.ItemDirectory)) {
+				set ??= new HashSet<FilePath> ();
+				set.Add (item.ItemDirectory);
+			}
 
 			if (item is IWorkspaceFileObject container) {
 				foreach (var file in container.GetItemFiles (true)) {
-					AddToSet (set, file);
+					if (ShouldAddToSet (set, file)) {
+						set ??= new HashSet<FilePath> ();
+						set.Add (file.ParentDirectory);
+					}
 				}
 			}
 
 			return set;
 
-			static void AddToSet (HashSet<FilePath> set, FilePath path)
+			static bool ShouldAddToSet (HashSet<FilePath> set, FilePath path)
 			{
 				// Do a double lookup instead of iterating everything first, if we already added a project.
 				if (path.IsNullOrEmpty)
-					return;
+					return false;
 
-				foreach (var directory in set) {
-					if (path.IsChildPathOf (directory))
-						return;
+				if (set != null) {
+					foreach (var directory in set) {
+						if (path.IsChildPathOf (directory))
+							return false;
+					}
 				}
-				set.Add (path.ParentDirectory);
+				return true;
 			}
 		}
 
