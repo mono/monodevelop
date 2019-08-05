@@ -110,17 +110,17 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			// Try to get a dialog version of the "welcome screen" first
 			if (!await ShowWelcomeWindow (options)) {
-				ShowWelcomePage (true);
+				await Runtime.RunInMainThread (() => ShowWelcomePage (true));
 			}
 		}
 
 		public static async void HideWelcomePageOrWindow ()
 		{
 			if (WelcomeWindowProvider != null) {
-				await WelcomeWindowProvider.HideWindow ();
+				await Runtime.RunInMainThread (WelcomeWindowProvider.HideWindow);
 				WelcomeWindowHidden?.Invoke (WelcomeWindow, EventArgs.Empty);
 			} else {
-				HideWelcomePage (true);
+				await Runtime.RunInMainThread (() => HideWelcomePage (true));
 			}
 			visible = false;
 		}
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				return false;
 			}
 
-			await WelcomeWindowProvider.ShowWindow (options);
+			await Runtime.RunInMainThread (() => WelcomeWindowProvider.ShowWindow (options));
 			visible = true;
 
 			WelcomeWindowShown?.Invoke (WelcomeWindow, EventArgs.Empty);
