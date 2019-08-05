@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectWithWildcardsTests.cs
 //
 // Author:
@@ -363,7 +363,7 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// If an MSBuild item has a property on loading then if all the properties are removed the 
+		/// If an MSBuild item has a property on loading then if all the properties are removed the
 		/// project file when saved will still have an end element. So this test uses a different
 		/// .saved5 file compared with the previous test and includes the extra end tag for the
 		/// EmbeddedResource.
