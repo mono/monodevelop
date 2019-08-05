@@ -404,7 +404,8 @@ namespace Mono.TextEditor
 			get {
 				if (font == null) {
 					try {
-						if (!IdeServices.FontService.TryGetFont (FontName, out var xwtFont)) {
+						var xwtFont = Xwt.Drawing.Font.FromName (FontName);
+						if (xwtFont == null) {
 							font = Pango.FontDescription.FromString (DEFAULT_FONT);
 						} else {
 							font = xwtFont.ToPangoFont ();
@@ -438,8 +439,9 @@ namespace Mono.TextEditor
 			get {
 				if (gutterFont == null) {
 					try {
-						if (!string.IsNullOrEmpty (GutterFontName))
-							gutterFont = Pango.FontDescription.FromString (GutterFontName);
+						var xwtFont = Xwt.Drawing.Font.FromName (GutterFontName);
+						if (xwtFont != null) 
+							gutterFont = xwtFont.ToPangoFont ();
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not load gutter font: " + GutterFontName, e);
 					}

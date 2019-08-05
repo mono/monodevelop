@@ -64,8 +64,8 @@ namespace MonoDevelop.Refactoring
 			this.documentContext = documentContext = editor.DocumentContext;
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
-
-			if (IdeServices.FontService.TryGetFont (DefaultSourceEditorOptions.Instance.FontName, out var font)) {
+			var font = Xwt.Drawing.Font.FromName (DefaultSourceEditorOptions.Instance.FontName);
+			if (font != null) {
 				fontDescription = font.ToPangoFont ();
 				fontDescription.Size = (int)(fontDescription.Size * 0.8f);
 			} else {

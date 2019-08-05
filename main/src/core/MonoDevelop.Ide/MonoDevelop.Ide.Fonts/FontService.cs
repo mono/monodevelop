@@ -153,17 +153,6 @@ namespace MonoDevelop.Ide.Fonts
 			return loadedFonts [name] = LoadFont (GetUnderlyingFontName (name));
 		}
 
-		public bool TryGetFont (string name, out Xwt.Drawing.Font font)
-		{
-			var fontDescription = GetUnderlyingFontName (name);
-			if (fontDescription == null) {
-				font = null;
-				return false;
-			}
-			font = Xwt.Drawing.Font.FromName (fontDescription);
-			return font != null;
-		}
-
 		public Xwt.Drawing.Font GetFont (string name)
 		{
 			var fontDescription = GetUnderlyingFontName (name);
@@ -294,12 +283,24 @@ namespace MonoDevelop.Ide.Fonts
 			var backend = Xwt.Toolkit.GetBackend (font) as FontDescription;
 			if (backend != null)
 				return backend.Copy ();
-			return FontDescription.FromString (font.ToString ());
+			var description = FontDescription.FromString (font.Family + " " + font.Size);
+			description.Weight = (Pango.Weight)font.Weight;
+			description.Style = (Pango.Style)font.Style;
+			description.Stretch = (Pango.Stretch)font.Stretch;
+			return description;
 		}
 #if MAC
 		public static NSFont ToNSFont (this Xwt.Drawing.Font font)
 		{
-			return Xwt.Toolkit.GetBackend (font) as NSFont;
+			if (Xwt.Toolkit.GetBackend (font) is Xwt.Mac.FontData fontData)
+				return fontData.Font;
+			NSFont result = null;
+			Xwt.Toolkit.NativeEngine.Invoke (() => {
+				var nativeXwtFont = Xwt.Drawing.Font.FromName (font.ToString ());
+				if (Xwt.Toolkit.GetBackend (nativeXwtFont) is Xwt.Mac.FontData fontData)
+					result = fontData.Font;
+			});
+			return result;
 		}
 #endif
 
@@ -311,8 +312,14 @@ namespace MonoDevelop.Ide.Fonts
 		public static Xwt.Drawing.Font ToXwtFont (this FontDescription font, Xwt.Toolkit withToolkit)
 		{
 			var toolkit = withToolkit ?? Xwt.Toolkit.CurrentEngine;
+
 			Xwt.Drawing.Font xwtFont = null;
-			toolkit.Invoke (() => xwtFont = Xwt.Drawing.Font.FromName (font.ToString ()));
+			toolkit.Invoke (() => {
+				xwtFont = Xwt.Drawing.Font.FromName (font.Family + " " + (int)(font.Size / Pango.Scale.PangoScale))
+					.WithWeight ((Xwt.Drawing.FontWeight)font.Weight)
+					.WithStyle ((Xwt.Drawing.FontStyle)font.Style)
+					.WithStretch ((Xwt.Drawing.FontStretch)font.Stretch);
+		});
 			return xwtFont;
 		}
 	}

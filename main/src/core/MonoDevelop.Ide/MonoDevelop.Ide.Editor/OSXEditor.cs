@@ -63,10 +63,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public static double GetLineHeight(string fontName)
+		public static double GetLineHeight(Xwt.Drawing.Font font)
 		{
-			if (!IdeServices.FontService.TryGetFont (fontName, out var font))
-				return -1;
+			if (font is null) {
+				throw new ArgumentNullException (nameof (font));
+			}
+
 			using (var lm = new NSLayoutManager ())
 				return lm.DefaultLineHeightForFont (font.ToNSFont ());
 		}
