@@ -63,11 +63,13 @@ namespace MonoDevelop.Projects
 			return result;
 		}
 
-		async Task TestAll (MockProject project)
+		async Task TestAll (MockProject project, Workspace ws)
 		{
 			await FileWatcherService.Update ();
 
-			project.Reset ();
+			foreach (var toClear in ws.GetAllItems<MockProject> ()) {
+				toClear.Reset ();
+			}
 
 			var testFile = project.BaseDirectory.Combine ("test_file");
 			// Create -> Change -> Rename -> Delete
@@ -93,7 +95,7 @@ namespace MonoDevelop.Projects
 
 			var projects = workspace.GetAllItems<MockProject> ().ToArray ();
 
-			await TestAll (projects [0]);
+			await TestAll (projects [0], workspace);
 
 			// Check we have data for project0, but not project 1
 			AssertData (projects [0], Is.GreaterThan (0));
@@ -148,7 +150,7 @@ namespace MonoDevelop.Projects
 			var project = workspace.GetAllItems<MockProject> ().Single ();
 			solution.OnRootDirectoriesChanged (project, isRemove: true, isAdd: false);
 
-			await TestAll (project);
+			await TestAll (project, workspace);
 			AssertData (project, Is.EqualTo (0));
 
 			await FileWatcherService.Remove (workspace);
@@ -164,7 +166,7 @@ namespace MonoDevelop.Projects
 
 			var project = workspace.GetAllItems<MockProject> ().Single ();
 
-			await TestAll (project);
+			await TestAll (project, workspace);
 			AssertData (project, Is.EqualTo (0));
 		}
 
@@ -180,7 +182,7 @@ namespace MonoDevelop.Projects
 			var project = new MockProject (projectFile);
 			item.OnRootDirectoriesChanged (project, isRemove: false, isAdd: true);
 
-			await TestAll (project);
+			await TestAll (project, workspace);
 			AssertData (project, Is.GreaterThan (0));
 
 			await FileWatcherService.Remove (workspace);
@@ -195,7 +197,7 @@ namespace MonoDevelop.Projects
 
 			var project = workspace.GetAllItems<MockProject> ().Single ();
 
-			await TestAll (project);
+			await TestAll (project, workspace);
 
 			Assert.That (FileWatcherService.Timings.GetTimings (FileService.EventDataKind.Created), Is.GreaterThan (TimeSpan.Zero));
 			Assert.That (FileWatcherService.Timings.GetTimings (FileService.EventDataKind.Removed), Is.GreaterThan (TimeSpan.Zero));
