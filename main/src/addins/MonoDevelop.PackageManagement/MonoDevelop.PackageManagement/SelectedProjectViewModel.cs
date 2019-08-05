@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement
 			Project = project;
 		}
 
-		public IDotNetProject Project { get; private set; }
+		public IDotNetProject Project { get; }
 		public bool IsSelected { get; set; }
 
 		public string Name {

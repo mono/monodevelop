@@ -34,11 +34,7 @@ namespace MonoDevelop.PackageManagement
 		public ManageProjectViewModel (ManagePackagesProjectInfo projectInfo, string packageId)
 		{
 			ProjectInfo = projectInfo;
-			Init (packageId);
-		}
 
-		void Init (string packageId)
-		{
 			var package = ProjectInfo.Packages.FirstOrDefault (package => StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId));
 			if (package != null) {
 				IsChecked = true;
@@ -56,10 +52,10 @@ namespace MonoDevelop.PackageManagement
 			get { return Project.Name; }
 		}
 
-		public string PackageVersion { get; private set; }
+		public string PackageVersion { get; set; }
 
 		public bool IsChecked { get; set; }
 
-		internal ManagePackagesProjectInfo ProjectInfo { get; private set; }
+		internal ManagePackagesProjectInfo ProjectInfo { get; set; }
 	}
 }

@@ -75,6 +75,7 @@ namespace MonoDevelop.PackageManagement
 		Label currentPackageVersionLabel;
 		Label currentPackageVersion;
 		InformationPopoverWidget currentPackageVersionInfoPopoverWidget;
+		Button closeButton;
 		int packageInfoFontSize = 11;
 
 		void Build ()
@@ -441,12 +442,11 @@ namespace MonoDevelop.PackageManagement
 			addPackagesButton.Label = GettextCatalog.GetString ("Add Package");
 			bottomHBox.PackEnd (addPackagesButton);
 
-			var closeButton = new Button ();
+			closeButton = new Button ();
 			closeButton.Name = "managePackagesDialogCloseButton";
 			closeButton.MinWidth = 120;
 			closeButton.MinHeight = 25;
 			closeButton.Label = GettextCatalog.GetString ("Close");
-			closeButton.Clicked += (sender, e) => Close ();
 			bottomHBox.PackEnd (closeButton);
 
 			packageSearchEntry.SetFocus ();

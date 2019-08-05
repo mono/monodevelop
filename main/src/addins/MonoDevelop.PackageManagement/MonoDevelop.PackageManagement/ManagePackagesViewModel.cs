@@ -186,6 +186,7 @@ namespace MonoDevelop.PackageManagement
 			var repositories = provider.GetRepositories ().ToList ();
 
 			if (repositories.Count > 1) {
+				// All Sources - first package source if there are multiple sources.
 				yield return new AggregateSourceRepositoryViewModel (repositories);
 			}
 
@@ -457,8 +458,7 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdatePackageViewModels (IEnumerable<PackageItemListViewModel> newPackageViewModels)
 		{
-			var packages = ConvertToPackageViewModels (newPackageViewModels).ToList ();
-			packages = PrioritizePackages (packages).ToList ();
+			var packages = PrioritizePackages (ConvertToPackageViewModels (newPackageViewModels)).ToList ();
 
 			foreach (ManagePackagesSearchResultViewModel packageViewModel in packages) {
 				PackageViewModels.Add (packageViewModel);
@@ -664,8 +664,10 @@ namespace MonoDevelop.PackageManagement
 		public bool IsOlderPackageInstalled (string id, NuGetVersion version)
 		{
 			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
-				if (projectInfo.Packages.Any (packageId => IsOlderPackageInstalled (packageId, id, version))) {
-					return true;
+				foreach (PackageIdentity package in projectInfo.Packages) {
+					if (IsOlderPackageInstalled (package, id, version)) {
+						return true;
+					}
 				}
 			}
 			return false;
@@ -816,9 +818,17 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<IDotNetProject> GetFilteredProjectsToSelect (IEnumerable<string> packageIds)
 		{
 			foreach (IDotNetProject project in dotNetProjects) {
-				var matchedProjectInfo = projectInformation.FirstOrDefault (p => p.Project == project);
-				if (matchedProjectInfo.Packages.Any (package => packageIds.Any (id => StringComparer.OrdinalIgnoreCase.Equals (package.Id, id)))) {
-					yield return project;
+				foreach (var projectInfo in projectInformation) {
+					if (projectInfo.Project != project)
+						continue;
+
+					foreach (PackageIdentity package in projectInfo.Packages) {
+						foreach (string packageId in packageIds) {
+							if (StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId)) {
+								yield return project;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -911,12 +921,13 @@ namespace MonoDevelop.PackageManagement
 		{
 			PackageIdentity currentPackage = null;
 			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
-				PackageIdentity foundPackage = projectInfo.Packages.FirstOrDefault (package => IsPackageIdMatch (package, packageId));
-				if (foundPackage != null) {
-					if (currentPackage == null) {
-						currentPackage = foundPackage;
-					} else {
-						return GettextCatalog.GetString ("Multiple");
+				foreach (PackageIdentity package in projectInfo.Packages) {
+					if (IsPackageIdMatch (package, packageId)) {
+						if (currentPackage == null) {
+							currentPackage = package;
+						} else {
+							return GettextCatalog.GetString ("Multiple");
+						}
 					}
 				}
 			}
@@ -948,7 +959,7 @@ namespace MonoDevelop.PackageManagement
 						previousMatch.projectInfo = projectInfo;
 					} else {
 						if (additionalText == null) {
-							additionalText = new StringBuilder ();
+							additionalText = StringBuilderCache.Allocate ();
 							AppendAdditionalText (additionalText, previousMatch.projectInfo, previousMatch.package);
 						}
 						additionalText.Append (", ");
@@ -958,7 +969,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			if (additionalText != null) {
-				return additionalText.ToString ();
+				return StringBuilderCache.ReturnAndFree (additionalText);
 			}
 
 			return string.Empty;

@@ -31,7 +31,7 @@ namespace MonoDevelop.PackageManagement
 {
 	class SelectProjectsViewModel
 	{
-		List<SelectedProjectViewModel> projects;
+		readonly List<SelectedProjectViewModel> projects;
 
 		public SelectProjectsViewModel (
 			IEnumerable<IDotNetProject> projects,
@@ -43,15 +43,8 @@ namespace MonoDevelop.PackageManagement
 				.Select (project => new SelectedProjectViewModel (project))
 				.ToList ();
 
-			Init (packagesCount, page);
-		}
-
-		void Init (
-			int packagesCount,
-			ManagePackagesPage page)
-		{
-			if (projects.Count () == 1) {
-				projects[0].IsSelected = true;
+			if (this.projects.Count == 1) {
+				this.projects[0].IsSelected = true;
 			}
 
 			bool multiplePackages = packagesCount > 1;
@@ -82,14 +75,14 @@ namespace MonoDevelop.PackageManagement
 			get { return projects; }
 		}
 
-		public bool IsAddingSinglePackage { get; private set; }
-		public bool IsAddingMultiplePackages { get; private set; }
-		public bool IsRemovingSinglePackage { get; private set; }
-		public bool IsRemovingMultiplePackages { get; private set; }
-		public bool IsUpdatingSinglePackage { get; private set; }
-		public bool IsUpdatingMultiplePackages { get; private set; }
-		public bool IsConsolidatingSinglePackage { get; private set; }
-		public bool IsConsolidatingMultiplePackages { get; private set; }
+		public bool IsAddingSinglePackage { get; }
+		public bool IsAddingMultiplePackages { get; }
+		public bool IsRemovingSinglePackage { get; }
+		public bool IsRemovingMultiplePackages { get; }
+		public bool IsUpdatingSinglePackage { get; }
+		public bool IsUpdatingMultiplePackages { get; }
+		public bool IsConsolidatingSinglePackage { get; }
+		public bool IsConsolidatingMultiplePackages { get; }
 
 		public IEnumerable<IDotNetProject> GetSelectedProjects ()
 		{

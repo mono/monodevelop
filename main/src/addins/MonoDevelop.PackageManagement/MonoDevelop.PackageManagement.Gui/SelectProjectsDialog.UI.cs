@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using Xwt;
@@ -36,6 +37,7 @@ namespace MonoDevelop.PackageManagement
 		Label topLabel;
 		VBox projectsListView;
 		DialogButton okButton;
+		List<CheckBox> checkBoxes = new List<CheckBox> ();
 
 		void Build ()
 		{
@@ -82,6 +84,8 @@ namespace MonoDevelop.PackageManagement
 			checkBox.Clicked += ProjectCheckBoxClicked;
 			hbox.PackStart (checkBox);
 
+			checkBoxes.Add (checkBox);
+
 			projectsListView.PackStart (hbox);
 		}
 
@@ -97,6 +101,17 @@ namespace MonoDevelop.PackageManagement
 		void UpdateOkButtonSensitivity ()
 		{
 			okButton.Sensitive = viewModel.GetSelectedProjects ().Any ();
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+
+			if (disposing) {
+				foreach (CheckBox checkBox in checkBoxes) {
+					checkBox.Clicked -= ProjectCheckBoxClicked;
+				}
+			}
 		}
 	}
 }

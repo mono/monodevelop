@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 		ManagePackagesViewModel parent;
 		PackageItemListViewModel viewModel;
 		PackageDetailControlModel packageDetailModel;
-		List<PackageDependencyMetadata> dependencies;
+		PackageDependencyMetadata[] dependencies;
 		string summary;
 		bool isChecked;
 
@@ -232,11 +232,13 @@ namespace MonoDevelop.PackageManagement
 				packageDetailModel.SelectedVersion = new DisplayVersion (SelectedVersion, null);
 				return ReadVersionsFromPackageDetailControlModel (cancellationToken).ContinueWith (
 					task => OnVersionsRead (task),
+					cancellationToken,
+					TaskContinuationOptions.NotOnCanceled,
 					TaskScheduler.FromCurrentSynchronizationContext ());
 			} catch (Exception ex) {
 				LoggingService.LogError ("ReadVersions error.", ex);
 			}
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		Task ReadVersionsFromPackageDetailControlModel (CancellationToken cancellationToken)
@@ -376,13 +378,11 @@ namespace MonoDevelop.PackageManagement
 			try {
 				if (task.IsFaulted) {
 					LoggingService.LogError ("Failed to read package metadata.", task.Exception);
-				} else if (task.IsCanceled) {
-					// Ignore.
 				} else {
 					var metadata = packageDetailModel?.PackageMetadata;
 					if (metadata != null) {
 						viewModel.Published = metadata.Published;
-						dependencies = GetCompatibleDependencies ().ToList ();
+						dependencies = GetCompatibleDependencies ().ToArray ();
 						OnPropertyChanged ("Dependencies");
 					}
 				}
@@ -401,15 +401,15 @@ namespace MonoDevelop.PackageManagement
 
 		public string GetPackageDependenciesDisplayText ()
 		{
-			var displayText = new StringBuilder ();
+			var displayText = StringBuilderCache.Allocate ();
 			foreach (PackageDependencyMetadata dependency in CompatibleDependencies) {
 				displayText.AppendLine (dependency.ToString ());
 			}
-			return displayText.ToString ();
+			return StringBuilderCache.ReturnAndFree (displayText);
 		}
 
 		IEnumerable<PackageDependencyMetadata> CompatibleDependencies {
-			get { return dependencies ?? new List<PackageDependencyMetadata> (); }
+			get { return dependencies ?? Array.Empty<PackageDependencyMetadata> (); }
 		}
 
 		IEnumerable<PackageDependencyMetadata> GetCompatibleDependencies ()

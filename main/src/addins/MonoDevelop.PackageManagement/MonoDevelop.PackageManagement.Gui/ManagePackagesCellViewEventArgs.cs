@@ -35,6 +35,6 @@ namespace MonoDevelop.PackageManagement
 			PackageViewModel = packageViewModel;
 		}
 
-		public ManagePackagesSearchResultViewModel PackageViewModel { get; private set; }
+		public ManagePackagesSearchResultViewModel PackageViewModel { get; }
 	}
 }

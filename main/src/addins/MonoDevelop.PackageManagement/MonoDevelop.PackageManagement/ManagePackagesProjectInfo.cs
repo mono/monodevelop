@@ -29,20 +29,21 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging.Core;
 using NuGet.Packaging;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.PackageManagement
 {
 	class ManagePackagesProjectInfo : IComparable<ManagePackagesProjectInfo>
 	{
-		List<PackageReference> packages;
+		readonly ImmutableArray<PackageReference> packages;
 
 		public ManagePackagesProjectInfo (IDotNetProject project, IEnumerable<PackageReference> packages)
 		{
 			Project = project;
-			this.packages = packages.ToList ();
+			this.packages = ImmutableArray<PackageReference>.Empty.AddRange (packages);
 		}
 
-		public IDotNetProject Project { get; private set; }
+		public IDotNetProject Project { get; }
 
 		public IEnumerable<PackageIdentity> Packages {
 			get { return packages.Select (p => p.PackageIdentity); }

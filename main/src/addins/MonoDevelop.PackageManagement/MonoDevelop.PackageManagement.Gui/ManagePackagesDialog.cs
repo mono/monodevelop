@@ -96,6 +96,7 @@ namespace MonoDevelop.PackageManagement
 			ShowLoadingMessage ();
 			LoadViewModel (initialSearch);
 
+			closeButton.Clicked += CloseButtonClicked;
 			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
 			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
 			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
@@ -114,6 +115,9 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void Dispose (bool disposing)
 		{
+			closeButton.Clicked -= CloseButtonClicked;
+			currentPackageVersionLabel.BoundsChanged -= PackageVersionLabelBoundsChanged;
+
 			imageLoader.Loaded -= ImageLoaded;
 			imageLoader.Dispose ();
 
@@ -125,6 +129,7 @@ namespace MonoDevelop.PackageManagement
 			packageStore.Clear ();
 			projectStore?.Clear ();
 			viewModel = null;
+
 			base.Dispose (disposing);
 		}
 
@@ -261,6 +266,11 @@ namespace MonoDevelop.PackageManagement
 				packagesListView.Visible = false;
 				noPackagesFoundFrame.Visible = true;
 			}
+		}
+
+		void CloseButtonClicked (object sender, EventArgs e)
+		{
+			Close ();
 		}
 
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
@@ -581,7 +591,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		bool IsOddRow (int row)
+		static bool IsOddRow (int row)
 		{
 			return (row % 2) == 0;
 		}
@@ -719,7 +729,7 @@ namespace MonoDevelop.PackageManagement
 		ProgressMonitorStatusMessage GetProgressMonitorInstallMessages (List<IPackageAction> packageActions)
 		{
 			if (packageActions.Count == 1) {
-				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
+				string packageId = packageActions.Cast<INuGetPackageAction> ().First ().PackageId;
 				if (OlderPackageInstalledThanPackageSelected ()) {
 					return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageId);
 				}
@@ -732,7 +742,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			int count = packageActions.Count;
 			if (count == 1) {
-				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
+				string packageId = packageActions.Cast<INuGetPackageAction> ().First ().PackageId;
 				return ProgressMonitorStatusMessageFactory.CreateRemoveSinglePackageMessage (packageId);
 			}
 
@@ -748,7 +758,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			int count = packageActions.Count;
 			if (count == 1) {
-				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
+				string packageId = packageActions.Cast<INuGetPackageAction> ().First ().PackageId;
 				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageId);
 			}
 
@@ -764,7 +774,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			int count = packageActions.Count;
 			if (count == 1) {
-				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
+				string packageId = packageActions.Cast<INuGetPackageAction> ().First ().PackageId;
 				return new ProgressMonitorStatusMessage (
 					GettextCatalog.GetString ("Consolidating {0}...", packageId),
 					GettextCatalog.GetString ("{0} successfully consolidated.", packageId),
@@ -912,7 +922,7 @@ namespace MonoDevelop.PackageManagement
 					}
 				}
 			} catch (Exception ex) {
-				LoggingService.LogError ("ManagePackage failed.", ex);
+				LoggingService.LogInternalError ("ManagePackage failed.", ex);
 				ShowErrorMessage (ex.Message);
 			}
 		}
