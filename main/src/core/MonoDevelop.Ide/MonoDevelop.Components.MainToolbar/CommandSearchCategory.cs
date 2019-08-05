@@ -38,15 +38,19 @@ namespace MonoDevelop.Components.MainToolbar
 	class CommandSearchCategory : SearchCategory
 	{
 		static readonly List<Tuple<Command, string>> allCommands;
-		private static readonly Mono.Addins.RuntimeAddin currentRuntimeAddin;
+		static readonly Mono.Addins.RuntimeAddin currentRuntimeAddin;
+
 		static CommandSearchCategory ()
 		{
+			// The AddinManager is not thread safe, so we need to make sure we're
+			// calling from the main thread.
+			Runtime.AssertMainThread ();
 			currentRuntimeAddin = Mono.Addins.AddinManager.CurrentAddin;
+
 			var hiddenCategory = GettextCatalog.GetString ("Hidden");
 			allCommands = IdeApp.CommandService.GetCommands ()
 			                    .Where (cmd => (cmd as ActionCommand)?.CommandArray != true && cmd.Category != hiddenCategory)
 			                    .Select(cmd => Tuple.Create (cmd, cmd.DisplayName))
-								.OrderByDescending(cmd => (cmd.Item1 as ActionCommand)?.RuntimeAddin == currentRuntimeAddin)
 			                    .ToList();
 		}
 
@@ -54,7 +58,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 		}
 
-		string[] validTags = new [] { "cmd", "command", "c" };
+		readonly string[] validTags = { "cmd", "command", "c" };
 
 		public override string [] Tags {
 			get {
@@ -85,7 +89,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 						if (matcher.CalcMatchRank (matchString, out var rank)) {
 							if ((cmd as ActionCommand)?.RuntimeAddin == currentRuntimeAddin)
-								rank += 100; // we prefer commands comming from the addin
+								rank += 1; // we prefer commands comming from the addin
 							searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
 						}
 					}
