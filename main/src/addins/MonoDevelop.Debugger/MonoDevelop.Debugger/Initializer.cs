@@ -86,8 +86,7 @@ namespace MonoDevelop.Debugger
 				bool alternateLocationExists = false;
 				if (frame.SourceLocation.FileHash != null) {
 					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
-					alternateLocationExists = File.Exists (newFilePath);
-					if (newFilePath != null && alternateLocationExists) {
+					if (newFilePath != null && File.Exists (newFilePath)) {
 						frame.UpdateSourceFile (newFilePath);
 						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
 						if (doc != null)
@@ -104,7 +103,7 @@ namespace MonoDevelop.Debugger
 					// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
 					if (!File.Exists (downloadLocation)) {
 						if (automaticSourceDownload == AutomaticSourceDownload.Always) {
-							doc = await DownloadAndOpenFileAsync (frame, line, sourceLink, alternateLocationExists);
+							doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
 						} else {
 							var hyperlink = $"<a href='{ sourceLink.Uri }'>{  Path.GetFileName (sourceLink.RelativeFilePath) }</a>";
 							var stackframeText = $"<b>{frame.FullStackframeText}</b>";
@@ -126,7 +125,7 @@ namespace MonoDevelop.Debugger
 									debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
 									DebuggingService.SetUserOptions (debuggerOptions);
 								}
-								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink, alternateLocationExists);
+								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
 							}
 						}
 					} else {
@@ -173,7 +172,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLink sourceLink, bool overwrite)
+		async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLink sourceLink)
 		{
 			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				GettextCatalog.GetString ("Downloading {0}", sourceLink.Uri),
@@ -188,7 +187,7 @@ namespace MonoDevelop.Debugger
 				DocumentRegistry.SkipNextChange (downloadLocation);
 				var client = HttpClientProvider.CreateHttpClient (sourceLink.Uri);
 				using (var stream = await client.GetStreamAsync (sourceLink.Uri).ConfigureAwait (false))
-				using (var fs = new FileStream (downloadLocation, overwrite ? FileMode.Create : FileMode.CreateNew)) {
+				using (var fs = new FileStream (downloadLocation, FileMode.Create)) {
 					await stream.CopyToAsync (fs).ConfigureAwait (false);
 				}
 				frame.UpdateSourceFile (downloadLocation);
