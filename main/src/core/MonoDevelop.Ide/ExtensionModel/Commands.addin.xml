@@ -945,7 +945,7 @@
 			_label = "Find Next Like Selection"
 			_description = "Search forwards for the selected text"
 			shortcut = "Control|F3"
-			macShortcut = "Meta|E Meta|F3" />
+			macShortcut = "Meta|F3" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
 			_label = "Find Previous Like Selection"
 			_description = "Search backwards for the selected text"
@@ -1022,10 +1022,11 @@
 			shortcut = "Control|I"
 			macShortcut = "Meta|L" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForFind"
-			_label = "Find Like Selection"
-			_description = "Uses the current selection as find string"/>
+			_label = "Use Selection for Find"
+			_description = "Uses the current selection as find string"
+			macShortcut = "Meta|E" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForReplace"
-			_label = "Replace Like Selection"
+			_label = "Use Selection for Replace"
 			_description = "Uses the current selection as replace string"/>
 	</Category>
 
