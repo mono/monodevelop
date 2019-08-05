@@ -635,6 +635,9 @@ namespace MonoDevelop.Projects.MSBuild
 				// It has to be a property or field
 				try {
 					var member = ResolveMember (type, memberName.ToString (), instance == null, MemberTypes.Property | MemberTypes.Field);
+					if (member == null || member.Length == 0)
+						return false;
+
 					if (member[0] is PropertyInfo)
 						val = ((PropertyInfo)member[0]).GetValue (instance);
 					else if (member[0] is FieldInfo)
