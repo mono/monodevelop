@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.MSBuild
 			} catch (Exception ex) {
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
-				throw new ProjectEvaluationException (msproject, ex.Message);
+				throw new ProjectEvaluationException (msproject, ex.Message, ex);
 			} finally {
 				if (oldProjectInstance != null)
 					engine.DisposeProjectInstance (oldProjectInstance);
