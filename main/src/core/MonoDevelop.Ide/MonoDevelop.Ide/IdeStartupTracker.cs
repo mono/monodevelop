@@ -93,6 +93,11 @@ namespace MonoDevelop.Ide
 			ttcMetadata.AddProperties (startupMetadata);
 
 			LoggingService.LogDebug ("TTC starting");
+
+			foreach (var kvp in sectionTimings) {
+				LoggingService.LogInfo ("Startup section {0} {1} ms", kvp.Key, kvp.Value);
+			}
+			LoggingService.LogInfo ("Startup sections {0} ms", startupTimer.ElapsedMilliseconds);
 		}
 
 		internal void MarkSection (string name)
