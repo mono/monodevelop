@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring.Options
 		DataField<ItemCollection> propertiesField = new DataField<ItemCollection> ();
 
 		DataField<string> severityField     = new DataField<string> ();
-		DataField<ItemCollection> notificationPreferencesField = new DataField<ItemCollection> ();
+		DataField<ItemCollection> severitiesField = new DataField<ItemCollection> ();
 
 		TreeStore store;
 		Xwt.TreeView treeView;
@@ -74,7 +74,7 @@ namespace MonoDevelop.Refactoring.Options
 
 		void CreateView ()
 		{
-			store = new TreeStore (itemField, descriptionField, propertyNameField, propertiesField, severityField, notificationPreferencesField);
+			store = new TreeStore (itemField, descriptionField, propertyNameField, propertiesField, severityField, severitiesField);
 
 			treeView = new TreeView (store);
 			treeView.SelectionChanged += (object sender, EventArgs e) => {
@@ -101,7 +101,6 @@ namespace MonoDevelop.Refactoring.Options
 				var item = treeNavigator.GetValue (itemField);
 				if (item == null)
 					return;
-				var text2 = treeNavigator.GetValue (propertyNameField);
 
 				GLib.Timeout.Add (10, delegate {
 					var text = treeNavigator.GetValue (propertyNameField);
@@ -120,7 +119,7 @@ namespace MonoDevelop.Refactoring.Options
 
 			var severityCellView = new ComboBoxCellView (severityField);
 			severityCellView.Editable = true;
-			severityCellView.ItemsField = notificationPreferencesField;
+			severityCellView.ItemsField = severitiesField;
 			severityCellView.SelectionChanged += delegate (object sender, WidgetEventArgs e) {
 				var treeNavigator = store.GetNavigatorAt (treeView.CurrentEventRow);
 				if (treeNavigator == null)
@@ -128,7 +127,6 @@ namespace MonoDevelop.Refactoring.Options
 				var item = treeNavigator.GetValue (itemField);
 				if (item == null)
 					return;
-				var oldSeverity = treeNavigator.GetValue (severityField);
 
 				GLib.Timeout.Add (10, delegate {
 					var newSeverity = treeNavigator.GetValue (severityField);
@@ -162,7 +160,7 @@ namespace MonoDevelop.Refactoring.Options
 					groupNode.SetValue (propertyNameField, "");
 					groupNode.SetValue (propertiesField, new ItemCollection ());
 					groupNode.SetValue (severityField, "");
-					groupNode.SetValue (notificationPreferencesField, new ItemCollection ());
+					groupNode.SetValue (severitiesField, new ItemCollection ());
 
 					groupNodes [item.GroupName] = groupNode;
 				}
@@ -179,7 +177,7 @@ namespace MonoDevelop.Refactoring.Options
 				itemCollection = new ItemCollection ();
 				foreach (var pref in item.NotificationPreferences)
 					itemCollection.Add (pref.Name);
-				childNode.SetValue (notificationPreferencesField, itemCollection);
+				childNode.SetValue (severitiesField, itemCollection);
 				groupNode.MoveToParent ();
 			}
 			treeView.ExpandAll (); 
