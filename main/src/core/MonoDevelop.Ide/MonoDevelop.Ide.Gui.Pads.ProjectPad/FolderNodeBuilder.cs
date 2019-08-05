@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
 			if (project != null) {
-				info.Visible = project.SupportedLanguages.Contains ("C#");
+				info.Visible = IdeApp.ProjectOperations.CanCreateProjectFile (project, GetFolderPath (CurrentNode.DataItem), "EmptyClass");
 			}
 		}
 
