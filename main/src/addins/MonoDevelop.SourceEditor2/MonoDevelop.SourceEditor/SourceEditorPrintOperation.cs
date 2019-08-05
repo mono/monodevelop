@@ -291,7 +291,8 @@ namespace MonoDevelop.SourceEditor
 		
 		private SourceEditorPrintSettings ()
 		{
-			if (!IdeServices.FontService.TryGetFont (DefaultSourceEditorOptions.Instance.FontName, out var font)) {
+			var font = Xwt.Drawing.Font.FromName (DefaultSourceEditorOptions.Instance.FontName);
+			if (font == null) {
 				LoggingService.LogWarning ("Could not load font: {0}", DefaultSourceEditorOptions.Instance.FontName);
 			} else {
 				Font = font.ToPangoFont ();

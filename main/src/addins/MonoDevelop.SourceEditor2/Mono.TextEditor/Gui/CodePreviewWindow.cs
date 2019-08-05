@@ -62,7 +62,9 @@ namespace Mono.TextEditor
 			this.fontName = fontName = fontName ?? DefaultSourceEditorOptions.Instance.FontName;
 
 			layout = PangoUtil.CreateLayout (this);
-			if (!IdeServices.FontService.TryGetFont (fontName, out var font)) {
+			var font = Xwt.Drawing.Font.FromName (fontName);
+
+			if (font == null) {
 				LoggingService.LogError ("Can't parse font " + fontName);
 			} else {
 				fontDescription = font.ToPangoFont ();

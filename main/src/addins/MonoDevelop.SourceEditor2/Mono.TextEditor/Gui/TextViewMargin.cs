@@ -48,6 +48,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Fonts;
 
 namespace Mono.TextEditor
 {
@@ -662,7 +663,8 @@ namespace Mono.TextEditor
 			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
 #if MAC
 				try {
-					lineHeight = System.Math.Ceiling (0.5 + OSXEditor.GetLineHeight(font.ToString ()));
+
+					lineHeight = System.Math.Ceiling (0.5 + OSXEditor.GetLineHeight(font.ToXwtFont ()));
 					if (lineHeight < 0)
 						lineHeight = GetLineHeight (metrics);
 				} catch (Exception e) {
