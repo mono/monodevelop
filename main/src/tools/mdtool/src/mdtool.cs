@@ -117,6 +117,7 @@ class MonoDevelopProcessHost
 			//setup app needs to skip runtime initialization or we get addin engine races
 			if (toolName == "setup") {
 				exitCode = RunSetup (toolArgs);
+				return exitCode;
 			}
 
 			// Only log fatal errors unless verbosity is specified. Command line tools should already
@@ -129,25 +130,30 @@ class MonoDevelopProcessHost
 			if (showHelp || badInput) {
 				ShowHelp (badInput, exeName);
 				exitCode = badInput? 1 : 0;
+				return exitCode;
 			}
 
-			var tool = Runtime.ApplicationService.GetApplication (toolName);
-			if (tool == null) {
-				Console.Error.WriteLine ("Tool '{0}' not found.", toolName);
-				listTools = true;
-				badInput = true;
+			if (!showHelp && !badInput) {
+				var tool = Runtime.ApplicationService.GetApplication (toolName);
+				if (tool == null) {
+					Console.Error.WriteLine ("Tool '{0}' not found.", toolName);
+					listTools = true;
+					badInput = true;
+				}
+
+				if (listTools) {
+					ShowAvailableTools ();
+					exitCode = badInput ? 1 : 0;
+					return exitCode;
+				}
+
+				if (tool != null) {
+					var task = tool.Run (toolArgs);
+					task.ContinueWith ((t) => sc.ExitLoop ());
+					sc.RunMainLoop ();
+					exitCode = task.Result;
+				}
 			}
-
-			if (listTools) {
-				ShowAvailableTools ();
-				exitCode = badInput? 1 : 0;
-			}
-
-			var task = tool.Run (toolArgs);
-			task.ContinueWith ((t) => sc.ExitLoop ());
-			sc.RunMainLoop ();
-			exitCode = task.Result;
-
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
 			exitCode = -1;
