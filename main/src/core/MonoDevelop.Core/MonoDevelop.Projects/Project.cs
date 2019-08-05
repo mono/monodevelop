@@ -2930,14 +2930,14 @@ namespace MonoDevelop.Projects
 			return config;
 		}
 
-		protected internal MSBuildProjectInstance CreateProjectInstanceForConfiguration (string conf, string platform, string framework = null, bool onlyEvaluateProperties = true)
+		internal MSBuildProjectInstance CreateProjectInstanceForConfiguration (string conf, string platform, string framework = null, bool onlyEvaluateProperties = true)
 		{
 			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			pi.Evaluate ();
 			return pi;
 		}
 
-		protected internal async Task<MSBuildProjectInstance> CreateProjectInstanceForConfigurationAsync (string conf, string platform, string framework, bool onlyEvaluateProperties = true)
+		internal async Task<MSBuildProjectInstance> CreateProjectInstanceForConfigurationAsync (string conf, string platform, string framework, bool onlyEvaluateProperties = true)
 		{
 			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			await pi.EvaluateAsync ();
