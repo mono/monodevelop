@@ -63,6 +63,31 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task LoadProjectWithQuestionWildcards ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-question-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.That (files, Is.EquivalentTo (new string [] {
+				"Data1.cs",
+				"Data2.cs",
+				"Data3.cs",
+				"maybe.js",
+				"maybe1.js",
+				"Program.cs",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}));
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public async Task LoadProjectWithWildcardsAndExcludes ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-excludes.csproj");
