@@ -38,8 +38,7 @@ namespace MonoDevelop.Ide
 {
 	internal class IdeStartupTracker
 	{
-		static Lazy<IdeStartupTracker> startupTracker = new Lazy<IdeStartupTracker> (() => new IdeStartupTracker ());
-		static internal IdeStartupTracker StartupTracker => startupTracker.Value;
+		static internal IdeStartupTracker StartupTracker { get; } = new IdeStartupTracker ();
 
 		const long ttcDuration = 3 * TimeSpan.TicksPerSecond; // Wait 3 seconds before ignoring TTC events
 
