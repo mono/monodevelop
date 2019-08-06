@@ -138,7 +138,7 @@ namespace MonoDevelop.PackageManagement
 			if (viewModel.IsManagingSolution)
 				return;
 
-			Title = GettextCatalog.GetString ("Manage NuGet Packages ({0})", viewModel.Project.Name);
+			Title = GettextCatalog.GetString ("Manage NuGet Packages – {0}", viewModel.Project.Name);
 		}
 
 		void UpdatePackageSearchEntryWithInitialText (string initialSearch)
