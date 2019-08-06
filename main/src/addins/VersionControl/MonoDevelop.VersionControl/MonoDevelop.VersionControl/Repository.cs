@@ -25,8 +25,7 @@ namespace MonoDevelop.VersionControl
 
 		int references;
 
-		public FilePath RootPath
-		{
+		public FilePath RootPath {
 			get;
 			protected set;
 		}
@@ -97,7 +96,6 @@ namespace MonoDevelop.VersionControl
 		protected virtual void Dispose (bool disposing)
 		{
 			IsDisposed = true;
-
 			if (queryRunning) {
 				lock (queryLock) {
 					fileQueryQueue.Clear ();
