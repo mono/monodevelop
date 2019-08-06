@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects
 
 		public IEnumerable<ChainedExtension> GetAllExtensions ()
 		{
-			return extensions;
+			return extensions ?? Enumerable.Empty<ChainedExtension> ();
 		}
 
 		public IDisposable BatchModify () => batchModifier = new BatchModifier (this);
