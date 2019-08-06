@@ -522,6 +522,7 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlDocumentController.cs" />
     <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Dialogs\ConfigureRepositoryDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />

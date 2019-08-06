@@ -465,7 +465,7 @@ namespace MonoDevelop.VersionControl
 				case Commands.Publish:
 					VersionControlItem it = items [0];
 					if (items.Count == 1 && it.IsDirectory && it.WorkspaceObject != null)
-						res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
+						res = PublishCommand.Publish (it.VersionInfo, it.WorkspaceObject, it.Path, test);
 					break;
 				case Commands.Annotate:
 					res = await BlameCommand.Show (items, test);
