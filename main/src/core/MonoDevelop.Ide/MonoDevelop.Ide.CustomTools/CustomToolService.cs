@@ -310,8 +310,6 @@ namespace MonoDevelop.Ide.CustomTools
 
 			// Execute the generator
 
-			Exception error = null;
-
 			// Share the one pad for all Tool output.
 			Pad pad = null;
 
@@ -337,7 +335,6 @@ namespace MonoDevelop.Ide.CustomTools
 				try {
 					await tool.Generate (monitor, project, file, result);
 				} catch (Exception ex) {
-					error = ex;
 					result.UnhandledException = ex;
 				}
 
@@ -360,11 +357,7 @@ namespace MonoDevelop.Ide.CustomTools
 				UpdateCompleted (monitor, file, genFile, result, false);
 			} finally {
 				FileService.ThawEvents ();
-				if (error == null)
-					newTask.SetResult (true);
-				else {
-					newTask.SetException (error);
-				}
+				newTask.TrySetResult (true);
 			}
 		}
 		
