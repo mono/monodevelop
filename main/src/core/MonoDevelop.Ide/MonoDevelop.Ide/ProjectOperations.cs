@@ -889,12 +889,13 @@ namespace MonoDevelop.Ide
 		{
 			var projectLangs = parentProject.SupportedLanguages;
 			var template = FileTemplate.GetFileTemplateByID (selectedTemplateId);
-
-			var templateLangs = template.GetCompatibleLanguages (parentProject, basePath);
-			if (templateLangs != null) {
-				foreach (var projectLang in projectLangs) {
-					if (templateLangs.Contains (projectLang))
-						return true;
+			if(template != null) {
+				var templateLangs = template.GetCompatibleLanguages (parentProject, basePath);
+				if (templateLangs != null) {
+					foreach (var projectLang in projectLangs) {
+						if (templateLangs.Contains (projectLang))
+							return true;
+					}
 				}
 			}
 			return false;
