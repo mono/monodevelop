@@ -415,9 +415,7 @@ namespace MonoDevelop.Projects
 
 		protected override Task OnLoad (ProgressMonitor monitor)
 		{
-			return Task.Run (async delegate {
-				await LoadAsync (monitor);
-			});
+			return LoadAsync (monitor);
 		}
 
 		async Task LoadAsync (ProgressMonitor monitor)

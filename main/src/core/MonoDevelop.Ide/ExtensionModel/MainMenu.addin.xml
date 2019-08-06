@@ -157,7 +157,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" />
-	
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForFind" />
 		<SeparatorItem id = "SearchSeparator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />

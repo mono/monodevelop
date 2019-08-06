@@ -333,6 +333,10 @@ namespace MonoDevelop.Core.Assemblies
 			get { return new TargetFrameworkMoniker ("4.7.1"); }
 		}
 
+		public static TargetFrameworkMoniker NET_4_7_2 {
+			get { return new TargetFrameworkMoniker ("4.7.2"); }
+		}
+
 		public static TargetFrameworkMoniker PORTABLE_4_0 {
 			get { return new TargetFrameworkMoniker (ID_PORTABLE, "4.0", "Profile1"); }
 		}

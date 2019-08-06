@@ -38,10 +38,7 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool DefaultVCSViewCanHandle (VersionControlItem item, DocumentController controller)
 		{
-			if (controller == null)
-				return item.Repository.GetFileIsText (item.Path);
-
-			return controller is TextEditorViewContent || controller.GetContent<ITextBuffer> () != null;
+			return item.Repository.GetFileIsText (item.Path);
 		}
 
 		public bool CanHandle (VersionControlItem item, DocumentController controller) => DefaultVCSViewCanHandle (item, controller);

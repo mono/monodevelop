@@ -215,11 +215,9 @@ namespace MonoDevelop.Projects
 
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			return Task<SolutionItem>.Factory.StartNew (delegate {
-				CompiledAssemblyProject p = new CompiledAssemblyProject ();
-				p.LoadFrom (fileName);
-				return p;
-			});
+			CompiledAssemblyProject p = new CompiledAssemblyProject ();
+			p.LoadFrom (fileName);
+			return Task.FromResult<SolutionItem> (p);
 		}
 	}
 }

@@ -29,12 +29,16 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public class ProjectEvaluationException: ApplicationException
 	{
-		public ProjectEvaluationException (MSBuildProject project, string message): base (message)
+		internal ProjectEvaluationException (MSBuildProject project, string message, Exception innerException) : base (message, innerException)
 		{
 			Project = project;
 		}
 
-		public MSBuildProject Project { get; private set; }
+		public ProjectEvaluationException (MSBuildProject project, string message): this (project, message, null)
+		{
+		}
+
+		public MSBuildProject Project { get; }
 	}
 }
 

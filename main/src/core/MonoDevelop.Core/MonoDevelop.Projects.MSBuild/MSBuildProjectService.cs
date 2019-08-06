@@ -784,26 +784,24 @@ namespace MonoDevelop.Projects.MSBuild
 				return Task.FromResult<SolutionItem> (new GenericProject ());
 
 			// Unknown project types are already displayed in the solution view, we don't need to tell the user with a modal dialog as well
-			return Task<SolutionItem>.Factory.StartNew (delegate {
-				var t = ReadGenericProjectType (file);
-				if (t == null)
-					throw new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type"));
+			var t = ReadGenericProjectType (file);
+			if (t == null)
+				return Task.FromException<SolutionItem> (new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type")));
 
-				var dt = Services.ProjectService.DataContext.GetConfigurationDataType (t);
-				if (dt != null) {
-					if (!typeof (Project).IsAssignableFrom (dt.ValueType))
-						throw new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type: {0}", t));
+			var dt = Services.ProjectService.DataContext.GetConfigurationDataType (t);
+			if (dt != null) {
+				if (!typeof (Project).IsAssignableFrom (dt.ValueType))
+					return Task.FromException<SolutionItem> (new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type: {0}", t)));
 
-					return (SolutionItem)Activator.CreateInstance (dt.ValueType);
-				}
+				return Task.FromResult ((SolutionItem)Activator.CreateInstance (dt.ValueType));
+			}
 
-				Type type;
-				lock (genericProjectTypes) {
-					if (!genericProjectTypes.TryGetValue (t, out type))
-						throw new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type: {0}", t));
-				}
-				return (SolutionItem)Activator.CreateInstance (type);
-			});
+			Type type;
+			lock (genericProjectTypes) {
+				if (!genericProjectTypes.TryGetValue (t, out type))
+					return Task.FromException<SolutionItem> (new UnknownSolutionItemTypeException (GettextCatalog.GetString ("Unknown project type: {0}", t)));
+			}
+			return Task.FromResult ((SolutionItem)Activator.CreateInstance (type));
 		}
 
 		static string ReadGenericProjectType (string file)

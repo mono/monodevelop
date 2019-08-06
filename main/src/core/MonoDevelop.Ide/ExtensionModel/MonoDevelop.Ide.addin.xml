@@ -348,8 +348,10 @@
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllExceptPinned" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllToTheRight" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.PinTab" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab" />
 		<SeparatorItem id = "CloseSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
