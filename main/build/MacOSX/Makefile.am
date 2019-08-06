@@ -29,7 +29,16 @@ export MACOSX_DEPLOYMENT_TARGET=10.12
 
 # With the hardened runtime, we need to specify the location of all libraries
 # that we dlopen
-MONOSTUB_RPATH=-Wl,-rpath,/Library/Frameworks/Mono.framework/Libraries/ -Wl,-rpath,@executable_path/../Resources/lib/monodevelop/bin/
+MONOSTUB_RPATH=-Wl,-rpath,/Library/Frameworks/Mono.framework/Libraries/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/bin/ \
+-Wl,-rpath,@executable_path/../Resources/lib/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/AddIns/DisplayBindings/TextEditor.Cocoa/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/AddIns/VersionControl/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/AddIns/VersionControl/lib/osx/ \
+-Wl,-rpath,/Library/Developer/CommandLineTools/usr/lib/ \
+-Wl,-rpath,/Applications/Xcode.app/Contents/Developer/ \
+-Wl,-rpath,/usr/lib/ \
+-Wl,-rpath,/usr/local/lib/
 
 all: monostub monostub-nogui monostub-test
 
