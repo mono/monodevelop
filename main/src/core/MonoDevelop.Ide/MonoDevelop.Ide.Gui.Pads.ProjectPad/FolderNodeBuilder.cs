@@ -437,7 +437,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 
 		[CommandHandler (ProjectCommands.AddEmptyClass)]
-		protected void OnAddCSharpClass ()
+		protected void OnAddEmptyClass ()
 		{
 			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
 			if (project != null) {
