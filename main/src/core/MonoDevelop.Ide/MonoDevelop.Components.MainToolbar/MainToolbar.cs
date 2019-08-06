@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#if !MAC
+
 using System;
 using Gtk;
 using MonoDevelop.Components.Commands;
@@ -43,6 +45,7 @@ using System.Threading;
 using MonoDevelop.Ide.Editor;
 using System.Text;
 using MonoDevelop.Components.AtkCocoaHelper;
+using System.Diagnostics;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -88,10 +91,6 @@ namespace MonoDevelop.Components.MainToolbar
 			get {
 				return statusArea;
 			}
-		}
-
-		internal static object LastCommandTarget {
-			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
 		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
@@ -271,10 +270,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			button.Clicked += HandleStartButtonClicked;
 
-			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
-				lastCommandTarget = new WeakReference (e.OldActiveWidget);
-			};
-
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
 		}
@@ -323,21 +318,54 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleSearchEntryKeyPressed (object sender, KeyPressEventArgs e)
 		{
-			if (SearchEntryKeyPressed != null) {
-				// TODO: Refactor this in Xwt as an extension method.
-				var k = (Xwt.Key)e.Event.KeyValue;
-				var m = Xwt.ModifierKeys.None;
-				if ((e.Event.State & Gdk.ModifierType.ShiftMask) != 0)
-					m |= Xwt.ModifierKeys.Shift;
-				if ((e.Event.State & Gdk.ModifierType.ControlMask) != 0)
-					m |= Xwt.ModifierKeys.Control;
-				if ((e.Event.State & Gdk.ModifierType.Mod1Mask) != 0)
-					m |= Xwt.ModifierKeys.Alt;
-				// TODO: Backport this one.
-				if ((e.Event.State & Gdk.ModifierType.Mod2Mask) != 0)
-					m |= Xwt.ModifierKeys.Command;
-				var kargs = new Xwt.KeyEventArgs (k, m, false, (long)e.Event.Time);
-				SearchEntryKeyPressed (sender, kargs);
+			if (PerformCommand != null) {
+				bool cmdPressed = (e.Event.State & Gdk.ModifierType.Mod2Mask) != 0;
+				SearchPopupCommand command;
+
+				switch ((Gdk.Key)e.Event.KeyValue) {
+				case Gdk.Key.Down:
+				case Gdk.Key.downarrow:
+					if (cmdPressed) {
+						goto case Gdk.Key.Page_Down;
+					}
+
+					command = SearchPopupCommand.NextItem;
+					break;
+
+				case Gdk.Key.Up:
+				case Gdk.Key.uparrow:
+					if (cmdPressed) {
+						goto case Gdk.Key.Page_Up;
+					}
+
+					command = SearchPopupCommand.PreviousItem;
+					break;
+
+				case Gdk.Key.KP_Page_Down:
+				case Gdk.Key.Page_Down:
+					command = SearchPopupCommand.NextCategory;
+					break;
+
+				case Gdk.Key.KP_Page_Up:
+				case Gdk.Key.Page_Up:
+					command = SearchPopupCommand.PreviousCategory;
+					break;
+
+				case Gdk.Key.Escape:
+					command = SearchPopupCommand.Cancel;
+					break;
+
+				case Gdk.Key.Return:
+				case Gdk.Key.KP_Enter:
+					command = SearchPopupCommand.Activate;
+					break;
+
+				default:
+					return;
+				}
+
+				var kargs = new SearchEntryCommandArgs (command);
+				PerformCommand?.Invoke (sender, kargs);
 				e.RetVal = kargs.Handled;
 			}
 		}
@@ -582,6 +610,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public event EventHandler SearchEntryChanged;
 		public event EventHandler SearchEntryActivated;
 		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
+		public event EventHandler<SearchEntryCommandArgs> PerformCommand;
 		public event EventHandler SearchEntryResized;
 		public event EventHandler SearchEntryLostFocus;
 
@@ -628,3 +657,4 @@ namespace MonoDevelop.Components.MainToolbar
 	}
 }
 
+#endif

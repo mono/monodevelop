@@ -129,11 +129,13 @@ namespace MonoDevelop.CodeActions
 		{
 			var loc = Editor.CaretOffset;
 			var ad = DocumentContext.AnalysisDocument;
+			var workspace = ad?.Project?.Solution?.Workspace;
 			var line = Editor.GetLine (Editor.CaretLine);
 
-			if (ad == null) {
+			if (ad == null || workspace == null) {
 				return Task.FromResult (CodeActionContainer.Empty);
 			}
+
 			TextSpan span;
 			if (Editor.IsSomethingSelected) {
 				var selectionRange = Editor.SelectionRange;
@@ -158,7 +160,7 @@ namespace MonoDevelop.CodeActions
 
 					var lineSpan = new TextSpan (line.Offset, line.Length);
 					var fixes = await codeFixService.GetFixesAsync (ad, lineSpan, true, cancellationToken);
-					fixes = await Runtime.RunInMainThread(() => FilterOnUIThread (fixes, DocumentContext.RoslynWorkspace));
+					fixes = await Runtime.RunInMainThread(() => FilterOnUIThread (fixes, workspace));
 
 					var refactorings = await codeRefactoringService.GetRefactoringsAsync (ad, span, cancellationToken);
 					var codeActionContainer = new CodeActionContainer (fixes, refactorings);

@@ -92,7 +92,7 @@ namespace MonoDevelop.Components.Commands
 		internal static readonly object CommandRouteTerminator = new object ();
 		
 		internal bool handlerFoundInMulticast;
-		Gtk.Widget lastActiveWidget;
+		Gtk.Widget activeWidget;
 
 #if MAC
 		Foundation.NSObject keyMonitor;
@@ -107,6 +107,9 @@ namespace MonoDevelop.Components.Commands
 				return conflicts;
 			}
 		}
+
+		WeakReference lastCommandTarget;
+		internal object LastCommandTarget => lastCommandTarget?.Target; 
 
 		public CommandManager (): this (null)
 		{
@@ -2277,10 +2280,11 @@ namespace MonoDevelop.Components.Commands
 
 				widget = GetFocusedChild (widget);
 			}
-			if (widget != lastActiveWidget) {
+			if (widget != activeWidget) {
 				if (ActiveWidgetChanged != null)
-					ActiveWidgetChanged (this, new ActiveWidgetEventArgs () { OldActiveWidget = lastActiveWidget, NewActiveWidget = widget });
-				lastActiveWidget = widget;
+					ActiveWidgetChanged (this, new ActiveWidgetEventArgs () { OldActiveWidget = activeWidget, NewActiveWidget = widget });
+				lastCommandTarget = new WeakReference (activeWidget);
+				activeWidget = widget;
 			}
 			return widget;
 		}
