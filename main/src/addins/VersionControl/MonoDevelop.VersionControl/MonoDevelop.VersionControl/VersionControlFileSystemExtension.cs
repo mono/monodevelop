@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.VersionControl
 			base.CopyFile (source, dest, overwrite);
 			Task.Run (async () => {
 				Repository repo = GetRepository (dest);
-				if (await repo.RequestFileWritePermissionAsync (dest)) {
+				if (!repo.RequestFileWritePermission (dest)) {
 					LoggingService.LogError ("Write permission denied.");
 					return;
 				}
@@ -92,17 +93,27 @@ namespace MonoDevelop.VersionControl
 			System.IO.Directory.CreateDirectory (path);
 			repo.Add (path, false, new ProgressMonitor ());
 		}
-		
+
+		object moveDirectoryLock = new object ();
 		public override void MoveDirectory (FilePath sourcePath, FilePath destPath)
 		{
 			ProgressMonitor monitor = new ProgressMonitor ();
 			
 			Repository srcRepo = GetRepository (sourcePath);
 			Repository dstRepo = GetRepository (destPath);
-			
-			if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath))
-				srcRepo.MoveDirectoryAsync (sourcePath, destPath, true, monitor);
-			else {
+
+			if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath)) {
+				Task.Run (async () => {
+					Monitor.TryEnter (moveDirectoryLock);
+					try {
+						await srcRepo.MoveDirectoryAsync (sourcePath, destPath, true, monitor);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while moving directory.", e);
+					} finally {
+						Monitor.Exit (moveDirectoryLock);
+					}
+				});
+			}  else {
 				CopyDirectory (sourcePath, destPath);
 				srcRepo.DeleteDirectory (sourcePath, true, monitor, false);
 			}
@@ -117,7 +128,7 @@ namespace MonoDevelop.VersionControl
 		public override void RequestFileEdit (FilePath file)
 		{
 			Repository repo = GetRepository (file.FullPath);
-			Task.Run (async () => await repo.RequestFileWritePermissionAsync (file));
+			repo.RequestFileWritePermission (file);
 		}
 		
 		public override void NotifyFilesChanged (IEnumerable<FilePath> files)

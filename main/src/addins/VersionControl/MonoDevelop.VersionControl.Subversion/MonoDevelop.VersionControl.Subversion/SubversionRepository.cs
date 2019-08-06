@@ -10,6 +10,7 @@ using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -123,12 +124,15 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Svn.GetSupportedOperations (this, vinfo, await base.GetSupportedOperationsAsync (vinfo, cancellationToken));
 		}
 
-		public override async Task<bool> RequestFileWritePermissionAsync (params FilePath [] paths)
+		public override bool RequestFileWritePermission (params FilePath [] paths)
 		{
 			var toLock = new List<FilePath>();
-
 			foreach (var path in paths) {
-				if (!File.Exists (path) || !(await GetVersionInfoAsync (path)).IsVersioned || !Svn.HasNeedLock (path) || (File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
+				if (!File.Exists (path))
+					continue;
+				if (!TryGetVersionInfo (path, out var info))
+					continue;
+				if (!info.IsVersioned || !Svn.HasNeedLock (path) || (File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
 					continue;
 				toLock.Add (path);
 			}
@@ -525,7 +529,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				} else {
 					if (keepLocal) {
-						foreach (var info in await GetDirectoryVersionInfoAsync (path, false, true)) {
+						foreach (var info in await GetDirectoryVersionInfoAsync (path, false, true, monitor.CancellationToken)) {
 							if (info != null && info.HasLocalChange (VersionStatus.ScheduledAdd)) {
 								// Revert the add command
 								await RevertAsync (path, false, monitor);
@@ -545,13 +549,13 @@ namespace MonoDevelop.VersionControl.Subversion
 			return null;
 		}
 		
-		public override DiffInfo[] PathDiff (FilePath localPath, Revision fromRevision, Revision toRevision)
+		public override async Task<DiffInfo []> PathDiffAsync (FilePath localPath, Revision fromRevision, Revision toRevision, CancellationToken cancellationToken)
 		{
 			string diff = Svn.GetUnifiedDiff (localPath, (SvnRevision)fromRevision, localPath, (SvnRevision)toRevision, true);
 			return GenerateUnifiedDiffInfo (diff, localPath, null);
 		}
 
-		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
+		public override async Task<DiffInfo []> PathDiffAsync (FilePath baseLocalPath, FilePath [] localPaths, bool remoteDiff, CancellationToken cancellationToken)
 		{
 			if (localPaths != null) {
 				var list = new List<DiffInfo> ();

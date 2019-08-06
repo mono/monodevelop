@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl.Git
 			Task.Run (async () => {
 				const int sliceSize = 150;
 
-				var history = await repo.GetHistoryAsync (repo.RootPath, null);
+				var history = await repo.GetHistoryAsync (repo.RootPath, null, token);
 
 				int slices = history.Length / sliceSize;
 				for (int i = 0; i < slices; ++i) {

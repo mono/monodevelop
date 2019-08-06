@@ -626,7 +626,7 @@ namespace MonoDevelop.VersionControl
 			try {
 				using (ProgressMonitor monitor = GetStatusMonitor ()) {
 					foreach (var file in files) {
-						var status = await repo.GetDirectoryVersionInfoAsync (file, false, false);
+						var status = await repo.GetDirectoryVersionInfoAsync (file, false, false, monitor.CancellationToken);
 						foreach (var v in status) {
 							if (!v.IsVersioned && files.Contains (v.LocalPath))
 								await repo.AddAsync (v.LocalPath, false, monitor);

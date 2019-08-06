@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -116,6 +117,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			try {
 				store.Clear ();
+				var token = destroyTokenSource.Token;
 
 				foreach (Branch b in repo.GetBranches ())
 					store.AppendValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), b.FriendlyName, "branch");
@@ -123,7 +125,7 @@ namespace MonoDevelop.VersionControl.Git
 				foreach (string t in repo.GetTags ())
 					store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
 
-				foreach (Remote r in await repo.GetRemotesAsync ()) {
+				foreach (Remote r in await repo.GetRemotesAsync (token)) {
 					TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
 					foreach (string b in repo.GetRemoteBranches (r.Name))
 						store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
@@ -160,6 +162,14 @@ namespace MonoDevelop.VersionControl.Git
 				labelOper.Visible = false;
 				buttonOk.Sensitive = false;
 			}
+		}
+
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
+
+		protected override void OnDestroyed ()
+		{
+			destroyTokenSource.Cancel ();
+			base.OnDestroyed ();
 		}
 	}
 }

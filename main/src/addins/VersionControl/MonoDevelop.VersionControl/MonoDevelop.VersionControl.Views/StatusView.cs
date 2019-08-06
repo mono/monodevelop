@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl.Views
 				get; private set;
 			}
 
-			public Lazy<DiffInfo> Diff {
+			public Task<DiffInfo> Diff {
 				get; set;
 			}
 
@@ -63,12 +63,12 @@ namespace MonoDevelop.VersionControl.Views
 			public DiffData (Repository vc, FilePath root, VersionInfo info, bool remote)
 			{
 				VersionInfo = info;
-				Diff = new Lazy<DiffInfo> (() => {
+				Diff = Task.Run(async () => {
 					try {
 						DiffInfo result = null;
 						if (!remote)
 							result = vc.GenerateDiff (root, info);
-						return result ?? vc.PathDiff (root, new [] { info.LocalPath }, remote).FirstOrDefault ();
+						return result ?? (await vc.PathDiffAsync (root, new [] { info.LocalPath }, remote)).FirstOrDefault ();
 					} catch (Exception ex) {
 						Exception = ex;
 						return null;
@@ -473,7 +473,7 @@ namespace MonoDevelop.VersionControl.Views
 						// Is directory.
 						if (item.Key) {
 							foreach (var directory in item)
-								changeSet.AddFiles (await vc.GetDirectoryVersionInfoAsync (directory.Path, remoteStatus, true));
+								changeSet.AddFiles (await vc.GetDirectoryVersionInfoAsync (directory.Path, remoteStatus, true, cancel));
 						} else {
 							var files = new List<VersionInfo> ();
 							foreach (var i in item) {
@@ -489,7 +489,7 @@ namespace MonoDevelop.VersionControl.Views
 
 				cancel.ThrowIfCancellationRequested ();
 				var newList = new List<VersionInfo> ();
-				newList.AddRange (await vc.GetDirectoryVersionInfoAsync (filepath, remoteStatus, true));
+				newList.AddRange (await vc.GetDirectoryVersionInfoAsync (filepath, remoteStatus, true, cancel));
 
 				cancel.ThrowIfCancellationRequested ();
 				Runtime.RunInMainThread (delegate {
@@ -940,7 +940,13 @@ namespace MonoDevelop.VersionControl.Views
 		/// </summary>
 		void OnCreatePatch (object s, EventArgs args)
 		{
-			CreatePatchCommand.CreatePatch (changeSet, false);
+			Task.Run (async () => {
+				try {
+					await CreatePatchCommand.CreatePatchAsync (changeSet, false);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while creating patch.", e);
+				}
+			});
 		}
 
 		void OnRefresh (object s, EventArgs args)
@@ -1116,22 +1122,22 @@ namespace MonoDevelop.VersionControl.Views
 				// which is not in our list
 				text =  new[] { GettextCatalog.GetString ("No differences found") };
 				LoggingService.LogError ("Attempted to generate the diff for a file not in the changeset", (Exception) null);
-			} else if (!info.Diff.IsValueCreated) {
+			} else if (!info.Diff.IsCompleted) {
 				text = new [] { GettextCatalog.GetString ("Loading data...") };
 				ThreadPool.QueueUserWorkItem (delegate {
 					// Here we just touch the  property so that the Lazy<T> creates
 					// the value. Do not capture the TreeIter as it may invalidate
 					// before the diff data has asyncronously loaded.
-					GC.KeepAlive (info.Diff.Value);
+
 					Gtk.Application.Invoke ((o, args) => { if (!disposed) FillDifs (); });
 				});
 			} else if (info.Exception != null) {
 				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") };
 				LoggingService.LogError ("Could not get diff information", info.Exception);
-			} else if (info.Diff.Value == null || string.IsNullOrEmpty (info.Diff.Value.Content)) {
+			} else if (string.IsNullOrEmpty (info.Diff.WaitAndGetResult ()?.Content)) {
 				text = new [] { GettextCatalog.GetString ("No differences found") };
 			} else {
-				text = info.Diff.Value.Content.Split ('\n');
+				text = info.Diff.WaitAndGetResult ().Content.Split ('\n');
 				asText = false;
 			}
 

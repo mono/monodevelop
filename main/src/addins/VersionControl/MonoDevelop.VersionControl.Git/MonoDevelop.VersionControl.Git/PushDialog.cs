@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -45,10 +46,14 @@ namespace MonoDevelop.VersionControl.Git
 			this.UseNativeContextMenus ();
 
 			changeList.DiffLoader = DiffLoader;
-			Task.Run (async () => (await repo.GetRemotesAsync (), await repo.GetCurrentRemoteAsync ())).ContinueWith (t => {
-				if (IsDestroyed)
+			var token = destroyTokenSource.Token;
+
+			Task.Run (async () => (await repo.GetRemotesAsync (token), await repo.GetCurrentRemoteAsync (token))).ContinueWith (t => {
+				if (token.IsCancellationRequested)
 					return;
-				var list = new List<string> (t.Result.Item1.Select (r => r.Name));
+				var tuple = t.Result;
+
+				var list = new List<string> (tuple.Item1.Select (r => r.Name));
 				foreach (string s in list)
 					remoteCombo.AppendText (s);
 				remoteCombo.Active = list.IndexOf (t.Result.Item2);
@@ -104,11 +109,11 @@ namespace MonoDevelop.VersionControl.Git
 			UpdateChangeSet ();
 		}
 
-		bool IsDestroyed { get; set; }
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
 
 		protected override void OnDestroyed ()
 		{
-			IsDestroyed = true;
+			destroyTokenSource.Cancel ();
 			base.OnDestroyed ();
 		}
 	}

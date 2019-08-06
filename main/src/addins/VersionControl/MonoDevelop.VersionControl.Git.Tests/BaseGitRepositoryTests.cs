@@ -508,7 +508,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			await Task.Run (() => repo2.SwitchToBranch (monitor, "master"));
 			Assert.IsFalse (repo2.IsBranchMerged ("branch1"));
-			await Task.Run (() => repo2.Merge ("branch1", GitUpdateOptions.NormalUpdate, monitor));
+			await Task.Run (() => repo2.MergeAsync ("branch1", GitUpdateOptions.NormalUpdate, monitor));
 			Assert.IsTrue (repo2.IsBranchMerged ("branch1"));
 		}
 
@@ -665,7 +665,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			await AddFileAsync ("init4", "init", toVcs: true, commit: true);
 			await AddFileAsync ("init5", "init", toVcs: true, commit: true);
 
-			await Task.Run (() => gitRepo.Rebase ("master", GitUpdateOptions.None, monitor));
+			await Task.Run (async () => await gitRepo.RebaseAsync ("master", GitUpdateOptions.None, monitor));
 
 			// Commits come in reverse (recent to old).
 			var history = (await gitRepo.GetHistoryAsync (LocalPath, null)).Reverse ().ToArray ();

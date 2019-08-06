@@ -796,9 +796,9 @@ namespace MonoDevelop.VersionControl
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.
-		public virtual Task<bool> RequestFileWritePermissionAsync (params FilePath [] paths)
+		public virtual bool RequestFileWritePermission (params FilePath [] paths)
 		{
-			return Task.FromResult (true);
+			return true;
 		}
 
 		// Called after a file has been modified.
@@ -864,9 +864,9 @@ namespace MonoDevelop.VersionControl
 		// Returns a diff description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.
-		public DiffInfo[] PathDiff (ChangeSet cset, bool remoteDiff)
+		public Task<DiffInfo []> PathDiffAsync (ChangeSet cset, bool remoteDiff, CancellationToken cancellationToken)
 		{
-			return PathDiff (cset.BaseLocalPath, cset.Items.Select (i => i.LocalPath).ToArray (), remoteDiff);
+			return PathDiffAsync (cset.BaseLocalPath, cset.Items.Select (i => i.LocalPath).ToArray (), remoteDiff, cancellationToken);
 		}
 
 		/// <summary>
@@ -882,14 +882,14 @@ namespace MonoDevelop.VersionControl
 		/// <param name="toRevision">
 		/// A <see cref="Revision"/>: The ending revision
 		/// </param>
-		public virtual DiffInfo[] PathDiff (FilePath localPath, Revision fromRevision, Revision toRevision)
+		public virtual Task<DiffInfo []> PathDiffAsync (FilePath localPath, Revision fromRevision, Revision toRevision, CancellationToken cancellationToken)
 		{
-			return new DiffInfo [0];
+			return Task.FromResult (Array.Empty<DiffInfo> ());
 		}
 
-		public virtual DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
+		public virtual Task<DiffInfo []> PathDiffAsync (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff, CancellationToken cancellationToken = default)
 		{
-			return new DiffInfo [0];
+			return Task.FromResult (Array.Empty<DiffInfo> ());
 		}
 
 		public Task<string> GetTextAtRevisionAsync (FilePath repositoryPath, Revision revision, CancellationToken cancellationToken = default)

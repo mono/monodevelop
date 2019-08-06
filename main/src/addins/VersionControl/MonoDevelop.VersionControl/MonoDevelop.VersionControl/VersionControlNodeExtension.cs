@@ -243,177 +243,110 @@ namespace MonoDevelop.VersionControl
 	{
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Update)]
-		protected async Task OnUpdate() {
-			await RunCommandAsync(Commands.Update, false);
-		}
-		
+		protected Task OnUpdate() => RunCommandAsync(Commands.Update, false);
+
 		[CommandUpdateHandler (Commands.Update)]
-		protected async Task UpdateUpdate(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Update, item);
-		}
-		
+		protected Task UpdateUpdate (CommandInfo item, CancellationToken token) => TestCommand (Commands.Update, item, cancellationToken: token);
+
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Diff)]
-		protected async Task OnDiff() {
-			await RunCommandAsync(Commands.Diff, false);
-		}
+		protected Task OnDiff() => RunCommandAsync(Commands.Diff, false);
 		
 		[CommandUpdateHandler (Commands.Diff)]
-		protected async Task UpdateDiff(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Diff, item);
-		}
+		protected Task UpdateDiff(CommandInfo item, CancellationToken token) => TestCommand(Commands.Diff, item, cancellationToken: token);
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Log)]
-		protected async Task OnLog() {
-			await RunCommandAsync(Commands.Log, false);
-		}
+		protected Task OnLog() => RunCommandAsync(Commands.Log, false);
 		
 		[CommandUpdateHandler (Commands.Log)]
-		protected async Task UpdateLog(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Log, item);
-		}
-		
+		protected Task UpdateLog(CommandInfo item, CancellationToken token) => TestCommand(Commands.Log, item, cancellationToken: token);
+
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Status)]
-		protected async Task OnStatus() {
-			await RunCommandAsync(Commands.Status, false);
-		}
+		protected Task OnStatus() => RunCommandAsync(Commands.Status, false);
 		
 		[CommandUpdateHandler (Commands.Status)]
-		protected async Task UpdateStatus(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Status, item);
-		}
-		
+		protected Task UpdateStatus(CommandInfo item, CancellationToken token) => TestCommand(Commands.Status, item, cancellationToken: token);
+
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Add)]
-		protected async Task OnAdd() {
-			await RunCommandAsync(Commands.Add, false);
-		}
-		
+		protected Task OnAdd() => RunCommandAsync(Commands.Add, false);
+
 		[CommandUpdateHandler (Commands.Add)]
-		protected async Task UpdateAdd(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Add, item);
-		}
+		protected Task UpdateAdd(CommandInfo item, CancellationToken token) => TestCommand(Commands.Add, item, cancellationToken: token);
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Remove)]
-		protected async Task OnRemove() {
-			await RunCommandAsync(Commands.Remove, false);
-		}
-		
+		protected Task OnRemove()  => RunCommandAsync(Commands.Remove, false);
+
 		[CommandUpdateHandler (Commands.Remove)]
-		protected async Task UpdateRemove(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Remove, item);
-		}
-		
+		protected Task UpdateRemove(CommandInfo item, CancellationToken token) => TestCommand(Commands.Remove, item, cancellationToken: token);
+
 		[CommandHandler (Commands.Publish)]
-		protected async Task OnPublish() 
-		{
-			await RunCommandAsync(Commands.Publish, false);
-		}
-		
+		protected Task OnPublish() => RunCommandAsync(Commands.Publish, false);
+
 		[CommandUpdateHandler (Commands.Publish)]
-		protected async Task UpdatePublish(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Publish, item);
-		}
-		
+		protected Task UpdatePublish(CommandInfo item, CancellationToken token) => TestCommand(Commands.Publish, item, cancellationToken: token);
+
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Revert)]
-		protected async Task OnRevert() {
-			await RunCommandAsync(Commands.Revert, false, false);
-		}
-		
+		protected Task OnRevert() => RunCommandAsync(Commands.Revert, false, false);
+
 		[CommandUpdateHandler (Commands.Revert)]
-		protected async Task UpdateRevert(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Revert, item, false);
-		}
-		
+		protected  Task UpdateRevert(CommandInfo item, CancellationToken token) => TestCommand(Commands.Revert, item, false, token);
+
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Lock)]
-		protected async Task OnLock() {
-			await RunCommandAsync(Commands.Lock, false);
-		}
+		protected Task OnLock() => RunCommandAsync(Commands.Lock, false);
 		
 		[CommandUpdateHandler (Commands.Lock)]
-		protected async Task UpdateLock(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Lock, item);
-		}
+		protected Task UpdateLock(CommandInfo item, CancellationToken token) => TestCommand(Commands.Lock, item, cancellationToken: token);
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unlock)]
-		protected async Task OnUnlock() {
-			await RunCommandAsync(Commands.Unlock, false);
-		}
+		protected Task OnUnlock() => RunCommandAsync(Commands.Unlock, false);
 		
 		[CommandUpdateHandler (Commands.Unlock)]
-		protected async Task UpdateUnlock(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Unlock, item);
-		}
+		protected Task UpdateUnlock(CommandInfo item, CancellationToken token) => TestCommand(Commands.Unlock, item, cancellationToken: token);
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Annotate)]
-		protected async Task OnAnnotate() {
-			await RunCommandAsync(Commands.Annotate, false);
-		}
+		protected Task OnAnnotate() => RunCommandAsync(Commands.Annotate, false);
 		
 		[CommandUpdateHandler (Commands.Annotate)]
-		protected async Task UpdateAnnotate(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.Annotate, item);
-		}
+		protected Task UpdateAnnotate(CommandInfo item, CancellationToken token) => TestCommand(Commands.Annotate, item, cancellationToken: token);
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.CreatePatch)]
-		protected async Task OnCreatePatch() {
-			await RunCommandAsync(Commands.CreatePatch, false);
-		}
+		protected Task OnCreatePatch() => RunCommandAsync(Commands.CreatePatch, false);
 		
 		[CommandUpdateHandler (Commands.CreatePatch)]
-		protected async Task UpdateCreatePatch(CommandInfo item, CancellationToken token) {
-			await TestCommand(Commands.CreatePatch, item);
-		}
-
+		protected Task UpdateCreatePatch(CommandInfo item, CancellationToken token) => TestCommand(Commands.CreatePatch, item, cancellationToken: token);
+		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Ignore)]
-		protected async Task OnIgnore ()
-		{
-			await RunCommandAsync(Commands.Ignore, false);
-		}
+		protected Task OnIgnore () => RunCommandAsync(Commands.Ignore, false);
 
 		[CommandUpdateHandler (Commands.Ignore)]
-		protected async Task UpdateIgnore (CommandInfo item, CancellationToken token)
-		{
-			await TestCommand(Commands.Ignore, item);
-		}
+		protected Task UpdateIgnore (CommandInfo item, CancellationToken token) => TestCommand(Commands.Ignore, item, cancellationToken: token);
 
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unignore)]
-		protected async Task OnUnignore ()
-		{
-			await RunCommandAsync(Commands.Unignore, false);
-		}
+		protected Task OnUnignore () => RunCommandAsync(Commands.Unignore, false);
 
 		[CommandUpdateHandler (Commands.Unignore)]
-		protected async Task UpdateUnignore (CommandInfo item, CancellationToken token)
-		{
-			await TestCommand(Commands.Unignore, item);
-		}
+		protected Task UpdateUnignore (CommandInfo item, CancellationToken token) => TestCommand (Commands.Unignore, item, cancellationToken: token);
 
 		[CommandHandler (Commands.ResolveConflicts)]
-		protected async Task OnResolveConflicts ()
-		{
-			await RunCommandAsync (Commands.ResolveConflicts, false, false);
-		}
+		protected Task OnResolveConflicts () => RunCommandAsync (Commands.ResolveConflicts, false, false);
 
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
-		protected async Task UpdateResolveConflicts (CommandInfo item, CancellationToken token)
-		{
-			await TestCommand (Commands.ResolveConflicts, item, false);
-		}
+		protected Task UpdateResolveConflicts (CommandInfo item, CancellationToken token) => TestCommand (Commands.ResolveConflicts, item, false, token);
 
-		private async Task<TestResult> TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		private async Task<TestResult> TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true, CancellationToken cancellationToken = default)
 		{
-			TestResult res = await RunCommandAsync(cmd, true, projRecurse);
+			TestResult res = await RunCommandAsync(cmd, true, projRecurse, cancellationToken);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
 				// Use the update command to show the "not available" message
 				item.Icon = null;
@@ -481,7 +414,7 @@ namespace MonoDevelop.VersionControl
 					res = await BlameCommand.Show (items, test);
 					break;
 				case Commands.CreatePatch:
-					res = await CreatePatchCommand.CreatePatch (items, test);
+					res = await CreatePatchCommand.CreatePatchAsync (items, test, cancellationToken);
 					break;
 				case Commands.Ignore:
 					res = await IgnoreCommand.IgnoreAsync (items, test, cancellationToken);

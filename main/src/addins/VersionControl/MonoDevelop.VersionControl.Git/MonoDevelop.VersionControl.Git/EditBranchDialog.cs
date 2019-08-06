@@ -33,6 +33,7 @@ using LibGit2Sharp;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -73,8 +74,9 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (Branch b in repo.GetBranches ()) {
 				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
-			repo.GetRemotesAsync ().ContinueWith (t => {
-				if (IsDestroyed)
+			var token = destroyTokenSource.Token;
+			repo.GetRemotesAsync (token).ContinueWith (t => {
+				if (token.IsCancellationRequested)
 					return;
 				foreach (var r in t.Result) {
 					foreach (string b in repo.GetRemoteBranches (r.Name))
@@ -155,11 +157,11 @@ Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
 			UpdateStatus ();
 		}
 
-		bool IsDestroyed { get; set; }
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
 
 		protected override void OnDestroyed ()
 		{
-			IsDestroyed = true;
+			destroyTokenSource.Cancel ();
 			base.OnDestroyed ();
 		}
 	}

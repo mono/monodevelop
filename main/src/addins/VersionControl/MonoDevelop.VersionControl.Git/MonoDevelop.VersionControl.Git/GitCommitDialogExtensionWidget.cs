@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -36,8 +37,9 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 
-			repo.GetCurrentRemoteAsync ().ContinueWith (t => {
-				if (IsDestroyed)
+			var token = destroyTokenSource.Token;
+			repo.GetCurrentRemoteAsync (token).ContinueWith (t => {
+				if (token.IsCancellationRequested)
 					return;
 				bool hasRemote = t.Result != null;
 				if (!hasRemote) {
@@ -77,11 +79,11 @@ namespace MonoDevelop.VersionControl.Git
 
 		public event EventHandler Changed;
 
-		bool IsDestroyed { get; set; }
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
 
 		protected override void OnDestroyed ()
 		{
-			IsDestroyed = true;
+			destroyTokenSource.Cancel ();
 			base.OnDestroyed ();
 		}
 	}

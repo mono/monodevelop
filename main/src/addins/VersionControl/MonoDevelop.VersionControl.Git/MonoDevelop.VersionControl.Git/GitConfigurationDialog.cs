@@ -32,6 +32,7 @@ using MonoDevelop.Components;
 using LibGit2Sharp;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -148,11 +149,12 @@ namespace MonoDevelop.VersionControl.Git
 				var state = new TreeViewState (treeRemotes, 4);
 				state.Save ();
 				storeRemotes.Clear ();
-				string currentRemote = await repo.GetCurrentRemoteAsync ();
-				if (IsDestroyed)
+				var token = destroyTokenSource.Token;
+				string currentRemote = await repo.GetCurrentRemoteAsync (token);
+				if (token.IsCancellationRequested)
 					return;
-				foreach (Remote remote in await repo.GetRemotesAsync ()) {
-					if (IsDestroyed)
+				foreach (Remote remote in await repo.GetRemotesAsync (token)) {
+					if (token.IsCancellationRequested)
 						return;
 					// Take into account fetch/push ref specs.
 					string text = remote.Name == currentRemote ? "<b>" + remote.Name + "</b>" : remote.Name;
@@ -175,9 +177,11 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
+
 		protected override void OnDestroyed ()
 		{
-			IsDestroyed = true;
+			destroyTokenSource.Cancel ();
 
 			base.OnDestroyed ();
 			if (this.repo != null) {
@@ -185,8 +189,6 @@ namespace MonoDevelop.VersionControl.Git
 				this.repo = null;
 			}
 		}
-
-		bool IsDestroyed { get; set; }
 
 		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
 		{
@@ -384,11 +386,11 @@ namespace MonoDevelop.VersionControl.Git
 
 			string tagName = (string)storeTags.GetValue (it, 0);
 			var monitor = new Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, false, false, true);
-			System.Threading.Tasks.Task.Run (() => {
+			System.Threading.Tasks.Task.Run (async () => {
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Pushing Tag"), 1);
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Pushing Tag '{0}' to '{1}'", tagName, repo.Url));
-					repo.PushTag (tagName);
+					await repo.PushTagAsync (tagName);
 					monitor.Step (1);
 					monitor.EndTask ();
 				} catch (Exception ex) {

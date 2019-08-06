@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 		const string MacSvnAdminPath = "/Library/Developer/CommandLineTools/usr/bin/svnadmin";
 		[SetUp]
-		public override Task Setup ()
+		public override async Task Setup ()
 		{
 			Process svnAdmin;
 			ProcessStartInfo info;
@@ -79,11 +79,11 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			}
 
 			// Check out the repository.
-			CheckoutAsync (LocalPath, RemoteUrl).Ignore ();
+			await CheckoutAsync (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
 			DotDir = ".svn";
 
-			return base.Setup ();
+			await base.Setup ();
 		}
 
 		[Test]

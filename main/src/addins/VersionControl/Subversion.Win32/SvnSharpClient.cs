@@ -425,7 +425,7 @@ namespace SubversionAddinWindows
 		{
 			var args = new SvnMergeArgs ();
 			BindMonitor (monitor);
-			Revision prev = await ((SvnRevision) revision).GetPreviousAsync ();
+			Revision prev = await ((SvnRevision) revision).GetPreviousAsync (monitor.CancellationToken);
 			var range = new SvnRevisionRange (GetRevision (revision), GetRevision (prev));
 			lock (client) 
 				client.Merge (path, new SvnPathTarget (path), range, args);
