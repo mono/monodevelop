@@ -66,8 +66,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeBuilderContext builderContext;
 		Dictionary<object, List<TreeNodeCallback>> callbacks = new Dictionary<object, List<TreeNodeCallback>> ();
 		bool editingText = false;
+		Gtk.TreeIter editingIter;
 
-		TreePadOption[] options;
+		TreePadOption [] options;
 		TreeOptions globalOptions;
 
 		TreeNodeNavigator workNode;
@@ -1407,6 +1408,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			// as this may directly invoke HandleOnEditCancelled
 			text_render.Editable = true;
 			editingText = true;
+			editingIter = iter;
 			tree.SetCursor (store.GetPath (iter), complete_column, true);
 		}
 

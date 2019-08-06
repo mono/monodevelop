@@ -4238,7 +4238,6 @@
     <Compile Include="$(VSEditorApiDirectory)src\Editor\Text\Util\TextUIUtil\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
     <Compile Include="$(VSEditorApiDirectory)src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorPreferences.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\IProjectPadNodeSelector.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\IPropertyGrid.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileNameEvalutor.cs" />

@@ -436,11 +436,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.Workbench.ActiveDocument.Select ();
 		}
 		
-		void OnFileInserted (ITreeNavigator nav)
-		{
-			nav.Selected = true;
-		}
-
 		///<summary>Imports files and folders from a target folder into the current folder</summary>
 		[CommandHandler (ProjectCommands.AddFilesFromFolder)]
 		public async void AddFilesFromFolder ()
@@ -552,19 +547,51 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			var project = CurrentNode.GetParentDataItem (typeof (Project), true) as Project;
 			string baseFolderPath = GetFolderPath (CurrentNode.DataItem);
-
-			FilePath folder = await NewFolderDialog.Open (baseFolderPath);
-
-			if (folder.IsNull)
+			string newFolderPath = GetDefaultFolderName (baseFolderPath);
+			if (newFolderPath == null || !AddNewFolder (newFolderPath))
 				return;
-
-			var newFolder = new ProjectFile (folder);
+			var newFolder = new ProjectFile (newFolderPath);
 			newFolder.Subtype = Subtype.Directory;
 			project.Files.Add (newFolder);
 
-			Tree.AddNodeInsertCallback (new ProjectFolder (folder, project), new TreeNodeCallback (OnFileInserted));
+			Tree.AddNodeInsertCallback (new ProjectFolder (newFolderPath, project), nav => {
+				nav.Selected = true;
+				nav.Expanded = true;
+				Tree.StartLabelEdit ();
+			});
 
 			await IdeApp.ProjectOperations.SaveAsync (project);
+		}
+
+		static bool AddNewFolder (FilePath directoryPath)
+		{
+			try {
+				Directory.CreateDirectory (directoryPath);
+				return true;
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while creating new directory " + directoryPath, e);
+				MessageService.ShowError (e.Message);
+				return false;
+			}
+		}
+
+		static string GetDefaultFolderName (string parentFolder)
+		{
+			string childFolderName = GettextCatalog.GetString ("New Folder");
+			string directoryName = Path.Combine (parentFolder, childFolderName);
+			int index = -1;
+
+			if (Directory.Exists (directoryName)) {
+				while (Directory.Exists (directoryName + (++index + 1))) {
+					if (index > 10000)
+						return null;
+				}
+			}
+
+			if (index >= 0) {
+				return directoryName += index + 1;
+			}
+			return directoryName;
 		}
 	}	
 }
