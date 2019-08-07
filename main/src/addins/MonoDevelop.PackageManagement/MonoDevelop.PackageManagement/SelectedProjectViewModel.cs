@@ -1,10 +1,10 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// SelectedProjectViewModel.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       matt <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 matt
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using MonoDevelop.Core;
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
-
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	class SelectedProjectViewModel
 	{
-		public override void ActivateItem ()
+		public SelectedProjectViewModel (IDotNetProject project)
 		{
-			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
+			Project = project;
+		}
+
+		public IDotNetProject Project { get; }
+		public bool IsSelected { get; set; }
+
+		public string Name {
+			get { return Project.Name; }
+		}
+
+		public IconId Icon {
+			get { return Project.DotNetProject.StockIcon; }
 		}
 	}
 }

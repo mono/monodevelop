@@ -1,5 +1,5 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// ManagePackagesInProjectHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,18 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
+using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	class ManagePackagesInProjectHandler : PackagesCommandHandler
 	{
-		public override void ActivateItem ()
+		protected override bool IsEnabled ()
+		{
+			return IsDotNetProjectSelected ();
+		}
+
+		protected override void Run ()
 		{
 			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
+			runner.Run (GetSelectedDotNetProject ());
 		}
 	}
 }

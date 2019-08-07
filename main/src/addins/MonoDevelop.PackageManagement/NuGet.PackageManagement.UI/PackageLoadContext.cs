@@ -14,7 +14,7 @@ namespace NuGet.PackageManagement.UI
 {
 	internal class PackageLoadContext
 	{
-		//private readonly Task<PackageCollection> _installedPackagesTask;
+		Task<PackageCollection> installedPackagesTask;
 
 		public IEnumerable<SourceRepository> SourceRepositories { get; private set; }
 
@@ -32,18 +32,18 @@ namespace NuGet.PackageManagement.UI
 		public PackageLoadContext(
 			IEnumerable<SourceRepository> sourceRepositories,
 			bool isSolution,
-			NuGetProject project)
+			IEnumerable<NuGetProject> projects)
 		{
 			SourceRepositories = sourceRepositories;
 			IsSolution = isSolution;
 			//PackageManager = uiContext.PackageManager;
-			Projects = new [] { project };
+			Projects = projects.ToArray ();
 			//PackageManagerProviders = uiContext.PackageManagerProviders;
 
-			//_installedPackagesTask = PackageCollection.FromProjectsAsync(Projects, CancellationToken.None);
+			installedPackagesTask = PackageCollection.FromProjectsAsync(Projects, CancellationToken.None);
 		}
 
-		//public Task<PackageCollection> GetInstalledPackagesAsync() =>_installedPackagesTask;
+		public Task<PackageCollection> GetInstalledPackagesAsync() => installedPackagesTask;
 
 		// Returns the list of frameworks that we need to pass to the server during search
 		public IEnumerable<string> GetSupportedFrameworks()

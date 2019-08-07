@@ -1,10 +1,10 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// PackageCellViewEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
+using System;
 
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	internal class ManagePackagesCellViewEventArgs : EventArgs
 	{
-		public override void ActivateItem ()
+		public ManagePackagesCellViewEventArgs (ManagePackagesSearchResultViewModel packageViewModel)
 		{
-			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
+			PackageViewModel = packageViewModel;
 		}
+
+		public ManagePackagesSearchResultViewModel PackageViewModel { get; }
 	}
 }

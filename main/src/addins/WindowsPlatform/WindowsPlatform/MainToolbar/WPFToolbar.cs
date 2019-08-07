@@ -1,4 +1,4 @@
-﻿using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.Windows;
 using MonoDevelop.Core;
 using System;
@@ -25,24 +25,25 @@ namespace WindowsPlatform.MainToolbar
 	public class WPFToolbar : GtkWPFWidget, IMainToolbarView, INotifyPropertyChanged
 	{
 		ToolBar toolbar;
+
 		WPFToolbar (ToolBar toolbar) : base (toolbar)
 		{
 			this.toolbar = toolbar;
 
 			toolbar.ConfigurationMenu.SelectionChanged += (o, e) => {
-				var comboMenu = (ComboMenu<IConfigurationModel>)o;
+				var comboMenu = (ComboMenu<IConfigurationModel>) o;
 				var newModel = e.Added;
 				if (newModel == null)
 					return;
 
-				Runtime.RunInMainThread(() => {
+				Runtime.RunInMainThread (() => {
 					ActiveConfiguration = newModel;
 					ConfigurationChanged?.Invoke (o, e);
 				});
 			};
 
 			toolbar.RunConfigurationMenu.SelectionChanged += (o, e) => {
-				var comboMenu = (ComboMenu<IRunConfigurationModel>)o;
+				var comboMenu = (ComboMenu<IRunConfigurationModel>) o;
 				var newModel = e.Added;
 				if (newModel == null)
 					return;
@@ -58,11 +59,11 @@ namespace WindowsPlatform.MainToolbar
 				if (newModel == null)
 					return;
 
-				using (var mutableModel = newModel.GetMutableModel()) {
-					Runtime.RunInMainThread(() => {
+				using (var mutableModel = newModel.GetMutableModel ()) {
+					Runtime.RunInMainThread (() => {
 						ActiveRuntime = newModel;
 
-						var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs();
+						var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs ();
 						RuntimeChanged?.Invoke (o, ea);
 
 						if (ea.Handled)
@@ -90,9 +91,7 @@ namespace WindowsPlatform.MainToolbar
 				toolbar.SearchBar.SearchText = toolbar.SearchBar.PlaceholderText;
 			};
 
-			toolbar.SearchBar.SearchBar.GotKeyboardFocus += (o, e) => {
-				SearchEntryActivated?.Invoke (o, e);
-			};
+			toolbar.SearchBar.SearchBar.GotKeyboardFocus += (o, e) => { SearchEntryActivated?.Invoke (o, e); };
 
 			toolbar.SearchBar.SearchBar.SizeChanged += (o, e) => {
 				if (SearchEntryResized != null)
@@ -100,41 +99,41 @@ namespace WindowsPlatform.MainToolbar
 			};
 
 			toolbar.SearchBar.SearchBar.PreviewKeyDown += (o, e) => {
-				var ka = new KeyEventArgs(KeyboardUtil.TranslateToXwtKey(e.Key), KeyboardUtil.GetModifiers(), e.IsRepeat, e.Timestamp);
-				SendKeyPress(ka);
+				var ka = new KeyEventArgs (KeyboardUtil.TranslateToXwtKey (e.Key), KeyboardUtil.GetModifiers (),
+					e.IsRepeat, e.Timestamp);
+				SendKeyPress (ka);
 				e.Handled = ka.Handled;
 			};
 
-			toolbar.SearchBar.ClearIconClicked += (o, e) =>
-			{
-				SendKeyPress(new KeyEventArgs(Xwt.Key.Escape, KeyboardUtil.GetModifiers(), false, 0));
+			toolbar.SearchBar.ClearIconClicked += (o, e) => {
+				SendKeyPress (new KeyEventArgs (Xwt.Key.Escape, KeyboardUtil.GetModifiers (), false, 0));
 			};
-        }
+		}
 
-        protected override void RepositionWpfWindow()
-        {
-            int scale = (int)MonoDevelop.Components.GtkWorkarounds.GetScaleFactor(this);
-            RepositionWpfWindow (scale, scale);
-        }
+		protected override void RepositionWpfWindow ()
+		{
+			int scale = (int) MonoDevelop.Components.GtkWorkarounds.GetScaleFactor (this);
+			RepositionWpfWindow (scale, scale);
+		}
 
-        void SendKeyPress(KeyEventArgs ka)
+		void SendKeyPress (KeyEventArgs ka)
 		{
 			if (SearchEntryKeyPressed != null)
-				SearchEntryKeyPressed(this, ka);
+				SearchEntryKeyPressed (this, ka);
 		}
 
 		public WPFToolbar () : this (new ToolBar ())
 		{
 		}
-		
+
 		public IConfigurationModel ActiveConfiguration {
 			get { return toolbar.ConfigurationMenu.Active; }
 			set { toolbar.ConfigurationMenu.Active = value; }
 		}
-		
+
 		public IRuntimeModel ActiveRuntime {
-			get	{ return toolbar.RuntimeMenu.Active; }
-			set	{ toolbar.RuntimeMenu.Active = value; }
+			get { return toolbar.RuntimeMenu.Active; }
+			set { toolbar.RuntimeMenu.Active = value; }
 		}
 
 		public IRunConfigurationModel ActiveRunConfiguration {
@@ -143,11 +142,11 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public bool ButtonBarSensitivity {
-			set	{ toolbar.ButtonBarPanel.IsEnabled = value; }
+			set { toolbar.ButtonBarPanel.IsEnabled = value; }
 		}
 
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
-			get	{ return toolbar.ConfigurationMenu.Model; }
+			get { return toolbar.ConfigurationMenu.Model; }
 			set { toolbar.ConfigurationMenu.Model = value; }
 		}
 
@@ -162,29 +161,26 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		bool configurationPlatformSensitivity;
-        public bool ConfigurationPlatformSensitivity {
+
+		public bool ConfigurationPlatformSensitivity {
 			get { return configurationPlatformSensitivity; }
 			set {
 				configurationPlatformSensitivity = value;
-				toolbar.ConfigurationMenu.IsEnabled = value && ConfigurationModel.Count() > 1;
-				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count() > 1;
-            }
-		}
-		
-		public bool PlatformSensitivity {
-			set {
-				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count() > 1;
+				toolbar.ConfigurationMenu.IsEnabled = value && ConfigurationModel.Count () > 1;
+				toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count () > 1;
 			}
+		}
+
+		public bool PlatformSensitivity {
+			set { toolbar.RuntimeMenu.IsEnabled = value && RuntimeModel.Count () > 1; }
 		}
 
 		public Gtk.Widget PopupAnchor {
-			get	{
-				return this;
-			}
+			get { return this; }
 		}
 
 		public OperationIcon RunButtonIcon {
-			set	{ toolbar.RunButton.Icon = value; }
+			set { toolbar.RunButton.Icon = value; }
 		}
 
 		public bool RunButtonSensitivity {
@@ -195,14 +191,15 @@ namespace WindowsPlatform.MainToolbar
 		public bool RunConfigurationVisible {
 			get { return toolbar.RunConfigurationMenu.IsVisible; }
 			set {
-				System.Windows.Visibility visible = value ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+				System.Windows.Visibility visible =
+					value ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 				toolbar.RunConfigurationMenu.Visibility = visible;
 				toolbar.RunConfigurationSeparator.Visibility = visible;
 			}
 		}
 
 		public string SearchCategory {
-			set	{
+			set {
 				toolbar.SearchBar.SearchText = value;
 				FocusSearchBar ();
 				toolbar.SearchBar.SearchBar.Select (value.Length, 0);
@@ -210,18 +207,16 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public IEnumerable<ISearchMenuModel> SearchMenuItems {
-			set	{
-				toolbar.SearchBar.SearchMenuItems = value;
-			}
+			set { toolbar.SearchBar.SearchMenuItems = value; }
 		}
 
 		public string SearchPlaceholderMessage {
 			get { return toolbar.SearchBar.PlaceholderText; }
-			set	{ toolbar.SearchBar.PlaceholderText = value; }
+			set { toolbar.SearchBar.PlaceholderText = value; }
 		}
 
 		public bool SearchSensivitity {
-			set	{ toolbar.SearchBar.IsEnabled = value; }
+			set { toolbar.SearchBar.IsEnabled = value; }
 		}
 
 		public string SearchText {
@@ -236,7 +231,7 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public StatusBar StatusBar {
-			get	{ return toolbar.StatusBar; }
+			get { return toolbar.StatusBar; }
 		}
 
 		public event EventHandler ConfigurationChanged;
@@ -245,6 +240,7 @@ namespace WindowsPlatform.MainToolbar
 		public event EventHandler SearchEntryActivated;
 		public event EventHandler SearchEntryChanged;
 		public event EventHandler<KeyEventArgs> SearchEntryKeyPressed;
+		public event EventHandler<SearchEntryCommandArgs> PerformCommand;
 		public event EventHandler SearchEntryLostFocus;
 		public event EventHandler SearchEntryResized;
 
@@ -267,18 +263,15 @@ namespace WindowsPlatform.MainToolbar
 			int idx = 0;
 			int count = groupList.Count;
 
-			var sepStyle = toolbar.FindResource (System.Windows.Controls.ToolBar.SeparatorStyleKey) as System.Windows.Style;
+			var sepStyle =
+				toolbar.FindResource (System.Windows.Controls.ToolBar.SeparatorStyleKey) as System.Windows.Style;
 
 			foreach (var buttonGroup in groupList) {
 				bool needsSeparator = (idx < count - 1);
 				foreach (var button in buttonGroup.Buttons) {
 					if (needsSeparator)
 						toolbar.ButtonBarPanel.Children.Add (new DottedSeparator {
-							Margin = new System.Windows.Thickness {
-								Left = 3,
-								Right = 3,
-							},
-							UseLayoutRounding = true,
+							Margin = new System.Windows.Thickness {Left = 3, Right = 3,}, UseLayoutRounding = true,
 						});
 
 					toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));
@@ -312,7 +305,7 @@ namespace WindowsPlatform.MainToolbar
 
 	public class NotNullConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert (object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			return value != null;
 		}
@@ -321,5 +314,5 @@ namespace WindowsPlatform.MainToolbar
 		{
 			throw new NotImplementedException ();
 		}
-    }
+	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// ManagePackagesPage.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,18 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
-
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	enum ManagePackagesPage
 	{
-		public override void ActivateItem ()
-		{
-			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
-		}
+		Browse,
+		Installed,
+		Updates,
+		Consolidate
 	}
 }

@@ -44,7 +44,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSourceViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageSourceCollectionAssert.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentNuGetPackagesRepositoryTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentManagedNuGetPackagesRepositoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectService.cs" />
@@ -86,17 +86,15 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectContext.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageUninstallerTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\AllPackagesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSourceRepositoryProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FakePackageFeed.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableAllPackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSearchResultViewModelTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ManagePackagesSearchResultViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSearchMetadata.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageSearchResultViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableManagePackagesSearchResultViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataResource.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataResourceProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedNuGetPackagesInWorkspaceTests.cs" />
@@ -154,6 +152,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesCommandHandlerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableRestorePackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ManagePackagesViewModelTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableManagePackagesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

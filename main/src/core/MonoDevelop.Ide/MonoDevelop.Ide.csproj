@@ -4260,6 +4260,7 @@
     <Compile Include="MonoDevelop.Components\Mac\DragEventTrapView.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NativeToolkitHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSViewExtensions.cs" />
+    <Compile Include="MonoDevelop.Components\Shared\GtkWorkarounds.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
@@ -4360,6 +4361,9 @@
     <InternalsVisibleTo Include="Xamarin.Ide" />
     <InternalsVisibleTo Include="Xamarin.OSXEditor" />
     <InternalsVisibleTo Include="Xamarin.Sketches" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Components\Shared\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
