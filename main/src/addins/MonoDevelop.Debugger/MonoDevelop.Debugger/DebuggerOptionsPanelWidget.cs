@@ -102,6 +102,8 @@ namespace MonoDevelop.Debugger
 			comboAutomaticSourceDownload.Items.Add(AutomaticSourceDownload.Never, GettextCatalog.GetString ("Never"));
 			autodownloadHBox.PackStart (comboAutomaticSourceDownload);
 			PackStart (autodownloadHBox);
+
+			checkStepIntoExternalCode.Toggled += (sender, obj) => comboAutomaticSourceDownload.Sensitive = checkStepIntoExternalCode.Active;
 			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Inspection") + "</b>", MarginTop=25 });
 			checkAllowEval = new CheckBox (GettextCatalog.GetString ("Allow implicit property evaluation and method invocation"));
 			checkAllowEval.Toggled += OnCheckAllowEvalToggled;
