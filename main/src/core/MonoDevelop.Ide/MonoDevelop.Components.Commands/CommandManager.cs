@@ -2280,11 +2280,15 @@ namespace MonoDevelop.Components.Commands
 				if (nw != null) {
 					var v = nw.FirstResponder as AppKit.NSView;
 					if (v != null && !IsRootGdkQuartzView (v)) {
+
+						ChangeActiveWidget (this, v);
+
 						if (IsEmbeddedNSView (v))
 							// FIXME: since there is no way to get the parent GTK widget of an embedded NSView,
 							// here we return a ICommandDelegatorRouter object that will cause the command route
 							// to continue with the active gtk widget once the NSView hierarchy has been inspected.
 							return new NSViewCommandRouter { ActiveView = v, ParentWidget = GetFocusedChild (widget) };
+
 						return v;
 					}
 				}
@@ -2299,13 +2303,18 @@ namespace MonoDevelop.Components.Commands
 
 				widget = GetFocusedChild (widget);
 			}
-			if (widget != lastActiveWidget) {
-				if (ActiveWidgetChanged != null)
-					ActiveWidgetChanged (this, new ActiveWidgetEventArgs () { OldActiveWidget = lastActiveWidget, NewActiveWidget = widget });
-				lastCommandTarget = new WeakReference (lastActiveWidget);
-				lastActiveWidget = widget;
-			}
+
+			ChangeActiveWidget (this, widget);
 			return widget;
+
+			static void ChangeActiveWidget (CommandManager cmdManager, Control newWidget)
+			{
+				if (newWidget == cmdManager.lastActiveWidget) return;
+
+				cmdManager.ActiveWidgetChanged?.Invoke (cmdManager, new ActiveWidgetEventArgs () { OldActiveWidget = cmdManager.lastActiveWidget, NewActiveWidget = newWidget });
+				cmdManager.lastCommandTarget = new WeakReference (cmdManager.lastActiveWidget);
+				cmdManager.lastActiveWidget = newWidget;
+			}
 		}
 
 #if WINDOWS
@@ -2339,7 +2348,7 @@ namespace MonoDevelop.Components.Commands
 			Gtk.Container container;
 
 			do {
-				container = widget.GetNativeWidget<Gtk.Container> ();
+				container = widget?.nativeWidget is Gtk.Container ? widget.GetNativeWidget<Gtk.Container> () : null;
 				if (container != null) {
 					Gtk.Widget child = container.FocusChild;
 					if (child != null)
@@ -2349,11 +2358,11 @@ namespace MonoDevelop.Components.Commands
 				}
 			} while (container != null);
 
-			return widget;
+			return widget.nativeWidget is Gtk.Widget ? widget : null;
 		}
 
-		#if MAC
-		class NSViewCommandRouter: ICommandDelegatorRouter
+#if MAC
+		class NSViewCommandRouter : ICommandDelegatorRouter
 		{
 			public AppKit.NSView ActiveView;
 			public Gtk.Widget ParentWidget;

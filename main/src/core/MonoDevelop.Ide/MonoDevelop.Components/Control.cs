@@ -88,9 +88,7 @@ namespace MonoDevelop.Components
 			if (nativeWidget is T resultWidget)
 				return resultWidget;
 
-			// we used to throw a NotSupportedException, however, that prevented us from
-			// doing anything with native controls, see: https://devdiv.visualstudio.com/DevDiv/_workitems/edit/945987
-			return null; 
+			throw new NotSupportedException ($"Cannot get native widget {typeof (T)}");
 		}
 
 		void OnGtkDestroyed (object sender, EventArgs args)
