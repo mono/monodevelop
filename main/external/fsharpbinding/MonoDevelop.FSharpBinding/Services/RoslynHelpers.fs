@@ -40,4 +40,5 @@ module RoslynHelpers =
             member x.ToMinimalDisplayString (_semanticModel, _position, _format) = symbolUse.Symbol.DisplayName //TODO format?
             member x.ToMinimalDisplayParts (_semanticModel, _position, _format) = ImmutableArray.Empty //TODO
             member x.HasUnsupportedMetadata = false //TODO
+            member x.Equals (other:Microsoft.CodeAnalysis.ISymbol, equalityComparer:Microsoft.CodeAnalysis.SymbolEqualityComparer) = equalityComparer.Equals(x, other)
             member x.Equals (other:Microsoft.CodeAnalysis.ISymbol) = x.Equals(other)
