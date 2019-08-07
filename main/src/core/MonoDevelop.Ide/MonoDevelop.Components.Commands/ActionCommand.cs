@@ -109,15 +109,16 @@ namespace MonoDevelop.Components.Commands
 						info.Visible = false;
 					return;
 				}
-				defaultHandler = (CommandHandler) Activator.CreateInstance (DefaultHandlerType);
+				defaultHandler = (CommandHandler)Activator.CreateInstance (DefaultHandlerType);
 			}
 			if (commandArray) {
 				info.ArrayInfo = new CommandArrayInfo (info);
 				defaultHandler.InternalUpdate (info.ArrayInfo);
-			}
-			else
+			} else
 				defaultHandler.InternalUpdate (info);
 		}
+
+		internal RuntimeAddin RuntimeAddin => defaultHandlerAddin;
 	}
 }
 
