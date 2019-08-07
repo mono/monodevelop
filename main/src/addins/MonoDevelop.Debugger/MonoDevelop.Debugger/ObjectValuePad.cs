@@ -39,7 +39,7 @@ namespace MonoDevelop.Debugger
 {
 	public class ObjectValuePad : PadContent
 	{
-		protected static readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debbugger.UseNewTreeView", false);
+		protected readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
 
 		protected ObjectValueTreeViewController controller;
 		protected ObjectValueTreeView tree;

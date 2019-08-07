@@ -26,24 +26,27 @@
 //
 
 using System;
-using Mono.Debugging.Client;
-using MonoDevelop.Components;
-using Gtk;
+
 using Gdk;
+using Gtk;
+
+using Mono.Debugging.Client;
+
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
 	class DebugValueWindow : PopoverWindow
 	{
+		readonly bool useNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
 		readonly ObjectValueTreeViewController controller;
 		readonly ObjectValueTreeView objValueTreeView;
 		readonly TreeView treeView;
 		readonly ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
-		static readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debbugger.UseNewTreeView", false);
 		static string currentBgColor;
 
 		static DebugValueWindow ()
@@ -92,7 +95,7 @@ namespace MonoDevelop.Debugger
 
 			UpdateTreeStyle (Theme.BackgroundColor);
 
-			if (UseNewTreeView) {
+			if (useNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.SetStackFrame (frame);
 				controller.AllowEditing = true;
@@ -146,7 +149,7 @@ namespace MonoDevelop.Debugger
 
 		public DebuggerSession GetDebuggerSession ()
 		{
-			if (UseNewTreeView)
+			if (useNewTreeView)
 				return controller.GetStackFrame ()?.DebuggerSession;
 
 			return objValueTreeView.Frame?.DebuggerSession;
@@ -169,7 +172,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void OnDestroyed ()
 		{
-			if (UseNewTreeView) {
+			if (useNewTreeView) {
 				if (treeView is IObjectValueTreeView ovtv) {
 					ovtv.StartEditing -= OnStartEditing;
 					ovtv.EndEditing -= OnEndEditing;

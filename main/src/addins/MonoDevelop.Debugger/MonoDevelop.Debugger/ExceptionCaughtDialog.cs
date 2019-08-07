@@ -46,9 +46,9 @@ namespace MonoDevelop.Debugger
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
-		static readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debbugger.UseNewTreeView", false);
 
 		readonly Dictionary<ExceptionInfo, ExceptionInfo> reverseInnerExceptions = new Dictionary<ExceptionInfo, ExceptionInfo> ();
+		readonly bool useNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
 		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
 
@@ -181,7 +181,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 		Widget CreateExceptionValueTreeView ()
 		{
-			if (UseNewTreeView) {
+			if (useNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.SetStackFrame (DebuggingService.CurrentFrame);
 				controller.AllowExpanding = true;
@@ -613,7 +613,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					parentException = null;
 			}
 
-			if (UseNewTreeView) {
+			if (useNewTreeView) {
 				controller.ClearAll ();
 			} else {
 				((ObjectValueTreeView) exceptionValueTreeView).ClearAll ();
@@ -625,7 +625,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 				var values = ex.Instance.GetAllChildren (opts);
 
-				if (UseNewTreeView) {
+				if (useNewTreeView) {
 					controller.AddValues (values);
 				} else {
 					((ObjectValueTreeView) exceptionValueTreeView).AddValues (values);
