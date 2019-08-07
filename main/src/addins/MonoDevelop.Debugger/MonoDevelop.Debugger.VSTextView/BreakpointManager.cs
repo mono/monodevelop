@@ -68,13 +68,11 @@ namespace MonoDevelop.Debugger
 			var bps = new List<Breakpoint> ();
 			var needsUpdate = false;
 
-			lock (breakpointStore) {
-				foreach (var breakpoint in breakpointStore.GetBreakpointsAtFile (textDocument.FilePath)) {
-					if (breakpoint.Line > snapshot.LineCount)
-						continue;
+			foreach (var breakpoint in breakpointStore.GetBreakpointsAtFile (textDocument.FilePath)) {
+				if (breakpoint.Line > snapshot.LineCount)
+					continue;
 
-					bps.Add (breakpoint);
-				}
+				bps.Add (breakpoint);
 			}
 
 			foreach (var breakpoint in bps) {
@@ -82,7 +80,7 @@ namespace MonoDevelop.Debugger
 					needsUpdate = true;
 
 				var line = snapshot.GetLineFromLineNumber (breakpoint.Line - 1);
-				var position = line.Start.Position + breakpoint.Column;
+				var position = line.Start.Position + breakpoint.Column - 1;
 				var span = await DebuggingService.GetBreakpointSpanAsync (textDocument, position);
 
 				if (breakpoints.TryGetValue (breakpoint, out var existingBreakpoint)) {

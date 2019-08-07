@@ -226,6 +226,10 @@ namespace MonoDevelop.PackageManagement
 			return Version?.IsPrerelease == true;
 		}
 
+		internal IDotNetProject Project {
+			get { return dotNetProject; }
+		}
+
 		public bool IsForProject (DotNetProject project)
 		{
 			return dotNetProject.DotNetProject == project;

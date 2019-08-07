@@ -53,12 +53,12 @@ namespace MonoDeveloper
 
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			return Task.Run (() => (SolutionItem) ReadFile (fileName, false, monitor));
+			return Task.FromResult ((SolutionItem) ReadFile (fileName, false, monitor));
 		}
 
 		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			return Task.Run (() => (WorkspaceItem) ReadFile (fileName, false, monitor));
+			return Task.FromResult ((WorkspaceItem) ReadFile (fileName, false, monitor));
 		}
 
 		public object ReadFile (FilePath fileName, bool hasParentSolution, ProgressMonitor monitor)

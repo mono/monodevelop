@@ -25,7 +25,7 @@ namespace NuGet.PackageManagement.UI
 			IEnumerable<NuGetProject> nugetProjects)
 			: base(nugetProjects)
 		{
-			Debug.Assert(nugetProjects.Count() == 1);
+			//Debug.Assert(nugetProjects.Count() == 1);
 		}
 
 		//public async override Task SetCurrentPackage(

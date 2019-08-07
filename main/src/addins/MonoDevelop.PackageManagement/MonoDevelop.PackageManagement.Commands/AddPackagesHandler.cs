@@ -24,16 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace MonoDevelop.PackageManagement.Commands
 {
 	internal class AddPackagesHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{
-			var runner = new AddPackagesDialogRunner ();
-			runner.Run ();
+			var runner = new ManagePackagesDialogRunner ();
+			runner.Run (GetSelectedDotNetProject ());
 		}
 
 		protected override bool IsEnabled ()

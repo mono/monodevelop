@@ -38,6 +38,8 @@ namespace MonoDevelop.Projects
 	[ExportProjectModelExtension]
 	public class SdkProjectExtension : DotNetProjectExtension
 	{
+		HashSet<(string Name, string Include)> evaluatedItems;
+
 		MSBuildSdkProject msbuildSdkProject = new MSBuildSdkProject ();
 		string[] cachedBuildActions;
 
@@ -53,8 +55,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		internal static bool FileShouldBeHidden (FilePath file)
 		{
-			return file.HasExtension (".userprefs") ||
-				file.FileName == ".DS_Store";
+			return file.HasExtension (".userprefs") || file.HasFileName (".DS_Store");
 		}
 
 		public IEnumerable<string> TargetFrameworks {
@@ -109,6 +110,7 @@ namespace MonoDevelop.Projects
 			Project.UseFileWatcher = true;
 
 			cachedBuildActions = null;
+			evaluatedItems = null;
 		}
 
 		internal protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -129,36 +131,15 @@ namespace MonoDevelop.Projects
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
-			return AddMissingProjectFiles (sourceFiles, configuration);
-		}
-
-		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files, ConfigurationSelector configuration)
-		{
-			ImmutableArray<ProjectFile>.Builder missingFiles = null;
-			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
-				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
-					if (missingFiles == null)
-						missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
-					missingFiles.Add (existingFile);
-				}
-			}
-
 			// Ensure generated assembly info file is available to type system. It is created in the obj
 			// directory and is excluded from the project with a wildcard exclude but the type system needs it to
 			// ensure the project's assembly information is correct to prevent diagnostic errors.
 			var generatedAssemblyInfoFile = GetGeneratedAssemblyInfoFile (configuration);
 			if (generatedAssemblyInfoFile != null) {
-				if (missingFiles == null)
-					missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
-				missingFiles.Add (generatedAssemblyInfoFile);
+				return sourceFiles.Add (generatedAssemblyInfoFile);
 			}
 
-			if (missingFiles == null)
-				return files;
-
-			missingFiles.Capacity = missingFiles.Count + files.Length;
-			missingFiles.AddRange (files);
-			return missingFiles.MoveToImmutable ();
+			return sourceFiles;
 		}
 
 		ProjectFile GetGeneratedAssemblyInfoFile (ConfigurationSelector configuration)
@@ -185,14 +166,23 @@ namespace MonoDevelop.Projects
 			// project file is being saved.
 		}
 
-		bool IsFSharpSdkProject ()
+		bool? isFSharpSdkProject;
+		bool IsLegacyFSharpSdkProject ()
 		{
-			var sdks = Project.MSBuildProject.GetReferencedSDKs ();
-			for (var i = 0; i < sdks.Length; i++) {
-				if (sdks [i].Contains ("FSharp"))
-					return true;
+			if (isFSharpSdkProject is null) {
+				isFSharpSdkProject = ContainsFSharpSdk (Project.MSBuildProject.GetReferencedSDKs ());
 			}
-			return false;
+
+			return isFSharpSdkProject.Value;
+
+			static bool ContainsFSharpSdk (string[] sdks)
+			{
+				for (var i = 0; i < sdks.Length; i++) {
+					if (sdks [i].Contains ("FSharp"))
+						return true;
+				}
+				return false;
+			}
 		}
 
 		internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
@@ -200,7 +190,7 @@ namespace MonoDevelop.Projects
 			if (!IsBuildActionSupported (buildItem.Name))
 				return false;
 
-			if (IsFSharpSdkProject ()) {
+			if (IsLegacyFSharpSdkProject ()) {
 				// Ignore imported F# files. F# files are defined in the main project.
 				// This prevents duplicate F# files when a new project is first created.
 				if (buildItem.Include.EndsWith (".fs", StringComparison.OrdinalIgnoreCase))
@@ -210,11 +200,15 @@ namespace MonoDevelop.Projects
 			if (IsFromSharedProject (buildItem))
 				return false;
 
-			// HACK: Remove any imported items that are not in the EvaluatedItems
-			// This may happen if a condition excludes the item. All items passed to the
-			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
-			return Project.MSBuildProject.EvaluatedItems
-				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
+			evaluatedItems ??= CreateEvaluatedItemsCache (Project.MSBuildProject);
+			return evaluatedItems.Contains ((buildItem.Name, buildItem.Include));
+
+			static HashSet<(string, string)> CreateEvaluatedItemsCache (MSBuildProject project)
+				=> new HashSet<(string Name, string Include)> (
+					project.EvaluatedItems
+					.Where (x => x.IsImported)
+					.Select (x => (x.Name, x.Include))
+				);
 		}
 
 		/// <summary>
@@ -262,6 +256,8 @@ namespace MonoDevelop.Projects
 		internal protected override async Task OnReevaluateProject (ProgressMonitor monitor)
 		{
 			await base.OnReevaluateProject (monitor);
+
+			isFSharpSdkProject = null;
 			UpdateHiddenFiles (Project.Files);
 		}
 

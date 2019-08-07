@@ -41,12 +41,12 @@ namespace MonoDevelop.Projects
 
 		public virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			throw new NotSupportedException ();
+			return Task.FromException<SolutionItem> (new NotSupportedException ());
 		}
 		
 		public virtual Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			throw new NotSupportedException ();
+			return Task.FromException<WorkspaceItem> (new NotSupportedException ());
 		}
 	}
 

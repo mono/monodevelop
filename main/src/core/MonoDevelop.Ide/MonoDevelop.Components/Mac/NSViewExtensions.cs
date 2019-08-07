@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if MAC
 using System;
 using System.Runtime.InteropServices;
 using Foundation;
@@ -71,10 +72,12 @@ namespace AppKit
 			}
 		}
 
-		static readonly IntPtr sel_sortSubviewsUsingFunction_context_ = Selector.GetHandle ("sortSubviewsUsingFunction:context:");
+		static readonly IntPtr sel_sortSubviewsUsingFunction_context_ =
+ Selector.GetHandle ("sortSubviewsUsingFunction:context:");
 		static void SortSubviews (NSView view, IntPtr function_pointer, IntPtr context)
 		{
 			MonoDevelop.Components.Mac.Messaging.void_objc_msgSend_IntPtr_IntPtr (view.Handle, sel_sortSubviewsUsingFunction_context_, function_pointer, context);
 		}
 	}
 }
+#endif

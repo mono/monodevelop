@@ -541,9 +541,9 @@ namespace MonoDevelop.Ide
 
 			// If the user interacted with the IDE just a moment ago, wait a bit more time before
 			// running the action
-			var interactionSpan = (int)(DateTime.Now - commandService.LastUserInteraction).TotalMilliseconds;
+			var interactionSpan = Math.Max (0, (DateTime.Now - commandService.LastUserInteraction).TotalMilliseconds);
 			if (interactionSpan < 500) {
-				DispatchIdleActions (500 - interactionSpan);
+				DispatchIdleActions (500 - (int) interactionSpan);
 				return;
 			}
 

@@ -478,8 +478,14 @@ namespace MonoDevelop.Components.Commands
 			}
 #endif
 			// Handle the GDK key via MD commanding
-			if (ProcessKeyEventCore (ev))
-				return true;
+			try {
+				if (ProcessKeyEventCore (ev)) {
+					return true;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Exception while parsing command", ex);
+				return false;
+			}
 
 #if MAC
 			// Otherwise if we have a native first responder that is not the GdkQuartzView
@@ -544,6 +550,10 @@ namespace MonoDevelop.Components.Commands
 				chord = null;
 				
 				NotifyKeyPressed (ev);
+				return false;
+			}
+
+			if (commands == null) {
 				return false;
 			}
 

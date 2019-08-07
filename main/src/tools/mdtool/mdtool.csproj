@@ -36,6 +36,9 @@
     <None Include="..\..\core\MonoDevelop.Startup\app.config">
       <Link>app.config</Link>
     </None>
+    <Compile Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Components\Shared\GtkWorkarounds.cs">
+      <Link>src\GtkWorkarounds.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

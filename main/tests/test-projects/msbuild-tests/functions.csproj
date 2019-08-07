@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <ItemGroup>
+	<ItemGroup>
 	<File Include="$(P1).$(Prefix)Test1" />
 	<Result Include="$(Files)" />
-  </ItemGroup>
-  <PropertyGroup>
+	<DesignerCS Include="a.designer.cs;b.designer.cs"/>
+	<DesignerCSDependentFiles Include="@(DesignerCS)">
+		<DependentUpon>$([System.String]::Copy('%(Identity)').Substring(
+			0,
+			$([System.String]::Copy('%(Identity)').LastIndexOf(
+				'.designer.cs',
+				System.StringComparison.OrdinalIgnoreCase))
+			)).cs
+		</DependentUpon>
+	</DesignerCSDependentFiles>
+	</ItemGroup>
+	<PropertyGroup>
 	<Prop>abcdefgh</Prop>
 	<SomeChars>1.0</SomeChars>
 	<TestFile>files\test.txt</TestFile>
@@ -37,7 +47,7 @@
 	<CharTrim>$(Path.Trim (\b))</CharTrim>
 	<OutDir>foo</OutDir>
 	<FullPath>$([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(MSBuildProjectDirectory)`, `$(OutDir)`))`))</FullPath>
-    <FullPathWithSpaces>$([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(MSBuildProjectDirectory)`, `(a b)`))`))</FullPathWithSpaces>
+	<FullPathWithSpaces>$([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(MSBuildProjectDirectory)`, `(a b)`))`))</FullPathWithSpaces>
 	<P1>AAA</P1>
 	<Files>$(P1);@(File)</Files>
 	<Prefix>Post</Prefix>
@@ -47,14 +57,18 @@
 	<DoubleNumberComplex>$([MSBuild]::Subtract($(DoubleNumber.Split('.')[0].Substring(3).Trim()), 8800))</DoubleNumberComplex>
 	<ParamsPathCombine>$([System.IO.Path]::Combine('a', 'b', 'c', 'd', 'e', 'f'))</ParamsPathCombine>
 	<EnumFolderPath>$([System.Environment]::GetFolderPath(SpecialFolder.LocalApplicationData))</EnumFolderPath>
+	<EnumFlagsSplitStringLength>$(Path.Split('\', StringSplitOptions.None).Length)</EnumFlagsSplitStringLength>
+	<EnumFlagsSplitStringRemoveEmptyLength>$(Path.Split('\', System.StringSplitOptions.None|RemoveEmptyEntries).Length)</EnumFlagsSplitStringRemoveEmptyLength>
 	<DirectoryNameOfFileAbove>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), false.targets))false.targets</DirectoryNameOfFileAbove>
 	<PathOfFileAbove>$([MSBuild]::GetPathOfFileAbove('false.targets'))</PathOfFileAbove>
 	<EnsureTrailingSlash>$([MSBuild]::EnsureTrailingSlash('$(CharTrim)'))</EnsureTrailingSlash>
 	<NormalizeDirectory>$([MSBuild]::NormalizeDirectory('$(CharTrim)'))</NormalizeDirectory>
 	<NormalizePath>$([MSBuild]::NormalizePath('$(CharTrim)'))</NormalizePath>
-  </PropertyGroup>
-  <PropertyGroup>
-  </PropertyGroup>
+	<CorrectOverloadIndexOf>$([System.String]::Copy('a.designer.cs').LastIndexOf('.designer.cs', System.StringComparison.OrdinalIgnoreCase))</CorrectOverloadIndexOf>
+	<CorrectOverloadIndexOfTransform>@(DesignerCSDependentFiles->'%(DependentUpon)')</CorrectOverloadIndexOfTransform>
+	</PropertyGroup>
+	<PropertyGroup>
+	</PropertyGroup>
 	<Target Name="Test">
 		<Message Text="$(FullPath)" />
 	</Target>

@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement.NodeBuilders;
-using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -38,8 +38,8 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		public override void ActivateItem ()
 		{
-			var runner = new AddPackagesDialogRunner ();
-			runner.Run ();
+			var runner = new ManagePackagesDialogRunner ();
+			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
 		}
 
 		[CommandUpdateHandler (PackagesFolderNodeCommands.ReinstallAllPackagesInProject)]

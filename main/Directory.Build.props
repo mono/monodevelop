@@ -1,4 +1,5 @@
 <Project>
+  <Import Project="$(MSBuildThisFileDirectory)msbuild\RoslynVersion.props"/>
 
   <PropertyGroup>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
@@ -19,7 +20,6 @@
     <NuGetVersionNuGet>5.2.0-rtm.6067</NuGetVersionNuGet>
     <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
     <NuGetVersionNUnit3>3.9.0</NuGetVersionNUnit3>
-    <NuGetVersionRoslyn>3.3.0-beta1-19360-03</NuGetVersionRoslyn>
     <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
     <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
     <NuGetVersionVSEditor>16.1.28-g2ad4df7366</NuGetVersionVSEditor>

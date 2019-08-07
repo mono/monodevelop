@@ -1,5 +1,5 @@
 ﻿//
-// TestableAllPackagesViewModel.cs
+// TestableManagePackagesViewModel.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,36 +25,57 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.PackageManagement.UI;
-using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class TestableAllPackagesViewModel : AllPackagesViewModel
+	class TestableManagePackagesViewModel : ManagePackagesViewModel
 	{
-		public RecentNuGetPackagesRepository RecentPackagesRepository;
+		public RecentManagedNuGetPackagesRepository RecentPackagesRepository;
 		public FakeNuGetProjectContext FakeNuGetProjectContext;
 
-		public TestableAllPackagesViewModel (
+		public TestableManagePackagesViewModel (
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject)
 			: this (
 				solutionManager,
 				dotNetProject,
 				new FakeNuGetProjectContext (),
-				new RecentNuGetPackagesRepository ())
+				new RecentManagedNuGetPackagesRepository ())
 		{
 		}
 
-		public TestableAllPackagesViewModel (
+		public TestableManagePackagesViewModel (
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
 			FakeNuGetProjectContext projectContext,
-			RecentNuGetPackagesRepository recentPackagesRepository)
-			: base (solutionManager, dotNetProject, projectContext, recentPackagesRepository)
+			RecentManagedNuGetPackagesRepository recentPackagesRepository)
+			: base (solutionManager, dotNetProject.ParentSolution, projectContext, recentPackagesRepository, dotNetProject)
+		{
+			FakeNuGetProjectContext = projectContext;
+			RecentPackagesRepository = recentPackagesRepository;
+		}
+
+		public TestableManagePackagesViewModel (
+			IMonoDevelopSolutionManager solutionManager,
+			ISolution solution)
+			: this (
+				solutionManager,
+				solution,
+				new FakeNuGetProjectContext (),
+				new RecentManagedNuGetPackagesRepository ())
+		{
+		}
+
+		public TestableManagePackagesViewModel (
+			IMonoDevelopSolutionManager solutionManager,
+			ISolution solution,
+			FakeNuGetProjectContext projectContext,
+			RecentManagedNuGetPackagesRepository recentPackagesRepository)
+			: base (solutionManager, solution, projectContext, recentPackagesRepository, null)
 		{
 			FakeNuGetProjectContext = projectContext;
 			RecentPackagesRepository = recentPackagesRepository;
@@ -62,7 +83,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageFeed PackageFeed = new FakePackageFeed ();
 
-		protected override IPackageFeed CreatePackageFeed (IEnumerable<SourceRepository> sourceRepositories)
+		protected override IPackageFeed CreatePackageFeed (PackageLoadContext context)
 		{
 			return PackageFeed;
 		}
@@ -92,9 +113,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public Task GetPackagesInstalledInProjectTask;
 
-		protected override Task GetPackagesInstalledInProject ()
+		protected override Task GetPackagesInstalledInProjects ()
 		{
-			GetPackagesInstalledInProjectTask = base.GetPackagesInstalledInProject ();
+			GetPackagesInstalledInProjectTask = base.GetPackagesInstalledInProjects ();
 			return GetPackagesInstalledInProjectTask;
 		}
 	}

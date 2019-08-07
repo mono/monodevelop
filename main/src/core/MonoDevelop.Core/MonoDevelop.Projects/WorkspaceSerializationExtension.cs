@@ -45,13 +45,11 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
+		public override async Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			return Task.Run (async () => {
-				var workspaceItem = ReadWorkspaceItemFile (fileName, monitor);
-				await workspaceItem.LoadUserProperties ().ConfigureAwait (false);
-				return workspaceItem;
-			});
+			var workspaceItem = ReadWorkspaceItemFile (fileName, monitor);
+			await workspaceItem.LoadUserProperties ().ConfigureAwait (false);
+			return workspaceItem;
 		}
 
 		WorkspaceItem ReadWorkspaceItemFile (FilePath fileName, ProgressMonitor monitor)
