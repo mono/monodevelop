@@ -146,7 +146,7 @@
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InsertSnippetCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SurroundWithCommandArgs" />
-		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToMatchingBraceCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GotoBraceCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleOutliningExpansionCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ToggleAllOutliningCommandArgs" />
