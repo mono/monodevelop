@@ -9,6 +9,7 @@
 # https://help.github.com/articles/about-codeowners
 
 /main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
+/main/src/core/MonoDevelop.Core/MonoDevelop.Utilities @mono/monodevelop-infrastructure
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.AtkCocoaHelper @iainx
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking @slluis @sevoku
@@ -35,3 +36,5 @@
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide @slluis
 /main/src/core/MonoDevelop.Ide/branding @slluis
+/main/tests/IdeUnitTests @mono/monodevelop-infrastructure
+/main/tests/UnitTests @mono/monodevelop-infrastructure
