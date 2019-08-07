@@ -45,6 +45,7 @@ class MonoDevelopProcessHost
 	[STAThread]
 	public static int Main (string[] args)
 	{
+		int exitCode = -1;
 		try {
 			var sc = new ConsoleSynchronizationContext ();
 			SynchronizationContext.SetSynchronizationContext (sc);
@@ -115,7 +116,8 @@ class MonoDevelopProcessHost
 
 			//setup app needs to skip runtime initialization or we get addin engine races
 			if (toolName == "setup") {
-				return RunSetup (toolArgs);
+				exitCode = RunSetup (toolArgs);
+				return exitCode;
 			}
 
 			// Only log fatal errors unless verbosity is specified. Command line tools should already
@@ -127,39 +129,56 @@ class MonoDevelopProcessHost
 
 			if (showHelp || badInput) {
 				ShowHelp (badInput, exeName);
-				return badInput? 1 : 0;
+				exitCode = badInput? 1 : 0;
+				return exitCode;
 			}
 
-			var tool = Runtime.ApplicationService.GetApplication (toolName);
-			if (tool == null) {
-				Console.Error.WriteLine ("Tool '{0}' not found.", toolName);
-				listTools = true;
-				badInput = true;
+			if (!showHelp && !badInput) {
+				var tool = Runtime.ApplicationService.GetApplication (toolName);
+				if (tool == null) {
+					Console.Error.WriteLine ("Tool '{0}' not found.", toolName);
+					listTools = true;
+					badInput = true;
+				}
+
+				if (listTools) {
+					ShowAvailableTools ();
+					exitCode = badInput ? 1 : 0;
+					return exitCode;
+				}
+
+				if (tool != null) {
+					var task = tool.Run (toolArgs);
+					task.ContinueWith ((t) => sc.ExitLoop ());
+					sc.RunMainLoop ();
+					exitCode = task.Result;
+				}
 			}
-
-			if (listTools) {
-				ShowAvailableTools ();
-				return badInput? 1 : 0;
-			}
-
-			var task = tool.Run (toolArgs);
-			task.ContinueWith ((t) => sc.ExitLoop ());
-			sc.RunMainLoop ();
-			return task.Result;
-
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
-			return -1;
+			exitCode = -1;
 		} catch (Exception ex) {
 			LoggingService.LogFatalError (ex.ToString ());
-			return -1;
+			exitCode = -1;
 		} finally {
 			try {
-				Runtime.Shutdown ();
+				var terminate = exitCode == 0;
+				Shutdown (terminate);
 			} catch {
 				// Ignore shutdown exceptions
 			}
 			LoggingService.Shutdown ();
+		}
+
+		return exitCode;
+	}
+
+	static void Shutdown (bool terminate)
+	{
+		Runtime.Shutdown ();
+
+		if (terminate) {
+			MonoDevelop.Components.GtkWorkarounds.Terminate ();
 		}
 	}
 
