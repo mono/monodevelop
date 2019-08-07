@@ -678,6 +678,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		// If this starts passing, either the git backend was fixed or the repository has changed
 		// a submodule whose loose object cannot be found.
 		[Test]
+		[Ignore("Fixed in another PR.")]
 		public async Task TestGitRecursiveCloneFailsAndDoesntCrash ()
 		{
 			var toCheckout = new GitRepository {
