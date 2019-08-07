@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectWithWildcardsTests.cs
 //
 // Author:
@@ -58,6 +58,31 @@ namespace MonoDevelop.Projects
 				"text3-1.txt",
 				"text3-2.txt",
 			}, files);
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task LoadProjectWithQuestionWildcards ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-question-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.That (files, Is.EquivalentTo (new string [] {
+				"Data1.cs",
+				"Data2.cs",
+				"Data3.cs",
+				"maybe.js",
+				"maybe1.js",
+				"Program.cs",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}));
 
 			p.Dispose ();
 		}
@@ -338,7 +363,7 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// If an MSBuild item has a property on loading then if all the properties are removed the 
+		/// If an MSBuild item has a property on loading then if all the properties are removed the
 		/// project file when saved will still have an end element. So this test uses a different
 		/// .saved5 file compared with the previous test and includes the extra end tag for the
 		/// EmbeddedResource.

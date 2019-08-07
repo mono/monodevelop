@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement;
 
@@ -33,8 +34,8 @@ namespace MonoDevelop.DotNetCore.Commands
 	{
 		public override void ActivateItem ()
 		{
-			var runner = new AddPackagesDialogRunner ();
-			runner.Run ();
+			var runner = new ManagePackagesDialogRunner ();
+			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
 		}
 	}
 }

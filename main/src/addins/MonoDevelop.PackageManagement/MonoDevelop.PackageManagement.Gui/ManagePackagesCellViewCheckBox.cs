@@ -1,5 +1,5 @@
 ﻿//
-// PackageCellViewCheckBox.cs
+// ManagePackagesCellViewCheckBox.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -30,20 +30,20 @@ using Gtk;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class PackageCellViewCheckBox
+	internal class ManagePackagesCellViewCheckBox
 	{
 		static int indicatorSize;
 		static int indicatorSpacing;
 		double scaleFactor;
 
-		static PackageCellViewCheckBox ()
+		static ManagePackagesCellViewCheckBox ()
 		{
 			var cb = new Gtk.CheckButton ();
 			indicatorSize = (int) cb.StyleGetProperty ("indicator-size");
 			indicatorSpacing = (int) cb.StyleGetProperty ("indicator-spacing");
 		}
 
-		public PackageCellViewCheckBox (double scaleFactor)
+		public ManagePackagesCellViewCheckBox (double scaleFactor)
 		{
 			this.scaleFactor = scaleFactor;
 			Size = indicatorSize;

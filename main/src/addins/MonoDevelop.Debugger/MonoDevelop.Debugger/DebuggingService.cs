@@ -186,12 +186,10 @@ namespace MonoDevelop.Debugger
 			if (liveUpdate) {
 				var bp = pinnedWatches.CreateLiveUpdateBreakpoint (watch);
 				pinnedWatches.Bind (watch, bp);
-				lock (breakpoints)
-					breakpoints.Add(bp);
+				breakpoints.Add(bp);
 			} else {
 				pinnedWatches.Bind (watch, null);
-				lock (breakpoints)
-					breakpoints.Remove (watch.BoundTracer);
+				breakpoints.Remove (watch.BoundTracer);
 			}
 		}
 
@@ -653,6 +651,7 @@ namespace MonoDevelop.Debugger
 			return new DebuggerSessionOptions {
 				StepOverPropertiesAndOperators = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", true),
 				ProjectAssembliesOnly = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true),
+				AutomaticSourceLinkDownload = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", AutomaticSourceDownload.Ask),
 				EvaluationOptions = eval,
 			};
 		}
@@ -661,6 +660,7 @@ namespace MonoDevelop.Debugger
 		{
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", options.StepOverPropertiesAndOperators);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", options.ProjectAssembliesOnly);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", options.AutomaticSourceLinkDownload);
 
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", options.EvaluationOptions.AllowTargetInvoke);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", options.EvaluationOptions.AllowToStringCalls);
@@ -1347,26 +1347,24 @@ namespace MonoDevelop.Debugger
 
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)
 		{
-			lock (breakpoints) {
-				foreach (var bp in breakpoints.GetBreakpoints ()) {
-					if (bp.FileName == a.TextFile.Name) {
-						if (bp.Line > a.LineNumber) {
-							var startIndex = a.TextFile.GetPositionFromLineColumn (bp.Line, bp.Column);
-							var endIndex = a.TextFile.GetPositionFromLineColumn (bp.Line + 1, 0) - 1;
+			foreach (var bp in breakpoints.GetBreakpoints ()) {
+				if (bp.FileName == a.TextFile.Name) {
+					if (bp.Line > a.LineNumber) {
+						var startIndex = a.TextFile.GetPositionFromLineColumn (bp.Line, bp.Column);
+						var endIndex = a.TextFile.GetPositionFromLineColumn (bp.Line + 1, 0) - 1;
 
-							if (endIndex < startIndex)
-								endIndex = startIndex;
+						if (endIndex < startIndex)
+							endIndex = startIndex;
 
-							var text = a.TextFile.GetText (startIndex, endIndex);
+						var text = a.TextFile.GetText (startIndex, endIndex);
 
-							// If the line that has the breakpoint is deleted, delete the breakpoint, otherwise update the line #.
-							if (bp.Line + a.LineCount >= a.LineNumber && !string.IsNullOrWhiteSpace (text))
-								breakpoints.UpdateBreakpointLine (bp, bp.Line + a.LineCount);
-							else
-								breakpoints.Remove (bp);
-						} else if (bp.Line == a.LineNumber && a.LineCount < 0)
+						// If the line that has the breakpoint is deleted, delete the breakpoint, otherwise update the line #.
+						if (bp.Line + a.LineCount >= a.LineNumber && !string.IsNullOrWhiteSpace (text))
+							breakpoints.UpdateBreakpointLine (bp, bp.Line + a.LineCount);
+						else
 							breakpoints.Remove (bp);
-					}
+					} else if (bp.Line == a.LineNumber && a.LineCount < 0)
+						breakpoints.Remove (bp);
 				}
 			}
 		}
@@ -1374,8 +1372,7 @@ namespace MonoDevelop.Debugger
 		static void OnStoreUserPrefs (object s, UserPreferencesEventArgs args)
 		{
 			var baseDir = (args.Item as Solution)?.BaseDirectory;
-			lock (breakpoints)
-				args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save (baseDir));
+			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save (baseDir));
 			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
 
@@ -1385,27 +1382,23 @@ namespace MonoDevelop.Debugger
 
 			if (elem != null) {
 				var baseDir = (args.Item as Solution)?.BaseDirectory;
-				lock (breakpoints)
-					breakpoints.Load (elem, baseDir);
+				breakpoints.Load (elem, baseDir);
 			}
 
 			PinnedWatchStore wstore = args.Properties.GetValue<PinnedWatchStore> ("MonoDevelop.Ide.DebuggingService.PinnedWatches");
 			if (wstore != null)
 				pinnedWatches.LoadFrom (wstore);
 
-			lock (breakpoints)
-				pinnedWatches.BindAll (breakpoints);
+			pinnedWatches.BindAll (breakpoints);
 
-			lock (breakpoints)
-				pinnedWatches.SetAllLiveUpdateBreakpoints (breakpoints);
+			pinnedWatches.SetAllLiveUpdateBreakpoints (breakpoints);
 
 			return Task.FromResult (true);
 		}
 
 		static void OnSolutionClosed (object s, EventArgs args)
 		{
-			lock (breakpoints)
-				breakpoints.Clear ();
+			breakpoints.Clear ();
 		}
 
 		static Microsoft.CodeAnalysis.ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, SourceLocation sourceLocation, string identifier)

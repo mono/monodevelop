@@ -460,7 +460,7 @@ namespace MonoDevelop.Projects
 
 					if (ItemExtension.OnCheckHasSolutionData () && !SavingSolution && ParentSolution != null) {
 						// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
-						await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
+						await Task.Run (() => SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor));
 						ParentSolution.NeedsReload = false;
 					}
 				}
@@ -1232,12 +1232,12 @@ namespace MonoDevelop.Projects
 
 		protected virtual Task OnLoad (ProgressMonitor monitor)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		protected internal virtual Task OnSave (ProgressMonitor monitor)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public FilePath GetAbsoluteChildPath (FilePath relPath)

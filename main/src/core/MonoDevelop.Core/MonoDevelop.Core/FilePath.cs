@@ -143,6 +143,14 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		[Pure]
+		internal bool HasFileName (string name)
+		{
+			return fileName.Length > name.Length
+				&& fileName.EndsWith (name, PathComparison)
+				&& fileName [fileName.Length - name.Length - 1] == Path.DirectorySeparatorChar;
+		}
+
 		public string Extension {
 			get {
 				return Path.GetExtension (fileName);
@@ -153,8 +161,27 @@ namespace MonoDevelop.Core
 		public bool HasExtension (string extension)
 		{
 			return fileName.Length > extension.Length
-				&& fileName.EndsWith (extension, PathComparison)
-				&& fileName[fileName.Length - extension.Length - 1] != Path.PathSeparator;
+				&& (extension == string.Empty
+					? HasNoExtension (fileName)
+					: fileName.EndsWith (extension, PathComparison) && fileName [fileName.Length - extension.Length] == '.');
+
+			static bool HasNoExtension (string path)
+			{
+				// Look for the last dot that's after the last path separator
+				for (int i = path.Length - 1; i >= 0; --i) {
+					var ch = path [i];
+					if (ch == '.') {
+						// Check if it's the dot is the last character
+						// if it is, then we have no extension
+						return i == path.Length - 1;
+					}
+
+					if (ch == Path.DirectorySeparatorChar)
+						return true;
+				}
+
+				return true;
+			}
 		}
 
 		public string FileNameWithoutExtension {

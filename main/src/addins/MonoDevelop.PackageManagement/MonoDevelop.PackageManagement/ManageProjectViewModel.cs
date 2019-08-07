@@ -1,10 +1,10 @@
-﻿//
-// PackageSearchResultViewModelComparer.cs
+//
+// ManageProjectViewModel.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,23 +25,37 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	class PackageSearchResultViewModelComparer : IEqualityComparer<PackageSearchResultViewModel>
+	class ManageProjectViewModel
 	{
-		public static readonly PackageSearchResultViewModelComparer Instance = 
-			new PackageSearchResultViewModelComparer ();
-		
-		public bool Equals (PackageSearchResultViewModel x, PackageSearchResultViewModel y)
+		public ManageProjectViewModel (ManagePackagesProjectInfo projectInfo, string packageId)
 		{
-			return x.Id.Equals (y.Id, StringComparison.OrdinalIgnoreCase);
+			ProjectInfo = projectInfo;
+
+			var package = ProjectInfo.Packages.FirstOrDefault (package => StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId));
+			if (package != null) {
+				IsChecked = true;
+				PackageVersion = package.Version.ToString ();
+			} else {
+				PackageVersion = "–";
+			}
 		}
 
-		public int GetHashCode (PackageSearchResultViewModel obj)
-		{
-			return obj.Id.GetHashCode ();
+		public IDotNetProject Project {
+			get { return ProjectInfo.Project; }
 		}
+
+		public string ProjectName {
+			get { return Project.Name; }
+		}
+
+		public string PackageVersion { get; set; }
+
+		public bool IsChecked { get; set; }
+
+		internal ManagePackagesProjectInfo ProjectInfo { get; set; }
 	}
 }

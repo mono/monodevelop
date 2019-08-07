@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects.Extensions
 			if (typeof(SolutionItemFactory).IsAssignableFrom (ItemType)) {
 				if (factory == null)
 					factory = (SolutionItemFactory)Activator.CreateInstance (ItemType);
-				item = await factory.CreateItem (fileName, Guid);
+				item = await factory.CreateItem (fileName, Guid).ConfigureAwait (false);
 			} else
 				item = MSBuildProjectService.CreateUninitializedInstance (ItemType);
 			

@@ -100,7 +100,7 @@ namespace MonoDevelop.Debugger
 
 			// Shared
 			ObjectValueTreeSelectedTextColor = Ide.Gui.Styles.BaseSelectionTextColor.ToHexString (false);
-			ObjectValueTreeForegroundTextColor = Ide.Gui.Styles.BaseSelectionTextColor.ToHexString (false);
+			ObjectValueTreeForegroundTextColor = Ide.Gui.Styles.BaseForegroundColor.ToHexString (false);
 			ObjectValueTreeExternalCodeForegroundTextColor = ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false);
 
 			ObjectValueTreeValueErrorText = Ide.Gui.Styles.WarningForegroundColor;

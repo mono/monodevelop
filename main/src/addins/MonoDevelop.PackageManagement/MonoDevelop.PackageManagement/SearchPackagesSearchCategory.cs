@@ -70,8 +70,8 @@ namespace MonoDevelop.PackageManagement
 
 			public override void Activate ()
 			{
-				var runner = new AddPackagesDialogRunner ();
-				runner.Run (pattern.UnparsedPattern);
+				var runner = new ManagePackagesDialogRunner ();
+				runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject, pattern.UnparsedPattern);
 			}
 
 			public override string GetMarkupText (bool selected)

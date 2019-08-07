@@ -1348,17 +1348,15 @@ namespace MonoDevelop.SourceEditor
 				int i = 0, count = 0;
 				bool mismatch = false;
 
-				lock (breakpoints) {
-					foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
-						count++;
-						if (i < breakpointSegments.Count) {
-							int lineNumber = document.OffsetToLineNumber (breakpointSegments [i].TextMarker.Offset);
-							if (lineNumber != bp.Line) {
-								mismatch = true;
-								break;
-							}
-							i++;
+				foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
+					count++;
+					if (i < breakpointSegments.Count) {
+						int lineNumber = document.OffsetToLineNumber (breakpointSegments [i].TextMarker.Offset);
+						if (lineNumber != bp.Line) {
+							mismatch = true;
+							break;
 						}
+						i++;
 					}
 				}
 
@@ -1383,11 +1381,9 @@ namespace MonoDevelop.SourceEditor
 
 			breakpointSegments.Clear ();
 
-			lock (breakpoints) {
-				foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
-					lineNumbers.Add (bp.Line);
-					AddBreakpoint (bp);
-				}
+			foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
+				lineNumbers.Add (bp.Line);
+				AddBreakpoint (bp);
 			}
 
 			foreach (int lineNumber in lineNumbers) {
@@ -1506,8 +1502,7 @@ namespace MonoDevelop.SourceEditor
 						int column = TextEditor.Caret.Line == args.LineNumber ? 
 												Math.Min (TextEditor.Caret.Column, args.LineSegment.Length) : 1;
 							
-						lock (breakpoints)
-							breakpoints.Toggle (Document.FileName, args.LineNumber, column);
+						breakpoints.Toggle (Document.FileName, args.LineNumber, column);
 					}
 				}
 			}

@@ -76,9 +76,17 @@ namespace MonoDevelop.AnalysisCore.Gui
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-
+			if (Editor.Options is DefaultSourceEditorOptions options)
+				options.Changed += Options_Changed;
 			AnalysisOptions.AnalysisEnabled.Changed += AnalysisOptionsChanged;
 			AnalysisOptionsChanged (null, null);
+		}
+
+		void Options_Changed (object sender, EventArgs e)
+		{
+			if (DocumentContext == null || !enabled)
+				return;
+			UpdateInitialDiagnostics ();
 		}
 
 		void AnalysisOptionsChanged (object sender, EventArgs e)
@@ -91,6 +99,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (disposed) 
 				return;
 			enabled = false;
+			if (Editor.Options is DefaultSourceEditorOptions options)
+				options.Changed -= Options_Changed;
 			diagService.DiagnosticsUpdated -= OnDiagnosticsUpdated;
 			diagService = null;
 			CancelUpdateTimout ();
@@ -154,7 +164,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
 
-			var doc = DocumentContext.AnalysisDocument;
+			var doc = DocumentContext?.AnalysisDocument;
 			if (doc == null || DocumentContext.IsAdHocProject)
 				return;
 
