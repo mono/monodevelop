@@ -525,6 +525,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git" />
     <InternalsVisibleTo Include="MonoDevelop.MacDev" />
   </ItemGroup>
   <ItemGroup>

@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			string user;
 			string email;
-			repo.GetUserInfo (out user, out email);
+			repo.GetUserInfo (out user, out email, CommitDialog);
 
 			string val = sol.UserProperties.GetValue<string> ("GitUserInfo");
 			if (val == "UsingMD") {

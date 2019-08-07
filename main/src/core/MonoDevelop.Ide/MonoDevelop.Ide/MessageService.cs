@@ -395,6 +395,8 @@ namespace MonoDevelop.Ide
 			NSWindow nativeParent = null;
 			try {
 				nativeParent = parent;
+				if (nativeParent.Handle == nsdialog.Handle)
+					throw new InvalidOperationException ("Can't add dialog as child to itself.");
 				nativeParent.AddChildWindow (nsdialog, NSWindowOrderingMode.Above);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Failed to get the native parent window", ex);
