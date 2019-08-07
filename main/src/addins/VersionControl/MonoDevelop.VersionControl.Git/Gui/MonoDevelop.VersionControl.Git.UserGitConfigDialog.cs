@@ -143,7 +143,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			this.DefaultWidth = 332;
 			this.DefaultHeight = 184;
-			this.Show ();
 			this.usernameEntry.Changed += new global::System.EventHandler (this.OnChanged);
 			this.emailEntry.Changed += new global::System.EventHandler (this.OnChanged);
 		}
