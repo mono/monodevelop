@@ -37,6 +37,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Projects.Text;
 
 
 namespace MonoDevelop.MacIntegration
@@ -115,7 +116,7 @@ namespace MonoDevelop.MacIntegration
 						data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 
 					if (state.EncodingSelector != null)
-						data.Encoding = state.EncodingSelector.SelectedEncodingId > 0 ? Encoding.GetEncoding (state.EncodingSelector.SelectedEncodingId) : null;
+						data.Encoding = state.EncodingSelector.SelectedEncoding?.Encoding;
 
 					if (state.ViewerSelector != null) {
 						if (state.CloseSolutionButton != null)
@@ -141,9 +142,8 @@ namespace MonoDevelop.MacIntegration
 			List<FileViewer> currentViewers = null;
 
 			if (data.ShowEncodingSelector) {
-				encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save) {
-					SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0
-				};
+				encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
+				encodingSelector.SelectedEncoding = TextEncoding.GetEncoding (data.Encoding);
 
 				controls.Add ((encodingSelector, GettextCatalog.GetString ("Encoding:")));
 			}
