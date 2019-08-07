@@ -8,6 +8,7 @@
 # https://github.com/blog/2392-introducing-code-owners
 # https://help.github.com/articles/about-codeowners
 
+/main/build/MacOSX @Therzok @iainx
 /main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
 /main/src/core/MonoDevelop.Core/MonoDevelop.Utilities @mono/monodevelop-infrastructure
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.AtkCocoaHelper @iainx
