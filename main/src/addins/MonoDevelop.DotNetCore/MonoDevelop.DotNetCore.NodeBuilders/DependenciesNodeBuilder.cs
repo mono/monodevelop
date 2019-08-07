@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
@@ -38,6 +39,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return DependenciesNode.NodeName;
+		}
+
+		public override Type CommandHandlerType {
+			get { return typeof (DependenciesNodeCommandHandler); }
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)

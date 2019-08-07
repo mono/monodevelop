@@ -1,5 +1,5 @@
 ﻿//
-// TestablePackageSearchResultViewModel.cs
+// TestableManagePackagesSearchResultViewModel.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -30,12 +30,12 @@ using NuGet.PackageManagement.UI;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class TestablePackageSearchResultViewModel : PackageSearchResultViewModel
+	class TestableManagePackagesSearchResultViewModel : ManagePackagesSearchResultViewModel
 	{
 		public FakeDotNetProject Project;
 		public FakeSolutionManager SolutionManager;
 
-		public TestablePackageSearchResultViewModel (
+		public TestableManagePackagesSearchResultViewModel (
 			PackageItemListViewModel viewModel)
 			: this (
 				new FakeSolutionManager (),
@@ -44,19 +44,19 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public TestablePackageSearchResultViewModel (
-			TestableAllPackagesViewModel parent,
+		public TestableManagePackagesSearchResultViewModel (
+			TestableManagePackagesViewModel parent,
 			PackageItemListViewModel viewModel)
 			: base (parent, viewModel)
 		{
 		}
 
-		public TestablePackageSearchResultViewModel (
+		public TestableManagePackagesSearchResultViewModel (
 			FakeSolutionManager solutionManager,
 			FakeDotNetProject project,
 			PackageItemListViewModel viewModel)
 			: this (
-				new TestableAllPackagesViewModel (solutionManager, project),
+				new TestableManagePackagesViewModel (solutionManager, project),
 				viewModel)
 		{
 			SolutionManager = solutionManager;

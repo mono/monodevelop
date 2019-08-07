@@ -1,5 +1,5 @@
 ﻿//
-// RecentNuGetPackagesRepositoryTests.cs
+// RecentManagedNuGetPackagesRepositoryTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -33,37 +33,37 @@ using NUnit.Framework;
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
-	public class RecentNuGetPackagesRepositoryTests
+	public class RecentManagedNuGetPackagesRepositoryTests
 	{
-		RecentNuGetPackagesRepository repository;
+		RecentManagedNuGetPackagesRepository repository;
 
 		void CreateRepository ()
 		{
-			repository = new RecentNuGetPackagesRepository ();
+			repository = new RecentManagedNuGetPackagesRepository ();
 		}
 
-		PackageSearchResultViewModel AddOnePackageToRepository (string id, string packageSource)
+		ManagePackagesSearchResultViewModel AddOnePackageToRepository (string id, string packageSource)
 		{
 			var viewModel = CreatePackage (id);
 			repository.AddPackage (viewModel, packageSource);
 			return viewModel;
 		}
 
-		PackageSearchResultViewModel CreatePackage (string id)
+		ManagePackagesSearchResultViewModel CreatePackage (string id)
 		{
 			var packageViewModel = new PackageItemListViewModel {
 				Id = id
 			};
-			return new PackageSearchResultViewModel (null, packageViewModel);
+			return new ManagePackagesSearchResultViewModel (null, packageViewModel);
 		}
 
-		IEnumerable<PackageSearchResultViewModel> AddTwoDifferentPackagesToRepository (string packageSource)
+		IEnumerable<ManagePackagesSearchResultViewModel> AddTwoDifferentPackagesToRepository (string packageSource)
 		{
 			yield return AddOnePackageToRepository ("Test.Package.1", packageSource);
 			yield return AddOnePackageToRepository ("Test.Package.2", packageSource);
 		}
 
-		IEnumerable<PackageSearchResultViewModel> AddFourDifferentPackagesToRepository (string packageSource)
+		IEnumerable<ManagePackagesSearchResultViewModel> AddFourDifferentPackagesToRepository (string packageSource)
 		{
 			yield return AddOnePackageToRepository ("Test.Package.1", packageSource);
 			yield return AddOnePackageToRepository ("Test.Package.2", packageSource);

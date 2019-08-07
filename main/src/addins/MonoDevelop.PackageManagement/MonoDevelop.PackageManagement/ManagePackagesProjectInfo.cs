@@ -1,5 +1,5 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// ManagePackagesProjectInfo.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,18 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using NuGet.Packaging.Core;
+using NuGet.Packaging;
+using System.Collections.Immutable;
 
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	class ManagePackagesProjectInfo : IComparable<ManagePackagesProjectInfo>
 	{
-		public override void ActivateItem ()
+		readonly ImmutableArray<PackageReference> packages;
+
+		public ManagePackagesProjectInfo (IDotNetProject project, IEnumerable<PackageReference> packages)
 		{
-			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
+			Project = project;
+			this.packages = ImmutableArray<PackageReference>.Empty.AddRange (packages);
+		}
+
+		public IDotNetProject Project { get; }
+
+		public IEnumerable<PackageIdentity> Packages {
+			get { return packages.Select (p => p.PackageIdentity); }
+		}
+
+		public int CompareTo (ManagePackagesProjectInfo other)
+		{
+			if (other == null)
+				return 1;
+
+			return string.Compare (Project.Name, other.Project.Name, StringComparison.CurrentCulture);
 		}
 	}
 }

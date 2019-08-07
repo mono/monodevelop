@@ -1214,7 +1214,7 @@
 			<SeparatorItem
 				id="DependenciesEditReferenceSeparator" />
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
+				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -1222,7 +1222,7 @@
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.DotNetCore.NodeBuilders.PackageDependenciesNode">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
+				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -1233,7 +1233,7 @@
 			value="MonoDevelop.DotNetCore.NodeBuilders.AssemblyDependenciesNode|MonoDevelop.DotNetCore.NodeBuilders.ProjectDependenciesNode">
 			<CommandItem
 				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-				insertbefore="MonoDevelop.PackageManagement.Commands.AddPackages" />
+				insertbefore="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
 		</Condition>
 		<Condition id="ItemType" value="UnknownProject|Solution">
 			<CommandItem

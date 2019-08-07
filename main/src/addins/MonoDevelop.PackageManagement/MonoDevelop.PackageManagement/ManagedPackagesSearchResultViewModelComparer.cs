@@ -1,5 +1,5 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// ManagedPackagesSearchResultViewModelComparer.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,18 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
+using System;
+using System.Collections.Generic;
 
-namespace MonoDevelop.DotNetCore.Commands
+namespace MonoDevelop.PackageManagement
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	class ManagedPackagesSearchResultViewModelComparer : IEqualityComparer<ManagePackagesSearchResultViewModel>
 	{
-		public override void ActivateItem ()
+		public static readonly ManagedPackagesSearchResultViewModelComparer Instance = 
+			new ManagedPackagesSearchResultViewModelComparer ();
+		
+		public bool Equals (ManagePackagesSearchResultViewModel x, ManagePackagesSearchResultViewModel y)
 		{
-			var runner = new ManagePackagesDialogRunner ();
-			runner.Run (IdeApp.ProjectOperations.CurrentSelectedProject);
+			return x.Id.Equals (y.Id, StringComparison.OrdinalIgnoreCase);
+		}
+
+		public int GetHashCode (ManagePackagesSearchResultViewModel obj)
+		{
+			return obj.Id.GetHashCode ();
 		}
 	}
 }

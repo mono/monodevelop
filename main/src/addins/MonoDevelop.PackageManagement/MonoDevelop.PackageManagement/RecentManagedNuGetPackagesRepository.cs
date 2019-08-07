@@ -1,5 +1,5 @@
 ﻿//
-// RecentNuGetPackagesRepository.cs
+// RecentManagedNuGetPackagesRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class RecentNuGetPackagesRepository
+	internal class RecentManagedNuGetPackagesRepository
 	{
 		public const int DefaultMaximumPackagesCount = 20;
 
@@ -43,14 +43,14 @@ namespace MonoDevelop.PackageManagement
 			set { maximumPackagesCount = value; }
 		}
 
-		public IEnumerable<PackageSearchResultViewModel> GetPackages (string source)
+		public IEnumerable<ManagePackagesSearchResultViewModel> GetPackages (string source)
 		{
 			return packages
 				.Where (package => String.Equals (package.Source, source, StringComparison.OrdinalIgnoreCase))
 				.Select (package => package.PackageViewModel);
 		}
 
-		public void AddPackage (PackageSearchResultViewModel viewModel, string source)
+		public void AddPackage (ManagePackagesSearchResultViewModel viewModel, string source)
 		{
 			var package = new RecentPackage (viewModel, source);
 			viewModel.IsRecentPackage = true;
@@ -74,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 
 		bool IsMatch (RecentPackage x, RecentPackage y)
 		{
-			return PackageSearchResultViewModelComparer.Instance.Equals (x.PackageViewModel, y.PackageViewModel);
+			return ManagedPackagesSearchResultViewModelComparer.Instance.Equals (x.PackageViewModel, y.PackageViewModel);
 		}
 
 		void AddPackageAtBeginning (RecentPackage package)
@@ -97,13 +97,13 @@ namespace MonoDevelop.PackageManagement
 
 		class RecentPackage
 		{
-			public RecentPackage (PackageSearchResultViewModel viewModel, string source)
+			public RecentPackage (ManagePackagesSearchResultViewModel viewModel, string source)
 			{
 				PackageViewModel = viewModel;
 				Source = source;
 			}
 
-			public PackageSearchResultViewModel PackageViewModel { get; set; }
+			public ManagePackagesSearchResultViewModel PackageViewModel { get; set; }
 			public string Source { get; set; }
 		}
 	}
