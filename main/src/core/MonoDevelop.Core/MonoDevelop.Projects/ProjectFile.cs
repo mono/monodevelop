@@ -75,14 +75,22 @@ namespace MonoDevelop.Projects
 			BuildAction = buildAction;
 		}
 
+		string cachedInclude;
+
 		public override string Include {
 			get {
 				if (Project != null) {
+					if (cachedInclude != null)
+						return cachedInclude;
+
 					string path = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, FilePath);
 					if (path.Length > 0) {
 						//directory paths must end with '/'
 						if ((Subtype == Subtype.Directory) && path [path.Length - 1] != '\\')
 							path = path + "\\";
+						// Cache the include path to avoid recalculating MSBuildProjectService.ToMSBuildPath
+						// which can slow down saving SDK style projects that contain thousands of files.
+						cachedInclude = path;
 						return path;
 					}
 				}
@@ -188,6 +196,8 @@ namespace MonoDevelop.Projects
 				// If the file is a link, rename the link too
 				if (IsLink && Link.FileName == oldPath.FileName)
 					link = Path.Combine (Path.GetDirectoryName (link), filename.FileName);
+
+				cachedInclude = null;
 
 				// If a file that belongs to a project is being renamed, update the value of UnevaluatedInclude
 				// since that is used when saving
@@ -485,12 +495,30 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		Project project;
+
 		protected override void OnProjectSet ()
 		{
 			base.OnProjectSet ();
+			if (project != null) {
+				project.Modified -= OnProjectModified;
+				project = null;
+			}
 			if (Project != null) {
 				base.Include = Include;
+				project = Project;
+				project.Modified += OnProjectModified;
 				VirtualPathChanged?.Invoke (this, new ProjectFileVirtualPathChangedEventArgs (this, FilePath.Null, ProjectVirtualPath));
+			}
+		}
+
+		void OnProjectModified (object sender, SolutionItemModifiedEventArgs e)
+		{
+			foreach (var eventInfo in e) {
+				if (eventInfo.Hint == "FileName") {
+					cachedInclude = null;
+					return;
+				}
 			}
 		}
 
@@ -516,6 +544,10 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnDispose ()
 		{
+			if (project != null) {
+				project.Modified -= OnProjectModified;
+				project = null;
+			}
 		}
 
 		internal event EventHandler<ProjectFileVirtualPathChangedEventArgs> VirtualPathChanged;
