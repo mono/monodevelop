@@ -1432,7 +1432,7 @@ namespace MonoDevelop.VersionControl.Git
 						if (!skipSubmodules)
 							RecursivelyCloneSubmodules (RootPath, updateOptions, monitor);
 					} catch (Exception e) {
-						LoggingService.LogError ("Error while cloning sub modules", e);
+						LoggingService.LogError ("Cloning submodules failed", e);
 						Directory.Delete (RootPath, true);
 						skipSubmodules = true;
 					}
@@ -1446,7 +1446,7 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
 				InitFileWatcher ();
 				if (skipSubmodules) {
-					MessageService.ShowError (GettextCatalog.GetString("Can't clone sub modules. Please use the command line client to init the sub modules."));
+					MessageService.ShowError (GettextCatalog.GetString("Cloning submodules failed"), GettextCatalog.GetString ("Please use the command line client to init the submodules manually."));
 				}
 				return Task.CompletedTask;
 			} catch (Exception e) {
@@ -1464,7 +1464,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Iterate through the submodules (where the submodule is in the index),
 				// and clone them.
 				var submoduleArray = repo.Submodules.Where (sm => sm.RetrieveStatus ().HasFlag (SubmoduleStatus.InIndex)).ToArray ();
-				monitor.BeginTask (GettextCatalog.GetString ("Cloning sub modules…"), submoduleArray.Length);
+				monitor.BeginTask (GettextCatalog.GetString ("Cloning submodules…"), submoduleArray.Length);
 				try {
 					foreach (var sm in submoduleArray) {
 						if (monitor.CancellationToken.IsCancellationRequested) {
@@ -1472,7 +1472,7 @@ namespace MonoDevelop.VersionControl.Git
 						}
 
 						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out submodule at '{0}'"), sm.Path);
+							monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out submodule at '{0}'…", sm.Path));
 							monitor.Step (1);
 						});
 						repo.Submodules.Update (sm.Name, updateOptions);
