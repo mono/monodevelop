@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 		};
 		readonly List<string> expressions = new List<string> ();
 		
-		public WatchPad () : base (true)
+		public WatchPad ()
 		{
 			if (UseNewTreeView) {
 				controller.AllowWatchExpressions = true;

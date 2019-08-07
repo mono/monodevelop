@@ -31,6 +31,7 @@ using MonoDevelop.Components;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Debugger
 		readonly ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
-		static bool UseNewTreeView = true;
+		static readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debbugger.UseNewTreeView", false);
 		static string currentBgColor;
 
 		static DebugValueWindow ()

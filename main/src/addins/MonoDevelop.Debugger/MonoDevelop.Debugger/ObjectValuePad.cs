@@ -28,15 +28,18 @@
 using System;
 
 using Gtk;
-using MonoDevelop.Ide.Gui;
+
 using Mono.Debugging.Client;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
 	public class ObjectValuePad : PadContent
 	{
-		protected bool UseNewTreeView = false;
+		protected static readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debbugger.UseNewTreeView", false);
 
 		protected ObjectValueTreeViewController controller;
 		protected ObjectValueTreeView tree;
@@ -54,10 +57,8 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public ObjectValuePad (bool useNewTreeView = false)
+		public ObjectValuePad ()
 		{
-			UseNewTreeView = useNewTreeView;
-
 			scrolled = new ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;

@@ -46,7 +46,7 @@ namespace MonoDevelop.Debugger
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
-		static bool UseNewTreeView = true;
+		static readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debbugger.UseNewTreeView", false);
 
 		readonly Dictionary<ExceptionInfo, ExceptionInfo> reverseInnerExceptions = new Dictionary<ExceptionInfo, ExceptionInfo> ();
 		readonly ExceptionCaughtMessage message;

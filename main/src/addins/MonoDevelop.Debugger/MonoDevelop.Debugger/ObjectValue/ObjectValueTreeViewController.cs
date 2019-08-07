@@ -41,7 +41,7 @@ namespace MonoDevelop.Debugger
 	{
 		bool CanQueryDebugger { get; }
 		IStackFrame Frame { get; }
-		Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
+		Task<CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
 	}
 
 	public class ObjectValueTreeViewController : IObjectValueDebuggerService
@@ -601,13 +601,13 @@ namespace MonoDevelop.Debugger
 				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
 			}
 
-			Runtime.RunInMainThread (() => {
+			await Runtime.RunInMainThread (() => {
 				if (loadedCount > 0) {
 					view.LoadNodeChildren (node, 0, node.Children.Count);
 				}
 
 				view.OnNodeExpanded (node);
-			}).Ignore ();
+			});
 		}
 
 		async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)
