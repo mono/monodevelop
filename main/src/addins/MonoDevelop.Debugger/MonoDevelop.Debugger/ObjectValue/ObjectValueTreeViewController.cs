@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Mono.Debugging.Client;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -212,7 +213,7 @@ namespace MonoDevelop.Debugger
 				Root = OnCreateRoot ();
 			}
 
-			((RootObjectValueNode)Root).AddValue (value);
+			((RootObjectValueNode) Root).AddValue (value);
 			RegisterNode (value);
 
 			Runtime.RunInMainThread (() => {
@@ -230,7 +231,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			var nodes = values.ToList ();
-			((RootObjectValueNode)Root).AddValues (nodes);
+			((RootObjectValueNode) Root).AddValues (nodes);
 
 			foreach (var node in nodes) {
 				RegisterNode (node);
@@ -279,7 +280,7 @@ namespace MonoDevelop.Debugger
 		void RemoveValue (ObjectValueNode node)
 		{
 			UnregisterNode (node);
-			OnEvaluationCompleted (node, new ObjectValueNode [0]);
+			OnEvaluationCompleted (node, new ObjectValueNode[0]);
 		}
 
 		// TODO: can we improve this
@@ -379,13 +380,13 @@ namespace MonoDevelop.Debugger
 			UnregisterNode (node);
 			if (string.IsNullOrEmpty (newExpression)) {
 				// we want the expression removed from the tree
-				OnEvaluationCompleted (node, new ObjectValueNode [0]);
+				OnEvaluationCompleted (node, new ObjectValueNode[0]);
 				return true;
 			}
 
 			var expressionNode = Frame.EvaluateExpression (newExpression);
 			RegisterNode (expressionNode);
-			OnEvaluationCompleted (node, new ObjectValueNode [1] { expressionNode });
+			OnEvaluationCompleted (node, new ObjectValueNode[] { expressionNode });
 
 			return true;
 		}
@@ -424,7 +425,7 @@ namespace MonoDevelop.Debugger
 
 				// make sure we set an old value for this node so we can show that it has changed
 				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
-					oldValues [node.Path] = new CheckpointState (node);
+					oldValues[node.Path] = new CheckpointState (node);
 				}
 
 				// ensure the parent and node are in the checkpoint and expanded
@@ -457,7 +458,7 @@ namespace MonoDevelop.Debugger
 
 				// make sure we set an old value for this node so we can show that it has changed
 				if (!oldValues.TryGetValue (node.Path, out CheckpointState state)) {
-					oldValues [node.Path] = new CheckpointState (node);
+					oldValues[node.Path] = new CheckpointState (node);
 				}
 
 				// ensure the parent and node are in the checkpoint and expanded
@@ -487,7 +488,7 @@ namespace MonoDevelop.Debugger
 				if (oldValues.TryGetValue (parent.Path, out CheckpointState state)) {
 					state.Expanded = true;
 				} else {
-					oldValues [parent.Path] = new CheckpointState (parent) { Expanded = true };
+					oldValues[parent.Path] = new CheckpointState (parent) { Expanded = true };
 				}
 
 				parent = parent.Parent; /*FindNode (parent.ParentId);*/
@@ -600,13 +601,13 @@ namespace MonoDevelop.Debugger
 				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
 			}
 
-			await Runtime.RunInMainThread (() => {
+			Runtime.RunInMainThread (() => {
 				if (loadedCount > 0) {
 					view.LoadNodeChildren (node, 0, node.Children.Count);
 				}
 
 				view.OnNodeExpanded (node);
-			});
+			}).Ignore ();
 		}
 
 		async Task<int> FetchMoreChildrenAsync (ObjectValueNode node)
@@ -627,7 +628,7 @@ namespace MonoDevelop.Debugger
 						// if any of them are still evaluating register for
 						// a completion event so that we can tell the UI
 						for (int i = oldCount; i < oldCount + result; i++) {
-							var c = node.Children [i];
+							var c = node.Children[i];
 							RegisterNode (c);
 						}
 
@@ -670,7 +671,7 @@ namespace MonoDevelop.Debugger
 							// if any of them are still evaluating register for
 							// a completion event so that we can tell the UI
 							for (int i = oldCount; i < oldCount + result; i++) {
-								var c = node.Children [i];
+								var c = node.Children[i];
 								RegisterNode (c);
 							}
 						} else {
@@ -704,7 +705,7 @@ namespace MonoDevelop.Debugger
 		void RegisterForEvaluationCompletion (ObjectValueNode node, bool sendImmediatelyIfNotEvaulating = false)
 		{
 			if (node.IsEvaluating) {
-				evaluationWatches [node] = null;
+				evaluationWatches[node] = null;
 				node.ValueChanged += OnEvaluatingNodeValueChanged;
 			} else if (sendImmediatelyIfNotEvaulating) {
 				OnEvaluatingNodeValueChanged (node, EventArgs.Empty);
@@ -772,7 +773,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		void ChangeCheckpoint (ObjectValueNode node)
 		{
-			oldValues [node.Path] = new CheckpointState (node);
+			oldValues[node.Path] = new CheckpointState (node);
 
 			if (node.IsExpanded) {
 				foreach (var child in node.Children) {
@@ -818,11 +819,11 @@ namespace MonoDevelop.Debugger
 		void OnEvaluationCompleted (ObjectValueNode node)
 		{
 			Runtime.RunInMainThread (() => {
-				view.LoadEvaluatedNode (node, new ObjectValueNode [1] { node });
+				view.LoadEvaluatedNode (node, new ObjectValueNode[] { node });
 			}).Ignore ();
 		}
 
-		void OnEvaluationCompleted (ObjectValueNode node, ObjectValueNode [] replacementNodes)
+		void OnEvaluationCompleted (ObjectValueNode node, ObjectValueNode[] replacementNodes)
 		{
 			// `node` returns us a set of new nodes that need to be replaced into the children
 			// of node.parent. This should only be applicable to direct children of the root since
@@ -919,7 +920,7 @@ namespace MonoDevelop.Debugger
 			// and they are all children of the root, we can mimic a list of expressions by just grabbing the
 			// name property of the root children
 			if (controller.Root == null)
-				return new string [0];
+				return new string[0];
 
 			return controller.Root.Children.Select (c => c.Name).ToArray ();
 		}
