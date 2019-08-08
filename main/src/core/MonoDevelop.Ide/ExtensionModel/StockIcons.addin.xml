@@ -364,7 +364,7 @@
 	<StockIcon stockid="md-package" resource="package-32.png" size="Dnd" />
 	<StockIcon stockid="md-package" resource="package-48.png" size="Dialog" />
 
-	<StockIcon stockid="md-warning" resource="warning-16.png" />
+	<StockIcon stockid="md-warning" resource="warning-16.png" imageid="1591" />
 	<StockIcon stockid="md-warning" resource="warning-16.png" size="Menu" />
 	<StockIcon stockid="md-warning" resource="warning-24.png" size="Button" />
 	<StockIcon stockid="md-warning" resource="warning-24.png" size="LargeToolbar" />
