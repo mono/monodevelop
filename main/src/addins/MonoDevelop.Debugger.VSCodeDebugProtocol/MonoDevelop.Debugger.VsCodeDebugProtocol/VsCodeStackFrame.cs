@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
@@ -37,9 +38,17 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
+		static SourceLink GetSourceLink(VSSourceLinkInfo info)
+		{
+			if (info == null)
+				return null;
+			return new SourceLink (info.Url, info.RelativeFilePath);
+		}
+
 		static SourceLocation GetSourceLocation (VsStackFrame frame)
 		{
-			return new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source));
+			var sourceLink = GetSourceLink (frame.Source?.VsSourceLinkInfo);
+			return new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source), sourceLink);
 		}
 
 		VsFormat format;

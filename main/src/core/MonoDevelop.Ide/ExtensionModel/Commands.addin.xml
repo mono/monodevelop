@@ -245,6 +245,11 @@
 			_label = "New _File..."
 			_description = "Create a new file"
 			icon  = "gtk-new" />
+			
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddEmptyClass"
+			 _label="New _Class..."
+			 _description="Create a new empty class"/>
+			
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
 			_description = "Add existing files to the project"
 			macShortcut = "Alt|Meta|A"

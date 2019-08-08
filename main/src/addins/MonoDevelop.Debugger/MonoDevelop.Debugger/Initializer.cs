@@ -32,6 +32,10 @@ using Mono.Debugging.Client;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.IO;
+
+using Xwt;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.Debugger
 {
@@ -41,7 +45,8 @@ namespace MonoDevelop.Debugger
 		DisassemblyView disassemblyView;
 		Document noSourceDoc;
 		NoSourceView noSourceView;
-		
+		string symbolCachePath;
+
 		protected override void Run ()
 		{
 			DebuggingService.CallStackChanged += OnStackChanged;
@@ -49,6 +54,7 @@ namespace MonoDevelop.Debugger
 			DebuggingService.DisassemblyRequested += OnShowDisassembly;
 
 			IdeApp.CommandService.RegisterGlobalHandler (new GlobalRunMethodHandler ());
+			symbolCachePath = UserProfile.Current.CacheDir.Combine ("Symbols");
 		}
 
 		void OnStackChanged (object s, EventArgs a)
@@ -63,27 +69,73 @@ namespace MonoDevelop.Debugger
 		{
 			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
-			
+		
 			var frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return;
 			
 			FilePath file = frame.SourceLocation.FileName;
+
 			int line = frame.SourceLocation.Line;
 			if (line != -1) {
-				if (!file.IsNullOrEmpty && System.IO.File.Exists (file)) {
+				if (!file.IsNullOrEmpty && File.Exists (file)) {
 					var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
 					if (doc != null)
 						return;
 				}
+				bool alternateLocationExists = false;
 				if (frame.SourceLocation.FileHash != null) {
 					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
-					if (newFilePath != null) {
+					if (newFilePath != null && File.Exists (newFilePath)) {
 						frame.UpdateSourceFile (newFilePath);
 						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
 						if (doc != null)
 							return;
 					}
+				}
+				var debuggerOptions = DebuggingService.GetUserOptions ();
+				var automaticSourceDownload = debuggerOptions.AutomaticSourceLinkDownload;
+
+				var sourceLink = frame.SourceLocation.SourceLink;
+				if (sourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
+					var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
+					Document doc = null;
+					// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
+					if (!File.Exists (downloadLocation)) {
+						if (automaticSourceDownload == AutomaticSourceDownload.Always) {
+							doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
+						} else {
+							var hyperlink = $"<a href='{ sourceLink.Uri }'>{  Path.GetFileName (sourceLink.RelativeFilePath) }</a>";
+							var stackframeText = $"<b>{frame.FullStackframeText}</b>";
+
+							var text = GettextCatalog.GetString
+								("{0} is a call to external source code. Would you like to get '{1}' and view it?", stackframeText, hyperlink);
+							var message = new Ide.GenericMessage {
+								Text = GettextCatalog.GetString ("External source code available"),
+								SecondaryText = text
+							};
+							message.AddOption (nameof (automaticSourceDownload), GettextCatalog.GetString ("Always get source code automatically"), false);
+							message.Buttons.Add (AlertButton.Cancel);
+							message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Get and Open")));
+							message.DefaultButton = 1;
+
+							var didNotCancel = MessageService.GenericAlert (message) != AlertButton.Cancel;
+							if (didNotCancel) {
+								if (message.GetOptionValue (nameof (automaticSourceDownload))) {
+									debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
+									DebuggingService.SetUserOptions (debuggerOptions);
+								}
+								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
+							}
+						}
+					} else {
+						// The file has previously been downloaded for a different solution.
+						// We need to map the cached location
+						frame.UpdateSourceFile (downloadLocation);
+						doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
+					}
+					if (doc != null)
+						return;
 				}
 			}
 
@@ -119,7 +171,35 @@ namespace MonoDevelop.Debugger
 				disassemblyDoc.Select ();
 			}
 		}
-		
+
+		async System.Threading.Tasks.Task<Document> DownloadAndOpenFileAsync (StackFrame frame, int line, SourceLink sourceLink)
+		{
+			var pm = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Downloading {0}", sourceLink.Uri),
+				Stock.StatusDownload,
+				true
+			);
+
+			Document doc = null;
+			try {
+				var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
+				Directory.CreateDirectory (Path.GetDirectoryName (downloadLocation));
+				DocumentRegistry.SkipNextChange (downloadLocation);
+				var client = HttpClientProvider.CreateHttpClient (sourceLink.Uri);
+				using (var stream = await client.GetStreamAsync (sourceLink.Uri).ConfigureAwait (false))
+				using (var fs = new FileStream (downloadLocation, FileMode.Create)) {
+					await stream.CopyToAsync (fs).ConfigureAwait (false);
+				}
+				frame.UpdateSourceFile (downloadLocation);
+				doc = await Runtime.RunInMainThread (() => IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Error downloading SourceLink file", ex);
+			} finally {
+				pm.Dispose ();
+			}
+			return doc;
+		}
+
 		async void OnShowDisassembly (object s, EventArgs a)
 		{
 			if (disassemblyDoc == null) {
@@ -142,12 +222,15 @@ namespace MonoDevelop.Debugger
 			if (bt != null) {
 				for (int n = 0; n < bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
+
 					if (!sf.IsExternalCode &&
 					    sf.SourceLocation.Line != -1 &&
 					    !string.IsNullOrEmpty (sf.SourceLocation.FileName) &&
 					    //Uncomment condition below once logic for ProjectOnlyCode in runtime is fixed
 					    (/*DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly) ||*/
-					        System.IO.File.Exists (sf.SourceLocation.FileName) ||
+
+						    sf.SourceLocation.SourceLink != null ||
+							File.Exists (sf.SourceLocation.FileName) ||
 					        SourceCodeLookup.FindSourceFile (sf.SourceLocation.FileName, sf.SourceLocation.FileHash).IsNotNull)) {
 						if (n != DebuggingService.CurrentFrameIndex)
 							DebuggingService.CurrentFrameIndex = n;
