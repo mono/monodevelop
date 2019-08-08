@@ -1,5 +1,5 @@
 //
-// RootObjectValueNode.cs
+// PinnedWatchLocation.cs
 //
 // Author:
 //       Jeffrey Stedfast <jestedfa@microsoft.com>
@@ -24,64 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-
 namespace MonoDevelop.Debugger
 {
-	/// <summary>
-	/// Special node used as the root of the treeview. 
-	/// </summary>
-	sealed class RootObjectValueNode : ObjectValueNode, ISupportChildObjectValueNodeReplacement
+	public class PinnedWatchLocation
 	{
-		public RootObjectValueNode () : base (string.Empty)
+		public PinnedWatchLocation (string fileName)
 		{
-			IsExpanded = true;
+			FileName = fileName;
 		}
 
-		public override bool HasChildren => true;
-
-		public void AddValue (ObjectValueNode value)
+		public PinnedWatchLocation (string fileName, int line, int column, int endLine, int endColumn)
 		{
-			AddChild (value);
+			FileName = fileName;
+			Line = line;
+			Column = column;
+			EndLine = endLine;
+			EndColumn = endColumn;
 		}
 
-		public void AddValues (IEnumerable<ObjectValueNode> values)
-		{
-			AddChildren (values);
+		public string FileName {
+			get; private set;
 		}
 
-		public void RemoveValueAt (int index)
-		{
-			RemoveChildAt (index);
+		public int Line {
+			get; set;
 		}
 
-		public void ReplaceValueAt (int index, ObjectValueNode value)
-		{
-			ReplaceChildAt (index, value);
+		public int Column {
+			get; set;
 		}
 
-		public void Clear ()
-		{
-			ClearChildren ();
+		public int EndLine {
+			get; set;
 		}
 
-		void ISupportChildObjectValueNodeReplacement.ReplaceChildNode (ObjectValueNode node, ObjectValueNode[] newNodes)
-		{
-			var index = Children.IndexOf (node);
-
-			Debug.Assert (index >= 0, "The node being replaced should be a child of this node");
-
-			if (newNodes.Length == 0) {
-				RemoveChildAt (index);
-				return;
-			}
-
-			ReplaceChildAt (index, newNodes [0]);
-
-			for (int i = 1; i < newNodes.Length; i++)
-				InsertChildAt (++index, newNodes[i]);
+		public int EndColumn {
+			get; set;
 		}
 	}
 }

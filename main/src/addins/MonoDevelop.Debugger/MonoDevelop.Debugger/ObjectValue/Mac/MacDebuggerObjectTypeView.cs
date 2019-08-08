@@ -1,5 +1,5 @@
 //
-// RootObjectValueNode.cs
+// MacDebuggerObjectTypeView.cs
 //
 // Author:
 //       Jeffrey Stedfast <jestedfa@microsoft.com>
@@ -25,63 +25,46 @@
 // THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
-using System.Collections.Generic;
+
+using AppKit;
 
 namespace MonoDevelop.Debugger
 {
 	/// <summary>
-	/// Special node used as the root of the treeview. 
+	/// The NSTableViewCell used for the "Type" column.
 	/// </summary>
-	sealed class RootObjectValueNode : ObjectValueNode, ISupportChildObjectValueNodeReplacement
+	class MacDebuggerObjectTypeView : MacDebuggerObjectCellViewBase
 	{
-		public RootObjectValueNode () : base (string.Empty)
+		public MacDebuggerObjectTypeView (MacObjectValueTreeView treeView) : base (treeView, "type")
 		{
-			IsExpanded = true;
+			TextField = new NSTextField {
+				AutoresizingMask = NSViewResizingMask.WidthSizable,
+				TranslatesAutoresizingMaskIntoConstraints = false,
+				BackgroundColor = NSColor.Clear,
+				Bordered = false,
+				Editable = false
+			};
+			TextField.Cell.UsesSingleLineMode = true;
+			TextField.Cell.Wraps = false;
+
+			AddSubview (TextField);
+
+			TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor).Active = true;
+			TextField.LeadingAnchor.ConstraintEqualToAnchor (LeadingAnchor, MarginSize).Active = true;
+			TextField.TrailingAnchor.ConstraintEqualToAnchor (TrailingAnchor, -MarginSize).Active = true;
 		}
 
-		public override bool HasChildren => true;
-
-		public void AddValue (ObjectValueNode value)
+		public MacDebuggerObjectTypeView (IntPtr handle) : base (handle)
 		{
-			AddChild (value);
 		}
 
-		public void AddValues (IEnumerable<ObjectValueNode> values)
+		protected override void UpdateContents ()
 		{
-			AddChildren (values);
-		}
+			TextField.AttributedStringValue = GetAttributedString (Node?.TypeName);
+			UpdateFont (TextField);
+			TextField.SizeToFit ();
 
-		public void RemoveValueAt (int index)
-		{
-			RemoveChildAt (index);
-		}
-
-		public void ReplaceValueAt (int index, ObjectValueNode value)
-		{
-			ReplaceChildAt (index, value);
-		}
-
-		public void Clear ()
-		{
-			ClearChildren ();
-		}
-
-		void ISupportChildObjectValueNodeReplacement.ReplaceChildNode (ObjectValueNode node, ObjectValueNode[] newNodes)
-		{
-			var index = Children.IndexOf (node);
-
-			Debug.Assert (index >= 0, "The node being replaced should be a child of this node");
-
-			if (newNodes.Length == 0) {
-				RemoveChildAt (index);
-				return;
-			}
-
-			ReplaceChildAt (index, newNodes [0]);
-
-			for (int i = 1; i < newNodes.Length; i++)
-				InsertChildAt (++index, newNodes[i]);
+			OptimalWidth = MarginSize + TextField.Frame.Width + MarginSize;
 		}
 	}
 }

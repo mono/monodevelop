@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-//
+
+// Note: This API is only used by the old (Gtk) TextEditor.
+// The new TextEditor uses MonoDevelop.Debugger.VSTextView.QuickInfo.DebuggerQuickInfoSourceProvider
 
 using System;
 using System.Threading;
@@ -39,6 +41,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
+	[Obsolete ("This has been replaced by MonoDevelop.Debugger.VSTextView.QuickInfo.DebuggerQuickInfoSourceProvider")]
 	class DebugValueTooltipProvider: TooltipProvider
 	{
 		DebugValueWindow tooltip;
@@ -78,13 +81,14 @@ namespace MonoDevelop.SourceEditor
 			if (!DebuggingService.IsPaused)
 				return null;
 
-			StackFrame frame = DebuggingService.CurrentFrame;
+			var frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return null;
 
 			var ed = CompileErrorTooltipProvider.GetExtensibleTextEditor (editor);
 			if (ed == null)
 				return null;
+
 			string expression = null;
 			int startOffset;
 
@@ -129,7 +133,15 @@ namespace MonoDevelop.SourceEditor
 
 		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
-			var window = new DebugValueWindow ((Gtk.Window)(editor.GetNativeWidget<Gtk.Widget> ()).Toplevel, editor.FileName, editor.OffsetToLocation (offset).Line, DebuggingService.CurrentFrame, (ObjectValue)item.Item, null);
+			var position = editor.OffsetToLocation (offset);
+			var location = new PinnedWatchLocation (editor.FileName) {
+				Line = position.Line,
+				Column = position.Column,
+				EndLine = position.Line,
+				EndColumn = position.Column
+			};
+
+			var window = new DebugValueWindow ((Gtk.Window)(editor.GetNativeWidget<Gtk.Widget> ()).Toplevel, location, DebuggingService.CurrentFrame, (ObjectValue)item.Item, null);
 			IdeApp.CommandService.RegisterTopWindow (window);
 			return window;
 		}
