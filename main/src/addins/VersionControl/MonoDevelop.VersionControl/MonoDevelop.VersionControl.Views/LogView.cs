@@ -93,7 +93,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Init ()
 		{
 			if (info != null && !info.Started) {
-				widget.ShowLoading ();
+				LogWidget.ShowLoading ();
 				info.Start ();
 			}
 		}
