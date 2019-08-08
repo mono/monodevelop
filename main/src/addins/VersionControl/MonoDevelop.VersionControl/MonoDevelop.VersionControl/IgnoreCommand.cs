@@ -28,29 +28,32 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
 	class IgnoreCommand
 	{
-		public static bool Ignore (VersionControlItemList items, bool test)
-		{
-			if (IgnoreInternal (items, test)) 
-				return true;
-			return false;
-		}
+		public static Task<bool> IgnoreAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken) => IgnoreInternalAsync (items, test, cancellationToken);
 
-		static bool IgnoreInternal (VersionControlItemList items, bool test)
+		static async Task<bool> IgnoreInternalAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken)
 		{
 			try {
-				if (test)
-					return items.All (x => x.VersionInfo.Status == VersionStatus.Unversioned);
+				if (test) {
+					foreach (var item in items) {
+						var info = await item.GetVersionInfoAsync (cancellationToken);
+						if (info.Status != VersionStatus.Unversioned)
+							return false;
+					}
+					return true;
+				}
 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to ignore the selected files?"),
 				                                AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
 					return false;
 
-				new IgnoreWorker (items).Start();
+				await new IgnoreWorker (items).StartAsync(cancellationToken).ConfigureAwait (false);
 				return true;
 			}
 			catch (Exception ex) {
@@ -76,11 +79,11 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Ignoring ...");
 			}
 
-			protected override void Run ()
+			protected override async Task RunAsync ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					try {
-						list [0].Repository.Ignore (list.Paths);
+						await list[0].Repository.IgnoreAsync (list.Paths);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Ignore operation failed", ex);
 						Monitor.ReportError (ex.Message, null);
@@ -97,25 +100,26 @@ namespace MonoDevelop.VersionControl
 
 	class UnignoreCommand
 	{
-		public static bool Unignore (VersionControlItemList items, bool test)
-		{
-			if (UnignoreInternal (items, test))
-				return true;
-			return false;
-		}
+		public static Task<bool> UnignoreAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken) => UnignoreInternalAsync (items, test, cancellationToken);
 
-		static bool UnignoreInternal (VersionControlItemList items, bool test)
+		static async Task<bool> UnignoreInternalAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken)
 		{
 			try {
 				// NGit doesn't return a version info for ignored files.
-				if (test)
-					return items.All (x => (x.VersionInfo.Status & (VersionStatus.ScheduledIgnore | VersionStatus.Ignored)) != VersionStatus.Unversioned);
+				if (test) {
+					foreach (var item in items) {
+						var info = await item.GetVersionInfoAsync (cancellationToken);
+						if ((info.Status & (VersionStatus.ScheduledIgnore | VersionStatus.Ignored)) == VersionStatus.Unversioned)
+							return false;
+					}
+					return true;
+				}
 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to unignore the selected files?"),
 				                                AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
 					return false;
 
-				new UnignoreWorker (items).Start();
+				await new UnignoreWorker (items).StartAsync(cancellationToken).ConfigureAwait (false);
 				return true;
 			}
 			catch (Exception ex) {
@@ -141,11 +145,11 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Unignoring ...");
 			}
 
-			protected override void Run ()
+			protected override async Task RunAsync ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					try {
-						list [0].Repository.Unignore (list.Paths);
+						await list[0].Repository.UnignoreAsync (list.Paths);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Unignore operation failed", ex);
 						Monitor.ReportError (ex.Message, null);
@@ -161,4 +165,3 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 }
-

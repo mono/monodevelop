@@ -1,4 +1,4 @@
-//
+﻿//
 // CommitDialog.cs
 //
 // Authors:
@@ -30,13 +30,15 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Projects;
-using MonoDevelop.Components;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Gtk;
+using Mono.Addins;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -140,22 +142,29 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 		}
 
-		void OnFileStatusChanged (FileUpdateEventInfo args)
+		async void OnFileStatusChanged (FileUpdateEventInfo args)
 		{
 			VersionInfo newInfo = null;
 			try {
 				// Reuse remote status from old version info
-				newInfo = changeSet.Repository.GetVersionInfo (args.FilePath);
+				var token = destroyTokenSource.Token;
+				newInfo = await changeSet.Repository.GetVersionInfoAsync (args.FilePath, cancellationToken: token);
+				if (token.IsCancellationRequested)
+					return;
+				await AddFile (newInfo);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 			}
-			AddFile (newInfo);
+			
 		}
 
-		void AddFile (VersionInfo vinfo)
+		async Task AddFile (VersionInfo vinfo)
 		{
 			if (vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges)) {
-				changeSet.AddFile (vinfo.LocalPath);
+				var token = destroyTokenSource.Token;
+				await changeSet.AddFileAsync (vinfo.LocalPath, token);
+				if (token.IsCancellationRequested)
+					return;
 				bool added = selected.Add (vinfo.LocalPath);
 				if (added)
 					AppendFileInfo (vinfo);
@@ -201,8 +210,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 			base.OnResponse (type);
 		}
 
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
+
 		protected override void OnDestroyed ()
 		{
+			destroyTokenSource.Cancel ();
+
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 
 			foreach (var ob in extensions) {

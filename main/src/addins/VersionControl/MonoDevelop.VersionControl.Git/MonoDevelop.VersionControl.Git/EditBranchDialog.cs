@@ -1,4 +1,4 @@
-//
+﻿//
 // EditBranchDialog.cs
 //
 // Author:
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
@@ -32,6 +33,8 @@ using MonoDevelop.Components;
 using LibGit2Sharp;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -72,11 +75,15 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (Branch b in repo.GetBranches ()) {
 				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
-
-			foreach (Remote r in repo.GetRemotes ()) {
-				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
-			}
+			var token = destroyTokenSource.Token;
+			repo.GetRemotesAsync (token).ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
+				foreach (var r in t.Result) {
+					foreach (string b in repo.GetRemoteBranches (r.Name))
+						AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
+				}
+			}, token, TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted, Runtime.MainTaskScheduler).Ignore ();
 
 			entryName.Text = name;
 			checkTrack.Active = !string.IsNullOrEmpty (tracking);
@@ -149,6 +156,14 @@ Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
 		{
 			UpdateStatus ();
+		}
+
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
+
+		protected override void OnDestroyed ()
+		{
+			destroyTokenSource.Cancel ();
+			base.OnDestroyed ();
 		}
 	}
 }

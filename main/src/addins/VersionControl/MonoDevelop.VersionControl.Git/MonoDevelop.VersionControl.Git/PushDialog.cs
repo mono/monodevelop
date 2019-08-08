@@ -1,4 +1,4 @@
-//
+﻿//
 // PushDialog.cs
 //
 // Author:
@@ -24,10 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -44,11 +47,18 @@ namespace MonoDevelop.VersionControl.Git
 			this.UseNativeContextMenus ();
 
 			changeList.DiffLoader = DiffLoader;
+			var token = destroyTokenSource.Token;
 
-			var list = new List<string> (repo.GetRemotes ().Select (r => r.Name));
-			foreach (string s in list)
-				remoteCombo.AppendText (s);
-			remoteCombo.Active = list.IndexOf (repo.GetCurrentRemote ());
+			Task.Run (async () => (await repo.GetRemotesAsync (token), await repo.GetCurrentRemoteAsync (token))).ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
+				var tuple = t.Result;
+
+				var list = new List<string> (tuple.Item1.Select (r => r.Name));
+				foreach (string s in list)
+					remoteCombo.AppendText (s);
+				remoteCombo.Active = list.IndexOf (t.Result.Item2);
+			}, token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
 
 			UpdateChangeSet ();
 		}
@@ -98,6 +108,14 @@ namespace MonoDevelop.VersionControl.Git
 		protected virtual void OnBranchComboChanged (object sender, System.EventArgs e)
 		{
 			UpdateChangeSet ();
+		}
+
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
+
+		protected override void OnDestroyed ()
+		{
+			destroyTokenSource.Cancel ();
+			base.OnDestroyed ();
 		}
 	}
 }
