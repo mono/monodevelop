@@ -758,8 +758,6 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileCreated;
 		static void OnFileCreated (FileEventArgs args)
 		{
-			AsyncEvents.OnFileCreated (args);
-
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
 					Counters.DirectoriesCreated++;
@@ -785,8 +783,6 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
 		static void OnFileRenamed (FileCopyEventArgs args)
 		{
-			AsyncEvents.OnFileRenamed (args);
-
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
 					Counters.DirectoriesRenamed++;
@@ -800,8 +796,6 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileRemoved;
 		static void OnFileRemoved (FileEventArgs args)
 		{
-			AsyncEvents.OnFileRemoved (args);
-
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
 					Counters.DirectoriesRemoved++;
@@ -880,11 +874,6 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
-
-		/// <summary>
-		/// File watcher events - these are not fired on the UI thread.
-		/// </summary>
-		public static AsyncEvents AsyncEvents { get; } = new AsyncEvents ();
 
 		internal sealed class FileServiceEventQueue : EventQueue
 		{
@@ -1332,76 +1321,6 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
-	}
-
-	public class AsyncEvents
-	{
-		readonly ObjectPool<Stopwatch> watchPool = ObjectPool.Create<Stopwatch> ();
-		readonly long [] timings = new long[Enum.GetNames (typeof (FileService.EventDataKind)).Length];
-
-		public event EventHandler<FileEventArgs> FileCreated;
-		public event EventHandler<FileEventArgs> FileRemoved;
-		public event EventHandler<FileCopyEventArgs> FileRenamed;
-
-		internal TimeSpan GetTimings (FileService.EventDataKind kind)
-			=> TimeSpan.FromTicks (timings[(int)kind]);
-
-		internal void OnFileCreated (FileEventArgs args)
-		{
-			var handler = FileCreated;
-			if (handler == null)
-				return;
-
-			var sw = watchPool.Get ();
-			try {
-				sw.Restart ();
-				handler.Invoke (this, Clone (args));
-				sw.Stop ();
-				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Created], sw.Elapsed.Ticks);
-			} finally {
-				watchPool.Return (sw);
-			}
-		}
-
-		internal void OnFileRemoved (FileEventArgs args)
-		{
-			var handler = FileRemoved;
-			if (handler == null)
-				return;
-
-			var sw = watchPool.Get ();
-			try {
-				sw.Restart ();
-				handler.Invoke (this, Clone (args));
-				sw.Stop ();
-				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Removed], sw.Elapsed.Ticks);
-			} finally {
-				watchPool.Return (sw);
-			}
-		}
-
-		internal void OnFileRenamed (FileCopyEventArgs args)
-		{
-			var handler = FileRenamed;
-			if (handler == null)
-				return;
-
-			var sw = watchPool.Get ();
-			try {
-				sw.Restart ();
-				handler.Invoke (this, Clone (args));
-				sw.Stop ();
-				Interlocked.Add (ref timings [(int)FileService.EventDataKind.Renamed], sw.Elapsed.Ticks);
-			} finally {
-				watchPool.Return (sw);
-			}
-		}
-
-		static FileCopyEventArgs Clone (FileCopyEventArgs args)
-			=> new FileCopyEventArgs (args);
-
-		static FileEventArgs Clone (FileEventArgs args)
-			=> new FileEventArgs (args);
 	}
 
 	public delegate bool FileServiceErrorHandler (string message, Exception ex);

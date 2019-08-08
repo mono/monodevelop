@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -67,22 +68,36 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var node = (DependenciesNode)dataObject;
-			node.PackageDependencyCache.Refresh ();
+			AddChildren (treeBuilder, node.GetChildNodes ());
+		}
 
-			var packagesNode = new PackageDependenciesNode (node);
-			if (packagesNode.HasChildNodes ())
-				treeBuilder.AddChild (packagesNode);
+		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
+		{
+			treeBuilder.AddChildren (dataObjects);
+		}
 
-			var sdkNode = new SdkDependenciesNode (node);
-			treeBuilder.AddChild (sdkNode);
+		public override void OnNodeAdded (object dataObject)
+		{
+			var dependenciesNode = (DependenciesNode)dataObject;
+			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += OnPackageDependenciesChanged;
+		}
 
-			var assembliesNode = new AssemblyDependenciesNode (node.Project);
-			if (assembliesNode.HasChildNodes ())
-				treeBuilder.AddChild (assembliesNode);
+		public override void OnNodeRemoved (object dataObject)
+		{
+			var dependenciesNode = (DependenciesNode)dataObject;
+			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged -= OnPackageDependenciesChanged;
+		}
 
-			var projectsNode = new ProjectDependenciesNode (node.Project);
-			if (projectsNode.HasChildNodes ())
-				treeBuilder.AddChild (projectsNode);
+		void OnPackageDependenciesChanged (object sender, EventArgs e)
+		{
+			var cache = (PackageDependencyNodeCache)sender;
+			ITreeBuilder builder = Context.GetTreeBuilder (cache.Project);
+			if (builder == null)
+				return;
+
+			if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
+				builder.UpdateAll ();
+			}
 		}
 	}
 }

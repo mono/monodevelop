@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.VersionControl.Dialogs;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -22,7 +24,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 						VersionControlService.NotifyBeforeCommit (vc, changeSet);
-							new CommitWorker (vc, changeSet, dlg).Start();
+							new CommitWorker (vc, changeSet, dlg).StartAsync();
 							return;
 						}
 					dlg.EndCommit (false);
@@ -95,7 +97,7 @@ namespace MonoDevelop.VersionControl
 			ChangeSet changeSet;
 			CommitDialog dlg;
 			bool success;
-						
+
 			public CommitWorker (Repository vc, ChangeSet changeSet, CommitDialog dlg)
 			{
 				this.vc = vc;
@@ -103,22 +105,22 @@ namespace MonoDevelop.VersionControl
 				this.dlg = dlg;
 				OperationType = VersionControlOperationType.Push;
 			}
-			
+
 			protected override string GetDescription()
 			{
 				return GettextCatalog.GetString ("Committing {0}...", changeSet.BaseLocalPath);
 			}
-			
-			protected override void Run ()
+
+			protected override async Task RunAsync ()
 			{
 				success = true;
 				try {
 					// store global comment before commit.
 					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, changeSet.GlobalComment, true);
-					
-					vc.Commit (changeSet, Monitor);
+
+					await vc.CommitAsync (changeSet, Monitor);
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Commit operation completed."));
-					
+
 					// Reset the global comment on successful commit.
 					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, "", true);
 				} catch (Exception ex) {
@@ -128,7 +130,7 @@ namespace MonoDevelop.VersionControl
 					throw;
 				}
 			}
-			
+
 			protected override void Finished ()
 			{
 				dlg.EndCommit (success);

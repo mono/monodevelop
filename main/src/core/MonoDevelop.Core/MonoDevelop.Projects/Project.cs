@@ -49,6 +49,7 @@ using MonoDevelop.Core.Collections;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.ObjectPool;
+using System.Diagnostics;
 
 namespace MonoDevelop.Projects
 {
@@ -221,7 +222,7 @@ namespace MonoDevelop.Projects
 			// We use a dummy configuration and platform to avoid loading default values from the configurations
 			// while evaluating
 			var c = Guid.NewGuid ().ToString ();
-			using (var pi = CreateProjectInstaceForConfiguration (c, c))
+			using (var pi = CreateProjectInstanceForConfiguration (c, c))
 				mainGroupProperties = pi.GetPropertiesLinkedToGroup (globalGroup);
 		}
 
@@ -296,7 +297,7 @@ namespace MonoDevelop.Projects
 
 		void InitConfiguration (ProjectConfiguration conf)
 		{
-			var pi = CreateProjectInstaceForConfiguration (conf.Name, conf.Platform);
+			var pi = CreateProjectInstanceForConfiguration (conf.Name, conf.Platform);
 			conf.Properties = pi.GetPropertiesLinkedToGroup (conf.MainPropertyGroup);
 			conf.ProjectInstance = pi;
 		}
@@ -570,7 +571,9 @@ namespace MonoDevelop.Projects
 				var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 				var results = ImmutableArray.CreateBuilder<ProjectFile> ();
 
-				var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+				var dotNetProjectConfig = config as DotNetProjectConfiguration;
+				string frameworkShortName = dotNetProjectConfig?.GetMultiTargetFrameworkShortName ();
+				var pri = await CreateProjectInstanceForConfigurationAsync (config?.Name, config?.Platform, frameworkShortName, false);
 				foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 					results.Add (CreateProjectFile (it));
 
@@ -1374,7 +1377,7 @@ namespace MonoDevelop.Projects
 			string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 			string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-			var globalProperties = CreateGlobalProperties (target);
+			var globalProperties = CreateGlobalProperties (configuration, target);
 			if (context != null) {
 				var md = (ProjectItemMetadata)context.GlobalProperties;
 				md.SetProject (sourceProject);
@@ -1532,6 +1535,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public bool HasMultipleTargetFrameworks {
+			get { return activeTargetFramework != null; }
+		}
+
 		/// <summary>
 		/// If an SDK project targets multiple target frameworks then this returns the first
 		/// target framework. Otherwise it returns null. This also handles the odd case if
@@ -1569,16 +1576,23 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		internal protected IEnumerable<string> GetTargetFrameworks ()
+		{
+			var frameworks = GetTargetFrameworks (MSBuildProject);
+			return frameworks ?? Array.Empty<string> ();
+		}
+
 		/// <summary>
 		/// Sets a global TargetFramework property for multi-target projects so MSBuild targets work.
 		/// For Build and Clean the TargetFramework property is not set so all frameworks are built.
 		/// </summary>
-		internal Dictionary<string, string> CreateGlobalProperties (string target)
+		internal protected virtual Dictionary<string, string> CreateGlobalProperties (ConfigurationSelector configuration, string target)
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
 			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
 				properties ["TargetFramework"] = framework;
+
 			return properties;
 		}
 
@@ -2532,7 +2546,7 @@ namespace MonoDevelop.Projects
 			}
 			NotifyModified ("Files");
 			OnFileRemovedFromProject (args);
-			ParentSolution?.OnRootDirectoriesChanged ();
+			ParentSolution?.OnRootDirectoriesChanged (this, isRemove: false, isAdd: false);
 		}
 
 		void NotifyFileAddedToProject (IEnumerable<ProjectFile> objs)
@@ -2551,7 +2565,7 @@ namespace MonoDevelop.Projects
 			OnFileAddedToProject (args);
 
 			if (!Loading)
-				ParentSolution?.OnRootDirectoriesChanged ();
+				ParentSolution?.OnRootDirectoriesChanged (this, isRemove: false, isAdd: false);
 		}
 
 		internal void UpdateDependency (ProjectFile file, FilePath oldPath)
@@ -2917,21 +2931,21 @@ namespace MonoDevelop.Projects
 			return config;
 		}
 
-		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		internal MSBuildProjectInstance CreateProjectInstanceForConfiguration (string conf, string platform, string framework = null, bool onlyEvaluateProperties = true)
 		{
-			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			pi.Evaluate ();
 			return pi;
 		}
 
-		async Task<MSBuildProjectInstance> CreateProjectInstaceForConfigurationAsync (string conf, string platform, bool onlyEvaluateProperties = true)
+		internal async Task<MSBuildProjectInstance> CreateProjectInstanceForConfigurationAsync (string conf, string platform, string framework, bool onlyEvaluateProperties = true)
 		{
-			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			await pi.EvaluateAsync ();
 			return pi;
 		}
 
-		MSBuildProjectInstance PrepareProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties)
+		MSBuildProjectInstance PrepareProjectInstanceForConfiguration (string conf, string platform, string framework, bool onlyEvaluateProperties)
 		{
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
@@ -2943,6 +2957,8 @@ namespace MonoDevelop.Projects
 				else
 					pi.SetGlobalProperty ("Platform", platform);
 			}
+			if (!string.IsNullOrEmpty (framework))
+				pi.SetGlobalProperty ("TargetFramework", framework);
 			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 			return pi;
 		}
@@ -4467,42 +4483,25 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		bool eventsEnabled;
 		void CreateFileWatcher ()
 		{
 			DisposeFileWatcher ();
 
-			if (!Directory.Exists (BaseDirectory))
-				return;
-
-			// Use FileService.AsyncEvents for file created event since this does not run on the UI thread. This
-			// avoids blocking the UI thread when many files are created.
-			FileService.AsyncEvents.FileCreated += OnFileCreated;
-			// Use FileService.AsyncEvents for file deleted events to be consistent. Without this a deletion event
-			// would not update the Solution window until the IDE gets focus again.
-			FileService.AsyncEvents.FileRemoved += OnFileDeleted;
-			// Use FileService.AsyncEvents for file renamed events since generating the FileService.FileRenamed event
-			// would result in non SDK style projects renaming files in the project if changed externally.
-			FileService.AsyncEvents.FileRenamed += OnFileRenamed;
+			eventsEnabled = Directory.Exists (BaseDirectory);
 		}
 
 		void DisposeFileWatcher ()
 		{
-			FileService.AsyncEvents.FileCreated -= OnFileCreated;
-			FileService.AsyncEvents.FileRemoved -= OnFileDeleted;
-			FileService.AsyncEvents.FileRenamed -= OnFileRenamed;
+			eventsEnabled = false;
 		}
 
-		void OnFileRenamed (object sender, FileCopyEventArgs e)
+		internal virtual void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
 		{
-			foreach (FileEventInfo info in e) {
-				OnFileRenamed (info.SourceFile, info.TargetFile);
-			}
-		}
-
-		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
-		{
-			if (Runtime.IsMainThread)
+			if (!eventsEnabled)
 				return;
+
+			Debug.Assert (!Runtime.IsMainThread);
 
 			try {
 				if (Directory.Exists (targetFile)) {
@@ -4522,20 +4521,12 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		void OnFileCreated (object sender, FileEventArgs e)
+		internal virtual void OnFileCreated (FilePath filePath)
 		{
-			if (Runtime.IsMainThread)
+			if (!eventsEnabled)
 				return;
 
-			foreach (FileEventInfo info in e) {
-				OnFileCreated (info.FileName);
-			}
-		}
-
-		void OnFileCreated (FilePath filePath)
-		{
-			if (Runtime.IsMainThread)
-				return;
+			Debug.Assert (!Runtime.IsMainThread);
 
 			try {
 				if (Directory.Exists (filePath))
@@ -4559,35 +4550,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		static readonly ObjectPool<List<FilePath>> filePathListPool = ObjectPool.Create (new PooledListPolicy<FilePath> ());
-
-		void OnFileDeleted (object sender, FileEventArgs e)
+		internal virtual void OnFileDeleted (FilePath filePath)
 		{
-			if (Runtime.IsMainThread)
+			if (!eventsEnabled)
 				return;
 
-			List<FilePath> paths = null;
-			foreach (var file in e) {
-				var path = file.FileName;
-				bool exists = File.Exists (path) || Directory.Exists (path);
-
-				if (!exists) {
-					paths ??= filePathListPool.Get ();
-					paths.Add (path);
-				}
-			}
-
-			if (paths == null)
-				return;
+			Debug.Assert (!Runtime.IsMainThread);
 
 			Runtime.RunInMainThread (() => {
-				try {
-					foreach (var path in paths) {
-						OnFileDeletedExternally (path);
-					}
-				} finally {
-					filePathListPool.Return (paths);
-				}
+				OnFileDeletedExternally (filePath);
 			});
 		}
 

@@ -28,6 +28,8 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -52,7 +54,7 @@ namespace MonoDevelop.VersionControl
 				obj = obj.ParentObject;
 			}
 		}
-		
+
 		public WorkspaceObject WorkspaceObject {
 			get;
 			private set;
@@ -74,34 +76,37 @@ namespace MonoDevelop.VersionControl
 				repository = value;
 			}
 		}
-		
+
 		public FilePath Path {
 			get;
 			private set;
 		}
-		
+
 		public bool IsDirectory {
 			get;
 			private set;
 		}
-		
-		public VersionInfo VersionInfo {
-			get {
-				if (versionInfo == null) {
-					try {
-						versionInfo = Repository.GetVersionInfo (Path);
-						if (versionInfo == null)
-							versionInfo = new VersionInfo (Path, "", IsDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Version control query failed", ex);
-						versionInfo = VersionInfo.CreateUnversioned (Path, IsDirectory);
-					}
-				}
-				return versionInfo;
-			}
-			internal set {
+
+
+		internal VersionInfo VersionInfo {
+			set {
 				versionInfo = value;
 			}
+		}
+
+		public async Task<VersionInfo> GetVersionInfoAsync (CancellationToken cancellationToken = default)
+		{
+			if (versionInfo != null)
+				return versionInfo;
+			try {
+				versionInfo = await Repository.GetVersionInfoAsync (Path, VersionInfoQueryFlags.IgnoreCache, cancellationToken).ConfigureAwait (false);
+				if (versionInfo == null)
+					versionInfo = new VersionInfo (Path, "", IsDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Version control query failed", ex);
+				versionInfo = VersionInfo.CreateUnversioned (Path, IsDirectory);
+			}
+			return versionInfo;
 		}
 	}
 }

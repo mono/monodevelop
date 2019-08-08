@@ -38,9 +38,9 @@ using MonoDevelop.Ide.Commands;
 namespace MonoDevelop.VersionControl.Views
 {
 	public interface IBlameView
-	{	
+	{
 	}
-	
+
 	internal class BlameView : DocumentController, IBlameView
 	{
 		BlameWidget widget;
@@ -135,4 +135,3 @@ namespace MonoDevelop.VersionControl.Views
 		#endregion
 	}
 }
-

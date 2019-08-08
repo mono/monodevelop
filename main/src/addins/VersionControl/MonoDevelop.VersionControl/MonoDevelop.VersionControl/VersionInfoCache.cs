@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -82,10 +84,10 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 
-		public void SetStatus (VersionInfo versionInfo, bool notify = true)
+		public async Task SetStatusAsync (VersionInfo versionInfo, bool notify = true, CancellationToken cancellationToken = default)
 		{
 			if (!versionInfo.IsInitialized)
-				versionInfo.Init (repo);
+				await versionInfo.InitAsync (repo, cancellationToken);
 
 			if (fileStatus.TryGetValue (versionInfo.LocalPath, out var vi) && vi.Equals (versionInfo)) {
 				vi.RequiresRefresh = false;
@@ -98,13 +100,13 @@ namespace MonoDevelop.VersionControl
 				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (repo, versionInfo.LocalPath, versionInfo.IsDirectory));
 		}
 
-		public void SetStatus (IEnumerable<VersionInfo> versionInfos)
+		public async Task SetStatusAsync (IEnumerable<VersionInfo> versionInfos, CancellationToken cancellationToken = default)
 		{
 			FileUpdateEventArgs args = null;
 
 			foreach (var versionInfo in versionInfos) {
 				if (!versionInfo.IsInitialized)
-					versionInfo.Init (repo);
+					await versionInfo.InitAsync (repo, cancellationToken);
 
 				if (fileStatus.TryGetValue (versionInfo.LocalPath, out var vi) && vi.Equals (versionInfo)) {
 					vi.RequiresRefresh = false;
@@ -126,7 +128,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		public void SetDirectoryStatus (FilePath localDirectory, VersionInfo [] versionInfos, bool hasRemoteStatus)
+		public async Task SetDirectoryStatusAsync (FilePath localDirectory, VersionInfo [] versionInfos, bool hasRemoteStatus, CancellationToken cancellationToken = default)
 		{
 			if (directoryStatus.TryGetValue (localDirectory.CanonicalPath, out var vis)) {
 				if (versionInfos.Length == vis.FileInfo.Length && (hasRemoteStatus == vis.HasRemoteStatus)) {
@@ -144,7 +146,7 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			directoryStatus [localDirectory.CanonicalPath] = new DirectoryStatus { FileInfo = versionInfos, HasRemoteStatus = hasRemoteStatus };
-			SetStatus (versionInfos);
+			await SetStatusAsync (versionInfos, cancellationToken: cancellationToken);
 		}
 
 		public void Dispose ()

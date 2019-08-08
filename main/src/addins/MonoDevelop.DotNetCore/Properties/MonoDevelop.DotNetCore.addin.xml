@@ -1255,7 +1255,6 @@
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.ProjectDependenciesNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.AssemblyDependenciesNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.SdkDependenciesNodeBuilder" />
-		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectReferencesNodeBuilderExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">

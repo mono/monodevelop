@@ -1,7 +1,8 @@
-
+﻿
 using System.Linq;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
@@ -52,6 +53,15 @@ namespace MonoDevelop.VersionControl
 		public bool IsDirectory {
 			get;
 			private set;
+		}
+
+		public bool RepositoryChanged { get; private set; }
+
+		public static FileUpdateEventInfo UpdateRepository (Repository repo)
+		{
+			if (repo == null)
+				throw new ArgumentNullException (nameof (repo));
+			return new FileUpdateEventInfo (repo, null, false) { RepositoryChanged = true };
 		}
 	}
 }

@@ -32,6 +32,7 @@ using SubversionAddinWindows;
 using System.Diagnostics;
 using System.IO;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			base.Setup ();
 		}
 
-		protected override void TestDiff ()
+		protected override async Task TestDiff ()
 		{
 			string difftext = @"--- testfile	(revision 1)
 +++ testfile	(working copy)
@@ -54,7 +55,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 +text
 \ No newline at end of file
 ";
-			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", await Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		// Tests that fail due to SvnSharp giving wrong data.

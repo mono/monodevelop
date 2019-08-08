@@ -91,8 +91,30 @@ namespace MonoDevelop.Projects
 
 			base.OnInitialize ();
 
+			if (HasMultipleTargetFrameworks)
+				EvaluateTargetFrameworkMonikers ();
+
 			if (languageName == null)
 				languageName = MSBuildProjectService.GetLanguageFromGuid (TypeGuid);
+		}
+
+		ImmutableArray<TargetFrameworkMoniker> targetFrameworkMonikers;
+
+		void EvaluateTargetFrameworkMonikers ()
+		{
+			var frameworksList = new List<TargetFrameworkMoniker> ();
+
+			var globalGroup = MSBuildProject.GetOrCreateGlobalPropertyGroup ();
+			foreach (string framework in GetTargetFrameworks ()) {
+				var c = Guid.NewGuid ().ToString ();
+				using (var pi = CreateProjectInstanceForConfiguration (c, c, framework)) {
+					pi.GetPropertiesLinkedToGroup (globalGroup);
+					var currentTargetFramework = GetTargetFramework (pi.EvaluatedProperties);
+					frameworksList.Add (currentTargetFramework.Id.WithShortName (framework));
+				}
+			}
+
+			targetFrameworkMonikers = frameworksList.ToImmutableArray ();
 		}
 
 		protected override void OnExtensionChainInitialized ()
@@ -413,10 +435,16 @@ namespace MonoDevelop.Projects
 					return;
 				bool updateReferences = targetFramework != null;
 				targetFramework = value;
+				if (targetFrameworkMonikers.IsDefaultOrEmpty)
+					targetFrameworkMonikers = ImmutableArray.Create<TargetFrameworkMoniker> (targetFramework.Id);
 				if (updateReferences)
 					UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
 			}
+		}
+
+		public ImmutableArray<TargetFrameworkMoniker> TargetFrameworkMonikers {
+			get { return targetFrameworkMonikers; }
 		}
 
 		public TargetRuntime TargetRuntime {
@@ -900,12 +928,9 @@ namespace MonoDevelop.Projects
 		{
 			return BindTask<IEnumerable<AssemblyReference>> (async ct => {
 				var res = await ProjectExtension.OnGetReferencedAssemblies (configuration);
-				
-				if (includeProjectReferences) {
-					foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-						foreach (var asm in pref.GetReferencedFileNames (configuration))
-							res.Add (CreateProjectAssemblyReference (asm, pref));
-					}
+
+				if (!includeProjectReferences) {
+					res.RemoveAll (r => r.IsProjectReference);
 				}
 				return res;
 			});
@@ -970,9 +995,11 @@ namespace MonoDevelop.Projects
 			if (config != null)
 				noStdLib = config.CompilationParameters.NoStdLib;
 
+			var framework = config?.TargetFramework ?? TargetFramework;
+
 			// System.Core is an implicit reference
 			if (!noStdLib) {
-				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
+				var sa = AssemblyContext.GetAssemblies (framework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
 				if (sa != null) {
 					var props = new MSBuildPropertyGroupEvaluated (null);
 					var trueString = "true";
@@ -1010,7 +1037,11 @@ namespace MonoDevelop.Projects
 				}
 
 				if (addFacadeAssemblies) {
-					var facades = await ProjectExtension.OnGetFacadeAssemblies ().ConfigureAwait (false);
+					List<AssemblyReference> facades = null;
+					if (HasMultipleTargetFrameworks)
+						facades = await ProjectExtension.OnGetFacadeAssemblies (framework).ConfigureAwait (false);
+					else
+						facades = await ProjectExtension.OnGetFacadeAssemblies ().ConfigureAwait (false);
 					if (facades != null) {
 						foreach (var facade in facades) {
 							if (!result.Contains (facade))
@@ -1021,13 +1052,13 @@ namespace MonoDevelop.Projects
 			}
 
 			// we do this here rather than PortableDotNetProjectFlavor because F# doesn't use the flavor for PCLs
-			if (TargetFramework.Id.Identifier == ".NETPortable" && TargetFramework.Id.Version != "5.0") {
+			if (framework.Id.Identifier == ".NETPortable" && framework.Id.Version != "5.0") {
 				var props = new MSBuildPropertyGroupEvaluated (null);
 				const string resolvedFrom = "ImplicitlyExpandTargetFramework";
 				var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
 				props.SetProperty (property.Name, property);
 
-				foreach (var asm in TargetRuntime.AssemblyContext.GetAssemblies (TargetFramework)) {
+				foreach (var asm in TargetRuntime.AssemblyContext.GetAssemblies (config.TargetFramework)) {
 					if (asm.Package.IsFrameworkPackage) {
 						var ar = new AssemblyReference (asm.Location, props);
 						result.Add (ar);
@@ -1040,13 +1071,18 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
 		{
+			return OnGetFacadeAssemblies (TargetFramework);
+		}
+
+		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies (TargetFramework framework)
+		{
 			var sharedProperties = new MSBuildPropertyGroupEvaluated (null);
 			var resolvedFrom = "ImplicitlyExpandDesignTimeFacades";
 			var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
 			sharedProperties.SetProperty (property.Name, property);
 
-			var runtime = TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime;
-			var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
+			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+			var facades = runtime.FindFacadeAssembliesForPCL (framework);
 			var result = facades is ICollection<string> collection ? new List<AssemblyReference> (collection.Count) : new List<AssemblyReference> ();
 
 			foreach (var facade in facades) {
@@ -1084,14 +1120,15 @@ namespace MonoDevelop.Projects
 				var monitor = new ProgressMonitor ();
 
 				var context = new TargetEvaluationContext ();
-				context.ItemsToEvaluate.Add ("ReferencePath");
+				context.ItemsToEvaluate.Add ("_ReferencesFromRAR");
+				context.ItemsToEvaluate.Add ("_ProjectReferencesFromRAR");
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 				context.GlobalProperties.SetValue ("Silent", true);
+				context.GlobalProperties.SetValue ("DesignTimeBuild", true);
 
-				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferences", configuration, context);
-
+				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferencesDesignTime;ResolveProjectReferencesDesignTime", configuration, context);
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
 				referenceCache = referenceCache.SetItem (confId, refs);
@@ -1186,57 +1223,21 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override async Task OnClearCachedData ()
+		protected override Task OnClearCachedData ()
 		{
 			// Clean the reference and package cache
-
 			referenceCacheNeedsRefresh = true;
 			packageDependenciesNeedRefresh = true;
 
-			await base.OnClearCachedData ();
+			lock (frameworkSpecificConfigurationsLock)
+				frameworkSpecificConfigurations.Clear ();
+
+			return base.OnClearCachedData ();
 		}
 
-		internal protected virtual async Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+		internal protected virtual Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			var result = await OnGetReferencedAssemblies (configuration);
-
-			foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-				foreach (var asm in pref.GetReferencedFileNames (configuration))
-					result.Add (CreateProjectAssemblyReference (asm, pref));
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// This should be removed once the project reference information is retrieved from MSBuild.
-		/// </summary>
-		AssemblyReference CreateProjectAssemblyReference (string path, ProjectReference reference)
-		{
-			var metadata = new MSBuildPropertyGroupEvaluated (MSBuildProject);
-			SetProperty (metadata, "Aliases", reference.Aliases);
-			SetProperty (metadata, "CopyLocal", reference.LocalCopy.ToString ());
-			SetProperty (metadata, "Project", reference.ProjectGuid);
-			SetProperty (metadata, "MSBuildSourceProjectFile", GetProjectFileName (reference));
-			SetProperty (metadata, "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString ());
-			SetProperty (metadata, "ReferenceSourceTarget", reference.ReferenceSourceTarget);
-
-			return new AssemblyReference (path, metadata);
-		}
-
-		void SetProperty (MSBuildPropertyGroupEvaluated metadata, string name, string value)
-		{
-			var property = new MSBuildPropertyEvaluated (MSBuildProject, name, value, value);
-			metadata.SetProperty (name, property);
-		}
-
-		static string GetProjectFileName (ProjectReference reference)
-		{
-			if (reference.OwnerProject?.ParentSolution == null)
-				return null;
-
-			Project project = reference.ResolveProject (reference.OwnerProject.ParentSolution);
-			return project?.FileName;
+			return OnGetReferencedAssemblies (configuration);
 		}
 
 		[Obsolete]
@@ -2087,6 +2088,131 @@ namespace MonoDevelop.Projects
 			NotifyReferencedAssembliesChanged ();
 		}
 
+		/// <summary>
+		/// Gets a framework specific configuration.
+		/// </summary>
+		/// <param name="name">Debug or release</param>
+		/// <param name="platform">Configuration platform (e.g. AnyCPU)</param>
+		/// <param name="framework">Short framework name (e.g. net472, netstandard2.0)</param>
+		public async Task<DotNetProjectConfiguration> GetConfigurationAsync (string name, string platform, string framework)
+		{
+			if (TryGetFrameworkSpecificConfiguration (name, platform, framework, out DotNetProjectConfiguration cachedConfig))
+				return cachedConfig;
+
+			DotNetProjectConfiguration newConfig = CloneConfiguration (name, platform);
+			if (newConfig == null)
+				return null;
+
+			var pi = await CreateProjectInstanceForConfigurationAsync (name, platform, framework);
+			newConfig.Properties = pi.GetPropertiesLinkedToGroup (newConfig.MainPropertyGroup);
+			newConfig.ProjectInstance = pi;
+
+			newConfig.Read (newConfig.Properties);
+			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
+			newConfig.TargetFrameworkShortName = framework;
+			newConfig.IsMultiTarget = true;
+
+			CacheFrameworkSpecificConfiguration (name, platform, framework, newConfig);
+
+			return newConfig;
+		}
+
+		DotNetProjectConfiguration CloneConfiguration (string name, string platform)
+		{
+			DotNetProjectConfiguration existingConfig = null;
+			foreach (SolutionItemConfiguration config in Configurations) {
+				if (config.Name == name && config.Platform == platform) {
+					existingConfig = config as DotNetProjectConfiguration;
+					break;
+				}
+			}
+
+			if (existingConfig == null)
+				return null;
+
+			return CloneConfiguration (existingConfig, name, platform) as DotNetProjectConfiguration;
+		}
+
+		/// <summary>
+		/// Gets a framework specific configuration.
+		/// </summary>
+		/// <param name="name">Debug or release</param>
+		/// <param name="platform">Configuration platform (e.g. AnyCPU)</param>
+		/// <param name="framework">Short framework name (e.g. net472, netstandard2.0)</param>
+		public DotNetProjectConfiguration GetConfiguration (string name, string platform, string framework)
+		{
+			if (TryGetFrameworkSpecificConfiguration (name, platform, framework, out DotNetProjectConfiguration cachedConfig))
+				return cachedConfig;
+
+			DotNetProjectConfiguration newConfig = CloneConfiguration (name, platform);
+			if (newConfig == null)
+				return null;
+
+			var pi = CreateProjectInstanceForConfiguration (name, platform, framework);
+			newConfig.Properties = pi.GetPropertiesLinkedToGroup (newConfig.MainPropertyGroup);
+			newConfig.ProjectInstance = pi;
+
+			newConfig.Read (newConfig.Properties);
+			newConfig.TargetFramework = GetTargetFramework (pi.EvaluatedProperties);
+			newConfig.TargetFrameworkShortName = framework;
+			newConfig.IsMultiTarget = true;
+
+			CacheFrameworkSpecificConfiguration (name, platform, framework, newConfig);
+
+			return newConfig;
+		}
+
+		bool TryGetFrameworkSpecificConfiguration (string name, string platform, string framework, out DotNetProjectConfiguration configuration)
+		{
+			lock (frameworkSpecificConfigurationsLock)
+				return frameworkSpecificConfigurations.TryGetValue ((name, platform, framework), out configuration);
+		}
+
+		void CacheFrameworkSpecificConfiguration (string name, string platform, string framework, DotNetProjectConfiguration configuration)
+		{
+			lock (frameworkSpecificConfigurationsLock)
+				frameworkSpecificConfigurations [(name, platform, framework)] = configuration;
+		}
+
+		readonly object frameworkSpecificConfigurationsLock = new object ();
+		Dictionary<(string, string, string), DotNetProjectConfiguration> frameworkSpecificConfigurations = new Dictionary<(string, string, string), DotNetProjectConfiguration> ();
+
+		public TargetFramework GetTargetFramework (ConfigurationSelector configuration)
+		{
+			var projectConfiguration = configuration.GetConfiguration (this) as DotNetProjectConfiguration;
+			return projectConfiguration?.TargetFramework ?? TargetFramework;
+		}
+
+		static TargetFramework GetTargetFramework (IMSBuildEvaluatedPropertyCollection evaluatedProperties)
+		{
+			string frameworkIdentifier = evaluatedProperties.GetValue ("TargetFrameworkIdentifier");
+			string frameworkVersion = evaluatedProperties.GetValue ("TargetFrameworkVersion");
+			string frameworkProfile = evaluatedProperties.GetValue ("TargetFrameworkProfile");
+
+			if (string.IsNullOrEmpty (frameworkIdentifier) || string.IsNullOrEmpty (frameworkVersion))
+				return null;
+
+			var targetFx = new TargetFrameworkMoniker (
+				frameworkIdentifier,
+				frameworkVersion,
+				frameworkProfile);
+
+			return Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
+		}
+
+		internal protected override Dictionary<string, string> CreateGlobalProperties (ConfigurationSelector configuration, string target)
+		{
+			var properties = base.CreateGlobalProperties (configuration, target);
+
+			if (GetConfiguration (configuration) is DotNetProjectConfiguration dotNetProjectConfiguration) {
+				string framework = dotNetProjectConfiguration.GetMultiTargetFrameworkShortName ();
+				if (!string.IsNullOrEmpty (framework))
+					properties ["TargetFramework"] = framework;
+			}
+
+			return properties;
+		}
+
 		internal class DefaultDotNetProjectExtension: DotNetProjectExtension
 		{
 			internal protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
@@ -2122,6 +2248,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
 			{
 				return Project.OnGetFacadeAssemblies ();
+			}
+
+			internal protected override Task<List<AssemblyReference>> OnGetFacadeAssemblies (TargetFramework framework)
+			{
+				return Project.OnGetFacadeAssemblies (framework);
 			}
 
 #pragma warning disable 672 // Member overrides obsolete member

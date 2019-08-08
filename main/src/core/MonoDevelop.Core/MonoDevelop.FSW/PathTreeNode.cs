@@ -17,12 +17,12 @@ namespace MonoDevelop.FSW
 		readonly int start;
 		readonly int length;
 
-		readonly List<object> ids = new List<object> ();
-		internal int IdCount => ids.Count;
-		internal void RegisterId (object id) => ids.Add (id);
-		internal bool UnregisterId (object id) => ids.Remove (id);
+		internal List<object> Ids { get; } = new List<object> ();
+		internal int IdCount => Ids.Count;
+		internal void RegisterId (object id) => Ids.Add (id);
+		internal bool UnregisterId (object id) => Ids.Remove (id);
 
-		public bool IsLive => ids.Count != 0;
+		public bool IsLive => Ids.Count != 0;
 		public ReadOnlySpan<char> GetPath () => fullPath.AsSpan (0, start + length);
 		internal ReadOnlySpan<char> GetSegment () => fullPath.AsSpan (start, length);
 		internal string Segment => fullPath.Substring (start, length);
@@ -36,7 +36,7 @@ namespace MonoDevelop.FSW
 			}
 		}
 
-		public PathTreeNode (string fullPath, int start, int length)
+		internal PathTreeNode (string fullPath, int start, int length)
 		{
 			this.fullPath = fullPath;
 			this.start = start;
@@ -95,6 +95,7 @@ namespace MonoDevelop.FSW
 
 			node = node.FirstChild;
 			while (node != null) {
+				builder.AppendLine ();
 				PrettyPrint (builder, node, indent);
 				node = node.Next;
 			}

@@ -6,8 +6,10 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
+using System.Threading.Tasks;
+using System.Threading;
 
-namespace MonoDevelop.VersionControl 
+namespace MonoDevelop.VersionControl
 {
 	internal class PublishCommand : CommandHandler
 	{
@@ -37,7 +39,7 @@ namespace MonoDevelop.VersionControl
 
 			List<FilePath> files = new List<FilePath> ();
 
-			// Build the list of files to be checked in			
+			// Build the list of files to be checked in
 			string moduleName = entry.Name;
 			if (localPath == entry.BaseDirectory) {
 				GetFiles (files, entry);
@@ -50,7 +52,7 @@ namespace MonoDevelop.VersionControl
 
 			if (files.Count == 0)
 				return false;
-	
+
 			SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish);
 			try {
 				dlg.ModuleName = moduleName;
@@ -60,7 +62,7 @@ namespace MonoDevelop.VersionControl
 						AlertButton publishButton = new AlertButton (GettextCatalog.GetString ("_Publish"));
 						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
-							w.Start ();
+							w.StartAsync ();
 							break;
 						}
 					} else
@@ -79,12 +81,12 @@ namespace MonoDevelop.VersionControl
 			if (entry is IWorkspaceFileObject)
 				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true).Where (file => file.CanonicalPath.IsChildPathOf (entry.BaseDirectory)));
 		}
-		
-		public static bool CanPublish (Repository vc, string path, bool isDir) {
+
+		public static async Task<bool> CanPublishAsync (Repository vc, string path, bool isDir) {
 			if (!VersionControlService.CheckVersionControlInstalled ())
 				return false;
 
-			if (!vc.GetVersionInfo (path).IsVersioned && isDir) 
+			if (!(await vc.GetVersionInfoAsync (path)).IsVersioned && isDir)
 				return true;
 			return false;
 		}
@@ -112,10 +114,10 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
 			}
 
-			protected override void Run ()
+			protected override async Task RunAsync ()
 			{
 				try {
-					vc.Publish (moduleName, path, files, message, Monitor);
+						await vc.PublishAsync (moduleName, path, files, message, Monitor);
 				} catch (VersionControlException e) {
 					LoggingService.LogError ("Publish operation failed", e);
 					Monitor.ReportError (e.Message, null);

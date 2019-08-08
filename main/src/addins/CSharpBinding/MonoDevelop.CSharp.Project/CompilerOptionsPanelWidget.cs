@@ -53,7 +53,6 @@ namespace MonoDevelop.CSharp.Project
 		ListStore classListStore;
 		bool classListFilled;
 		LanguageVersion[] unsupportedLanguageVersions = {
-			LanguageVersion.Preview
 		};
 
 		public CompilerOptionsPanelWidget (DotNetProject project)

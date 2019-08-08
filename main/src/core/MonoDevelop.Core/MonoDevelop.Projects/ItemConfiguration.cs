@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects
 		string name = null;
 		
 		string platform;
-		
+
 		[ItemProperty ("CustomCommands", SkipEmpty = true)]
 		[ItemProperty ("Command", Scope="*")]
 		CustomCommandCollection customCommands = new CustomCommandCollection ();
@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects
 			this.name = name;
 			this.platform = platform;
 		}
-		
+
 		public static void ParseConfigurationId (string id, out string name, out string platform)
 		{
 			if (string.IsNullOrEmpty (id)) {
@@ -83,14 +83,17 @@ namespace MonoDevelop.Projects
 		}
 		
 		public string Id {
-			get {
-				if (string.IsNullOrEmpty (platform))
-					return name;
-				else
-					return name + "|" + platform;
-			}
+			get { return GetId (); }
 		}
-		
+
+		internal protected virtual string GetId ()
+		{
+			if (string.IsNullOrEmpty (platform))
+				return name;
+			else
+				return name + "|" + platform;
+		}
+
 		public string Platform {
 			get { return platform ?? string.Empty; }
 		}
