@@ -173,7 +173,7 @@ namespace MonoDevelop.CSharp
 
 			public string GetMarkup (int n)
 			{
-				if (tag is DotNetProject) {
+				if (tag is OwnerProjectInfo) {
 					return GLib.Markup.EscapeText (ext.ownerProjects[n].Name);
 				}
 
@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharp
 			public Xwt.Drawing.Image GetIcon (int n)
 			{
 				string icon;
-				if (tag is DotNetProject) {
+				if (tag is OwnerProjectInfo) {
 					icon = ext.ownerProjects[n].StockIcon;
 				} else {
 					var node = memberList[n];
@@ -213,7 +213,7 @@ namespace MonoDevelop.CSharp
 
 			public object GetTag (int n)
 			{
-				if (tag is DotNetProject) {
+				if (tag is OwnerProjectInfo) {
 					return ext.ownerProjects[n];
 				}
 				return memberList[n];
@@ -221,10 +221,10 @@ namespace MonoDevelop.CSharp
 
 			public void ActivateItem (int n)
 			{
-				if (tag is DotNetProject) {
+				if (tag is OwnerProjectInfo) {
 					var proj = ext.ownerProjects [n];
 					foreach (var doc in ext.textContainer.GetRelatedDocuments ())
-						if (IdeServices.TypeSystemService.GetMonoProject (doc.Project) is DotNetProject dnp && dnp == proj)
+						if (proj.Project.Id == doc.Project.Id)
 							ext.registration.Workspace.SetDocumentContext (doc.Id);
 					ext.WorkspaceChanged (null, null);
 					return;
@@ -248,7 +248,7 @@ namespace MonoDevelop.CSharp
 
 			public int IconCount {
 				get {
-					if (tag is DotNetProject) {
+					if (tag is OwnerProjectInfo) {
 						return ext.ownerProjects.Count;
 					}
 					return memberList.Count;

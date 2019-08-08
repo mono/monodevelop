@@ -493,17 +493,19 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!ProjectHandler.CanLoadProject (project))
 						continue;
 
-					var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, cts.Token).ConfigureAwait (false);
-					if (projectInfo == null)
-						continue;
+					foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
+						var projectInfo = await ProjectHandler.LoadProjectIfCacheOutOfDate (project, framework, cts.Token).ConfigureAwait (false);
+						if (projectInfo == null)
+							continue;
 
-					if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
-						// Cache did not contain project so add it to the solution.
-						OnProjectAdded (projectInfo);
-					} else {
-						lock (projectModifyLock) {
-							projectInfo = AddVirtualDocuments (projectInfo);
-							OnProjectReloaded (projectInfo);
+						if (!CurrentSolution.ContainsProject (projectInfo.Id)) {
+							// Cache did not contain project so add it to the solution.
+							OnProjectAdded (projectInfo);
+						} else {
+							lock (projectModifyLock) {
+								projectInfo = AddVirtualDocuments (projectInfo);
+								OnProjectReloaded (projectInfo);
+							}
 						}
 					}
 					await Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments).ConfigureAwait (false);
@@ -1466,8 +1468,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
-			var id = GetProjectId (project);
-			if (id != null) {
+			foreach (var id in GetProjectIds (project)) {
 				OnProjectRemoved (id);
 			}
 		}
@@ -1497,24 +1498,24 @@ namespace MonoDevelop.Ide.TypeSystem
 					cts = new CancellationTokenSource ();
 					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null).ContinueWith (t => {
-							if (t.IsCanceled)
-								return;
-							if (t.IsFaulted) {
-								LoggingService.LogError ("Failed to reload project", t.Exception);
-								return;
-							}
-							try {
-								lock (projectModifyLock) {
-									ProjectInfo newProjectContents = t.Result;
-									newProjectContents = AddVirtualDocuments (newProjectContents);
-									OnProjectReloaded (newProjectContents);
-									Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
+						foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
+							var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null, null, framework).ContinueWith (t => {
+								if (t.IsFaulted) {
+									LoggingService.LogError ("Failed to reload project", t.Exception);
+									return;
 								}
-							} catch (Exception e) {
-								LoggingService.LogError ("Error while reloading project " + project.Name, e);
-							}
-						}, cts.Token);
+								try {
+									lock (projectModifyLock) {
+										ProjectInfo newProjectContents = t.Result;
+										newProjectContents = AddVirtualDocuments (newProjectContents);
+										OnProjectReloaded (newProjectContents);
+										Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
+									}
+								} catch (Exception e) {
+									LoggingService.LogError ("Error while reloading project " + project.Name, e);
+								}
+							}, cts.Token, TaskContinuationOptions.NotOnCanceled, TaskScheduler.Default);
+						}
 					} else {
 						modifiedProjects.Add (project);
 					}

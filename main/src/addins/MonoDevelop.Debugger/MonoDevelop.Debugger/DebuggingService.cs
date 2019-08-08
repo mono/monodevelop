@@ -651,6 +651,7 @@ namespace MonoDevelop.Debugger
 			return new DebuggerSessionOptions {
 				StepOverPropertiesAndOperators = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", true),
 				ProjectAssembliesOnly = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true),
+				AutomaticSourceLinkDownload = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", AutomaticSourceDownload.Ask),
 				EvaluationOptions = eval,
 			};
 		}
@@ -659,6 +660,7 @@ namespace MonoDevelop.Debugger
 		{
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", options.StepOverPropertiesAndOperators);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", options.ProjectAssembliesOnly);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AutomaticSourceDownload", options.AutomaticSourceLinkDownload);
 
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", options.EvaluationOptions.AllowTargetInvoke);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", options.EvaluationOptions.AllowToStringCalls);

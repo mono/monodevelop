@@ -1,10 +1,10 @@
-﻿//
-// EmptyDirectoryRemover.cs
+//
+// TestableSdkDependenciesNodeBuilder.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
-using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.DotNetCore.NodeBuilders;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore.NodeBuilders
+namespace MonoDevelop.DotNetCore.Tests
 {
-	class DotNetCoreProjectReferencesNodeBuilderExtension : NodeBuilderExtension
+	class TestableSdkDependenciesNodeBuilder : SdkDependenciesNodeBuilder
 	{
-		public override bool CanBuildNode (Type dataType)
+		public List<object> ChildNodes = new List<object> ();
+
+		public IEnumerable<PackageDependencyNode> ChildNodesAsPackageDependencyNodes ()
 		{
-			return typeof (ProjectReferenceCollection).IsAssignableFrom (dataType);
+			return ChildNodes.OfType<PackageDependencyNode> ();
 		}
 
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		protected override void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
 		{
-			if (IsDotNetCoreProject (parentNode)) {
-				attributes |= NodeAttributes.Hidden;
+			foreach (var dataObject in dataObjects) {
+				ChildNodes.Add (dataObject);
 			}
-		}
-
-		bool IsDotNetCoreProject (ITreeNavigator parentNode)
-		{
-			var project = parentNode.DataItem as DotNetProject;
-			if (project != null)
-				return project.HasFlavor<DotNetCoreProjectExtension> ();
-
-			return false;
 		}
 	}
 }

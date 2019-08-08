@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly object gate = new object ();
 
 			ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project> projectIdToMdProjectMap = ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project>.Empty;
-			readonly Dictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new Dictionary<MonoDevelop.Projects.Project, ProjectId> ();
+			readonly Dictionary<MonoDevelop.Projects.Project, List<FrameworkMap>> projectIdMap = new Dictionary<MonoDevelop.Projects.Project, List<FrameworkMap>> ();
 			readonly Dictionary<ProjectId, ProjectData> projectDataMap = new Dictionary<ProjectId, ProjectData> ();
 			readonly object updatingProjectDataLock = new object ();
 
@@ -48,56 +48,91 @@ namespace MonoDevelop.Ide.TypeSystem
 				Workspace = workspace;
 			}
 
-			internal ProjectId GetId (MonoDevelop.Projects.Project p)
+			internal ProjectId GetId (MonoDevelop.Projects.Project p, string framework = null)
 			{
 				lock (gate) {
-					return projectIdMap.TryGetValue (p, out ProjectId result) ? result : null;
+					if (projectIdMap.TryGetValue (p, out var frameworkMappings)) {
+						foreach (var map in frameworkMappings) {
+							if (map.Framework == framework)
+								return map.ProjectId;
+						}
+						if (framework == null) {
+							// Ensure that code that is not multi-framework aware finds a ProjectId.
+							var map = frameworkMappings.FirstOrDefault ();
+							return map?.ProjectId;
+						}
+					}
+					return null;
 				}
 			}
 
-			internal ProjectId GetOrCreateId (MonoDevelop.Projects.Project p, MonoDevelop.Projects.Project oldProject)
+			internal ProjectId[] GetIds (MonoDevelop.Projects.Project p)
 			{
 				lock (gate) {
-					var result = MigrateOldProjectInfo ();
-					if (result == null) {
-						projectIdMap [p] = result = ProjectId.CreateNewId (p.Name);
-						projectIdToMdProjectMap = projectIdToMdProjectMap.Add (result, p);
+					if (projectIdMap.TryGetValue (p, out var frameworkMappings))
+						return frameworkMappings.Select (f => f.ProjectId).ToArray ();
+					return null;
+				}
+			}
+
+			internal ProjectId GetOrCreateId (MonoDevelop.Projects.Project p, MonoDevelop.Projects.Project oldProject, string framework = null)
+			{
+				lock (gate) {
+					var frameworkMappings = MigrateOldProjectInfo ();
+					if (frameworkMappings != null) {
+						foreach (var map in frameworkMappings) {
+							if (map.Framework == framework)
+								return map.ProjectId;
+						}
+					} else {
+						frameworkMappings = new List<FrameworkMap> ();
+						projectIdMap [p] = frameworkMappings;
 					}
-					return result;
+
+					string debugName = string.IsNullOrEmpty (framework) ? p.Name : $"{p.Name} ({framework})";
+					ProjectId id = ProjectId.CreateNewId (debugName);
+					frameworkMappings.Add (new FrameworkMap (framework, id));
+					projectIdToMdProjectMap = projectIdToMdProjectMap.Add (id, p);
+					return id;
 				}
 
-				ProjectId MigrateOldProjectInfo ()
+				List<FrameworkMap> MigrateOldProjectInfo ()
 				{
-					if (projectIdMap.TryGetValue (p, out var id))
-						return id;
+					if (projectIdMap.TryGetValue (p, out var frameworkMappings)) {
+						return frameworkMappings;
+					}
 
 					p.Modified += Workspace.OnProjectModified;
 					if (oldProject == null)
 						return null;
 
 					oldProject.Modified -= Workspace.OnProjectModified;
-					if (projectIdMap.TryGetValue (oldProject, out id)) {
+					if (projectIdMap.TryGetValue (oldProject, out frameworkMappings)) {
 						projectIdMap.Remove (oldProject);
-						projectIdMap [p] = id;
-						projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (id, p);
+						projectIdMap [p] = frameworkMappings;
+						foreach (var mapping in frameworkMappings)
+							projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (mapping.ProjectId, p);
 					}
-					return id;
+					return frameworkMappings;
 				}
 			}
 
 			internal void RemoveProject (MonoDevelop.Projects.Project project)
 			{
-				ProjectId projectId;
+				List<FrameworkMap> frameworkMappings = null;
 
 				lock (gate) {
-					if (projectIdMap.TryGetValue (project, out projectId)) {
+					if (projectIdMap.TryGetValue (project, out frameworkMappings)) {
 						projectIdMap.Remove (project);
-						projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (projectId);
+						projectIdToMdProjectMap = projectIdToMdProjectMap.RemoveRange (
+							frameworkMappings.Select (mapping => mapping.ProjectId));
 					}
 				}
 
-				if (projectId != null) {
-					RemoveData (projectId);
+				if (frameworkMappings != null) {
+					foreach (FrameworkMap mapping in frameworkMappings) {
+						RemoveData (mapping.ProjectId);
+					}
 				}
 			}
 
@@ -107,7 +142,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				lock (gate) {
 					if (projectIdToMdProjectMap.TryGetValue (id, out actualProject)) {
-						projectIdMap.Remove (actualProject);
+						if (projectIdMap.TryGetValue (actualProject, out var frameworkMappings)) {
+							frameworkMappings.RemoveAll (mapping => mapping.ProjectId == id);
+							if (frameworkMappings.Count == 0)
+								projectIdMap.Remove (actualProject);
+						}
 						projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (id);
 					}
 				}
@@ -121,6 +160,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				lock (gate) {
 					return projectIdToMdProjectMap.TryGetValue (projectId, out var result) ? result : null;
+				}
+			}
+
+			internal (MonoDevelop.Projects.Project project, string framework) GetMonoProjectAndFramework (ProjectId projectId)
+			{
+				lock (gate) {
+					var project = projectIdToMdProjectMap.TryGetValue (projectId, out var result) ? result : null;
+					if (project != null && projectIdMap.TryGetValue (project, out var frameworkMappings)) {
+						var frameworkMap = frameworkMappings.FirstOrDefault (mapping => mapping.ProjectId == projectId);
+						return (project, frameworkMap.Framework);
+					}
+
+					return (project, null);
 				}
 			}
 
@@ -163,6 +215,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (updatingProjectDataLock) {
 					return projectDataMap.Keys.ToArray ();
 				}
+			}
+
+			sealed class FrameworkMap
+			{
+				public FrameworkMap (string framework, ProjectId projectId)
+				{
+					Framework = framework;
+					ProjectId = projectId;
+				}
+
+				public string Framework { get; set; }
+				public ProjectId ProjectId { get; set; }
 			}
 		}
 	}

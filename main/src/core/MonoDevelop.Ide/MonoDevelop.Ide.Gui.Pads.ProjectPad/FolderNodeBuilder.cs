@@ -435,7 +435,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.Select ();
 		}
-		
+
+		[CommandHandler (ProjectCommands.AddEmptyClass)]
+		protected void OnAddEmptyClass ()
+		{
+			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
+			if (project != null) {
+				if (IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem), "EmptyClass")) {
+					CurrentNode.Expanded = true;
+				}
+			}
+		}
+
+		[CommandUpdateHandler (ProjectCommands.AddEmptyClass)]
+		protected void UpdateAddEmptyClass (CommandInfo info)
+		{
+			var project = (Project)CurrentNode.GetParentDataItem (typeof (Project), true);
+			if (project != null) {
+				info.Visible = IdeApp.ProjectOperations.CanCreateProjectFile (project, GetFolderPath (CurrentNode.DataItem), "EmptyClass");
+			} else {
+				info.Visible = false;
+			}
+		}
+
+
 		void OnFileInserted (ITreeNavigator nav)
 		{
 			nav.Selected = true;
