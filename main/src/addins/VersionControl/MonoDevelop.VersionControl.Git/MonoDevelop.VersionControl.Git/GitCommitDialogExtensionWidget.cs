@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl.Git
 					checkPush.TooltipText = GettextCatalog.GetString ("Pushing is only available for repositories with configured remotes.");
 				}
 
-			}, token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
+			}, token, TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted, Runtime.MainTaskScheduler).Ignore ();
 		}
 
 		public bool PushAfterCommit {

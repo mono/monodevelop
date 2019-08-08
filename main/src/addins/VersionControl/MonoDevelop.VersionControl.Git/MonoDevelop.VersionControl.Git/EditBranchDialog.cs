@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl.Git
 					foreach (string b in repo.GetRemoteBranches (r.Name))
 						AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
 				}
-			}, token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
+			}, token, TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted, Runtime.MainTaskScheduler).Ignore ();
 
 			entryName.Text = name;
 			checkTrack.Active = !string.IsNullOrEmpty (tracking);
