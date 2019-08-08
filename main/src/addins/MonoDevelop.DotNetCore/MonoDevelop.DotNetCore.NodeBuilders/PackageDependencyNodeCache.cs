@@ -144,11 +144,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return frameworks;
 		}
 
-		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (
-			DependenciesNode dependenciesNode,
-			bool sdkDependencies)
+		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (DependenciesNode dependenciesNode)
 		{
-			return frameworks.Select (dependency => new TargetFrameworkNode (dependenciesNode, dependency, sdkDependencies));
+			return frameworks.Select (dependency => new TargetFrameworkNode (dependenciesNode, dependency));
 		}
 
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes (DependenciesNode dependenciesNode)

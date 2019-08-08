@@ -87,8 +87,11 @@ namespace MonoDevelop.DotNetCore
 		/// Cannot check TargetFramework property since it may not be set.
 		/// Currently support .NET Core and .NET Standard.
 		/// </summary>
-		bool HasSupportedFramework (DotNetProject project)
+		static bool HasSupportedFramework (DotNetProject project)
 		{
+			if (project.HasMultipleTargetFrameworks)
+				return project.TargetFrameworkMonikers.Any (moniker => moniker.IsNetStandardOrNetCoreApp ());
+
 			string framework = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetFrameworkIdentifier");
 			if (framework != null)
 				return framework == ".NETCoreApp" || framework == ".NETStandard";
@@ -98,6 +101,12 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
+			if (Project.HasMultipleTargetFrameworks) {
+				// Gets called when assigning the Project.TargetFramework. The framework being set may not be
+				// supported by the DotNetCoreProjectExtension but one of the multi-target frameworks will be
+				// supported so return true to allow the Project to be loaded.
+				return true;
+			}
 			return framework.IsNetCoreApp () || framework.IsNetStandard ();
 		}
 
@@ -123,12 +132,13 @@ namespace MonoDevelop.DotNetCore
 			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
 		}
 
-		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		protected override ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			TargetFrameworkMoniker framework,
+			ProjectRunConfiguration runConfiguration)
 		{
-			if (Project.TargetFramework.IsNetCoreApp ()) {
-				return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
-			}
-			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+			return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
 		}
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -182,13 +192,23 @@ namespace MonoDevelop.DotNetCore
 			return outputDirectory.Combine (configuration.OutputAssembly + ".dll");
 		}
 
-		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
 		{
-			if (Project.TargetFramework.IsNetCoreApp () && DotNetCoreRuntime.IsMissing) {
+			return framework.IsNetStandardOrNetCoreApp ();
+		}
+
+		protected override Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			TargetFrameworkMoniker framework,
+			SolutionItemRunConfiguration runConfiguration)
+		{
+			if (DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
-			return base.OnExecute (monitor, context, configuration, runConfiguration);
+			return base.OnExecute (monitor, context, configuration, framework, runConfiguration);
 		}
 
 		Task ShowCannotExecuteDotNetCoreApplicationDialog ()
@@ -227,7 +247,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
-			if (Project.TargetFramework.IsNetCoreApp ()) {
+			if (Project.GetTargetFramework (configuration).IsNetCoreApp ()) {
 				return OnExecuteDotNetCoreCommand (monitor, context, configuration, executionCommand);
 			}
 			return base.OnExecuteCommand (monitor, context, configuration, executionCommand);

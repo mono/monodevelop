@@ -40,14 +40,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 			=> ProjectMap.GetId (project);
 
+		internal ProjectId[] GetProjectIds (MonoDevelop.Projects.Project project)
+			=> ProjectMap.GetIds (project);
+
 		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
 			=> GetMonoProject (project.Id);
 
 		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
 			=> ProjectMap.GetMonoProject (projectId);
 
-		internal Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
-			=> ProjectHandler.LoadProject (p, token, oldProject, null);
+		internal Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject, string framework)
+			=> ProjectHandler.LoadProject (p, token, oldProject, null, framework);
+
+		internal static IEnumerable<string> GetFrameworks (MonoDevelop.Projects.Project p)
+			=> MonoDevelopWorkspace.ProjectSystemHandler.GetFrameworks (p);
 
 		internal DocumentId GetDocumentId (ProjectId projectId, string name)
 		{

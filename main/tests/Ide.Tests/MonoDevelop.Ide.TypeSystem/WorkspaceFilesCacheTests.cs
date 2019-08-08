@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,9 +42,12 @@ namespace MonoDevelop.Ide.TypeSystem
 	[RequireService(typeof(RootWorkspace))]
 	public class WorkspaceFilesCacheTests : IdeTestBase
 	{
-		static FilePath GetProjectCacheFile (FilePath cacheDir, Project project, string configuration)
+		static FilePath GetProjectCacheFile (FilePath cacheDir, Project project, string configuration, string framework = null)
 		{
-			return cacheDir.Combine (project.FileName.FileNameWithoutExtension + "-" + configuration + ".json");
+			if (string.IsNullOrEmpty (framework))
+				return cacheDir.Combine (project.FileName.FileNameWithoutExtension + "-" + configuration + ".json");
+
+			return cacheDir.Combine (project.FileName.FileNameWithoutExtension + "-" + configuration + "-" + framework + ".json");
 		}
 
 		async Task<ProjectCacheInfo> WaitForProjectInfoCacheToChange (
@@ -72,13 +76,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static ProjectCacheInfo GetProjectCacheInfo (Solution sol, Project p)
+		static ProjectCacheInfo GetProjectCacheInfo (Solution sol, Project p, string framework = null)
 		{
 			var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
 			var cache = new WorkspaceFilesCache ();
 			cache.Load (sol);
 
-			if (cache.TryGetCachedItems (p, ws.MetadataReferenceManager, ws.ProjectMap, out ProjectCacheInfo cacheInfo))
+			if (cache.TryGetCachedItems (p, ws.MetadataReferenceManager, ws.ProjectMap, framework, out ProjectCacheInfo cacheInfo))
 				return cacheInfo;
 			return null;
 		}
@@ -115,6 +119,48 @@ namespace MonoDevelop.Ide.TypeSystem
 				var matchedReference = cacheInfo.References.FirstOrDefault (r => r.FilePath.FileNameWithoutExtension == reference.Include);
 				Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
 			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceFilesCacheCreation_MultiTargetFramework ()
+		{
+			FilePath solFile = Util.GetSampleProject ("multi-target-netframework", "multi-target.sln");
+
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			var p = sol.GetAllProjects ().Single () as DotNetProject;
+
+			// Check cache created for active configuration.
+			var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
+			var netStandardProjectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug", "netstandard1.0");
+			Assert.IsTrue (File.Exists (netStandardProjectCacheFile));
+
+			var netFrameworkProjectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug", "net472");
+			Assert.IsTrue (File.Exists (netFrameworkProjectCacheFile));
+
+			var netFrameworkCacheInfo = GetProjectCacheInfo (sol, p, "net472");
+			Assert.IsNotNull (netFrameworkCacheInfo);
+
+			var netStandardCacheInfo = GetProjectCacheInfo (sol, p, "netstandard1.0");
+			Assert.IsNotNull (netStandardCacheInfo);
+
+			// Check cached references.
+			Assert.IsFalse (netFrameworkCacheInfo.References.Any (d => d.FilePath.FileName == "System.Collections.dll"));
+			Assert.IsTrue (netFrameworkCacheInfo.References.Any (d => d.FilePath.FileName == "mscorlib.dll"));
+			Assert.IsTrue (netStandardCacheInfo.References.Any (d => d.FilePath.FileName == "System.Collections.dll"));
+			Assert.IsFalse (netStandardCacheInfo.References.Any (d => d.FilePath.FileName == "mscorlib.dll"));
+
+			// Check cached source files.
+			Assert.IsFalse (netFrameworkCacheInfo.SourceFiles.Any (d => d.FilePath.FileName == "MyClass-netstandard.cs"));
+			Assert.IsTrue (netFrameworkCacheInfo.SourceFiles.Any (d => d.FilePath.FileName == "MyClass-netframework.cs"));
+			Assert.IsTrue (netStandardCacheInfo.SourceFiles.Any (d => d.FilePath.FileName == "MyClass-netstandard.cs"));
+			Assert.IsFalse (netStandardCacheInfo.SourceFiles.Any (d => d.FilePath.FileName == "MyClass-netframework.cs"));
 		}
 
 		[Test]
@@ -250,7 +296,71 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var ext = p.GetFlavor<DelayGetReferencesProjectExtension> ();
 				ext.TaskCompletionSource.TrySetResult (true);
-				Assert.IsTrue (ext.IsCalled);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+				TypeSystemServiceTestExtensions.UnloadSolution (sol);
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceFilesCache_MultiTargetProjectReference_UsedOnLoad ()
+		{
+			// First we create the cache by loading the solution.
+			string solFile = Util.GetSampleProject ("multi-target-project-ref", "multi-target.sln");
+
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			var project = sol.FindProjectByName ("multi-target-ref") as DotNetProject;
+
+			// Check cache created for active configuration.
+			var cacheInfo = GetProjectCacheInfo (sol, project, "netstandard1.4");
+			Assert.IsNotNull (cacheInfo);
+			cacheInfo = GetProjectCacheInfo (sol, project, "net472");
+			Assert.IsNotNull (cacheInfo);
+
+			await IdeServices.Workspace.Close (false);
+
+			// Load the solution again.
+			var fn = new CustomItemNode<DelayGetReferencesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			sol = IdeServices.Workspace.GetAllItems<Solution> ().First ();
+			IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+			project = sol.FindProjectByName ("multi-target-ref") as DotNetProject;
+			var referencedProject = sol.FindProjectByName ("multi-target") as DotNetProject;
+			try {
+				var ws = IdeServices.TypeSystemService.GetWorkspace (sol);
+
+				var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+				var projects = ws.CurrentSolution.Projects.ToArray ();
+
+				var netframeworkProject = projects.FirstOrDefault (p => p.Name == "multi-target (net471)");
+				var netstandardProject = projects.FirstOrDefault (p => p.Name == "multi-target (netstandard1.0)");
+				var netframeworkProjectRef = projects.FirstOrDefault (p => p.Name == "multi-target-ref (net472)");
+				var netstandardProjectRef = projects.FirstOrDefault (p => p.Name == "multi-target-ref (netstandard1.4)");
+
+				Assert.AreEqual (4, projectIds.Length);
+				Assert.AreEqual (4, projects.Length);
+
+				// Check project references.
+				var projectReferences = netstandardProjectRef.ProjectReferences.ToArray ();
+
+				Assert.AreEqual (1, projectReferences.Length);
+				Assert.AreEqual (netstandardProject.Id, projectReferences [0].ProjectId);
+
+				projectReferences = netframeworkProjectRef.ProjectReferences.ToArray ();
+
+				Assert.AreEqual (1, projectReferences.Length);
+				Assert.AreEqual (netframeworkProject.Id, projectReferences [0].ProjectId);
+
+				var ext = project.GetFlavor<DelayGetReferencesProjectExtension> ();
+				ext.TaskCompletionSource.TrySetResult (true);
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 				TypeSystemServiceTestExtensions.UnloadSolution (sol);
@@ -312,6 +422,32 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project tests.
+		/// </summary>
+		static void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
+		}
+
+		void RunMSBuild (string arguments)
+		{
+			var process = Process.Start ("msbuild", arguments);
+			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
+			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
+		}
+
 		class CustomItemNode<T> : SolutionItemExtensionNode where T : new()
 		{
 			public override object CreateInstance ()
@@ -323,11 +459,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		class DelayGetReferencesProjectExtension : DotNetProjectExtension
 		{
 			public TaskCompletionSource<bool> TaskCompletionSource = new TaskCompletionSource<bool> ();
-			public bool IsCalled;
 
 			protected internal override async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 			{
-				IsCalled = true;
 				await TaskCompletionSource.Task;
 				return await base.OnGetReferencedAssemblies (configuration);
 			}

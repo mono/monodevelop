@@ -44,7 +44,6 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\AssemblyDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\AssemblyDependenciesNode.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectReferencesNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetMigrate.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNodeBuilder.cs" />

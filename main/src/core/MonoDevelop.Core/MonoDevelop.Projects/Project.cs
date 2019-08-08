@@ -221,7 +221,7 @@ namespace MonoDevelop.Projects
 			// We use a dummy configuration and platform to avoid loading default values from the configurations
 			// while evaluating
 			var c = Guid.NewGuid ().ToString ();
-			using (var pi = CreateProjectInstaceForConfiguration (c, c))
+			using (var pi = CreateProjectInstanceForConfiguration (c, c))
 				mainGroupProperties = pi.GetPropertiesLinkedToGroup (globalGroup);
 		}
 
@@ -296,7 +296,7 @@ namespace MonoDevelop.Projects
 
 		void InitConfiguration (ProjectConfiguration conf)
 		{
-			var pi = CreateProjectInstaceForConfiguration (conf.Name, conf.Platform);
+			var pi = CreateProjectInstanceForConfiguration (conf.Name, conf.Platform);
 			conf.Properties = pi.GetPropertiesLinkedToGroup (conf.MainPropertyGroup);
 			conf.ProjectInstance = pi;
 		}
@@ -570,7 +570,9 @@ namespace MonoDevelop.Projects
 				var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 				var results = ImmutableArray.CreateBuilder<ProjectFile> ();
 
-				var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+				var dotNetProjectConfig = config as DotNetProjectConfiguration;
+				string frameworkShortName = dotNetProjectConfig?.GetMultiTargetFrameworkShortName ();
+				var pri = await CreateProjectInstanceForConfigurationAsync (config?.Name, config?.Platform, frameworkShortName, false);
 				foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 					results.Add (CreateProjectFile (it));
 
@@ -1374,7 +1376,7 @@ namespace MonoDevelop.Projects
 			string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 			string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-			var globalProperties = CreateGlobalProperties (target);
+			var globalProperties = CreateGlobalProperties (configuration, target);
 			if (context != null) {
 				var md = (ProjectItemMetadata)context.GlobalProperties;
 				md.SetProject (sourceProject);
@@ -1532,6 +1534,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public bool HasMultipleTargetFrameworks {
+			get { return activeTargetFramework != null; }
+		}
+
 		/// <summary>
 		/// If an SDK project targets multiple target frameworks then this returns the first
 		/// target framework. Otherwise it returns null. This also handles the odd case if
@@ -1569,16 +1575,23 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		internal protected IEnumerable<string> GetTargetFrameworks ()
+		{
+			var frameworks = GetTargetFrameworks (MSBuildProject);
+			return frameworks ?? Array.Empty<string> ();
+		}
+
 		/// <summary>
 		/// Sets a global TargetFramework property for multi-target projects so MSBuild targets work.
 		/// For Build and Clean the TargetFramework property is not set so all frameworks are built.
 		/// </summary>
-		internal Dictionary<string, string> CreateGlobalProperties (string target)
+		internal protected virtual Dictionary<string, string> CreateGlobalProperties (ConfigurationSelector configuration, string target)
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
 			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
 				properties ["TargetFramework"] = framework;
+
 			return properties;
 		}
 
@@ -2917,21 +2930,21 @@ namespace MonoDevelop.Projects
 			return config;
 		}
 
-		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
+		internal MSBuildProjectInstance CreateProjectInstanceForConfiguration (string conf, string platform, string framework = null, bool onlyEvaluateProperties = true)
 		{
-			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			pi.Evaluate ();
 			return pi;
 		}
 
-		async Task<MSBuildProjectInstance> CreateProjectInstaceForConfigurationAsync (string conf, string platform, bool onlyEvaluateProperties = true)
+		internal async Task<MSBuildProjectInstance> CreateProjectInstanceForConfigurationAsync (string conf, string platform, string framework, bool onlyEvaluateProperties = true)
 		{
-			var pi = PrepareProjectInstaceForConfiguration (conf, platform, onlyEvaluateProperties);
+			var pi = PrepareProjectInstanceForConfiguration (conf, platform, framework, onlyEvaluateProperties);
 			await pi.EvaluateAsync ();
 			return pi;
 		}
 
-		MSBuildProjectInstance PrepareProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties)
+		MSBuildProjectInstance PrepareProjectInstanceForConfiguration (string conf, string platform, string framework, bool onlyEvaluateProperties)
 		{
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
@@ -2943,6 +2956,8 @@ namespace MonoDevelop.Projects
 				else
 					pi.SetGlobalProperty ("Platform", platform);
 			}
+			if (!string.IsNullOrEmpty (framework))
+				pi.SetGlobalProperty ("TargetFramework", framework);
 			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 			return pi;
 		}

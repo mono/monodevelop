@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var path = filePath.IsAbsolute ? filePath.CanonicalPath : filePath;
 			if (openDocuments.TryGetValue (path, out var reference)) {
 				reference.ReferenceCount++;
-				if (reference.Owner == null)
+				if (owner != null && reference.Owner != owner)
 					reference.Owner = owner;
 				return new DocumentRegistration { OpenDocument = reference };
 			}
@@ -515,14 +515,31 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 
-					var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject);
+					HashSet<ProjectId> oldProjectIds = null;
 					if (oldProject != null) {
-						projectInfo = ws.AddVirtualDocuments (projectInfo);
-						ws.OnProjectReloaded (projectInfo);
+						oldProjectIds = ws.GetProjectIds (oldProject).ToHashSet ();
 					}
-					else {
-						ws.OnProjectAdded (projectInfo);
+
+					foreach (string framework in MonoDevelopWorkspace.GetFrameworks (project)) {
+						var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject, framework);
+						if (oldProject != null) {
+							if (oldProjectIds.Remove (projectInfo.Id)) {
+								projectInfo = ws.AddVirtualDocuments (projectInfo);
+								ws.OnProjectReloaded (projectInfo);
+							} else {
+								ws.OnProjectAdded (projectInfo);
+							}
+						} else {
+							ws.OnProjectAdded (projectInfo);
+						}
 					}
+
+					if (oldProjectIds != null) {
+						foreach (var removedProjectId in oldProjectIds) {
+							ws.OnProjectRemoved (removedProjectId);
+						}
+					}
+
 					ws.ReloadModifiedProject (project);
 					Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore ();
 				}

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
@@ -74,7 +73,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		void PackageOperationsFinished (object sender, EventArgs e)
 		{
-			RefreshAllChildNodes (packagesOnly: true);
+			RefreshAllChildNodes (packages: true);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -85,50 +84,31 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			var folderNode = new DependenciesNode (project);
 			treeBuilder.AddChild (folderNode);
+			folderNode.PackageDependencyCache.Refresh ();
 		}
 
-		void RefreshAllChildNodes (bool packagesOnly = false)
+		void RefreshAllChildNodes (bool packages = false)
 		{
 			Runtime.RunInMainThread (() => {
 				foreach (DotNetProject project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
 					if (project.IsDotNetCoreProject ())
-						RefreshChildNodes (project, packagesOnly);
+						RefreshChildNodes (project, packages);
 				}
-			});
+			}).Ignore ();
 		}
 
-		void RefreshChildNodes (DotNetProject project, bool packagesOnly)
+		void RefreshChildNodes (DotNetProject project, bool packages)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder (project);
 			if (builder != null) {
 				if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
-					if (packagesOnly && !AnyPackageUpdates (project)) {
+					if (packages) {
 						var dependenciesNode = (DependenciesNode)builder.DataItem;
 						dependenciesNode.PackageDependencyCache.Refresh ();
-						UpdateNuGetFolderNode (builder, dependenciesNode);
 					} else {
 						builder.UpdateAll ();
 					}
 				}
-			}
-		}
-
-		/// <summary>
-		/// Need to refresh all nodes, including the Dependencies folder node, if there are updates to ensure
-		/// the secondary label on the Dependencies folder is updated if a NuGet package is updated.
-		/// </summary>
-		bool AnyPackageUpdates (DotNetProject project)
-		{
-			var updatedPackages = PackageManagementServices.UpdatedPackagesInWorkspace.GetUpdatedPackages (new DotNetProjectProxy (project));
-			return updatedPackages.AnyPackages ();
-		}
-
-		void UpdateNuGetFolderNode (ITreeBuilder builder, DependenciesNode dependenciesNode)
-		{
-			bool hasPackages = dependenciesNode.Project.Items.OfType<ProjectPackageReference> ().Any ();
-			if (hasPackages && !builder.MoveToChild (PackageDependenciesNode.NodeName, typeof (PackageDependenciesNode))) {
-				var packagesNode = new PackageDependenciesNode (dependenciesNode);
-				builder.AddChild (packagesNode);
 			}
 		}
 
@@ -144,8 +124,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			Runtime.RunInMainThread (() => {
 				if (project.IsDotNetCoreProject ())
-					RefreshChildNodes (project, packagesOnly: false);
-			});
+					RefreshChildNodes (project, packages: false);
+			}).Ignore ();
 		}
 
 		void UpdatePackagesAvailable (object sender, EventArgs e)

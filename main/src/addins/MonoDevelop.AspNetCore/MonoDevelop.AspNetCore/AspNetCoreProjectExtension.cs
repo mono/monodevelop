@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Ide;
@@ -54,14 +55,22 @@ namespace MonoDevelop.AspNetCore
 			return DotNetCoreSupportsObject (item) && IsWebProject ((DotNetProject)item);
 		}
 
-		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
 		{
-			if (Project.TargetFramework.IsNetCoreApp ()) {
-				var result = CreateAspNetCoreExecutionCommand (configSel, configuration, runConfiguration);
-				if (result != null)
-					return result;
-			}
-			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+			return framework.IsNetCoreApp ();
+		}
+
+		protected override ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			TargetFrameworkMoniker framework,
+			ProjectRunConfiguration runConfiguration)
+		{
+			var result = CreateAspNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			if (result != null)
+				return result;
+
+			return base.OnCreateExecutionCommand (configSel, configuration, framework, runConfiguration);
 		}
 
 		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -93,12 +102,17 @@ namespace MonoDevelop.AspNetCore
 			};
 		}
 
-		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		protected override Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			TargetFrameworkMoniker framework,
+			SolutionItemRunConfiguration runConfiguration)
 		{
 			if (DotNetCoreRuntime.IsInstalled) {
-				return CheckCertificateThenExecute (monitor, context, configuration, runConfiguration);
+				return CheckCertificateThenExecute (monitor, context, configuration, framework, runConfiguration);
 			}
-			return base.OnExecute (monitor, context, configuration, runConfiguration);
+			return base.OnExecute (monitor, context, configuration, framework, runConfiguration);
 		}
 
 		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
@@ -115,12 +129,17 @@ namespace MonoDevelop.AspNetCore
 			return result.Count > 0 ? result : base.OnGetExecutionTargets (configuration);
 		}
 
-		async Task CheckCertificateThenExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		async Task CheckCertificateThenExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			TargetFrameworkMoniker framework,
+			SolutionItemRunConfiguration runConfiguration)
 		{
 			if (AspNetCoreCertificateManager.CheckDevelopmentCertificateIsTrusted (Project, runConfiguration)) {
 				await AspNetCoreCertificateManager.TrustDevelopmentCertificate (monitor);
 			}
-			await base.OnExecute (monitor, context, configuration, runConfiguration);
+			await base.OnExecute (monitor, context, configuration, framework, runConfiguration);
 		}
 
 		protected override string OnGetDefaultBuildAction (string fileName)

@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -112,7 +113,10 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		public async Task GetReferences_ThreeProjectReferences_TransitivelyReferencedProjectsIncluded ()
 		{
-			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
+			FilePath solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
+
+			RestoreNuGetPackages (solutionFileName);
+
 			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
 			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
@@ -149,7 +153,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		public async Task GetReferences_ThreeProjectReferencesAndReferenceOutputAssemblyIsFalse_ReferenceOutputAssemblyIsFalseProjectsNotReturned ()
 		{
-			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
+			FilePath solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
 			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
 			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
@@ -159,6 +163,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			projectReference.ReferenceOutputAssembly = false;
 			await projectLibC.SaveAsync (Util.GetMonitor ());
 
+			// Generate project.asset.json to ensure MSBuild returns correct project reference information.
+			RestoreNuGetPackages (solutionFileName);
+
 			var referencesLibC = await projectLibC.GetReferences (ConfigurationSelector.Default);
 			var referencesLibB = await projectLibB.GetReferences (ConfigurationSelector.Default);
 
@@ -166,32 +173,26 @@ namespace MonoDevelop.DotNetCore.Tests
 			var projectReferencesLibB = referencesLibB.Where (r => r.IsProjectReference).ToList ();
 
 			Assert.AreEqual (1, projectReferencesLibB.Count);
-			Assert.AreEqual (1, projectReferencesLibC.Count);
+			Assert.AreEqual (0, projectReferencesLibC.Count);
 			Assert.IsTrue (projectReferencesLibB [0].ReferenceOutputAssembly);
-			Assert.IsFalse (projectReferencesLibC [0].ReferenceOutputAssembly);
 		}
 
 		[Test]
 		public async Task GetReferences_ThreeProjectReferencesJsonNet_JsonNetReferenceAvailableToReferencingProjects ()
 		{
 			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
+			RestoreNuGetPackages (solutionFileName);
+
 			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
 			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
 			var projectLibA = solution.FindProjectByName ("LibA") as DotNetProject;
 
-			//string fileName = GetType ().Assembly.Location;
-			//var reference = ProjectReference.CreateAssemblyFileReference (fileName);
-			//projectLibA.Items.Add (reference);
 			var packageReference = ProjectPackageReference.Create ("Newtonsoft.Json", "10.0.1");
 			projectLibA.Items.Add (packageReference);
 			await projectLibA.SaveAsync (Util.GetMonitor ());
 
-			CreateNuGetConfigFile (solution.BaseDirectory);
-
-			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solutionFileName}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			RestoreNuGetPackages (solutionFileName);
 
 			var referencesLibC = await projectLibC.GetReferences (ConfigurationSelector.Default);
 			var referencesLibB = await projectLibB.GetReferences (ConfigurationSelector.Default);
@@ -450,9 +451,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (Project)sol.Items [0];
 
-				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-				Assert.AreEqual (0, process.ExitCode);
+				RestoreNuGetPackages (solFile);
 
 				var debugConfig = new SolutionConfigurationSelector ("Debug");
 				var debugSourceFiles = await p.GetSourceFilesAsync (Util.GetMonitor (), debugConfig);
@@ -466,6 +465,15 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.IsTrue (debugSourceFiles.Any (f => f.FilePath == expectedDebugAssemblyInfoFile));
 				Assert.IsTrue (releaseSourceFiles.Any (f => f.FilePath == expectedReleaseAssemblyInfoFile));
 			}
+		}
+
+		static void RestoreNuGetPackages (FilePath solutionFileName)
+		{
+			CreateNuGetConfigFile (solutionFileName.ParentDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solutionFileName}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
 		}
 	}
 }
