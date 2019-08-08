@@ -960,7 +960,7 @@ namespace MonoDevelop.PackageManagement
 					if (IsPackageIdMatch (package, packageId)) {
 						if (currentPackage == null) {
 							currentPackage = package;
-						} else {
+						} else if (currentPackage.Version != package.Version) {
 							return GettextCatalog.GetString ("Multiple");
 						}
 					}
@@ -984,35 +984,30 @@ namespace MonoDevelop.PackageManagement
 			if (!IsManagingSolution)
 				return string.Empty;
 
-			StringBuilder additionalText = null;
-			(PackageIdentity package, ManagePackagesProjectInfo projectInfo) previousMatch = (null, null);
+			bool multipleVersions = false;
+			var packageInfoList = new List<(PackageIdentity package, ManagePackagesProjectInfo projectInfo)> ();
 			foreach (ManagePackagesProjectInfo projectInfo in projectInformation) {
-				PackageIdentity foundPackage = projectInfo.Packages.FirstOrDefault (package => IsPackageIdMatch (package, packageId));
-				if (foundPackage != null) {
-					if (previousMatch.package == null) {
-						previousMatch.package = foundPackage;
-						previousMatch.projectInfo = projectInfo;
-					} else {
-						if (additionalText == null) {
-							additionalText = StringBuilderCache.Allocate ();
-							AppendAdditionalText (additionalText, previousMatch.projectInfo, previousMatch.package);
+				foreach (PackageIdentity package in projectInfo.Packages) {
+					if (IsPackageIdMatch (package, packageId)) {
+						packageInfoList.Add ((package, projectInfo));
+						if (!multipleVersions && packageInfoList.Count > 1) {
+							multipleVersions = package.Version != packageInfoList [0].package.Version;
 						}
-						additionalText.Append (", ");
-						AppendAdditionalText (additionalText, projectInfo, foundPackage);
 					}
 				}
 			}
 
-			if (additionalText != null) {
-				return StringBuilderCache.ReturnAndFree (additionalText);
+			if (!multipleVersions)
+				return string.Empty;
+
+			var additionalText = StringBuilderCache.Allocate ();
+			for (int i = 0; i < packageInfoList.Count; i++) {
+				var packageInfo = packageInfoList [i];
+				if (i > 0)
+					additionalText.Append (", ");
+				additionalText.AppendFormat ("{0}: {1}", packageInfo.projectInfo.Project.Name, packageInfo.package.Version);
 			}
-
-			return string.Empty;
-		}
-
-		static void AppendAdditionalText (StringBuilder additionalText, ManagePackagesProjectInfo projectInfo, PackageIdentity foundPackage)
-		{
-			additionalText.AppendFormat ("{0}: {1}", projectInfo.Project.Name, foundPackage.Version);
+			return StringBuilderCache.ReturnAndFree (additionalText);
 		}
 	}
 }
