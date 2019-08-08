@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -57,7 +58,7 @@ namespace MonoDevelop.VersionControl.Git
 				foreach (string s in list)
 					remoteCombo.AppendText (s);
 				remoteCombo.Active = list.IndexOf (t.Result.Item2);
-			}, Runtime.MainTaskScheduler);
+			}, token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
 
 			UpdateChangeSet ();
 		}

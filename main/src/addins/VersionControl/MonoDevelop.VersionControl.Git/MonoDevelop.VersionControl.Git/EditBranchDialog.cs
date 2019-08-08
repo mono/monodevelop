@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
@@ -82,7 +83,7 @@ namespace MonoDevelop.VersionControl.Git
 					foreach (string b in repo.GetRemoteBranches (r.Name))
 						AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
 				}
-			}, Runtime.MainTaskScheduler);
+			}, token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
 
 			entryName.Text = name;
 			checkTrack.Active = !string.IsNullOrEmpty (tracking);
