@@ -42,15 +42,12 @@ namespace MonoDevelop.Debugger
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
 		readonly List<string> expressions = new List<string> ();
-		
-		public WatchPad ()
+
+		public WatchPad () : base (true)
 		{
-			if (UseNewTreeView) {
-				controller.AllowWatchExpressions = true;
-			} else {
+			if (!UseNewTreeView) {
 				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
 				tree.DragDataReceived += HandleDragDataReceived;
-				tree.AllowAdding = true;
 			}
 		}
 

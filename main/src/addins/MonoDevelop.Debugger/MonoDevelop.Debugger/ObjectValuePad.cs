@@ -44,44 +44,73 @@ namespace MonoDevelop.Debugger
 		protected ObjectValueTreeViewController controller;
 		protected ObjectValueTreeView tree;
 
-		readonly ScrolledWindow scrolled;
+		readonly Control control;
+		PadFontChanger fontChanger;
+		StackFrame lastFrame;
 		bool needsUpdateValues;
 		bool needsUpdateFrame;
 		bool initialResume;
-		StackFrame lastFrame;
-		PadFontChanger fontChanger;
+		bool disposed;
 
 		public override Control Control {
-			get {
-				return scrolled;
-			}
+			get { return control; }
 		}
 
-		public ObjectValuePad ()
+		public ObjectValuePad (bool allowWatchExpressions = false)
 		{
-			scrolled = new ScrolledWindow ();
-			scrolled.HscrollbarPolicy = PolicyType.Automatic;
-			scrolled.VscrollbarPolicy = PolicyType.Automatic;
-
 			if (UseNewTreeView) {
-				controller = new ObjectValueTreeViewController ();
+				controller = new ObjectValueTreeViewController (allowWatchExpressions);
 				controller.AllowEditing = true;
 
-				var treeView = controller.GetControl () as GtkObjectValueTreeView;
-				fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
+				var ctrl = controller.GetControl ();
 
-				scrolled.Add (treeView);
+#if MAC
+				var view = ctrl.GetNativeWidget<AppKit.NSView> ();
+				var treeView = (MacObjectValueTreeView) view;
+
+				//fontChanger = new PadFontChanger (ctrl, treeView.SetCustomFont, widget.QueueResize);
+
+				var scrolled = new AppKit.NSScrollView {
+					DocumentView = view
+				};
+
+				var host = new GtkNSViewHost (scrolled);
+				host.ShowAll ();
+
+				control = host;
+#else
+				var widget = ctrl.GetNativeWidget<Widget> ();
+				var treeView = (GtkObjectValueTreeView) widget;
+				treeView.Show ();
+
+				fontChanger = new PadFontChanger (ctrl, treeView.SetCustomFont, widget.QueueResize);
+
+				var scrolled = new ScrolledWindow {
+					HscrollbarPolicy = PolicyType.Automatic,
+					VscrollbarPolicy = PolicyType.Automatic
+				};
+				scrolled.Add (widget);
+				scrolled.Show ();
+
+				control = scrolled;
+#endif
 			} else {
 				tree = new ObjectValueTreeView ();
+				tree.AllowAdding = allowWatchExpressions;
 				tree.AllowEditing = true;
-				tree.AllowAdding = false;
+				tree.Show ();
 
 				fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
 
+				var scrolled = new ScrolledWindow {
+					HscrollbarPolicy = PolicyType.Automatic,
+					VscrollbarPolicy = PolicyType.Automatic
+				};
 				scrolled.Add (tree);
-			}
+				scrolled.Show ();
 
-			scrolled.ShowAll ();
+				control = scrolled;
+			}
 
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			DebuggingService.PausedEvent += OnDebuggerPaused;
@@ -99,17 +128,23 @@ namespace MonoDevelop.Debugger
 
 		public override void Dispose ()
 		{
-			if (fontChanger == null)
+			if (disposed)
 				return;
 
-			fontChanger.Dispose ();
-			fontChanger = null;
+			if (fontChanger != null) {
+				fontChanger.Dispose ();
+				fontChanger = null;
+			}
+
+			disposed = true;
+
 			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
 			DebuggingService.PausedEvent -= OnDebuggerPaused;
 			DebuggingService.ResumedEvent -= OnDebuggerResumed;
 			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged -= OnEvaluationOptionsChanged;
 			DebuggingService.VariableChanged -= OnVariableChanged;
+
 			base.Dispose ();
 		}
 

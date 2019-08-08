@@ -37,6 +37,16 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
+	public enum PreviewButtonIcon
+	{
+		None,
+		Hidden,
+		RowHover,
+		Hover,
+		Active,
+		Selected,
+	}
+
 	public interface IObjectValueDebuggerService
 	{
 		bool CanQueryDebugger { get; }
@@ -71,8 +81,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
 
-		public ObjectValueTreeViewController ()
+		public ObjectValueTreeViewController (bool allowWatchExpressions = false)
 		{
+			AllowWatchExpressions = allowWatchExpressions;
+			Root = new RootObjectValueNode ();
 		}
 
 		public IDebuggerService Debugger {
@@ -119,13 +131,7 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
 		public bool AllowWatchExpressions {
-			get => allowWatchExpressions;
-			set {
-				allowWatchExpressions = value;
-				if (view != null) {
-					view.AllowWatchExpressions = value;
-				}
-			}
+			get; private set;
 		}
 
 		public PinnedWatch PinnedWatch {
@@ -137,11 +143,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public string PinnedWatchFile {
-			get; set;
-		}
-
-		public int PinnedWatchLine {
+		public PinnedWatchLocation PinnedWatchLocation {
 			get; set;
 		}
 
@@ -151,16 +153,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		void ConfigureView ()
 		{
-			if (view != null)
-				throw new InvalidOperationException ("You can only get the control once for each controller instance");
-
-			view = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
-				AllowExpanding = this.AllowExpanding,
-				PinnedWatch = this.PinnedWatch,
-			};
-
+			view.AllowExpanding = AllowExpanding;
+			view.PinnedWatch = PinnedWatch;
 
 			view.NodeExpand += OnViewNodeExpand;
 			view.NodeCollapse += OnViewNodeCollapse;
@@ -174,8 +170,45 @@ namespace MonoDevelop.Debugger
 			view.NodePinned += OnViewNodePinned;
 			view.NodeUnpinned += OnViewNodeUnpinned;
 			view.NodeShowVisualiser += OnViewNodeShowVisualiser;
+		}
 
-			return view;
+		public GtkObjectValueTreeView GetGtkControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		{
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			var control = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+
+			view = control;
+
+			ConfigureView ();
+
+			return control;
+		}
+
+#if MAC
+		public MacObjectValueTreeView GetMacControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		{
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			var control = new MacObjectValueTreeView (this, this, AllowEditing, headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+
+			view = control;
+
+			ConfigureView ();
+
+			return control;
+		}
+#endif
+
+		public Control GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		{
+#if MAC
+			return GetMacControl (headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+#else
+			return GetGtkControl (headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+#endif
 		}
 
 		public void CancelAsyncTasks ()
@@ -188,10 +221,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearValues ()
 		{
-			Root = OnCreateRoot ();
+			((RootObjectValueNode) Root).Clear ();
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Cleared ();
 			}).Ignore ();
 		}
 
@@ -209,15 +242,11 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValue (ObjectValueNode value)
 		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
 			((RootObjectValueNode) Root).AddValue (value);
 			RegisterNode (value);
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Appended (value);
 			}).Ignore ();
 		}
 
@@ -226,23 +255,19 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValues (IEnumerable<ObjectValueNode> values)
 		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
 			var nodes = values.ToList ();
+
 			((RootObjectValueNode) Root).AddValues (nodes);
 
-			foreach (var node in nodes) {
+			foreach (var node in nodes)
 				RegisterNode (node);
-			}
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Appended (nodes);
 			}).Ignore ();
 		}
 
-		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
+		public async Task<CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
 		{
 			if (CanQueryDebugger && Frame != null) {
 				// TODO: improve how we get at the underlying real stack frame
@@ -257,13 +282,11 @@ namespace MonoDevelop.Debugger
 			var watch = new PinnedWatch ();
 
 			if (PinnedWatch != null) {
-				watch.File = PinnedWatch.File;
-				watch.Line = PinnedWatch.Line;
+				watch.Location = PinnedWatch.Location;
 				watch.OffsetX = PinnedWatch.OffsetX;
 				watch.OffsetY = PinnedWatch.OffsetY + height + 5;
 			} else {
-				watch.File = PinnedWatchFile;
-				watch.Line = PinnedWatchLine;
+				watch.Location = PinnedWatchLocation;
 				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
 				watch.OffsetY = -1;
 			}
@@ -737,15 +760,6 @@ namespace MonoDevelop.Debugger
 
 		#endregion
 
-
-		/// <summary>
-		/// Called when clearing, by default sets the root to a new ObjectValueNode
-		/// </summary>
-		protected virtual ObjectValueNode OnCreateRoot ()
-		{
-			return new RootObjectValueNode ();
-		}
-
 		protected virtual IDebuggerService OnGetDebuggerService ()
 		{
 			return new ObjectValueDebuggerService ();
@@ -880,6 +894,18 @@ namespace MonoDevelop.Debugger
 			}
 
 			return "md-" + access + global + source;
+		}
+
+		public static string GetPreviewButtonIcon (PreviewButtonIcon icon)
+		{
+			switch (icon) {
+			case PreviewButtonIcon.Hidden: return "md-empty";
+			case PreviewButtonIcon.RowHover: return "md-preview-normal";
+			case PreviewButtonIcon.Hover: return "md-preview-hover";
+			case PreviewButtonIcon.Active: return "md-preview-active";
+			case PreviewButtonIcon.Selected: return "md-preview-selected";
+			default: return null;
+			}
 		}
 	}
 

@@ -1,11 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Gtk;
+
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using MonoDevelop.Core;
 using Microsoft.VisualStudio.Text.Editor;
-using Gtk;
+
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Debugger.VSTextView.QuickInfo
@@ -14,9 +17,11 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 	{
 		readonly DebuggerQuickInfoSourceProvider provider;
 		readonly ITextBuffer textBuffer;
-		DebugValueWindow window;
-		ITextView lastView;
 		DocumentView lastDocumentView;
+#if MAC
+		MacDebuggerTooltipWindow window;
+#endif
+		ITextView lastView;
 
 		public DebuggerQuickInfoSource (DebuggerQuickInfoSourceProvider provider, ITextBuffer textBuffer)
 		{
@@ -24,7 +29,6 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			this.textBuffer = textBuffer;
 			DebuggingService.CurrentFrameChanged += CurrentFrameChanged;
 			DebuggingService.StoppedEvent += TargetProcessExited;
-
 		}
 
 		void CurrentFrameChanged (object sender, EventArgs e)
@@ -79,10 +83,11 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		{
 			if (DebuggingService.CurrentFrame == null)
 				return null;
+
 			if (window != null)
 				await Runtime.RunInMainThread (DestroyWindow);
-			var view = session.TextView;
 
+			var view = session.TextView;
 			var textViewLines = view.TextViewLines;
 			var snapshot = textViewLines.FormattedSpan.Snapshot;
 			var triggerPoint = session.GetTriggerPoint (textBuffer);
@@ -92,7 +97,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 			if (!view.Selection.IsEmpty) {
 				foreach (var span in view.Selection.SelectedSpans) {
-					if(span.Contains(point)) {
+					if (span.Contains (point)) {
 						await EvaluateAndShowTooltipAsync (session, view, point, new DataTipInfo (snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeInclusive), snapshot.GetText (span)), cancellationToken);
 						return null;
 					}
@@ -108,6 +113,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				await EvaluateAndShowTooltipAsync (session, view, point, debugInfo, cancellationToken);
 				return null;
 			}
+
 			return null;
 		}
 
@@ -121,13 +127,16 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 			if (val.IsEvaluating)
 				await WaitOneAsync (val.WaitHandle, cancellationToken);
+
 			if (cancellationToken.IsCancellationRequested)
 				return;
+
 			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return;
 
-			if (!view.Properties.TryGetProperty (typeof (Gtk.Widget), out Gtk.Widget gtkParent))
+			if (!view.Properties.TryGetProperty (typeof (Widget), out Widget gtkParent))
 				return;
+
 			provider.textDocumentFactoryService.TryGetTextDocument (view.TextDataModel.DocumentBuffer, out var textDocument);
 
 			// This is a bit hacky, since AsyncQuickInfo is designed to display multiple elements if multiple sources
@@ -135,22 +144,38 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			// and do our own thing, notice VS does same thing
 			await session.DismissAsync ();
 			await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
-			this.lastView = view;
+			lastView = view;
+
 			val.Name = debugInfo.Text;
-			window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
-			Ide.IdeApp.CommandService.RegisterTopWindow (window);
-			var bounds = view.TextViewLines.GetCharacterBounds (point);
+
+#if MAC
+			var location = new PinnedWatchLocation (textDocument?.FilePath);
+			var snapshot = view.TextDataModel.DocumentBuffer.CurrentSnapshot;
+			int line, column;
+
+			var start = debugInfo.Span.GetStartPoint (snapshot);
+			snapshot.GetLineAndColumn (start, out line, out column);
+			location.Column = column;
+			location.Line = line;
+
+			var end = debugInfo.Span.GetEndPoint (snapshot);
+			snapshot.GetLineAndColumn (end, out line, out column);
+			location.EndColumn = column;
+			location.EndLine = line;
+
+			window = new MacDebuggerTooltipWindow (location, DebuggingService.CurrentFrame, val, watch: null);
+
 			view.LayoutChanged += LayoutChanged;
 #if CLOSE_ON_FOCUS_LOST
 			view.LostAggregateFocus += View_LostAggregateFocus;
 #endif
 			RegisterForHiddenAsync (view).Ignore ();
-			window.LeaveNotifyEvent += LeaveNotifyEvent;
-#if MAC
-			var cocoaView = ((ICocoaTextView)view);
-			var cgPoint = cocoaView.VisualElement.ConvertPointToView (new CoreGraphics.CGPoint (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop), cocoaView.VisualElement.Superview);
-			cgPoint.Y = cocoaView.VisualElement.Superview.Frame.Height - cgPoint.Y;
-			window.ShowPopup (gtkParent, new Gdk.Rectangle ((int)cgPoint.X, (int)cgPoint.Y, (int)bounds.Width, (int)bounds.Height), Components.PopupPosition.TopLeft);
+
+			var cocoaView = (ICocoaTextView) view;
+			var bounds = view.TextViewLines.GetCharacterBounds (point);
+			var rect = new CoreGraphics.CGRect (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop, bounds.Width, bounds.Height);
+
+			window.Show (rect, cocoaView.VisualElement, AppKit.NSRectEdge.MaxXEdge);
 #else
 			throw new NotImplementedException ();
 #endif
@@ -168,6 +193,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		{
 			DestroyWindow ();
 		}
+
 #if CLOSE_ON_FOCUS_LOST
 		private void View_LostAggregateFocus (object sender, EventArgs e)
 		{
@@ -181,6 +207,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 #endif
 		}
 #endif
+
 		private void LayoutChanged (object sender, TextViewLayoutChangedEventArgs e)
 		{
 			if (e.OldViewState.ViewportLeft != e.NewViewState.ViewportLeft ||
@@ -190,19 +217,11 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				DestroyWindow ();
 		}
 
-		private void LeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
-		{
-			if(args.Event.Detail != Gdk.NotifyType.Nonlinear)
-				return;
-			DestroyWindow ();
-		}
-
 		void DestroyWindow ()
 		{
 			Runtime.AssertMainThread ();
 			if (window != null) {
-				window.Destroy ();
-				window.LeaveNotifyEvent -= LeaveNotifyEvent;
+				window.Close ();
 				window = null;
 			}
 			if (lastView != null) {
