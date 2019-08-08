@@ -340,7 +340,7 @@ namespace MonoDevelop.Debugger.Soft
 						TimeBetweenConnectionAttempts = 800,
 						MaxConnectionAttempts = -1,
 					};
-				};
+				}
 				
 				var dsi = new SoftDebuggerStartInfo (startArgs) {
 					Command = StringParserService.Parse (command),
