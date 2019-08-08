@@ -1437,6 +1437,7 @@ namespace MonoDevelop.VersionControl.Git
 						LoggingService.LogError ("Cloning submodules failed", e);
 						Directory.Delete (RootPath, true);
 						skipSubmodules = true;
+						throw e;
 					}
 				}), true);
 
