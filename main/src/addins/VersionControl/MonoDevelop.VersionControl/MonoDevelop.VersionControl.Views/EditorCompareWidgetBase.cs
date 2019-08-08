@@ -40,6 +40,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -68,6 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 			set {
 				leftDiff = value;
 				OnDiffChanged (EventArgs.Empty);
+				SetDiffEditorVersions ();
 			}
 		}
 		
@@ -77,9 +79,32 @@ namespace MonoDevelop.VersionControl.Views
 			set {
 				rightDiff = value;
 				OnDiffChanged (EventArgs.Empty);
+				SetDiffEditorVersions ();
 			}
 		}
-		
+
+		ITextSourceVersion [] diffVersions;
+
+		void SetDiffEditorVersions ()
+		{
+			if (diffVersions == null) // editors.Length never changes
+				diffVersions = new ITextSourceVersion [editors.Length];
+			for (int i = 0; i < editors.Length; i++) {
+				diffVersions [i] = editors [i].Document.Version;
+			}
+		}
+
+		bool IsEditorDiffValid ()
+		{
+			if (diffVersions == null)
+				return false;
+			for (int i = 0; i < editors.Length; i++) {
+				if (diffVersions [i].CompareAge (editors [i].Document.Version) != 0)
+					return false;
+			}
+			return true;
+		}
+
 		internal abstract MonoTextEditor MainEditor {
 			get;
 		}
@@ -147,11 +172,15 @@ namespace MonoDevelop.VersionControl.Views
 
 			if (editors.Length == 2) {
 				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
+					if (!IsEditorDiffValid ())
+						return;
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 
 				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
+					if (!IsEditorDiffValid ())
+						return;
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 				};
@@ -160,15 +189,21 @@ namespace MonoDevelop.VersionControl.Views
 				Add (rightDiffScrollBar);
 			} else {
 				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
+					if (!IsEditorDiffValid ())
+						return;
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
+					if (!IsEditorDiffValid ())
+						return;
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 					PaintEditorOverlay (myEditor, args, RightDiff, false);
 				};
 				editors[2].Painted +=  delegate (object sender, PaintEventArgs args) {
+					if (!IsEditorDiffValid ())
+						return;
 					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, RightDiff, true);
 				};
@@ -287,7 +322,9 @@ namespace MonoDevelop.VersionControl.Views
 		
 		static List<ISegment> BreakTextInWords (MonoTextEditor editor, int start, int count)
 		{
-			return TextBreaker.BreakLinesIntoWords(editor, start, count);
+			var s = Math.Min (start, editor.LineCount);
+			var c = Math.Min (count, editor.LineCount - (s - 1));
+			return TextBreaker.BreakLinesIntoWords(editor, s, c);
 		}
 		
 		static List<Cairo.Rectangle> CalculateChunkPath (MonoTextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)

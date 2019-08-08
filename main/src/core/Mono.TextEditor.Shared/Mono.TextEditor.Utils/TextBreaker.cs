@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
@@ -74,9 +75,17 @@ namespace Mono.TextEditor.Utils
 		/// </param>
 		public static List<ISegment> BreakLinesIntoWords (TextDocument document, int startLine, int lineCount, bool includeDelimiter = true)
 		{
+			if (document is null)
+				throw new ArgumentNullException (nameof (document));
+			if (startLine < 1)
+				throw new ArgumentOutOfRangeException (nameof (startLine), "startLine >= 1, was " + startLine);
+			if (startLine - 1 + lineCount > document.LineCount) 
+				throw new ArgumentOutOfRangeException (nameof (startLine), "startLine + lineCount <= " + (document.LineCount + 1) + ", was " + startLine);
 			var result = new List<ISegment> ();
 			for (int line = startLine; line < startLine + lineCount; line++) {
 				var lineSegment = document.GetLine (line);
+				if (lineSegment == null)
+					continue;
 				int offset = lineSegment.Offset;
 				bool wasIdentifierPart = false;
 				int lastWordEnd = 0;
