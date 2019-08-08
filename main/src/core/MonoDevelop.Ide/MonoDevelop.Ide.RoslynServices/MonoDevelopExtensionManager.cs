@@ -81,6 +81,16 @@ namespace MonoDevelop.Ide.RoslynServices
 					return;
 				}
 #endif
+				// HACK: Let Roslyn's CSharpSemanticQuickInfoProvider throw as many errors as it wants without becoming
+				//       disabled. This is just a temporary workaround until we find the right fix for
+				//       https://devdiv.visualstudio.com/DevDiv/_workitems/edit/960181 .
+				//       Without this, as soon as the above bug is hit, most useful C# tooltips stop appearing until
+				//       you close/reopen the solution.
+				if (provider.GetType().FullName == "Microsoft.CodeAnalysis.CSharp.QuickInfo.CSharpSemanticQuickInfoProvider") {
+					errorLoggerService?.LogException (provider, exception);
+					return;
+				}
+
 				base.HandleException (provider, exception);
 			}
 		}
