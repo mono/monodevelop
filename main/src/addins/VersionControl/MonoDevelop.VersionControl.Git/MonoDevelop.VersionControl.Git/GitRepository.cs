@@ -668,7 +668,7 @@ namespace MonoDevelop.VersionControl.Git
 					};
 					return rev;
 				}).Cast<Revision> ().ToArray();
-				}, cancellationToken: cancellationToken);
+			}, cancellationToken: cancellationToken);
 		}
 
 		protected override Task<RevisionPath []> OnGetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken = default)
