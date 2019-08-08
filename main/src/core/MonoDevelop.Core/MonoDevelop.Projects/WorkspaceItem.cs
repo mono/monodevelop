@@ -197,35 +197,25 @@ namespace MonoDevelop.Projects
 				yield return FileName;
 		}
 
-		HashSet<FilePath> rootDirectories;
+		internal event EventHandler<RootDirectoriesChangedEventArgs> RootDirectoriesChanged;
 
-		/// <summary>
-		/// Returns the root directories associated that should be watched by the file watcher.
-		/// </summary>
-		internal HashSet<FilePath> GetRootDirectories ()
+		internal class RootDirectoriesChangedEventArgs : EventArgs
 		{
-			if (rootDirectories != null)
-				return rootDirectories;
+			public IWorkspaceFileObject SourceItem { get; }
+			public bool IsRemove { get; }
+			public bool IsAdd { get; }
 
-			var directories = new HashSet<FilePath> ();
-			foreach (FilePath file in GetItemFiles (true)) {
-				var parentDirectory = file.ParentDirectory;
-				if (parentDirectory.IsNullOrEmpty)
-					continue;
-				if (!directories.Any (directory => file.IsChildPathOf (directory)))
-					directories.Add (parentDirectory);
+			public RootDirectoriesChangedEventArgs (IWorkspaceFileObject sourceItem, bool isRemove, bool isAdd)
+			{
+				SourceItem = sourceItem;
+				IsRemove = isRemove;
+				IsAdd = isAdd;
 			}
-
-			rootDirectories = directories;
-			return directories;
 		}
 
-		internal event EventHandler RootDirectoriesChanged;
-
-		internal void OnRootDirectoriesChanged ()
+		internal void OnRootDirectoriesChanged (IWorkspaceFileObject sourceItem, bool isRemove, bool isAdd)
 		{
-			rootDirectories = null;
-			RootDirectoriesChanged?.Invoke (this, EventArgs.Empty);
+			RootDirectoriesChanged?.Invoke (this, new RootDirectoriesChangedEventArgs (sourceItem, isRemove, isAdd));
 		}
 
 		[ThreadSafe]

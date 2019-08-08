@@ -49,6 +49,7 @@ using MonoDevelop.Core.Collections;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.ObjectPool;
+using System.Diagnostics;
 
 namespace MonoDevelop.Projects
 {
@@ -2545,7 +2546,7 @@ namespace MonoDevelop.Projects
 			}
 			NotifyModified ("Files");
 			OnFileRemovedFromProject (args);
-			ParentSolution?.OnRootDirectoriesChanged ();
+			ParentSolution?.OnRootDirectoriesChanged (this, isRemove: false, isAdd: false);
 		}
 
 		void NotifyFileAddedToProject (IEnumerable<ProjectFile> objs)
@@ -2564,7 +2565,7 @@ namespace MonoDevelop.Projects
 			OnFileAddedToProject (args);
 
 			if (!Loading)
-				ParentSolution?.OnRootDirectoriesChanged ();
+				ParentSolution?.OnRootDirectoriesChanged (this, isRemove: false, isAdd: false);
 		}
 
 		internal void UpdateDependency (ProjectFile file, FilePath oldPath)
@@ -4482,42 +4483,25 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		bool eventsEnabled;
 		void CreateFileWatcher ()
 		{
 			DisposeFileWatcher ();
 
-			if (!Directory.Exists (BaseDirectory))
-				return;
-
-			// Use FileService.AsyncEvents for file created event since this does not run on the UI thread. This
-			// avoids blocking the UI thread when many files are created.
-			FileService.AsyncEvents.FileCreated += OnFileCreated;
-			// Use FileService.AsyncEvents for file deleted events to be consistent. Without this a deletion event
-			// would not update the Solution window until the IDE gets focus again.
-			FileService.AsyncEvents.FileRemoved += OnFileDeleted;
-			// Use FileService.AsyncEvents for file renamed events since generating the FileService.FileRenamed event
-			// would result in non SDK style projects renaming files in the project if changed externally.
-			FileService.AsyncEvents.FileRenamed += OnFileRenamed;
+			eventsEnabled = Directory.Exists (BaseDirectory);
 		}
 
 		void DisposeFileWatcher ()
 		{
-			FileService.AsyncEvents.FileCreated -= OnFileCreated;
-			FileService.AsyncEvents.FileRemoved -= OnFileDeleted;
-			FileService.AsyncEvents.FileRenamed -= OnFileRenamed;
+			eventsEnabled = false;
 		}
 
-		void OnFileRenamed (object sender, FileCopyEventArgs e)
+		internal virtual void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
 		{
-			foreach (FileEventInfo info in e) {
-				OnFileRenamed (info.SourceFile, info.TargetFile);
-			}
-		}
-
-		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
-		{
-			if (Runtime.IsMainThread)
+			if (!eventsEnabled)
 				return;
+
+			Debug.Assert (!Runtime.IsMainThread);
 
 			try {
 				if (Directory.Exists (targetFile)) {
@@ -4537,20 +4521,12 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		void OnFileCreated (object sender, FileEventArgs e)
+		internal virtual void OnFileCreated (FilePath filePath)
 		{
-			if (Runtime.IsMainThread)
+			if (!eventsEnabled)
 				return;
 
-			foreach (FileEventInfo info in e) {
-				OnFileCreated (info.FileName);
-			}
-		}
-
-		void OnFileCreated (FilePath filePath)
-		{
-			if (Runtime.IsMainThread)
-				return;
+			Debug.Assert (!Runtime.IsMainThread);
 
 			try {
 				if (Directory.Exists (filePath))
@@ -4574,35 +4550,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		static readonly ObjectPool<List<FilePath>> filePathListPool = ObjectPool.Create (new PooledListPolicy<FilePath> ());
-
-		void OnFileDeleted (object sender, FileEventArgs e)
+		internal virtual void OnFileDeleted (FilePath filePath)
 		{
-			if (Runtime.IsMainThread)
+			if (!eventsEnabled)
 				return;
 
-			List<FilePath> paths = null;
-			foreach (var file in e) {
-				var path = file.FileName;
-				bool exists = File.Exists (path) || Directory.Exists (path);
-
-				if (!exists) {
-					paths ??= filePathListPool.Get ();
-					paths.Add (path);
-				}
-			}
-
-			if (paths == null)
-				return;
+			Debug.Assert (!Runtime.IsMainThread);
 
 			Runtime.RunInMainThread (() => {
-				try {
-					foreach (var path in paths) {
-						OnFileDeletedExternally (path);
-					}
-				} finally {
-					filePathListPool.Return (paths);
-				}
+				OnFileDeletedExternally (filePath);
 			});
 		}
 
