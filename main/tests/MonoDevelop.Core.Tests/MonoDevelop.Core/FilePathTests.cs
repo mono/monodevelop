@@ -108,6 +108,10 @@ namespace MonoDevelop.Core
 			child = parent.Combine ("child");
 			Assert.IsTrue (child.IsChildPathOf (parent));
 
+			// Alternative trailing directory char.
+			parent = FilePath.Build ("base" + Path.AltDirectorySeparatorChar);
+			Assert.IsTrue (child.IsChildPathOf (parent));
+
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=48212
 			Assert.IsFalse (child.IsChildPathOf (child));
 		}
