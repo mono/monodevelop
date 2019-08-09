@@ -43,6 +43,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.ObjectPool;
+using System.Runtime.CompilerServices;
+using System.Collections;
 
 namespace MonoDevelop.Core
 {
@@ -69,6 +71,8 @@ namespace MonoDevelop.Core
 		static FileServiceErrorHandler errorHandler;
 
 		static readonly EventQueue eventQueue = new FileServiceEventQueue ();
+
+		static HashSet<FilePath> lockedDirectories;
 
 		static readonly string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
 		public static string ApplicationRootPath {
@@ -111,6 +115,19 @@ namespace MonoDevelop.Core
 				} else {
 					fileSystemChain = defaultExtension;
 				}
+			}
+		}
+
+		
+		static FileService ()
+		{
+			lockedDirectories = new HashSet<FilePath> ();
+			lockedDirectories.Add ("/");
+			foreach (var value in Enum.GetValues (typeof (Environment.SpecialFolder))) {
+				var path = Environment.GetFolderPath ((Environment.SpecialFolder)value);
+				if (string.IsNullOrEmpty (path))
+					continue;
+				lockedDirectories.Add (path);
 			}
 		}
 
@@ -160,6 +177,7 @@ namespace MonoDevelop.Core
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
 			try {
+				AssertCanDeleteDirectory (path);
 				GetFileSystemForPath (path, true).DeleteDirectory (path);
 			} catch (Exception e) {
 				if (!HandleError (GettextCatalog.GetString ("Can't remove directory {0}", path), e))
@@ -167,6 +185,31 @@ namespace MonoDevelop.Core
 				return;
 			}
 			OnFileRemoved (new FileEventArgs (path, true));
+		}
+
+		/// <summary>
+		/// Checks if a directory can be safely deleted. It checks if the directory is not a system relevant directory.
+		/// </summary>
+		/// <param name="path">The path to be checked.</param>
+		/// <param name="requiredParentDirectory">optional parameter that specifies a required parent of the path.</param>
+		/// <exception cref="InvalidOperationException">Is thrown when the directory can't be safely deleted.</exception>
+		public static void AssertCanDeleteDirectory (FilePath path, string requiredParentDirectory = null)
+		{
+			if (lockedDirectories.Contains (path.FullPath)) {
+				throw new InvalidOperationException ("Can't delete directory " + path + ".");
+			}
+			if (requiredParentDirectory != null) {
+				var cur = path;
+				FilePath parent = requiredParentDirectory;
+				while (true) {
+					if (cur.IsEmpty) {
+						throw new InvalidOperationException (path + " needs to be child of " + requiredParentDirectory);
+					}
+					if (cur == parent)
+						return;
+					cur = cur.ParentDirectory;
+				}
+			}
 		}
 
 		public static void RenameFile (string oldName, string newName)
