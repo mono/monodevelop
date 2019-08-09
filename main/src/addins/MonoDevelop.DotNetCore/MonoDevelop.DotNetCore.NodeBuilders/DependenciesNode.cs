@@ -50,10 +50,12 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			Project = project;
 			this.updatedPackagesInWorkspace = updatedPackagesInWorkspace;
 			PackageDependencyCache = new PackageDependencyNodeCache (Project);
+			FrameworkReferencesCache = new FrameworkReferenceNodeCache (Project);
 		}
 
 		internal DotNetProject Project { get; private set; }
 		internal PackageDependencyNodeCache PackageDependencyCache { get; private set; }
+		internal FrameworkReferenceNodeCache FrameworkReferencesCache { get; private set; }
 
 		public bool LoadedDependencies {
 			get { return PackageDependencyCache.LoadedDependencies; }
@@ -115,22 +117,39 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		internal IEnumerable<object> GetChildNodes (TargetFrameworkNode frameworkNode)
 		{
+			bool addedFrameworkReferencesNode = false;
 			if (frameworkNode != null) {
+				var frameworkReferencesNode = new FrameworkReferencesNode (this);
+				if (frameworkReferencesNode.HasChildNodes ()) {
+					addedFrameworkReferencesNode = true;
+					yield return frameworkReferencesNode;
+				}
+
 				var packagesNode = new PackageDependenciesNode (frameworkNode);
 				if (packagesNode.HasChildNodes ())
 					yield return packagesNode;
 
-				var sdkNode = new SdkDependenciesNode (frameworkNode);
-				if (sdkNode.HasChildNodes ())
-					yield return sdkNode;
+				if (!addedFrameworkReferencesNode) {
+					var sdkNode = new SdkDependenciesNode (frameworkNode);
+					if (sdkNode.HasChildNodes ())
+						yield return sdkNode;
+				}
 			} else {
+				var frameworkReferencesNode = new FrameworkReferencesNode (this);
+				if (frameworkReferencesNode.HasChildNodes ()) {
+					addedFrameworkReferencesNode = true;
+					yield return frameworkReferencesNode;
+				}
+
 				var packagesNode = new PackageDependenciesNode (this);
 				if (packagesNode.HasChildNodes ())
 					yield return packagesNode;
 
-				var sdkNode = new SdkDependenciesNode (this);
-				if (sdkNode.HasChildNodes ())
-					yield return sdkNode;
+				if (!addedFrameworkReferencesNode) {
+					var sdkNode = new SdkDependenciesNode (this);
+					if (sdkNode.HasChildNodes ())
+						yield return sdkNode;
+				}
 			}
 
 			var assembliesNode = new AssemblyDependenciesNode (Project);

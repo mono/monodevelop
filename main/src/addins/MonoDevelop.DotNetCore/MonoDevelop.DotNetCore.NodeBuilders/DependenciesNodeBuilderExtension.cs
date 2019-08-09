@@ -85,6 +85,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			var folderNode = new DependenciesNode (project);
 			treeBuilder.AddChild (folderNode);
 			folderNode.PackageDependencyCache.Refresh ();
+			folderNode.FrameworkReferencesCache.Refresh ();
 		}
 
 		void RefreshAllChildNodes (bool packages = false)
@@ -105,6 +106,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 					if (packages) {
 						var dependenciesNode = (DependenciesNode)builder.DataItem;
 						dependenciesNode.PackageDependencyCache.Refresh ();
+						dependenciesNode.FrameworkReferencesCache.Refresh ();
 					} else {
 						builder.UpdateAll ();
 					}
