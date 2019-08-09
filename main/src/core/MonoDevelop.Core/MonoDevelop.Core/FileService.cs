@@ -122,12 +122,11 @@ namespace MonoDevelop.Core
 		static FileService ()
 		{
 			lockedDirectories = new HashSet<FilePath> ();
-			lockedDirectories.Add ("/");
 			foreach (var value in Enum.GetValues (typeof (Environment.SpecialFolder))) {
-				var path = Environment.GetFolderPath ((Environment.SpecialFolder)value);
+				var path = (FilePath)Environment.GetFolderPath ((Environment.SpecialFolder)value);
 				if (string.IsNullOrEmpty (path))
 					continue;
-				lockedDirectories.Add (path);
+				lockedDirectories.Add (path.CanonicalPath);
 			}
 		}
 
@@ -195,20 +194,20 @@ namespace MonoDevelop.Core
 		/// <exception cref="InvalidOperationException">Is thrown when the directory can't be safely deleted.</exception>
 		public static void AssertCanDeleteDirectory (FilePath path, string requiredParentDirectory = null)
 		{
-			if (lockedDirectories.Contains (path.FullPath)) {
+			path = path.FullPath.CanonicalPath;
+			if (lockedDirectories.Contains (path)) {
 				throw new InvalidOperationException ("Can't delete directory " + path + ".");
 			}
+
+			foreach (var drive in Directory.GetLogicalDrives ()) {
+				if (path.Equals (((FilePath)drive).FullPath.CanonicalPath))
+					throw new InvalidOperationException ("Can't delete logical drive " + path + ".");
+			}
+
 			if (requiredParentDirectory != null) {
-				var cur = path;
-				FilePath parent = requiredParentDirectory;
-				while (true) {
-					if (cur.IsEmpty) {
-						throw new InvalidOperationException (path + " needs to be child of " + requiredParentDirectory);
-					}
-					if (cur == parent)
-						return;
-					cur = cur.ParentDirectory;
-				}
+				var parent = ((FilePath)requiredParentDirectory).FullPath.CanonicalPath;
+				if (!parent.IsChildPathOf (path))
+					throw new InvalidOperationException (path + " needs to be child of " + requiredParentDirectory);
 			}
 		}
 
