@@ -1505,13 +1505,21 @@ namespace MonoDevelop.Debugger
 		{
 			var doc = IdeApp.Workbench.GetDocument (document.FilePath);
 			IBreakpointSpanResolver resolver = null;
+			ITextBuffer buffer;
 
-			if (doc != null)
+			if (doc != null) {
 				resolver = doc.GetContent<IBreakpointSpanResolver> ();
+				buffer = doc.TextBuffer;
+			} else {
+				buffer = document.TextBuffer;
+			}
+
+			if (buffer == null)
+				return Task.FromResult (default (Span));
 
 			resolver = resolver ?? new DefaultBreakpointSpanResolver ();
 
-			return resolver.GetBreakpointSpanAsync (document.TextBuffer, position, cancellationToken);
+			return resolver.GetBreakpointSpanAsync (buffer, position, cancellationToken);
 		}
 	}
 
