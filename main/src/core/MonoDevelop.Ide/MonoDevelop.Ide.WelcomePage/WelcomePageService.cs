@@ -116,13 +116,15 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static async void HideWelcomePageOrWindow ()
 		{
-			if (WelcomeWindowProvider != null) {
-				await Runtime.RunInMainThread (WelcomeWindowProvider.HideWindow);
-				WelcomeWindowHidden?.Invoke (WelcomeWindow, EventArgs.Empty);
-			} else {
-				await Runtime.RunInMainThread (() => HideWelcomePage (true));
-			}
-			visible = false;
+			await Runtime.RunInMainThread (async () => {
+				if (WelcomeWindowProvider != null) {
+					await WelcomeWindowProvider.HideWindow ();
+					visible = false;
+					WelcomeWindowHidden?.Invoke (WelcomeWindow, EventArgs.Empty);
+				} else {
+					HideWelcomePage (true);
+				}
+			});
 		}
 
 		public static void ShowWelcomePage (bool animate = false)
@@ -166,10 +168,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				return false;
 			}
 
-			await Runtime.RunInMainThread (() => WelcomeWindowProvider.ShowWindow (options));
-			visible = true;
-
-			WelcomeWindowShown?.Invoke (WelcomeWindow, EventArgs.Empty);
+			await Runtime.RunInMainThread (async () => {
+				await WelcomeWindowProvider.ShowWindow (options);
+				visible = true;
+				WelcomeWindowShown?.Invoke (WelcomeWindow, EventArgs.Empty);
+			});
 
 			return true;
 		}
