@@ -700,14 +700,14 @@ namespace MonoDevelop.Debugger
 		#region Evaluation watches
 		/// <summary>
 		/// Registers the ValueChanged event for a node where IsEvaluating is true. If the node is not evaluating, and
-		/// sendImmediatelyIfNotEvaulating is true, then fire OnEvaluatingNodeValueChanged immediately 
+		/// sendImmediatelyIfNotEvaluating is true, then fire OnEvaluatingNodeValueChanged immediately 
 		/// </summary>
-		void RegisterForEvaluationCompletion (ObjectValueNode node, bool sendImmediatelyIfNotEvaulating = false)
+		void RegisterForEvaluationCompletion (ObjectValueNode node, bool sendImmediatelyIfNotEvaluating = false)
 		{
 			if (node.IsEvaluating) {
 				evaluationWatches[node] = null;
 				node.ValueChanged += OnEvaluatingNodeValueChanged;
-			} else if (sendImmediatelyIfNotEvaulating) {
+			} else if (sendImmediatelyIfNotEvaluating) {
 				OnEvaluatingNodeValueChanged (node, EventArgs.Empty);
 			}
 		}

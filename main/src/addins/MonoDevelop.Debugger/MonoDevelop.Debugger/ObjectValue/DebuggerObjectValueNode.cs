@@ -121,20 +121,27 @@ namespace MonoDevelop.Debugger
 		}
 		#endregion
 
-		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IList<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
-			var childValues = await GetChildrenAsync (DebuggerObject, cancellationToken);
+			var children = await GetChildrenAsync (DebuggerObject, cancellationToken);
+			var nodes = new ObjectValueNode[children.Length];
 
-			return childValues.Select (x => new DebuggerObjectValueNode (x));
+			for (int i = 0; i < children.Length; i++)
+				nodes[i] = new DebuggerObjectValueNode (children[i]);
+
+			return nodes;
 		}
 
-		protected override async Task<Tuple<IEnumerable<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		protected override async Task<Tuple<IList<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
 		{
-			var values = await GetChildrenAsync (DebuggerObject, index, count, cancellationToken);
-			var nodes = values.Select (value => new DebuggerObjectValueNode (value));
+			var children = await GetChildrenAsync (DebuggerObject, index, count, cancellationToken);
+			var nodes = new ObjectValueNode[children.Length];
+
+			for (int i = 0; i < children.Length; i++)
+				nodes[i] = new DebuggerObjectValueNode (children[i]);
 
 			// if we returned less that we asked for, we assume we've now loaded all children
-			return Tuple.Create<IEnumerable<ObjectValueNode>, bool> (nodes, values.Length < count);
+			return Tuple.Create<IList<ObjectValueNode>, bool> (nodes, children.Length < count);
 		}
 
 		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value, CancellationToken cancellationToken)

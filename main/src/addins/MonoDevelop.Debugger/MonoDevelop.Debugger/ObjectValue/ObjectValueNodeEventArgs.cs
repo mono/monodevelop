@@ -59,25 +59,6 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public sealed class ObjectValueDisplayEventArgs : ObjectValueNodeEventArgs
-	{
-		public ObjectValueDisplayEventArgs (ObjectValueNode node) : base (node)
-		{
-		}
-
-		public string DisplayValue {
-			get; private set;
-		}
-
-		public bool HasVisualisers {
-			get; set;
-		}
-
-		public bool HasChangedSinceLastCheckpoint {
-			get; set;
-		}
-	}
-
 	public sealed class ObjectValueExpressionEventArgs : ObjectValueNodeEventArgs
 	{
 		public ObjectValueExpressionEventArgs (ObjectValueNode node, string expression) : base(node)

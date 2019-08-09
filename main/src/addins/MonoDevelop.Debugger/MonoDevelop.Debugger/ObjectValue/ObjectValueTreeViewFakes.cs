@@ -109,7 +109,7 @@ namespace MonoDevelop.Debugger
 
 		public override bool HasChildren => true;
 
-		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IList<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);
@@ -135,27 +135,29 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => true;
 		public override bool IsEnumerable => true;
 
-		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IList<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			await Task.Delay (1000);
-			var result = new List<ObjectValueNode> ();
+
+			var nodes = new ObjectValueNode[maxItems];
 			for (int i = 0; i < maxItems; i++) {
-				result.Add (new FakeIndexedObjectValueNode (i));
+				nodes[i] = new FakeIndexedObjectValueNode (i);
 			}
 
-			return result;
+			return nodes;
 		}
 
-		protected override async Task<Tuple<IEnumerable<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		protected override async Task<Tuple<IList<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
 		{
 			await Task.Delay (1000);
+
 			var max = Math.Min (maxItems, index+count);
 			var result = new List<ObjectValueNode> ();
 			for (int i = index; i < max; i++) {
 				result.Add (new FakeIndexedObjectValueNode (i));
 			}
 
-			return Tuple.Create<IEnumerable<ObjectValueNode>, bool> (result, result.Count < count);
+			return Tuple.Create<IList<ObjectValueNode>, bool> (result, result.Count < count);
 		}
 	}
 
@@ -179,7 +181,7 @@ namespace MonoDevelop.Debugger
 		public override bool HasChildren => hasChildren;
 		public override bool IsEvaluating => isEvaluating;
 
-		protected override async Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected override async Task<IList<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
 			// TODO: do some sleeping...
 			await Task.Delay (1000);

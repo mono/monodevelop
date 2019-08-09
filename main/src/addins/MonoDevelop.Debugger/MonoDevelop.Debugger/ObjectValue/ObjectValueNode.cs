@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger
 				AddChildren (loadedChildren);
 				ChildrenLoaded = true;
 
-				return loadedChildren.Count ();
+				return loadedChildren.Count;
 			}
 
 			return 0;
@@ -187,7 +187,7 @@ namespace MonoDevelop.Debugger
 				AddChildren (loadedChildren.Item1);
 				ChildrenLoaded = loadedChildren.Item2;
 
-				return loadedChildren.Item1.Count ();
+				return loadedChildren.Item1.Count;
 			}
 
 			return 0;
@@ -236,17 +236,17 @@ namespace MonoDevelop.Debugger
 			ChildrenLoaded = false;
 		}
 
-		protected virtual Task<IEnumerable<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
+		protected virtual Task<IList<ObjectValueNode>> OnLoadChildrenAsync (CancellationToken cancellationToken)
 		{
-			return Task.FromResult (Enumerable.Empty<ObjectValueNode> ());
+			return Task.FromResult ((IList<ObjectValueNode>) new ObjectValueNode[0]);
 		}
 
 		/// <summary>
 		/// Returns the children that were loaded and a bool indicating whether all children have now been loaded
 		/// </summary>
-		protected virtual Task<Tuple<IEnumerable<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
+		protected virtual Task<Tuple<IList<ObjectValueNode>, bool>> OnLoadChildrenAsync (int index, int count, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (Tuple.Create (Enumerable.Empty<ObjectValueNode> (), true));
+			return Task.FromResult (Tuple.Create ((IList<ObjectValueNode>) new ObjectValueNode[0], true));
 		}
 
 		protected void OnValueChanged (EventArgs e)
