@@ -87,10 +87,14 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyInfo.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliWatch.cs" />
     <Compile Include="DotNetCoreDownloadUrl.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\FrameworkReference.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodePropertyProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodeDescriptor.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Commands\DependenciesNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferenceNodeCache.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferenceNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferencesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferencesNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
@@ -213,6 +217,7 @@
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+    <InternalsVisibleTo Include="MonoDevelop.AzureFunctions" />
   </ItemGroup>
   <ItemGroup>
     <DownloadNupkg Include="Microsoft.DotNet.Common.ProjectTemplates.1.x" Version="$(TemplatesVersion1x)" ExtensionDir="Templates" />

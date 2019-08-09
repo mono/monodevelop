@@ -1207,6 +1207,76 @@ namespace MonoDevelop.Projects
 			return packageDependencies;
 		}
 
+		public Task<IEnumerable<FrameworkReference>> GetFrameworkReferences (ConfigurationSelector configuration, CancellationToken cancellationToken)
+		{
+			return BindTask<IEnumerable<FrameworkReference>> (async ct => {
+				using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, cancellationToken)) {
+					return await OnGetFrameworkReferences (configuration, tokenSource.Token);
+				}
+			});
+		}
+
+		async Task<List<FrameworkReference>> OnGetFrameworkReferences (ConfigurationSelector configuration, CancellationToken cancellationToken)
+		{
+			var result = new List<FrameworkReference> ();
+			if (MSBuildProject.UseMSBuildEngine) {
+				return await RunResolveFrameworkReferencesTarget (configuration, cancellationToken);
+			} else
+				return new List<FrameworkReference> ();
+		}
+
+		ImmutableDictionary<string, List<FrameworkReference>> frameworkReferencesCache = ImmutableDictionary<string, List<FrameworkReference>>.Empty;
+		AsyncCriticalSection frameworkReferencesCacheLock = new AsyncCriticalSection ();
+		bool frameworkReferencesNeedRefresh;
+
+		async Task<List<FrameworkReference>> RunResolveFrameworkReferencesTarget (ConfigurationSelector configuration, CancellationToken cancellationToken)
+		{
+			List<FrameworkReference> references = null;
+			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
+
+			// Check the cache before entering the lock, which may be slow
+			if (!frameworkReferencesNeedRefresh && frameworkReferencesCache.TryGetValue (confId, out references))
+				return references;
+
+			using (await frameworkReferencesCacheLock.EnterAsync ().ConfigureAwait (false)) {
+
+				if (frameworkReferencesNeedRefresh) {
+					// Refresh requested. Clear the whole cache.
+					frameworkReferencesCache = ImmutableDictionary<string, List<FrameworkReference>>.Empty;
+					frameworkReferencesNeedRefresh = false;
+				}
+
+				// Check the cache before starting the task
+				if (frameworkReferencesCache.TryGetValue (confId, out references))
+					return references;
+
+				var monitor = new ProgressMonitor ().WithCancellationToken (cancellationToken);
+
+				var context = new TargetEvaluationContext ();
+				context.ItemsToEvaluate.Add ("ResolvedFrameworkReference");
+				context.BuilderQueue = BuilderQueue.ShortOperations;
+				context.LoadReferencedProjects = false;
+				context.LogVerbosity = MSBuildVerbosity.Quiet;
+
+				var result = await RunTargetInternal (monitor, "ResolveFrameworkReferences", configuration, context);
+
+				if (result == null)
+					return new List<FrameworkReference> ();
+
+				if (monitor.CancellationToken.IsCancellationRequested && !result.Items.Any ()) {
+					// Avoid caching 0 items which can happen if a cancellation occurs.
+					return new List<FrameworkReference> ();
+				}
+
+				references = result.Items.Select (i => new FrameworkReference (i.Include, i.Metadata)).Where (reference => reference != null).ToList ();
+
+				frameworkReferencesCache = frameworkReferencesCache.SetItem (confId, references);
+			}
+
+			return references;
+		}
+
+
 		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 		{
 			if (ParentSolution == null) {
@@ -1228,6 +1298,7 @@ namespace MonoDevelop.Projects
 			// Clean the reference and package cache
 			referenceCacheNeedsRefresh = true;
 			packageDependenciesNeedRefresh = true;
+			frameworkReferencesNeedRefresh = true;
 
 			lock (frameworkSpecificConfigurationsLock)
 				frameworkSpecificConfigurations.Clear ();

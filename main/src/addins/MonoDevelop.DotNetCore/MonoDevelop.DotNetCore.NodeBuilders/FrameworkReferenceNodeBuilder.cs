@@ -1,5 +1,5 @@
-//
-// FrameworkReference.cs
+﻿//
+// FrameworkReferenceNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,17 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects;
+using System;
+using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	/// <summary>
-	/// FrameworkReference is a set of known framework assemblies that are versioned
-	/// with the project's TargetFramework. Introduced with .NET Core 3.0
-	/// https://github.com/dotnet/designs/pull/50
-	/// </summary>
-	[ExportProjectItemType ("FrameworkReference")]
-	class FrameworkReference : ProjectItem
+	class FrameworkReferenceNodeBuilder : TypeNodeBuilder
 	{
+		public override Type NodeDataType {
+			get { return typeof(FrameworkReferenceNode); }
+		}
+
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		{
+			var node = (FrameworkReferenceNode)dataObject;
+			return node.Name;
+		}
+
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
+		{
+			var node = (FrameworkReferenceNode)dataObject;
+			nodeInfo.Label = node.GetLabel ();
+			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
+			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
+		}
 	}
 }

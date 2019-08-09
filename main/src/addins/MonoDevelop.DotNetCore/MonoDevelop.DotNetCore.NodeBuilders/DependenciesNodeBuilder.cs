@@ -80,12 +80,14 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			var dependenciesNode = (DependenciesNode)dataObject;
 			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += OnPackageDependenciesChanged;
+			dependenciesNode.FrameworkReferencesCache.FrameworkReferencesChanged += OnFrameworkReferencesChanged;
 		}
 
 		public override void OnNodeRemoved (object dataObject)
 		{
 			var dependenciesNode = (DependenciesNode)dataObject;
 			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged -= OnPackageDependenciesChanged;
+			dependenciesNode.FrameworkReferencesCache.FrameworkReferencesChanged -= OnFrameworkReferencesChanged;
 		}
 
 		void OnPackageDependenciesChanged (object sender, EventArgs e)
@@ -96,6 +98,25 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				return;
 
 			if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
+				builder.UpdateAll ();
+			}
+		}
+
+		void OnFrameworkReferencesChanged (object sender, EventArgs e)
+		{
+			var cache = (FrameworkReferenceNodeCache)sender;
+			ITreeBuilder builder = Context.GetTreeBuilder (cache.Project);
+			if (builder == null)
+				return;
+
+			if (!builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
+				builder.UpdateAll ();
+				return;
+			}
+
+			if (builder.MoveToChild (FrameworkReferencesNode.NodeName, typeof (FrameworkReferencesNode))) {
+				builder.UpdateAll ();
+			} else {
 				builder.UpdateAll ();
 			}
 		}
