@@ -194,13 +194,16 @@ namespace MonoDevelop.Projects
 		public void CantDeleteSystemFolders ()
 		{
 			FileService.AssertCanDeleteDirectory (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData));
+			FileService.AssertCanDeleteDirectory (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments));
+			FileService.AssertCanDeleteDirectory (Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 		}
 
 		[Test]
 		[ExpectedException (typeof (InvalidOperationException))]
-		public void CantDeleteLogicalDrive ()
+		public void CantDeleteRoot ()
 		{
-			FileService.AssertCanDeleteDirectory (Directory.GetLogicalDrives () [0]);
+			string root = Platform.IsWindows ? "C:" : "/";
+			FileService.AssertCanDeleteDirectory (root);
 		}
 	}
 }
