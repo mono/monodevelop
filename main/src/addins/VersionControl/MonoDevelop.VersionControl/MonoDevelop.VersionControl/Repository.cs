@@ -782,9 +782,13 @@ namespace MonoDevelop.VersionControl
 					LoggingService.LogError ("Failed to delete directory", e);
 					metadata.SetFailure ();
 					if (!keepLocal)
-						foreach (var path in localPaths) {
-							FileService.AssertCanDeleteDirectory (path, RootPath);
-							Directory.Delete (path, true);
+						try {
+							foreach (var path in localPaths) {
+								FileService.AssertCanDeleteDirectory (path, RootPath);
+								Directory.Delete (path, true);
+							}
+						} catch (Exception e2) {
+							LoggingService.LogInternalError (e2);
 						}
 				}
 			}
