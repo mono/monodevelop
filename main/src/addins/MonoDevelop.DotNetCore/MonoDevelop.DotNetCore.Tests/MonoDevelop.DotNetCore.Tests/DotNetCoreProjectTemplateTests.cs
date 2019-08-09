@@ -53,6 +53,10 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			// Set environment variable to enable VB.NET support
 			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
+
+			// Set $PATH to point to the .NET Core SDK we provision, as in VSTS bots are
+			// setup with lots of old and incompatible SDK versions under $HOME/.dotnet
+			Environment.SetEnvironmentVariable ("PATH", $"/usr/local/share/dotnet:{Environment.GetEnvironmentVariable ("PATH")}");
 		}
 
 		[Test]
@@ -198,20 +202,20 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
 		}
 
-		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
-		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore30=true")]
 
-		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
-		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore30=true")]
 
-		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
-		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore30=true")]
 
 		// NUnit3 templates come with .NET Core 2.2, but they only support .NET Core 2.1 framework
 		[TestCase ("NUnit3.DotNetNew.Template.CSharp", "UseNetCore30=true")]

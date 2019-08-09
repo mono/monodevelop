@@ -102,6 +102,7 @@ namespace IdeUnitTests
 			var process = new Process ();
 			process.StartInfo = new ProcessStartInfo ("msbuild", arguments) {
 				RedirectStandardOutput = true,
+				RedirectStandardError = true,
 				UseShellExecute = false
 			};
 			process.Start ();

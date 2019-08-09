@@ -79,6 +79,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			packageDependenciesChanged = new TaskCompletionSource<bool> ();
 
 			dependenciesNode.PackageDependencyCache.Refresh ();
+			dependenciesNode.FrameworkReferencesCache.Refresh ();
 
 			await WaitForPackageDependenciesChanged ();
 
