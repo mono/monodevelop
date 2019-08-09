@@ -25,14 +25,17 @@
 // THE SOFTWARE.
 
 using System;
+
+using Xwt;
+
 using Mono.Debugging.Client;
+
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui.Dialogs;
-using Xwt;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -66,6 +69,7 @@ namespace MonoDevelop.Debugger
 		CheckBox checkGroupStatic;
 		SpinButton spinTimeout;
 		CheckBox enableLogging;
+		CheckBox useNewTreeView;
 		Label evalLabel;
 
 		void Build ()
@@ -134,6 +138,8 @@ namespace MonoDevelop.Debugger
 			PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Advanced options") + "</b>", MarginTop=25 });
 			enableLogging = new CheckBox (GettextCatalog.GetString ("Enable diagnostic logging", BrandingService.ApplicationName));
 			PackStart (enableLogging);
+			useNewTreeView = new CheckBox (GettextCatalog.GetString ("Use the new Locals/Watch window tree view"));
+			PackStart (useNewTreeView);
 
 			SetupAccessibility ();
 		}
@@ -177,7 +183,7 @@ namespace MonoDevelop.Debugger
 			checkAllowToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
 			enableLogging.Active = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false);
-
+			useNewTreeView.Active = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
 		}
 
 		public void Store ()
@@ -198,9 +204,10 @@ namespace MonoDevelop.Debugger
 
 			DebuggingService.SetUserOptions (options);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", enableLogging.Active);
+			PropertyService.Set ("MonoDevelop.Debugger.UseNewTreeView", useNewTreeView.Active);
 		}
 
-		protected virtual void OnCheckAllowEvalToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckAllowEvalToggled (object sender, EventArgs e)
 		{
 			checkAllowToString.Sensitive = checkAllowEval.Active;
 		}

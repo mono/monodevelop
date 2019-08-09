@@ -37,18 +37,24 @@ namespace MonoDevelop.Debugger
 {
 	public class WatchPad : ObjectValuePad, IMementoCapable, ICustomXmlSerializer
 	{
+		// Note: This can be removed once we make the switch to UseNewTreeView
 		static readonly Gtk.TargetEntry[] DropTargets = {
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
-		List<string> storedVars;
+		readonly List<string> expressions = new List<string> ();
 		
 		public WatchPad ()
 		{
-			tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
-			tree.DragDataReceived += HandleDragDataReceived;
-			tree.AllowAdding = true;
+			if (UseNewTreeView) {
+				controller.AllowWatchExpressions = true;
+			} else {
+				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
+				tree.DragDataReceived += HandleDragDataReceived;
+				tree.AllowAdding = true;
+			}
 		}
 
+		// Note: This can be removed once we make the switch to UseNewTreeView
 		void HandleDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
 		{
 			var text = args.SelectionData.Text;
@@ -65,16 +71,58 @@ namespace MonoDevelop.Debugger
 				AddWatch (expr.Trim ());
 			}
 		}
-		
+
 		public void AddWatch (string expression)
 		{
-			tree.AddExpression (expression);
+			if (UseNewTreeView) {
+				controller.AddExpression (expression);
+			} else {
+				tree.AddExpression (expression);
+			}
+		}
+
+		void ReloadValues ()
+		{
+			// clone the list of expressions
+//			expressions.Clear ();
+//			expressions.AddRange (controller.GetExpressions());
+
+			// remove the expressions because we're going to rebuild them
+			controller.ClearAll ();
+
+			// re-add the expressions which will reevaluate the expressions and repopulate the treeview
+			controller.AddExpressions (expressions);
+		}
+
+		public override void OnUpdateFrame ()
+		{
+			base.OnUpdateFrame ();
+
+			if (UseNewTreeView)
+				ReloadValues ();
 		}
 
 		public override void OnUpdateValues ()
 		{
 			base.OnUpdateValues ();
-			tree.Update ();
+
+			if (UseNewTreeView) {
+				ReloadValues ();
+			} else {
+				tree.Update ();
+			}
+		}
+
+		protected override void OnDebuggerResumed (object s, EventArgs a)
+		{
+			// base will clear the controller, which removes all values and expressions
+
+			if (UseNewTreeView) {
+				expressions.Clear ();
+				expressions.AddRange (controller.GetExpressions ());
+			}
+
+			base.OnDebuggerResumed (s, a);
 		}
 
 		#region IMementoCapable implementation 
@@ -84,27 +132,42 @@ namespace MonoDevelop.Debugger
 				return this;
 			}
 			set {
-				if (tree != null) {
-					tree.ClearExpressions ();
-					if (storedVars != null)
-						tree.AddExpressions (storedVars);
+				if (UseNewTreeView) {
+					if (controller != null) {
+						controller.ClearAll ();
+						controller.AddExpressions (expressions);
+					}
+				} else {
+					if (tree != null) {
+						tree.ClearExpressions ();
+						tree.AddExpressions (expressions);
+					}
 				}
 			}
 		}
 		
 		void ICustomXmlSerializer.WriteTo (XmlWriter writer)
 		{
-			if (tree != null) {
-				writer.WriteStartElement ("Values");
-				foreach (string name in tree.Expressions)
-					writer.WriteElementString ("Value", name);
-				writer.WriteEndElement ();
+			if (UseNewTreeView) {
+				if (controller != null) {
+					writer.WriteStartElement ("Values");
+					foreach (var expression in controller.GetExpressions())
+						writer.WriteElementString ("Value", expression);
+					writer.WriteEndElement ();
+				}
+			} else {
+				if (tree != null) {
+					writer.WriteStartElement ("Values");
+					foreach (var name in tree.Expressions)
+						writer.WriteElementString ("Value", name);
+					writer.WriteEndElement ();
+				}
 			}
 		}
 		
 		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (XmlReader reader)
 		{
-			storedVars = new List<string> ();
+			expressions.Clear ();
 			
 			reader.MoveToContent ();
 			if (reader.IsEmptyElement) {
@@ -115,9 +178,10 @@ namespace MonoDevelop.Debugger
 			reader.MoveToContent ();
 			while (reader.NodeType != XmlNodeType.EndElement) {
 				if (reader.NodeType == XmlNodeType.Element) {
-					storedVars.Add (reader.ReadElementString ());
-				} else
+					expressions.Add (reader.ReadElementString ());
+				} else {
 					reader.Skip ();
+				}
 			}
 			reader.ReadEndElement ();
 			return null;

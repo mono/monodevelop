@@ -75,7 +75,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\StackTracePad.cs" />
-    <Compile Include="MonoDevelop.Debugger\ObjectValueTreeView.cs" />
     <Compile Include="MonoDevelop.Debugger\WatchPad.cs" />
     <Compile Include="MonoDevelop.Debugger\Initializer.cs" />
     <Compile Include="MonoDevelop.Debugger\DisassemblyView.cs" />
@@ -175,6 +174,22 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
     <Compile Include="MonoDevelop.Debugger\IBreakpointSpanResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DefaultBreakpointSpanResolver.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueTreeView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueTreeViewController.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueTreeViewFakes.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\DebuggerObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\RootObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\IEvaluatingGroupObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ISupportChildObjectValueNodeReplacement.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ShowMoreValuesObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\IDebuggerService.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\IStackFrame.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueDebuggerService.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueStackFrame.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueNodeEventArgs.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Gtk\GtkObjectValueTreeView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\IObjectValueTreeView.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
@@ -363,9 +378,20 @@
     <Folder Include="MonoDevelop.Debugger.VSTextView\Tags\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\QuickInfo\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\" />
+    <Folder Include="MonoDevelop.Debugger\ObjectValue\" />
+    <Folder Include="MonoDevelop.Debugger\ObjectValue\Gtk\" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="MSBuild" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

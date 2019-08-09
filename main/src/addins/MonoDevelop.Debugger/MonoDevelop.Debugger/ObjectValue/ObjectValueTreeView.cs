@@ -314,6 +314,7 @@ namespace MonoDevelop.Debugger
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
+			HeadersVisible = true;
 			EnableSearch = false;
 			AllowPopupMenu = true;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
@@ -627,7 +628,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || compact)
 				return;
-			
+
 			columnSizesUpdating = true;
 			
 			double width = (double) Allocation.Width;
@@ -684,12 +685,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 				
-		public void SaveState ()
+		void SaveState ()
 		{
 			state.Save ();
 		}
 		
-		public void LoadState ()
+		void LoadState ()
 		{
 			restoringState = true;
 			state.Load ();

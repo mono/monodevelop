@@ -26,18 +26,25 @@
 //
 
 using System;
-using Mono.Debugging.Client;
-using MonoDevelop.Components;
-using Gtk;
+
 using Gdk;
+using Gtk;
+
+using Mono.Debugging.Client;
+
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
 	class DebugValueWindow : PopoverWindow
 	{
-		public ObjectValueTreeView Tree { get; }
-		ScrolledWindow sw;
+		readonly bool useNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
+		readonly ObjectValueTreeViewController controller;
+		readonly ObjectValueTreeView objValueTreeView;
+		readonly TreeView treeView;
+		readonly ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
 		static string currentBgColor;
@@ -73,10 +80,10 @@ namespace MonoDevelop.Debugger
 
 		public DebugValueWindow (Gtk.Window transientFor, string pinnedWatchFileName, int pinnedWatchLine, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
-			this.TypeHint = WindowTypeHint.PopupMenu;
-			this.AllowShrink = false;
-			this.AllowGrow = false;
-			this.Decorated = false;
+			TypeHint = WindowTypeHint.PopupMenu;
+			AllowShrink = false;
+			AllowGrow = false;
+			Decorated = false;
 
 			TransientFor = transientFor;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
@@ -87,36 +94,65 @@ namespace MonoDevelop.Debugger
 			sw.VscrollbarPolicy = PolicyType.Never;
 
 			UpdateTreeStyle (Theme.BackgroundColor);
-			Tree = new ObjectValueTreeView ();
-			Tree.Name = innerTreeName;
 
-			sw.Add (Tree);
+			if (useNewTreeView) {
+				controller = new ObjectValueTreeViewController ();
+				controller.SetStackFrame (frame);
+				controller.AllowEditing = true;
+
+				treeView = (TreeView) controller.GetControl (headersVisible: false, allowPinning: true, compactView: true, rootPinVisible: true);
+
+				controller.PinnedWatch = watch;
+				controller.PinnedWatchLine = pinnedWatchLine;
+				controller.PinnedWatchFile = pinnedWatchFileName;
+
+				if (treeView is IObjectValueTreeView ovtv) {
+					ovtv.StartEditing += OnStartEditing;
+					ovtv.EndEditing += OnEndEditing;
+					ovtv.NodePinned += OnPinStatusChanged;
+				}
+
+				controller.AddValue (value);
+			} else {
+				objValueTreeView = new ObjectValueTreeView ();
+				objValueTreeView.RootPinAlwaysVisible = true;
+				objValueTreeView.HeadersVisible = false;
+				objValueTreeView.AllowEditing = true;
+				objValueTreeView.AllowPinning = true;
+				objValueTreeView.CompactView = true;
+				objValueTreeView.PinnedWatch = watch;
+				objValueTreeView.PinnedWatchLine = pinnedWatchLine;
+				objValueTreeView.PinnedWatchFile = pinnedWatchFileName;
+				objValueTreeView.Frame = frame;
+
+				objValueTreeView.AddValue (value);
+
+				objValueTreeView.PinStatusChanged += OnPinStatusChanged;
+				objValueTreeView.StartEditing += OnStartEditing;
+				objValueTreeView.EndEditing += OnEndEditing;
+
+				treeView = objValueTreeView;
+			}
+
+			treeView.Name = innerTreeName;
+			treeView.Selection.UnselectAll ();
+			treeView.SizeAllocated += OnTreeSizeChanged;
+
+			sw.Add (treeView);
 			ContentBox.Add (sw);
-
-			Tree.Frame = frame;
-			Tree.CompactView = true;
-			Tree.AllowAdding = false;
-			Tree.AllowEditing = true;
-			Tree.HeadersVisible = false;
-			Tree.AllowPinning = true;
-			Tree.RootPinAlwaysVisible = true;
-			Tree.PinnedWatch = watch;
-			Tree.PinnedWatchLine = pinnedWatchLine;
-			Tree.PinnedWatchFile = pinnedWatchFileName;
-
-			Tree.AddValue (value);
-			Tree.Selection.UnselectAll ();
-			Tree.SizeAllocated += OnTreeSizeChanged;
-			Tree.PinStatusChanged += OnPinStatusChanged;
-
 			sw.ShowAll ();
-
-			Tree.StartEditing += OnStartEditing;
-			Tree.EndEditing += OnEndEditing;
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
 			PreviewWindowManager.WindowClosed += PreviewWindowManager_WindowClosed;
+		}
+
+		public DebuggerSession GetDebuggerSession ()
+		{
+			if (useNewTreeView)
+				return controller.GetStackFrame ()?.DebuggerSession;
+
+			return objValueTreeView.Frame?.DebuggerSession;
 		}
 
 		void OnStartEditing (object sender, EventArgs args)
@@ -136,10 +172,20 @@ namespace MonoDevelop.Debugger
 
 		protected override void OnDestroyed ()
 		{
-			Tree.StartEditing -= OnStartEditing;
-			Tree.EndEditing -= OnEndEditing;
-			Tree.PinStatusChanged -= OnPinStatusChanged;
-			Tree.SizeAllocated -= OnTreeSizeChanged;
+			if (useNewTreeView) {
+				if (treeView is IObjectValueTreeView ovtv) {
+					ovtv.StartEditing -= OnStartEditing;
+					ovtv.EndEditing -= OnEndEditing;
+					ovtv.NodePinned -= OnPinStatusChanged;
+				}
+			} else {
+				objValueTreeView.PinStatusChanged -= OnPinStatusChanged;
+				objValueTreeView.StartEditing -= OnStartEditing;
+				objValueTreeView.EndEditing -= OnEndEditing;
+			}
+
+			treeView.SizeAllocated -= OnTreeSizeChanged;
+
 			PreviewWindowManager.WindowClosed -= PreviewWindowManager_WindowClosed;
 
 			base.OnDestroyed ();
