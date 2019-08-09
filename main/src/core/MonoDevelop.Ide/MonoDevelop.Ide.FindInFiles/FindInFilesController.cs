@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 					if (message != null)
 						searchMonitor.ReportStatus (message);
-					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
+					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds.", (DateTime.Now - timer).TotalSeconds));
 				}
 				if (UpdateStopButton != null) {
 					Application.Invoke ((o, args) => {
