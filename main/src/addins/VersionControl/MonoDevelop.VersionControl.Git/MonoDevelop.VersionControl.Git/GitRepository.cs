@@ -1609,11 +1609,16 @@ namespace MonoDevelop.VersionControl.Git
 							await RevertAsync (path, true, monitor);
 						}
 					}
-				} else {
-					// Untracked files are not deleted by the rm command, so delete them now
-					foreach (var f in localPaths)
-						if (Directory.Exists (f))
-							Directory.Delete (f, true);
+				}
+			}
+
+			if (!keepLocal) {
+				// Untracked files are not deleted by the rm command, so delete them now
+				foreach (var f in localPaths) {
+					if (Directory.Exists (f)) {
+						FileService.AssertCanDeleteDirectory (f, this.RootPath);
+						Directory.Delete (f, true);
+					}
 				}
 			}
 		}
@@ -1625,8 +1630,10 @@ namespace MonoDevelop.VersionControl.Git
 					foreach (var f in localPaths) {
 						if (File.Exists (f))
 							File.Delete (f);
-						else if (Directory.Exists (f))
+						else if (Directory.Exists (f)) {
+							FileService.AssertCanDeleteDirectory (f, RootPath);
 							Directory.Delete (f, true);
+						}
 					}
 
 				RunBlockingOperation (() => {
