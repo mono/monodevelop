@@ -127,6 +127,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static void ShowWelcomePage (bool animate = false)
 		{
+			Runtime.AssertMainThread ();
 			if (!visible) {
 				visible = true;
 				if (welcomePage == null) {
@@ -150,6 +151,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static void HideWelcomePage (bool animate = false)
 		{
+			Runtime.AssertMainThread ();
 			if (visible) {
 				visible = false;
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Show ();
