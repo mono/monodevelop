@@ -205,7 +205,7 @@ namespace MonoDevelop.Core
 		{
 			bool startsWith = fileName.StartsWith (basePath.fileName, PathComparison);
 			
-			if (startsWith && (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar ||
+			if (startsWith && (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar &&
 				basePath.fileName [basePath.fileName.Length - 1] != Path.AltDirectorySeparatorChar)) {
 				// If the last character isn't a path separator character, check whether the string we're searching in
 				// has more characters than the string we're looking for then check the character.
