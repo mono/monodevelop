@@ -192,7 +192,7 @@ namespace MonoDevelop.Core
 		/// <param name="path">The path to be checked.</param>
 		/// <param name="requiredParentDirectory">optional parameter that specifies a required parent of the path.</param>
 		/// <exception cref="InvalidOperationException">Is thrown when the directory can't be safely deleted.</exception>
-		public static void AssertCanDeleteDirectory (FilePath path, string requiredParentDirectory = null)
+		public static void AssertCanDeleteDirectory (FilePath path, string requiredParentDirectory = null, bool canDeleteParent = true)
 		{
 			path = path.FullPath.CanonicalPath;
 			if (lockedDirectories.Contains (path)) {
@@ -206,7 +206,9 @@ namespace MonoDevelop.Core
 
 			if (requiredParentDirectory != null) {
 				var parent = ((FilePath)requiredParentDirectory).FullPath.CanonicalPath;
-				if (!parent.IsChildPathOf (path))
+				if (!canDeleteParent && parent == path)
+					throw new InvalidOperationException ("Can't delete parent path" + path);
+				if (!path.IsChildPathOf (parent) && parent != path)
 					throw new InvalidOperationException (path + " needs to be child of " + requiredParentDirectory);
 			}
 		}
