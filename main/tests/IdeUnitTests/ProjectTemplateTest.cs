@@ -121,6 +121,13 @@ namespace IdeUnitTests
 				"  <packageSources>\r\n" +
 				"    <clear />\r\n" +
 				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"    <add key=\"dotnet-core\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json\" />\r\n" +
+				"    <add key=\"dotnet-windowsdesktop\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json\" />\r\n" +
+				"    <add key=\"aspnet-aspnetcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json\" />\r\n" +
+				"    <add key=\"aspnet-aspnetcore-tooling\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json\" />\r\n" +
+				"    <add key=\"aspnet-entityframeworkcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json\" />\r\n" +
+				"    <add key=\"aspnet-extensions\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json\" />\r\n" +
+				"    <add key=\"gRPCrepository\" value=\"https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev\" />\r\n" +
 				"  </packageSources>\r\n" +
 				"</configuration>";
 
