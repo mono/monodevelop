@@ -1599,6 +1599,44 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void AddNewPackageReference_ExistingItemGroupHasCondition_NewItemGroupCreated ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFrameworks>netcoreapp1.0;net472</TargetFrameworks>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup Condition=\"'$(TargetFramework)' == 'net472'\">\r\n" +
+				"    <PackageReference Include=\"Newtonsoft.Json\" Version=\"10.0.3\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			p.AddKnownItemAttribute ("PackageReference", "Version");
+
+			var item = p.AddNewItem ("PackageReference", "NUnit");
+			item.Metadata.SetValue ("Version", "2.6.4");
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFrameworks>netcoreapp1.0;net472</TargetFrameworks>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup Condition=\"'$(TargetFramework)' == 'net472'\">\r\n" +
+				"    <PackageReference Include=\"Newtonsoft.Json\" Version=\"10.0.3\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <PackageReference Include=\"NUnit\" Version=\"2.6.4\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		[Test]
 		public void ProjectHasNoMainPropertyGroup_AddRemoveProjectTypeGuid ()
 		{
 			string projectXml =
