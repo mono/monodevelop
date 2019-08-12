@@ -89,13 +89,13 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public static bool HasChildren (ProjectFile inputFile)
 		{
-			var children = GetProjectNestingInfo (inputFile.Project).GetChidlrenForFile (inputFile);
+			var children = GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 			return (children?.Count ?? 0) > 0;
 		}
 
 		public static IEnumerable<ProjectFile> GetChildren (ProjectFile inputFile)
 		{
-			return GetProjectNestingInfo (inputFile.Project).GetChidlrenForFile (inputFile);
+			return GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 		}
 	}
 
@@ -173,7 +173,7 @@ namespace MonoDevelop.Projects.FileNesting
 			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Parent : null;
 		}
 
-		public ProjectFileCollection GetChidlrenForFile (ProjectFile inputFile)
+		public ProjectFileCollection GetChildrenForFile (ProjectFile inputFile)
 		{
 			EnsureInitialized ();
 			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Children : null;
