@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects.FileNesting
 
 	sealed class ProjectNestingInfo : IDisposable
 	{
-		class ProjectFileNestingInfo
+		sealed class ProjectFileNestingInfo
 		{
 			public ProjectFile File { get; }
 			public ProjectFile Parent { get; set; }
