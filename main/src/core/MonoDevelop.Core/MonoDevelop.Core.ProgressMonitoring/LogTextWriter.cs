@@ -76,7 +76,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public override void Close ()
 		{
 			if (context != null)
-				context.Post ((o) => ((LogTextWriter)o).OnClosed (), this);
+				context.Post ((o) => {
+					if (((LogTextWriter)o).IsDisposed)
+						return;
+					((LogTextWriter)o).OnClosed ();
+				}, this);
 			else
 				OnClosed ();
 		}
@@ -89,7 +93,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public override void Write (char[] buffer, int index, int count)
 		{
 			if (context != null)
-				context.Post ((o) => ((LogTextWriter)o).OnWrite (buffer, index, count), this);
+				context.Post ((o) => {
+					if (((LogTextWriter)o).IsDisposed)
+						return;
+					((LogTextWriter)o).OnWrite (buffer, index, count);
+				}, this);
 			else
 				OnWrite (buffer, index, count);
 		}
@@ -106,7 +114,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public override void Write (char value)
 		{
 			if (context != null)
-				context.Post ((o) => ((LogTextWriter)o).OnWrite (value), this);
+				context.Post ((o) => {
+					if (((LogTextWriter)o).IsDisposed)
+						return;
+					((LogTextWriter)o).OnWrite (value);
+				}, this);
 			else
 				OnWrite (value);
 		}
@@ -123,7 +135,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public override void Write (string value)
 		{
 			if (context != null)
-				context.Post ((o) => ((LogTextWriter)o).OnWrite (value), this);
+				context.Post ((o) => {
+					if (((LogTextWriter)o).IsDisposed)
+						return;
+					((LogTextWriter)o).OnWrite (value);
+				}, this);
 			else
 				OnWrite (value);
 		}
@@ -140,12 +156,26 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public override void Flush ()
 		{
 			if (context != null)
-				context.Post ((o) => base.Flush (), null);
+				context.Post ((o) => {
+					if (IsDisposed)
+						return;
+					base.Flush ();
+				}, null);
 			else
 				base.Flush ();
 		}
 
 		public event LogTextEventHandler TextWritten;
 		public event EventHandler Closed;
+
+		public bool IsDisposed { get; private set; }
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if (disposing) {
+				IsDisposed = true;
+			}
+		}
 	}
 }

@@ -981,6 +981,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected override void OnDispose (bool disposing)
 		{
 			base.OnDispose (disposing);
+			internalLogger.TextWritten -= WriteConsoleLogText;
+
 			console.Dispose ();
 			Disposed?.Invoke (this, EventArgs.Empty);
 		}
