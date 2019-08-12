@@ -43,6 +43,24 @@ namespace MonoDevelop.DotNetCore.Tests
 	[TestFixture]
 	class DotNetCoreProjectTemplateTests : DotNetCoreTestBase
 	{
+		class DotNetCoreProjectTemplateTest : ProjectTemplateTest
+		{
+			public DotNetCoreProjectTemplateTest (string basename, string templateId) : base (basename, templateId)
+			{
+			}
+
+			protected override string GetExtraNuGetSources ()
+			{
+				return "    <add key=\"dotnet-core\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json\" />\r\n" +
+					"    <add key=\"dotnet-windowsdesktop\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json\" />\r\n" +
+					"    <add key=\"aspnet-aspnetcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json\" />\r\n" +
+					"    <add key=\"aspnet-aspnetcore-tooling\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json\" />\r\n" +
+					"    <add key=\"aspnet-entityframeworkcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json\" />\r\n" +
+					"    <add key=\"aspnet-extensions\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json\" />\r\n" +
+					"    <add key=\"gRPCrepository\" value=\"https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev\" />\r\n";
+			}
+		}
+
 		[TestFixtureSetUp]
 		public void SetUp ()
 		{
@@ -373,7 +391,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters, Action<Solution> preBuildChecks = null, bool checkExecutionTargets = false)
 		{
-			using (var ptt = new ProjectTemplateTest (basename, templateId)) {
+			using (var ptt = new DotNetCoreProjectTemplateTest (basename, templateId)) {
 
 				foreach (var templateParameter in TemplateParameter.CreateParameters (parameters)) {
 					ptt.Config.Parameters [templateParameter.Name] = templateParameter.Value;
