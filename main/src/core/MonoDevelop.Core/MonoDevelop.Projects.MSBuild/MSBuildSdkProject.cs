@@ -90,7 +90,8 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!hasDescription)
 				RemovePropertyIfHasDefaultValue (globalPropertyGroup, "Description", "Package Description");
 
-			project.DefaultTargets = null;
+			if (!project.DefaultTargetsSpecified)
+				project.DefaultTargets = null;
 
 			RemoveExtraProjectReferenceMetadata (project);
 

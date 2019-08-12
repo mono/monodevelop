@@ -3251,8 +3251,12 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnWriteProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			if (string.IsNullOrEmpty (sourceProject.DefaultTargets) && SupportsBuild ())
+			if (string.IsNullOrEmpty (sourceProject.DefaultTargets) && SupportsBuild ()) {
 				sourceProject.DefaultTargets = "Build";
+				sourceProject.DefaultTargetsSpecified = false;
+			} else {
+				sourceProject.DefaultTargetsSpecified = true;
+			}
 			
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 			if (globalGroup == null)
