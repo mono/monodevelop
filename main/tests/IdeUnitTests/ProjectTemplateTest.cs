@@ -61,7 +61,7 @@ namespace IdeUnitTests
 			this.templateId = templateId;
 
 			SolutionDirectory = Util.CreateTmpDir (basename);
-			CreateNuGetConfigFile (SolutionDirectory);
+			CreateNuGetConfigFile (this);
 			ProjectName = GetProjectName (templateId);
 
 			Config = new NewProjectConfiguration {
@@ -112,22 +112,18 @@ namespace IdeUnitTests
 			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed. Exit code: {process.ExitCode}. {standardError}");
 		}
 
-		static void CreateNuGetConfigFile (FilePath directory)
+		protected virtual string GetExtraNuGetSources () => string.Empty;
+
+		static void CreateNuGetConfigFile (ProjectTemplateTest test)
 		{
-			var fileName = directory.Combine ("NuGet.Config");
+			var fileName = test.SolutionDirectory.Combine ("NuGet.Config");
 
 			string xml =
 				"<configuration>\r\n" +
 				"  <packageSources>\r\n" +
 				"    <clear />\r\n" +
 				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
-				"    <add key=\"dotnet-core\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json\" />\r\n" +
-				"    <add key=\"dotnet-windowsdesktop\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json\" />\r\n" +
-				"    <add key=\"aspnet-aspnetcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json\" />\r\n" +
-				"    <add key=\"aspnet-aspnetcore-tooling\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json\" />\r\n" +
-				"    <add key=\"aspnet-entityframeworkcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json\" />\r\n" +
-				"    <add key=\"aspnet-extensions\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json\" />\r\n" +
-				"    <add key=\"gRPCrepository\" value=\"https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev\" />\r\n" +
+				test.GetExtraNuGetSources () +
 				"  </packageSources>\r\n" +
 				"</configuration>";
 
