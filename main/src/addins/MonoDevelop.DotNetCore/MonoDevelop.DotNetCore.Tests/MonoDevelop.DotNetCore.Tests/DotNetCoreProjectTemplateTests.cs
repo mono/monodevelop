@@ -52,7 +52,8 @@ namespace MonoDevelop.DotNetCore.Tests
 			}
 
 			// Set environment variable to enable VB.NET support
-			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
+			// Disabled for now due to .NET Core 3.0 preview 8 bug - https://github.com/dotnet/corefx/issues/40012
+			//Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
 
 			// Set $PATH to point to the .NET Core SDK we provision, as in VSTS bots are
 			// setup with lots of old and incompatible SDK versions under $HOME/.dotnet
