@@ -777,7 +777,8 @@ namespace MonoDevelop.Debugger
 
 			// We'll ignore this label because the content of the label is included in the accessibility Help text of the 
 			// entryPrintExpression widget
-			warningPrintExpression.Accessible.Role = Xwt.Accessibility.Role.Filler;
+			printMessageTip.Accessible.Role = Xwt.Accessibility.Role.Filler;
+
 			printExpressionGroup.PackStart (warningPrintExpression);
 			breakpointActionGroup.PackStart (printExpressionGroup);
 
