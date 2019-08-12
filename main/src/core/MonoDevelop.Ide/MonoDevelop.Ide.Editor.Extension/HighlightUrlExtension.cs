@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				cts = new CancellationTokenSource ();
 				src [lineOffset] = cts;
 				var token = cts.Token;
-				RunUpdateTask (input, startLine, endOffset, token);
+				RunUpdateTask (input, startLine, endOffset, Editor.Version, token);
 			}
 		}
 
@@ -100,10 +100,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			updateAllSrc.Cancel ();
 			DisposeUrlTextMarker ();
 			updateAllSrc = new CancellationTokenSource ();
-			updateAllTask = RunUpdateTask (Editor.CreateSnapshot (), Editor.GetLine (1), Editor.Length, updateAllSrc.Token);
+			updateAllTask = RunUpdateTask (Editor.CreateSnapshot (), Editor.GetLine (1), Editor.Length, Editor.Version, updateAllSrc.Token);
 		}
 
-		Task RunUpdateTask (ITextSource input, IDocumentLine startLine, int endOffset, CancellationToken token)
+		Task RunUpdateTask (ITextSource input, IDocumentLine startLine, int endOffset, ITextSourceVersion textSourceVersion, CancellationToken token)
 		{
 			return Task.Run (delegate {
 				var matches = new List<(UrlType, Match, IDocumentLine)> ();
@@ -142,6 +142,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 				Runtime.RunInMainThread (delegate {
 					if (token.IsCancellationRequested || Editor == null)
+						return;
+					if (textSourceVersion.CompareAge (Editor.Version) != 0)
 						return;
 					line = startLine;
 					while (line != null && line.Offset <= endOffset) {

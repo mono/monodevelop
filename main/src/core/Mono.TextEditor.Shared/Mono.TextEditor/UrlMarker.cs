@@ -93,44 +93,74 @@ namespace Mono.TextEditor
 		
 		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
+			if (editor is null)
+				throw new ArgumentNullException (nameof (editor));
+			if (cr is null)
+				throw new ArgumentNullException (nameof (cr));
+			if (metrics is null)
+				throw new ArgumentNullException (nameof (metrics));
+
 			var startOffset = metrics.TextStartOffset;
 			int endOffset = metrics.TextEndOffset;
 			double startXPos = metrics.TextRenderStartPosition;
 			double endXPos = metrics.TextRenderEndPosition;
 			double y = metrics.LineYRenderStartPosition;
-			var layout = metrics.Layout.Layout;
+			var layoutWrapper = metrics.Layout;
+			var layout = layoutWrapper?.Layout;
+			if (layout == null || LineSegment == null)
+				return;
 			var lineOffset = LineSegment.Offset;
 			int markerStart = lineOffset + startColumn;
 			int markerEnd = lineOffset + endColumn;
-	
-			if (markerEnd < startOffset || markerStart > endOffset) 
-				return; 
-	
-			double @from;
-			double to;
-	
+
+			if (markerEnd < startOffset || markerStart > endOffset)
+				return;
+
+			var (x1, x2) = CalculateXPositions (startOffset, endOffset, startXPos, endXPos, layoutWrapper, layout, markerStart, markerEnd);
+			DrawUnderline (editor, cr, y, layoutWrapper, markerStart, x1, x2);
+		}
+
+		static (double x1, double x2) CalculateXPositions (int startOffset, int endOffset, double startXPos, double endXPos, TextViewMargin.LayoutWrapper layoutWrapper, LayoutCache.LayoutProxy layout, int markerStart, int markerEnd)
+		{
+			if (layoutWrapper is null)
+				throw new ArgumentNullException (nameof (layoutWrapper));
+			if (layout is null)
+				throw new ArgumentNullException (nameof (layout));
+
+			double x1, x2;
 			if (markerStart < startOffset && endOffset < markerEnd) {
-				@from = startXPos;
-				to = endXPos;
+				x1 = startXPos;
+				x2 = endXPos;
 			} else {
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 
 				uint curIndex = 0, byteIndex = 0;
-				int x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex, ref byteIndex)).X;
+				int x_pos = layout.IndexToPos ((int)layoutWrapper.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex, ref byteIndex)).X;
 
-				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-	
-				x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex, ref byteIndex)).X;
-	
-				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+				x1 = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+
+				x_pos = layout.IndexToPos ((int)layoutWrapper.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex, ref byteIndex)).X;
+
+				x2 = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}
-	
-			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
-			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
-			if (@from < to) {
+			return (x1, x2);
+		}
+
+		void DrawUnderline (MonoTextEditor editor, Cairo.Context cr, double y, TextViewMargin.LayoutWrapper layoutWrapper, int markerStart, double x1, double x2)
+		{
+			if (editor is null)
+				throw new ArgumentNullException (nameof (editor));
+			if (cr is null) 
+				throw new ArgumentNullException (nameof (cr));
+			if (layoutWrapper is null)
+				throw new ArgumentNullException (nameof (layoutWrapper));
+
+			x1 = System.Math.Max (x1, editor.TextViewMargin.XOffset);
+			x2 = System.Math.Max (x2, editor.TextViewMargin.XOffset);
+			if (x1 < x2) {
 				if (color == null) {
-					foreach (var chunk in metrics.Layout.Chunks) {
+					foreach (var chunk in layoutWrapper.Chunks) {
 						if (chunk.Contains (markerStart)) {
 							color = editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (chunk.ScopeStack));
 							break;
@@ -139,9 +169,8 @@ namespace Mono.TextEditor
 					if (color == null)
 						color = editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (new ScopeStack (style)));
 				}
-				cr.DrawLine (color.Value, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
+				cr.DrawLine (color.Value, x1 + 0.5, y + editor.LineHeight - 1.5, x2 + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}
-	
 }
