@@ -53,7 +53,9 @@ using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Composition;
+using LeakSimulation;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide
 {
@@ -201,8 +203,29 @@ namespace MonoDevelop.Ide
 
 		internal static TaskCompletionSource<LaunchType> LaunchCompletionSource { get; } = new TaskCompletionSource<LaunchType>();
 
+		public static LeakObject LeakedObject = new LeakObject();
+		public static event EventHandler OnLeak;
+		static ConditionalWeakTable<LeakObject, LeakObject> table = new ConditionalWeakTable<LeakObject, LeakObject> ();
+
+		static void AddLeaks()
+		{
+			var leakObject = new LeakObject ();
+			OnLeak += (o, args) => leakObject.Do ();
+
+			LeakStatic.Initialize ();
+			table.Add (LeakStatic.Object, leakObject);
+		}
+
+		public static void ClearLeaks()
+		{
+			OnLeak = null;
+			LeakStatic.ClearLeaks ();
+		}
+
 		public static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage = false)
 		{
+			AddLeaks();
+
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
 

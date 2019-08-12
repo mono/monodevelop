@@ -4269,6 +4269,8 @@
     <Compile Include="MonoDevelop.Components\Mac\NativeToolkitHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Shared\GtkWorkarounds.cs" />
+    <Compile Include="MonoDevelop.Ide\LeakSimulation\LeakStatic.cs" />
+    <Compile Include="MonoDevelop.Ide\LeakSimulation\LeakObject.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
@@ -4372,6 +4374,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Components\Shared\" />
+    <Folder Include="MonoDevelop.Ide\LeakSimulation\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
