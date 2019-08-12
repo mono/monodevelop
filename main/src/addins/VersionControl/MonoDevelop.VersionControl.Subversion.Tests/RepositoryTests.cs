@@ -74,7 +74,7 @@ namespace VersionControl.Subversion.Unix.Tests
 +text
 \ No newline at end of file
 ";
-			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", await Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
+			Assert.AreEqual (difftext, (await Repo.GenerateDiffAsync (LocalPath + "testfile", await Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache))).Content);
 		}
 
 		// Tests that fail due to Subversion giving wrong data.

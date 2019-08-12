@@ -862,9 +862,9 @@ namespace MonoDevelop.VersionControl
 			throw new System.NotSupportedException ();
 		}
 
-		public virtual DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
+		public virtual Task<DiffInfo> GenerateDiffAsync (FilePath baseLocalPath, VersionInfo versionInfo)
 		{
-			return null;
+			return TaskUtil.Default<DiffInfo> ();
 		}
 
 		// Returns a diff description between local files and the remote files.
