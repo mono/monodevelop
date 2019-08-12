@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects.FileNesting
 		}
 	}
 
-	class ProjectNestingInfo : IDisposable
+	sealed class ProjectNestingInfo : IDisposable
 	{
 		class ProjectFileNestingInfo
 		{
