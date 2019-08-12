@@ -38,6 +38,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\TestableSdkDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\TestablePackageDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\TestableTargetFrameworkNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\TestableFrameworkReferencesNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

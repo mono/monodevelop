@@ -47,6 +47,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		DependenciesNode dependenciesNode;
 		SdkDependenciesNode sdkFolderNode;
 		PackageDependenciesNode nugetFolderNode;
+		FrameworkReferencesNode frameworksFolderNode;
 		TaskCompletionSource<bool> packageDependenciesChanged;
 		TestableDependenciesNodeBuilder dependenciesNodeBuilder;
 		// Ensure NuGet.Versioning assembly is loaded by the tests otherwise they fail
@@ -86,6 +87,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			dependenciesNodeBuilder.BuildChildNodes (null, dependenciesNode);
 			nugetFolderNode = dependenciesNodeBuilder.PackageDependencies;
 			sdkFolderNode = dependenciesNodeBuilder.SdkDependencies;
+			frameworksFolderNode = dependenciesNodeBuilder.FrameworkReferences;
 		}
 
 		void PackageDependenciesChanged (object sender, EventArgs e)
@@ -139,9 +141,26 @@ namespace MonoDevelop.DotNetCore.Tests
 			return nodeBuilder.ChildNodesAsPackageDependencyNodes ().ToList ();
 		}
 
-		List<TargetFrameworkNode> GetFrameworkChildDependencies ()
+		List<TargetFrameworkNode> GetTargetFrameworkChildDependencies ()
 		{
 			return dependenciesNodeBuilder.TargetFrameworks;
+		}
+
+		List<FrameworkReferenceNode> GetFrameworksFolderChildDependencies ()
+		{
+			return GetFrameworksFolderChildDependencies (frameworksFolderNode);
+		}
+
+		static List<FrameworkReferenceNode> GetFrameworksFolderChildDependencies (FrameworkReferencesNode node)
+		{
+			var nodeBuilder = new TestableFrameworkReferencesNodeBuilder ();
+			nodeBuilder.BuildChildNodes (null, node);
+			return nodeBuilder.ChildNodesAsFrameworkReferenceNode ().ToList ();
+		}
+
+		static bool IsDotNetCoreSdk30OrLaterInstalled ()
+		{
+			return DotNetCoreSdk.Versions.Any (version => version.Major == 3);
 		}
 
 		[Test]
@@ -330,7 +349,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
 			await CreateDependenciesNode ();
 
-			var frameworkNodes = GetFrameworkChildDependencies ();
+			var frameworkNodes = GetTargetFrameworkChildDependencies ();
 			var netstandardFrameworkNode = frameworkNodes.FirstOrDefault (node => node.Name == ".NETStandard");
 			var netframeworkNode = frameworkNodes.FirstOrDefault (node => node.Name == ".NETFramework");
 
@@ -383,6 +402,74 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (newtonsoftNode.IsReadOnly);
 			Assert.IsTrue (newtonsoftNode.IsTopLevel);
 			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
+		}
+
+		[Test]
+		public async Task NetStandard21Library_NewtonsoftJsonNuGetPackageReference ()
+		{
+			if (!IsDotNetCoreSdk30OrLaterInstalled ()) {
+				Assert.Ignore (".NET Core 3 SDK is not installed.");
+			}
+
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandard21JsonNet.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			// Should be no sdk folder node.
+			Assert.IsNull (sdkFolderNode);
+
+			var frameworkNode = GetFrameworksFolderChildDependencies ().Single ();
+			Assert.AreEqual ("NETStandard.Library", frameworkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", frameworkNode.GetLabel ());
+
+			var defaultNode = frameworksFolderNode.GetDefaultNodes ().Single ();
+			Assert.AreEqual ("NETStandard.Library", defaultNode.Name);
+			Assert.AreEqual ("NETStandard.Library", defaultNode.GetLabel ());
+
+			var newtonsoftNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.Name);
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.GetLabel ());
+			Assert.AreEqual ("(10.0.3)", newtonsoftNode.GetSecondaryLabel ());
+			Assert.IsTrue (newtonsoftNode.CanBeRemoved);
+			Assert.IsFalse (newtonsoftNode.IsReadOnly);
+			Assert.IsTrue (newtonsoftNode.IsTopLevel);
+			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
+			Assert.IsTrue (newtonsoftNode.HasDependencies ());
+		}
+
+		[Test]
+		public async Task NetCore30Library_NewtonsoftJsonNuGetPackageReference ()
+		{
+			if (!IsDotNetCoreSdk30OrLaterInstalled ()) {
+				Assert.Ignore (".NET Core 3 SDK is not installed.");
+			}
+
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetCore30JsonNet.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			// Should be no sdk folder node.
+			Assert.IsNull (sdkFolderNode);
+
+			var frameworkNode = GetFrameworksFolderChildDependencies ().Single ();
+			Assert.AreEqual ("Microsoft.NETCore.App", frameworkNode.Name);
+			Assert.AreEqual ("Microsoft.NETCore.App", frameworkNode.GetLabel ());
+
+			var defaultNode = frameworksFolderNode.GetDefaultNodes ().Single ();
+			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.Name);
+			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.GetLabel ());
+
+			var newtonsoftNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.Name);
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.GetLabel ());
+			Assert.AreEqual ("(10.0.3)", newtonsoftNode.GetSecondaryLabel ());
+			Assert.IsTrue (newtonsoftNode.CanBeRemoved);
+			Assert.IsFalse (newtonsoftNode.IsReadOnly);
+			Assert.IsTrue (newtonsoftNode.IsTopLevel);
+			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
+			Assert.IsTrue (newtonsoftNode.HasDependencies ());
 		}
 	}
 }
