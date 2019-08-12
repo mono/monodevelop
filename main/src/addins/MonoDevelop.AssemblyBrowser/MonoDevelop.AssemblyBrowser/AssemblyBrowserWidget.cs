@@ -1263,19 +1263,24 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (ensuredDefinitions == null)
 				throw new ArgumentNullException (nameof (ensuredDefinitions));
-			foreach (var def in ensuredDefinitions) {
-				if (!definitions.Contains (def)) {
-					definitions = definitions.Add (def);
 
-					Application.Invoke ((o, args) => {
-						if (ensuredDefinitions.Count + projects.Count == 1) {
-							TreeView.LoadTree (def.LoadingTask.Result);
-						} else {
-							TreeView.AddChild (def.LoadingTask.Result);
+			Runtime.RunInMainThread (() => {
+				foreach (var def in ensuredDefinitions) {
+					try {
+						if (!definitions.Contains (def)) {
+							definitions = definitions.Add (def);
+							var peFile = def.Assembly;
+							if (ensuredDefinitions.Count + projects.Count == 1) {
+								TreeView.LoadTree (peFile);
+							} else {
+								TreeView.AddChild (peFile);
+							}
 						}
-					});
+					} catch (Exception e) {
+						LoggingService.LogError ($"Can't load definition {def}. File name: {def?.FileName}", e);
+					}
 				}
-			}
+			});
 		}
 	}
 }
