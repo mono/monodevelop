@@ -72,6 +72,8 @@ namespace MonoDevelop.Debugger
 		ShowNextStatement,
 		NewCatchpoint,
 		NewFunctionBreakpoint
+		AddBreakpoint,
+		RemoveBreakpointOnLine,
 	}
 
 	class DebugHandler: CommandHandler
@@ -342,7 +344,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class ToggleBreakpointHandler: CommandHandler
+	class BreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -361,7 +363,45 @@ namespace MonoDevelop.Debugger
 			if (bp != null && bp.Line != caretLine)
 				textView.Caret.MoveTo (point.Snapshot.GetLineFromLineNumber (bp.Line).Start);
 		}
+	}
 
+	class AddBreakpointHandler : BreakpointHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var breakpoints = DebuggingService.Breakpoints;
+			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true);
+			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
+			var col = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, caretLine);
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !(col.Count > 0);
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
+					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+					!DebuggingService.Breakpoints.IsReadOnly &&
+					!(col.Count > 0);
+		}
+	}
+
+	class RemoveBreakpointOnLineHandler : BreakpointHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var breakpoints = DebuggingService.Breakpoints;
+			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true);
+			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
+			var col = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, caretLine);
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && (col.Count > 0);
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
+					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+					!DebuggingService.Breakpoints.IsReadOnly &&
+					(col.Count > 0);
+		}
+	}
+
+	[Obsolete]
+	class ToggleBreakpointHandler : BreakpointHandler
+	{
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
