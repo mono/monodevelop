@@ -231,15 +231,15 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore30=true")]
 
-		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
-		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore30=true")]
-		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		//[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore30=true")]
 
 		// NUnit3 templates come with .NET Core 2.2, but they only support .NET Core 2.1 framework
 		[TestCase ("NUnit3.DotNetNew.Template.CSharp", "UseNetCore30=true")]
 		[TestCase ("NUnit3.DotNetNew.Template.FSharp", "UseNetCore30=true")]
-		[TestCase ("NUnit3.DotNetNew.Template.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("NUnit3.DotNetNew.Template.VisualBasic", "UseNetCore30=true")]
 		public async Task NetCore30 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {
