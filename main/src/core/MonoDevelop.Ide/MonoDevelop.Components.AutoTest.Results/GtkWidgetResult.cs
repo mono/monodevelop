@@ -93,7 +93,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (desiredType.IsInstanceOfType (resultWidget)) {
-				return desiredType == typeof(Notebook) ? new GtkNotebookResult (resultWidget) : this;
+				return desiredType == typeof(Notebook) ? DisposeWithResult (new GtkNotebookResult (resultWidget)) : this;
 			}
 
 			return null;
@@ -175,12 +175,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			if (column == null) {
-				return new GtkTreeModelResult (resultWidget, model, 0) { SourceQuery = this.SourceQuery };
+				return DisposeWithResult (new GtkTreeModelResult (resultWidget, model, 0) { SourceQuery = this.SourceQuery });
 			}
 
 			// Check if the class has the SemanticModelAttribute
 			var columnNumber = GetColumnNumber (column, model);
-			return columnNumber == -1 ? null : new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
+			return columnNumber == -1 ? null : DisposeWithResult (new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery });
 		}
 
 		protected int GetColumnNumber (string column, TreeModel model)
@@ -231,7 +231,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 					continue;
 				}
 
-				siblingResults.Add (new GtkWidgetResult (child) { SourceQuery = this.SourceQuery });
+				siblingResults.Add (DisposeWithResult (new GtkWidgetResult (child) { SourceQuery = this.SourceQuery }));
 			}
 
 			return siblingResults;
