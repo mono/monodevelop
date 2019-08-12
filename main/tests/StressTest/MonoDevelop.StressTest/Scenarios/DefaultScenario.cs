@@ -98,7 +98,7 @@ namespace MonoDevelop.StressTest
 			WorkbenchExtensions.OpenFiles (filesToOpen);
 
 			// Wait for the text area to be available.
-			var area = TestService.Session.WaitForElement (IdeQuery.TextAreaForFile (openFile), 10000);
+			var area = TestService.Session.WaitForElement (IdeQuery.TextAreaForFile (openFile), 30000);
 			Assert.That (area, Has.Length.EqualTo (1));
 
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
