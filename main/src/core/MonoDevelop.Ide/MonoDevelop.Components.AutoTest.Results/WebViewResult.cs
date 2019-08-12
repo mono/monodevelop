@@ -100,7 +100,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			DomElement nextSibling = node.NextElementSibling;
 			while (nextSibling != null) {
-				results.Add (new WebViewResult (nextSibling) { SourceQuery = SourceQuery });
+				var result = DisposeWithResult (new WebViewResult (nextSibling) { SourceQuery = SourceQuery });
+				results.Add (result);
 				nextSibling = nextSibling.NextElementSibling;
 			}
 
@@ -114,7 +115,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				props.Add (attr.Name, new ObjectResult (attr.NodeValue), null);
 			}
 
-			return props;
+			return DisposeWithResult (props);
 		}
 
 		public override AppResult Property (string propertyName, object value)

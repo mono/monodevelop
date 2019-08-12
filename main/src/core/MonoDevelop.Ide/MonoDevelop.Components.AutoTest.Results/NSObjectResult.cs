@@ -196,7 +196,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				var children = new List<AppResult> ();
 				for (int i = 0; i < control.RowCount; i++) {
 					LoggingService.LogInfo ($"Found row {i} of NSTableView -  {control.Identifier} - {control.AccessibilityIdentifier}");
-					children.Add (new NSObjectResult (control, i));
+					children.Add (DisposeWithResult (new NSObjectResult (control, i)));
 				}
 				return children;
 			}
