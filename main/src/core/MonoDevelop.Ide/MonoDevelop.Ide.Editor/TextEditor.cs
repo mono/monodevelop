@@ -393,7 +393,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public FilePath FileName {
 			get {
-				return ReadOnlyTextDocument.FileName;
+				return ReadOnlyTextDocument?.FileName ?? FilePath.Empty;
 			}
 			set {
 				Runtime.AssertMainThread ();
