@@ -980,6 +980,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 			MSBuildItemGroup insertBefore = null;
 			foreach (MSBuildItemGroup grp in ItemGroups) {
+				if (!string.IsNullOrEmpty (grp.Condition))
+					continue;
 				foreach (MSBuildItem it in grp.Items) {
 					if (ShouldAddItemToGroup (it, newItem)) {
 						bestGroups [groupId] = grp;
