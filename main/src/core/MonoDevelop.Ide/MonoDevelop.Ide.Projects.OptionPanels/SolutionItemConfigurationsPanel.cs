@@ -107,21 +107,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void AddConfiguration (string copyFrom)
 		{
-			var dlg = new NewConfigurationDialog (configData.Entry, configData.Configurations);
-			try {
+			Xwt.Toolkit.NativeEngine.Invoke (delegate {
 				bool done = false;
+
 				do {
-					if (MessageService.RunCustomDialog (dlg, Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
-						var cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
-						store.AppendValues (cc, cc.Id);
-						done = true;
-					} else
-						done = true;
+					using (var dlg2 = new MonoDevelop.Ide.Gui.Dialogs.NewConfigurationDialog (configData.Entry, configData.Configurations)) {
+						if (dlg2.Run (Xwt.MessageDialog.RootWindow) == Xwt.Command.Ok) {
+							var cc = configData.AddConfiguration (dlg2.ConfigName, copyFrom, dlg2.CreateChildren);
+							store.AppendValues (cc, cc.Id);
+							done = true;
+						} else {
+							done = true;
+						}
+					}
 				} while (!done);
-			} finally {
-				dlg.Destroy ();
-				dlg.Dispose ();
-			}
+			});
 		}
 
 		void OnRemoveConfiguration (object sender, EventArgs args)
