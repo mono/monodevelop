@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -64,6 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.ActiveConfigurationChanged += IdeAppWorkspaceActiveConfigurationChanged;
 			FileService.FileRemoved += OnSystemFileDeleted;
 			FileService.FileCreated += OnSystemFileCreated;
+			FileNestingService.NestingRulesChanged += OnFileNestingRulesChanged;
 		}
 
 		public override void Dispose ()
@@ -75,6 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
 			FileService.FileRemoved -= OnSystemFileDeleted;
 			FileService.FileCreated -= OnSystemFileCreated;
+			FileNestingService.NestingRulesChanged -= OnFileNestingRulesChanged;
 
 			base.Dispose ();
 		}
@@ -244,6 +247,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					}
 				}
 			}
+		}
+
+		void OnFileNestingRulesChanged (Project obj)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (obj);
+			tb?.UpdateAll ();
 		}
 
 		void AddFile (ProjectFile file, Project project)
