@@ -128,7 +128,7 @@
 		<Condition id="ItemType" value="Project">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages"
-				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</Condition>
 	</Extension>

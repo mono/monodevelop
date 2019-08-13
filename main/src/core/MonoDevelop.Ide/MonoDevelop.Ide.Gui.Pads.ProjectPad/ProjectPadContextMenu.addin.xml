@@ -83,9 +83,12 @@
 				</Condition>
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 		</Condition>
-		<Condition id="ItemType" value="Project|ProjectFolder">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+		<Condition id="ItemType" value="Project">
+				<SeparatorItem/>
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 						 _label = "Add Reference..."/>
+		</Condition>
+		<Condition id="ItemType" value="Project|ProjectFolder">
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFilesFromFolder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddExistingFolder" />
