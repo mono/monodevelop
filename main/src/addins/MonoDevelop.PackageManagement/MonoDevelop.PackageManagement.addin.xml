@@ -191,6 +191,7 @@
 
 	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class="MonoDevelop.PackageManagement.PackageManagementMSBuildExtension" />
+		<Class class="MonoDevelop.PackageManagement.PackageManagementCanReferenceProjectExtension" />
 		<Class class="MonoDevelop.PackageManagement.PackageManagementSdkProjectExtension" />
 	</Extension>
 	<!--
