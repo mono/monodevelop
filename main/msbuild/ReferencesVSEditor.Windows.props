@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="$(NuGetVersionRoslyn)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
     <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
     <PackageReference Include="Microsoft.VisualStudio.InteractiveWindow" Version="2.8.0" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.InteractiveHost" Version="$(NuGetVersionRoslyn)" ExcludeAssets="$(ReferencesVSEditorPrivateAssets)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.InteractiveHost" Version="$(NuGetVersionRoslyn)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
   </ItemGroup>
 
   <!-- The consolidated package is authored in a way to avoid adding it to the C# compiler (ref\net46 is empty).
@@ -25,7 +25,7 @@
     <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net472\Microsoft.VisualStudio.Platform.VSEditor.dll">
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(NuGetPackageRoot)Microsoft.CodeAnalysis.InteractiveHost\$(NuGetVersionRoslyn)\Microsoft.CodeAnalysis.InteractiveHost.dll">
+    <Reference Include="$(NuGetPackageRoot)Microsoft.CodeAnalysis.InteractiveHost\$(NuGetVersionRoslyn)\lib\net472\Microsoft.CodeAnalysis.InteractiveHost.dll">
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>
