@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl.Views
 			return editor.YToLine (midY);
 		}
 
-		protected override void OnFocused ()
+		protected override void OnContentShown ()
 		{
 			info.Start ();
 			if (ComparisonWidget.originalComboBox.Text == GettextCatalog.GetString ("Local"))
