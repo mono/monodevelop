@@ -29,13 +29,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using MonoDevelop.Projects;
-using MonoDevelop.DotNetCore.Tests;
 using UnitTests;
 
 namespace MonoDevelop.AspNetCore.Tests
 {
 	[TestFixture]
-	class AspNetCoreProjectTests : DotNetCoreTestBase
+	class AspNetCoreProjectTests : TestBase
 	{
 		Solution solution;
 
