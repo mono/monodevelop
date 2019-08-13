@@ -25,6 +25,7 @@
     <Compile Include="MonoDevelop.AspNetCore.Tests\PublishProfileTests.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Tests\LaunchSettingsTests.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Tests\AspNetCoreExecutionCommandTests.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Tests\AspNetCoreProjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
@@ -71,6 +72,10 @@
       <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
       <Name>IdeUnitTests</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.Tests\MonoDevelop.DotNetCore.Tests.csproj">
+      <Project>{7D3073E9-F52D-4E14-B988-5316DC6FD0BF}</Project>
+      <Name>MonoDevelop.DotNetCore.Tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
