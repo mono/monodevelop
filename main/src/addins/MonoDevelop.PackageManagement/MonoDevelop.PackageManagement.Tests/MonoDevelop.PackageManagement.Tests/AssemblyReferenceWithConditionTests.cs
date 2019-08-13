@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				CreateNuGetConfigFile (solution.BaseDirectory);
 				var project = (DotNetProject)solution.FindProjectByName ("PackageAssemblyReferenceCondition");
 
-				var restoreResult = await RestoreNuGetPackages (solution);
+				var restoreResult = await RestorePackagesConfigNuGetPackages (solution);
 				Assert.IsTrue (restoreResult.Restored);
 				Assert.AreEqual (1, restoreResult.RestoredPackages.Count ());
 
