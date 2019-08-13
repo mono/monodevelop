@@ -32,7 +32,7 @@ using Xwt;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public class NewConfigurationDialog : Dialog
+	class NewConfigurationDialog : Dialog
 	{
 		public string ConfigName {
 			get {
