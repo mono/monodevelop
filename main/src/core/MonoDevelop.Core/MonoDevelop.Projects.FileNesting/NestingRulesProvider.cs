@@ -146,8 +146,9 @@ namespace MonoDevelop.Projects.FileNesting
 				}
 			}
 
+			var inDirectory = inputFile.FilePath.ParentDirectory;
 			foreach (var rule in nestingRules) {
-				var parentFile = rule.GetParentFile (inputFile);
+				var parentFile = rule.GetParentFile (inputFile, inDirectory);
 				if (parentFile != null) {
 					// Stop at the 1st rule found
 					return parentFile;
