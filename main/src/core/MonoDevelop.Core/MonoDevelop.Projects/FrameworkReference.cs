@@ -34,6 +34,10 @@ namespace MonoDevelop.Projects
 	[ExportProjectItemType ("FrameworkReference")]
 	public class FrameworkReference : ProjectItem
 	{
+		public FrameworkReference ()
+		{
+		}
+
 		internal FrameworkReference (string include, IReadOnlyPropertySet metadata)
 		{
 			Include = include;
