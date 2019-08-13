@@ -28,14 +28,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects.FileNesting
 {
 	public static class FileNestingService
 	{
-		static readonly ConcurrentDictionary<Project, ProjectNestingInfo> loadedProjects = new ConcurrentDictionary<Project, ProjectNestingInfo> ();
+		static readonly ConditionalWeakTable<Project, ProjectNestingInfo> loadedProjects = new ConditionalWeakTable<Project, ProjectNestingInfo> ();
 		static ImmutableList<NestingRulesProvider> rulesProviders = ImmutableList<NestingRulesProvider>.Empty;
 
 		static FileNestingService ()
@@ -60,7 +60,8 @@ namespace MonoDevelop.Projects.FileNesting
 		static ProjectNestingInfo GetProjectNestingInfo (Project project)
 		{
 			if (!loadedProjects.TryGetValue (project, out var nestingInfo)) {
-				nestingInfo = loadedProjects [project] = new ProjectNestingInfo (project);
+				nestingInfo = new ProjectNestingInfo (project);
+				loadedProjects.Add (project, nestingInfo);
 			}
 
 			return nestingInfo;
