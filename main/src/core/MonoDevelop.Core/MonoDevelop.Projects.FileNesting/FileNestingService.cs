@@ -69,10 +69,6 @@ namespace MonoDevelop.Projects.FileNesting
 
 		internal static ProjectFile InternalGetParentFile (ProjectFile inputFile)
 		{
-			if (!inputFile.Project.UserProperties.GetValue<bool> ("FileNesting", true)) {
-				return null;
-			}
-
 			foreach (var rp in rulesProviders) {
 				var parentFile = rp.GetParentFile (inputFile);
 				if (parentFile != null) {
@@ -83,19 +79,40 @@ namespace MonoDevelop.Projects.FileNesting
 			return null;
 		}
 
+		public static event Action<Project> NestingRulesChanged;
+
+		internal static void NotifyNestingRulesChanged (Project project) => NestingRulesChanged?.Invoke (project);
+
+		public static bool IsEnabledForProject (Project project)
+		{
+			return project?.ParentSolution?.UserProperties?.GetValue<bool> ("FileNesting", true) ?? true;
+		}
+
 		public static ProjectFile GetParentFile (ProjectFile inputFile)
 		{
+			if (!IsEnabledForProject (inputFile.Project)) {
+				return null;
+			}
+
 			return GetProjectNestingInfo (inputFile.Project).GetParentForFile (inputFile);
 		}
 
 		public static bool HasChildren (ProjectFile inputFile)
 		{
+			if (!IsEnabledForProject (inputFile.Project)) {
+				return false;
+			}
+
 			var children = GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 			return (children?.Count ?? 0) > 0;
 		}
 
 		public static IEnumerable<ProjectFile> GetChildren (ProjectFile inputFile)
 		{
+			if (!IsEnabledForProject (inputFile.Project)) {
+				return null;
+			}
+
 			return GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 		}
 	}
@@ -115,6 +132,7 @@ namespace MonoDevelop.Projects.FileNesting
 		}
 
 		readonly ConcurrentDictionary<ProjectFile, ProjectFileNestingInfo> projectFiles = new ConcurrentDictionary<ProjectFile, ProjectFileNestingInfo> ();
+		bool fileNestingEnabled;
 
 		public Project Project { get; }
 
@@ -123,6 +141,7 @@ namespace MonoDevelop.Projects.FileNesting
 			Project = project;
 			Project.FileAddedToProject += OnFileAddedToProject;
 			Project.FileRemovedFromProject += OnFileRemovedFromProject;
+			Project.ParentSolution.UserProperties.Changed += OnUserPropertiesChanged;
 		}
 
 		bool initialized = false;
@@ -131,6 +150,7 @@ namespace MonoDevelop.Projects.FileNesting
 			if (!initialized) {
 				initialized = true;
 
+				fileNestingEnabled = FileNestingService.IsEnabledForProject (Project);
 				foreach (var file in Project.Files) {
 					AddFile (file);
 				}
@@ -166,26 +186,42 @@ namespace MonoDevelop.Projects.FileNesting
 			foreach (var file in e) {
 				projectFiles.TryRemove (file.ProjectFile, out _);
 			}
+
+			FileNestingService.NotifyNestingRulesChanged (Project);
+		}
+
+		void OnUserPropertiesChanged (object sender, Core.PropertyBagChangedEventArgs e)
+		{
+			bool newValue = FileNestingService.IsEnabledForProject (Project);
+			if (fileNestingEnabled != newValue) {
+				fileNestingEnabled = newValue;
+				FileNestingService.NotifyNestingRulesChanged (Project);
+			}
 		}
 
 		public ProjectFile GetParentForFile (ProjectFile inputFile)
 		{
 			EnsureInitialized ();
+			if (!fileNestingEnabled)
+				return null;
+
 			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Parent : null;
 		}
 
 		public ProjectFileCollection GetChildrenForFile (ProjectFile inputFile)
 		{
 			EnsureInitialized ();
+			if (!fileNestingEnabled)
+				return null;
+
 			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Children : null;
 		}
 
 		public void Dispose ()
 		{
-			if (initialized) {
-				Project.FileAddedToProject -= OnFileAddedToProject;
-				Project.FileRemovedFromProject -= OnFileRemovedFromProject;
-			}
+			Project.FileAddedToProject -= OnFileAddedToProject;
+			Project.FileRemovedFromProject -= OnFileRemovedFromProject;
+			Project.ParentSolution.UserProperties.Changed -= OnUserPropertiesChanged;
 		}
 	}
 
