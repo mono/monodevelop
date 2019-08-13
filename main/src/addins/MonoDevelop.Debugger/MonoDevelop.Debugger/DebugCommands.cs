@@ -71,8 +71,8 @@ namespace MonoDevelop.Debugger
 		SetNextStatement,
 		ShowNextStatement,
 		NewCatchpoint,
-		NewFunctionBreakpoint
-		AddBreakpoint,
+		NewFunctionBreakpoint,
+		AddBreakpointOnLine,
 		RemoveBreakpointOnLine,
 	}
 
@@ -365,7 +365,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class AddBreakpointHandler : BreakpointHandler
+	class AddBreakpointOnLineHandler : BreakpointHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -396,19 +396,6 @@ namespace MonoDevelop.Debugger
 					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 					!DebuggingService.Breakpoints.IsReadOnly &&
 					(col.Count > 0);
-		}
-	}
-
-	[Obsolete]
-	class ToggleBreakpointHandler : BreakpointHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-					!DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 

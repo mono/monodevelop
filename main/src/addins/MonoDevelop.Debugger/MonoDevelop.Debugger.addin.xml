@@ -142,10 +142,10 @@
 				_label = "Toggle Breakpoint"
 				icon = "md-breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.AddBreakpoint"
+		<Command id = "MonoDevelop.Debugger.DebugCommands.AddBreakpointOnLine"
 				_label = "Add Breakpoint"
 				icon = "md-breakpoint"
-				defaultHandler = "MonoDevelop.Debugger.AddBreakpointHandler"
+				defaultHandler = "MonoDevelop.Debugger.AddBreakpointOnLineHandler"
 				shortcut = "F9"
 				macShortcut = "Meta|\ F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpointOnLine"
@@ -227,7 +227,7 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewCatchpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpoints" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.AddBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.AddBreakpointOnLine" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpointOnLine" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
