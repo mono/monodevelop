@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.configurations = configurations;
 
 			SetupConfigs (item);
+
+			comboName.SetFocus ();
 		}
 
 		void Build ()
