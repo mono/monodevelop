@@ -549,8 +549,6 @@ namespace MonoDevelop.Projects.MSBuild
 			set { AssertCanModify (); defaultTargets = value; NotifyChanged (); }
 		}
 
-		public bool DefaultTargetsSpecified { get; set; }
-
 		string toolsVersion;
 
 		public string ToolsVersion

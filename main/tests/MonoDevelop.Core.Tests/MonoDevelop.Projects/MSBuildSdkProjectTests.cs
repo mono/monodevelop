@@ -186,7 +186,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void WriteProject_DefaultTargetsAdded_DefaultTargetsIsSetToNull ()
+		public void WriteProject_InitiallyEmptyDefaultTargetsAdded_DefaultTargetsIsSetToNull ()
 		{
 			CreateMSBuildProject (
 				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
@@ -201,6 +201,25 @@ namespace MonoDevelop.Projects
 			WriteProject ();
 
 			Assert.IsNull (msbuildProject.DefaultTargets);
+		}
+
+		[Test]
+		public void WriteProject_InitiallyNonEmptyDefaultTargetsAdded_DefaultTargetsIsNotNull ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" DefaultTargets=\"Publish\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+
+			Assert.AreEqual (msbuildProject.DefaultTargets, "Publish");
+
+			WriteProject ();
+
+			Assert.AreEqual (msbuildProject.DefaultTargets, "Publish");
 		}
 
 		[Test]

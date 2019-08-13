@@ -3253,9 +3253,6 @@ namespace MonoDevelop.Projects
 		{
 			if (string.IsNullOrEmpty (sourceProject.DefaultTargets) && SupportsBuild ()) {
 				sourceProject.DefaultTargets = "Build";
-				sourceProject.DefaultTargetsSpecified = false;
-			} else {
-				sourceProject.DefaultTargetsSpecified = true;
 			}
 			
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
