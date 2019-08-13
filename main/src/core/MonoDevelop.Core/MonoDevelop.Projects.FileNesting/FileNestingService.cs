@@ -179,15 +179,33 @@ namespace MonoDevelop.Projects.FileNesting
 			foreach (var file in e) {
 				AddFile (file.ProjectFile);
 			}
+
+			if (fileNestingEnabled)
+				FileNestingService.NotifyNestingRulesChanged (Project);
 		}
 
 		void OnFileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
 			foreach (var file in e) {
-				projectFiles.TryRemove (file.ProjectFile, out _);
+				projectFiles.TryRemove (file.ProjectFile, out var nestingInfo);
+
+				// Update parent
+				if (nestingInfo?.Parent != null) {
+					if (projectFiles.TryGetValue (nestingInfo.Parent, out var tmp)) {
+						tmp.Children.Remove (file.ProjectFile);
+					}
+				}
+
+				// Update children
+				if (nestingInfo?.Children != null) {
+					foreach (var child in nestingInfo.Children) {
+						AddFile (child);
+					}
+				}
 			}
 
-			FileNestingService.NotifyNestingRulesChanged (Project);
+			if (fileNestingEnabled)
+				FileNestingService.NotifyNestingRulesChanged (Project);
 		}
 
 		void OnUserPropertiesChanged (object sender, Core.PropertyBagChangedEventArgs e)
