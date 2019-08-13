@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNetCore
 		protected override bool AppliesToProject (Project project)
 		{
 			var dotnetProj = project as DotNetProject;
-			return dotnetProj != null && dotnetProj.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) != -1) != null;
+			return dotnetProj != null && dotnetProj.ProjectProperties.HasProperty ("UsingMicrosoftNETSdkWeb");
 		}
 	}
 }
