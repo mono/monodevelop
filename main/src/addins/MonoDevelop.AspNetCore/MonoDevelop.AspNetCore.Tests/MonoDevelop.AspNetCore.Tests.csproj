@@ -73,10 +73,6 @@
       <Name>IdeUnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.Tests\MonoDevelop.DotNetCore.Tests.csproj">
-      <Project>{7D3073E9-F52D-4E14-B988-5316DC6FD0BF}</Project>
-      <Name>MonoDevelop.DotNetCore.Tests</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.AspNetCore.Tests\" />

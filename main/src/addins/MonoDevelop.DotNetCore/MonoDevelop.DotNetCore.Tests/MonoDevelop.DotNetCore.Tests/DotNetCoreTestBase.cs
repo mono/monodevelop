@@ -34,7 +34,7 @@ using UnitTests;
 namespace MonoDevelop.DotNetCore.Tests
 {
 	[RequireService (typeof (TypeSystemService))]
-	internal class DotNetCoreTestBase : TestBase
+	class DotNetCoreTestBase : TestBase
 	{
 		protected override Task InternalSetup (string rootDir)
 		{
