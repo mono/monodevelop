@@ -1,10 +1,10 @@
-﻿//
-// DotNetCoreTestBase.cs
+//
+// AspNetCoreProjectTests.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,41 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.TypeSystem;
+using NUnit.Framework;
+using MonoDevelop.Projects;
+using MonoDevelop.DotNetCore.Tests;
 using UnitTests;
 
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.AspNetCore.Tests
 {
-	[RequireService (typeof (TypeSystemService))]
-	internal class DotNetCoreTestBase : TestBase
+	[TestFixture]
+	class AspNetCoreProjectTests : DotNetCoreTestBase
 	{
-		protected override Task InternalSetup (string rootDir)
+		Solution solution;
+
+		[TearDown]
+		public override void TearDown ()
 		{
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			return base.InternalSetup (rootDir);
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
 		}
 
-		/// <summary>
-		/// Clear all other package sources and just use the main NuGet package source when
-		/// restoring the packages for the project temlate tests.
-		/// </summary>
-		protected static void CreateNuGetConfigFile (FilePath directory)
+		[Test]
+		public async Task RazorClassLib_Load_LoadsProject ()
 		{
-			var fileName = directory.Combine ("NuGet.Config");
-
-			string xml =
-				"<configuration>\r\n" +
-				"  <packageSources>\r\n" +
-				"    <clear />\r\n" +
-				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
-				"  </packageSources>\r\n" +
-				"</configuration>";
-
-			File.WriteAllText (fileName, xml);
+			// Just test, for now, that we can load a Razor Class Lib project
+			string projectFileName = Util.GetSampleProject ("aspnetcore-razor-class-lib", "aspnetcore-razor-class-lib.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName)) {
+				Assert.NotNull (project.Items.Single (item => item.Include == "Areas\\MyFeature\\Pages\\Page1.cshtml.cs"));
+				Assert.NotNull (project.Items.Single (item => item.Include == "Areas\\MyFeature\\Pages\\Page1.cshtml"));
+			}
 		}
 	}
 }
