@@ -1,21 +1,21 @@
-// 
+//
 // FilePath.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2011 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,7 +60,7 @@ namespace MonoDevelop.Core
 		public bool IsNullOrEmpty {
 			get { return string.IsNullOrEmpty (fileName); }
 		}
-		
+
 		public bool IsNotNull {
 			get { return fileName != null; }
 		}
@@ -114,7 +114,7 @@ namespace MonoDevelop.Core
 				return Directory.Exists (FullPath);
 			}
 		}
-		
+
 		/// <summary>
 		/// Returns a path in standard form, which can be used to be compared
 		/// for equality with other canonical paths. It is similar to FullPath,
@@ -203,10 +203,11 @@ namespace MonoDevelop.Core
 		[Pure]
 		public bool IsChildPathOf (FilePath basePath)
 		{
+			if (string.IsNullOrEmpty (basePath.fileName) || string.IsNullOrEmpty (fileName))
+				return false;
 			bool startsWith = fileName.StartsWith (basePath.fileName, PathComparison);
-			
-			if (startsWith && (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar &&
-				basePath.fileName [basePath.fileName.Length - 1] != Path.AltDirectorySeparatorChar)) {
+			if (startsWith && basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar &&
+				basePath.fileName [basePath.fileName.Length - 1] != Path.AltDirectorySeparatorChar) {
 				// If the last character isn't a path separator character, check whether the string we're searching in
 				// has more characters than the string we're looking for then check the character.
 				// Otherwise, if the path lengths are equal, we return false.
@@ -272,7 +273,7 @@ namespace MonoDevelop.Core
 		{
 			return new FilePath (Path.Combine (fileName, path1, path2));
 		}
-		
+
 		public Task DeleteAsync ()
 		{
 			return Task.Run ((System.Action)Delete);
@@ -282,11 +283,11 @@ namespace MonoDevelop.Core
 		{
 			// Ensure that this file/directory and all children are writable
 			MakeWritable (true);
-			
+
 			// Also ensure the directory containing this file/directory is writable,
 			// otherwise we will not be able to delete it
 			ParentDirectory.MakeWritable (false);
-			
+
 			if (Directory.Exists (this)) {
 				Directory.Delete (this, true);
 			} else if (File.Exists (this)) {
@@ -298,7 +299,7 @@ namespace MonoDevelop.Core
 		{
 			MakeWritable (false);
 		}
-		
+
 		public void MakeWritable (bool recurse)
 		{
 			if (Directory.Exists (this)) {
@@ -306,9 +307,9 @@ namespace MonoDevelop.Core
 					var info = new DirectoryInfo (this);
 					info.Attributes &= ~FileAttributes.ReadOnly;
 				} catch {
-					
+
 				}
-				
+
 				if (recurse) {
 					foreach (var sub in Directory.GetFileSystemEntries (this)) {
 						((FilePath) sub).MakeWritable (recurse);
@@ -322,11 +323,11 @@ namespace MonoDevelop.Core
 					var info = new FileInfo (this);
 					info.Attributes &= ~FileAttributes.ReadOnly;
 				} catch {
-					
+
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Builds a path by combining all provided path sections
 		/// </summary>
@@ -420,7 +421,7 @@ namespace MonoDevelop.Core
 		{
 			return fileName;
 		}
-		 
+
 		public int CompareTo (FilePath filePath)
 		{
 			return PathComparer.Compare (fileName, filePath.fileName);
@@ -452,7 +453,7 @@ namespace MonoDevelop.Core
 				array[n] = paths[n].ToString ();
 			return array;
 		}
-		
+
 		public static FilePath[] ToFilePathArray (this string[] paths)
 		{
 			var array = new FilePath[paths.Length];
@@ -460,7 +461,7 @@ namespace MonoDevelop.Core
 				array[n] = paths[n];
 			return array;
 		}
-		
+
 		public static IEnumerable<string> ToPathStrings (this IEnumerable<FilePath> paths)
 		{
 			foreach (FilePath p in paths)
