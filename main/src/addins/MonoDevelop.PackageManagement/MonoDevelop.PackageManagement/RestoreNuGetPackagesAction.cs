@@ -48,12 +48,17 @@ namespace MonoDevelop.PackageManagement
 		List<INuGetAwareProject> nugetAwareProjects;
 
 		public RestoreNuGetPackagesAction (Solution solution)
+			: this (solution, PackageManagementServices.Workspace.GetSolutionManager (solution))
+		{
+		}
+
+		internal RestoreNuGetPackagesAction (Solution solution, IMonoDevelopSolutionManager solutionManager)
 		{
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 			RestorePackagesConfigProjects = true;
 
-			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
+			this.solutionManager = solutionManager;
 			solutionManager.ClearProjectCache ();
 		}
 
