@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 
 <ExtensionNodeSet id="MonoDevelop.Components.Commands.CommandSet">
 	<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
