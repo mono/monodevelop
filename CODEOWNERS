@@ -35,3 +35,5 @@
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide @slluis
 /main/src/core/MonoDevelop.Ide/branding @slluis
+/main/Directory.Build.props @mono/monodevelop-roslyn
+/main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn
