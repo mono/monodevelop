@@ -804,18 +804,19 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			nb = new notify_baton ();
 			IntPtr localpool = IntPtr.Zero;
+			string npath = null;
 			try {
 				localpool = TryStartOperation (monitor);
 				// Using Uri here because the normalization method doesn't remove the redundant port number when using https
 				url = NormalizePath (new Uri(url).ToString(), localpool);
-				string npath = NormalizePath (path, localpool);
+				npath = NormalizePath (path, localpool);
 				CheckError (svn.client_checkout (IntPtr.Zero, url, npath, ref rev, recurse, ctx, localpool));
 			} catch (SubversionException e) {
 				if (e.ErrorCode != 200015)
 					throw;
 
-				if (Directory.Exists (path.ParentDirectory))
-					FileService.DeleteDirectory (path.ParentDirectory);
+				if (npath != null && Directory.Exists (npath))
+					FileService.DeleteDirectory (npath);
 			} finally {
 				TryEndOperation (localpool);
 			}
