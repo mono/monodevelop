@@ -76,11 +76,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void Build ()
 		{
-			Padding = 0;
+			Padding = 6;
 			Resizable = false;
 			Title = GettextCatalog.GetString ("New Configuration");
 
-			var mainVBox = new VBox () { Spacing = 6, Margin = 6 };
+			var mainVBox = new VBox () { Spacing = 6 };
 			var table = new Table { DefaultColumnSpacing = 6, DefaultRowSpacing = 6 };
 
 			var label = new Label { Text = GettextCatalog.GetString ("Name:") };
