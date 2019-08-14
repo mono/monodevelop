@@ -29,6 +29,7 @@
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting.Commands
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.UnitTesting.Commands
 		ShowTestDetails,
 		GoToFailure,
 		RerunTest,
+		DebugAllTests,
 	}
 
 	public enum TestChartCommands
@@ -80,6 +82,40 @@ namespace MonoDevelop.UnitTesting.Commands
 			}
 		}
 		
+		protected override void Update (CommandInfo info)
+		{
+			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			if (ob != null) {
+				UnitTest test = UnitTestService.FindRootTest (ob);
+				info.Enabled = (test != null);
+			} else
+				info.Enabled = false;
+		}
+	}
+
+	class DebugAllTestsHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			if (ob != null) {
+				UnitTest test = UnitTestService.FindRootTest (ob);
+				if (test != null) {
+					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+					if (debugModeSet == null)
+						return;
+					foreach (var mode in debugModeSet.ExecutionModes) {
+						if (test.CanRun (mode.ExecutionHandler)) {
+							ExecutionContext context = new ExecutionContext (mode, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+							UnitTestService.RunTest (test, context);
+							return;
+						}
+					}
+				}
+
+			}
+		}
+
 		protected override void Update (CommandInfo info)
 		{
 			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;

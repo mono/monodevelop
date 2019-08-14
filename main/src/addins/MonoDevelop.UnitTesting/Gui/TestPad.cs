@@ -82,7 +82,7 @@ namespace MonoDevelop.UnitTesting
 		
 		ArrayList testNavigationHistory = new ArrayList ();
 
-		Button buttonRunAll, buttonStop;
+		Button buttonRunAll, buttonStop,buttonDebugAll;
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
@@ -105,6 +105,14 @@ namespace MonoDevelop.UnitTesting
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Add (buttonRunAll);
 			
+			buttonDebugAll = new Button (GettextCatalog.GetString ("Debug All"));
+			buttonDebugAll.Accessible.Name = "TestPad.DebugAll";
+			buttonDebugAll.Accessible.Description = GettextCatalog.GetString ("Debug all the tests");
+			buttonDebugAll.Clicked += new EventHandler (OnDebugAllClicked);
+			buttonDebugAll.Sensitive = true;
+			buttonDebugAll.TooltipText = GettextCatalog.GetString ("Debug all tests");
+			topToolbar.Add (buttonDebugAll);
+
 			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonStop.Sensitive = false;
@@ -554,6 +562,24 @@ namespace MonoDevelop.UnitTesting
 			RunTest (TreeView.GetRootNode (), null);
 		}
 		
+		void OnDebugAllClicked (object sender, EventArgs args)
+		{
+			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+			if (debugModeSet == null)
+				return;
+
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+
+			foreach (var mode in debugModeSet.ExecutionModes) {
+				if (test.CanRun (mode.ExecutionHandler)) {
+					RunTests (TreeView.GetSelectedNodes (), mode.ExecutionHandler);
+				}
+			}
+			
+		}
+
 		void RunSelectedTest (IExecutionHandler mode)
 		{
 			RunTests (TreeView.GetSelectedNodes (), mode);
@@ -565,6 +591,7 @@ namespace MonoDevelop.UnitTesting
 			runningTestOperation = null;
 			this.buttonRunAll.Sensitive = true;
 			this.buttonStop.Sensitive = false;
+			this.buttonDebugAll.Sensitive = true;
 
 		}
 
