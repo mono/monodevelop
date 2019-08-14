@@ -42,3 +42,5 @@
 /main/tests/IdeUnitTests @mono/monodevelop-infrastructure
 /main/tests/UnitTests @mono/monodevelop-infrastructure
 /main/src/tools/ExtensionTools @mono/monodevelop-infrastructure
+/main/Directory.Build.props @mono/monodevelop-roslyn
+/main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn
