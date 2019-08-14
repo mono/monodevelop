@@ -913,6 +913,8 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void AddTopLevel (DockFrameTopLevel w, int x, int y, int width, int height)
 		{
+			ValidateWindowBounds (ref x, ref y, ref width, ref height);
+
 			w.X = x;
 			w.Y = y;
 
@@ -952,7 +954,15 @@ namespace MonoDevelop.Components.Docking
 				topLevels.Add (w);
 			}
 		}
-		
+
+		void ValidateWindowBounds (ref int x, ref int y, ref int w, ref int h)
+		{
+			x = Math.Max (0, x);
+			y = Math.Max (0, y);
+			w = Math.Min (mainBox.Allocation.Width - x, w);
+			h = Math.Min (mainBox.Allocation.Height - y, h);
+		}
+
 		internal void RemoveTopLevel (DockFrameTopLevel w)
 		{
 			w.Unparent ();
