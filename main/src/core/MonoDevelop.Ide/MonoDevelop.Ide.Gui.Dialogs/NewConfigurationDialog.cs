@@ -29,10 +29,11 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using Xwt;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	class NewConfigurationDialog : Dialog
+	class NewConfigurationDialog : Xwt.Dialog
 	{
 		public string ConfigName {
 			get {
@@ -85,18 +86,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			var label = new Label { Text = GettextCatalog.GetString ("Name:") };
 			comboName = new ComboBoxEntry ();
+			comboName.TextEntry.Changed += ComboTextChanged;
 			comboName.Accessible.LabelWidget = label;
 			table.Add (label, 0, 0);
 			table.Add (comboName, 1, 0);
 
-			comboName.TextEntry.Changed += TextEntry_Changed;
-
 			label = new Label { Text = GettextCatalog.GetString ("Platform:") };
 			comboPlatform = new ComboBoxEntry ();
+			comboPlatform.TextEntry.Changed += ComboTextChanged;
 			comboPlatform.Accessible.LabelWidget = label;
 			comboPlatform.WidthRequest = 250;
 			table.Add (label, 0, 1);
 			table.Add (comboPlatform, 1, 1);
+
+			popover = new InformationPopoverWidget ();
+			popover.Visible = false;
+			table.Add (popover, 2, 0);
 
 			createChildrenCheck = new CheckBox { Label = GettextCatalog.GetString ("Create configurations for all solution items") };
 
@@ -107,20 +112,41 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Buttons.Add (cancelButton);
 
 			okButton = new DialogButton (Command.Ok);
-			okButton.Clicked += OkButtonClicked;
 			Buttons.Add (okButton);
 
 			DefaultCommand = okButton.Command;
 
 			Content = mainVBox;
+
+			ValidateText ();
 		}
 
-		private void TextEntry_Changed (object sender, EventArgs e)
+		void ComboTextChanged (object sender, EventArgs e)
 		{
-			// This does nothing. For some reason without having this attached to
-			// comboName.TextEntry.Changed, when we hit OK then there is an empty
-			// string in comboName.TextEntry (even though the text is visible).
-			// This doesn't happen on comboPlatform.TextEntry though.
+			ValidateText ();
+		}
+
+		void ValidateText ()
+		{
+			var name = comboName.TextEntry.Text.Trim ();
+			var isOk = false;
+
+			if (name.Length == 0 || name.IndexOf ('|') != -1) {
+				isOk = false;
+				popover.Message = GettextCatalog.GetString ("Please enter a valid configuration name.");
+				popover.Severity = Tasks.TaskSeverity.Warning;
+				popover.Show ();
+			} else if (configurations[ConfigName] != null) {
+				isOk = false;
+				popover.Message = GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", ConfigName);
+				popover.Severity = Tasks.TaskSeverity.Warning;
+				popover.Show ();
+			} else {
+				isOk = true;
+				popover.Hide ();
+			}
+
+			okButton.Sensitive = isOk;
 		}
 
 		protected override void Dispose (bool disposing)
@@ -128,8 +154,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			base.Dispose (disposing);
 
 			if (disposing) {
-				okButton.Clicked -= OkButtonClicked;
-				comboName.TextEntry.Changed -= TextEntry_Changed;
+				comboName.TextEntry.Changed -= ComboTextChanged;
+				comboPlatform.TextEntry.Changed -= ComboTextChanged;
 			}
 		}
 
@@ -153,22 +179,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 
-		void OkButtonClicked (object sender, EventArgs e)
-		{
-			var name = comboName.TextEntry.Text.Trim ();
-			if (name.Length == 0 || name.IndexOf ('|') != -1) {
-				MessageService.ShowWarning (this, GettextCatalog.GetString ("Please enter a valid configuration name."));
-			} else if (configurations[ConfigName] != null) {
-				MessageService.ShowWarning (this, GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", ConfigName));
-			} else {
-				Respond (Command.Ok);
-			}
-		}
-
 		ItemConfigurationCollection<ItemConfiguration> configurations;
 		ComboBoxEntry comboName;
 		ComboBoxEntry comboPlatform;
 		CheckBox createChildrenCheck;
 		DialogButton okButton;
+		InformationPopoverWidget popover;
 	}
 }
