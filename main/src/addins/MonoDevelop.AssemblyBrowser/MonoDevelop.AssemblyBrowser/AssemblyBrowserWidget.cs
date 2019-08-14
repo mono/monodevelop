@@ -1277,7 +1277,7 @@ namespace MonoDevelop.AssemblyBrowser
 							}
 						}
 					} catch (Exception e) {
-						LoggingService.LogError ($"Can't load definition {def}. File name: {def?.FileName}", e);
+						LoggingService.LogInternalError ($"Can't load definition {def}. File name: {def?.FileName}", e);
 					}
 				}
 			});
