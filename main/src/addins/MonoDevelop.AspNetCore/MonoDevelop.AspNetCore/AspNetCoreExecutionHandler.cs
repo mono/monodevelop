@@ -27,10 +27,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net.Sockets;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.AspNetCore
 {
@@ -86,12 +86,12 @@ namespace MonoDevelop.AspNetCore
 			//Try to connect every 50ms while process is running
 			while (!processTask.IsCompleted) {
 				await Task.Delay (50).ConfigureAwait (false);
-				using (var tcpClient = new TcpClient ()) {
+				using (var httpClient = HttpClientProvider.CreateHttpClient (launchUri.AbsoluteUri)) {
 					try {
-						await tcpClient.ConnectAsync (launchUri.Host, launchUri.Port).ConfigureAwait (false);
-						// pause briefly to allow the server process to initialize
-						await Task.Delay (TimeSpan.FromSeconds (1)).ConfigureAwait (false);
-						break;
+						using (var response = await httpClient.GetAsync (launchUri.AbsoluteUri, System.Net.Http.HttpCompletionOption.ResponseHeadersRead)) {
+							await Task.Delay (1000).ConfigureAwait (false);
+							break;
+						}
 					} catch {
 					}
 				}
