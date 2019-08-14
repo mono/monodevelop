@@ -256,7 +256,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			var b = (Branch) storeBranches.GetValue (it, 0);
-			if (await GitService.SwitchToBranch (repo, b.FriendlyName))
+			if (await GitService.SwitchToBranchAsync (repo, b.FriendlyName))
 				FillBranches ();
 		}
 
