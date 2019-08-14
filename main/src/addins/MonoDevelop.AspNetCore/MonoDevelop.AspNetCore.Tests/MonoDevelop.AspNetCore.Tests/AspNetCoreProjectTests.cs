@@ -1,10 +1,10 @@
 //
-// FrameworkReference.cs
+// AspNetCoreProjectTests.cs
 //
 // Author:
-//       Matt Ward <matt.ward@microsoft.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft
+// Copyright (c) 2019 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.Projects
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using MonoDevelop.Projects;
+using UnitTests;
+
+namespace MonoDevelop.AspNetCore.Tests
 {
-	/// <summary>
-	/// FrameworkReference is a set of known framework assemblies that are versioned
-	/// with the project's TargetFramework. Introduced with .NET Core 3.0
-	/// https://github.com/dotnet/designs/pull/50
-	/// </summary>
-	[ExportProjectItemType ("FrameworkReference")]
-	public class FrameworkReference : ProjectItem
+	[TestFixture]
+	class AspNetCoreProjectTests : TestBase
 	{
-		public FrameworkReference ()
+		Solution solution;
+
+		[TearDown]
+		public override void TearDown ()
 		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
 		}
 
-		internal FrameworkReference (string include, IReadOnlyPropertySet metadata)
+		[Test]
+		public async Task RazorClassLib_Load_LoadsProject ()
 		{
-			Include = include;
-			TargetingPackVersion = metadata.GetValue ("TargetingPackVersion");
+			// Just test, for now, that we can load a Razor Class Lib project
+			string projectFileName = Util.GetSampleProject ("aspnetcore-razor-class-lib", "aspnetcore-razor-class-lib.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName)) {
+				Assert.NotNull (project.Items.Single (item => item.Include == "Areas\\MyFeature\\Pages\\Page1.cshtml.cs"));
+				Assert.NotNull (project.Items.Single (item => item.Include == "Areas\\MyFeature\\Pages\\Page1.cshtml"));
+			}
 		}
-
-		public string TargetingPackVersion { get; }
 	}
 }
