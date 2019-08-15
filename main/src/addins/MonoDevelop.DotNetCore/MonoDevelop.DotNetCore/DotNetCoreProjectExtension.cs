@@ -65,7 +65,7 @@ namespace MonoDevelop.DotNetCore
 				// avoid allocation caused by not querying .FileName
 				string fileName = arg.FileName;
 				// make sure the global.json file that has been changed is the one we got when loading the project
-				if (Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPath
+				if (Project.ParentSolution?.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPath
 					&& globalJsonPath.Equals (fileName, StringComparison.OrdinalIgnoreCase)) {
 					DetectSDK (restore: true);
 				}
