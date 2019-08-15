@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
@@ -176,6 +177,33 @@ namespace MonoDevelop.Projects
 		void OnFileChanged (object sender, FileEventArgs e)
 		{
 			fileChangeEvents.Add (e);
+		}
+
+		[TestCase ("base/child", "base", true)]
+		[TestCase ("/foo", "/foo", true)]
+		[TestCase ("/foo", "/foo", false, ExpectedException = typeof (InvalidOperationException))]
+		[TestCase ("/path/to/child", "/path/to", true)]
+		[TestCase ("base", "other", true, ExpectedException = typeof (InvalidOperationException))]
+		public void CanDeleteFolderWithBaseCheckWorks (string path, string requiredParentDirectory, bool canDeleteParent = true)
+		{
+			FileService.AssertCanDeleteDirectory (path, requiredParentDirectory, canDeleteParent);
+		}
+
+		[Test]
+		[ExpectedException (typeof (InvalidOperationException))]
+		public void CantDeleteSystemFolders ()
+		{
+			FileService.AssertCanDeleteDirectory (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData));
+			FileService.AssertCanDeleteDirectory (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments));
+			FileService.AssertCanDeleteDirectory (Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
+		}
+
+		[Test]
+		[ExpectedException (typeof (InvalidOperationException))]
+		public void CantDeleteRoot ()
+		{
+			string root = Platform.IsWindows ? "C:" : "/";
+			FileService.AssertCanDeleteDirectory (root);
 		}
 	}
 }

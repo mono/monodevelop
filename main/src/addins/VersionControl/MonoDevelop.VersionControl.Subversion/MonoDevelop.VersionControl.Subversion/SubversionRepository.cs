@@ -515,6 +515,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		protected override async Task OnDeleteDirectoriesAsync (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (string path in localPaths) {
+				if (!keepLocal)
+					FileService.AssertCanDeleteDirectory (path, RootPath);
+
 				if (await IsVersionedAsync (path, monitor.CancellationToken)) {
 					string newPath = String.Empty;
 					if (keepLocal) {
@@ -535,8 +538,9 @@ namespace MonoDevelop.VersionControl.Subversion
 								await RevertAsync (path, false, monitor);
 							}
 						}
-					} else
+					} else {
 						Directory.Delete (path, true);
+					}
 				}
 			}
 		}

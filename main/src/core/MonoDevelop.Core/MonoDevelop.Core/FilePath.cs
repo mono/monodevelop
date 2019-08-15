@@ -204,12 +204,14 @@ namespace MonoDevelop.Core
 		public bool IsChildPathOf (FilePath basePath)
 		{
 			bool startsWith = fileName.StartsWith (basePath.fileName, PathComparison);
-			if (startsWith && basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar) {
+			
+			if (startsWith && (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar &&
+				basePath.fileName [basePath.fileName.Length - 1] != Path.AltDirectorySeparatorChar)) {
 				// If the last character isn't a path separator character, check whether the string we're searching in
 				// has more characters than the string we're looking for then check the character.
 				// Otherwise, if the path lengths are equal, we return false.
 				if (fileName.Length > basePath.fileName.Length)
-					startsWith &= fileName [basePath.fileName.Length] == Path.DirectorySeparatorChar;
+					startsWith &= fileName [basePath.fileName.Length] == Path.DirectorySeparatorChar || fileName [basePath.fileName.Length] == Path.AltDirectorySeparatorChar;
 				else
 					startsWith = false;
 			}
