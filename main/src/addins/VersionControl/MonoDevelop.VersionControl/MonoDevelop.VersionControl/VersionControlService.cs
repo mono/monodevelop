@@ -528,6 +528,8 @@ namespace MonoDevelop.VersionControl
 				}
 				if (vargs.Count > 0)
 					NotifyFileStatusChanged (vargs);
+			} catch (OperationCanceledException) {
+				return;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			} finally {
@@ -637,6 +639,8 @@ namespace MonoDevelop.VersionControl
 					return;
 
 				NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));
+			} catch (OperationCanceledException) {
+				return;
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}

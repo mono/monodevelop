@@ -50,13 +50,14 @@ namespace MonoDevelop.VersionControl
 				}
 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to ignore the selected files?"),
-				                                AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
+												AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
 					return false;
 
-				await new IgnoreWorker (items).StartAsync(cancellationToken).ConfigureAwait (false);
+				await new IgnoreWorker (items).StartAsync (cancellationToken).ConfigureAwait (false);
 				return true;
-			}
-			catch (Exception ex) {
+			} catch (OperationCanceledException) {
+				return false;
+			} catch (Exception ex) {
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
@@ -116,13 +117,14 @@ namespace MonoDevelop.VersionControl
 				}
 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to unignore the selected files?"),
-				                                AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
+												AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
 					return false;
 
-				await new UnignoreWorker (items).StartAsync(cancellationToken).ConfigureAwait (false);
+				await new UnignoreWorker (items).StartAsync (cancellationToken).ConfigureAwait (false);
 				return true;
-			}
-			catch (Exception ex) {
+			} catch (OperationCanceledException) {
+				return false;
+			} catch (Exception ex) {
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
