@@ -10,7 +10,6 @@ using Newtonsoft.Json.Linq;
 
 namespace MonoDevelop.AspNetCore
 {
-
 	[JsonObject (MemberSerialization.OptIn)]
 	internal class LaunchProfileData
 	{
@@ -143,7 +142,7 @@ namespace MonoDevelop.AspNetCore
 		/// Helper to convert an ILaunchProfile back to its serializable form. Basically, it
 		/// converts it to a dictionary of settings. This preserves custom values
 		/// </summary>
-		public static Dictionary<string, object> ToSerializableForm (ILaunchProfile profile)
+		internal static Dictionary<string, object> ToSerializableForm (ILaunchProfile profile)
 		{
 			var data = new Dictionary<string, object> (StringComparer.Ordinal);
 
@@ -189,7 +188,7 @@ namespace MonoDevelop.AspNetCore
 		/// Helper to convert an ILaunchProfile back to its serializable form. It does some
 		/// fixup. Like setting empty values to null.
 		/// </summary>
-		public static LaunchProfileData FromILaunchProfile (ILaunchProfile profile)
+		internal static LaunchProfileData FromILaunchProfile (ILaunchProfile profile)
 		{
 			return new LaunchProfileData () {
 				Name = profile.Name,
