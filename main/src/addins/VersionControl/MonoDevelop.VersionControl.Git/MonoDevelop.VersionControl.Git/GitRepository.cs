@@ -1422,8 +1422,7 @@ namespace MonoDevelop.VersionControl.Git
 
 					try {
 						RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, options);
-					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (inner => inner is LibGit2Sharp.UserCancelledException);
+					} catch (UserCancelledException) {
 						return;
 					}
 					var updateOptions = new SubmoduleUpdateOptions {
@@ -1438,7 +1437,7 @@ namespace MonoDevelop.VersionControl.Git
 							RecursivelyCloneSubmodules (RootPath, updateOptions, monitor);
 					} catch (Exception e) {
 						LoggingService.LogError ("Cloning submodules failed", e);
-						Directory.Delete (RootPath, true);
+						FileService.DeleteDirectory (RootPath);
 						skipSubmodules = true;
 						throw e;
 					}
