@@ -99,6 +99,8 @@ namespace MonoDevelop.VersionControl
 			if (versionInfo != null)
 				return versionInfo;
 			try {
+				if (Repository.TryGetVersionInfo (Path, out versionInfo))
+					return versionInfo;
 				versionInfo = await Repository.GetVersionInfoAsync (Path, VersionInfoQueryFlags.IgnoreCache, cancellationToken).ConfigureAwait (false);
 				if (versionInfo == null)
 					versionInfo = new VersionInfo (Path, "", IsDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
