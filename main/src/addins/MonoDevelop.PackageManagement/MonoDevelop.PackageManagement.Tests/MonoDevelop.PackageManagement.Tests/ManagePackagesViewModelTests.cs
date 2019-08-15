@@ -1785,5 +1785,103 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("LibB", action.Project.Name);
 			Assert.IsFalse (action.LicensesMustBeAccepted);
 		}
+
+		[Test]
+		public async Task Update_PackageInTwoProjects_PackageActionsCreatedForBothProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("Test", "0.1");
+
+			var project2 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project2);
+			nugetProject.AddPackageReference ("Test", "0.1");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("Test", "0.2");
+			viewModel.PageSelected = ManagePackagesPage.Updates;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels.Single ();
+			viewModel.SelectedPackage = package;
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+
+			// Check two install actions - one for each project.
+			var selectedProjects = new [] { project, project2 };
+			var actions = viewModel.CreatePackageActions (new [] { package }, selectedProjects).ToList ();
+
+			Assert.AreEqual (2, actions.Count);
+			var action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
+
+			action = actions [1] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsFalse (action.LicensesMustBeAccepted);
+		}
+
+		[Test]
+		public async Task Update_PackagesInTwoProjects_PackageActionsCreatedForBothProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("TestA", "0.1");
+
+			var project2 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project2);
+			nugetProject.AddPackageReference ("TestB", "0.1");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("TestA", "0.2");
+			viewModel.PackageFeed.AddPackage ("TestB", "0.3");
+			viewModel.PageSelected = ManagePackagesPage.Updates;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels [0];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			Assert.AreEqual ("TestA", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+
+			package = viewModel.PackageViewModels [1];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			Assert.AreEqual ("TestB", package.Id);
+			Assert.AreEqual ("0.3", package.Version.ToString ());
+
+			// Check two install actions - one for each project.
+			var selectedProjects = new [] { project, project2 };
+			var actions = viewModel.CreatePackageActions (viewModel.PackageViewModels, selectedProjects).ToList ();
+
+			Assert.AreEqual (2, actions.Count);
+			var action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("TestA", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
+
+			action = actions [1] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("TestB", action.PackageId);
+			Assert.AreEqual ("0.3", action.Version.ToString ());
+			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
+		}
 	}
 }
