@@ -1419,8 +1419,13 @@ namespace MonoDevelop.VersionControl.Git
 							});
 						}
 					};
-					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, options);
 
+					try {
+						RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, options);
+					} catch (AggregateException ae) {
+						ae.Flatten ().Handle (inner => inner is LibGit2Sharp.UserCancelledException);
+						return;
+					}
 					var updateOptions = new SubmoduleUpdateOptions {
 						Init = true,
 						CredentialsProvider = options.CredentialsProvider,
