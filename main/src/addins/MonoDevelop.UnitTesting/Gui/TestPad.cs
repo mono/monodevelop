@@ -545,6 +545,7 @@ namespace MonoDevelop.UnitTesting
 				UnitTestService.ResetResult (test.RootTest);
 			
 			this.buttonRunAll.Sensitive = false;
+			this.buttonDebugAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;
 
 			ExecutionContext context = new ExecutionContext (mode, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
@@ -574,7 +575,8 @@ namespace MonoDevelop.UnitTesting
 
 			foreach (var mode in debugModeSet.ExecutionModes) {
 				if (test.CanRun (mode.ExecutionHandler)) {
-					RunTests (TreeView.GetSelectedNodes (), mode.ExecutionHandler);
+					RunTest (test, mode.ExecutionHandler);
+					return;
 				}
 			}
 			
