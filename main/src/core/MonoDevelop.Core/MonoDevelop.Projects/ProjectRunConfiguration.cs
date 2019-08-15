@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects
 
 		public ProjectRunConfiguration (string name): base (name)
 		{
+			StoreInUserFile = !UserSpecificUnSupported;
 		}
 
 		internal protected virtual void Initialize (Project project)
@@ -150,7 +151,9 @@ namespace MonoDevelop.Projects
 
 		internal MSBuildProjectInstance ProjectInstance { get; set; }
 
-		public bool StoreInUserFile { get; set; } = true;
+		public bool StoreInUserFile { get; set; } 
+
+		public bool UserSpecificUnSupported { get; set; }
 	}
 }
 
