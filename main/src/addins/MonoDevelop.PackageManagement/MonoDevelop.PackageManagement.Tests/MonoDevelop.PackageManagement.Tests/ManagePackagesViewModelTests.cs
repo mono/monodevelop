@@ -1654,24 +1654,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("TestA", action.PackageId);
 			Assert.AreEqual ("0.3", action.Version.ToString ());
 			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
 
 			action = actions [1] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("TestA", action.PackageId);
 			Assert.AreEqual ("0.3", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsFalse (action.LicensesMustBeAccepted);
 
 			action = actions [2] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("TestB", action.PackageId);
 			Assert.AreEqual ("0.4", action.Version.ToString ());
 			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
 
 			action = actions [3] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("TestB", action.PackageId);
 			Assert.AreEqual ("0.4", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsFalse (action.LicensesMustBeAccepted);
 		}
 
 		[Test]
@@ -1707,12 +1711,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("Test", action.PackageId);
 			Assert.AreEqual ("0.1", action.Version.ToString ());
 			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
 
 			action = actions [1] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("Test", action.PackageId);
 			Assert.AreEqual ("0.1", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsFalse (action.LicensesMustBeAccepted);
 		}
 
 		[Test]
@@ -1756,24 +1762,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("TestA", action.PackageId);
 			Assert.AreEqual ("0.1", action.Version.ToString ());
 			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
 
 			action = actions [1] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("TestA", action.PackageId);
 			Assert.AreEqual ("0.1", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsFalse (action.LicensesMustBeAccepted);
 
 			action = actions [2] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("TestB", action.PackageId);
 			Assert.AreEqual ("0.2", action.Version.ToString ());
 			Assert.AreEqual ("LibA", action.Project.Name);
+			Assert.IsTrue (action.LicensesMustBeAccepted);
 
 			action = actions [3] as InstallNuGetPackageAction;
 			Assert.AreEqual (PackageActionType.Install, action.ActionType);
 			Assert.AreEqual ("TestB", action.PackageId);
 			Assert.AreEqual ("0.2", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
+			Assert.IsFalse (action.LicensesMustBeAccepted);
 		}
 	}
 }
