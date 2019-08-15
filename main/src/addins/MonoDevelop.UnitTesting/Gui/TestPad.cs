@@ -565,12 +565,16 @@ namespace MonoDevelop.UnitTesting
 		
 		void OnDebugAllClicked (object sender, EventArgs args)
 		{
-			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
-			if (debugModeSet == null)
+			var nav = TreeView.GetRootNode ();
+			if (nav == null)
 				return;
 
-			UnitTest test = GetSelectedTest ();
+			var test = nav.DataItem as UnitTest;
 			if (test == null)
+				return;
+
+			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+			if (debugModeSet == null)
 				return;
 
 			foreach (var mode in debugModeSet.ExecutionModes) {
