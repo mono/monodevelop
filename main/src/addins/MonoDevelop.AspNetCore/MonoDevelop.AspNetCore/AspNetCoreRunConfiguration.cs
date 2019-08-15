@@ -52,7 +52,7 @@ namespace MonoDevelop.AspNetCore
 		internal event EventHandler SaveRequested;
 
 		internal AspNetCoreRunConfiguration (string name, LaunchProfileData profile)
-			: base (name)
+			: this (name)
 		{
 			CurrentProfile = profile;
 
@@ -62,6 +62,7 @@ namespace MonoDevelop.AspNetCore
 		public AspNetCoreRunConfiguration (string name)
 			: base (name)
 		{
+			base.UserSpecificUnSupported = true;
 		}
 		
 		[Obsolete]
