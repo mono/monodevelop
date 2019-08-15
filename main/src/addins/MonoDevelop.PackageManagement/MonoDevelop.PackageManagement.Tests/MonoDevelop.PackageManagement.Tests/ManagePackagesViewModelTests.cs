@@ -1673,5 +1673,107 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("0.4", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
 		}
+
+		[Test]
+		public async Task Install_PackageInTwoProjects_PackageActionsCreatedForBothProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			CreateNuGetProjectForProject (project);
+
+			var project2 = AddProjectToSolution ("LibB");
+			CreateNuGetProjectForProject (project2);
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("Test", "0.1");
+			viewModel.PageSelected = ManagePackagesPage.Browse;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels.Single ();
+			viewModel.SelectedPackage = package;
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.1", package.Version.ToString ());
+
+			// Check two install actions - one for each project.
+			var selectedProjects = new [] { project, project2 };
+			var actions = viewModel.CreatePackageActions (new [] { package }, selectedProjects).ToList ();
+
+			Assert.AreEqual (2, actions.Count);
+			var action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("0.1", action.Version.ToString ());
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			action = actions [1] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("0.1", action.Version.ToString ());
+			Assert.AreEqual ("LibB", action.Project.Name);
+		}
+
+		[Test]
+		public async Task Install_PackagesInTwoProjects_PackageActionsCreatedForBothProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			CreateNuGetProjectForProject (project);
+
+			var project2 = AddProjectToSolution ("LibB");
+			CreateNuGetProjectForProject (project2);
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("TestA", "0.1");
+			viewModel.PackageFeed.AddPackage ("TestB", "0.2");
+			viewModel.PageSelected = ManagePackagesPage.Browse;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels [0];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			Assert.AreEqual ("TestA", package.Id);
+			Assert.AreEqual ("0.1", package.Version.ToString ());
+
+			package = viewModel.PackageViewModels [1];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			Assert.AreEqual ("TestB", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+
+			// Check two install actions - one for each project.
+			var selectedProjects = new [] { project, project2 };
+			var actions = viewModel.CreatePackageActions (viewModel.PackageViewModels, selectedProjects).ToList ();
+
+			Assert.AreEqual (4, actions.Count);
+			var action = actions [0] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("TestA", action.PackageId);
+			Assert.AreEqual ("0.1", action.Version.ToString ());
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			action = actions [1] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("TestA", action.PackageId);
+			Assert.AreEqual ("0.1", action.Version.ToString ());
+			Assert.AreEqual ("LibB", action.Project.Name);
+
+			action = actions [2] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("TestB", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			action = actions [3] as InstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Install, action.ActionType);
+			Assert.AreEqual ("TestB", action.PackageId);
+			Assert.AreEqual ("0.2", action.Version.ToString ());
+			Assert.AreEqual ("LibB", action.Project.Name);
+		}
 	}
 }
