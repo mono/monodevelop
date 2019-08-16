@@ -316,9 +316,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsTrue (sdkNode.IsTopLevel);
 
 			var activeDirectoryNode = GetNuGetFolderChildDependencies ().Single ();
-			Assert.AreEqual ("Microsoft.IdentityModel.Clients.ActiveDirectory", activeDirectoryNode.Name);
-			Assert.AreEqual ("Microsoft.IdentityModel.Clients.ActiveDirectory", activeDirectoryNode.GetLabel ());
-			Assert.AreEqual ("(3.13.5)", activeDirectoryNode.GetSecondaryLabel ());
+			Assert.AreEqual ("Test.Xam.IndirectNuGetWarning", activeDirectoryNode.Name);
+			Assert.AreEqual ("Test.Xam.IndirectNuGetWarning", activeDirectoryNode.GetLabel ());
+			Assert.AreEqual ("(0.1.0)", activeDirectoryNode.GetSecondaryLabel ());
 			Assert.IsTrue (activeDirectoryNode.CanBeRemoved);
 			Assert.IsFalse (activeDirectoryNode.IsReadOnly);
 			Assert.IsTrue (activeDirectoryNode.IsTopLevel);
@@ -330,7 +330,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (systemNetHttpNode.CanBeRemoved);
 			Assert.IsFalse (systemNetHttpNode.IsTopLevel);
 			Assert.AreEqual (TaskSeverity.Warning, systemNetHttpNode.GetStatusSeverity ());
-			string diagnosticMessage = "Microsoft.IdentityModel.Clients.ActiveDirectory 3.13.5 depends on System.Net.Http (>= 4.0.1) but System.Net.Http 4.0.1 was not found. An approximate best match of System.Net.Http 4.1.0 was resolved.";
+			string diagnosticMessage = "Test.Xam.IndirectNuGetWarning 0.1.0 depends on System.Net.Http (>= 4.0.1) but System.Net.Http 4.0.1 was not found. An approximate best match of System.Net.Http 4.1.0 was resolved.";
 			Assert.AreEqual (systemNetHttpNode.GetStatusMessage (), diagnosticMessage);
 
 			// Diagnostic child node should be added to the systemNetHttpNode.

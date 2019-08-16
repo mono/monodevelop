@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.13.5" />
+    <PackageReference Include="Test.Xam.IndirectNuGetWarning" Version="0.1.0" />
   </ItemGroup>
 </Project>
