@@ -9,7 +9,7 @@
 # https://help.github.com/articles/about-codeowners
 
 /main/Directory.Build.props @mono/monodevelop-roslyn
-/main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn
+/main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn @mono/monodevelop-infrastructure
 /main/src/addins/CSharpBinding @mono/monodevelop-roslyn
 /main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.AtkCocoaHelper @iainx
