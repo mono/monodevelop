@@ -1,4 +1,4 @@
 setlocal
-set CONFIG=ReleaseWin32
+set CONFIG=DebugWin32
 call winbuild.bat %*
 endlocal
