@@ -349,6 +349,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.Spa.Angular.CSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.Spa.React.CSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.Spa.ReactRedux.CSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Worker.Empty.CSharp", "UseNetCore30=true", false)]
 		public async Task AspNetCore30 (string templateId, string parameters, bool checkExecutionTargets)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {

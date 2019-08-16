@@ -132,6 +132,18 @@
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
+				id="Microsoft.Worker.Empty.CSharp"
+				templateId="Microsoft.Worker.Empty.CSharp.3.0"
+				_overrideName="Worker"
+				_overrideDescription="An empty project template for creating a worker service."
+				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
 				id="Microsoft.Web.RazorPages.CSharp"
 				templateId="Microsoft.Web.RazorPages.CSharp.3.0"
 				_overrideName="Web Application"
