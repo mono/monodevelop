@@ -43,7 +43,7 @@ git submodule update --init --recursive || goto :error
 
 "%MSBUILD_EXE%" external\fsharpbinding\.paket\paket.targets /t:RestorePackages /p:PaketReferences="%~dp0external\fsharpbinding\MonoDevelop.FSharpBinding\paket.references"
 
-set "CONFIG=DebugWin32"
+if not defined CONFIG (set "CONFIG=DebugWin32")
 set "PLATFORM=Any CPU"
 
 "%MSBUILD_EXE%" Main.sln /bl:MonoDevelop.binlog /r /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
