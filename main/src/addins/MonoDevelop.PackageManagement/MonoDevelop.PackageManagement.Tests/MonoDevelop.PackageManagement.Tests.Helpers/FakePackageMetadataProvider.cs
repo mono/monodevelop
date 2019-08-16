@@ -45,12 +45,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public Task<IPackageSearchMetadata> GetLocalPackageMetadataAsync (PackageIdentity identity, bool includePrerelease, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException ();
+			return GetPackageMetadataAsync (identity, includePrerelease, cancellationToken);
 		}
 
 		public Task<IPackageSearchMetadata> GetPackageMetadataAsync (PackageIdentity identity, bool includePrerelease, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException ();
+			var metadata = new FakePackageSearchMetadata {
+				Identity = identity
+			};
+			return Task.FromResult<IPackageSearchMetadata> (metadata);
 		}
 
 		public Task<IEnumerable<IPackageSearchMetadata>> GetPackageMetadataListAsync (string packageId, bool includePrerelease, bool includeUnlisted, CancellationToken cancellationToken)

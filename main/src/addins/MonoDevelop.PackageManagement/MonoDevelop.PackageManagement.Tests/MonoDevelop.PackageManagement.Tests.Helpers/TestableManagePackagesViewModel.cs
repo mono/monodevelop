@@ -82,10 +82,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public FakePackageFeed PackageFeed = new FakePackageFeed ();
+		public Func<PackageLoadContext, IPackageFeed> CreatePackageFeedAction = context => { return null; };
 
 		protected override IPackageFeed CreatePackageFeed (PackageLoadContext context)
 		{
-			return PackageFeed;
+			return CreatePackageFeedAction (context) ?? PackageFeed;
 		}
 
 		protected override Task CreateReadPackagesTask ()
