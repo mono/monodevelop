@@ -761,83 +761,81 @@ namespace MonoDevelop.VersionControl.Git
 		// This way we reduce the number of GitRevisions created and RevWalks done.
 		Dictionary<FilePath, GitRevision> versionInfoCacheRevision = new Dictionary<FilePath, GitRevision> ();
 		Dictionary<FilePath, GitRevision> versionInfoCacheEmptyRevision = new Dictionary<FilePath, GitRevision> ();
-		Task<VersionInfo[]> GetDirectoryVersionInfoAsync (FilePath localDirectory, IEnumerable<FilePath> localFileNames, bool getRemoteStatus, bool recursive, CancellationToken cancellationToken)
+		async Task<VersionInfo[]> GetDirectoryVersionInfoAsync (FilePath localDirectory, IEnumerable<FilePath> localFileNames, bool getRemoteStatus, bool recursive, CancellationToken cancellationToken)
 		{
 			var versions = new List<VersionInfo> ();
 
-			return ExclusiveOperationFactory.StartNew (() => {
-				if (localFileNames != null) {
-					var localFiles = new List<FilePath> ();
-					var groups = GroupByRepository (localFileNames);
-					foreach (var group in groups) {
-						var repositoryRoot = group.Key.Info.WorkingDirectory;
-						GitRevision arev;
-						if (!versionInfoCacheEmptyRevision.TryGetValue (repositoryRoot, out arev)) {
-							arev = new GitRevision (this, repositoryRoot, null);
-							versionInfoCacheEmptyRevision.Add (repositoryRoot, arev);
-						}
-						foreach (var p in group) {
-							if (Directory.Exists (p)) {
-								if (recursive)
-									versions.AddRange (GetDirectoryVersionInfoAsync (p, getRemoteStatus, true, cancellationToken).Result);
-								versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
-							} else
-								localFiles.Add (p);
-						}
+			if (localFileNames != null) {
+				var localFiles = new List<FilePath> ();
+				var groups = GroupByRepository (localFileNames);
+				foreach (var group in groups) {
+					var repositoryRoot = group.Key.Info.WorkingDirectory;
+					GitRevision arev;
+					if (!versionInfoCacheEmptyRevision.TryGetValue (repositoryRoot, out arev)) {
+						arev = new GitRevision (this, repositoryRoot, null);
+						versionInfoCacheEmptyRevision.Add (repositoryRoot, arev);
 					}
-					// No files to check, we are done
-					if (localFiles.Count != 0) {
-						foreach (var group in groups) {
-							var repository = group.Key;
-							var repositoryRoot = repository.Info.WorkingDirectory;
-
-							GitRevision rev = null;
-							Commit headCommit = GetHeadCommit (repository);
-							if (headCommit != null) {
-								if (!versionInfoCacheRevision.TryGetValue (repositoryRoot, out rev)) {
-									rev = new GitRevision (this, repositoryRoot, headCommit);
-									versionInfoCacheRevision.Add (repositoryRoot, rev);
-								} else if (rev.GetCommit (repository) != headCommit) {
-									rev = new GitRevision (this, repositoryRoot, headCommit);
-									versionInfoCacheRevision [repositoryRoot] = rev;
-								}
-							}
-
-							GetFilesVersionInfoCore (repository, rev, group.ToList (), versions);
-						}
-					}
-				} else {
-					var directories = new List<FilePath> ();
-					CollectFiles (directories, localDirectory, recursive);
-
-					// Set directory items as Versioned.
-					GitRevision arev = null;
-					foreach (var group in GroupByRepositoryRoot (directories)) {
-						if (!versionInfoCacheEmptyRevision.TryGetValue (group.Key, out arev)) {
-							arev = new GitRevision (this, group.Key, null);
-							versionInfoCacheEmptyRevision.Add (group.Key, arev);
-						}
-						foreach (var p in group)
+					foreach (var p in group) {
+						if (Directory.Exists (p)) {
+							if (recursive)
+								versions.AddRange (await GetDirectoryVersionInfoAsync (p, getRemoteStatus, true, cancellationToken));
 							versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+						} else
+							localFiles.Add (p);
 					}
+				}
+				// No files to check, we are done
+				if (localFiles.Count != 0) {
+					foreach (var group in groups) {
+						var repository = group.Key;
+						var repositoryRoot = repository.Info.WorkingDirectory;
 
-					var rootRepository = GetRepository (RootPath);
-					Commit headCommit = GetHeadCommit (rootRepository);
-					if (headCommit != null) {
-						if (!versionInfoCacheRevision.TryGetValue (RootPath, out arev)) {
-							arev = new GitRevision (this, RootPath, headCommit);
-							versionInfoCacheRevision.Add (RootPath, arev);
-						} else if (arev.GetCommit (rootRepository) != headCommit) {
-							arev = new GitRevision (this, RootPath, headCommit);
-							versionInfoCacheRevision [RootPath] = arev;
+						GitRevision rev = null;
+						Commit headCommit = GetHeadCommit (repository);
+						if (headCommit != null) {
+							if (!versionInfoCacheRevision.TryGetValue (repositoryRoot, out rev)) {
+								rev = new GitRevision (this, repositoryRoot, headCommit);
+								versionInfoCacheRevision.Add (repositoryRoot, rev);
+							} else if (rev.GetCommit (repository) != headCommit) {
+								rev = new GitRevision (this, repositoryRoot, headCommit);
+								versionInfoCacheRevision [repositoryRoot] = rev;
+							}
 						}
-					}
 
-					GetDirectoryVersionInfoCore (rootRepository, arev, localDirectory.CanonicalPath, versions, recursive);
+						GetFilesVersionInfoCore (repository, rev, group.ToList (), versions);
+					}
+				}
+			} else {
+				var directories = new List<FilePath> ();
+				CollectFiles (directories, localDirectory, recursive);
+
+				// Set directory items as Versioned.
+				GitRevision arev = null;
+				foreach (var group in GroupByRepositoryRoot (directories)) {
+					if (!versionInfoCacheEmptyRevision.TryGetValue (group.Key, out arev)) {
+						arev = new GitRevision (this, group.Key, null);
+						versionInfoCacheEmptyRevision.Add (group.Key, arev);
+					}
+					foreach (var p in group)
+						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
 				}
 
-				return versions.ToArray ();
-			});
+				var rootRepository = GetRepository (RootPath);
+				Commit headCommit = GetHeadCommit (rootRepository);
+				if (headCommit != null) {
+					if (!versionInfoCacheRevision.TryGetValue (RootPath, out arev)) {
+						arev = new GitRevision (this, RootPath, headCommit);
+						versionInfoCacheRevision.Add (RootPath, arev);
+					} else if (arev.GetCommit (rootRepository) != headCommit) {
+						arev = new GitRevision (this, RootPath, headCommit);
+						versionInfoCacheRevision [RootPath] = arev;
+					}
+				}
+
+				GetDirectoryVersionInfoCore (rootRepository, arev, localDirectory.CanonicalPath, versions, recursive);
+			}
+
+			return versions.ToArray ();
 		}
 
 		static void GetFilesVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, List<FilePath> localPaths, List<VersionInfo> versions)
@@ -1649,19 +1647,22 @@ namespace MonoDevelop.VersionControl.Git
 			return RunOperationAsync (repositoryPath, repository => GetCommitTextContent (gitRev.GetCommit (repository), repositoryPath, repository));
 		}
 
-		public override DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
+
+
+
+		public override Task<DiffInfo> GenerateDiffAsync (FilePath baseLocalPath, VersionInfo versionInfo)
 		{
-			try {
-				return RunOperation (versionInfo.LocalPath, repository => {
+			return RunOperationAsync (versionInfo.LocalPath, repository => {
+				try {
 					var patch = repository.Diff.Compare<Patch> (repository.Head?.Tip?.Tree, DiffTargets.WorkingDirectory | DiffTargets.Index, new [] { repository.ToGitPath (versionInfo.LocalPath) });
 					// Trim the header by taking out the first 2 lines.
 					int diffStart = patch.Content.IndexOf ('\n', patch.Content.IndexOf ('\n') + 1);
 					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, patch.Content.Substring (diffStart + 1));
-				});
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not get diff for file '" + versionInfo.LocalPath + "'", ex);
-			}
-			return null;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not get diff for file '" + versionInfo.LocalPath + "'", ex);
+					return null;
+				}
+			});
 		}
 
 		public override async Task<DiffInfo []> PathDiffAsync (FilePath baseLocalPath, FilePath [] localPaths, bool remoteDiff, CancellationToken cancellationToken)
@@ -1669,7 +1670,7 @@ namespace MonoDevelop.VersionControl.Git
 			var diffs = new List<DiffInfo> ();
 			VersionInfo[] vinfos = await GetDirectoryVersionInfoAsync (baseLocalPath, localPaths, false, true, cancellationToken);
 			foreach (VersionInfo vi in vinfos) {
-				var diff = GenerateDiff (baseLocalPath, vi);
+				var diff = await GenerateDiffAsync (baseLocalPath, vi);
 				if (diff != null)
 					diffs.Add (diff);
 			}

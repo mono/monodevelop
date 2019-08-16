@@ -84,7 +84,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 ";
 			if (Platform.IsWindows)
 				difftext = difftext.Replace ("\r\n", "\n");
-			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", await Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
+			Assert.AreEqual (difftext, (await Repo.GenerateDiffAsync (LocalPath + "testfile", await Repo.GetVersionInfoAsync (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache))).Content);
 		}
 
 		protected override void ModifyPath (Repository repo, ref FilePath old)
@@ -209,7 +209,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.IsFalse (status.HasLocalChanges);
 			Assert.AreEqual (VersionStatus.Versioned, status.Status);
 			if (withDiff)
-				Assert.IsTrue (string.IsNullOrEmpty (repo2.GenerateDiff (testPath, status).Content));
+				Assert.IsTrue (string.IsNullOrEmpty ((await repo2.GenerateDiffAsync (testPath, status)).Content));
 
 			// modify the file without staging
 			File.AppendAllText (testPath, "test 2\n");
@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
  test 1
 +test 2
 ".Replace ("file1", testFile);
-				var diff = repo2.GenerateDiff (testPath, status);
+				var diff = await repo2.GenerateDiffAsync (testPath, status);
 				Assert.AreEqual (difftext, diff.Content);
 			}
 
@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.IsTrue (status.Equals (await Repo.GetVersionInfoAsync (testPath, VersionInfoQueryFlags.IgnoreCache)));
 
 			if (withDiff) {
-				var diff = repo2.GenerateDiff (testPath, status);
+				var diff = await repo2.GenerateDiffAsync (testPath, status);
 				Assert.AreEqual (difftext, diff.Content);
 			}
 
@@ -250,7 +250,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 +test 2
 +test 3
 ".Replace ("file1", testFile);
-				var diff = repo2.GenerateDiff (testPath, status);
+				var diff = await repo2.GenerateDiffAsync (testPath, status);
 				Assert.AreEqual (difftext, diff.Content);
 			}
 
