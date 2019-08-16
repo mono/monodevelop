@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.PackageManagement.UI;
 using NuGet.ProjectManagement;
@@ -1882,6 +1883,116 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("0.3", action.Version.ToString ());
 			Assert.AreEqual ("LibB", action.Project.Name);
 			Assert.IsTrue (action.LicensesMustBeAccepted);
+		}
+
+		[Test]
+		public async Task Uninstall_PackageInTwoProjects_PackageActionsCreatedForBothProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("Test", "0.1");
+
+			var project2 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project2);
+			nugetProject.AddPackageReference ("Test", "0.2");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			var metadataProvider = new FakePackageMetadataProvider ();
+			viewModel.CreatePackageFeedAction = context => {
+				return new InstalledPackageFeed (context, metadataProvider, new NullLogger ());
+			};
+			metadataProvider.AddPackageMetadata ("Test", "0.2");
+			viewModel.PageSelected = ManagePackagesPage.Installed;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels.Single ();
+			viewModel.SelectedPackage = package;
+			Assert.AreEqual ("Test", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+
+			// Check two uninstall actions - one for each project.
+			var selectedProjects = new [] { project, project2 };
+			var actions = viewModel.CreatePackageActions (new [] { package }, selectedProjects).ToList ();
+
+			Assert.AreEqual (2, actions.Count);
+			var action = actions [0] as UninstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Uninstall, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			action = actions [1] as UninstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Uninstall, action.ActionType);
+			Assert.AreEqual ("Test", action.PackageId);
+			Assert.AreEqual ("LibB", action.Project.Name);
+		}
+
+		[Test]
+		public async Task Uninstall_PackagesInTwoProjects_PackageActionsCreatedForBothProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("TestA", "0.1");
+			nugetProject.AddPackageReference ("TestB", "0.1");
+
+			var project2 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project2);
+			nugetProject.AddPackageReference ("TestA", "0.1");
+			nugetProject.AddPackageReference ("TestB", "0.2");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			var metadataProvider = new FakePackageMetadataProvider ();
+			viewModel.CreatePackageFeedAction = context => {
+				return new InstalledPackageFeed (context, metadataProvider, new NullLogger ());
+			};
+			metadataProvider.AddPackageMetadata ("TestA", "0.1");
+			metadataProvider.AddPackageMetadata ("TestB", "0.2");
+			viewModel.PageSelected = ManagePackagesPage.Installed;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			var package = viewModel.PackageViewModels [0];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			Assert.AreEqual ("TestA", package.Id);
+			Assert.AreEqual ("0.1", package.Version.ToString ());
+
+			package = viewModel.PackageViewModels [1];
+			viewModel.SelectedPackage = package;
+			package.IsChecked = true;
+			Assert.AreEqual ("TestB", package.Id);
+			Assert.AreEqual ("0.2", package.Version.ToString ());
+
+			// Check four uninstall actions - one for each package and project.
+			var selectedProjects = new [] { project, project2 };
+			var actions = viewModel.CreatePackageActions (viewModel.PackageViewModels, selectedProjects).ToList ();
+
+			Assert.AreEqual (4, actions.Count);
+			var action = actions [0] as UninstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Uninstall, action.ActionType);
+			Assert.AreEqual ("TestA", action.PackageId);
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			action = actions [1] as UninstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Uninstall, action.ActionType);
+			Assert.AreEqual ("TestA", action.PackageId);
+			Assert.AreEqual ("LibB", action.Project.Name);
+
+			action = actions [2] as UninstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Uninstall, action.ActionType);
+			Assert.AreEqual ("TestB", action.PackageId);
+			Assert.AreEqual ("LibA", action.Project.Name);
+
+			action = actions [3] as UninstallNuGetPackageAction;
+			Assert.AreEqual (PackageActionType.Uninstall, action.ActionType);
+			Assert.AreEqual ("TestB", action.PackageId);
+			Assert.AreEqual ("LibB", action.Project.Name);
 		}
 	}
 }
