@@ -375,7 +375,7 @@ namespace MonoDevelop.VersionControl
 			}
 
 			bool res = false;
-			
+
 			try {
 				switch (cmd) {
 				case Commands.Update:
@@ -426,8 +426,9 @@ namespace MonoDevelop.VersionControl
 					res = await ResolveConflictsCommand.ResolveConflicts (items, test);
 					break;
 				}
-			}
-			catch (Exception ex) {
+			} catch (OperationCanceledException) {
+				return TestResult.Disable;
+			} catch (Exception ex) {
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
