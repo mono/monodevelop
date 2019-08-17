@@ -197,6 +197,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				ip.SetCaretLocation (line, column);
 			}
 		}
+
+		protected bool IsActiveView (Widget widget)
+		{
+			if (widget == null)
+				return false;
+
+			if (pages.TryGetValue (widget, out DocumentViewContent view))
+				return container.ActiveView == view;
+			return false;
+		}
 	}
 }
 

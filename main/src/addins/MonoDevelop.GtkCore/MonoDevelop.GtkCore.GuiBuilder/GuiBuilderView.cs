@@ -88,6 +88,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return view;
 		}
 
+		protected override object OnGetContent (Type type)
+		{
+			// Only show GTK# toolbox items or properties when the GTK# designer is active.
+			if (IsActiveView (designerPage)) {
+				if (type.IsAssignableFrom (typeof (DesignerPage))) {
+					return designerPage;
+				} else if (type.IsAssignableFrom (typeof (ToolboxProvider))) {
+					return ToolboxProvider.Instance;
+				}
+			}
+			return base.OnGetContent (type);
+		}
+
 		void AttachWindow (GuiBuilderWindow window)
 		{
 			gproject = window.Project;
