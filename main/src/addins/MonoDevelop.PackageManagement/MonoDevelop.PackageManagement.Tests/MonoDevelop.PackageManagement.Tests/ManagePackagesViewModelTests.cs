@@ -1994,5 +1994,91 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("TestB", action.PackageId);
 			Assert.AreEqual ("LibB", action.Project.Name);
 		}
+
+		[Test]
+		public async Task GetDotNetProjectsToSelect_ThreeProjectsPackageInstalledInTwoProjects_ProjectNotDuplicatedInSelectedProjects ()
+		{
+			CreateProject ();
+			project.Name = "LibA";
+			var nugetProject = CreateNuGetProjectForProject (project);
+			nugetProject.AddPackageReference ("TestA", "0.1");
+
+			var project2 = AddProjectToSolution ("LibB");
+			nugetProject = CreateNuGetProjectForProject (project2);
+			nugetProject.AddPackageReference ("TestB", "0.2");
+
+			var project3 = AddProjectToSolution ("LibC");
+			nugetProject = CreateNuGetProjectForProject (project3);
+			nugetProject.AddPackageReference ("TestA", "0.2");
+			nugetProject.AddPackageReference ("TestB", "0.2");
+
+			AddOnePackageSourceToRegisteredSources ();
+			CreateViewModelForSolution ();
+			viewModel.PackageFeed.AddPackage ("TestA", "0.2");
+			viewModel.PackageFeed.AddPackage ("TestB", "0.5");
+			viewModel.PageSelected = ManagePackagesPage.Browse;
+
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			viewModel.SelectedPackage = viewModel.PackageViewModels [0];
+
+			var selectedProjects = viewModel.GetDotNetProjectsToSelect (new [] { "TestA" }).ToList ();
+			Assert.AreEqual (3, selectedProjects.Count);
+			Assert.AreEqual (project, selectedProjects [0]);
+			Assert.AreEqual (project2, selectedProjects [1]);
+			Assert.AreEqual (project3, selectedProjects [2]);
+
+			viewModel.PageSelected = ManagePackagesPage.Installed;
+
+			// LibB not included - package not installed in this project so cannot be removed.
+			selectedProjects = viewModel.GetDotNetProjectsToSelect (new [] { "TestA" }).ToList ();
+			Assert.AreEqual (2, selectedProjects.Count);
+			Assert.AreEqual (project, selectedProjects [0]);
+			Assert.AreEqual (project3, selectedProjects [1]);
+
+			viewModel.PageSelected = ManagePackagesPage.Updates;
+
+			// LibB not included - package not installed in this project so cannot be removed.
+			selectedProjects = viewModel.GetDotNetProjectsToSelect (new [] { "TestA" }).ToList ();
+			Assert.AreEqual (2, selectedProjects.Count);
+			Assert.AreEqual (project, selectedProjects [0]);
+			Assert.AreEqual (project3, selectedProjects [1]);
+
+			// Check two packages.
+			viewModel.PageSelected = ManagePackagesPage.Browse;
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.PackageViewModels [1].IsChecked = true;
+
+			var packageIds = viewModel.CheckedPackageViewModels.Select (vm => vm.Id).ToList ();
+
+			selectedProjects = viewModel.GetDotNetProjectsToSelect (packageIds).ToList ();
+			Assert.AreEqual (3, selectedProjects.Count);
+			Assert.AreEqual (project, selectedProjects [0]);
+			Assert.AreEqual (project2, selectedProjects [1]);
+			Assert.AreEqual (project3, selectedProjects [2]);
+
+			viewModel.PageSelected = ManagePackagesPage.Installed;
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.PackageViewModels [1].IsChecked = true;
+
+			// All projects included - packages are installed in multiple projects.
+			selectedProjects = viewModel.GetDotNetProjectsToSelect (packageIds).ToList ();
+			Assert.AreEqual (3, selectedProjects.Count);
+			Assert.AreEqual (project, selectedProjects [0]);
+			Assert.AreEqual (project2, selectedProjects [1]);
+			Assert.AreEqual (project3, selectedProjects [2]);
+
+			viewModel.PageSelected = ManagePackagesPage.Updates;
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.PackageViewModels [1].IsChecked = true;
+
+			// All projects included - packages are installed in multiple projects.
+			selectedProjects = viewModel.GetDotNetProjectsToSelect (packageIds).ToList ();
+			Assert.AreEqual (3, selectedProjects.Count);
+			Assert.AreEqual (project, selectedProjects [0]);
+			Assert.AreEqual (project2, selectedProjects [1]);
+			Assert.AreEqual (project3, selectedProjects [2]);
+		}
 	}
 }
