@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			box = new Gtk.VBox ();
 			box.Spacing = 12;
 			userConf = new Gtk.CheckButton (GettextCatalog.GetString ("User-specific configuration")) {
-				Sensitive = !config.ProjectConfig.UserSpecificUnSupported
+				Sensitive = config.ProjectConfig.SupportedFeatures.HasFlag (ProjectRunConfigurationFeatures.UserSpecificSupported)
 			};
 			box.PackEnd (userConf, false, false, 0);
 			box.PackEnd (new Gtk.HSeparator (), false, false, 0);
