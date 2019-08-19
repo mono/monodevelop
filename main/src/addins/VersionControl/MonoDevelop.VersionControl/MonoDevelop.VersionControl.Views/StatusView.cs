@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Views
 					try {
 						DiffInfo result = null;
 						if (!remote)
-							result = vc.GenerateDiff (root, info);
+							result = await vc.GenerateDiffAsync (root, info);
 						return result ?? (await vc.PathDiffAsync (root, new [] { info.LocalPath }, remote)).FirstOrDefault ();
 					} catch (Exception ex) {
 						Exception = ex;

@@ -545,11 +545,11 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public override DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
+		public override Task<DiffInfo> GenerateDiffAsync (FilePath baseLocalPath, VersionInfo versionInfo)
 		{
 			string diff = Svn.GetUnifiedDiff (versionInfo.LocalPath, false, false);
 			if (!string.IsNullOrEmpty (diff))
-				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }).FirstOrDefault ();
+				return Task.FromResult (GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }).FirstOrDefault ());
 			return null;
 		}
 		
