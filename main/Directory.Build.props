@@ -1,6 +1,4 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)msbuild\RoslynVersion.props"/>
-
   <PropertyGroup>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>

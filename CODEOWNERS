@@ -10,7 +10,6 @@
 
 /main/build/MacOSX @Therzok @iainx
 /main/Directory.Build.props @mono/monodevelop-roslyn @mono/monodevelop-infrastructure
-/main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn
 /main/src/addins/CSharpBinding @mono/monodevelop-roslyn
 /main/src/addins/PerformanceDiagnostics @mono/monodevelop-infrastructure
 /main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
