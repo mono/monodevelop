@@ -164,6 +164,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public override void DetachFromView ()
 		{
+			HidePathBar ();
 			if (viewControl != null) {
 				box.Remove (viewControl);
 				viewControl = null;
