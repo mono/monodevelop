@@ -29,6 +29,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using Microsoft.Build.Construction;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects.FileNesting
@@ -141,6 +142,7 @@ namespace MonoDevelop.Projects.FileNesting
 			Project = project;
 			Project.FileAddedToProject += OnFileAddedToProject;
 			Project.FileRemovedFromProject += OnFileRemovedFromProject;
+			Project.FileRenamedInProject += OnFileRenamedInProject;
 			Project.ParentSolution.UserProperties.Changed += OnUserPropertiesChanged;
 		}
 
@@ -174,6 +176,25 @@ namespace MonoDevelop.Projects.FileNesting
 			projectFiles [projectFile] = tmp;
 		}
 
+		void RemoveFile (ProjectFile projectFile)
+		{
+			projectFiles.TryRemove (projectFile, out var nestingInfo);
+
+			// Update parent
+			if (nestingInfo?.Parent != null) {
+				if (projectFiles.TryGetValue (nestingInfo.Parent, out var tmp)) {
+					tmp.Children.Remove (projectFile);
+				}
+			}
+
+			// Update children
+			if (nestingInfo?.Children != null) {
+				foreach (var child in nestingInfo.Children) {
+					AddFile (child);
+				}
+			}
+		}
+
 		void OnFileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
 			foreach (var file in e) {
@@ -187,21 +208,18 @@ namespace MonoDevelop.Projects.FileNesting
 		void OnFileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
 			foreach (var file in e) {
-				projectFiles.TryRemove (file.ProjectFile, out var nestingInfo);
+				RemoveFile (file.ProjectFile);
+			}
 
-				// Update parent
-				if (nestingInfo?.Parent != null) {
-					if (projectFiles.TryGetValue (nestingInfo.Parent, out var tmp)) {
-						tmp.Children.Remove (file.ProjectFile);
-					}
-				}
+			if (fileNestingEnabled)
+				FileNestingService.NotifyNestingRulesChanged (Project);
+		}
 
-				// Update children
-				if (nestingInfo?.Children != null) {
-					foreach (var child in nestingInfo.Children) {
-						AddFile (child);
-					}
-				}
+		void OnFileRenamedInProject (object sender, ProjectFileRenamedEventArgs e)
+		{
+			foreach (var file in e) {
+				RemoveFile (file.ProjectFile);
+				AddFile (file.ProjectFile);
 			}
 
 			if (fileNestingEnabled)
@@ -239,6 +257,7 @@ namespace MonoDevelop.Projects.FileNesting
 		{
 			Project.FileAddedToProject -= OnFileAddedToProject;
 			Project.FileRemovedFromProject -= OnFileRemovedFromProject;
+			Project.FileRenamedInProject += OnFileRenamedInProject;
 			Project.ParentSolution.UserProperties.Changed -= OnUserPropertiesChanged;
 		}
 	}
