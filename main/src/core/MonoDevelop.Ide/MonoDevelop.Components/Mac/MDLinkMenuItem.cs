@@ -45,8 +45,9 @@ namespace MonoDevelop.Components.Mac
 
 		static void MDLinkMenuItem_Activated (object sender, System.EventArgs e)
 		{
-			if (sender is MDLinkMenuItem linkMenuItem)
-			MonoDevelop.Ide.IdeServices.DesktopService.ShowUrl (linkMenuItem.lce.Url);
+			if (sender is MDLinkMenuItem linkMenuItem) {
+				MonoDevelop.Ide.IdeServices.DesktopService.ShowUrl (linkMenuItem.lce.Url);
+			}
 		}
 
 		public void Update (MDMenu parent, ref int index)
