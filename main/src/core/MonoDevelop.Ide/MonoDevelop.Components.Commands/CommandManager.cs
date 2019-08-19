@@ -2238,9 +2238,8 @@ namespace MonoDevelop.Components.Commands
 						if (win == null)
 							win = w;
 					}
-					if (lastFocused.nativeWidget == w) {
-						lastFocusedExists = true;
-					}
+
+					lastFocusedExists |= lastFocused?.nativeWidget == w;
 				}
 			}
 
