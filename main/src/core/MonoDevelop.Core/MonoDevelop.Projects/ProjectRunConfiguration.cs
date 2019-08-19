@@ -30,6 +30,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
+	[Flags]
+	public enum ProjectRunConfigurationFeatures
+	{
+		None,
+		UserSpecificSupported
+	}
+
 	public class ProjectRunConfiguration: SolutionItemRunConfiguration
 	{
 		IPropertySet properties;
@@ -37,7 +44,8 @@ namespace MonoDevelop.Projects
 
 		public ProjectRunConfiguration (string name): base (name)
 		{
-			StoreInUserFile = !UserSpecificUnSupported;
+			//By default, all ProjectRunConfiguration derived classes supports User Specific run configs.
+			SupportedFeatures = ProjectRunConfigurationFeatures.UserSpecificSupported;
 		}
 
 		internal protected virtual void Initialize (Project project)
@@ -151,9 +159,9 @@ namespace MonoDevelop.Projects
 
 		internal MSBuildProjectInstance ProjectInstance { get; set; }
 
-		public bool StoreInUserFile { get; set; } 
+		public bool StoreInUserFile { get; set; } = true;
 
-		public bool UserSpecificUnSupported { get; set; }
+		public ProjectRunConfigurationFeatures SupportedFeatures { get; set; }
 	}
 }
 
