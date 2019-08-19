@@ -200,6 +200,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AddSubview (messageTextField);
 
 			BackgroundColors = new NSColor [] { Styles.ToolbarBackgroundColor };
+
+			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
+			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
+			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
 		}
 
 		public override void KeyDown (NSEvent theEvent)
@@ -303,19 +307,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			dataSource.Clear ();
 		}
 
-		internal void OnContainerIsShown (object sender, EventArgs e)
-		{
-			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
-			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
-			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
-		}
-
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
-				if (container != null) {
-					container.PadContentShown -= OnContainerIsShown;
-				}
 
 				collectionViewDelegate.DragBegin -= CollectionViewDelegate_DragBegin;
 				collectionViewDelegate.SelectionChanged -= CollectionViewDelegate_SelectionChanged;
