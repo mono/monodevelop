@@ -37,14 +37,13 @@ namespace MonoDevelop.Ide.Gui.Shell
 		EventBox notebook;
 		Tabstrip tabstrip;
 		VBox rootTabsBox;
-		HBox bottomBarBox;
 
 		public GtkShellDocumentViewContainerTabs ()
 		{
 			rootTabsBox = new VBox ();
 			rootTabsBox.Accessible.SetShouldIgnore (true);
 
-			bottomBarBox = new HBox (false, 0);
+			var bottomBarBox = new HBox (false, 0);
 			bottomBarBox.Show ();
 			rootTabsBox.PackEnd (bottomBarBox, false, false, 0);
 

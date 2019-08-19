@@ -473,20 +473,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (mainShellView != null) {
 				mainShellView.GotFocus -= ShellContentView_GotFocus;
 				mainShellView.LostFocus -= ShellContentView_LostFocus;
+				mainShellView = null;
 			}
-			AttachedViews.DetachListener ();
+			if (attachmentsContainer != null) {
+				attachmentsContainer.ActiveViewChanged -= AttachmentsContainer_ActiveViewChanged;
+				attachmentsContainer = null;
+			}
 
 			IsRoot = false;
 			window = null;
-			shellView = null;
 		}
 
 		protected virtual void OnDispose ()
 		{
-			foreach (var c in AttachedViews.ToList ())
-				c.Dispose ();
-			AttachedViews.Clear ();
-
 			if (Parent != null) {
 				Parent.RemoveChild (this);
 				Parent = null;
@@ -496,6 +495,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				shellView.Dispose ();
 				shellView = null;
 			}
+
+			foreach (var c in AttachedViews.ToList ())
+				c.Dispose ();
+			AttachedViews.Clear ();
 
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Dispose ();

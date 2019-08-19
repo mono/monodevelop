@@ -141,8 +141,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void HidePathBar ()
 		{
+			DetachPathedDocument ();
+
 			if (pathBar != null) {
-				DetachPathedDocument ();
 				box.Remove (pathBar);
 				pathBar.Destroy ();
 				pathBar = null;
