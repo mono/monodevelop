@@ -29,6 +29,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Web.UI.WebControls;
+using GLib;
 using Microsoft.Build.Construction;
 using Mono.Addins;
 
@@ -176,8 +178,10 @@ namespace MonoDevelop.Projects.FileNesting
 			projectFiles [projectFile] = tmp;
 		}
 
-		void RemoveFile (ProjectFile projectFile)
+		void RemoveFile (ProjectFile projectFile, List<ProjectFile> originalFilesToRemove = null)
 		{
+			bool actuallyRemoveFiles = originalFilesToRemove == null;
+
 			projectFiles.TryRemove (projectFile, out var nestingInfo);
 
 			// Update parent
@@ -190,8 +194,16 @@ namespace MonoDevelop.Projects.FileNesting
 			// Update children
 			if (nestingInfo?.Children != null) {
 				foreach (var child in nestingInfo.Children) {
-					AddFile (child);
+					if (originalFilesToRemove == null) {
+						originalFilesToRemove = new List<ProjectFile> ();
+					}
+					originalFilesToRemove.Add (child);
+					RemoveFile (child, originalFilesToRemove);
 				}
+			}
+
+			if (actuallyRemoveFiles && originalFilesToRemove != null) {
+				Project.Files.RemoveRange (originalFilesToRemove);
 			}
 		}
 
