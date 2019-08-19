@@ -101,6 +101,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			popover = new InformationPopoverWidget ();
 			popover.Visible = false;
+			popover.CanGetFocus = false;
 			table.Add (popover, 2, 0);
 
 			createChildrenCheck = new CheckBox { Label = GettextCatalog.GetString ("Create configurations for all solution items") };
