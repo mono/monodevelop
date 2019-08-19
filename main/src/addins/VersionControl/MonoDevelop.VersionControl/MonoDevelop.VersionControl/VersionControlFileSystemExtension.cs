@@ -107,6 +107,8 @@ namespace MonoDevelop.VersionControl
 					Monitor.TryEnter (moveDirectoryLock);
 					try {
 						await srcRepo.MoveDirectoryAsync (sourcePath, destPath, true, monitor);
+					} catch (OperationCanceledException) {
+						return;
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while moving directory.", e);
 					} finally {

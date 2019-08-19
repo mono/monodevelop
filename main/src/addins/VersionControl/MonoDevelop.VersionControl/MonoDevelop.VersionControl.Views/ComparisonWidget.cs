@@ -186,35 +186,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		public void SetRevision (MonoTextEditor toEditor, Revision rev)
 		{
-			BackgroundWorker worker = new BackgroundWorker ();
-			worker.DoWork += async delegate(object sender, DoWorkEventArgs e) {
-				Revision workingRevision = (Revision)e.Argument;
-				string text = null;
-				try {
-					text = await info.Item.Repository.GetTextAtRevisionAsync ((await info.Item.GetVersionInfoAsync ()).LocalPath, workingRevision);
-				} catch (Exception ex) {
-					text = string.Format (GettextCatalog.GetString ("Error while getting the text of revision {0}:\n{1}"), workingRevision, ex.ToString ());
-					MessageService.ShowError (text);
-				}
-				e.Result = new KeyValuePair<Revision, string> (workingRevision, text);
-			};
-
-			worker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-				Application.Invoke ((o, args) => {
-					var result = (KeyValuePair<Revision, string>)e.Result;
-					var box = toEditor == editors[0] ? diffComboBox : originalComboBox;
-					RemoveLocal (toEditor.GetTextEditorData ());
-					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
-					toEditor.Text = result.Value;
-					IdeApp.Workbench.StatusBar.AutoPulse = false;
-					IdeApp.Workbench.StatusBar.EndProgress ();
-					IdeApp.Workbench.StatusBar.ShowReady ();
-					box.Sensitive = true;
-					UpdateDiff ();
-				});
-			};
-
-			worker.RunWorkerAsync (rev);
 			IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
 			IdeApp.Workbench.StatusBar.AutoPulse = true;
 
@@ -226,6 +197,29 @@ namespace MonoDevelop.VersionControl.Views
 
 			var box2 = toEditor == editors[0] ? diffComboBox : originalComboBox;
 			box2.Sensitive = false;
+
+			Task.Run (async delegate {
+				string text = null;
+				try {
+					text = await info.Item.Repository.GetTextAtRevisionAsync ((await info.Item.GetVersionInfoAsync ()).LocalPath, rev);
+				} catch (Exception ex) {
+					text = string.Format (GettextCatalog.GetString ("Error while getting the text of revision {0}:\n{1}"), rev, ex.ToString ());
+					MessageService.ShowError (text);
+					return;
+				}
+
+				Runtime.RunInMainThread (() => {
+					var box = toEditor == editors [0] ? diffComboBox : originalComboBox;
+					RemoveLocal (toEditor.GetTextEditorData ());
+					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), rev, rev.Time, rev.Author), null, rev);
+					toEditor.Text = text;
+					IdeApp.Workbench.StatusBar.AutoPulse = false;
+					IdeApp.Workbench.StatusBar.EndProgress ();
+					IdeApp.Workbench.StatusBar.ShowReady ();
+					box.Sensitive = true;
+					UpdateDiff ();
+				}).Ignore ();
+			}).Ignore ();
 		}
 
 		internal Revision originalRevision, diffRevision;

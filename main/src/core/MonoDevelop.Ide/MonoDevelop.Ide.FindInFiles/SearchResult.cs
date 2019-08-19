@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		TextEditor GetDocument ()
 		{
-			if (cachedEditor == null || cachedEditor.FileName != FileName || cachedEditorFileProvider != FileProvider) {
+			if (cachedEditor == null || cachedEditor.IsDisposed || cachedEditor.FileName != FileName || cachedEditorFileProvider != FileProvider) {
 				var content = FileProvider.ReadString ();
 				cachedEditor?.Dispose ();
 				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, IdeServices.DesktopService.GetMimeTypeForUri (FileName)));
