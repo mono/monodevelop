@@ -42,16 +42,13 @@ namespace MonoDevelop.Components.Mac
 	{
 		static readonly string servicesID = "MonoDevelop.MacIntegration.MacIntegrationCommands.Services";
 
-		EventHandler CloseHandler;
-
 		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget) : this (manager, ces, commandSource, initialCommandTarget, null)
 		{
 		}
 
 		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget, EventHandler closeHandler)
 		{
-			CloseHandler = closeHandler;
-			this.WeakDelegate = this;
+			Delegate = new MenuDelegate (closeHandler);
 
 			AutoEnablesItems = false;
 
@@ -184,65 +181,74 @@ namespace MonoDevelop.Components.Mac
 				lastSeparator.Hidden = true;
 		}
 
-		[Export ("menuNeedsUpdate:")]
-		void MenuNeedsUpdate (NSMenu menu)
-		{
-			Debug.Assert (menu == this);
-
-			// MacOS calls this for each menu when it's about to open, but also for every menu on every keystroke.
-			// We only want to do the update when the menu's about to open, since it's expensive. Checking whether
-			// NSMenuProperty.Image needs to be updated is the only way to distinguish between these cases.
-			//
-			// http://www.cocoabuilder.com/archive/cocoa/285859-reason-for-menuneedsupdate-notification.html
-			//
-			if (PropertiesToUpdate ().HasFlag (NSMenuProperty.Image))
-				UpdateCommands ();
-		}
-
-		[Export ("menuWillOpen:")]
-		void MenuWillOpen (NSMenu menu)
-		{
-			Ide.IdeApp.DisableIdleActions ();
-			StartBumpingGtkLoop ();
-		}
-
-		[Export ("menuDidClose:")]
-		void MenuDidClose (NSMenu menu)
-		{
-			Ide.IdeApp.EnableIdleActions ();
-			EndBumpingGtkLoop ();
-			if (CloseHandler != null) {
-				CloseHandler (this, null);
-			}
-		}
-
-		static int bumperCount;
-		static NSTimer bumperTimer;
-
-		static void StartBumpingGtkLoop ()
-		{
-			if (bumperCount++ == 0) {
-				var runLoop = NSRunLoop.Current;
-				bumperTimer = NSTimer.CreateRepeatingTimer (0.1d, delegate {
-					Gtk.Application.RunIteration (false);
-				});
-				runLoop.AddTimer (bumperTimer, NSRunLoop.NSRunLoopCommonModes);
-			}
-		}
-
-		static void EndBumpingGtkLoop ()
-		{
-			if (--bumperCount == 0) {
-				bumperTimer.Invalidate ();
-				bumperTimer = null;
-			}
-		}
-
 		public static void ShowLastSeparator (ref NSMenuItem lastSeparator)
 		{
 			if (lastSeparator != null) {
 				lastSeparator.Hidden = false;
 				lastSeparator = null;
+			}
+		}
+
+		class MenuDelegate : NSMenuDelegate
+		{
+			EventHandler CloseHandler;
+
+			public MenuDelegate (EventHandler closeHandler)
+			{
+				CloseHandler = closeHandler;
+			}
+
+			public override void MenuWillOpen (NSMenu menu)
+			{
+				Ide.IdeApp.DisableIdleActions ();
+				StartBumpingGtkLoop ();
+			}
+
+			public override void MenuDidClose (NSMenu menu)
+			{
+				Ide.IdeApp.EnableIdleActions ();
+				EndBumpingGtkLoop ();
+				CloseHandler?.Invoke (this, null);
+				CloseHandler = null;
+			}
+
+			public override void NeedsUpdate (NSMenu menu)
+			{
+				// MacOS calls this for each menu when it's about to open, but also for every menu on every keystroke.
+				// We only want to do the update when the menu's about to open, since it's expensive. Checking whether
+				// NSMenuProperty.Image needs to be updated is the only way to distinguish between these cases.
+				//
+				// http://www.cocoabuilder.com/archive/cocoa/285859-reason-for-menuneedsupdate-notification.html
+				//
+				if (menu is MDMenu mdMenu && menu.PropertiesToUpdate ().HasFlag (NSMenuProperty.Image))
+					mdMenu.UpdateCommands ();
+			}
+
+			public override void MenuWillHighlightItem (NSMenu menu, NSMenuItem item)
+			{
+			}
+
+			static int bumperCount;
+			static NSTimer bumperTimer;
+
+			static void StartBumpingGtkLoop ()
+			{
+				if (bumperCount++ == 0) {
+					var runLoop = NSRunLoop.Current;
+					bumperTimer = NSTimer.CreateRepeatingTimer (0.1d, delegate {
+						Gtk.Application.RunIteration (false);
+					});
+					runLoop.AddTimer (bumperTimer, NSRunLoop.NSRunLoopCommonModes);
+				}
+			}
+
+			static void EndBumpingGtkLoop ()
+			{
+				if (--bumperCount == 0) {
+					bumperTimer.Invalidate ();
+					bumperTimer.Dispose ();
+					bumperTimer = null;
+				}
 			}
 		}
 	}
