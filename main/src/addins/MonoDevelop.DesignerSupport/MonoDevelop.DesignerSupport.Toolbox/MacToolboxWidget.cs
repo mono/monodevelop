@@ -298,20 +298,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return base.BecomeFirstResponder ();
 		}
 
-		#region INativeChildView
-
-		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-
-		}
-
-		public void OnKeyReleased (object s, Gtk.KeyReleaseEventArgs ev)
-		{
-
-		}
-
-		#endregion
-
 		internal void ClearImageCache ()
 		{
 			dataSource.Clear ();
