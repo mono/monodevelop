@@ -72,11 +72,6 @@ namespace MonoDevelop.Debugger
 
 		public override void PreprocessMouseLeftButtonDown (MouseEvent e)
 		{
-			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask) {
-				PreprocessMouseRightButtonDown (e);
-				return;
-			}
-
 			// Record click location.
 			clickLocation = GetMouseLocationInTextView (e);
 
@@ -94,11 +89,6 @@ namespace MonoDevelop.Debugger
 
 		public override void PreprocessMouseLeftButtonUp (MouseEvent e)
 		{
-			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask) {
-				PreprocessMouseRightButtonUp (e);
-				return;
-			}
-
 			// Did we successfully drag a glyph?
 			var mouseUpLocation = GetMouseLocationInTextView (e);
 			if (HandleDragEnd (mouseUpLocation)) {
@@ -133,12 +123,6 @@ namespace MonoDevelop.Debugger
 			var pt = ((NSEvent)e.Event).LocationInWindow;
 			pt = textViewHost.TextView.VisualElement.ConvertPointFromView (pt, null);
 			IdeApp.CommandService.ShowContextMenu (textViewHost.TextView.VisualElement, (int)pt.X, (int)pt.Y, cset, controller);
-		}
-
-		public override void PostprocessMouseLeftButtonUp (MouseEvent e)
-		{
-			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask)
-				PostprocessMouseRightButtonUp (e);
 		}
 
 		public override void PostprocessMouseEnter (MouseEvent e)
