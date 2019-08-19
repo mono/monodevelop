@@ -28,6 +28,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Mono.Addins;
 
@@ -85,7 +86,12 @@ namespace MonoDevelop.Projects.FileNesting
 
 		public static bool IsEnabledForProject (Project project)
 		{
-			return project?.ParentSolution?.UserProperties?.GetValue<bool> ("FileNesting", true) ?? true;
+			return project?.ParentSolution?.UserProperties?.GetValue<bool> ("MonoDevelop.Ide.FileNesting.Enabled", true) ?? true;
+		}
+
+		public static bool AppliesToProject (Project project)
+		{
+			return rulesProviders.Any (rp => rp.AppliesToProject (project));
 		}
 
 		public static ProjectFile GetParentFile (ProjectFile inputFile)
