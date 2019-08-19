@@ -8,6 +8,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
@@ -117,7 +118,9 @@ namespace MonoDevelop.VersionControl
 			protected override async Task RunAsync ()
 			{
 				try {
-						await vc.PublishAsync (moduleName, path, files, message, Monitor);
+					await vc.PublishAsync (moduleName, path, files, message, Monitor);
+				} catch (OperationCanceledException) {
+					return;
 				} catch (VersionControlException e) {
 					LoggingService.LogError ("Publish operation failed", e);
 					Monitor.ReportError (e.Message, null);

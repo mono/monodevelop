@@ -61,14 +61,15 @@ namespace MonoDevelop.VersionControl
 					  "Are you sure you want to revert the changes from the revision selected on these resources?");
 
 				if (MessageService.AskQuestion (question,
-				                                GettextCatalog.GetString ("Note: The reversion will occur in your working copy, so you will still need to perform a commit to complete it."),
-				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
+												GettextCatalog.GetString ("Note: The reversion will occur in your working copy, so you will still need to perform a commit to complete it."),
+												AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
 
-				await new RevertWorker(vc, path, revision, toRevision).StartAsync(cancellationToken);
+				await new RevertWorker (vc, path, revision, toRevision).StartAsync (cancellationToken);
 				return true;
-			}
-			catch (Exception ex) {
+			} catch (OperationCanceledException) {
+				return false;
+			} catch (Exception ex) {
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
@@ -128,6 +129,8 @@ namespace MonoDevelop.VersionControl
 						}
 					});
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
+				} catch (OperationCanceledException) {
+					return;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Revert operation failed", ex);
 					Monitor.ReportError (ex.Message, null);

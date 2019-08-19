@@ -74,6 +74,8 @@ namespace MonoDevelop.VersionControl
 						VersionControlService.NotifyFileStatusChanged (items);
 					});
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
+				} catch (OperationCanceledException) {
+					return Task.CompletedTask;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unlock operation failed", ex);
 					MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);

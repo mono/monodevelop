@@ -497,6 +497,8 @@ namespace MonoDevelop.VersionControl.Views
 					if (!cancel.IsCancellationRequested && !disposed)
 						LoadStatus (newList);
 				}).Ignore ();
+			} catch (OperationCanceledException) {
+				return;
 			} catch (Exception ex) {
 				if (!(ex is OperationCanceledException))
 					LoggingService.LogError ("VCS StatusView update failed", ex);

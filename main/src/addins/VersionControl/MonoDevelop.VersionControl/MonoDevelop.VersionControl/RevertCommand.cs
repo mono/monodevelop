@@ -34,15 +34,16 @@ namespace MonoDevelop.VersionControl
 					return true;
 				}
 
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes made in the selected files?"), 
-				                                GettextCatalog.GetString ("All changes made to the selected files will be permanently lost."),
-				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes made in the selected files?"),
+												GettextCatalog.GetString ("All changes made to the selected files will be permanently lost."),
+												AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
 
-				await new RevertWorker (items).StartAsync();
+				await new RevertWorker (items).StartAsync ();
 				return true;
-			}
-			catch (Exception ex) {
+			} catch (OperationCanceledException) {
+				return false;
+			} catch (Exception ex) {
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
@@ -66,7 +67,9 @@ namespace MonoDevelop.VersionControl
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					try {
-						await list[0].Repository.RevertAsync (list.Paths, true, Monitor);
+						await list [0].Repository.RevertAsync (list.Paths, true, Monitor);
+					} catch (OperationCanceledException) {
+						return;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Revert operation failed", ex);
 						Monitor.ReportError (ex.Message, null);

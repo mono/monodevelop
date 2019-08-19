@@ -39,7 +39,9 @@ namespace MonoDevelop.VersionControl
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					try {
-						await list[0].Repository.UpdateAsync (list.Paths, true, Monitor);
+						await list [0].Repository.UpdateAsync (list.Paths, true, Monitor);
+					} catch (OperationCanceledException) {
+						return;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Update operation failed", ex);
 						Monitor.ReportError (ex.Message, null);
