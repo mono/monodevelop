@@ -41,7 +41,7 @@ namespace MonoDevelop.AspNetCore
 			SourceFile = AddinManager.CurrentAddin.GetFilePath (Path.Combine ("Resources", "AspNetCore.filenesting.json"));
 		}
 
-		protected override bool AppliesToProject (Project project)
+		public override bool AppliesToProject (Project project)
 		{
 			var dotnetProj = project as DotNetProject;
 			return dotnetProj != null && dotnetProj.ProjectProperties.HasProperty ("UsingMicrosoftNETSdkWeb");

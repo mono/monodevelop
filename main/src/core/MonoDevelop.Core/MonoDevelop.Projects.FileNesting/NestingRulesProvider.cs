@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
-		protected virtual bool AppliesToProject (Project project) => true;
+		public virtual bool AppliesToProject (Project project) => true;
 
 		public ProjectFile GetParentFile (ProjectFile inputFile)
 		{
