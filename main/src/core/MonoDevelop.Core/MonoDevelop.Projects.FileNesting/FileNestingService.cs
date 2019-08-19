@@ -29,9 +29,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
-using System.Web.UI.WebControls;
-using GLib;
-using Microsoft.Build.Construction;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects.FileNesting
