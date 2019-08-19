@@ -289,6 +289,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			foreach (var c in Views.ToList ())
 				c.Dispose ();
+			Views.Clear ();
+
 			base.OnDispose ();
 		}
 

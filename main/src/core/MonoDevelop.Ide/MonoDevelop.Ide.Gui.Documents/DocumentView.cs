@@ -474,6 +474,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 				mainShellView.GotFocus -= ShellContentView_GotFocus;
 				mainShellView.LostFocus -= ShellContentView_LostFocus;
 			}
+			AttachedViews.DetachListener ();
+
 			IsRoot = false;
 			window = null;
 			shellView = null;
@@ -481,12 +483,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnDispose ()
 		{
-			if (Parent != null)
+			foreach (var c in AttachedViews.ToList ())
+				c.Dispose ();
+			AttachedViews.Clear ();
+
+			if (Parent != null) {
 				Parent.RemoveChild (this);
-			else if (IsRoot)
+				Parent = null;
+			} else if (IsRoot)
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
-			if (shellView != null)
+			if (shellView != null) {
 				shellView.Dispose ();
+				shellView = null;
+			}
 
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Dispose ();
@@ -494,6 +503,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal virtual void OnClosed ()
 		{
+			foreach (var c in AttachedViews.ToList ())
+				c.Close ();
+
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Close ();
 		}
