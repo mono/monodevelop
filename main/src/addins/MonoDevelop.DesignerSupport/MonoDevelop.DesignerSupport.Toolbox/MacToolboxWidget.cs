@@ -142,24 +142,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public MacToolboxWidget (IPadWindow container) : base ()
+		public MacToolboxWidget (IPadWindow container)
 		{
 			this.container = container;
-			container.PadContentShown += OnContainerIsShown;
-
-			Initialize ();
-		}
-
-		// Called when created from unmanaged code
-		public MacToolboxWidget (IntPtr handle) : base (handle)
-		{
-			Initialize ();
-		}
-
-		// Called when created directly from a XIB file
-		[Export ("initWithCoder:")]
-		public MacToolboxWidget (NSCoder coder) : base (coder)
-		{
 			Initialize ();
 		}
 
