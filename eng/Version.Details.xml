@@ -11,5 +11,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>af34d3d032aaaa0ed6756de4e9dd50a94f7b40f2</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.CodeAnalysis.EditorFeatures" Version="3.3.0-beta3-19415-01">
+      <Uri>https://github.com/dotnet/roslyn</Uri>
+      <Sha>f5ba9f2c61a2fe853dc4913888d40df221539147</Sha>
+    </Dependency>
   </ToolsetDependencies>
 </Dependencies>

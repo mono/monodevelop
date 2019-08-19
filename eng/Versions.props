@@ -3,5 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>1.0.0</VersionPrefix>
     <PreReleaseVersionLabel>prerelease</PreReleaseVersionLabel>
+    <MicrosoftCodeAnalysisEditorFeaturesPackageVersion>3.3.0-beta3-19415-01</MicrosoftCodeAnalysisEditorFeaturesPackageVersion>
+    <NuGetVersionRoslyn>$(MicrosoftCodeAnalysisEditorFeaturesPackageVersion)</NuGetVersionRoslyn>
   </PropertyGroup>
 </Project>
