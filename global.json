@@ -1,0 +1,14 @@
+{
+  "tools": {
+    "dotnet": "3.0.100-preview6-012264",
+    "runtimes": {
+      "dotnet": [
+        "2.1.11"
+      ]
+    }
+  },
+  "msbuild-sdks": {
+    "Microsoft.DotNet.Arcade.Sdk": "1.0.0-beta.19405.1",
+    "Microsoft.DotNet.Helix.Sdk": "2.0.0-beta.19405.1"
+  }
+}
