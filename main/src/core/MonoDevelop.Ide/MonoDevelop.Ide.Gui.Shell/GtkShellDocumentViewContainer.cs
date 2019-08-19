@@ -265,8 +265,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public override void DetachFromView ()
 		{
-			foreach (var child in GetAllViews ())
+			foreach (var child in GetAllViews ()) {
 				child.DetachFromView ();
+			}
+			RemoveAllViews ();
 			base.DetachFromView ();
 		}
 

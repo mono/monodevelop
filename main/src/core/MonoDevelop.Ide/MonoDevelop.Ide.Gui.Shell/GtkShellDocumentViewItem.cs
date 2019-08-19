@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 {
 	class GtkShellDocumentViewItem : EventBox, IShellDocumentViewItem, ICommandDelegator
 	{
-		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
+		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		object delegatedCommandTarget;
 		Task loadTask;
 		bool subscribedWindowsEvents;
@@ -85,8 +85,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		protected override void OnDestroyed ()
 		{
-			UnsubscribeWindowEvents ();
 			cancellationTokenSource.Cancel ();
+
+			focusLostTimeout?.Dispose ();
+			focusLostTimeout = null;
 			base.OnDestroyed ();
 		}
 
@@ -132,13 +134,16 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public virtual void DetachFromView ()
 		{
+			UnsubscribeWindowEvents ();
+
+			Item?.DetachFromView ();
 			Item = null;
 		}
 
 		bool hasFocus;
 		bool hasFocusInWindow;
 		IDisposable focusLostTimeout;
-		static WeakReference<GtkShellDocumentViewItem> lastViewFocused = new WeakReference<GtkShellDocumentViewItem> (null);
+		static readonly WeakReference<GtkShellDocumentViewItem> lastViewFocused = new WeakReference<GtkShellDocumentViewItem> (null);
 
 		protected override void OnFocusChildSet (Widget widget)
 		{
@@ -210,10 +215,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void SubscribeWindowEvents ()
 		{
 			var topLevel = Toplevel as Gtk.Window;
-			if (topLevel == subscribedWindow)
+			if (topLevel == subscribedWindow || cancellationTokenSource.IsCancellationRequested)
 				return;
 
 			UnsubscribeWindowEvents ();
+
 			subscribedWindow = topLevel;
 			if (subscribedWindow != null) {
 				subscribedWindow.FocusInEvent += SubscribedWindow_FocusInEvent;

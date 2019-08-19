@@ -1,4 +1,4 @@
-﻿//
+//
 // DocumentViewContainer.cs
 //
 // Author:
@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return;
 			}
 
-			// Grab the focus in the next UI iteration. 
+			// Grab the focus in the next UI iteration.
 			// If GrabFocus is being called in an event handler, the focus may be lost again after executing
 			// the rest of the handler. Real case: if the focus is being grabbed in the double-click handler
 			// of a list, the focus will be lost since the default click handler will return the focus to
@@ -482,10 +482,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (mainShellView != null) {
 				mainShellView.GotFocus -= ShellContentView_GotFocus;
 				mainShellView.LostFocus -= ShellContentView_LostFocus;
+				mainShellView = null;
 			}
+			if (attachmentsContainer != null) {
+				attachmentsContainer.ActiveViewChanged -= AttachmentsContainer_ActiveViewChanged;
+				attachmentsContainer = null;
+			}
+
 			IsRoot = false;
 			window = null;
-			shellView = null;
 		}
 
 		protected virtual void OnDispose ()
@@ -496,6 +501,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
 			if (shellView != null)
 				shellView.Dispose ();
+
+			foreach (var c in AttachedViews.ToList ())
+				c.Dispose ();
+			AttachedViews.Clear ();
 
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Dispose ();
