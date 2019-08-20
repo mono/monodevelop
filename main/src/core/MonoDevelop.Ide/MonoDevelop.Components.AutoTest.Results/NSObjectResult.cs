@@ -367,7 +367,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			var pObject = pinfo.GetValue (ResultObject, null);
 			LoggingService.LogDebug ($"'RuntimeModel' property on '{type}' is '{pObject}' and is of type '{pinfo.PropertyType}'");
-			var model = (IEnumerable<IRuntimeModel>)pObject;
+			var topRunTimeModels = (IEnumerable<IRuntimeModel>)pObject;
+			var model = AllRuntimes (topRunTimeModels);
 
 			var runtime = model.FirstOrDefault (r => {
 				var mutableModel = r.GetMutableModel ();
@@ -410,6 +411,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 			return false;
 		}
+
+		IEnumerable<IRuntimeModel> AllRuntimes (IEnumerable<IRuntimeModel> runtimes)
+		{
+			foreach (var runtime in runtimes) {
+				yield return runtime;
+				foreach (var childRuntime in AllRuntimes (runtime.Children))
+					yield return childRuntime;
+			}
+		}
+
 		#endregion
 
 		protected override void Dispose (bool disposing)
