@@ -272,7 +272,7 @@ namespace MonoDevelop.Projects.FileNesting
 		{
 			Project.FileAddedToProject -= OnFileAddedToProject;
 			Project.FileRemovedFromProject -= OnFileRemovedFromProject;
-			Project.FileRenamedInProject += OnFileRenamedInProject;
+			Project.FileRenamedInProject -= OnFileRenamedInProject;
 			Project.ParentSolution.UserProperties.Changed -= OnUserPropertiesChanged;
 		}
 	}
