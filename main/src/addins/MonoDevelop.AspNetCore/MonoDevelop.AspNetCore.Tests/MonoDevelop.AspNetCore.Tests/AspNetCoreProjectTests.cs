@@ -25,11 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using MonoDevelop.Projects;
 using UnitTests;
+using MonoDevelop.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore.Tests
 {
@@ -55,6 +58,57 @@ namespace MonoDevelop.AspNetCore.Tests
 			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName)) {
 				Assert.NotNull (project.Items.Single (item => item.Include == "Areas\\MyFeature\\Pages\\Page1.cshtml.cs"));
 				Assert.NotNull (project.Items.Single (item => item.Include == "Areas\\MyFeature\\Pages\\Page1.cshtml"));
+			}
+		}
+
+		[Test]
+		public async Task AspNetCore_FileNesting ()
+		{
+			string projectFileName = Util.GetSampleProject ("aspnetcore-empty-30", "aspnetcore-empty-30.sln");
+			using (var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), projectFileName)) {
+				var files = new List<(string, string)> ();
+				files.Add (("Index.cshtml.cs", "Index.cshtml"));
+				files.Add (("file.html.css", "file.html"));
+				files.Add (("bootstrap.css.map", "bootstrap.css"));
+				files.Add (("jquery.js", "jquery.ts"));
+				files.Add (("site-vsdoc.js", "site.js"));
+				files.Add (("jquery.min.js", "jquery.js"));
+				files.Add (("template.cs", "template.tt"));
+				files.Add (("template.doc", "template.tt"));
+				files.Add ((".bowerrc", "bower.json"));
+
+				var project = sol.GetAllProjectsWithFlavor<AspNetCoreProjectExtension> ().FirstOrDefault ();
+
+				var dir = project.BaseDirectory;
+				project.AddDirectory ("FileNesting");
+
+				foreach (var f in files) {
+					// Create files
+					string inputFileDestination = Path.Combine (dir, "FileNesting", f.Item1);
+					string parentFileDestination = Path.Combine (dir, "FileNesting", f.Item2);
+
+					File.WriteAllText (parentFileDestination, "");
+					var parentFile = project.AddFile (parentFileDestination);
+					File.WriteAllText (inputFileDestination, "");
+					var inputFile = project.AddFile (inputFileDestination);
+
+					var actualParentFile = FileNestingService.GetParentFile (inputFile);
+					Assert.That (parentFile, Is.EqualTo (actualParentFile), $"Was expecting parent file {parentFileDestination} for {inputFileDestination} but got {actualParentFile}");
+
+					// Disable file nesting on the solution
+					sol.UserProperties.SetValue ("MonoDevelop.Ide.FileNesting.Enabled", false);
+					Assert.False (FileNestingService.IsEnabledForProject (project));
+					Assert.Null (FileNestingService.GetParentFile (inputFile));
+
+					// Re-enable file nesting on the solution
+					sol.UserProperties.SetValue ("MonoDevelop.Ide.FileNesting.Enabled", true);
+					Assert.True (FileNestingService.IsEnabledForProject (project));
+
+					// Test removing files
+					project.Files.Remove (inputFile);
+					Assert.That (FileNestingService.GetChildren (parentFile).Count (), Is.EqualTo (0));
+					project.Files.Remove (parentFile);
+				}
 			}
 		}
 	}
