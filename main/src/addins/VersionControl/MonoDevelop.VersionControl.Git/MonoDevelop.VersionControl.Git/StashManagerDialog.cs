@@ -141,7 +141,7 @@ namespace MonoDevelop.VersionControl.Git
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);
-						if (await GitService.SwitchToBranch (repository, dlg.BranchName))
+						if (await GitService.SwitchToBranchAsync (repository, dlg.BranchName))
 							await ApplyStashAndRemove (stashIndex);
 					}
 				} finally {

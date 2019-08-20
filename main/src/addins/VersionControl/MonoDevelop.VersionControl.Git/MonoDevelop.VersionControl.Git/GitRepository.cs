@@ -1874,15 +1874,14 @@ namespace MonoDevelop.VersionControl.Git
 			return RunSafeOperation (() => RootRepository.Head.FriendlyName);
 		}
 
-		void SwitchBranchInternal (ProgressMonitor monitor, string branch)
+		async Task SwitchBranchInternalAsync (ProgressMonitor monitor, string branch)
 		{
 			int progress = 0;
-			RunBlockingOperation (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
+			await ExclusiveOperationFactory.StartNew (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
 				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 				OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
 				CheckoutNotifyFlags = refreshFlags,
-			}), true, monitor.CancellationToken);
-			monitor.Step (1);
+			}), monitor.CancellationToken);
 
 			if (GitService.StashUnstashWhenSwitchingBranches) {
 				try {
@@ -1894,14 +1893,14 @@ namespace MonoDevelop.VersionControl.Git
 					monitor.ReportError (GettextCatalog.GetString ("Restoring stash for branch {0} failed", branch), e);
 				}
 			}
-			monitor.Step (1);
 
-			Runtime.RunInMainThread (() => {
+			monitor.Step (1);
+			await Runtime.RunInMainThread (() => {
 				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
-			}).Ignore ();
+			});
 		}
 
-		public bool SwitchToBranch (ProgressMonitor monitor, string branch)
+		public async Task<bool> SwitchToBranchAsync (ProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
 			Stash stash;
@@ -1914,7 +1913,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				// try to switch without stashing
 				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 2);
-				SwitchBranchInternal (monitor, branch);
+				await SwitchBranchInternalAsync (monitor, branch);
 				return true;
 			} catch (CheckoutConflictException ex) {
 				// retry with stashing
@@ -1947,11 +1946,10 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.Step (1);
 
 				try {
-					SwitchBranchInternal (monitor, branch);
+					await SwitchBranchInternalAsync (monitor, branch);
 					return true;
 				} catch (Exception e) {
 					monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), e);
-				} finally {
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
