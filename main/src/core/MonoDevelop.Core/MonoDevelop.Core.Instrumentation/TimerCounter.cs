@@ -135,30 +135,27 @@ namespace MonoDevelop.Core.Instrumentation
 
 		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
 		{
-			ITimeTracker<T> timer;
 			if (!Enabled && !LogMessages) {
-				timer = new DummyTimerCounter<T> (metadata);
-			} else {
-				var c = new TimeCounter<T> (this, metadata, cancellationToken);
-				if (Enabled) {
-					lock (values) {
-						lastTimer = c;
-						timer = c;
-						count++;
-						totalCount++;
-						int i = StoreValue (message, lastTimer, metadata?.Properties);
-						lastTimer.TraceList.ValueIndex = i;
-					}
-				} else {
-					if (message != null)
-						InstrumentationService.LogMessage (message);
-					else
-						InstrumentationService.LogMessage ("START: " + Name);
-					lastTimer = c;
-					timer = c;
-				}
+				return new DummyTimerCounter<T> (metadata);
 			}
-			return timer;
+
+			var c = new TimeCounter<T> (this, metadata, cancellationToken);
+			lastTimer = c;
+
+			if (Enabled) {
+				lock (values) {
+					count++;
+					totalCount++;
+					int i = StoreValue (message, c, metadata?.Properties);
+					((ITimeCounter)c).TraceList.ValueIndex = i;
+				}
+			} else {
+				if (message != null)
+					InstrumentationService.LogMessage (message);
+				else
+					InstrumentationService.LogMessage ("START: " + Name);
+			}
+			return c;
 		}
 
 		public void EndTiming ()

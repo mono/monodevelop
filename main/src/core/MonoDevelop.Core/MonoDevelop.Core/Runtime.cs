@@ -83,7 +83,7 @@ namespace MonoDevelop.Core
 			if (initialized)
 				return;
 
-			Counters.RuntimeInitialization.BeginTiming ();
+			using var initTimer = Counters.RuntimeInitialization.BeginTiming ();
 			SetupInstrumentation ();
 
 			Platform.Initialize ();
@@ -114,7 +114,7 @@ namespace MonoDevelop.Core
 			AddinManager.AddinAssembliesLoaded += OnAssembliesLoaded;
 
 			try {
-				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
+				initTimer.Trace ("Initializing Addin Manager");
 
 				string configDir, addinsDir, databaseDir;
 				GetAddinRegistryLocation (out configDir, out addinsDir, out databaseDir);
@@ -124,7 +124,7 @@ namespace MonoDevelop.Core
 				if (updateAddinRegistry)
 					AddinManager.Registry.Update (null);
 				setupService = new AddinSetupService (AddinManager.Registry);
-				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
+				initTimer.Trace ("Initialized Addin Manager");
 				
 				PropertyService.Initialize ();
 
@@ -134,13 +134,13 @@ namespace MonoDevelop.Core
 
 				//have to do this after the addin service and property service have initialized
 				if (UserDataMigrationService.HasSource) {
-					Counters.RuntimeInitialization.Trace ("Migrating User Data from MD " + UserDataMigrationService.SourceVersion);
+					initTimer.Trace ("Migrating User Data from MD " + UserDataMigrationService.SourceVersion);
 					UserDataMigrationService.StartMigration ();
 				}
 				
 				RegisterAddinRepositories ();
 
-				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
+				initTimer.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
 				LoadMSBuildLibraries ();
@@ -152,8 +152,6 @@ namespace MonoDevelop.Core
 				AddinManager.AddinLoadError -= OnLoadError;
 				AddinManager.AddinLoaded -= OnLoad;
 				AddinManager.AddinUnloaded -= OnUnload;
-			} finally {
-				Counters.RuntimeInitialization.EndTiming ();
 			}
 		}
 		

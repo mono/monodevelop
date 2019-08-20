@@ -71,7 +71,7 @@ namespace MonoDevelop.Core
 		
 		static PropertyService ()
 		{
-			Counters.PropertyServiceInitialization.BeginTiming ();
+			using var timer = Counters.PropertyServiceInitialization.BeginTiming ();
 			
 			string migrateVersion = null;
 			UserProfile migratableProfile = null;
@@ -109,8 +109,6 @@ namespace MonoDevelop.Core
 					PropertyChanged?.Invoke (sender, args);
 				});
 			};
-			
-			Counters.PropertyServiceInitialization.EndTiming ();
 		}
 		
 		internal static bool GetMigratableProfile (out UserProfile profile, out string version)

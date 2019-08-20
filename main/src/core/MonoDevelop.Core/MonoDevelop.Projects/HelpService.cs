@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 					return;
 				}
 
-				Counters.HelpServiceInitialization.BeginTiming ();
+				var timer = Counters.HelpServiceInitialization.BeginTiming ();
 				
 				try {
 					helpTree = RootTree.LoadTree ();
@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects
 						LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
 				} finally {
 					helpTreeInitialized = true;
-					Counters.HelpServiceInitialization.EndTiming ();
+					timer.End ();
 				}
 			}
 		}

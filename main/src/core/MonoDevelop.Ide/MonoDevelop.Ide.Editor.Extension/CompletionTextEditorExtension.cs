@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								}
 							} finally {
-								Counters.ProcessCodeCompletion.EndTiming ();
+								timer.End ();
 								if (token.IsCancellationRequested) {
 									completionStats.OnUserCanceled (timer.Duration);
 								} else {
@@ -249,17 +249,17 @@ namespace MonoDevelop.Ide.Editor.Extension
 						}, Runtime.MainTaskScheduler);
 					} else {
 						CurrentCompletionContext = null;
-						Counters.ProcessCodeCompletion.EndTiming ();
+						timer.End ();
 						completionStats.OnSuccess (timer.Duration);
 					}
 				} catch (TaskCanceledException) {
-					Counters.ProcessCodeCompletion.EndTiming ();
+					timer.End ();
 					completionStats.OnUserCanceled (timer.Duration);
 				} catch (AggregateException) {
-					Counters.ProcessCodeCompletion.EndTiming ();
+					timer.End ();
 					completionStats.OnFailure (timer.Duration);
 				} catch {
-					Counters.ProcessCodeCompletion.EndTiming ();
+					timer.End ();
 					completionStats.OnFailure (timer.Duration);
 					throw;
 				}
@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								}
 							} finally {
-								Counters.ProcessCodeCompletion.EndTiming ();
+								timer.End ();
 								if (token.IsCancellationRequested) {
 									completionStats.OnUserCanceled (timer.Duration);
 								} else {
@@ -337,14 +337,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 					}
 				} catch (TaskCanceledException) {
 					CurrentCompletionContext = null;
-					Counters.ProcessCodeCompletion.EndTiming ();
+					timer.End ();
 					completionStats.OnUserCanceled (timer.Duration);
 				} catch (AggregateException) {
 					CurrentCompletionContext = null;
-					Counters.ProcessCodeCompletion.EndTiming ();
+					timer.End ();
 					completionStats.OnFailure (timer.Duration);
 				} catch {
-					Counters.ProcessCodeCompletion.EndTiming ();
+					timer.End ();
 					completionStats.OnFailure (timer.Duration);
 					throw;
 				}
@@ -463,10 +463,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 
-			ITimeTracker timer = null;
+			ITimeTracker timer = Counters.ProcessCodeCompletion.BeginTiming ();
 			bool failure = false;
 			try {
-				timer = Counters.ProcessCodeCompletion.BeginTiming ();
 				completionList = await DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason), token);
 				if (completionList != null && completionList.TriggerWordStart >= 0) {
 					CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
@@ -479,7 +478,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				failure = true;
 				throw;
 			} finally {
-				Counters.ProcessCodeCompletion.EndTiming ();
+				timer.End ();
 				if (failure) {
 					completionStats.OnFailure (timer.Duration);
 				} else {
