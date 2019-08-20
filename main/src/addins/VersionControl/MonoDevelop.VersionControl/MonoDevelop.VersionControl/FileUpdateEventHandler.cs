@@ -35,8 +35,6 @@ namespace MonoDevelop.VersionControl
 	{
 		public FileUpdateEventInfo (Repository repo, FilePath filePath, bool isDirectory)
 		{
-			if (FilePath.IsNullOrEmpty)
-				throw new ArgumentNullException (nameof (FilePath));
 			FilePath = filePath;
 			Repository = repo;
 			IsDirectory = isDirectory;
