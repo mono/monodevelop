@@ -43,12 +43,11 @@ namespace MonoDevelop.VersionControl
 	{
 		WorkspaceObject project;
 		Repository repo;
-		VersionControlDocumentInfo vcInfo;
 
-		DocumentView diffView;
-		DocumentView blameView;
-		DocumentView logView;
-		DocumentView mergeView;
+		readonly WeakReference<DocumentView> diffViewRef = new WeakReference<DocumentView> (null);
+		readonly WeakReference<DocumentView> blameViewRef = new WeakReference<DocumentView> (null);
+		readonly WeakReference<DocumentView> logViewRef = new WeakReference<DocumentView> (null);
+		readonly WeakReference<DocumentView> mergeViewRef = new WeakReference<DocumentView> (null);
 
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
@@ -80,13 +79,14 @@ namespace MonoDevelop.VersionControl
 			var mainView = await base.OnInitializeView ();
 			var controller = (FileDocumentController)Controller;
 			var item = new VersionControlItem (repo, project, controller.FilePath, false, null);
-			vcInfo = new VersionControlDocumentInfo (this, Controller, item, item.Repository);
-			vcInfo.Document = Controller.Document;
+			var vcInfo = new VersionControlDocumentInfo (this, Controller, item, item.Repository) {
+				Document = Controller.Document
+			};
 
-			diffView = await TryAttachView (mainView, vcInfo, DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"));
-			blameView = await TryAttachView (mainView, vcInfo, BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"));
-			logView = await TryAttachView (mainView, vcInfo, LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"));
-			mergeView = await TryAttachView (mainView, vcInfo, MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"));
+			diffViewRef.SetTarget (await TryAttachView (mainView, vcInfo, DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository")));
+			blameViewRef.SetTarget (await TryAttachView (mainView, vcInfo, BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file")));
+			logViewRef.SetTarget (await TryAttachView (mainView, vcInfo, LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file")));
+			mergeViewRef.SetTarget (await TryAttachView (mainView, vcInfo, MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file")));
 			return mainView;
 		}
 
@@ -110,35 +110,41 @@ namespace MonoDevelop.VersionControl
 
 		internal void ShowDiffView (Revision originalRevision = null, Revision diffRevision = null, int line = -1)
 		{
-			if (originalRevision != null && diffRevision != null && diffView?.SourceController is DiffView content) {
-				content.ComparisonWidget.info.RunAfterUpdate (delegate {
-					content.ComparisonWidget.SetRevision (content.ComparisonWidget.DiffEditor, diffRevision);
-					content.ComparisonWidget.SetRevision (content.ComparisonWidget.OriginalEditor, originalRevision);
-					if (line != -1) {
-						content.ComparisonWidget.DiffEditor.Caret.Location = new Ide.Editor.DocumentLocation (line, 1);
-						content.ComparisonWidget.DiffEditor.CenterToCaret ();
-					}
-				});
+			if (diffViewRef.TryGetTarget (out var diffView)) {
+				if (originalRevision != null && diffRevision != null && diffView.SourceController is DiffView content) {
+					content.ComparisonWidget.info.RunAfterUpdate (delegate {
+						content.ComparisonWidget.SetRevision (content.ComparisonWidget.DiffEditor, diffRevision);
+						content.ComparisonWidget.SetRevision (content.ComparisonWidget.OriginalEditor, originalRevision);
+						if (line != -1) {
+							content.ComparisonWidget.DiffEditor.Caret.Location = new Ide.Editor.DocumentLocation (line, 1);
+							content.ComparisonWidget.DiffEditor.CenterToCaret ();
+						}
+					});
+				}
+				diffView.SetActive ();
 			}
-			diffView?.SetActive ();
 		}
 
 		internal void ShowBlameView ()
 		{
-			blameView?.SetActive ();
+			if (blameViewRef.TryGetTarget(out var blameView))
+				blameView.SetActive ();
 		}
 
 		internal void ShowLogView (Revision revision = null)
 		{
-			if (revision != null && diffView?.SourceController is LogView content)
-				content.LogWidget.SelectedRevision = revision;
+			if (logViewRef.TryGetTarget (out var logView)) {
+				if (revision != null && logView.SourceController is LogView content)
+					content.LogWidget.SelectedRevision = revision;
 
-			logView?.SetActive ();
+				logView.SetActive ();
+			}
 		}
 
 		internal void ShowMergeView ()
 		{
-			mergeView?.SetActive ();
+			if (mergeViewRef.TryGetTarget (out var mergeView))
+				mergeView.SetActive ();
 		}
 	}
 }

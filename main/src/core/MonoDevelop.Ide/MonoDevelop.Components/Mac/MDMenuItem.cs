@@ -43,54 +43,102 @@ namespace MonoDevelop.Components.Mac
 		public const string ActionSelName = "run:";
 		public static Selector ActionSel = new Selector (ActionSelName);
 
-		CommandEntry ce;
-		CommandManager manager;
-
-		bool isArrayItem;
-		object initialCommandTarget;
-		CommandSource commandSource;
-		CommandInfo lastInfo;
+		readonly Dispatcher dispatcher;
+		readonly bool isArrayItem;
 
 		public MDMenuItem (CommandManager manager, CommandEntry ce, ActionCommand command, CommandSource commandSource, object initialCommandTarget)
 		{
-			this.ce = ce;
-			this.manager = manager;
-			this.initialCommandTarget = initialCommandTarget;
-			this.commandSource = commandSource;
+			dispatcher = new Dispatcher (manager, ce, command, commandSource, initialCommandTarget, this);
 
 			isArrayItem = command.CommandArray;
 
-			Target = this;
+			Target = dispatcher;
 			Action = ActionSel;
 		}
 
 		protected override void Dispose (bool disposing)
 		{
-			if (lastInfo != null) {
-				lastInfo.CancelAsyncUpdate ();
-				lastInfo.Changed -= OnLastInfoChanged;
-				lastInfo = null;
+			if (disposing) {
+				dispatcher.Dispose ();
 			}
-			initialCommandTarget = null;
+
 			base.Dispose (disposing);
 		}
 
-		public CommandManager Manager { get { return manager; } }
-		public CommandEntry CommandEntry { get { return ce; } }
+		public CommandManager Manager { get { return dispatcher.Manager; } }
+		public CommandEntry CommandEntry { get { return dispatcher.Entry; } }
 
-		[Export (ActionSelName)]
-		public void Run (NSMenuItem sender)
+		sealed class Dispatcher : NSObject
 		{
-			var a = sender as MDExpandedArrayItem;
-			//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
-			GLib.Timeout.Add (1, () => {
-				if (a != null) {
-					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, initialCommandTarget, commandSource, lastInfo);
-				} else {
-					manager.DispatchCommand (ce.CommandId, null, initialCommandTarget, commandSource, lastInfo);
+			public CommandManager Manager { get; }
+			public CommandEntry Entry { get; }
+			public CommandSource CommandSource { get; }
+			public object InitialCommandTarget { get; }
+			public CommandInfo LastInfo {
+				get => lastInfo;
+				set {
+					if (lastInfo == value) {
+						return;
+					}
+
+					if (lastInfo != null) {
+						lastInfo.CancelAsyncUpdate ();
+						lastInfo.Changed -= OnLastInfoChanged;
+					}
+					lastInfo = value;
+					if (lastInfo != null && lastInfo.IsUpdatingAsynchronously) {
+						lastInfo.Changed += OnLastInfoChanged;
+					}
 				}
-				return false;
-			});
+			}
+
+			CommandInfo lastInfo;
+			readonly WeakReference<MDMenuItem> itemRef;
+
+			public Dispatcher (CommandManager manager, CommandEntry ce, ActionCommand command, CommandSource commandSource, object initialCommandTarget, MDMenuItem item)
+			{
+				Manager = manager;
+				Entry = ce;
+				CommandSource = commandSource;
+				InitialCommandTarget = initialCommandTarget;
+				itemRef = new WeakReference<MDMenuItem> (item);
+			}
+
+			[Export (ActionSelName)]
+			public void Run (NSMenuItem sender)
+			{
+				var a = sender as MDExpandedArrayItem;
+				//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
+				GLib.Timeout.Add (1, () => {
+					if (a != null) {
+						Manager.DispatchCommand (Entry.CommandId, a.Info.DataItem, InitialCommandTarget, CommandSource, LastInfo);
+					} else {
+						Manager.DispatchCommand (Entry.CommandId, null, InitialCommandTarget, CommandSource, LastInfo);
+					}
+					return false;
+				});
+			}
+
+			void OnLastInfoChanged (object sender, EventArgs args)
+			{
+				if (LastInfo != sender || !itemRef.TryGetTarget (out var menuItem))
+					return;
+
+				var parent = menuItem.Menu;
+				var ind = menuItem.FindMeInParent (parent);
+				menuItem.Update (parent, ref ind, LastInfo);
+				(parent as MDMenu)?.UpdateSeparators ();
+			}
+
+			protected override void Dispose (bool disposing)
+			{
+				if (lastInfo != null) {
+					lastInfo.CancelAsyncUpdate ();
+					lastInfo.Changed -= OnLastInfoChanged;
+					lastInfo = null;
+				}
+				base.Dispose (disposing);
+			}
 		}
 
 		//NOTE: This is used to disable the whole menu when there's a modal dialog.
@@ -112,37 +160,18 @@ namespace MonoDevelop.Components.Mac
 		public void Update (MDMenu parent, ref int index)
 		{
 			try {
-				var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
-				if (lastInfo != info) {
-					if (lastInfo != null) {
-						lastInfo.CancelAsyncUpdate ();
-						lastInfo.Changed -= OnLastInfoChanged;
-					}
-					lastInfo = info;
-					if (lastInfo.IsUpdatingAsynchronously) {
-						lastInfo.Changed += OnLastInfoChanged;
-					}
-				}
+				var info = dispatcher.Manager.GetCommandInfo (dispatcher.Entry.CommandId, new CommandTargetRoute (dispatcher.InitialCommandTarget));
+				dispatcher.LastInfo = info;
 				Update (parent, ref index, info);
 			} catch(Exception ex) {
-				LoggingService.LogInternalError ($"Updating MDMenu for {ce.CommandId} failed.", ex);
+				LoggingService.LogInternalError ($"Updating MDMenu for {dispatcher.Entry.CommandId} failed.", ex);
 			}
-		}
-
-		void OnLastInfoChanged (object sender, EventArgs args)
-		{
-			if (lastInfo != sender)
-				return;
-			var parent = Menu;
-			var ind = FindMeInParent (parent);
-			Update (parent, ref ind, lastInfo);
-			(parent as MDMenu)?.UpdateSeparators ();
 		}
 
 		void Update (NSMenu parent, ref int index, CommandInfo info)
 		{
 			if (!isArrayItem) {
-				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);
+				SetItemValues (this, info, dispatcher.Entry.DisabledVisible, dispatcher.Entry.OverrideLabel);
 				return;
 			}
 
@@ -182,7 +211,7 @@ namespace MonoDevelop.Components.Mac
 
 				var item = new MDExpandedArrayItem {
 					Info = ci,
-					Target = this
+					Target = dispatcher
 				};
 				if (ci is CommandInfoSet) {
 					item.Submenu = new NSMenu ();
@@ -211,7 +240,7 @@ namespace MonoDevelop.Components.Mac
 		{
 			item.Title = GetCleanCommandText (info, overrideLabel);
 
-			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
+			bool enabled = info.Enabled && (!IsGloballyDisabled || dispatcher.CommandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
 
 			item.Enabled = enabled;

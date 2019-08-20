@@ -29,12 +29,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Linq;
+using System.Runtime.Remoting;
 
 namespace MonoDevelop.Components.AutoTest
 {
-	public class ObjectProperties : MarshalByRefObject
+	public class ObjectProperties : MarshalByRefObject, IDisposable
 	{
-		readonly Dictionary<string,AppResult> propertyMap = new Dictionary<string,AppResult> ();
+		Dictionary<string,AppResult> propertyMap = new Dictionary<string,AppResult> ();
 
 		readonly Dictionary<string,PropertyMetadata> propertyMetaData = new Dictionary<string,PropertyMetadata> ();
 
@@ -44,6 +45,9 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			if (!propertyMap.ContainsKey (propertyName))
 				propertyMap.Add (propertyName, propertyValue);
+			else
+				propertyValue.Dispose ();
+
 			if (!propertyMetaData.ContainsKey (propertyName) && propertyInfo != null)
 				propertyMetaData.Add (propertyName, new PropertyMetadata (propertyInfo));
 		}
@@ -64,6 +68,20 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			return propertyMetaData [propertyName];
 		}
+
+		public void Dispose ()
+		{
+			RemotingServices.Disconnect (this);
+
+			if (propertyMap != null) {
+				foreach (var prop in propertyMap)
+					prop.Value.Dispose ();
+
+				propertyMap = null;
+			}
+		}
+
+		public override object InitializeLifetimeService () => null;
 	}
 }
 

@@ -64,12 +64,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.IsNotNull (controller.Child2);
 			Assert.IsNull (controller.Child1.Control);
 			Assert.IsNull (controller.Child2.Control);
+			Assert.IsNull (controller.Attached.Control);
 
 			Assert.AreEqual (1, shell.Windows.Count);
 			await shell.Windows [0].RootView.Show ();
 
 			Assert.IsNotNull (controller.Child1.Control);
 			Assert.IsNotNull (controller.Child2.Control);
+			Assert.IsNotNull (controller.Attached.Control);
 
 			await doc.Close (true);
 
@@ -78,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.AreEqual (1, controller.Child2.DisposeCount);
 			Assert.AreEqual (1, controller.Child1.Control.DisposeCount);
 			Assert.AreEqual (1, controller.Child2.Control.DisposeCount);
+			Assert.AreEqual (1, controller.Attached.Control.DisposeCount);
 		}
 
 		static object [] LoadControllers = {
@@ -420,6 +423,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public ChildDisposableTestController Child1 { get; set; }
 		public ChildDisposableTestController Child2 { get; set; }
+		public ChildDisposableTestController Attached { get; set; }
 
 		protected override void OnDispose ()
 		{
@@ -440,6 +444,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			await Child2.Initialize (new ModelDescriptor ());
 			var view2 = await Child2.GetDocumentView ();
 			container.Views.Add (view2);
+
+			Attached = new ChildDisposableTestController ();
+			await Attached.Initialize (new ModelDescriptor ());
+			var viewAttached = await Attached.GetDocumentView ();
+			container.AttachedViews.Add (viewAttached);
 
 			return container;
 		}
