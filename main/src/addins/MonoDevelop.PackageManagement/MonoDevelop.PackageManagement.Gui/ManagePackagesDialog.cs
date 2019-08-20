@@ -101,7 +101,6 @@ namespace MonoDevelop.PackageManagement
 			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
 			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
 			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
-			this.packageSearchEntry.Activated += PackageSearchEntryActivated;
 			this.packageVersionComboBox.SelectionChanged += PackageVersionChanged;
 			imageLoader.Loaded += ImageLoaded;
 
@@ -839,45 +838,6 @@ namespace MonoDevelop.PackageManagement
 			ManagePackagesSearchResultViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
 			packageViewModel.IsChecked = !packageViewModel.IsChecked;
 			PackageCellViewPackageChecked (null, null);
-		}
-
-		void ManagePackage (ManagePackagesSearchResultViewModel packageViewModel)
-		{
-			try {
-				if (packageViewModel != null) {
-					if (viewModel.IsConsolidatePageSelected) {
-						List<IPackageAction> packageActions = viewModel.CreateConsolidatePackageActions (
-							new ManagePackagesSearchResultViewModel [] { packageViewModel }
-						);
-						RunPackageActions (packageActions);
-					} else {
-						var projects = SelectProjects (packageViewModel).ToList ();
-						if (!projects.Any ())
-							return;
-
-						List<IPackageAction> packageActions = viewModel.CreatePackageActions (
-							new ManagePackagesSearchResultViewModel [] { packageViewModel },
-							projects);
-						RunPackageActions (packageActions);
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError ("ManagePackage failed.", ex);
-				ShowErrorMessage (ex.Message);
-			}
-		}
-
-		void PackageSearchEntryActivated (object sender, EventArgs e)
-		{
-			if (loadingMessageVisible)
-				return;
-
-			if (PackagesCheckedCount > 0) {
-				AddPackagesButtonClicked (sender, e);
-			} else {
-				ManagePackagesSearchResultViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
-				ManagePackage (selectedPackageViewModel);
-			}
 		}
 
 		void PackagesListViewScrollValueChanged (object sender, EventArgs e)
