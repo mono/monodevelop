@@ -70,9 +70,7 @@ namespace MonoDevelop.VersionControl
 			repo = VersionControlService.GetRepository (project);
 			if (repo == null)
 				return false;
-
-			var versionInfo = await repo.GetVersionInfoAsync (fileController.FilePath);
-			return versionInfo.IsVersioned;
+			return repo.TryGetVersionInfo (fileController.FilePath, out var info) && info.IsVersioned;
 		}
 
 		protected internal override async Task<DocumentView> OnInitializeView ()

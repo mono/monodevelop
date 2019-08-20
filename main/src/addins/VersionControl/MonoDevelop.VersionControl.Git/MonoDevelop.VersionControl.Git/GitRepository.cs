@@ -1518,7 +1518,8 @@ namespace MonoDevelop.VersionControl.Git
 									toCheckout.Add (vi.LocalPath);
 							}
 					} else {
-						var vi = await GetVersionInfoAsync (item, cancellationToken: monitor.CancellationToken);
+						if (!TryGetVersionInfo (item, out var vi))
+							continue;
 						if (vi.Status == VersionStatus.Unversioned)
 							continue;
 

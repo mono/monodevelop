@@ -35,9 +35,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public FileUpdateEventInfo (Repository repo, FilePath filePath, bool isDirectory)
 		{
-			if (FilePath.IsNullOrEmpty) {
-				LoggingService.LogInternalError ("FilePath was null or empty.", new Exception (nameof (FilePath)));
-			}
+			if (FilePath.IsNullOrEmpty)
+				throw new ArgumentNullException (nameof (FilePath));
 			FilePath = filePath;
 			Repository = repo;
 			IsDirectory = isDirectory;
