@@ -37,8 +37,6 @@ namespace MonoDevelop.Core.Instrumentation
 	[Serializable]
 	public class TimerCounter : Counter
 	{
-		[NonSerialized]
-		ITimeCounter lastTimer;
 		double minSeconds;
 		TimeSpan totalTime;
 		int totalCountWithTime;
@@ -122,7 +120,6 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 
 			var c = new TimeCounter<T> (this, metadata, cancellationToken);
-			lastTimer = c;
 
 			if (Enabled) {
 				lock (values) {
@@ -138,14 +135,6 @@ namespace MonoDevelop.Core.Instrumentation
 					InstrumentationService.LogMessage ("START: " + Name);
 			}
 			return c;
-		}
-
-		public void EndTiming ()
-		{
-			if (lastTimer != null) {
-				lastTimer.End ();
-				lastTimer = null;
-			}
 		}
 	}
 
