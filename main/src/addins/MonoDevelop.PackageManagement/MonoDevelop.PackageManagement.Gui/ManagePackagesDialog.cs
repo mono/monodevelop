@@ -836,12 +836,9 @@ namespace MonoDevelop.PackageManagement
 
 		void PackagesListRowActivated (object sender, ListViewRowEventArgs e)
 		{
-			if (PackagesCheckedCount > 0) {
-				AddPackagesButtonClicked (sender, e);
-			} else {
-				ManagePackagesSearchResultViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
-				ManagePackage (packageViewModel);
-			}
+			ManagePackagesSearchResultViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
+			packageViewModel.IsChecked = !packageViewModel.IsChecked;
+			PackageCellViewPackageChecked (null, null);
 		}
 
 		void ManagePackage (ManagePackagesSearchResultViewModel packageViewModel)
