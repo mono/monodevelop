@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
   <PropertyGroup>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
@@ -21,5 +23,11 @@
     <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
     <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
     <NuGetVersionVSEditor>16.1.28-g2ad4df7366</NuGetVersionVSEditor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(CopyrightNetFoundation)' != ''">
+    <Copyright>$(CopyrightNetFoundation)</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 </Project>
