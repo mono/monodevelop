@@ -147,6 +147,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			VersionInfo newInfo = null;
 			try {
+				if (args.FilePath.IsNullOrEmpty)
+					return;
 				// Reuse remote status from old version info
 				var token = destroyTokenSource.Token;
 				changeSet.Repository.TryGetVersionInfo (args.FilePath, out newInfo);

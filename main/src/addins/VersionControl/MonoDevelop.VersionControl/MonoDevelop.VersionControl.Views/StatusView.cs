@@ -1007,6 +1007,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		async Task<bool> OnFileStatusChanged (FileUpdateEventInfo args)
 		{
+			if (args.FilePath.IsNullOrEmpty)
+				return false;
 			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
 				return true;
 
