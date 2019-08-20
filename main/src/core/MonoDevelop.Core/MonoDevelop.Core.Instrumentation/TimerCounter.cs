@@ -49,6 +49,8 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 		}
 
+		public override CounterDisplayMode DisplayMode => CounterDisplayMode.Line;
+
 		public override string ToString ()
 		{
 			return string.Format ("[TimerCounter: Name={0} Id={1} Category={2} MinSeconds={3}, TotalTime={4}, AverageTime={5}, MinTime={6}, MaxTime={7}, CountWithDuration={8}]", Name, Id, Category, MinSeconds, TotalTime, AverageTime, MinTime, MaxTime, CountWithDuration);

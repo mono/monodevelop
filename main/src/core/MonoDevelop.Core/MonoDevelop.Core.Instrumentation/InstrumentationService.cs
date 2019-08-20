@@ -345,7 +345,6 @@ namespace MonoDevelop.Core.Instrumentation
 		public static TimerCounter CreateTimerCounter (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null)
 		{
 			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, id, true);
-			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;
 			return c;
@@ -354,7 +353,6 @@ namespace MonoDevelop.Core.Instrumentation
 		public static TimerCounter<T> CreateTimerCounter<T> (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null) where T:CounterMetadata, new()
 		{
 			var c = (TimerCounter<T>) CreateCounter<T> (name, category, logMessages, id, true);
-			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;
 			return c;

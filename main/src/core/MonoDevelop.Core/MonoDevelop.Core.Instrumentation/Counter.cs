@@ -42,7 +42,6 @@ namespace MonoDevelop.Core.Instrumentation
 		protected List<CounterValue> values = new List<CounterValue> ();
 		TimeSpan resolution = TimeSpan.FromMilliseconds (0);
 		DateTime lastValueTime = DateTime.MinValue;
-		CounterDisplayMode displayMode = CounterDisplayMode.Block;
 		bool disposed;
 		string id;
 		
@@ -110,11 +109,8 @@ namespace MonoDevelop.Core.Instrumentation
 		public int TotalCount {
 			get { return totalCount; }
 		}
-		
-		public CounterDisplayMode DisplayMode {
-			get { return this.displayMode; }
-			set { this.displayMode = value; }
-		}
+
+		public virtual CounterDisplayMode DisplayMode => CounterDisplayMode.Block;
 		
 		public IEnumerable<CounterValue> GetValues ()
 		{
