@@ -36,7 +36,6 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		internal int count;
 		internal int totalCount;
-		int lastStoredCount;
 		string name;
 		bool logMessages;
 		CounterCategory category;
@@ -210,8 +209,7 @@ namespace MonoDevelop.Core.Instrumentation
 				if (now - lastValueTime < resolution)
 					return -1;
 			}
-			var val = new CounterValue (count, totalCount, count - lastStoredCount, now, message, timer != null ? timer.TraceList : null, metadata);
-			lastStoredCount = count;
+			var val = new CounterValue (count, totalCount, now, message, timer?.TraceList, metadata);
 
 			if (storeValues)
 				values.Add (val);
@@ -429,18 +427,17 @@ namespace MonoDevelop.Core.Instrumentation
 		readonly IDictionary<string, object> metadata;
 
 		internal CounterValue (int value, int totalCount, DateTime timestamp, IDictionary<string, object> metadata)
-			: this (value, totalCount, 0, timestamp, null, null, metadata)
+			: this (value, totalCount, timestamp, null, null, metadata)
 		{
 		}
 
-		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces, IDictionary<string, object> metadata)
+		internal CounterValue (int value, int totalCount, DateTime timestamp, string message, TimerTraceList traces, IDictionary<string, object> metadata)
 		{
 			Value = value;
 			TimeStamp = timestamp;
 			TotalCount = totalCount;
 			Message = message;
 			this.traces = traces;
-			ValueChange = change;
 			ThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 			this.metadata = metadata;
 		}
@@ -450,8 +447,6 @@ namespace MonoDevelop.Core.Instrumentation
 		public int Value { get; }
 
 		public int TotalCount { get; }
-
-		public int ValueChange { get; }
 
 		public int ThreadId { get; }
 
