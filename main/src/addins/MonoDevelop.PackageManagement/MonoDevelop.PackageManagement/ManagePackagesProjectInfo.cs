@@ -56,5 +56,17 @@ namespace MonoDevelop.PackageManagement
 
 			return string.Compare (Project.Name, other.Project.Name, StringComparison.CurrentCulture);
 		}
+
+		public bool HasAnyPackage (IEnumerable<string> packageIds)
+		{
+			foreach (PackageIdentity package in Packages) {
+				foreach (string packageId in packageIds) {
+					if (StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }

@@ -83,6 +83,10 @@ namespace MonoDevelop.PackageManagement
 			get { return PackageActionType.Uninstall; }
 		}
 
+		internal IDotNetProject Project {
+			get { return dotNetProject; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

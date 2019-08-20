@@ -857,13 +857,8 @@ namespace MonoDevelop.PackageManagement
 					if (projectInfo.Project != project)
 						continue;
 
-					foreach (PackageIdentity package in projectInfo.Packages) {
-						foreach (string packageId in packageIds) {
-							if (StringComparer.OrdinalIgnoreCase.Equals (package.Id, packageId)) {
-								yield return project;
-							}
-						}
-					}
+					if (projectInfo.HasAnyPackage (packageIds))
+						yield return project;
 				}
 			}
 		}
