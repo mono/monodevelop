@@ -34,8 +34,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public MemoryProbe (Counter c)
 		{
-			this.c = c;
-			c++;
+			this.c = ++c;
 		}
 		
 		~MemoryProbe ()

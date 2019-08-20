@@ -64,7 +64,7 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 
 		public TimeSpan AverageTime {
-			get { return totalCountWithTime > 0 ? new TimeSpan (totalTime.Ticks / totalCountWithTime) : TimeSpan.FromTicks (0); }
+			get { return totalCountWithTime > 0 ? TimeSpan.FromTicks (totalTime.Ticks / totalCountWithTime) : TimeSpan.Zero; }
 		}
 
 		public TimeSpan MinTime {
@@ -224,37 +224,30 @@ namespace MonoDevelop.Core.Instrumentation
 
 	public class CounterMetadata
 	{
-		readonly IDictionary<string, object> properties;
+		internal protected IDictionary<string, object> Properties { get; }
 
-		internal protected IDictionary<string, object> Properties => properties;
-
-		public CounterMetadata ()
+		public CounterMetadata () : this(new Dictionary<string, object> ())
 		{
-			properties = new Dictionary<string, object> ();
 		}
 
 		public CounterMetadata (IDictionary<string, object> properties)
 		{
-			if (properties == null) {
-				this.properties = new Dictionary<string, object> ();
-			} else {
-				this.properties = properties;
-			}
+			Properties = properties ?? new Dictionary<string, object> ();
 		}
 
 		public CounterMetadata (CounterMetadata original)
 		{
-			if (original != null && original.properties != null) {
-				this.properties = new Dictionary<string, object> (original.properties);
+			if (original?.Properties != null) {
+				this.Properties = new Dictionary<string, object> (original.Properties);
 			} else {
-				this.properties = new Dictionary<string, object> ();
+				this.Properties = new Dictionary<string, object> ();
 			}
 		}
 
 		public void AddProperties (CounterMetadata original)
 		{
 			foreach (var kvp in original.Properties) {
-				properties [kvp.Key] = kvp.Value;
+				Properties [kvp.Key] = kvp.Value;
 			}
 		}
 
@@ -276,11 +269,11 @@ namespace MonoDevelop.Core.Instrumentation
 		public void SetUserCancel () => Result = CounterResult.UserCancel;
 
 		protected void SetProperty (object value, [CallerMemberName]string name = null)
-			=> properties[name] = value;
+			=> Properties[name] = value;
 
 		protected T GetProperty<T> ([CallerMemberName]string name = null)
 		{
-			if (properties.TryGetValue (name, out var result)) {
+			if (Properties.TryGetValue (name, out var result)) {
 				return (T)Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
 			}
 
@@ -289,7 +282,7 @@ namespace MonoDevelop.Core.Instrumentation
 
 		protected bool ContainsProperty ([CallerMemberName]string propName = null)
 		{
-			return properties.ContainsKey (propName);
+			return Properties.ContainsKey (propName);
 		}
 	}
 
@@ -300,13 +293,6 @@ namespace MonoDevelop.Core.Instrumentation
 		Failure,
 		UserCancel,
 		UserFault
-	}
-
-	public class IncorrectPropertyTypeException : Exception
-	{
-		public IncorrectPropertyTypeException (string message) : base (message)
-		{
-		}
 	}
 }
 
