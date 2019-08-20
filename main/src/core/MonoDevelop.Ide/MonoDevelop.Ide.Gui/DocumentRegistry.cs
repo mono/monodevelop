@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui
 
 		class DocumentInfo : IDisposable
 		{
-			public Document Document { get; private set; }
+			public Document Document { get; private set; } 
 			public DateTime LastSaveTimeUtc { get; set; }
 
 			public DocumentInfo (Document doc)
