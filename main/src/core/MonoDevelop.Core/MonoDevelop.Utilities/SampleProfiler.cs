@@ -41,10 +41,15 @@ namespace MonoDevelop.Utilities
 {
 	public class SampleProfiler
 	{
-		readonly string outputPath;
+		readonly Func<string> getOutputPath;
+		public SampleProfiler (ConfigurationProperty<string> option)
+		{
+			getOutputPath = () => option.Value;
+		}
+
 		public SampleProfiler (string outputPath)
 		{
-			this.outputPath = outputPath;
+			getOutputPath = () => outputPath;
 		}
 
 		public bool ToggleProfilingChecked => sampleProcessPid != -1;
@@ -75,7 +80,7 @@ namespace MonoDevelop.Utilities
 					LoggingService.LogError (errorMessage);
 					return;
 				}
-				ConvertJITAddressesToMethodNames (outputPath, outputFilePath, "Profile");
+				ConvertJITAddressesToMethodNames (getOutputPath (), outputFilePath, "Profile");
 			};
 			return sampleProcess;
 		}
