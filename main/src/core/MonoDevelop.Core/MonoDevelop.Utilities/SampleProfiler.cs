@@ -70,7 +70,7 @@ namespace MonoDevelop.Utilities
 
 			sampleProcess.EnableRaisingEvents = true;
 			sampleProcess.Exited += (sender, args) => {
-				if (sampleProcess.ExitCode != 0) {
+				if (spinDump && sampleProcess.ExitCode != 0) {
 					const string errorMessage = "Administrative privileges required: spindump profiler is intended as a diagnostic tool. To enable spindump profiler handling, add the required sudoers entry";
 					LoggingService.LogError (errorMessage);
 					return;
@@ -88,18 +88,22 @@ namespace MonoDevelop.Utilities
 
 		ProcessStartInfo GetSpinDumpStartInfo (int seconds, string outputFilePath)
 		{
+			const int millisBetweenSamples = 1;
+
+			// We need to delete the file before using it as an output target, otherwise it will error.
 			File.Delete (outputFilePath);
+
 			return new ProcessStartInfo ("sudo") {
 				UseShellExecute = false,
 				// Some weird things happen when using -o, so write to stdout and manually pipe the text
-				Arguments = $"-n spindump {Process.GetCurrentProcess ().Id} {seconds} -noBinary -onlyRunnable -onlyTarget -o {outputFilePath}",
+				Arguments = $"-n spindump {Process.GetCurrentProcess ().Id} {seconds} {millisBetweenSamples} -noBinary -onlyRunnable -onlyTarget -o {outputFilePath}",
 				RedirectStandardOutput = true,
 			};
 		}
 
 		[DllImport ("__Internal")]
 		extern static string mono_pmip (long offset);
-		static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
+		readonly static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
 
 		public static void ConvertJITAddressesToMethodNames (string outputPath, string fileName, string profilingType)
 		{
