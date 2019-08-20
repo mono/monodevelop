@@ -59,7 +59,8 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		#region IAttachableViewContent implementation
-		protected override void OnFocused ()
+
+		protected override void OnContentShown ()
 		{
 			info.Start ();
 			widget.Reset ();

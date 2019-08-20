@@ -116,7 +116,23 @@ namespace MonoDevelop.Core
 			Assert.IsFalse (child.IsChildPathOf (child));
 		}
 
-		[TestCase("test.txt", "test")]
+		[Test]
+		public void TestEmptyIsChildPathOfCases ()
+		{
+			Assert.IsFalse (FilePath.Empty.IsChildPathOf (FilePath.Empty));
+			Assert.IsFalse (FilePath.Empty.IsChildPathOf ("test"));
+			Assert.IsFalse (FilePath.Build ("base").IsChildPathOf (FilePath.Empty));
+		}
+
+		[Test]
+		public void TestNullIsChildPathOfCases ()
+		{
+			Assert.IsFalse (FilePath.Null.IsChildPathOf (FilePath.Null));
+			Assert.IsFalse (FilePath.Null.IsChildPathOf ("test"));
+			Assert.IsFalse (FilePath.Build ("base").IsChildPathOf (FilePath.Null));
+		}
+
+		[TestCase ("test.txt", "test")]
 		[TestCase(".gitignore", "")]
 		public void FileNameWithoutExtension (string fileName, string expected)
 		{
