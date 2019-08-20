@@ -93,24 +93,6 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 
-		public override void Trace (string message)
-		{
-			if (Enabled) {
-				if (lastTimer != null)
-					lastTimer.Trace (message);
-				else {
-					lock (values) {
-						StoreValue (message, null, null);
-					}
-				}
-			} else if (LogMessages) {
-				if (lastTimer != null)
-					lastTimer.Trace (message);
-				else if (message != null)
-					InstrumentationService.LogMessage (message);
-			}
-		}
-
 		public ITimeTracker BeginTiming ()
 		{
 			return BeginTiming (null, (IDictionary<string, object>)null);
