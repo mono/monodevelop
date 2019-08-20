@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects.FileNesting
 				if (parent.Children == null) {
 					parent.Children = new ProjectFileCollection ();
 				}
-				if (!parent.Children.Contains (projectFile)) {
+				if (parent.Children.GetFile (projectFile.FilePath) == null) {
 					parent.Children.Add (projectFile);
 				}
 			}
