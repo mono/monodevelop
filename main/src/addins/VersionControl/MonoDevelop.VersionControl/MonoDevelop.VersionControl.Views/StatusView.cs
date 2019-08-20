@@ -991,7 +991,7 @@ namespace MonoDevelop.VersionControl.Views
 		async void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
 			try {
-				if (args.Any (f => f.FilePath == filepath || (filepath != null && f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
+				if (args.Any (f => f.FilePath == filepath || (filepath != null && !f.FilePath.IsNullOrEmpty && f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
 					StartUpdate ();
 					return;
 				}
