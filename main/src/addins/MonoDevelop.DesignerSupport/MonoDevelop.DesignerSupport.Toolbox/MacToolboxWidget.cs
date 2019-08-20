@@ -38,7 +38,6 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	[Register ("MacToolboxWidget")]
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget
 	{
 		internal const string ImageViewItemName = "ImageViewItem";
@@ -59,7 +58,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler ActivateSelectedItem;
 
 		IPadWindow container;
-		NSTextField messageTextField;
+		
 		MacToolboxWidgetDataSource dataSource;
 
 		bool listMode;
@@ -91,19 +90,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return null;
 				}
 				return CategoryVisibilities [(int)selectedIndexPath.Section].Items [(int)selectedIndexPath.Item];
-			}
-		}
-
-		public string CustomMessage {
-			get => messageTextField.StringValue;
-			set {
-				if (string.IsNullOrEmpty (value)) {
-					messageTextField.StringValue = "";
-					messageTextField.Hidden = true;
-				} else {
-					messageTextField.StringValue = value;
-					messageTextField.Hidden = false;
-				}
 			}
 		}
 
@@ -189,16 +175,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			collectionViewDelegate.DragBegin += CollectionViewDelegate_DragBegin;
 			collectionViewDelegate.SelectionChanged += CollectionViewDelegate_SelectionChanged;
 
-			var fontSmall = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
-			messageTextField = new NSLabel {
-				StringValue = String.Empty,
-				Alignment = NSTextAlignment.Center,
-				Font = fontSmall,
-				LineBreakMode = NSLineBreakMode.ByWordWrapping
-			};
-			messageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
-			AddSubview (messageTextField);
-
 			BackgroundColors = new NSColor [] { Styles.ToolbarBackgroundColor };
 
 			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
@@ -237,8 +213,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override void SetFrameSize (CGSize newSize)
 		{
 			base.SetFrameSize (newSize);
-			var frame = messageTextField.Frame;
-			messageTextField.Frame = new CGRect (frame.Location, newSize);
+		
 			RedrawItems (true, false);
 		}
 

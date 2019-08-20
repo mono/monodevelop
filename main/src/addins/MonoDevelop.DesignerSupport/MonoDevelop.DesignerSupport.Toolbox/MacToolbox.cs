@@ -41,10 +41,10 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
+	class MacToolbox : NSView, IPropertyPadProvider, IToolboxConfiguration
 	{
 		const string ToolboxItemContextMenuCommand = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu";
-
+		const float MessageMargin = 7;
 		const int IconsSpacing = 4;
 		ToolboxService toolboxService;
 
@@ -67,17 +67,27 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Xwt.Drawing.Image groupByCategoryImage;
 
 		NSStackView horizontalStackView;
+		NSStackView verticalStackView;
 
 		const int buttonSizeWidth = 25;
 		const int buttonSizeHeight = buttonSizeWidth;
 
+		NSTextField messageTextField;
+
 		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
 		{
-			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
-			Alignment = NSLayoutAttribute.Leading;
-			Spacing = 0;
-			Distribution = NSStackViewDistribution.Fill;
-			AccessibilityElement = false;
+			WantsLayer = true;
+
+			verticalStackView = new NSStackView () {
+				Orientation = NSUserInterfaceLayoutOrientation.Vertical,
+				Alignment = NSLayoutAttribute.Leading,
+				Spacing = 0,
+				Distribution = NSStackViewDistribution.Fill,
+				AccessibilityElement = false,
+				WantsLayer = true
+			};
+			AddSubview (verticalStackView);
+
 			this.toolboxService = toolboxService;
 			this.container = container;
 
@@ -88,10 +98,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var addImage = ImageService.GetIcon (Stock.Add, Gtk.IconSize.Menu);
 
 			horizontalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
-			AddArrangedSubview (horizontalStackView);
+			verticalStackView.AddArrangedSubview (horizontalStackView);
 
-			horizontalStackView.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 0).Active = true;
-			horizontalStackView.RightAnchor.ConstraintEqualToAnchor (RightAnchor, 0).Active = true;
+			horizontalStackView.LeftAnchor.ConstraintEqualToAnchor (verticalStackView.LeftAnchor, 0).Active = true;
+			horizontalStackView.RightAnchor.ConstraintEqualToAnchor (verticalStackView.RightAnchor, 0).Active = true;
 		
 			horizontalStackView.EdgeInsets = new NSEdgeInsets (7, 7, 7, 7);
 
@@ -151,11 +161,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
-				TranslatesAutoresizingMaskIntoConstraints = false
+				DocumentView = toolboxWidget
 			};
-			scrollView.WantsLayer = true;
-			scrollView.DocumentView = toolboxWidget;
-			AddArrangedSubview (scrollView);
+			verticalStackView.AddArrangedSubview (scrollView);
 
 			//update view when toolbox service updated
 			toolboxService.ToolboxContentsChanged += ToolboxService_ToolboxContentsChanged;
@@ -172,6 +180,49 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.ShowCategories = catToggleButton.Active = true;
 			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
+
+			//custom message
+			var cell = new VerticalAlignmentTextCell (NSTextBlockVerticalAlignment.Middle) {
+				Font = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize),
+				LineBreakMode = NSLineBreakMode.ByWordWrapping,
+				Alignment = NSTextAlignment.Center,
+				Editable = false,
+				Bordered = false,
+				Bezeled = false,
+				DrawsBackground = false,
+				Selectable = false
+			};
+
+			messageTextField = new NSTextField {
+				Cell = cell,
+				WantsLayer = true,
+				Hidden = true
+			};
+			AddSubview (messageTextField);
+		}
+
+		void SetCustomMessage (string value)
+		{
+			if (string.IsNullOrEmpty (value)) {
+				messageTextField.StringValue = "";
+				messageTextField.Hidden = true;
+			} else {
+				messageTextField.StringValue = value;
+				messageTextField.Hidden = false;
+			}
+		}
+
+		public override void SetFrameSize (CGSize newSize)
+		{
+			base.SetFrameSize (newSize);
+			verticalStackView.Frame = Bounds;
+
+			var size = Math.Max (0, newSize.Height - (MessageMargin*2) - horizontalStackView.Frame.Height);
+			messageTextField.Frame = new CGRect (
+				MessageMargin,
+				MessageMargin,
+				Math.Max (0, newSize.Width - (MessageMargin*2)),
+				size);
 		}
 
 		void ToolboxService_ToolboxConsumerChanged (object sender, ToolboxConsumerChangedEventArgs e)
@@ -337,14 +388,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Runtime.AssertMainThread ();
 			
 			if (toolboxService.Initializing) {
-				toolboxWidget.CustomMessage = GettextCatalog.GetString ("Initializing...");
+				SetCustomMessage (GettextCatalog.GetString ("Initializing..."));
 				return;
 			}
 			
 			ConfigureToolbar ();
 
-			toolboxWidget.CustomMessage = null;
-
+			SetCustomMessage (null);
+		
 			toolboxWidget.ClearImageCache ();
 
 			categories.Clear ();
@@ -363,7 +414,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
 		
 			if (categories.Count == 0) {
-				toolboxWidget.CustomMessage = GettextCatalog.GetString ("There are no tools available for the current document.");
+				SetCustomMessage (GettextCatalog.GetString ("There are no tools available for the current document."));
 			}
 		}
 			
