@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Foundation;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace PerformanceDiagnosticsAddIn
@@ -37,7 +38,21 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			UIThreadMonitor.Instance.Profile (5);
+			UIThreadMonitor.Instance.Profile (spinDump: false, 5);
+		}
+	}
+
+	public class SpinDumpFor5SecondsHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.DisableOnShellLock = false;
+			base.Update (info);
+		}
+
+		protected override void Run ()
+		{
+			UIThreadMonitor.Instance.Profile (spinDump: true, 5);
 		}
 	}
 
@@ -62,7 +77,7 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			UIThreadMonitor.Instance.ToggleProfiling ();
+			UIThreadMonitor.Instance.ToggleProfiling (spinDump: false);
 		}
 	}
 
