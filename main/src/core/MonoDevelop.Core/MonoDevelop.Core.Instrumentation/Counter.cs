@@ -423,68 +423,41 @@ namespace MonoDevelop.Core.Instrumentation
 	}
 	
 	[Serializable]
-	public struct CounterValue
+	public readonly struct CounterValue
 	{
-		int value;
-		int totalCount;
-		int change;
-		DateTime timestamp;
-		string message;
-		TimerTraceList traces;
-		int threadId;
-		IDictionary<string, object> metadata;
+		readonly TimerTraceList traces;
+		readonly IDictionary<string, object> metadata;
 
 		internal CounterValue (int value, int totalCount, DateTime timestamp, IDictionary<string, object> metadata)
+			: this (value, totalCount, 0, timestamp, null, null, metadata)
 		{
-			this.value = value;
-			this.timestamp = timestamp;
-			this.totalCount = totalCount;
-			this.message = null;
-			traces = null;
-			threadId = 0;
-			change = 0;
-			this.metadata = metadata;
 		}
 
 		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces, IDictionary<string, object> metadata)
 		{
-			this.value = value;
-			this.timestamp = timestamp;
-			this.totalCount = totalCount;
-			this.message = message;
+			Value = value;
+			TimeStamp = timestamp;
+			TotalCount = totalCount;
+			Message = message;
 			this.traces = traces;
-			this.change = change;
-			this.threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+			ValueChange = change;
+			ThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 			this.metadata = metadata;
 		}
 
-		public DateTime TimeStamp {
-			get { return timestamp; }
-		}
-		
-		public int Value {
-			get { return this.value; }
-		}
-		
-		public int TotalCount {
-			get { return totalCount; }
-		}
+		public DateTime TimeStamp { get; }
 
-		public int ValueChange {
-			get { return change; }
-		}
-		
-		public int ThreadId {
-			get { return this.threadId; }
-		}
-		
-		public string Message {
-			get { return message; }
-		}
-		
-		public bool HasTimerTraces {
-			get { return traces != null; }
-		}
+		public int Value { get; }
+
+		public int TotalCount { get; }
+
+		public int ValueChange { get; }
+
+		public int ThreadId { get; }
+
+		public string Message { get; }
+
+		public bool HasTimerTraces => traces != null;
 
 		public IDictionary<string, object> Metadata {
 			get {
@@ -494,21 +467,12 @@ namespace MonoDevelop.Core.Instrumentation
 				return metadata ?? traces?.Metadata;
 			}
 		}
-		
-		public TimeSpan Duration {
-			get {
-				if (traces == null)
-					return new TimeSpan (0);
-				else
-					return traces.TotalTime;
-			}
-		}
+
+		public TimeSpan Duration => traces != null ? traces.TotalTime : TimeSpan.Zero;
 		
 		public IEnumerable<TimerTrace> GetTimerTraces ()
 		{
-			if (traces == null)
-				yield break;
-			TimerTrace trace = traces.FirstTrace;
+			TimerTrace trace = traces?.FirstTrace;
 			while (trace != null) {
 				yield return trace;
 				trace = trace.Next;

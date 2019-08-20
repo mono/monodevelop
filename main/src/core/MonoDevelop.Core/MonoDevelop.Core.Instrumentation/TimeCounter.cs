@@ -163,7 +163,7 @@ namespace MonoDevelop.Core.Instrumentation
 			stopWatch.Stop ();
 			Duration = stopWatch.Elapsed;
 
-			if (metadata != null && cancellationToken != CancellationToken.None && cancellationToken.IsCancellationRequested)
+			if (metadata != null && cancellationToken.IsCancellationRequested)
 				metadata.SetUserCancel ();
 
 			if (counter.LogMessages) {
