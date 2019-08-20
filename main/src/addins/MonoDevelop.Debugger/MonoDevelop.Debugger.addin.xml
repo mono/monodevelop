@@ -141,7 +141,7 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint"
 				_label = "Toggle Breakpoint"
 				icon = "md-breakpoint"
-				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler" 
+				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler"
 				shortcut = "F9"
 				macShortcut = "Meta|\ F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint"
