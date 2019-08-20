@@ -342,8 +342,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
-
-	class ToggleBreakpointHandler : CommandHandler
+	
+	class ToggleBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -375,7 +375,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class EnableDisableBreakpointHandler : CommandHandler
+	class EnableDisableBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
