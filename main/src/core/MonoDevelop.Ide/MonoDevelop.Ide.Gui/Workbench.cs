@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui
 				await Runtime.GetService<DocumentModelRegistry> ();
 				await Runtime.GetService<DocumentControllerService> ();
 
-				Counters.Initialization.Trace ("Creating DefaultWorkbench");
+				Counters.InitializationTracker.Trace ("Creating DefaultWorkbench");
 				workbench = (DefaultWorkbench) await Runtime.GetService<IShell> ();
 				monitor.Step (1);
 				
@@ -131,10 +131,10 @@ namespace MonoDevelop.Ide.Gui
 
 		void Realize ()
 		{
-			Counters.Initialization.Trace ("Realizing Root Window");
+			Counters.InitializationTracker.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
 
-			Counters.Initialization.Trace ("Initializing monitors");
+			Counters.InitializationTracker.Trace ("Initializing monitors");
 		}
 
 		[Obsolete ("Use Present () instead")]
@@ -158,9 +158,9 @@ namespace MonoDevelop.Ide.Gui
 				if (LayoutChanged != null)
 					LayoutChanged (this, EventArgs.Empty);
 
-				Counters.Initialization.Trace ("Loading memento");
+				Counters.InitializationTracker.Trace ("Loading memento");
 				var memento = IdeApp.Preferences.WorkbenchMemento.Value;
-				Counters.Initialization.Trace ("Setting memento");
+				Counters.InitializationTracker.Trace ("Setting memento");
 				workbench.Memento = memento;
 
 				hasEverBeenShown = true;

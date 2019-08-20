@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide
 	internal static class Counters
 	{
 		internal static TimerCounter Initialization = InstrumentationService.CreateTimerCounter ("IDE Initialization", "IDE", id:"Ide.Initialization");
+		internal static ITimeTracker InitializationTracker;
 		internal static Counter OpenDocuments = InstrumentationService.CreateCounter ("Open documents", "IDE");
 		internal static Counter DocumentsInMemory = InstrumentationService.CreateCounter ("Documents in memory", "IDE");
 		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads loaded", "IDE");
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide
 		internal static Counter<CompletionStatisticsMetadata> CodeCompletionStats = InstrumentationService.CreateCounter<CompletionStatisticsMetadata> ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
 		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
 		internal static Counter<TimeToCodeMetadata> TimeToIntellisense = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Intellisense", "IDE", id: "Ide.TimeToIntellisense"); 
-		internal static bool TrackingBuildAndDeploy;
+		internal static ITimeTracker<BuildAndDeployMetadata> BuildAndDeployTracker;
 		internal static TimerCounter<BuildAndDeployMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<BuildAndDeployMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 		internal static Counter<PlatformMemoryMetadata> MemoryPressure = InstrumentationService.CreateCounter<PlatformMemoryMetadata> ("Memory Pressure", "IDE", id: "Ide.MemoryPressure");
 		internal static Counter<PlatformThermalMetadata> ThermalNotification = InstrumentationService.CreateCounter<PlatformThermalMetadata> ("Thermal Notification", "IDE", id: "Ide.ThermalNotification");

@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.Commands
 				LoggingService.LogInternalError (args.ErrorMessage, args.Exception);
 			};
 
-			Counters.Initialization.Trace ("Loading Commands");
+			Counters.InitializationTracker.Trace ("Loading Commands");
 			LoadCommands ("/MonoDevelop/Ide/Commands");
 
 			IsEnabled = false;
