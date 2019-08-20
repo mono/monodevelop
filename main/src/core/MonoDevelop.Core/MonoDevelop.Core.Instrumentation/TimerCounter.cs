@@ -126,13 +126,6 @@ namespace MonoDevelop.Core.Instrumentation
 			return BeginTiming (null, converted);
 		}
 
-		[Obsolete ("Use BeginTiming (string, IDictionary<string, object>) instead")]
-		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
-		{
-			var converted = metadata.ToDictionary (k => k.Key, k => (object)(k.Value));
-			return BeginTiming (message, converted);
-		}
-
 		public ITimeTracker BeginTiming (string message, IDictionary<string, object> metadata)
 		{
 			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
