@@ -195,11 +195,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
-			Counters.ProcessCodeCompletion.Trace ("Begin show completion window");
+			completionContext.Trace ("Begin show completion window");
 
 			var r = controller.ShowListWindow (list, completionContext);
 
-			Counters.ProcessCodeCompletion.Trace ("End show completion window");
+			completionContext.Trace ("End show completion window");
 
 			return r;
 		}
