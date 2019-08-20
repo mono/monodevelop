@@ -1226,6 +1226,32 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Ensure the cached value is updated when the Project or FileName changes.
+		/// </summary>
+		[Test]
+		public void ProjectFileIncludeCachingTests ()
+		{
+			using (var project = Services.ProjectService.CreateDotNetProject ("C#")) {
+				FilePath directory = Util.CreateTmpDir ("ProjectFileIncludeCachingTests");
+				project.FileName = directory.Combine ("Project.csproj");
+
+				var fileName = project.BaseDirectory.Combine ("Source", "Test.cs");
+				var projectFile = new ProjectFile (fileName);
+				projectFile.Project = project;
+
+				Assert.AreEqual (@"Source\Test.cs", projectFile.Include);
+
+				projectFile.Name = projectFile.FilePath.ChangeName ("Changed");
+				Assert.AreEqual (@"Source\Changed.cs", projectFile.Include);
+				Assert.AreEqual (@"Source\Changed.cs", projectFile.UnevaluatedInclude);
+
+				// Change project's ItemDirectory. This will change the ProjectFile's Include.
+				project.FileName = project.BaseDirectory.Combine ("Source", "Project.csproj");
+				Assert.AreEqual ("Changed.cs", projectFile.Include);
+			}
+		}
+
 		class TestGetReferencesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)

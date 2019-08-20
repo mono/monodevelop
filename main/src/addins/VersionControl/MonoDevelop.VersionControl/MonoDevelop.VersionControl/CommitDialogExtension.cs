@@ -6,8 +6,9 @@ namespace MonoDevelop.VersionControl
 	/// <summary>
 	/// Base class for commit dialog extensions.
 	/// </summary>
-	public class CommitDialogExtension: Gtk.EventBox
+	public class CommitDialogExtension : Gtk.EventBox
 	{
+		internal VersionControl.Dialogs.CommitDialog CommitDialog  { get; set; }
 		/// <summary>
 		/// Initialize the extension.
 		/// </summary>

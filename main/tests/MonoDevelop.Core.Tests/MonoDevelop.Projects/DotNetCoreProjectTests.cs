@@ -696,6 +696,44 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task AddNewFileToProjectAndSave_ProjectHas1500CSharpFiles_SavingIsFast ()
+		{
+			FilePath solFile = Util.GetSampleProject ("netstandard-sdk", "netstandard-sdk.sln");
+
+			// Create 1500 C# files.
+			var sourceDirectory = solFile.ParentDirectory.Combine ("Files");
+			Directory.CreateDirectory (sourceDirectory);
+
+			for (int i = 0; i < 1500; ++i) {
+				string fileName = sourceDirectory.Combine ($"Test{i}.cs");
+				string code = "class Test" + i + "{}";
+				File.WriteAllText (fileName, code);
+			}
+
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = solution.GetAllProjects ().Single () as DotNetProject;
+				// Sanity check - ensure project and solution in same directory otherwise the generated .cs files
+				// will not be used.
+				Assert.AreEqual (solution.BaseDirectory, p.BaseDirectory);
+
+				string fileName = p.BaseDirectory.Combine ("NewClass.cs");
+				string code = "class NewClass {}";
+				File.WriteAllText (fileName, code);
+
+				p.AddFile (fileName, BuildAction.Compile);
+
+				var timer = Stopwatch.StartNew ();
+				await p.SaveAsync (Util.GetMonitor ());
+				timer.Stop ();
+
+				// This was taking 20 seconds before.
+				// Takes about 300ms with ProjectFile.Include caching. Here we use 2 seconds
+				// in case the build server is slow.
+				Assert.That (timer.ElapsedMilliseconds, Is.LessThan (2000));
+			}
+		}
+
 		static void RunMSBuildRestore (FilePath fileName)
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);

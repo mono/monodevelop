@@ -58,7 +58,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			this.frameId = frame.Id;
 		}
 
-		static byte [] HexToByteArray (string hex)
+		static byte[] HexToByteArray (string hex)
 		{
 			if (hex.Length % 2 == 1)
 				throw new ArgumentException ();
@@ -69,14 +69,21 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return bytes;
 		}
 
-		static byte [] GetHashBytes (Source source)
+		static byte[] GetHashBytes (Source source)
 		{
 			if (source == null)
 				return null;
-			var checkSum = source.Checksums.FirstOrDefault (c => c.Algorithm == ChecksumAlgorithm.SHA1);
-			if (checkSum == null)
-				return null;
-			return HexToByteArray (checkSum.ChecksumValue);
+
+			foreach (var checksum in source.Checksums) {
+				switch (checksum.Algorithm) {
+				case ChecksumAlgorithm.SHA256:
+				case ChecksumAlgorithm.SHA1:
+				case ChecksumAlgorithm.MD5:
+					return HexToByteArray (checksum.ChecksumValue);
+				}
+			}
+
+			return null;
 		}
 
 		public override string FullStackframeText {

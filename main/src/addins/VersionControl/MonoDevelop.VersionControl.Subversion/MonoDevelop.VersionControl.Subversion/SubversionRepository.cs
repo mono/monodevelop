@@ -17,7 +17,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			Url = "svn://";
 		}
-		
+
 		public SubversionRepository (SubversionVersionControl vcs, string url, FilePath rootPath): base (vcs)
 		{
 			Url = url;
@@ -35,11 +35,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override bool HasChildRepositories {
 			get { return false; }
 		}
-		
+
 		/*public override IEnumerable<Repository> ChildRepositories {
 			get {
 				List<Repository> list = new List<Repository> ();
-				
+
 				foreach (DirectoryEntry ent in Svn.ListUrl (Url, false)) {
 					if (ent.IsDirectory) {
 						SubversionRepository rep = new SubversionRepository (VersionControlSystem, Url + "/" + ent.Name, null);
@@ -80,7 +80,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return GetVersionInfo (sourcefile, VersionInfoQueryFlags.IgnoreCache).IsVersioned;
 		}
-		
+
 		public override string GetBaseText (FilePath localFile)
 		{
 			return Svn.GetTextBase (localFile);
@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return Svn.GetHistory (this, localFile, since);
 		}
-		
+
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
 		{
 			SvnRevision rev = (SvnRevision) revision;
@@ -113,7 +113,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return Svn.GetDirectoryVersionInfo (this, localDirectory, getRemoteStatus, recursive);
 		}
-		
+
 		protected override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{
 			return Svn.GetSupportedOperations (this, vinfo, base.GetSupportedOperations (vinfo));
@@ -164,7 +164,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (!serverPath.StartsWith ("/", StringComparison.Ordinal) && !url.EndsWith ("/", StringComparison.Ordinal))
 				url += "/";
 			url += serverPath;
-			
+
 			string[] paths = new string[] {url};
 
 			CreateDirectory (paths, message, monitor);
@@ -180,7 +180,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 
 			Svn.Commit (new FilePath[] { localPath }, message, monitor);
-			
+
 			return new SubversionRepository (VersionControlSystem, paths[0], localPath);
 		}
 
@@ -199,7 +199,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			foreach (string path in localPaths)
 				Svn.Update (path, recurse, monitor);
 		}
-		
+
 		protected override void OnCommit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
 			Svn.Commit (changeSet.Items.Select (it => it.LocalPath).ToArray (), changeSet.GlobalComment, monitor);
@@ -251,10 +251,10 @@ namespace MonoDevelop.VersionControl.Subversion
 						// First of all, make a copy of the file
 						string tmp = Path.GetTempFileName ();
 						File.Copy (path, tmp, true);
-						
+
 						// Now revert the status of the file
 						Revert (path, false, monitor);
-						
+
 						// Copy the file over the old one and clean up
 						File.Copy (tmp, path, true);
 						File.Delete (tmp);
@@ -265,7 +265,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					if (!IsVersioned (path.ParentDirectory)) {
 						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository
-						
+
 						if (!path.IsChildPathOf (RootPath))
 							throw new InvalidOperationException ("File outside the repository directory");
 
@@ -292,7 +292,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Svn.Add (path, recurse, monitor);
 			}
 		}
-		
+
 		public string Root {
 			get {
 				try {
@@ -304,7 +304,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					return string.Empty;
 				}
 			}
-		}		
+		}
 
 		public override bool CanMoveFilesFrom (Repository srcRepository, FilePath localSrcPath, FilePath localDestPath)
 		{
@@ -330,7 +330,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					File.Delete (localDestPath);
 				destIsVersioned = true;
 			}
-			
+
 			VersionInfo srcInfo = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 				// Subversion automatically detects the rename and moves the new file accordingly.
@@ -359,25 +359,25 @@ namespace MonoDevelop.VersionControl.Subversion
 				VersionInfo vinfo = GetVersionInfo (localDestPath, VersionInfoQueryFlags.IgnoreCache);
 				if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete) && Directory.Exists (localDestPath))
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
-					
+
 				localSrcPath = localSrcPath.FullPath;
-				
+
 				// The target directory does not exist, but it is versioned. It may be because
 				// it is scheduled to delete, or maybe it has been physicaly deleted. In any
 				// case we are going to replace the old directory by the new directory.
-				
+
 				// Revert the old directory, so we can see which files were there so
 				// we can delete or replace them
 				Revert (localDestPath, true, monitor);
-				
+
 				// Get the list of files in the directory to be replaced
 				ArrayList oldFiles = new ArrayList ();
 				GetDirectoryFiles (localDestPath, oldFiles);
-				
+
 				// Get the list of files to move
 				ArrayList newFiles = new ArrayList ();
 				GetDirectoryFiles (localSrcPath, newFiles);
-				
+
 				// Move all new files to the new destination
 				Hashtable copiedFiles = new Hashtable ();
 				Hashtable copiedFolders = new Hashtable ();
@@ -386,12 +386,12 @@ namespace MonoDevelop.VersionControl.Subversion
 					string dst = Path.Combine (localDestPath, src.Substring (((string)localSrcPath).Length + 1));
 					if (File.Exists (dst))
 						File.Delete (dst);
-					
+
 					// Make sure the target directory exists
 					string destDir = Path.GetDirectoryName (dst);
 					if (!Directory.Exists (destDir))
 						Directory.CreateDirectory (destDir);
-						
+
 					// If the source file is versioned, make sure the target directory
 					// is also versioned.
 					if (IsVersioned (src))
@@ -413,19 +413,19 @@ namespace MonoDevelop.VersionControl.Subversion
 							foldersToDelete.Add (fd);
 					}
 				}
-				
+
 				// Delete old folders
 				foreach (string folder in foldersToDelete) {
 					Svn.Delete (folder, true, monitor);
 				}
-				
+
 				// Delete the source directory
 				DeleteDirectory (localSrcPath, true, monitor, false);
 			}
 			else {
 				if (Directory.Exists (localDestPath))
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
-				
+
 				VersionInfo srcInfo = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 				if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 					// If the directory is scheduled to add, cancel it, move the directory, and schedule to add it again
@@ -442,18 +442,18 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 			}
 		}
-		
+
 		void MakeDirVersioned (string dir, ProgressMonitor monitor)
 		{
 			if (Directory.Exists (SubversionBackend.GetDirectoryDotSvn (VersionControlSystem, dir)))
 				return;
-			
+
 			// Make the parent versioned
 			string parentDir = Path.GetDirectoryName (dir);
 			if (parentDir == dir || parentDir == "")
 				throw new InvalidOperationException ("Could not create versioned directory.");
 			MakeDirVersioned (parentDir, monitor);
-			
+
 			Add (dir, false, monitor);
 		}
 
@@ -501,6 +501,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (string path in localPaths) {
+				if (!keepLocal)
+					FileService.AssertCanDeleteDirectory (path, RootPath);
 				if (IsVersioned (path)) {
 					string newPath = String.Empty;
 					if (keepLocal) {
@@ -521,12 +523,13 @@ namespace MonoDevelop.VersionControl.Subversion
 								Revert (path, false, monitor);
 							}
 						}
-					} else
+					} else {
 						Directory.Delete (path, true);
+					}
 				}
 			}
 		}
-		
+
 		public override DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
 		{
 			string diff = Svn.GetUnifiedDiff (versionInfo.LocalPath, false, false);
@@ -534,7 +537,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }).FirstOrDefault ();
 			return null;
 		}
-		
+
 		public override DiffInfo[] PathDiff (FilePath localPath, Revision fromRevision, Revision toRevision)
 		{
 			string diff = Svn.GetUnifiedDiff (localPath, (SvnRevision)fromRevision, localPath, (SvnRevision)toRevision, true);
@@ -557,7 +560,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
 			}
 		}
-		
+
 		public override Annotation[] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			SvnRevision sinceRev = since != null ? (SvnRevision)since : null;
@@ -578,14 +581,14 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				}
 			}
-			
+
 			return annotations.ToArray ();
 		}
-		
+
 		public override string CreatePatch (IEnumerable<DiffInfo> diffs)
 		{
 			StringBuilder patch = new StringBuilder ();
-			
+
 			if (null != diffs) {
 				foreach (DiffInfo diff in diffs) {
 					string relpath;
@@ -601,7 +604,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					patch.AppendLine (diff.Content);
 				}
 			}
-			
+
 			return patch.ToString ();
 		}
 

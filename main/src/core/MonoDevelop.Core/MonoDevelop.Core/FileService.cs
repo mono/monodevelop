@@ -43,6 +43,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.ObjectPool;
+using System.Runtime.CompilerServices;
+using System.Collections;
 
 namespace MonoDevelop.Core
 {
@@ -69,6 +71,8 @@ namespace MonoDevelop.Core
 		static FileServiceErrorHandler errorHandler;
 
 		static readonly EventQueue eventQueue = new FileServiceEventQueue ();
+
+		static HashSet<FilePath> lockedDirectories;
 
 		static readonly string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
 		public static string ApplicationRootPath {
@@ -111,6 +115,18 @@ namespace MonoDevelop.Core
 				} else {
 					fileSystemChain = defaultExtension;
 				}
+			}
+		}
+
+		
+		static FileService ()
+		{
+			lockedDirectories = new HashSet<FilePath> ();
+			foreach (var value in Enum.GetValues (typeof (Environment.SpecialFolder))) {
+				var path = (FilePath)Environment.GetFolderPath ((Environment.SpecialFolder)value);
+				if (string.IsNullOrEmpty (path))
+					continue;
+				lockedDirectories.Add (path.CanonicalPath);
 			}
 		}
 
@@ -160,6 +176,7 @@ namespace MonoDevelop.Core
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
 			try {
+				AssertCanDeleteDirectory (path);
 				GetFileSystemForPath (path, true).DeleteDirectory (path);
 			} catch (Exception e) {
 				if (!HandleError (GettextCatalog.GetString ("Can't remove directory {0}", path), e))
@@ -167,6 +184,34 @@ namespace MonoDevelop.Core
 				return;
 			}
 			OnFileRemoved (new FileEventArgs (path, true));
+		}
+
+		/// <summary>
+		/// Checks if a directory can be safely deleted. It checks if the directory is not a system relevant directory.
+		/// </summary>
+		/// <param name="path">The path to be checked.</param>
+		/// <param name="requiredParentDirectory">optional parameter that specifies a required parent of the path.</param>
+		/// <param name="includingParent">if true, requiredParentDirectory can be deleted.</param>
+		/// <exception cref="InvalidOperationException">Is thrown when the directory can't be safely deleted.</exception>
+		public static void AssertCanDeleteDirectory (FilePath path, string requiredParentDirectory = null, bool includingParent = true)
+		{
+			path = path.FullPath.CanonicalPath;
+			if (lockedDirectories.Contains (path)) {
+				throw new InvalidOperationException ("Can't delete directory " + path + ".");
+			}
+
+			foreach (var drive in Directory.GetLogicalDrives ()) {
+				if (path.Equals (((FilePath)drive).FullPath.CanonicalPath))
+					throw new InvalidOperationException ("Can't delete logical drive " + path + ".");
+			}
+
+			if (requiredParentDirectory != null) {
+				var parent = ((FilePath)requiredParentDirectory).FullPath.CanonicalPath;
+				if (!includingParent && parent == path)
+					throw new InvalidOperationException ("Can't delete parent path" + path);
+				if (!path.IsChildPathOf (parent) && parent != path)
+					throw new InvalidOperationException (path + " needs to be child of " + requiredParentDirectory);
+			}
 		}
 
 		public static void RenameFile (string oldName, string newName)

@@ -89,6 +89,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					continue;
 				}
 				if (ext.Initialize (changeSet)) {
+					ext.CommitDialog = this;
 					var newTitle = ext.FormatDialogTitle (changeSet, Title);
 					if (newTitle != null)
 						Title = newTitle;

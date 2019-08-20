@@ -903,7 +903,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
+		protected internal override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{
 			VersionControlOperation ops = base.GetSupportedOperations (vinfo);
 			if (GetCurrentRemote () == null)
@@ -1353,7 +1353,7 @@ namespace MonoDevelop.VersionControl.Git
 			return name == null && email == null;
 		}
 
-		public void GetUserInfo (out string name, out string email)
+		public void GetUserInfo (out string name, out string email, Components.Window parent = null)
 		{
 			try {
 				string lname = null, lemail = null;
@@ -1369,7 +1369,7 @@ namespace MonoDevelop.VersionControl.Git
 				Runtime.RunInMainThread (() => {
 					var dlg = new UserGitConfigDialog ();
 					try {
-						if ((Gtk.ResponseType)MessageService.RunCustomDialog (dlg) == Gtk.ResponseType.Ok) {
+						if ((Gtk.ResponseType)MessageService.RunCustomDialog (dlg, parent) == Gtk.ResponseType.Ok) {
 							dlgName = dlg.UserText;
 							dlgEmail = dlg.EmailText;
 							SetUserInfo (dlgName, dlgEmail);
@@ -1594,11 +1594,16 @@ namespace MonoDevelop.VersionControl.Git
 							Revert (path, true, monitor);
 						}
 					}
-				} else {
-					// Untracked files are not deleted by the rm command, so delete them now
-					foreach (var f in localPaths)
-						if (Directory.Exists (f))
-							Directory.Delete (f, true);
+				}
+			}
+
+			if (!keepLocal) {
+				// Untracked files are not deleted by the rm command, so delete them now
+				foreach (var f in localPaths) {
+					if (Directory.Exists (f)) {
+						FileService.AssertCanDeleteDirectory (f, this.RootPath);
+						Directory.Delete (f, true);
+					}
 				}
 			}
 		}
@@ -1610,8 +1615,10 @@ namespace MonoDevelop.VersionControl.Git
 					foreach (var f in localPaths) {
 						if (File.Exists (f))
 							File.Delete (f);
-						else if (Directory.Exists (f))
+						else if (Directory.Exists (f)) {
+							FileService.AssertCanDeleteDirectory (f, RootPath);
 							Directory.Delete (f, true);
+						}
 					}
 
 				RunBlockingOperation (() => {

@@ -251,8 +251,8 @@ namespace SubversionAddinWindows
 				try {
 					client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path, args);
 				} catch (SvnOperationCanceledException) {
-					if (Directory.Exists (path.ParentDirectory))
-						FileService.DeleteDirectory (path.ParentDirectory);
+					if (Directory.Exists (path))
+						FileService.DeleteDirectory (path);
 				}
 			}
 		}
