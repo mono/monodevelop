@@ -44,24 +44,13 @@ namespace MonoDevelop.Core.Instrumentation
 		DateTime lastValueTime = DateTime.MinValue;
 		CounterDisplayMode displayMode = CounterDisplayMode.Block;
 		bool disposed;
-		bool storeValues;
-		bool enabled;
 		string id;
 		
 		List<InstrumentationConsumer> handlers = new List<InstrumentationConsumer> ();
 
-		public bool StoreValues {
-			get {
-				return storeValues;
-			}
-			set {
-				storeValues = value;
-			}
-		}
+		public bool StoreValues => InstrumentationService.Enabled;
 
-		public bool Enabled {
-			get { return enabled; }
-		}
+		public bool Enabled => InstrumentationService.Enabled || handlers.Count > 0;
 		
 		internal List<InstrumentationConsumer> Handlers {
 			get {
@@ -73,8 +62,6 @@ namespace MonoDevelop.Core.Instrumentation
 		internal void UpdateStatus ()
 		{
 			InstrumentationService.InitializeHandlers ();
-			enabled = InstrumentationService.Enabled || Handlers.Count > 0;
-			storeValues = InstrumentationService.Enabled;
 		}
 	
 		internal Counter (string name, CounterCategory category)
@@ -212,8 +199,9 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 			var val = new CounterValue (count, totalCount, now, message, timer?.TraceList, metadata);
 
-			if (storeValues)
+			if (StoreValues)
 				values.Add (val);
+
 			if (Handlers.Count > 0) {
 				if (timer != null) {
 					foreach (var h in handlers) {
@@ -274,7 +262,7 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void Inc (int n, string message, IDictionary<string, object> metadata)
 		{
-			if (enabled) {
+			if (Enabled) {
 				lock (values) {
 					count += n;
 					totalCount += n;
@@ -307,7 +295,7 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void Dec (int n, string message, IDictionary<string, object> metadata)
 		{
-			if (enabled) {
+			if (Enabled) {
 				lock (values) {
 					count -= n;
 					StoreValue (message, null, metadata);
@@ -329,7 +317,7 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void SetValue (int value, string message, IDictionary<string, object> metadata)
 		{
-			if (enabled) {
+			if (Enabled) {
 				lock (values) {
 					count = value;
 					StoreValue (message, null, metadata);
@@ -358,7 +346,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public virtual void Trace (string message)
 		{
-			if (enabled) {
+			if (Enabled) {
 				lock (values) {
 					StoreValue (message, null, (IDictionary<string, object>)null);
 				}
