@@ -40,6 +40,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Commands;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Debugger
 {
@@ -72,8 +73,6 @@ namespace MonoDevelop.Debugger
 		ShowNextStatement,
 		NewCatchpoint,
 		NewFunctionBreakpoint,
-		AddBreakpointOnLine,
-		RemoveBreakpointOnLine,
 	}
 
 	class DebugHandler: CommandHandler
@@ -343,8 +342,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
-	
-	class BreakpointHandler: CommandHandler
+
+	class ToggleBreakpointHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -357,49 +356,26 @@ namespace MonoDevelop.Debugger
 
 			bp = breakpoints.Toggle (IdeApp.Workbench.ActiveDocument.FileName, caretLine, caretColumn);
 
+			var msg = bp == null ? GettextCatalog.GetString ("Breakpoint removed") : GettextCatalog.GetString ("Breakpoint added");
+			IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (msg);
 			// If the breakpoint could not be inserted in the caret location, move the caret
 			// to the real line of the breakpoint, so that if the Toggle command is run again,
 			// this breakpoint will be removed
 			if (bp != null && bp.Line != caretLine)
 				textView.Caret.MoveTo (point.Snapshot.GetLineFromLineNumber (bp.Line).Start);
 		}
-	}
 
-	class AddBreakpointOnLineHandler : BreakpointHandler
-	{
 		protected override void Update (CommandInfo info)
 		{
-			var breakpoints = DebuggingService.Breakpoints;
-			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true);
-			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
-			var col = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, caretLine);
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !(col.Count > 0);
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
 					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-					!DebuggingService.Breakpoints.IsReadOnly &&
-					!(col.Count > 0);
+					!DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 
-	class RemoveBreakpointOnLineHandler : BreakpointHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			var breakpoints = DebuggingService.Breakpoints;
-			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true);
-			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
-			var col = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, caretLine);
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && (col.Count > 0);
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> (true) != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-					!DebuggingService.Breakpoints.IsReadOnly &&
-					(col.Count > 0);
-		}
-	}
-
-	class EnableDisableBreakpointHandler: CommandHandler
+	class EnableDisableBreakpointHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
