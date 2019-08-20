@@ -60,12 +60,7 @@ namespace MonoDevelop.Projects.FileNesting
 
 		static ProjectNestingInfo GetProjectNestingInfo (Project project)
 		{
-			if (!loadedProjects.TryGetValue (project, out var nestingInfo)) {
-				nestingInfo = new ProjectNestingInfo (project);
-				loadedProjects.Add (project, nestingInfo);
-			}
-
-			return nestingInfo;
+			return loadedProjects.GetValue (project, p => new ProjectNestingInfo (p));
 		}
 
 		internal static ProjectFile InternalGetParentFile (ProjectFile inputFile)
