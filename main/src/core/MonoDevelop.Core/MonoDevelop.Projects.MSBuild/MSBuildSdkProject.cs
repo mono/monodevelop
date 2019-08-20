@@ -49,6 +49,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public bool HasToolsVersion () => !string.IsNullOrEmpty (ToolsVersion);
 
+		public bool DefaultTargetsSpecified { get; set; } = false;
+
 		public CompileTarget DefaultCompileTarget => defaultCompileTarget;
 
 		/// <summary>
@@ -60,6 +62,9 @@ namespace MonoDevelop.Projects.MSBuild
 			ToolsVersion = project.ToolsVersion;
 			if (!HasToolsVersion ())
 				project.ToolsVersion = "15.0";
+
+			if (!string.IsNullOrEmpty (project.DefaultTargets))
+				DefaultTargetsSpecified = true;
 		}
 
 		public void ReadProject (MSBuildProject project, TargetFrameworkMoniker framework)
@@ -90,7 +95,8 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!hasDescription)
 				RemovePropertyIfHasDefaultValue (globalPropertyGroup, "Description", "Package Description");
 
-			project.DefaultTargets = null;
+			if (!DefaultTargetsSpecified)
+				project.DefaultTargets = null;
 
 			RemoveExtraProjectReferenceMetadata (project);
 
