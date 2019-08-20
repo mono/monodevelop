@@ -262,6 +262,8 @@ namespace MonoDevelop.Projects.FileNesting
 			Project.FileRemovedFromProject -= OnFileRemovedFromProject;
 			Project.FileRenamedInProject -= OnFileRenamedInProject;
 			Project.ParentSolution.UserProperties.Changed -= OnUserPropertiesChanged;
+
+			projectFiles?.Clear ();
 		}
 	}
 
