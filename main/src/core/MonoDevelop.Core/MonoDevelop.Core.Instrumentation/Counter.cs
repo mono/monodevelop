@@ -208,6 +208,7 @@ namespace MonoDevelop.Core.Instrumentation
 			if (resolution.Ticks != 0) {
 				if (now - lastValueTime < resolution)
 					return -1;
+				lastValueTime = now;
 			}
 			var val = new CounterValue (count, totalCount, now, message, timer?.TraceList, metadata);
 
