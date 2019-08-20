@@ -100,13 +100,6 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public int Count {
 			get { return count; }
-			set {
-				lock (values) {
-					if (value > count)
-						totalCount += value - count;
-					count = value;
-				}
-			}
 		}
 		
 		public bool Disposed {
