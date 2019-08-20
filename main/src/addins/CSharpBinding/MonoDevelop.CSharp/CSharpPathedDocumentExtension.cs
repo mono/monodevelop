@@ -48,8 +48,9 @@ namespace MonoDevelop.CSharp
 		readonly ITextView textView;
 		readonly Microsoft.VisualStudio.Text.Operations.IEditorOperations editorOperations;
 		readonly JoinableTaskContext joinableTaskContext;
-		List<DotNetProject> ownerProjects = new List<DotNetProject> ();
-		List<DotNetProject> lastOwnerProjects = new List<DotNetProject> ();
+		List<OwnerProjectInfo> ownerProjects = new List<OwnerProjectInfo> ();
+		List<OwnerProjectInfo> lastOwnerProjects = new List<OwnerProjectInfo> ();
+
 		bool disposed;
 		WorkspaceRegistration registration;
 		SourceTextContainer textContainer;
@@ -82,10 +83,13 @@ namespace MonoDevelop.CSharp
 			if (activeDocument == null)
 				return;
 			var activeProj = (DotNetProject)IdeServices.TypeSystemService.GetMonoProject (activeDocument.Project);
-			ownerProjects.Add (activeProj);
-			foreach (var document in textContainer.GetRelatedDocuments ())
-				if (IdeServices.TypeSystemService.GetMonoProject (document.Project) is DotNetProject dotnetProj && dotnetProj != activeProj)
-					ownerProjects.Add (dotnetProj);
+			if (activeProj != null)
+				ownerProjects.Add (new OwnerProjectInfo (activeDocument.Project, activeProj.StockIcon));
+			foreach (var document in textContainer.GetRelatedDocuments ()) {
+				DotNetProject dotnetProj = IdeServices.TypeSystemService.GetMonoProject (document.Project) as DotNetProject;
+				if (dotnetProj != null && document.Project.Id != activeDocument.Project.Id)
+					ownerProjects.Add (new OwnerProjectInfo (document.Project, dotnetProj.StockIcon));
+			}
 			Update (activeDocument, textView.Caret.Position.BufferPosition);
 		}
 
@@ -463,7 +467,7 @@ namespace MonoDevelop.CSharp
 		bool caretPositionChangedSubscribed;
 		*/
 
-		Projects.Project lastProject;
+		OwnerProjectInfo lastProject;
 		SyntaxNode lastType;
 		string lastTypeMarkup;
 		SyntaxNode lastMember;
@@ -613,6 +617,37 @@ namespace MonoDevelop.CSharp
 		{
 			src.Cancel ();
 			src = new CancellationTokenSource ();
+		}
+
+		sealed class OwnerProjectInfo : IEquatable<OwnerProjectInfo>
+		{
+			public OwnerProjectInfo (Microsoft.CodeAnalysis.Project project, IconId iconId)
+			{
+				Project = project;
+				StockIcon = iconId;
+			}
+
+			public Microsoft.CodeAnalysis.Project Project { get; set; }
+			public string Name => Project.Name ?? string.Empty;
+			public IconId StockIcon { get; set; }
+
+			public override bool Equals (object obj)
+			{
+				return Equals (obj as OwnerProjectInfo);
+			}
+
+			public bool Equals (OwnerProjectInfo other)
+			{
+				if (other == null)
+					return false;
+
+				return other.Project.Id == Project.Id;
+			}
+
+			public override int GetHashCode ()
+			{
+				return Project.Id.GetHashCode ();
+			}
 		}
 	}
 }

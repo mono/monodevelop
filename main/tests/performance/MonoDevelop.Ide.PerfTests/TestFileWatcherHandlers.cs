@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.PerfTests
 
 			foreach (var kvp in trackedCounters) {
 				const string UIThreadMethod = "MonoDevelop.Core.FileService.eventQueue.GetTimings";
-				const string BackgroundMethod = "MonoDevelop.Core.FileService.AsyncEvents.GetTimings";
+				const string BackgroundMethod = "MonoDevelop.Projects.FileWatcherService.Timings.GetTimings";
 
 				var enumValue = kvp.Key;
 				var counterId = kvp.Value;

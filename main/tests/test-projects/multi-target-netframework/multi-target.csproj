@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net472;netstandard1.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Compile Remove="MyClass-netstandard.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <Compile Remove="MyClass-netframework.cs" />
+  </ItemGroup>
+
+  <!-- Test framework specific compiler parameters are used -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <NoWarn>NET12345</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <NoWarn>STA4433</NoWarn>
+  </PropertyGroup>
+</Project>

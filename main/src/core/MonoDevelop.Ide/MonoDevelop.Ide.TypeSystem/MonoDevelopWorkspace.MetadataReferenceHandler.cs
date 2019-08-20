@@ -65,57 +65,70 @@ namespace MonoDevelop.Ide.TypeSystem
 				return builder.MoveToImmutable ();
 			}
 
-			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, ImmutableArray<ProjectReference>)> CreateReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
+			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, ImmutableArray<ProjectReference>)> CreateReferences (
+				MonoDevelop.Projects.Project proj,
+				string framework,
+				CancellationToken token)
 			{
-				var metadataReferences = await CreateMetadataReferences (proj, token).ConfigureAwait (false);
-				if (token.IsCancellationRequested)
-					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, ImmutableArray<ProjectReference>.Empty);
+				if (!(proj is MonoDevelop.Projects.DotNetProject netProject))
+					return (CreateDefaultMetadataReferences (), ImmutableArray<ProjectReference>.Empty);
 
-				var projectReferences = await CreateProjectReferences (proj, token).ConfigureAwait (false);
-				return (metadataReferences, projectReferences);
-			}
+				var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
 
-			async Task<ImmutableArray<MonoDevelopMetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
-			{
-				// create some default references for unsupported project types.
-				if (!(proj is MonoDevelop.Projects.DotNetProject netProject)) {
-					return CreateDefaultMetadataReferences ();
-				}
+				if (!string.IsNullOrEmpty (framework))
+					config = new MonoDevelop.Projects.DotNetProjectFrameworkConfigurationSelector (config, framework);
 
-				var data = new AddMetadataReferencesData {
-					Result = new List<MonoDevelopMetadataReference> (),
+				var data = new AddReferencesData {
+					References = new List<MonoDevelopMetadataReference> (),
+					ProjectReferences = new List<ProjectReference> (),
 					Project = netProject,
 					Visited = new HashSet<string> (FilePath.PathComparer),
-					ConfigurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default,
-					Token = token,
+					AddedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> (),
+					ConfigurationSelector = config,
+					Token = token
 				};
 
-				if (!await AddMetadataAssemblyReferences (data))
-					return ImmutableArray<MonoDevelopMetadataReference>.Empty;
-				return data.Result.ToImmutableArray ();
+				if (!await AddReferences (data))
+					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, ImmutableArray<ProjectReference>.Empty);
+				return (data.References.ToImmutableArray (), data.ProjectReferences.ToImmutableArray ());
 			}
 
-			class AddMetadataReferencesData
+			class AddReferencesData
 			{
-				public List<MonoDevelopMetadataReference> Result;
+				public List<MonoDevelopMetadataReference> References;
 				public MonoDevelop.Projects.DotNetProject Project;
+				public List<ProjectReference> ProjectReferences;
 				public MonoDevelop.Projects.ConfigurationSelector ConfigurationSelector;
 				public HashSet<string> Visited;
+				public HashSet<MonoDevelop.Projects.DotNetProject> AddedProjects;
 				public CancellationToken Token;
 			}
 
-			async Task<bool> AddMetadataAssemblyReferences (AddMetadataReferencesData data)
+			async Task<bool> AddReferences (AddReferencesData data)
 			{
 				try {
-					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, false).ConfigureAwait (false);
+					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, true).ConfigureAwait (false);
 					foreach (var file in referencedAssemblies) {
 						if (file.IsProjectReference) {
 							var referencedItem = file.GetReferencedItem (data.Project.ParentSolution);
 							if (!(referencedItem is MonoDevelop.Projects.DotNetProject referencedProject))
 								continue;
 
-							if (!IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
+							if (!IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject)) {
+								if (!file.ReferenceOutputAssembly)
+									continue;
+
+								if (!data.AddedProjects.Add (referencedProject))
+									continue;
+
+								string framework = file.HasSingleTargetFramework ? null : file.NearestTargetFramework;
+								var projectReferenceAliases = file.EnumerateAliases ();
+								var projectId = projectMap.GetOrCreateId (referencedProject, null, framework);
+								var projectReference = new ProjectReference (projectId, projectReferenceAliases.ToImmutableArray ());
+								data.ProjectReferences.Add (projectReference);
+
 								continue;
+							}
 						}
 
 						if (data.Token.IsCancellationRequested)
@@ -127,7 +140,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var aliases = file.EnumerateAliases ().ToImmutableArray ();
 						var metadataReference = manager.GetOrCreateMetadataReference (file.FilePath, new MetadataReferenceProperties (aliases: aliases));
 						if (metadataReference != null)
-							data.Result.Add (metadataReference);
+							data.References.Add (metadataReference);
 					}
 
 					return true;
@@ -135,45 +148,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogError ("Error while getting referenced assemblies", e);
 					// TODO: Check whether this should return false, I retained compat for now.
 					return true;
-				}
-			}
-
-			async Task<ImmutableArray<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
-			{
-				if (!(p is MonoDevelop.Projects.DotNetProject netProj))
-					return ImmutableArray<ProjectReference>.Empty;
-
-				List<MonoDevelop.Projects.AssemblyReference> references;
-				try {
-					var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
-					references = await netProj.GetReferences (config, token).ConfigureAwait (false);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while getting referenced projects.", e);
-					return ImmutableArray<ProjectReference>.Empty;
-				};
-				return CreateProjectReferencesFromAssemblyReferences (netProj, references).ToImmutableArray ();
-			}
-
-			IEnumerable<ProjectReference> CreateProjectReferencesFromAssemblyReferences (MonoDevelop.Projects.DotNetProject p, List<MonoDevelop.Projects.AssemblyReference> references)
-			{
-				var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
-
-				foreach (var pr in references) {
-					if (!pr.IsProjectReference || !pr.ReferenceOutputAssembly)
-						continue;
-
-					var referencedItem = pr.GetReferencedItem (p.ParentSolution);
-					if (!(referencedItem is MonoDevelop.Projects.DotNetProject referencedProject))
-						continue;
-
-					if (!addedProjects.Add (referencedProject))
-						continue;
-
-					if (IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
-						continue;
-
-					var aliases = pr.EnumerateAliases ();
-					yield return new ProjectReference (projectMap.GetOrCreateId (referencedProject, null), aliases.ToImmutableArray ());
 				}
 			}
 		}

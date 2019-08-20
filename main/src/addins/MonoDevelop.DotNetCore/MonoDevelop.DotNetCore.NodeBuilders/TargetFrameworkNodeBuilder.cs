@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
@@ -52,19 +52,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var node = (TargetFrameworkNode)dataObject;
-			return node.HasDependencies ();
+			return true;
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			treeBuilder.AddChildren (GetPackageDependencyNodes (dataObject));
+			var node = (TargetFrameworkNode)dataObject;
+			AddChildren (treeBuilder, node.GetChildNodes ());
 		}
 
-		IEnumerable<PackageDependencyNode> GetPackageDependencyNodes (object dataObject)
+		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
 		{
-			var node = (TargetFrameworkNode)dataObject;
-			return node.GetDependencyNodes ();
+			treeBuilder.AddChildren (dataObjects);
 		}
 	}
 }

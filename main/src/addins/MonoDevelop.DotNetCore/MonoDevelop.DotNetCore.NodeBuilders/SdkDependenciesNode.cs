@@ -24,11 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using System.Collections.Generic;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
@@ -41,11 +41,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			ParentNode = parentNode;
 		}
 
+		public SdkDependenciesNode (TargetFrameworkNode frameworkNode)
+		{
+			FrameworkNode = frameworkNode;
+			ParentNode = frameworkNode.DependenciesNode;
+		}
+
 		internal DotNetProject Project {
 			get { return ParentNode.Project; }
 		}
 
 		internal DependenciesNode ParentNode { get; private set; }
+		internal TargetFrameworkNode FrameworkNode { get; private set; }
 
 		public string GetLabel ()
 		{
@@ -69,9 +76,15 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return ParentNode.PackageDependencyCache.LoadedDependencies; }
 		}
 
-		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes ()
+		public IEnumerable<PackageDependencyNode> GetChildNodes ()
 		{
-			return ParentNode.GetTargetFrameworkNodes (sdkDependencies: true);
+			if (FrameworkNode != null) {
+				return FrameworkNode.GetDependencyNodes (sdkDependencies: true);
+			} else {
+				// Projects sometimes return no dependencies from MSBuild initially so
+				// add the default nodes until the dependencies are updated.
+				return GetDefaultNodes ();
+			}
 		}
 
 		/// <summary>
@@ -83,6 +96,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				yield return new PackageDependencyNode (ParentNode, "Microsoft.NETCore.App", true, true);
 			else if (Project.TargetFramework.IsNetStandard ())
 				yield return new PackageDependencyNode (ParentNode, "NETStandard.Library", true, true);
+		}
+
+		public bool HasChildNodes ()
+		{
+			return GetChildNodes ().Any ();
 		}
 	}
 }

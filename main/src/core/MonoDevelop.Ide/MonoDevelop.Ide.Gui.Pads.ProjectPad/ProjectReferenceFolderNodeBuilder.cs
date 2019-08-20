@@ -124,6 +124,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					tb.AddChild (e.ProjectReference);
 			}
 		}
+
+		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		{
+			// Hide References folder if the project is a SDK style project.
+			var project = (DotNetProject)parentNode.GetParentDataItem (typeof (DotNetProject), true);
+			if (project.HasFlavor<SdkProjectExtension> ())
+				attributes |= NodeAttributes.Hidden;
+		}
 	}
 	
 	class ProjectReferenceFolderNodeCommandHandler: NodeCommandHandler

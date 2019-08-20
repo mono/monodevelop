@@ -89,7 +89,8 @@ namespace MonoDevelop.Ide.Commands
 		SelectActiveRuntime,
 		EditSolutionItem,
 		Unload,
-		SetStartupProjects
+		SetStartupProjects,
+		AddEmptyClass,
 	}
 
 	internal class SolutionOptionsHandler : CommandHandler

@@ -61,7 +61,7 @@ namespace IdeUnitTests
 			this.templateId = templateId;
 
 			SolutionDirectory = Util.CreateTmpDir (basename);
-			CreateNuGetConfigFile (SolutionDirectory);
+			CreateNuGetConfigFile (this);
 			ProjectName = GetProjectName (templateId);
 
 			Config = new NewProjectConfiguration {
@@ -102,6 +102,7 @@ namespace IdeUnitTests
 			var process = new Process ();
 			process.StartInfo = new ProcessStartInfo ("msbuild", arguments) {
 				RedirectStandardOutput = true,
+				RedirectStandardError = true,
 				UseShellExecute = false
 			};
 			process.Start ();
@@ -111,15 +112,18 @@ namespace IdeUnitTests
 			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed. Exit code: {process.ExitCode}. {standardError}");
 		}
 
-		static void CreateNuGetConfigFile (FilePath directory)
+		protected virtual string GetExtraNuGetSources () => string.Empty;
+
+		static void CreateNuGetConfigFile (ProjectTemplateTest test)
 		{
-			var fileName = directory.Combine ("NuGet.Config");
+			var fileName = test.SolutionDirectory.Combine ("NuGet.Config");
 
 			string xml =
 				"<configuration>\r\n" +
 				"  <packageSources>\r\n" +
 				"    <clear />\r\n" +
 				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				test.GetExtraNuGetSources () +
 				"  </packageSources>\r\n" +
 				"</configuration>";
 

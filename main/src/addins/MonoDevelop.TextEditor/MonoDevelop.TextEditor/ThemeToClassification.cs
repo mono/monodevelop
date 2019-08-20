@@ -186,7 +186,9 @@ namespace MonoDevelop.TextEditor
 			var defaultSettings = theme.Settings[0];
 			for (var i = 1; i < theme.Settings.Count; i++) {
 				var setting = theme.Settings[i];
-				settingsMap[setting.Name] = setting;
+				// Skip settings that don't have names, since that is what our mappings key off of
+				if (setting.Name != null)
+					settingsMap[setting.Name] = setting;
 			}
 			CreatePlainText (editorFormat, defaultSettings, appearanceCategory);
 			CreateLineNumberAndSuggestion (editorFormat, defaultSettings);

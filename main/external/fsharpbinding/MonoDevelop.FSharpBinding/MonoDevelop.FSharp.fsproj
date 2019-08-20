@@ -56,7 +56,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Xamarin.Mac">
-      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
+      <HintPath>..\..\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">

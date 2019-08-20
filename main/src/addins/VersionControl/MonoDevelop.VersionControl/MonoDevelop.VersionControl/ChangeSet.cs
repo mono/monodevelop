@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -90,9 +92,9 @@ namespace MonoDevelop.VersionControl
 			return items.Any (item => item.LocalPath == fileName);
 		}
 
-		public ChangeSetItem AddFile (FilePath file)
+		public async Task<ChangeSetItem> AddFileAsync (FilePath file, CancellationToken cancellationToken = default)
 		{
-			return AddFile (repo.GetVersionInfo (file));
+			return AddFile (await repo.GetVersionInfoAsync (file, cancellationToken: cancellationToken));
 		}
 		
 		public ChangeSetItem AddFile (VersionInfo fileVersionInfo)
@@ -106,9 +108,9 @@ namespace MonoDevelop.VersionControl
 			return item;
 		}
 		
-		public void AddFiles (VersionInfo[] fileVersionInfos)
+		public void AddFiles (IReadOnlyList<VersionInfo> fileVersionInfos)
 		{
-			foreach (VersionInfo vi in fileVersionInfos)
+			foreach (var vi in fileVersionInfos)
 				AddFile (vi);
 		}
 

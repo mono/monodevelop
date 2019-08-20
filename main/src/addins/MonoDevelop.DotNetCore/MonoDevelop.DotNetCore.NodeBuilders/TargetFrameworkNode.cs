@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -33,19 +32,21 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class TargetFrameworkNode
 	{
-		DependenciesNode dependenciesNode;
 		PackageDependencyInfo dependency;
-		bool sdkDependencies;
 
 		public TargetFrameworkNode (
 			DependenciesNode dependenciesNode,
-			PackageDependencyInfo dependency,
-			bool sdkDependencies)
+			PackageDependencyInfo dependency)
 		{
-			this.dependenciesNode = dependenciesNode;
+			DependenciesNode = dependenciesNode;
 			this.dependency = dependency;
-			this.sdkDependencies = sdkDependencies;
 		}
+
+		internal DotNetProject Project {
+			get { return DependenciesNode.Project; }
+		}
+
+		internal DependenciesNode DependenciesNode { get; }
 
 		public string Name {
 			get { return dependency.Name; }
@@ -66,18 +67,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return new IconId ("md-framework-dependency");
 		}
 
-		public bool HasDependencies ()
-		{
-			return dependency.Dependencies.Any ();
-		}
-
-		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
+		public IEnumerable<PackageDependencyNode> GetDependencyNodes (bool sdkDependencies)
 		{
 			return PackageDependencyNode.GetDependencyNodes (
-				dependenciesNode,
+				DependenciesNode,
 				dependency,
 				sdkDependencies,
 				topLevel: true);
+		}
+
+		public IEnumerable<object> GetChildNodes ()
+		{
+			return DependenciesNode.GetChildNodes (this);
 		}
 	}
 }

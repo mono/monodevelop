@@ -1,4 +1,4 @@
-// Lock.cs
+﻿// Lock.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -27,36 +27,41 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
 	public class LockCommand
 	{
-		public static bool Lock (VersionControlItemList items, bool test)
+		public static async Task<bool> LockAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken)
 		{
-			if (!items.All (i => i.VersionInfo.CanLock))
-				return false;
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync (cancellationToken);
+				if (!info.CanLock)
+					return false;
+			}
 			if (test)
 				return true;
-			
-			new LockWorker (items).Start();
+
+			await new LockWorker (items).StartAsync (cancellationToken).ConfigureAwait (false);
 			return true;
 		}
 
-		private class LockWorker : VersionControlTask 
+		private class LockWorker : VersionControlTask
 		{
 			VersionControlItemList items;
-						
+
 			public LockWorker (VersionControlItemList items) {
 				this.items = items;
 			}
-			
+
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Locking...");
 			}
 
-			protected override void Run ()
+			protected override Task RunAsync ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					try {
@@ -64,13 +69,14 @@ namespace MonoDevelop.VersionControl
 					} catch (Exception ex) {
 						LoggingService.LogError ("Lock operation failed", ex);
 						Monitor.ReportError (ex.Message, null);
-						return;
+						return Task.CompletedTask;
 					}
 				}
 				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));
+				return Task.CompletedTask;
 			}
 		}
 	}

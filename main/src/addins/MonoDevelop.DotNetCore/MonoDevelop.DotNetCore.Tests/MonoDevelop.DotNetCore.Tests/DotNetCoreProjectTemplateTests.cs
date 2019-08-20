@@ -43,6 +43,24 @@ namespace MonoDevelop.DotNetCore.Tests
 	[TestFixture]
 	class DotNetCoreProjectTemplateTests : DotNetCoreTestBase
 	{
+		class DotNetCoreProjectTemplateTest : ProjectTemplateTest
+		{
+			public DotNetCoreProjectTemplateTest (string basename, string templateId) : base (basename, templateId)
+			{
+			}
+
+			protected override string GetExtraNuGetSources ()
+			{
+				return "    <add key=\"dotnet-core\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json\" />\r\n" +
+					"    <add key=\"dotnet-windowsdesktop\" value=\"https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json\" />\r\n" +
+					"    <add key=\"aspnet-aspnetcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json\" />\r\n" +
+					"    <add key=\"aspnet-aspnetcore-tooling\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json\" />\r\n" +
+					"    <add key=\"aspnet-entityframeworkcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json\" />\r\n" +
+					"    <add key=\"aspnet-extensions\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json\" />\r\n" +
+					"    <add key=\"gRPCrepository\" value=\"https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev\" />\r\n";
+			}
+		}
+
 		[TestFixtureSetUp]
 		public void SetUp ()
 		{
@@ -52,7 +70,12 @@ namespace MonoDevelop.DotNetCore.Tests
 			}
 
 			// Set environment variable to enable VB.NET support
-			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
+			// Disabled for now due to .NET Core 3.0 preview 8 bug - https://github.com/dotnet/corefx/issues/40012
+			//Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
+
+			// Set $PATH to point to the .NET Core SDK we provision, as in VSTS bots are
+			// setup with lots of old and incompatible SDK versions under $HOME/.dotnet
+			Environment.SetEnvironmentVariable ("PATH", $"/usr/local/share/dotnet:{Environment.GetEnvironmentVariable ("PATH")}");
 		}
 
 		[Test]
@@ -198,25 +221,25 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
 		}
 
-		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
-		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore30=true")]
 
-		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
-		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore30=true")]
 
-		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
-		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore22=true")]
-		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore22=true")]
+		//[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore30=true;Framework=netcoreapp3.0")]
+		//[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore30=true")]
 
 		// NUnit3 templates come with .NET Core 2.2, but they only support .NET Core 2.1 framework
 		[TestCase ("NUnit3.DotNetNew.Template.CSharp", "UseNetCore30=true")]
 		[TestCase ("NUnit3.DotNetNew.Template.FSharp", "UseNetCore30=true")]
-		[TestCase ("NUnit3.DotNetNew.Template.VisualBasic", "UseNetCore30=true")]
+		//[TestCase ("NUnit3.DotNetNew.Template.VisualBasic", "UseNetCore30=true")]
 		public async Task NetCore30 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {
@@ -368,7 +391,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters, Action<Solution> preBuildChecks = null, bool checkExecutionTargets = false)
 		{
-			using (var ptt = new ProjectTemplateTest (basename, templateId)) {
+			using (var ptt = new DotNetCoreProjectTemplateTest (basename, templateId)) {
 
 				foreach (var templateParameter in TemplateParameter.CreateParameters (parameters)) {
 					ptt.Config.Parameters [templateParameter.Name] = templateParameter.Value;

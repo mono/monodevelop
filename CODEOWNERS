@@ -8,6 +8,9 @@
 # https://github.com/blog/2392-introducing-code-owners
 # https://help.github.com/articles/about-codeowners
 
+/main/Directory.Build.props @mono/monodevelop-roslyn
+/main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn @mono/monodevelop-infrastructure
+/main/src/addins/CSharpBinding @mono/monodevelop-roslyn
 /main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.AtkCocoaHelper @iainx
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands @slluis
@@ -31,7 +34,7 @@
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs @netonjm @rodrmoya
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring @slluis
-/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem @mkrueger @DavidKarlas
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem @mono/monodevelop-roslyn @mkrueger @DavidKarlas
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide @slluis
 /main/src/core/MonoDevelop.Ide/branding @slluis

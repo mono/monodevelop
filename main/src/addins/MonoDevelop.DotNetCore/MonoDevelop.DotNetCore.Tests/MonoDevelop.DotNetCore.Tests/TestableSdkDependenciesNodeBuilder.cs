@@ -1,5 +1,5 @@
 //
-// FrameworkReference.cs
+// TestableSdkDependenciesNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,17 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.DotNetCore.NodeBuilders;
+using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.DotNetCore.Tests
 {
-	/// <summary>
-	/// FrameworkReference is a set of known framework assemblies that are versioned
-	/// with the project's TargetFramework. Introduced with .NET Core 3.0
-	/// https://github.com/dotnet/designs/pull/50
-	/// </summary>
-	[ExportProjectItemType ("FrameworkReference")]
-	class FrameworkReference : ProjectItem
+	class TestableSdkDependenciesNodeBuilder : SdkDependenciesNodeBuilder
 	{
+		public List<object> ChildNodes = new List<object> ();
+
+		public IEnumerable<PackageDependencyNode> ChildNodesAsPackageDependencyNodes ()
+		{
+			return ChildNodes.OfType<PackageDependencyNode> ();
+		}
+
+		protected override void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
+		{
+			foreach (var dataObject in dataObjects) {
+				ChildNodes.Add (dataObject);
+			}
+		}
 	}
 }

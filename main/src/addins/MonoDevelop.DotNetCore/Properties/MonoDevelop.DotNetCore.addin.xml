@@ -1214,7 +1214,7 @@
 			<SeparatorItem
 				id="DependenciesEditReferenceSeparator" />
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
+				id="MonoDevelop.PackageManagement.Commands.ManageNuGetPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -1222,7 +1222,7 @@
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.DotNetCore.NodeBuilders.PackageDependenciesNode">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
+				id="MonoDevelop.PackageManagement.Commands.ManageNuGetPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -1233,7 +1233,7 @@
 			value="MonoDevelop.DotNetCore.NodeBuilders.AssemblyDependenciesNode|MonoDevelop.DotNetCore.NodeBuilders.ProjectDependenciesNode">
 			<CommandItem
 				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-				insertbefore="MonoDevelop.PackageManagement.Commands.ManagePackagesInProject" />
+				insertbefore="MonoDevelop.PackageManagement.Commands.ManageNuGetPackagesInProject" />
 		</Condition>
 		<Condition id="ItemType" value="UnknownProject|Solution">
 			<CommandItem
@@ -1255,7 +1255,8 @@
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.ProjectDependenciesNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.AssemblyDependenciesNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.SdkDependenciesNodeBuilder" />
-		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectReferencesNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.FrameworkReferencesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.FrameworkReferenceNodeBuilder" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">

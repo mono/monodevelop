@@ -1,10 +1,10 @@
 ﻿//
-// EmptyDirectoryRemover.cs
+// FrameworkReferenceNodeBuilder.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreProjectReferencesNodeBuilderExtension : NodeBuilderExtension
+	class FrameworkReferenceNodeBuilder : TypeNodeBuilder
 	{
-		public override bool CanBuildNode (Type dataType)
-		{
-			return typeof (ProjectReferenceCollection).IsAssignableFrom (dataType);
+		public override Type NodeDataType {
+			get { return typeof(FrameworkReferenceNode); }
 		}
 
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			if (IsDotNetCoreProject (parentNode)) {
-				attributes |= NodeAttributes.Hidden;
-			}
+			var node = (FrameworkReferenceNode)dataObject;
+			return node.Name;
 		}
 
-		bool IsDotNetCoreProject (ITreeNavigator parentNode)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var project = parentNode.DataItem as DotNetProject;
-			if (project != null)
-				return project.HasFlavor<DotNetCoreProjectExtension> ();
-
-			return false;
+			var node = (FrameworkReferenceNode)dataObject;
+			nodeInfo.Label = node.GetLabel ();
+			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
+			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
 		}
 	}
 }

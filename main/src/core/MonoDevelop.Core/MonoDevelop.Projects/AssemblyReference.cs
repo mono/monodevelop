@@ -88,6 +88,16 @@ namespace MonoDevelop.Projects
 		public bool IsFacade => ResolvedFrom == "ImplicitlyExpandDesignTimeFacades";
 
 		/// <summary>
+		/// Whether the reference supports multiple target frameworks.
+		/// </summary>
+		public bool HasSingleTargetFramework => metadata.GetValue ("HasSingleTargetFramework", true);
+
+		/// <summary>
+		/// Nearest target framework match.
+		/// </summary>
+		public string NearestTargetFramework => metadata.GetValue ("NearestTargetFramework");
+
+		/// <summary>
 		/// The value of the ResolvedFrom metadata, for example '{GAC}' or 'ImplicitlyExpandDesignTimeFacades'.
 		/// </summary>
 		public string ResolvedFrom => GetMetadata ("ResolvedFrom");

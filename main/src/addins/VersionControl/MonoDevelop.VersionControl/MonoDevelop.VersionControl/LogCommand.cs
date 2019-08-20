@@ -37,19 +37,24 @@ namespace MonoDevelop.VersionControl
 	{
 		internal static readonly string LogViewHandlers = "/MonoDevelop/VersionControl/LogViewHandler";
 		
-		static bool CanShow (VersionControlItem item)
+		static async Task<bool> CanShowAsync (VersionControlItem item)
 		{
 			// We want directories to be able to view the log for an entire directory
 			// by selecting it from the solution pane
-			return item.VersionInfo.IsVersioned && 
+			return (await item.GetVersionInfoAsync()).IsVersioned && 
 				       AddinManager.GetExtensionObjects<IVersionControlViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
 		public static async Task<bool> Show (VersionControlItemList items, bool test)
 		{
-			if (test)
-				return items.All (CanShow);
-			
+			if (test) {
+				foreach (var item in items) {
+					if (!await CanShowAsync (item))
+						return false;
+				}
+				return true;
+			}
+
 			foreach (var item in items) {
 				if (!item.IsDirectory) {
 					Document document = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);

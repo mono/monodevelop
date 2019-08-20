@@ -42,7 +42,12 @@ namespace MonoDevelop.Projects
 		public SolutionItemConfiguration (string id): base (id)
 		{
 		}
-		
+
+		internal SolutionItemConfiguration (string name, string platform)
+			: base (name, platform)
+		{
+		}
+
 		public SolutionItem ParentItem {
 			get { return parentItem; }
 		}

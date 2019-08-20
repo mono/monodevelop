@@ -1,4 +1,4 @@
-// VersionControlCommandHandler.cs
+﻿// VersionControlCommandHandler.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>

@@ -586,10 +586,13 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnDispose ()
 		{
-			RootFolder.Dispose ();
-			Counters.SolutionsLoaded--;
 			msbuildEngineManager.Dispose ();
 			base.OnDispose ();
+
+			// Dispose the root folder after we dispose the base item, as we need the root folder
+			// to contain the items when unregistering from the file watcher service.
+			RootFolder.Dispose ();
+			Counters.SolutionsLoaded--;
 		}
 
 		internal bool IsSolutionItemEnabled (string solutionItemPath)
@@ -1207,7 +1210,8 @@ namespace MonoDevelop.Projects
 				SetupNewItem (args.SolutionItem, args.ReplacedItem);
 			}
 
-			OnRootDirectoriesChanged ();
+			OnRootDirectoriesChanged (args.SolutionItem as IWorkspaceFileObject, isRemove: false, isAdd: true);
+			OnRootDirectoriesChanged (args.ReplacedItem as IWorkspaceFileObject, isRemove: true, isAdd: false);
 
 			SolutionItemAdded?.Invoke (this, args);
 		}
@@ -1252,7 +1256,7 @@ namespace MonoDevelop.Projects
 					DetachItem (item, args.Reloading);
 			}
 
-			OnRootDirectoriesChanged ();
+			OnRootDirectoriesChanged (args.SolutionItem as IWorkspaceFileObject, isRemove: true, isAdd: false);
 
 			SolutionItemRemoved?.Invoke (this, args);
 		}

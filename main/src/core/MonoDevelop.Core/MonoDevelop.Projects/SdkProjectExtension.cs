@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
@@ -262,74 +263,6 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Returns all transitive references.
-		/// </summary>
-		internal protected override async Task<List<AssemblyReference>> OnGetReferences (
-			ConfigurationSelector configuration,
-			System.Threading.CancellationToken token)
-		{
-			var references = new List<AssemblyReference> ();
-
-			var traversedProjects = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
-			traversedProjects.Add (Project.ItemId);
-
-			await GetTransitiveAssemblyReferences (traversedProjects, references, configuration, true, token);
-
-			return references;
-		}
-
-		/// <summary>
-		/// Recursively gets all transitive project references for .NET Core projects
-		/// and if includeNonProjectReferences is true also returns non project
-		/// assembly references.
-		/// 
-		/// Calling base.OnGetReferences returns the directly referenced projects and
-		/// also all transitive references which are not project references.
-		/// 
-		/// includeNonProjectReferences should be set to false when getting the
-		/// assembly references for referenced projects since the assembly references
-		/// from OnGetReferences already contains any transitive references which are
-		/// not projects.
-		/// </summary>
-		async Task GetTransitiveAssemblyReferences (
-			HashSet<string> traversedProjects,
-			List<AssemblyReference> references,
-			ConfigurationSelector configuration,
-			bool includeNonProjectReferences,
-			System.Threading.CancellationToken token)
-		{
-			foreach (var reference in await base.OnGetReferences (configuration, token).ConfigureAwait (false)) {
-				if (!reference.IsProjectReference) {
-					if (includeNonProjectReferences) {
-						references.Add (reference);
-					}
-					continue;
-				}
-
-				// Project references with ReferenceOutputAssembly false should be
-				// added but there is no need to check any further since there will not
-				// any transitive project references.
-				if (!reference.ReferenceOutputAssembly) {
-					references.Add (reference);
-					continue;
-				}
-
-				var project = reference.GetReferencedItem (Project.ParentSolution) as DotNetProject;
-				if (project == null)
-					continue;
-
-				if (!traversedProjects.Add (project.ItemId))
-					continue;
-
-				references.Add (reference);
-
-				var extension = project.AsFlavor<SdkProjectExtension> ();
-				if (extension != null)
-					await extension.GetTransitiveAssemblyReferences (traversedProjects, references, configuration, false, token).ConfigureAwait (false);
-			}
-		}
-
-		/// <summary>
 		/// ASP.NET Core projects have different build actions if the file is in the wwwroot folder.
 		/// It also uses Content build actions for *.json, *.config and *.cshtml files. To support
 		/// this the default file globs for the file are found and the MSBuild item name is returned.
@@ -342,6 +275,96 @@ namespace MonoDevelop.Projects
 				return globItems [0].Name;
 
 			return base.OnGetDefaultBuildAction (fileName);
+		}
+
+		protected internal override IEnumerable<ExecutionTarget> OnGetExecutionTargets (
+			OperationContext ctx,
+			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfig)
+		{
+			if (Project.HasMultipleTargetFrameworks) {
+				return GetMultipleTargetFrameworkExecutionTargets (ctx, configuration, runConfig);
+			}
+			return base.OnGetExecutionTargets (ctx, configuration, runConfig);
+		}
+
+		/// <summary>
+		/// This is only called if the main project has a CompileTarget which is not Library. Does not handle
+		/// configurations which have different CompileTargets.
+		/// </summary>
+		IEnumerable<ExecutionTarget> GetMultipleTargetFrameworkExecutionTargets (
+			OperationContext ctx,
+			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfig)
+		{
+			var targets = new List<ExecutionTarget> (Project.TargetFrameworkMonikers.Length);
+			foreach (TargetFrameworkMoniker framework in Project.TargetFrameworkMonikers) {
+				var target = new TargetFrameworkExecutionTarget (framework);
+				targets.Add (target);
+			}
+			return targets;
+		}
+
+		protected internal override Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfiguration)
+		{
+			TargetFrameworkMoniker framework = Project.TargetFramework.Id;
+			if (Project.HasMultipleTargetFrameworks) {
+				var frameworkContext = context?.ExecutionTarget as TargetFrameworkExecutionTarget;
+				if (frameworkContext != null) {
+					framework = frameworkContext.Framework;
+					if (!(configuration is DotNetProjectFrameworkConfigurationSelector))
+						configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.FrameworkShortName);
+				}
+			}
+
+			if (IsSupportedFramework (framework))
+				return OnExecute (monitor, context, configuration, framework, runConfiguration);
+
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		/// <summary>
+		/// Used by SdkProjectExtensions to indicate they support the target framework. Called to check if
+		/// an action, such as OnExecute should be called for a particular target framework in a multi-target
+		/// framework project.
+		/// </summary>
+		protected virtual bool IsSupportedFramework (TargetFrameworkMoniker framework)
+		{
+			return true;
+		}
+
+		protected internal virtual Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
+			TargetFrameworkMoniker framework,
+			SolutionItemRunConfiguration runConfiguration)
+		{
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		protected internal override ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			ProjectRunConfiguration runConfiguration)
+		{
+			if (IsSupportedFramework (configuration.TargetFramework.Id))
+				return OnCreateExecutionCommand (configSel, configuration, configuration.TargetFramework.Id, runConfiguration);
+
+			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+		}
+
+		protected internal virtual ExecutionCommand OnCreateExecutionCommand (
+			ConfigurationSelector configSel,
+			DotNetProjectConfiguration configuration,
+			TargetFrameworkMoniker framework,
+			ProjectRunConfiguration runConfiguration)
+		{
+			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 		}
 	}
 }

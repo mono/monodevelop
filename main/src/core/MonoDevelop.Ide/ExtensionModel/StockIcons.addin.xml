@@ -141,6 +141,7 @@
 	<StockIcon stockid="md-find-next" resource="find-next-16.png" size="Menu" />
 	<StockIcon stockid="md-find-prev" resource="find-prev-16.png" size="Menu" />
 	<StockIcon stockid="md-folder-assets" resource="folder-assets-16.png" size="Menu" />
+	<StockIcon stockid="md-framework-dependency" resource="framework-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-assembly" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-folder" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-fs-field" resource="element-fs-field-16.png" size="Menu" />
@@ -363,7 +364,7 @@
 	<StockIcon stockid="md-package" resource="package-32.png" size="Dnd" />
 	<StockIcon stockid="md-package" resource="package-48.png" size="Dialog" />
 
-	<StockIcon stockid="md-warning" resource="warning-16.png" />
+	<StockIcon stockid="md-warning" resource="warning-16.png" imageid="1591" />
 	<StockIcon stockid="md-warning" resource="warning-16.png" size="Menu" />
 	<StockIcon stockid="md-warning" resource="warning-24.png" size="Button" />
 	<StockIcon stockid="md-warning" resource="warning-24.png" size="LargeToolbar" />

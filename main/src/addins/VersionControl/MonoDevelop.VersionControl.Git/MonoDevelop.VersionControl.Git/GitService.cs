@@ -95,19 +95,23 @@ namespace MonoDevelop.VersionControl.Git
 					var stageChanges = dlg.StageChanges;
 					dlg.Hide ();
 
-					Task.Run (() => {
-						if (rebasing) {
-							using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", selectedBranch))) {
-								if (isRemote)
-									repo.Fetch (monitor, remoteName);
-								repo.Rebase (selectedBranch, stageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+					Task.Run (async () => {
+						try {
+							if (rebasing) {
+								using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", selectedBranch))) {
+									if (isRemote)
+										repo.Fetch (monitor, remoteName);
+									await repo.RebaseAsync (selectedBranch, stageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+								}
+							} else {
+								using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", selectedBranch))) {
+									if (isRemote)
+										repo.Fetch (monitor, remoteName);
+									await repo.MergeAsync (selectedBranch, stageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor, FastForwardStrategy.NoFastForward);
+								}
 							}
-						} else {
-							using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", selectedBranch))) {
-								if (isRemote)
-									repo.Fetch (monitor, remoteName);
-								repo.Merge (selectedBranch, stageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor, FastForwardStrategy.NoFastForward);
-							}
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while showing merge dialog.", e);
 						}
 					});
 				}

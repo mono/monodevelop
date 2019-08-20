@@ -78,6 +78,9 @@
 		</Condition>
 		<Condition id="ItemType" value="Project|ProjectFolder|Solution|SolutionFolder">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+				<Condition id="ItemType" value="Project|ProjectFolder">
+					<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddEmptyClass" />
+				</Condition>
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 		</Condition>
 		<Condition id="ItemType" value="Project|ProjectFolder">

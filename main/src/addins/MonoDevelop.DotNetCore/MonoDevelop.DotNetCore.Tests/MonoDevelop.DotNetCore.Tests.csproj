@@ -34,6 +34,10 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DependencyNodeTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSDKResolverTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\TemplateDependencyChecker.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\TestableDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\TestableSdkDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\TestablePackageDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\TestableTargetFrameworkNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

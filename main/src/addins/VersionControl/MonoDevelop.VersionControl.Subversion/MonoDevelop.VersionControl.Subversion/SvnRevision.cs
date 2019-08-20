@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -69,13 +71,16 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return Rev.ToString();
 		}
-		
-		public override Revision GetPrevious()
-		{
-			if (Kind != 1 && Rev == 0)
-				return Previous;
 
-			return new SvnRevision (Repository, Rev-1);
+		public override Task<Revision> GetPreviousAsync (CancellationToken cancellationToken)
+		{
+			Revision result;
+			if (Kind != 1 && Rev == 0) {
+				result = Previous;
+			} else {
+				result = new SvnRevision (Repository, Rev - 1);
+			}
+			return Task.FromResult (result);
 		}
 		
 		public readonly static SvnRevision Blank = new SvnRevision(0);

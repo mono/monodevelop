@@ -1,4 +1,4 @@
-//
+﻿//
 // GitCommitDialogExtensionWidget.cs
 //
 // Author:
@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -35,11 +37,17 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 
-			bool hasRemote = repo.GetCurrentRemote () != null;
-			if (!hasRemote) {
-				checkPush.Sensitive = false;
-				checkPush.TooltipText = GettextCatalog.GetString ("Pushing is only available for repositories with configured remotes.");
-			}
+			var token = destroyTokenSource.Token;
+			repo.GetCurrentRemoteAsync (token).ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
+				bool hasRemote = t.Result != null;
+				if (!hasRemote) {
+					checkPush.Sensitive = false;
+					checkPush.TooltipText = GettextCatalog.GetString ("Pushing is only available for repositories with configured remotes.");
+				}
+
+			}, token, TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted, Runtime.MainTaskScheduler).Ignore ();
 		}
 
 		public bool PushAfterCommit {
@@ -71,5 +79,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		public event EventHandler Changed;
 
+		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
+
+		protected override void OnDestroyed ()
+		{
+			destroyTokenSource.Cancel ();
+			base.OnDestroyed ();
+		}
 	}
 }

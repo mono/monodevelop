@@ -29,6 +29,8 @@ using MonoDevelop.VersionControl.Tests;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.IO;
+using System;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
@@ -39,7 +41,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 		const string MacSvnAdminPath = "/Library/Developer/CommandLineTools/usr/bin/svnadmin";
 		[SetUp]
-		public override void Setup ()
+		public override async Task Setup ()
 		{
 			Process svnAdmin;
 			ProcessStartInfo info;
@@ -77,25 +79,26 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			}
 
 			// Check out the repository.
-			Checkout (LocalPath, RemoteUrl);
+			await CheckoutAsync (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
 			DotDir = ".svn";
 
-			base.Setup ();
+			await base.Setup ();
 		}
 
 		[Test]
 		[Ignore ("Subversion fails to revert special kind revisions.")]
-		public override void RevertsRevision ()
+		public override Task RevertsRevision ()
 		{
+			return Task.CompletedTask;
 		}
 
 		[Test]
-		public override void LogIsProper ()
+		public override Task LogIsProper ()
 		{
 			if (!Platform.IsWindows)
 				Assert.Inconclusive ("Linux/Mac Svn seems to hiccup on symlinks.");
-			base.LogIsProper ();
+			return base.LogIsProper ();
 		}
 
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
@@ -107,9 +110,9 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			get { return VersionStatus.Unversioned; }
 		}
 
-		protected override void CheckLog (Repository repo)
+		protected override async Task CheckLog (Repository repo)
 		{
-			var revs = repo.GetHistory (LocalPath.Combine ("."), null);
+			var revs = await repo.GetHistoryAsync (LocalPath.Combine ("."), null);
 			for (int i = 0; i < revs.Length - 1; ++i) {
 				var svnRev = (SvnRevision)revs [i];
 				Assert.AreEqual (revs.Length - 1 - i, svnRev.Rev);

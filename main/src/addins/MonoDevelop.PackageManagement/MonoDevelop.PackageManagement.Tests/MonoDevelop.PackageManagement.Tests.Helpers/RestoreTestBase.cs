@@ -39,7 +39,6 @@ using NuGet.Packaging.PackageExtraction;
 using NuGet.Packaging.Signing;
 using NuGet.ProjectManagement;
 using NUnit.Framework;
-using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -72,7 +71,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			File.WriteAllText (fileName, xml);
 		}
 
-		protected static Task<PackageRestoreResult> RestoreNuGetPackages (Solution solution)
+		protected static Task<PackageRestoreResult> RestorePackagesConfigNuGetPackages (Solution solution)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (solution);
 			var context = new FakeNuGetProjectContext {
@@ -117,6 +116,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				logger);
 
 			return context;
+		}
+
+		protected static Task RestoreNuGetPackages (Solution solution)
+		{
+			var solutionManager = new MonoDevelopSolutionManager (solution);
+			var restoreAction = new RestoreNuGetPackagesAction (solution, solutionManager);
+
+			return Task.Run (() => {
+				restoreAction.Execute ();
+			});
 		}
 
 		protected class PackageManagementEventsConsoleLogger : IDisposable

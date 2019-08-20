@@ -92,6 +92,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetFacadeAssemblies ();
 		}
 
+		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies (TargetFramework framework)
+		{
+			return next.OnGetFacadeAssemblies (framework);
+		}
+
 		[Obsolete("User overload that takes a RunConfiguration")]
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{

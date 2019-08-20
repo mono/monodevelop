@@ -43,7 +43,7 @@ namespace NuGet.PackageManagement.UI
 			var packageReferences = await Task.WhenAll (tasks);
 			var packages = packageReferences
 				.SelectMany (p => p)
-				.Where (p => p != null)
+				.Where (p => p != null && p.PackageIdentity != null && p.PackageIdentity.HasVersion)
 				.Select (p => p.PackageIdentity)
 				.Distinct (PackageIdentity.Comparer)
 				.ToArray ();

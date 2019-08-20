@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Gtk;
 using MonoDevelop.Core;
@@ -9,13 +9,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Documents;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
 {
 	public interface ILogView
 	{
 	}
-	
+
 	class LogView : BaseView, ILogView
 	{
 		LogWidget widget;
@@ -30,31 +31,44 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public static bool CanShow (VersionControlItemList items, Revision since)
+		public static async Task<bool> CanShow (VersionControlItemList items, Revision since)
 		{
-			return items.All (i => i.VersionInfo.CanLog);
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync ();
+				if (!info.CanLog)
+					return false;
+			}
+			return true;
 		}
-		
+
 		public LogView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"))
 		{
 			this.info = info;
 		}
-		
-		void CreateControlFromInfo ()
+
+		async void CreateControlFromInfo ()
 		{
 			var lw = new LogWidget (info);
-			
-			widget = lw;
-			info.Updated += OnInfoUpdated;
-			lw.History = this.info.History;
-			vinfo   = this.info.Item.VersionInfo;
-			Init ();
+
+			try {
+				widget = lw;
+				info.Updated += OnInfoUpdated;
+				lw.History = this.info.History;
+				vinfo = await this.info.Item.GetVersionInfoAsync ();
+				Init ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+			}
 		}
 
-		void OnInfoUpdated (object sender, EventArgs e)
+		async void OnInfoUpdated (object sender, EventArgs e)
 		{
-			widget.History = this.info.History;
-			vinfo   = this.info.Item.VersionInfo;
+			try {
+				widget.History = this.info.History;
+				vinfo = await info.Item.GetVersionInfoAsync ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
 		}
 
 		protected override Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
@@ -79,7 +93,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Init ()
 		{
 			if (info != null && !info.Started) {
-				widget.ShowLoading ();
+				LogWidget.ShowLoading ();
 				info.Start ();
 			}
 		}

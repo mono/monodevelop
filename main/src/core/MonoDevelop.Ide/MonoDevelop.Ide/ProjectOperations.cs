@@ -50,6 +50,7 @@ using MonoDevelop.Projects.MSBuild;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Projects.OptionPanels;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide
 {
@@ -882,6 +883,22 @@ namespace MonoDevelop.Ide
 					nfd.SelectTemplate (selectedTemplateId);
 				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
 			}
+		}
+
+		public bool CanCreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
+		{
+			var projectLangs = parentProject.SupportedLanguages;
+			var template = FileTemplate.GetFileTemplateByID (selectedTemplateId);
+			if(template != null) {
+				var templateLangs = template.GetCompatibleLanguages (parentProject, basePath);
+				if (templateLangs != null) {
+					foreach (var projectLang in projectLangs) {
+						if (templateLangs.Contains (projectLang))
+							return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		public bool CreateSolutionFolderFile (SolutionFolder parentSolutionFolder,string selectedTemplateId = null)

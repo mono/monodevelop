@@ -50,10 +50,16 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			Project = project;
 			this.updatedPackagesInWorkspace = updatedPackagesInWorkspace;
 			PackageDependencyCache = new PackageDependencyNodeCache (Project);
+			FrameworkReferencesCache = new FrameworkReferenceNodeCache (Project);
 		}
 
 		internal DotNetProject Project { get; private set; }
 		internal PackageDependencyNodeCache PackageDependencyCache { get; private set; }
+		internal FrameworkReferenceNodeCache FrameworkReferencesCache { get; private set; }
+
+		public bool LoadedDependencies {
+			get { return PackageDependencyCache.LoadedDependencies; }
+		}
 
 		public string GetLabel ()
 		{
@@ -83,6 +89,78 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return updatedPackages.GetPackages ().Count ();
 		}
 
+		public IEnumerable<object> GetChildNodes ()
+		{
+			if (LoadedDependencies) {
+				return GetLoadedDependencyNodes ();
+			} else {
+				return GetDefaultChildNodes ();
+			}
+		}
+
+		IEnumerable<object> GetLoadedDependencyNodes ()
+		{
+			var frameworkNodes = GetTargetFrameworkNodes ().ToList ();
+			if (frameworkNodes.Count > 1) {
+				return frameworkNodes;
+			} else if (frameworkNodes.Any ()) {
+				return GetChildNodes (frameworkNodes [0]);
+			} else {
+				return GetDefaultChildNodes ();
+			}
+		}
+
+		IEnumerable<object> GetDefaultChildNodes ()
+		{
+			return GetChildNodes (null);
+		}
+
+		internal IEnumerable<object> GetChildNodes (TargetFrameworkNode frameworkNode)
+		{
+			bool addedFrameworkReferencesNode = false;
+			if (frameworkNode != null) {
+				var frameworkReferencesNode = new FrameworkReferencesNode (this);
+				if (frameworkReferencesNode.HasChildNodes ()) {
+					addedFrameworkReferencesNode = true;
+					yield return frameworkReferencesNode;
+				}
+
+				var packagesNode = new PackageDependenciesNode (frameworkNode);
+				if (packagesNode.HasChildNodes ())
+					yield return packagesNode;
+
+				if (!addedFrameworkReferencesNode) {
+					var sdkNode = new SdkDependenciesNode (frameworkNode);
+					if (sdkNode.HasChildNodes ())
+						yield return sdkNode;
+				}
+			} else {
+				var frameworkReferencesNode = new FrameworkReferencesNode (this);
+				if (frameworkReferencesNode.HasChildNodes ()) {
+					addedFrameworkReferencesNode = true;
+					yield return frameworkReferencesNode;
+				}
+
+				var packagesNode = new PackageDependenciesNode (this);
+				if (packagesNode.HasChildNodes ())
+					yield return packagesNode;
+
+				if (!addedFrameworkReferencesNode) {
+					var sdkNode = new SdkDependenciesNode (this);
+					if (sdkNode.HasChildNodes ())
+						yield return sdkNode;
+				}
+			}
+
+			var assembliesNode = new AssemblyDependenciesNode (Project);
+			if (assembliesNode.HasChildNodes ())
+				yield return assembliesNode;
+
+			var projectsNode = new ProjectDependenciesNode (Project);
+			if (projectsNode.HasChildNodes ())
+				yield return projectsNode;
+		}
+
 		public IconId Icon {
 			get { return Stock.OpenReferenceFolder; }
 		}
@@ -91,9 +169,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return Stock.ClosedReferenceFolder; }
 		}
 
-		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (bool sdkDependencies)
+		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes ()
 		{
-			return PackageDependencyCache.GetTargetFrameworkNodes (this, sdkDependencies);
+			return PackageDependencyCache.GetTargetFrameworkNodes (this);
 		}
 
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()

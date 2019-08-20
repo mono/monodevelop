@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
@@ -43,9 +42,17 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			ParentNode = parentNode;
 		}
 
+		public PackageDependenciesNode (TargetFrameworkNode frameworkNode)
+		{
+			FrameworkNode = frameworkNode;
+			ParentNode = frameworkNode.DependenciesNode;
+		}
+
 		internal DotNetProject Project {
 			get { return ParentNode.Project; }
 		}
+
+		internal TargetFrameworkNode FrameworkNode { get; private set; }
 
 		internal DependenciesNode ParentNode { get; private set; }
 
@@ -71,11 +78,6 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return ParentNode.PackageDependencyCache.LoadedDependencies; }
 		}
 
-		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes ()
-		{
-			return ParentNode.GetTargetFrameworkNodes (sdkDependencies: false);
-		}
-
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
 		{
 			return ParentNode.GetProjectPackageReferencesAsDependencyNodes ();
@@ -83,7 +85,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public bool HasChildNodes ()
 		{
-			return Project.Items.OfType<ProjectPackageReference> ().Any ();
+			return GetChildNodes ().Any ();
+		}
+
+		public IEnumerable<PackageDependencyNode> GetChildNodes ()
+		{
+			if (FrameworkNode != null) {
+				return FrameworkNode.GetDependencyNodes (sdkDependencies: false);
+			} else {
+				// Projects sometimes return no dependencies from MSBuild initially so
+				// add the default nodes until the dependencies are updated.
+				return GetProjectPackageReferencesAsDependencyNodes ();
+			}
 		}
 	}
 }

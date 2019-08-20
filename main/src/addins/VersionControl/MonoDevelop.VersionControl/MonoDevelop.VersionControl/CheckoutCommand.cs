@@ -3,6 +3,8 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -20,7 +22,7 @@ namespace MonoDevelop.VersionControl
 			try {
 				if (MessageService.RunCustomDialog (del) == (int) Gtk.ResponseType.Ok && del.Repository != null) {
 					CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
-					w.Start ();
+					w.StartAsync ();
 				}
 			} finally {
 				del.Destroy ();
@@ -62,10 +64,10 @@ namespace MonoDevelop.VersionControl
 					AlertButton.Ok);
 			}
 
-			protected override void Run ()
+			protected override async Task RunAsync ()
 			{
 				if (System.IO.Directory.Exists (path) && System.IO.Directory.EnumerateFileSystemEntries (path).Any ()) {
-					var result = Runtime.RunInMainThread (() => AskForCheckoutPath ()).Result;
+					var result = await Runtime.RunInMainThread (() => AskForCheckoutPath ());
 					if (result == AlertButton.Cancel)
 						return;
 
@@ -73,7 +75,7 @@ namespace MonoDevelop.VersionControl
 					FileService.CreateDirectory (path);
 				}
 
-				vc.Checkout (path, null, true, Monitor);
+				await vc.CheckoutAsync (path, null, true, Monitor);
 
 				if (Monitor.CancellationToken.IsCancellationRequested) {
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
@@ -87,7 +89,7 @@ namespace MonoDevelop.VersionControl
 
 				foreach (string str in System.IO.Directory.EnumerateFiles (path, "*", System.IO.SearchOption.AllDirectories)) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
-						Runtime.RunInMainThread (delegate {
+						await Runtime.RunInMainThread (delegate {
 							IdeApp.Workspace.OpenWorkspaceItem (str);
 						});
 						break;

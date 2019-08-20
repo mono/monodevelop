@@ -27,39 +27,44 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
-	
-	
+
+
 	public class UnlockCommand
 	{
-		public static bool Unlock (VersionControlItemList items, bool test)
+		public static async Task<bool> UnlockAsync (VersionControlItemList items, bool test, CancellationToken cancellationToken)
 		{
-			if (!items.All (i => i.VersionInfo.CanUnlock))
-				return false;
+			foreach (var item in items) {
+				var info = await item.GetVersionInfoAsync (cancellationToken);
+				if (!info.CanUnlock)
+					return false;
+			}
 			if (test)
 				return true;
-			
-			new UnlockWorker (items).Start();
+
+			await new UnlockWorker (items).StartAsync(cancellationToken).ConfigureAwait (false);
 			return true;
 		}
 
-		private class UnlockWorker : VersionControlTask 
+		private class UnlockWorker : VersionControlTask
 		{
 			VersionControlItemList items;
-						
+
 			public UnlockWorker (VersionControlItemList items) {
 				this.items = items;
 			}
-			
+
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Unlocking...");
 			}
 
-			protected override void Run ()
+			protected override Task RunAsync ()
 			{
 				try {
 					foreach (VersionControlItemList list in items.SplitByRepository ()) {
@@ -69,10 +74,13 @@ namespace MonoDevelop.VersionControl
 						VersionControlService.NotifyFileStatusChanged (items);
 					});
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
+				} catch (OperationCanceledException) {
+					return Task.CompletedTask;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unlock operation failed", ex);
 					MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
 				}
+				return Task.CompletedTask;
 			}
 		}
 	}
