@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			return (children?.Count ?? 0) > 0;
 		}
 
-		public static IEnumerable<ProjectFile> GetChildren (ProjectFile inputFile)
+		public static ProjectFileCollection GetChildren (ProjectFile inputFile)
 		{
 			return GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 		}

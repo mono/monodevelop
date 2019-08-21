@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				treeBuilder.AddChildren (file.DependentChildren);
 			else {
 				var children = FileNestingService.GetChildren (file);
-				if (children?.Any () ?? false) {
+				if ((children?.Count ?? 0) > 0) {
 					treeBuilder.AddChildren (children);
 				}
 			}

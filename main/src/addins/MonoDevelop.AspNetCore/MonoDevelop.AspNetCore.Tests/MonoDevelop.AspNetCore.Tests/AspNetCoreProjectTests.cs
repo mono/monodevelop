@@ -106,7 +106,7 @@ namespace MonoDevelop.AspNetCore.Tests
 
 					// Test removing files
 					project.Files.Remove (inputFile);
-					Assert.That (FileNestingService.GetChildren (parentFile).Count (), Is.EqualTo (0));
+					Assert.That (FileNestingService.GetChildren (parentFile).Count, Is.EqualTo (0));
 					project.Files.Remove (parentFile);
 				}
 			}
