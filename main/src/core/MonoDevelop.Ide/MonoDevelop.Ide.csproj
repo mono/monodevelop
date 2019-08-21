@@ -4347,6 +4347,7 @@
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
