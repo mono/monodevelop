@@ -62,8 +62,6 @@ namespace MonoDevelop.AspNetCore
 		public AspNetCoreRunConfiguration (string name)
 			: base (name)
 		{
-			base.StoreInUserFile = false;
-			base.SupportedFeatures = base.SupportedFeatures & ~ProjectRunConfigurationFeatures.UserSpecificSupported;
 		}
 		
 		[Obsolete]
