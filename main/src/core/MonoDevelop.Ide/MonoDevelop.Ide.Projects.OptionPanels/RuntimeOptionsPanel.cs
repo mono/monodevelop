@@ -35,6 +35,7 @@ using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
@@ -113,6 +114,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 				Sensitive = frameworks.Count > 1;
 			}
+
+			runtimeVersionCombo.SetCommonAccessibilityAttributes ("RuntimeOption.TargetFrameworks", label114,
+																 GettextCatalog.GetString ("Select the target framework"));
 		}
 
 		public void Store ()
