@@ -31,8 +31,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Mono.Addins;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects.FileNesting
+namespace MonoDevelop.Ide.Projects.FileNesting
 {
 	public static class FileNestingService
 	{

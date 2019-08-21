@@ -29,19 +29,17 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.FileNesting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui.Components;
-using System.Linq;
-using MonoDevelop.Components;
-using System.Threading.Tasks;
-using System.Threading;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {

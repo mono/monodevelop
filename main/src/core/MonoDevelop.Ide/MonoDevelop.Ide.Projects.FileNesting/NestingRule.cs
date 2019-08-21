@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects.FileNesting
+namespace MonoDevelop.Ide.Projects.FileNesting
 {
 	internal enum NestingRuleKind
 	{

@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {

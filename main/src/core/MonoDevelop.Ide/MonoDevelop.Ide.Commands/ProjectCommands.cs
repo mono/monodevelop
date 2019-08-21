@@ -44,7 +44,7 @@ using System.Linq;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.FeatureConfiguration;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Commands
 {
