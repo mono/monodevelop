@@ -316,12 +316,14 @@ namespace MonoDevelop.Core.Instrumentation
 				InstrumentationService.LogMessage (message);
 		}
 
+		[Obsolete ("Use Inc(1) instead")]
 		public static Counter operator ++ (Counter c)
 		{
 			c.Inc (1, null);
 			return c;
 		}
-		
+
+		[Obsolete ("Use Dec(1) instead")]
 		public static Counter operator -- (Counter c)
 		{
 			c.Dec (1, null);
