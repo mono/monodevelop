@@ -116,9 +116,11 @@ namespace MonoDevelop.VersionControl
 		static async Task<bool> CanCreatePatchAsync (ChangeSet items, CancellationToken cancellationTokent)
 		{
 			if (null == items || 0 == items.Count){ return false; }
-			
-			var vinfos = await items.Repository.GetVersionInfoAsync (items.Items.Select (i => i.LocalPath), cancellationToken: cancellationTokent);
-			return vinfos.All (i => i.CanRevert);
+			foreach (var item in items.Items.Select (i => i.LocalPath)) {
+				if (!items.Repository.TryGetVersionInfo (item, out var info) || !info.CanRevert)
+					return false;
+			}
+			return true;
 		}
 		
 		/// <summary>
