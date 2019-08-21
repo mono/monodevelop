@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects.FileNesting
 {
-	public static class FileNestingService
+	internal static class FileNestingService
 	{
 		static readonly ConditionalWeakTable<Project, ProjectNestingInfo> loadedProjects = new ConditionalWeakTable<Project, ProjectNestingInfo> ();
 		static ImmutableList<NestingRulesProvider> rulesProviders = ImmutableList<NestingRulesProvider>.Empty;

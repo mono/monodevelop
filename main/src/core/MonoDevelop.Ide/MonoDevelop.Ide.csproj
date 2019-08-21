@@ -4340,6 +4340,7 @@
     <InternalsVisibleTo Include="IdeUnitTests" />
     <InternalsVisibleTo Include="MacPlatform" />
     <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNetCore.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.AssemblyBrowser" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
