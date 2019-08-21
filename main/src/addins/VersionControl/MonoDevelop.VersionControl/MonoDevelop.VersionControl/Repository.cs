@@ -298,12 +298,15 @@ namespace MonoDevelop.VersionControl
 		public async Task<IReadOnlyList<VersionInfo>> GetVersionInfoAsync (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None, CancellationToken cancellationToken = default)
 		{
 			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
-				// We shouldn't use IEnumerable because elements don't save property modifications.
-				var res = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
-				foreach (var vi in res)
-					if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken);
-				await infoCache.SetStatusAsync (res, cancellationToken: cancellationToken);
-				return res;
+				var res = await ExclusiveOperationFactory.StartNew (async delegate {
+					// We shouldn't use IEnumerable because elements don't save property modifications.
+					var res = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
+					foreach (var vi in res)
+						if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken);
+					await infoCache.SetStatusAsync (res, cancellationToken: cancellationToken);
+					return res;
+				});
+				return await res;
 			}
 			var pathsToQuery = new List<FilePath> ();
 			var result = new List<VersionInfo> ();
@@ -325,7 +328,7 @@ namespace MonoDevelop.VersionControl
 //				Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
 			}
 			if (pathsToQuery.Count > 0) {
-				ConcurrentOperationFactory.StartNew (async delegate {
+				ExclusiveOperationFactory.StartNew (async delegate {
 					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
@@ -361,7 +364,7 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			if (pathsToQuery.Count > 0) {
-				ConcurrentOperationFactory.StartNew (async delegate {
+				ExclusiveOperationFactory.StartNew (async delegate {
 					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
