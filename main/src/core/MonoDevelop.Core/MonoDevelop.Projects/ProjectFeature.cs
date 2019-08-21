@@ -34,7 +34,8 @@ namespace MonoDevelop.Projects
 		Build = 1,
 		Execute = 2,
 		Configurations = 4,
-		RunConfigurations = 8
+		RunConfigurations = 8,
+		UserSpecificRunConfigurations = 16
 	}
 }
 
