@@ -28,6 +28,7 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.Ide.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.VersionControl.Git.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.DesignerSupport.Tests.dll \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.Packaging.Tests.dll \

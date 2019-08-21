@@ -32,8 +32,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
-		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingFileGenerator"/>
-		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>
+		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingFileGenerator" extensions=".tt" />
+		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor" extensions=".tt" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
