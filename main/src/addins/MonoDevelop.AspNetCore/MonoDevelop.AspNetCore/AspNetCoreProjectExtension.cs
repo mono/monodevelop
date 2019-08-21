@@ -233,5 +233,10 @@ namespace MonoDevelop.AspNetCore
 			}
 			launchProfileProvider.SaveLaunchSettings ();
 		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return base.OnGetSupportedFeatures () & ~ProjectFeatures.UserSpecificRunConfigurations;
+		}
 	}
 }

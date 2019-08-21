@@ -50,10 +50,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config = (RunConfigInfo)dataObject;
 			editor = RunConfigurationService.CreateEditorForConfiguration (config.EditedConfig);
 
-			box = new Gtk.VBox ();
-			box.Spacing = 12;
+			box = new Gtk.VBox {
+				Spacing = 12
+			};
 			userConf = new Gtk.CheckButton (GettextCatalog.GetString ("User-specific configuration")) {
-				Sensitive = config.ProjectConfig.SupportedFeatures.HasFlag (ProjectRunConfigurationFeatures.UserSpecificSupported)
+				Sensitive = config.Project.SupportsUserSpecificRunConfigurations ()
 			};
 			box.PackEnd (userConf, false, false, 0);
 			box.PackEnd (new Gtk.HSeparator (), false, false, 0);
