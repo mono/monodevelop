@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects.FileNesting
+namespace MonoDevelop.Ide.Projects.FileNesting
 {
 	public abstract class NestingRulesProvider
 	{

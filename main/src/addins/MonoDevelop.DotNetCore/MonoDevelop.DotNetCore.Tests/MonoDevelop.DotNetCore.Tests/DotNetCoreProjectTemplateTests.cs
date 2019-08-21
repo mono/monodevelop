@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using IdeUnitTests;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Ide.Projects.FileNesting;
 using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.DotNetCore.Tests

@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using MonoDevelop.Projects;
 using UnitTests;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore.Tests
 {

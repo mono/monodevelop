@@ -47,7 +47,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {

@@ -24,12 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.IO;
-using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore
 {
