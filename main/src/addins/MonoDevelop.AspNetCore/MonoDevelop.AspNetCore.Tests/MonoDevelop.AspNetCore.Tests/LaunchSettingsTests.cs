@@ -84,7 +84,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		public async Task Checks_Adding_Removing_Profiles ()
 		{
 			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
-			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
 			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
@@ -109,7 +109,8 @@ namespace MonoDevelop.AspNetCore.Tests
 		public async Task RefreshLaunchSettings_returns_expected_Profile ()
 		{
 			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
-			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
 			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
@@ -121,7 +122,7 @@ namespace MonoDevelop.AspNetCore.Tests
 
 			//modifiying launchSettings.json externally and loading it again
 			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
-			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			project = (DotNetProject)solution.GetAllProjects ().Single ();
 
 			var config = project.GetDefaultRunConfiguration () as AspNetCoreRunConfiguration;
@@ -165,7 +166,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		public async Task If_launchSettings_is_emtpy_it_should_return_defaultProfile ()
 		{
 			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
-			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
 			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
@@ -178,6 +179,25 @@ namespace MonoDevelop.AspNetCore.Tests
 			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, string.Empty);
 
 			var config = project.GetDefaultRunConfiguration () as AspNetCoreRunConfiguration;
+
+			Assert.That (config, Is.Not.Null, "GetDefaultRunConfiguration cast to AspNetCoreRunConfiguration is null");
+			Assert.That (config.Name, Is.EqualTo ("Default"));
+		}
+
+		[Test]
+		public async Task SyncRunConfigurations_syncs_RunConfigs ()
+		{
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = (DotNetProject)solution.GetAllProjects ().Single ();
+
+			project.RunConfigurations.Clear ();
+			Assert.That (project.RunConfigurations, Is.Empty);
+			
+			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
+			launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.SyncRunConfigurations (project);
 
 			Assert.That (config, Is.Not.Null, "GetDefaultRunConfiguration cast to AspNetCoreRunConfiguration is null");
 			Assert.That (config.Name, Is.EqualTo ("Default"));
