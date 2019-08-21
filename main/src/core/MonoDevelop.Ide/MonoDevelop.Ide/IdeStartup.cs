@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide
 			Thread.CurrentThread.Name = "GUI Thread";
 			Counters.InitializationTracker.Trace ("Running IdeApp");
 			Counters.InitializationTracker.End ();
-			Counters.InitializationTracker = null;
+			Counters.InitializationTracker = new NullTimeTracker ();
 
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();

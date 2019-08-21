@@ -69,7 +69,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 		}
 
-		public T Metadata { get; private set; }
+		public T Metadata { get; }
 
 		public TimeSpan Duration { get; }
 	}
