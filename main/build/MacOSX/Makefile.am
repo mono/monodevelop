@@ -27,6 +27,19 @@ EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
 export MACOSX_DEPLOYMENT_TARGET=10.12
 
+# With the hardened runtime, we need to specify the location of all libraries
+# that we dlopen
+MONOSTUB_RPATH=-Wl,-rpath,/Library/Frameworks/Mono.framework/Libraries/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/bin/ \
+-Wl,-rpath,@executable_path/../Resources/lib/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/AddIns/DisplayBindings/TextEditor.Cocoa/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/AddIns/VersionControl/ \
+-Wl,-rpath,@executable_path/../Resources/lib/monodevelop/AddIns/VersionControl/lib/osx/ \
+-Wl,-rpath,/Library/Developer/CommandLineTools/usr/lib/ \
+-Wl,-rpath,/Applications/Xcode.app/Contents/Developer/ \
+-Wl,-rpath,/usr/lib/ \
+-Wl,-rpath,/usr/local/lib/
+
 all: monostub monostub-nogui monostub-test
 
 render.exe: render.cs
@@ -42,12 +55,12 @@ monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
@@ -89,6 +102,7 @@ app: monostub monostub-test
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
 
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s/@APP_DISPLAY_NAME@/$(APP_DISPLAY_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
+	cp Entitlements.plist $(MAC_APP_DIR)/Contents/Entitlements.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 
 # Native launch scripts
