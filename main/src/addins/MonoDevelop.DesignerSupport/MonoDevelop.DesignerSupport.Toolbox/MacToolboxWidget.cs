@@ -182,10 +182,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override void KeyDown (NSEvent theEvent)
 		{
-			base.KeyDown (theEvent);
 			if ((int)theEvent.ModifierFlags == (int)KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter)) {
 				PerformActivateSelectedItem ();
 			}
+			base.KeyDown (theEvent);
 		}
 
 		void DataSource_RegionCollapsed (object sender, NSIndexPath e)
@@ -218,10 +218,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override void MouseDown (NSEvent theEvent)
 		{
 			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
-			base.MouseDown (theEvent);
 			if (SelectedItem != null && theEvent.ClickCount > 1) {
 				PerformActivateSelectedItem ();
 			}
+
+			base.MouseDown (theEvent);
 		}
 
 		public void RedrawItems (bool invalidates, bool reloads)
