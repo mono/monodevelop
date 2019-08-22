@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Foundation;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -108,5 +112,40 @@ namespace PerformanceDiagnosticsAddIn
 			log.WriteLine ("=========================================================================================");
 		}
 	}
-}
 
+#if DEBUG
+	public class InduceManagedCrash : CommandHandler
+	{
+		protected override void Run ()
+		{
+			Task.Run (() => {
+				new NSObject ().BeginInvokeOnMainThread (() => throw new Exception ("Diagnostics: Managed crash"));
+			});
+		}
+	}
+
+	public class InduceNativeCrash : CommandHandler
+	{
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern void void_objc_msgSend (IntPtr receiver, IntPtr selector);
+
+		protected override void Run ()
+		{
+			Task.Run (() => {
+				using var x = new NSException ("Native crash", "Diagnostics", null);
+				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+
+				void_objc_msgSend (x.Handle, selector);
+			});
+		}
+	}
+
+	public class InduceHang : CommandHandler
+	{
+		protected override void Run ()
+		{
+			Thread.Sleep (TimeSpan.FromMinutes(2));
+		}
+	}
+}
+#endif
