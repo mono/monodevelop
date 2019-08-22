@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelopTests
 open System
 open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Text
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
@@ -36,8 +37,9 @@ module TestHelpers =
         async {
             try
                 let checker = FSharpChecker.Create()
-                let! projOptions, _errors = checker.GetProjectOptionsFromScript(filename, source)
-                let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(filename, 0, source , projOptions)
+                let sourceText = SourceText.ofString source
+                let! projOptions, _errors = checker.GetProjectOptionsFromScript(filename, sourceText)
+                let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(filename, 0, sourceText , projOptions)
 
                 // Construct new typed parse result if the task succeeded
                 let results =
