@@ -126,7 +126,7 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
-			return (base.OnGetSupportedFeatures () | ProjectFeatures.Execute) & ~ProjectFeatures.RunConfigurations;
+			return (base.OnGetSupportedFeatures () | ProjectFeatures.Execute) & ~(ProjectFeatures.RunConfigurations | ProjectFeatures.UserSpecificRunConfigurations);
 		}
 
 		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
