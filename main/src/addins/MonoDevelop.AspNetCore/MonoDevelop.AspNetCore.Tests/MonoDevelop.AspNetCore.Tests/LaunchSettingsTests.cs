@@ -122,8 +122,7 @@ namespace MonoDevelop.AspNetCore.Tests
 
 			//modifiying launchSettings.json externally and loading it again
 			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
-			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
-			project = (DotNetProject)solution.GetAllProjects ().Single ();
+			var config = project.GetDefaultRunConfiguration() as AspNetCoreRunConfiguration;
 
 			var config = project.GetDefaultRunConfiguration () as AspNetCoreRunConfiguration;
 
