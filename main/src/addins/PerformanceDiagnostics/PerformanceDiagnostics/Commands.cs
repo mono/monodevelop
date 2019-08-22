@@ -114,7 +114,7 @@ namespace PerformanceDiagnosticsAddIn
 	}
 
 #if DEBUG
-	public class InduceManagedCrash : CommandHandler
+	class InduceManagedCrashHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -124,7 +124,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class InduceNativeCrash : CommandHandler
+	class InduceNativeCrashHandler : CommandHandler
 	{
 		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		static extern void void_objc_msgSend (IntPtr receiver, IntPtr selector);
@@ -140,12 +140,12 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class InduceHang : CommandHandler
+	class InduceHangHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			Thread.Sleep (TimeSpan.FromMinutes(2));
 		}
 	}
-}
 #endif
+}

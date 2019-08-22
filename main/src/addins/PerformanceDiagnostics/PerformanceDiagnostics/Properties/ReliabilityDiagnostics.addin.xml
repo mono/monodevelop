@@ -7,10 +7,10 @@
 			defaultHandler="PerformanceDiagnosticsAddIn.InduceManagedCrash"
 			_label="Induce Managed Crash" />
 		<Command id="PerformanceDiagnosticsAddIn.InduceNativeCrash"
-			defaultHandler="PerformanceDiagnosticsAddIn.InduceNativeCrash"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceNativeCrashHandler"
 			_label="Induce Native Crash" />
 		<Command id="PerformanceDiagnosticsAddIn.InduceHang"
-			defaultHandler="PerformanceDiagnosticsAddIn.InduceHang"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceHangHandler"
 			_label="Induce Hang" />
 		
 	</Extension>
