@@ -11,6 +11,7 @@ See http://www.monodevelop.com for more info.
 
 Directory organization
 ----------------------
+test
 
 There are two main directories:
 
