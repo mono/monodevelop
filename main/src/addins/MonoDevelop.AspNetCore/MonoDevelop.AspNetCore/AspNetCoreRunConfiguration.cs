@@ -63,6 +63,12 @@ namespace MonoDevelop.AspNetCore
 			: base (name)
 		{
 		}
+		
+		[Obsolete]
+		public AspNetCoreRunConfiguration (string name, DotNetProject project)
+			: base (name)
+		{
+		}
 
 		internal void InitializeLaunchSettings ()
 		{
