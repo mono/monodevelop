@@ -11,7 +11,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	public class StartStopListeningUIThreadMonitorHandler : CommandHandler
+	class StartStopListeningUIThreadMonitorHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -28,7 +28,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class ProfileFor5SecondsHandler : CommandHandler
+	class ProfileFor5SecondsHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -42,7 +42,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class SpinDumpFor5SecondsHandler : CommandHandler
+	class SpinDumpFor5SecondsHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -56,7 +56,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class EnhanceSampleFile : CommandHandler
+	class EnhanceSampleFile : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -66,7 +66,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class ToggleProfileHandler : CommandHandler
+	class ToggleProfileHandler : CommandHandler
 	{
 		protected override void Update(CommandInfo info)
 		{
@@ -81,7 +81,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class InitializeGtkHelperHandler : CommandHandler
+	class InitializeGtkHelperHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -112,7 +112,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class DumpLiveWidgetsHandler : CommandHandler
+	class DumpLiveWidgetsHandler : CommandHandler
 	{
 		static readonly System.IO.TextWriter log = LoggingService.CreateLogFile ("leak-dump");
 		protected override void Update (CommandInfo info)
