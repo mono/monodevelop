@@ -58,7 +58,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			BezelStyle = NSBezelStyle.RoundRect;
 			SetButtonType (NSButtonType.OnOff);
 			FocusRingType = NSFocusRingType.Default;
-			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
 		public override bool BecomeFirstResponder ()

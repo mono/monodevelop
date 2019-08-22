@@ -46,7 +46,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public SearchTextField ()
 		{
-			TranslatesAutoresizingMaskIntoConstraints = false;
 			Delegate = this;
 		}
 
