@@ -180,12 +180,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
 		}
 
+	
+		public event EventHandler<NativeViews.NSEventArgs> KeyDownPressed;
+
 		public override void KeyDown (NSEvent theEvent)
 		{
-			if ((int)theEvent.ModifierFlags == (int)KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter)) {
-				PerformActivateSelectedItem ();
-			}
-			base.KeyDown (theEvent);
+			var args = new NativeViews.NSEventArgs (theEvent);
+			KeyDownPressed?.Invoke (this, args);
+
+			if (!args.Handled)
+				base.KeyDown (theEvent);
 		}
 
 		void DataSource_RegionCollapsed (object sender, NSIndexPath e)
