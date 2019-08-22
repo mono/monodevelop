@@ -68,9 +68,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return CategoryVisibilities.Select (s => s.Category); }
 		}
 
-		internal void PerformActivateSelectedItem () => OnActivateSelectedItem (EventArgs.Empty);
-
-		void OnActivateSelectedItem (EventArgs args) => ActivateSelectedItem?.Invoke (this, args);
+		internal void PerformActivateSelectedItem () => ActivateSelectedItem?.Invoke (this, EventArgs.Empty);
 
 		NSIndexPath selectedIndexPath;
 		public NSIndexPath SelectedIndexPath {
@@ -222,7 +220,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
 			base.MouseDown (theEvent);
 			if (SelectedItem != null && theEvent.ClickCount > 1) {
-				OnActivateSelectedItem (EventArgs.Empty);
+				PerformActivateSelectedItem ();
 			}
 		}
 
