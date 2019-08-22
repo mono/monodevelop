@@ -369,6 +369,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			LoggingService.LogDebug ($"'RuntimeModel' property on '{type}' is '{pObject}' and is of type '{pinfo.PropertyType}'");
 			var topRunTimeModels = (IEnumerable<IRuntimeModel>)pObject;
 			var model = AllRuntimes (topRunTimeModels);
+			model = model.Where (x => !x.IsSeparator);
 
 			var runtime = model.FirstOrDefault (r => {
 				var mutableModel = r.GetMutableModel ();
