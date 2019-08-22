@@ -52,7 +52,7 @@ namespace MonoDevelop.AspNetCore
 		internal event EventHandler SaveRequested;
 
 		internal AspNetCoreRunConfiguration (string name, LaunchProfileData profile)
-			: base (name)
+			: this (name)
 		{
 			CurrentProfile = profile;
 

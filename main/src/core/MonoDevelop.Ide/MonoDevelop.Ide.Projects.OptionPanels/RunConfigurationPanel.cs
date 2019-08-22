@@ -50,9 +50,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config = (RunConfigInfo)dataObject;
 			editor = RunConfigurationService.CreateEditorForConfiguration (config.EditedConfig);
 
-			box = new Gtk.VBox ();
-			box.Spacing = 12;
-			userConf = new Gtk.CheckButton (GettextCatalog.GetString ("User-specific configuration"));
+			box = new Gtk.VBox {
+				Spacing = 12
+			};
+			userConf = new Gtk.CheckButton (GettextCatalog.GetString ("User-specific configuration")) {
+				Sensitive = config.Project.SupportsUserSpecificRunConfigurations ()
+			};
 			box.PackEnd (userConf, false, false, 0);
 			box.PackEnd (new Gtk.HSeparator (), false, false, 0);
 			box.ShowAll ();
@@ -79,12 +82,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (editor != null) {
 				editor.Load (config.Project, config.EditedConfig);
 				var c = editor.CreateControl ();
-				box.PackStart (c.GetNativeWidget<Gtk.Widget> (), true, true, 0);
+				box.PackStart (c.GetNativeWidget<Gtk.Widget> (), true, true, 0); 
 				userConf.Active = config.EditedConfig.StoreInUserFile;
 				return box;
 			}
-			else
-				return new Gtk.Label ("");
+
+			return new Gtk.Label ("");
 		}
 
 		void Editor_Changed (object sender, EventArgs e)
