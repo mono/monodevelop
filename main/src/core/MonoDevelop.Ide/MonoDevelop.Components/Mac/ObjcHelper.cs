@@ -27,108 +27,40 @@
 #if MAC
 using System;
 using ObjCRuntime;
-using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Components.Mac
 {
 	public static class ObjcHelper
 	{
-		[DllImport ("/usr/lib/libobjc.dylib")]
-		static extern bool class_addMethod (IntPtr cls, IntPtr sel, Delegate method, string argTypes);
-		
-		[DllImport ("/usr/lib/libobjc.dylib")]
-		static extern IntPtr objc_getMetaClass (string name);
-		
-		[DllImport ("/usr/lib/libobjc.dylib")]
-		static extern IntPtr class_getInstanceMethod (IntPtr cls, IntPtr sel);
-		
-		[DllImport ("/usr/lib/libobjc.dylib")]
-		static extern IntPtr class_getClassMethod (IntPtr cls, IntPtr sel);
-		
-		[System.Runtime.InteropServices.DllImport ("/usr/lib/libobjc.dylib")]
-		static extern bool method_exchangeImplementations (IntPtr m1, IntPtr m2);
-		
-		[System.Runtime.InteropServices.DllImport ("/usr/lib/libobjc.dylib")]
-		static extern IntPtr method_setImplementation (IntPtr m1, Delegate impl);
-		
-		[System.Runtime.InteropServices.DllImport ("/usr/lib/libobjc.dylib")]
-		static extern IntPtr object_getClass (IntPtr obj);
-		
-		[System.Runtime.InteropServices.DllImport ("/usr/lib/libobjc.dylib")]
-		static extern IntPtr objc_getProtocol (string name);
-		
-		[System.Runtime.InteropServices.DllImport ("/usr/lib/libobjc.dylib")]
-		static extern bool class_conformsToProtocol(IntPtr cls, IntPtr protocol);
-		
-		[System.Runtime.InteropServices.DllImport ("/usr/lib/libobjc.dylib")]
-		static extern bool class_addProtocol(IntPtr cls, IntPtr protocol);
-		
 		public static Class GetObjectClass (IntPtr obj)
-		{
-			return new Class (object_getClass (obj));
-		}
-		
+			=> Xwt.Mac.ObjcHelper.GetObjectClass (obj);
+
 		public static Class GetMetaClass (string name)
-		{
-			return new Class (objc_getMetaClass (name));
-		}
-		
+			=> Xwt.Mac.ObjcHelper.GetMetaClass (name);
+
 		public static void InstanceMethodExchange (this Class cls, IntPtr sel1, IntPtr sel2)
-		{
-			IntPtr m1 = class_getInstanceMethod (cls.Handle, sel1);
-			if (m1 == IntPtr.Zero)
-				throw new Exception ("Class did not have a method for the first selector");
-			IntPtr m2 = class_getInstanceMethod (cls.Handle, sel2);
-			if (m2 == IntPtr.Zero)
-				throw new Exception ("Class did not have a method for the second selector");
-			if (!method_exchangeImplementations (m1, m2))
-				throw new Exception ("Failed to exchange implementations");
-		}
-		
+			=> Xwt.Mac.ObjcHelper.InstanceMethodExchange (cls, sel1, sel2);
+
 		public static void MethodExchange (this Class cls, IntPtr sel1, IntPtr sel2)
-		{
-			IntPtr m1 = class_getClassMethod (cls.Handle, sel1);
-			if (m1 == IntPtr.Zero)
-				throw new Exception ("Class did not have a method for the first selector");
-			IntPtr m2 = cls.GetMethod (sel2);
-			if (m2 == IntPtr.Zero)
-				throw new Exception ("Class did not have a method for the second selector");
-			if (!method_exchangeImplementations (m1, m2))
-				throw new Exception ("Failed to exchange implementations");
-		}
-		
+			=> Xwt.Mac.ObjcHelper.MethodExchange (cls, sel1, sel2);
+
 		public static IntPtr SetMethodImplementation (this Class cls, IntPtr method, Delegate impl)
-		{
-			IntPtr m1 = class_getClassMethod (cls.Handle, method);
-			if (m1 == IntPtr.Zero)
-				throw new Exception ("Class did not have a method for the first selector");
-			return method_setImplementation (m1, impl);
-		}
-		
+			=> Xwt.Mac.ObjcHelper.SetMethodImplementation (cls, method, impl);
+
 		public static IntPtr GetMethod (this Class cls, IntPtr sel)
-		{
-			return class_getClassMethod (cls.Handle, sel);
-		}
+			=> Xwt.Mac.ObjcHelper.GetMethod (cls, sel);
 
 		public static bool AddMethod (this Class cls, IntPtr sel, Delegate method, string argTypes)
-		{
-			return class_addMethod (cls.Handle, sel, method, argTypes);
-		}
-		
+			=> Xwt.Mac.ObjcHelper.AddMethod (cls, sel, method, argTypes);
+
 		public static IntPtr GetProtocol (string name)
-		{
-			return objc_getProtocol (name);
-		}
-		
-		public static bool ConformsToProtocol(this Class cls, IntPtr protocol)
-		{
-			return class_conformsToProtocol (cls.Handle, protocol);
-		}
-		
-		public static bool AddProtocol(this Class cls, IntPtr protocol)
-		{
-			return class_addProtocol (cls.Handle, protocol);
-		}
+			=> Xwt.Mac.ObjcHelper.GetProtocol (name);
+
+		public static bool ConformsToProtocol (this Class cls, IntPtr protocol)
+			=> Xwt.Mac.ObjcHelper.ConformsToProtocol (cls, protocol);
+
+		public static bool AddProtocol (this Class cls, IntPtr protocol)
+			=> Xwt.Mac.ObjcHelper.AddProtocol (cls, protocol);
 	}
 }
 
