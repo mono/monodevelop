@@ -160,7 +160,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			#endregion
 
-			toolboxWidget = new MacToolboxWidget (container) {
+			toolboxWidget = new MacToolboxWidget () {
 				AccessibilityTitle = GettextCatalog.GetString ("Toolbox Toolbar"),
 			};
 
@@ -390,6 +390,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void Refilter (bool isNewData)
 		{
+			ToolboxWidgetItem selectedItem = null;
+			//if there is a search our index of the selected item will change and we want get the new one
+			if (!isNewData) {
+				selectedItem = toolboxWidget.SelectedItem;
+			}
+			
 			var cats = categories.Values.ToList ();
 			cats.Sort ((a, b) => a.Priority != b.Priority ? b.Priority.CompareTo (a.Priority) : b.Text.CompareTo (a.Text));
 
@@ -410,7 +416,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				toolboxWidget.AddCategory (category);
 			}
 
-			toolboxWidget.RedrawItems (true, true, isNewData);
+			toolboxWidget.RedrawItems (true, true, isNewData, selectedItem);
 		}
 		
 		async void ToolboxAddButton_Clicked (object sender, EventArgs e)

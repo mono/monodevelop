@@ -178,7 +178,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
 			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
 		}
-
 	
 		public event EventHandler<NativeViews.NSEventArgs> KeyDownPressed;
 
@@ -191,15 +190,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				base.KeyDown (theEvent);
 		}
 
-		void DataSource_RegionCollapsed (object sender, NSIndexPath e)
-		{
-			RegionCollapsed?.Invoke (this, EventArgs.Empty);
-		}
+		void DataSource_RegionCollapsed (object sender, NSIndexPath e) => RegionCollapsed?.Invoke (this, EventArgs.Empty);
 
-		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e)
-		{
-			DragBegin?.Invoke (this, EventArgs.Empty);
-		}
+		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e) => DragBegin?.Invoke (this, EventArgs.Empty);
 
 		void CollectionViewDelegate_SelectionChanged (object sender, NSSet e)
 		{
@@ -215,7 +208,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			base.SetFrameSize (newSize);
 		
-			RedrawItems (true, false, false);
+			RedrawItems (true, false, false, SelectedItem);
 		}
 
 		public override void MouseDown (NSEvent theEvent)
@@ -224,15 +217,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (SelectedItem != null && theEvent.ClickCount > 1) {
 				PerformActivateSelectedItem ();
 			}
-
 			base.MouseDown (theEvent);
 		}
 
-		public void RedrawItems (bool invalidates, bool reloads,bool isNewData)
+		NSIndexPath GetIndexPathFromItem (ToolboxWidgetItem item)
+		{
+			for (int i = 0; i < CategoryVisibilities.Count; i++) {
+				for (int j = 0; j < CategoryVisibilities[i].Items.Count; j++) {
+					if (item == CategoryVisibilities [i].Items[j])
+						return NSIndexPath.FromItemSection (j, i);
+				}
+			}
+			return null;
+		}
+
+		public void RedrawItems (bool invalidates, bool reloads,bool isNewData, ToolboxWidgetItem selectedWidgetItem)
 		{
 			NSIndexPath selected = null;
-			if (!isNewData && SelectionIndexPaths.Count > 0) {
-				selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
+			if (!isNewData && selectedWidgetItem != null) {
+				selected = GetIndexPathFromItem (selectedWidgetItem);
 			}
 			if (IsListMode) {
 				flowLayout.ItemSize = new CGSize (Math.Max (Frame.Width - IconMargin, 1), LabelCollectionViewItem.ItemHeight);
