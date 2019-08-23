@@ -1,0 +1,8 @@
+<ExtensionModel>
+	
+	<ExtensionPoint path="/MonoDevelop/Ide/ProjectModel/FileNesting" name="File nesting rules providers">
+  		<Description>Pluggable checks for file nesting rules providers</Description>
+  		<ExtensionNode objectType="MonoDevelop.Ide.Projects.FileNesting.NestingRulesProvider" />
+  	</ExtensionPoint>
+	
+</ExtensionModel>

@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		public async Task GetDefaultFolderWhenPublish ()
 		{
 			var solutionFileName = Util.GetSampleProject ("restore-netcore-offline", "dotnetcoreconsole.sln");
-			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.GetAllProjects ().OfType<DotNetProject>().Single ();
 
 			var resolver = new DefaultFolderResolver (project);
