@@ -4,7 +4,7 @@
 	<Extension path="/MonoDevelop/Ide/Commands">
 
 		<Command id="PerformanceDiagnosticsAddIn.InduceManagedCrash"
-			defaultHandler="PerformanceDiagnosticsAddIn.InduceManagedCrash"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceManagedCrashHandler"
 			_label="Induce Managed Crash" />
 		<Command id="PerformanceDiagnosticsAddIn.InduceNativeCrash"
 			defaultHandler="PerformanceDiagnosticsAddIn.InduceNativeCrashHandler"
