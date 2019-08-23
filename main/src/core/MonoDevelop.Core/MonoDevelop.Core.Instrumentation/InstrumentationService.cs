@@ -41,6 +41,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -173,37 +174,59 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			while (!stopping) {
 				Thread.Sleep (interval);
-				try {
-					lock (counters) {
-						InstrumentationServiceData data = new InstrumentationServiceData ();
-						data.EndTime = DateTime.Now;
-						data.StartTime = StartTime;
-						data.Counters = counters;
-						data.Categories = categories;
-						FilePath path = file + ".tmp";
-						using (Stream fs = File.OpenWrite (path)) {
-							BinaryFormatter f = new BinaryFormatter ();
-							f.Serialize (fs, data);
-						}
-						FileService.SystemRename (path, file);
-					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Instrumentation service data could not be saved", ex);
+				lock (counters) {
+					Save (file, (fs, data) => new BinaryFormatter ().Serialize (fs, data));
 				}
 			}
 			autoSaveThread = null;
+		}
+
+		internal static void SaveJson (string filePath)
+		{
+			Save (filePath, (fs, data) => {
+				using var writer = new StreamWriter (fs);
+				var serializer = JsonSerializer.Create (new JsonSerializerSettings {
+					ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+					DefaultValueHandling = DefaultValueHandling.Ignore,
+					NullValueHandling = NullValueHandling.Ignore,
+				});
+				serializer.Serialize (writer, data);
+			});
+		}
+
+		static void Save (string filePath, Action<Stream, IInstrumentationService> serializer)
+		{
+			try {
+				FilePath tempPath = filePath + ".tmp";
+				using (Stream fs = File.OpenWrite (tempPath)) {
+					serializer (fs, GetServiceData ());
+				}
+				FileService.SystemRename (tempPath, filePath);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Instrumentation service data could not be saved", ex);
+			}
 		}
 		
 		public static IInstrumentationService GetRemoteService (string hostAndPort)
 		{
 			return (IInstrumentationService) Activator.GetObject (typeof(IInstrumentationService), "tcp://" + hostAndPort + "/InstrumentationService");
 		}
+
+		public static IInstrumentationService GetServiceData ()
+		{
+			return new InstrumentationServiceData {
+				EndTime = DateTime.Now,
+				StartTime = StartTime,
+				Counters = counters,
+				Categories = categories
+			};
+		}
 		
 		public static IInstrumentationService LoadServiceDataFromFile (string file)
 		{
 			using (Stream s = File.OpenRead (file)) {
-				BinaryFormatter f = new BinaryFormatter ();
-				IInstrumentationService data = f.Deserialize (s) as IInstrumentationService;
+				var f = new BinaryFormatter ();
+				var data = f.Deserialize (s) as IInstrumentationService;
 				if (data == null)
 					throw new Exception ("Invalid instrumentation service data file");
 				return data;
@@ -526,12 +549,9 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public Counter GetCounter (string name)
 		{
-			Counter c;
-			if (Counters.TryGetValue (name, out c))
+			if (Counters.TryGetValue (name, out Counter c))
 				return c;
-			c = new Counter (name, null);
-			Counters [name] = c;
-			return c;
+			return Counters [name] = new Counter (name, null);
 		}
 		
 		public CounterCategory GetCategory (string name)
