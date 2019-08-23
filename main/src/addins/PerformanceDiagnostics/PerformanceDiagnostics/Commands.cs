@@ -67,7 +67,7 @@ namespace PerformanceDiagnosticsAddIn
 			if (!File.Exists (spinDumpFile)) {
 				var message = new ConfirmationMessage (
 					GettextCatalog.GetString ("{0} requires administrative privileges to run spindump", BrandingService.ApplicationName),
-					GettextCatalog.GetString ("Continue with installing '{0}' so 'spindump' can be run without a password for this user?", spinDumpFile),
+					GettextCatalog.GetString ("Continue with installing '{0}' so 'spindump' can be run without a password for the current user?", spinDumpFile),
 					AlertButton.Proceed) {
 					Icon = MonoDevelop.Ide.Gui.Stock.Warning,
 				};
