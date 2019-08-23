@@ -241,8 +241,7 @@ namespace MonoDevelop.Components
 			window.Present ();
 
 #if MAC
-			var dialog = window as Gtk.Dialog;
-				MacRequestAttention (dialog == null? false : dialog.Modal);
+			MacRequestAttention (window is Gtk.Dialog && window.Modal);
 #endif
 		}
 
