@@ -517,12 +517,13 @@ namespace MonoDevelop.VersionControl
 					if (repo == null)
 						continue;
 					var filePaths = repoFiles.Where (ShouldAddFile).Select (f => f.ProjectFile.FilePath);
-					var versionInfos = await repo.GetVersionInfoAsync (filePaths, VersionInfoQueryFlags.IgnoreCache).ConfigureAwait (false);
-					var paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
-					if (paths.Length > 0) {
+					foreach (var file in filePaths) {
 						if (monitor == null)
 							monitor = GetStatusMonitor ();
-						await repo.AddAsync (paths, false, monitor);
+
+	  					var gotInfo = repo.TryGetVersionInfo (file, out var versionInfo);
+						if (gotInfo == false || versionInfo.CanAdd)
+							await repo.AddAsync (file, false, monitor);
 					}
 					vargs.AddRange (repoFiles.Select (i => new FileUpdateEventInfo (repo, i.ProjectFile.FilePath, i.ProjectFile.Subtype == Subtype.Directory)));
 				}
