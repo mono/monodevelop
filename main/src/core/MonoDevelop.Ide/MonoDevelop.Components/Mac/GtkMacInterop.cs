@@ -121,17 +121,23 @@ namespace MonoDevelop.Components.Mac
 			return (int)(frame.Height - rect.Height);
 		}
 
-		internal static Gdk.EventKey ConvertKeyEvent (AppKit.NSEvent ev)
+		internal static Gdk.ModifierType ConvertModifierMask (NSEventModifierMask mask)
 		{
 			var state = Gdk.ModifierType.None;
-			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.ControlKeyMask) != 0)
+			if ((mask & NSEventModifierMask.ControlKeyMask) != 0)
 				state |= Gdk.ModifierType.ControlMask;
-			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.ShiftKeyMask) != 0)
+			if ((mask & NSEventModifierMask.ShiftKeyMask) != 0)
 				state |= Gdk.ModifierType.ShiftMask;
-			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.CommandKeyMask) != 0)
-				state |= Gdk.ModifierType.MetaMask;
-			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.AlternateKeyMask) != 0)
+			if ((mask & NSEventModifierMask.CommandKeyMask) != 0)
+				state |= Gdk.ModifierType.Mod2Mask | Gdk.ModifierType.MetaMask;
+			if ((mask & NSEventModifierMask.AlternateKeyMask) != 0)
 				state |= Gdk.ModifierType.Mod1Mask;
+			return state;
+		}
+
+		internal static Gdk.EventKey ConvertKeyEvent (AppKit.NSEvent ev)
+		{
+			var state = ConvertModifierMask (ev.ModifierFlags);
 
 			var w = GetGtkWindow (ev.Window);
 			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, w != null ? w.GdkWindow : null, (uint)(ev.Timestamp * 1000));

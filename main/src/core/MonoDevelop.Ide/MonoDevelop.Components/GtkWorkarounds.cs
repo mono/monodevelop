@@ -294,17 +294,7 @@ namespace MonoDevelop.Components
 				mtype |= Gdk.ModifierType.Mod2Mask; // Command key
 			return mtype;
 #elif MAC
-			Gdk.ModifierType mtype = Gdk.ModifierType.None;
-			NSEventModifierMask mod = NSEvent.CurrentModifierFlags;
-			if ((mod & NSEventModifierMask.ShiftKeyMask) != 0)
-				mtype |= Gdk.ModifierType.ShiftMask;
-			if ((mod & NSEventModifierMask.ControlKeyMask) != 0)
-				mtype |= Gdk.ModifierType.ControlMask;
-			if ((mod & NSEventModifierMask.AlternateKeyMask) != 0)
-				mtype |= Gdk.ModifierType.Mod1Mask; // Alt key
-			if ((mod & NSEventModifierMask.CommandKeyMask) != 0)
-				mtype |= Gdk.ModifierType.Mod2Mask; // Command key
-			return mtype;
+			return GtkMacInterop.ConvertModifierMask (NSEvent.CurrentModifierFlags);
 #else
 			Gdk.ModifierType mtype;
 			Gtk.Global.GetCurrentEventState (out mtype);
