@@ -114,9 +114,6 @@ namespace MonoDevelop.VersionControl
 		TaskFactory exclusiveOperationFactory;
 		protected TaskFactory ExclusiveOperationFactory { get { InitScheduler (); return exclusiveOperationFactory; } }
 
-		TaskFactory concurrentOperationFactory;
-		protected TaskFactory ConcurrentOperationFactory { get { InitScheduler (); return concurrentOperationFactory; } }
-
 		protected void InitScheduler ()
 		{
 			if (IsDisposed)
@@ -125,7 +122,6 @@ namespace MonoDevelop.VersionControl
 			if (scheduler == null) {
 				scheduler = new ConcurrentExclusiveSchedulerPair ();
 				exclusiveOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
-				concurrentOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
 			}
 		}
 
@@ -135,7 +131,6 @@ namespace MonoDevelop.VersionControl
 				scheduler.Complete ();
 				scheduler.Completion.Wait ();
 				scheduler = null;
-				concurrentOperationFactory = null;
 				exclusiveOperationFactory = null;
 			}
 		}

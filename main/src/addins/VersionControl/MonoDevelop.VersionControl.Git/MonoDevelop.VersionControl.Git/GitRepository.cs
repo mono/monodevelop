@@ -491,7 +491,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
@@ -499,7 +499,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			ConcurrentOperationFactory.StartNew (action).RunWaitAndCapture ();
+			ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task RunOperationAsync (Action action, bool hasUICallbacks = false)
@@ -507,7 +507,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action);
+			return ExclusiveOperationFactory.StartNew (action);
 		}
 
 		internal T RunOperation<T> (Func<T> action, bool hasUICallbacks = false)
@@ -515,7 +515,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action).RunWaitAndCapture ();
+			return ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task<T> RunOperationAsync<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -523,7 +523,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action, cancellationToken);
+			return ExclusiveOperationFactory.StartNew (action, cancellationToken);
 		}
 
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
@@ -531,7 +531,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal Task<T> RunOperationAsync<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -539,7 +539,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
+			return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
 		}
 
 		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
