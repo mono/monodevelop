@@ -83,16 +83,12 @@ namespace MonoDevelop.Components.Mac
 		public static NSWindow GetNSWindow (Gtk.Window window)
 		{
 			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
-			if (ptr == IntPtr.Zero)
-				return null;
 			return ObjCRuntime.Runtime.GetNSObject<NSWindow> (ptr);
 		}
 
 		public static NSView GetNSView (Gtk.Widget widget)
 		{
 			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
-			if (ptr == IntPtr.Zero)
-				return null;
 			return ObjCRuntime.Runtime.GetNSObject<NSView> (ptr);
 		}
 

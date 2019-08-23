@@ -50,9 +50,6 @@ namespace MonoDevelop.Components
 	{
 		const string USER32DLL = "User32.dll";
 
-		[DllImport (PangoUtil.LIBQUARTZ)]
-		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
-
 		static System.Reflection.MethodInfo glibObjectGetProp, glibObjectSetProp;
 
 		public static int GtkMinorVersion = 12, GtkMicroVersion = 0;
@@ -721,8 +718,7 @@ namespace MonoDevelop.Components
 		public static void ShowNativeShadow (Gtk.Window window, bool show)
 		{
 #if MAC
-			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
-			var nsWindow = ObjCRuntime.Runtime.GetNSObject<NSWindow> (ptr);
+			var nsWindow = GtkMacInterop.GetNSWindow (window);
 			if (nsWindow != null)
 				nsWindow.HasShadow = show;
 #endif
@@ -731,8 +727,7 @@ namespace MonoDevelop.Components
 		public static void UpdateNativeShadow (Gtk.Window window)
 		{
 #if MAC
-			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
-			var nsWindow = ObjCRuntime.Runtime.GetNSObject<NSWindow> (ptr);
+			var nsWindow = GtkMacInterop.GetNSWindow (window);
 			if (nsWindow != null)
 				nsWindow.InvalidateShadow ();
 #endif
@@ -1337,6 +1332,8 @@ namespace MonoDevelop.Components
 			// minimize/maximize buttons. This may be because on Cocoa these are set at window creation and can only
 			// be changed afterwards by directly accessing the window button and disabling it like so.
 			NSWindow nsWindow = GtkMacInterop.GetNSWindow (window);
+			if (nsWindow == null)
+				return;
 
 			nsWindow.StandardWindowButton (NSWindowButton.MiniaturizeButton).Enabled = false;
 			nsWindow.StandardWindowButton (NSWindowButton.ZoomButton).Enabled = false;
