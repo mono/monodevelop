@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using AppKit;
+using CoreGraphics;
+using Foundation;
 using MonoDevelop.Ide;
 using NUnit.Framework;
 
@@ -35,11 +38,39 @@ namespace MonoDevelop.Components
 		[Test]
 		public void TestUsableGeometryMac ()
 		{
-			if (!Core.Platform.IsMac)
-				Assert.Ignore ("No test case on non macOS");
-
-
 			var rectangle = GtkWorkarounds.GetUsableMonitorGeometry (Gdk.Screen.Default, 0);
+
+			var macScreen = NSScreen.MainScreen;
+
+			var offsetRect = GetDockSize ();
+			var frame = macScreen.Frame;
+
+			frame.Y += NSStatusBar.SystemStatusBar.Thickness + 1;
+			frame.Height -= NSStatusBar.SystemStatusBar.Thickness + 1;
+
+			Assert.That (rectangle.Width, Is.EqualTo (frame.Width).Or.EqualTo (frame.Width + offsetRect.Width));
+			Assert.That (rectangle.Height, Is.EqualTo (frame.Height).Or.EqualTo (frame.Height + offsetRect.Height));
+			Assert.That (rectangle.X, Is.EqualTo (frame.X).Or.EqualTo (frame.X + offsetRect.X));
+			Assert.That (rectangle.Y, Is.EqualTo (frame.Y).Or.EqualTo (frame.Y + offsetRect.Y));
+		}
+
+		static CGRect GetDockSize ()
+		{
+			var dockDomain = NSUserDefaults.StandardUserDefaults.PersistentDomainForName ("com.apple.dock");
+
+			var orientation = (NSString)dockDomain.ValueForKey (new NSString ("orientation"));
+			var size = ((NSNumber)dockDomain.ValueForKey (new NSString ("tilesize"))).Int32Value + 11;
+
+			var offsetRect = new CGRect ();
+			if (orientation == "bottom") {
+				offsetRect.Height = -size;
+			} else if (orientation == "left") {
+				offsetRect.X = size;
+				offsetRect.Width = -size;
+			} else if (orientation == "right") {
+				offsetRect.Width -= size;
+			}
+			return offsetRect;
 		}
 	}
 }
