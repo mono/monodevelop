@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input)
 		{
-			return DefaultFilterItems (this, input.FilteredItems, input.OldCompletionString, input.CompletionString, text => { }, GetCompletionDataMatcher (input.CompletionString));
+			return DefaultFilterItems (this, input.FilteredItems, input.OldCompletionString, input.CompletionString, input.Tracer ?? (text => { }), GetCompletionDataMatcher (input.CompletionString));
 		}
 
 		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
