@@ -216,7 +216,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			base.SetFrameSize (newSize);
 		
-			RedrawItems (true, false);
+			RedrawItems (true, false, false);
 		}
 
 		public override void MouseDown (NSEvent theEvent)
@@ -229,10 +229,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			base.MouseDown (theEvent);
 		}
 
-		public void RedrawItems (bool invalidates, bool reloads)
+		public void RedrawItems (bool invalidates, bool reloads,bool isNewData)
 		{
 			NSIndexPath selected = null;
-			if (SelectionIndexPaths.Count > 0) {
+			if (!isNewData && SelectionIndexPaths.Count > 0) {
 				selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
 			}
 			if (IsListMode) {
@@ -257,6 +257,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			if (selected != null) {
 				SelectionIndexPaths = new NSSet (selected);
+			} else {
+				SelectionIndexPaths = new NSSet ();
 			}
 		}
 

@@ -175,7 +175,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxService.ToolboxContentsChanged += ToolboxService_ToolboxContentsChanged;
 			toolboxService.ToolboxConsumerChanged += ToolboxService_ToolboxConsumerChanged;
 
-
 			toolboxWidget.DragBegin += ToolboxWidget_DragBegin;
 			toolboxWidget.ActivateSelectedItem += ToolboxWidget_ActivateSelectedItem;
 			toolboxWidget.MenuOpened += ToolboxWidget_MenuOpened;
@@ -346,11 +345,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		void FilterEntry_Changed (object sender, EventArgs e)
-		{
-			Refilter ();
-		}
-
 		void ToolboxWidget_DragBegin (object sender, EventArgs e)
 		{
 			if (this.toolboxWidget.SelectedItem != null) {
@@ -363,7 +357,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-			Refilter ();
+			Refilter (false);
 
 			PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 
@@ -379,7 +373,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ToggleCategorisation (object sender, EventArgs e)
 		{
 			this.toolboxWidget.ShowCategories = catToggleButton.Active;
-			Refilter ();
+			Refilter (false);
 			if (catToggleButton.Active) {
 				catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Hide Categories");
 				catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to hide toolbox categories");
@@ -391,10 +385,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void FilterTextChanged (object sender, EventArgs e)
 		{
-			Refilter ();
+			Refilter (false);
 		}
 
-		void Refilter ()
+		void Refilter (bool isNewData)
 		{
 			var cats = categories.Values.ToList ();
 			cats.Sort ((a, b) => a.Priority != b.Priority ? b.Priority.CompareTo (a.Priority) : b.Text.CompareTo (a.Text));
@@ -416,7 +410,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				toolboxWidget.AddCategory (category);
 			}
 
-			toolboxWidget.RedrawItems (true, true);
+			toolboxWidget.RedrawItems (true, true, isNewData);
 		}
 		
 		async void ToolboxAddButton_Clicked (object sender, EventArgs e)
@@ -510,7 +504,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (targetTable != null)
 				DragSourceSet?.Invoke (this, targetTable);
 
-			Refilter ();
+			Refilter (true);
 
 			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
