@@ -38,7 +38,6 @@ namespace MonoDevelop.Components.Mac
 	static class Util
 	{
 		static Selector selCopyWithZone = new Selector ("copyWithZone:");
-		static Selector selRetainCount = new Selector ("retainCount");
 		static DateTime lastCopyPoolDrain = DateTime.Now;
 		static List<object> copyPool = new List<object> ();
 
@@ -84,7 +83,7 @@ namespace MonoDevelop.Components.Mac
 			List<NSObject> markedForDelete = new List<NSObject> ();
 
 			foreach (NSObject ob in copyPool) {
-				uint count = Messaging.UInt32_objc_msgSend (ob.Handle, selRetainCount.Handle);
+				nuint count = ob.RetainCount;
 				if (count == 1)
 					markedForDelete.Add (ob);
 			}
@@ -120,8 +119,6 @@ namespace MonoDevelop.Components.Mac
 			});
 		}
 
-		static Selector applyFontTraits = new Selector ("applyFontTraits:range:");
-
 		public static NSAttributedString ToAttributedString (this FormattedText ft)
 			=> ToAttributedString (ft, null);
 
@@ -150,18 +147,18 @@ namespace MonoDevelop.Components.Mac
 				else if (att is FontStyleTextAttribute) {
 					var xa = (FontStyleTextAttribute)att;
 					if (xa.Style == FontStyle.Italic) {
-						Messaging.void_objc_msgSend_int_NSRange (ns.Handle, applyFontTraits.Handle, (IntPtr)(long)NSFontTraitMask.Italic, r);
+						ns.ApplyFontTraits (NSFontTraitMask.Italic, r);
 					} else if (xa.Style == FontStyle.Oblique) {
 						ns.AddAttribute (NSStringAttributeKey.Obliqueness, (NSNumber)0.2f, r);
 					} else {
 						ns.AddAttribute (NSStringAttributeKey.Obliqueness, (NSNumber)0.0f, r);
-						Messaging.void_objc_msgSend_int_NSRange (ns.Handle, applyFontTraits.Handle, (IntPtr)(long)NSFontTraitMask.Unitalic, r);
+						ns.ApplyFontTraits (NSFontTraitMask.Unitalic, r);
 					}
 				}
 				else if (att is FontWeightTextAttribute) {
 					var xa = (FontWeightTextAttribute)att;
 					var trait = xa.Weight >= FontWeight.Bold ? NSFontTraitMask.Bold : NSFontTraitMask.Unbold;
-					Messaging.void_objc_msgSend_int_NSRange (ns.Handle, applyFontTraits.Handle, (IntPtr)(long) trait, r);
+					ns.ApplyFontTraits (trait, r);
 				}
 				else if (att is LinkTextAttribute) {
 					var xa = (LinkTextAttribute)att;
