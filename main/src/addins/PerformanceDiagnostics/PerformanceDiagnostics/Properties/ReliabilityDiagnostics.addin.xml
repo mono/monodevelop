@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+
+	<Extension path="/MonoDevelop/Ide/Commands">
+
+		<Command id="PerformanceDiagnosticsAddIn.InduceManagedCrash"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceManagedCrashHandler"
+			_label="Induce Managed Crash" />
+		<Command id="PerformanceDiagnosticsAddIn.InduceNativeCrash"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceNativeCrashHandler"
+			_label="Induce Native Crash" />
+		<Command id="PerformanceDiagnosticsAddIn.InduceHang"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceHangHandler"
+			_label="Induce Hang" />
+		
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
+		<ItemSet id="Diagnostics" _label="_Diagnostics">
+
+			<CommandItem id="PerformanceDiagnosticsAddIn.InduceManagedCrash" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.InduceNativeCrash" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.InduceHang" />
+			
+		</ItemSet>
+	</Extension>
+</ExtensionModel>

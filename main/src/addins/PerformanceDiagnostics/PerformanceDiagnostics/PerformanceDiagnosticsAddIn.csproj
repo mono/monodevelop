@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml" />
+    <EmbeddedResource Include="Properties\ReliabilityDiagnostics.addin.xml" Condition=" '$(Configuration)' == 'Debug' "/>
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="UIThreadMonitorDaemon.exe" />
