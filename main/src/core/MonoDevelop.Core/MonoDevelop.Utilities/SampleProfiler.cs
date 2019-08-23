@@ -95,6 +95,9 @@ namespace MonoDevelop.Utilities
 		{
 			const int millisBetweenSamples = 1;
 
+			if (!Platform.IsMac)
+				throw new InvalidOperationException ("Spindump is only available on macOS");
+
 			// We need to delete the file before using it as an output target, otherwise it will error.
 			File.Delete (outputFilePath);
 

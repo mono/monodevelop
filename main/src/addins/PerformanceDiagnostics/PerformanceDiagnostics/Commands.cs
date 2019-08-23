@@ -1,8 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Foundation;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -52,7 +55,51 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
+			if (!IsAuthorized ())
+				return;
+
 			UIThreadMonitor.Instance.Profile (spinDump: true, 5);
+		}
+
+		const string spinDumpFile = "/etc/sudoers.d/vsspindump";
+		static bool IsAuthorized ()
+		{
+			if (!File.Exists (spinDumpFile)) {
+				var message = new ConfirmationMessage (
+					GettextCatalog.GetString ("{0} requires administrative privileges to run spindump", BrandingService.ApplicationName),
+					GettextCatalog.GetString ("Continue with installing '{0}' so 'spindump' can be run without a password for this user?", spinDumpFile),
+					AlertButton.Proceed) {
+					Icon = MonoDevelop.Ide.Gui.Stock.Warning,
+				};
+
+				if (!MessageService.Confirm (message) || !CreatePrivilegedHelperFile ())
+					return false;
+			}
+
+			return true;
+		}
+
+		static bool CreatePrivilegedHelperFile ()
+		{
+			var psi = new ProcessStartInfo ("/usr/libexec/authopen", $"-c -m 0644 -w '{spinDumpFile}'") {
+				RedirectStandardInput = true,
+				UseShellExecute = false,
+			};
+
+			using var process = Process.Start (psi);
+
+			string content = $"{Environment.UserName} ALL=(ALL:ALL) NOPASSWD:/usr/sbin/spindump";
+
+			process.StandardInput.WriteLine (content);
+			process.StandardInput.Close ();
+			process.WaitForExit ();
+
+			if (process.ExitCode != 0) {
+				MessageService.ShowError (GettextCatalog.GetString ("Failed to create privileges helper, authopen exited with code {0}", process.ExitCode));
+				return false;
+			}
+
+			return true;
 		}
 	}
 
