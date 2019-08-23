@@ -86,7 +86,7 @@ namespace MonoDevelop.Components.Mac
 				}
 				else if (att is UnderlineTextAttribute) {
 					var xa = (UnderlineTextAttribute)att;
-					int style = xa.Underline ? 0x01 /*NSUnderlineStyleSingle*/ : 0;
+					int style = xa.Underline ? (int)NSUnderlineStyle.Single : 0;
 					ns.AddAttribute (NSStringAttributeKey.UnderlineStyle, (NSNumber)style, r);
 				}
 				else if (att is FontStyleTextAttribute) {
@@ -113,7 +113,7 @@ namespace MonoDevelop.Components.Mac
 				}
 				else if (att is StrikethroughTextAttribute) {
 					var xa = (StrikethroughTextAttribute)att;
-					int style = xa.Strikethrough ? 0x01 /*NSUnderlineStyleSingle*/ : 0;
+					int style = xa.Strikethrough ? (int)NSUnderlineStyle.Single : 0;
 					ns.AddAttribute (NSStringAttributeKey.StrikethroughStyle, (NSNumber)style, r);
 				}
 				else if (att is FontTextAttribute) {
