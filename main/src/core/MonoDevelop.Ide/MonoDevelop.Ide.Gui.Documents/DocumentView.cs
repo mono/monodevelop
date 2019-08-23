@@ -360,25 +360,32 @@ namespace MonoDevelop.Ide.Gui.Documents
 			mainShellView.GotFocus += ShellContentView_GotFocus;
 			mainShellView.LostFocus += ShellContentView_LostFocus;
 			if (IsRoot && AttachedViews.Count > 0) {
-				attachmentsContainer = window.CreateViewContainer ();
-				attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
-				attachmentsContainer.CurrentMode = DocumentViewContainerMode.Tabs;
-				attachmentsContainer.InsertView (0, mainShellView);
-				int pos = 1;
-				foreach (var attachedView in AttachedViews)
-					attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
-				if (activeAttachedView == this)
-					attachmentsContainer.ActiveView = mainShellView;
-				else
-					attachmentsContainer.ActiveView = activeAttachedView?.ShellView;
-				attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
-				shellView = attachmentsContainer;
+				CreateAttachmentsContainer ();
 			} else
 				shellView = mainShellView;
 
 			UpdateTitle ();
 			shellView.SetDelegatedCommandTarget (this);
 			return shellView;
+		}
+
+		void CreateAttachmentsContainer ()
+		{
+			if (attachmentsContainer != null)
+				return;
+			attachmentsContainer = window.CreateViewContainer ();
+			attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
+			attachmentsContainer.CurrentMode = DocumentViewContainerMode.Tabs;
+			attachmentsContainer.InsertView (0, mainShellView);
+			int pos = 1;
+			foreach (var attachedView in AttachedViews)
+				attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
+			if (activeAttachedView == this)
+				attachmentsContainer.ActiveView = mainShellView;
+			else
+				attachmentsContainer.ActiveView = activeAttachedView?.ShellView;
+			attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
+			shellView = attachmentsContainer;
 		}
 
 		private void ShellContentView_GotFocus (object sender, EventArgs e)
@@ -436,13 +443,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (AttachedViews.Count > 0) {
 				if (attachmentsContainer == null && window != null) {
 					// Attachments notebook needs to be added
-					attachmentsContainer = window.CreateViewContainer ();
-					attachmentsContainer.InsertView (0, mainShellView);
-					int pos = 1;
-					foreach (var attachedView in AttachedViews)
-						attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
-					shellView = attachmentsContainer;
-					attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
+					CreateAttachmentsContainer ();
 					UpdateTitle ();
 					ReplaceViewInParent ();
 				}
