@@ -46,8 +46,8 @@ namespace AppKit
 		{
 			var data = (SortData)GCHandle.FromIntPtr (context).Target;
 			try {
-				var a = (NSView)Runtime.GetNSObject (view1);
-				var b = (NSView)Runtime.GetNSObject (view2);
+				var a = Runtime.GetNSObject<NSView> (view1);
+				var b = Runtime.GetNSObject<NSView> (view2);
 				return (nint)(long)data.Comparer (a, b);
 			} catch (Exception e) {
 				data.Exception = e;
