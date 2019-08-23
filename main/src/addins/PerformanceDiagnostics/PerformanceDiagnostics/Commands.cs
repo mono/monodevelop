@@ -72,8 +72,7 @@ namespace PerformanceDiagnosticsAddIn
 					Icon = MonoDevelop.Ide.Gui.Stock.Warning,
 				};
 
-				if (!MessageService.Confirm (message) || !CreatePrivilegedHelperFile ())
-					return false;
+				return MessageService.Confirm (message) && CreatePrivilegedHelperFile ();
 			}
 
 			return true;
