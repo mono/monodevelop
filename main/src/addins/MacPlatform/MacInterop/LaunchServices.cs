@@ -54,17 +54,18 @@ namespace MonoDevelop.MacInterop
 	public static class LaunchServices
 	{
 		public static int OpenApplication (string application)
-		{
-			return OpenApplication (new ApplicationStartInfo (application));
-		}
+			=> OpenApplication (new ApplicationStartInfo (application));
 
 		public static int OpenApplication (ApplicationStartInfo application)
+			=> OpenApplicationInternal (application)?.ProcessIdentifier ?? -1;
+
+		internal static NSRunningApplication OpenApplicationInternal (ApplicationStartInfo application)
 		{
 			if (application == null)
-				throw new ArgumentNullException ("application");
+				throw new ArgumentNullException (nameof (application));
 
 			if (string.IsNullOrEmpty (application.Application) || !System.IO.Directory.Exists (application.Application))
-				throw new ArgumentException ("Application is not valid");
+				throw new ArgumentException ("Application is not valid", nameof(application));
 
 			NSUrl appUrl = NSUrl.FromFilename (application.Application);
 
@@ -92,10 +93,9 @@ namespace MonoDevelop.MacInterop
 			var app = NSWorkspace.SharedWorkspace.LaunchApplication (appUrl, options, config, out NSError error);
 			if (app == null) {
 				LoggingService.LogError (error.LocalizedDescription);
-				return -1;
 			}
 
-			return app.ProcessIdentifier;
+			return app;
 		}
 	}
 }
