@@ -34,7 +34,8 @@ namespace MonoDevelop.Components
 {
 	public static partial class GtkWorkarounds
 	{
-		const string LIBOBJC = "/usr/lib/libobjc.dylib";
+#if MAC
+		const string LIBOBJC = ObjCRuntime.Constants.ObjectiveCLibrary;
 
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
 		static extern IntPtr objc_msgSend_IntPtr (IntPtr klass, IntPtr selector);
@@ -55,11 +56,13 @@ namespace MonoDevelop.Components
 
 			objc_msgSend_NSInt64_NSInt32 (app, sel_terminate, 0);
 		}
+#endif
 
 		public static void Terminate ()
 		{
-			if (Platform.IsMac)
-				MacTerminate ();
+#if MAC
+			MacTerminate ();
+#endif
 		}
 	}
 }

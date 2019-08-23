@@ -33,7 +33,7 @@ namespace MonoDevelop.Components.Mac
 {
 	static class Messaging
 	{
-		const string LIBOBJC_DYLIB = "objc";
+		const string LIBOBJC_DYLIB = ObjCRuntime.Constants.ObjectiveCLibrary;
 
 		[DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
 		public static extern void void_objc_msgSend_int_NSRange (IntPtr handle, IntPtr sel, IntPtr a1, NSRange a2);

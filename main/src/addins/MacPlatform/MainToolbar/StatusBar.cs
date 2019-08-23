@@ -738,21 +738,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
 
-		// Xamarin.Mac has a bug where NSView.NextKeyView cannot be set to null
-		// Work around it here by rebinding it ourselves
-		// https://github.com/xamarin/xamarin-macios/issues/4558
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		static extern void void_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr nextKeyViewHandle);
-		static readonly IntPtr setNextKeyViewSelector = ObjCRuntime.Selector.GetHandle ("setNextKeyView:");
-		static void NullableSetNextKeyView (NSView parent, NSView nextKeyView)
-		{
-			if (parent == null) {
-				throw new ArgumentNullException (nameof (parent));
-			}
-
-			void_objc_msgSend_IntPtr (parent.Handle, setNextKeyViewSelector, nextKeyView != null ? nextKeyView.Handle : IntPtr.Zero);
-		}
-
 		internal void RemoveStatusIcon (StatusIcon icon)
 		{
 			// For keyboard focus the icons are the reverse of the order they're stored in the list

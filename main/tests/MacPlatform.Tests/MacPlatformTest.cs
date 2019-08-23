@@ -151,7 +151,7 @@ namespace MacPlatform.Tests
 			MacTelemetryDetails.CFRelease (namePtr);
 		}
 
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		[DllImport (ObjCRuntime.Constants.ObjectiveCLibrary, EntryPoint = "objc_msgSend")]
 		static extern void void_objc_msgSend (IntPtr receiver, IntPtr selector);
 
 		[Test]
