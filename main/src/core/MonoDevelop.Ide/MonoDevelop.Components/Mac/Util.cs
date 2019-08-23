@@ -38,62 +38,6 @@ namespace MonoDevelop.Components.Mac
 {
 	static class Util
 	{
-		static Selector selCopyWithZone = new Selector ("copyWithZone:");
-		static DateTime lastCopyPoolDrain = DateTime.Now;
-		static List<object> copyPool = new List<object> ();
-
-		/// <summary>
-		/// Implements the NSCopying protocol in a class. The class must implement ICopiableObject.
-		/// The method ICopiableObject.CopyFrom will be called to make the copy of the object
-		/// </summary>
-		/// <typeparam name="T">Type for which to enable copying</typeparam>
-		public static void MakeCopiable<T> () where T:ICopiableObject
-		{
-			Class c = new Class (typeof(T));
-			c.AddMethod (selCopyWithZone.Handle, new Func<IntPtr, IntPtr, IntPtr, IntPtr> (MakeCopy), "i@:@");
-		}
-
-		static IntPtr MakeCopy (IntPtr sender, IntPtr sel, IntPtr zone)
-		{
-			var thisOb = (ICopiableObject) Runtime.GetNSObject (sender);
-
-			// Makes a copy of the object by calling the default implementation of copyWithZone
-			IntPtr copyHandle = Messaging.IntPtr_objc_msgSendSuper_IntPtr(((NSObject)thisOb).SuperHandle, selCopyWithZone.Handle, zone);
-			var copyOb = (ICopiableObject) Runtime.GetNSObject (copyHandle);
-
-			// Copy of managed data
-			copyOb.CopyFrom (thisOb);
-
-			// Copied objects are for internal use of the Cocoa framework. We need to keep a reference of the
-			// managed object until the the framework doesn't need it anymore.
-
-			if ((DateTime.Now - lastCopyPoolDrain).TotalSeconds > 2)
-				DrainObjectCopyPool ();
-
-			copyPool.Add (copyOb);
-
-			return ((NSObject)copyOb).Handle;
-		}
-
-		public static void DrainObjectCopyPool ()
-		{
-			// Objects in the pool have been created by Cocoa, so there should be no managed references
-			// other than the ones we keep in the pool. An object can be removed from the pool if it
-			// has only 1 reference left (the managed one)
-
-			List<NSObject> markedForDelete = new List<NSObject> ();
-
-			foreach (NSObject ob in copyPool) {
-				nuint count = ob.RetainCount;
-				if (count == 1)
-					markedForDelete.Add (ob);
-			}
-			foreach (NSObject ob in markedForDelete)
-				copyPool.Remove (ob);
-
-			lastCopyPoolDrain = DateTime.Now;
-		}
-
 		public static NSColor ToNSColor (this Color col)
 		{
 			return NSColor.FromDeviceRgba ((float)col.Red, (float)col.Green, (float)col.Blue, (float)col.Alpha);
