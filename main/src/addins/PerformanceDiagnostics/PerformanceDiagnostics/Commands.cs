@@ -1,16 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Foundation;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	public class StartStopListeningUIThreadMonitorHandler : CommandHandler
+	class StartStopListeningUIThreadMonitorHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -27,7 +31,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class ProfileFor5SecondsHandler : CommandHandler
+	class ProfileFor5SecondsHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -37,11 +41,68 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			UIThreadMonitor.Instance.Profile (5);
+			UIThreadMonitor.Instance.Profile (spinDump: false, 5);
 		}
 	}
 
-	public class EnhanceSampleFile : CommandHandler
+	class SpinDumpFor5SecondsHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.DisableOnShellLock = false;
+			base.Update (info);
+		}
+
+		protected override void Run ()
+		{
+			if (!IsAuthorized ())
+				return;
+
+			UIThreadMonitor.Instance.Profile (spinDump: true, 5);
+		}
+
+		const string spinDumpFile = "/etc/sudoers.d/vsspindump";
+		static bool IsAuthorized ()
+		{
+			if (!File.Exists (spinDumpFile)) {
+				var message = new ConfirmationMessage (
+					GettextCatalog.GetString ("{0} requires administrative privileges to run spindump", BrandingService.ApplicationName),
+					GettextCatalog.GetString ("Continue with installing '{0}' so 'spindump' can be run without a password for the current user?", spinDumpFile),
+					AlertButton.Proceed) {
+					Icon = MonoDevelop.Ide.Gui.Stock.Warning,
+				};
+
+				return MessageService.Confirm (message) && CreatePrivilegedHelperFile ();
+			}
+
+			return true;
+		}
+
+		static bool CreatePrivilegedHelperFile ()
+		{
+			var psi = new ProcessStartInfo ("/usr/libexec/authopen", $"-c -m 0644 -w '{spinDumpFile}'") {
+				RedirectStandardInput = true,
+				UseShellExecute = false,
+			};
+
+			using var process = Process.Start (psi);
+
+			string content = $"{Environment.UserName} ALL=(ALL:ALL) NOPASSWD:/usr/sbin/spindump";
+
+			process.StandardInput.WriteLine (content);
+			process.StandardInput.Close ();
+			process.WaitForExit ();
+
+			if (process.ExitCode != 0) {
+				MessageService.ShowError (GettextCatalog.GetString ("Failed to create privileges helper, authopen exited with code {0}", process.ExitCode));
+				return false;
+			}
+
+			return true;
+		}
+	}
+
+	class EnhanceSampleFile : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -51,7 +112,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class ToggleProfileHandler : CommandHandler
+	class ToggleProfileHandler : CommandHandler
 	{
 		protected override void Update(CommandInfo info)
 		{
@@ -62,11 +123,11 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			UIThreadMonitor.Instance.ToggleProfiling ();
+			UIThreadMonitor.Instance.ToggleProfiling (spinDump: false);
 		}
 	}
 
-	public class InitializeGtkHelperHandler : CommandHandler
+	class InitializeGtkHelperHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -97,7 +158,7 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	public class DumpLiveWidgetsHandler : CommandHandler
+	class DumpLiveWidgetsHandler : CommandHandler
 	{
 		static readonly System.IO.TextWriter log = LoggingService.CreateLogFile ("leak-dump");
 		protected override void Update (CommandInfo info)

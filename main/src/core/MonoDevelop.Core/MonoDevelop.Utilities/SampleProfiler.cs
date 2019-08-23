@@ -41,16 +41,21 @@ namespace MonoDevelop.Utilities
 {
 	public class SampleProfiler
 	{
-		readonly string outputPath;
+		readonly Func<string> getOutputPath;
+		public SampleProfiler (ConfigurationProperty<string> option)
+		{
+			getOutputPath = () => option.Value;
+		}
+
 		public SampleProfiler (string outputPath)
 		{
-			this.outputPath = outputPath;
+			getOutputPath = () => outputPath;
 		}
 
 		public bool ToggleProfilingChecked => sampleProcessPid != -1;
 
 		int sampleProcessPid = -1;
-		public void ToggleProfiling ()
+		public void ToggleProfiling (bool spinDump)
 		{
 			if (sampleProcessPid != -1) {
 				Mono.Unix.Native.Syscall.kill (sampleProcessPid, Mono.Unix.Native.Signum.SIGINT);
@@ -58,42 +63,68 @@ namespace MonoDevelop.Utilities
 				return;
 			}
 
-			var outputFilePath = Path.GetTempFileName ();
-			var startInfo = new ProcessStartInfo ("sample");
-			startInfo.UseShellExecute = false;
-			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} 10000 -file {outputFilePath}";
-			var sampleProcess = Process.Start (startInfo);
-			sampleProcess.EnableRaisingEvents = true;
-			sampleProcess.Exited += delegate {
-				ConvertJITAddressesToMethodNames (outputPath, outputFilePath, "Profile");
-			};
-			sampleProcessPid = sampleProcess.Id;
+			sampleProcessPid = Profile (spinDump, 10000).Id;
 		}
 
-		public void Profile (int seconds)
+		public Process Profile (bool spinDump, int seconds)
 		{
 			var outputFilePath = Path.GetTempFileName ();
-			var startInfo = new ProcessStartInfo ("sample");
-			startInfo.UseShellExecute = false;
-			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} {seconds} -file {outputFilePath}";
-			var sampleProcess = Process.Start (startInfo);
+			var psi = spinDump ? GetSpinDumpStartInfo (seconds, outputFilePath) : GetSampleStartInfo (seconds, outputFilePath);
+
+			var sampleProcess = Process.Start (psi);
+
 			sampleProcess.EnableRaisingEvents = true;
-			sampleProcess.Exited += delegate {
-				ConvertJITAddressesToMethodNames (outputPath, outputFilePath, "Profile");
+			sampleProcess.Exited += (sender, args) => {
+				if (spinDump && sampleProcess.ExitCode != 0) {
+					const string errorMessage = "Administrative privileges required: spindump profiler is intended as a diagnostic tool. To enable spindump profiler handling, add the required sudoers entry";
+					LoggingService.LogError (errorMessage);
+					return;
+				}
+				ConvertJITAddressesToMethodNames (getOutputPath (), outputFilePath, "Profile");
+			};
+			return sampleProcess;
+		}
+
+		ProcessStartInfo GetSampleStartInfo (int seconds, string outputFilePath)
+			=>  new ProcessStartInfo ("sample") {
+				UseShellExecute = false,
+				Arguments = $"{Process.GetCurrentProcess ().Id} {seconds} -file {outputFilePath}"
+			};
+
+		ProcessStartInfo GetSpinDumpStartInfo (int seconds, string outputFilePath)
+		{
+			const int millisBetweenSamples = 1;
+
+			if (!Platform.IsMac)
+				throw new InvalidOperationException ("Spindump is only available on macOS");
+
+			// We need to delete the file before using it as an output target, otherwise it will error.
+			File.Delete (outputFilePath);
+
+			return new ProcessStartInfo ("sudo") {
+				UseShellExecute = false,
+				// Some weird things happen when using -o, so write to stdout and manually pipe the text
+				Arguments = $"-n spindump {Process.GetCurrentProcess ().Id} {seconds} {millisBetweenSamples} -noBinary -onlyRunnable -onlyTarget -o {outputFilePath}",
+				RedirectStandardOutput = true,
 			};
 		}
 
 		[DllImport ("__Internal")]
 		extern static string mono_pmip (long offset);
-		static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
+		readonly static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
 
 		public static void ConvertJITAddressesToMethodNames (string outputPath, string fileName, string profilingType)
 		{
-			// sample line to replace:
-			// ???  (in <unknown binary>)  [0x103648455]
-			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
+			var matchRegexes = new Regex [] {
+				// sample line output
+				// ???  (in <unknown binary>)  [0x103648455]
+				new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled),
+				// spindump line output
+				new Regex (@"\?\?\? \(.* \+ \d+\) \[0x([0-9a-f]+)\]", RegexOptions.Compiled),
+				new Regex (@"\?\?\? \[0x([0-9a-f]+)\]", RegexOptions.Compiled),
+			};
 
-
+			// When using spindump, this format means kernel code, so don't bother writing it, we have a toplevel usercode function
 			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
 				Directory.CreateDirectory (outputPath);
 				var outputFilename = Path.Combine (outputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
@@ -102,26 +133,50 @@ namespace MonoDevelop.Utilities
 				using (var sw = new StreamWriter (outputFilename)) {
 					string line;
 					while ((line = sr.ReadLine ()) != null) {
+						bool printLine = true;
 
-						var match = rx.Match (line);
-						if (match.Success) {
-							var offset = long.Parse (match.Groups[1].Value, NumberStyles.HexNumber);
+						foreach (var rx in matchRegexes) {
+							try {
+								var match = rx.Match (line);
+								if (match.Success) {
+									var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
+									if (offset < 0) {
+										// This is kernel code, no use writing redundant stack frames.
+										printLine = false;
+										break;
+									}
 
-							if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
-								pmipMethodName = mono_pmip (offset)?.TrimStart ();
-								if (pmipMethodName != null)
-									pmipMethodName = PmipParser.ToSample (pmipMethodName, offset);
-								methodsCache.Add (offset, pmipMethodName);
-							}
+									var pmipMethodName = GetSymbolicatedLine (offset);
+									if (pmipMethodName != null) {
+										line = line
+											.Remove (match.Index, match.Length)
+											.Insert (match.Index, pmipMethodName);
+									}
 
-							if (pmipMethodName != null) {
-								line = line.Remove (match.Index, match.Length);
-								line = line.Insert (match.Index, pmipMethodName);
+									// Stop processing other regexes, we have a match
+									break;
+								}
+							} catch (Exception e) {
+								LoggingService.LogError ($"Failed to parse address sample output line {line}", e);
 							}
 						}
-						sw.WriteLine (line);
+
+						if (printLine)
+							sw.WriteLine (line);
 					}
 				}
+			}
+
+			static string GetSymbolicatedLine (long offset)
+			{
+				if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
+					pmipMethodName = mono_pmip (offset)?.TrimStart ();
+					if (pmipMethodName != null)
+						pmipMethodName = PmipParser.ToSample (pmipMethodName, offset);
+					methodsCache.Add (offset, pmipMethodName);
+				}
+
+				return pmipMethodName;
 			}
 		}
 
