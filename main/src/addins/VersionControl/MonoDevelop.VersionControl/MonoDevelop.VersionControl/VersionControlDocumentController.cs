@@ -49,6 +49,9 @@ namespace MonoDevelop.VersionControl
 		readonly WeakReference<DocumentView> logViewRef = new WeakReference<DocumentView> (null);
 		readonly WeakReference<DocumentView> mergeViewRef = new WeakReference<DocumentView> (null);
 
+		DocumentView mainView;
+		VersionControlDocumentInfo vcInfo;
+
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
 			if (!(controller is FileDocumentController fileController) || !IdeApp.IsInitialized)
@@ -69,23 +72,84 @@ namespace MonoDevelop.VersionControl
 			repo = VersionControlService.GetRepository (project);
 			if (repo == null)
 				return false;
-			return repo.TryGetVersionInfo (fileController.FilePath, out var info) && info.IsVersioned;
+
+			return true;
 		}
 
 		protected internal override async Task<DocumentView> OnInitializeView ()
 		{
-			var mainView = await base.OnInitializeView ();
+			mainView = await base.OnInitializeView ();
 			var controller = (FileDocumentController)Controller;
 			var item = new VersionControlItem (repo, project, controller.FilePath, false, null);
-			var vcInfo = new VersionControlDocumentInfo (this, Controller, item, item.Repository) {
+			vcInfo = new VersionControlDocumentInfo (this, Controller, item, item.Repository) {
 				Document = Controller.Document
 			};
-
-			diffViewRef.SetTarget (await TryAttachView (mainView, vcInfo, DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository")));
-			blameViewRef.SetTarget (await TryAttachView (mainView, vcInfo, BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file")));
-			logViewRef.SetTarget (await TryAttachView (mainView, vcInfo, LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file")));
-			mergeViewRef.SetTarget (await TryAttachView (mainView, vcInfo, MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file")));
+			await UpdateSubviewsAsync ();
+			VersionControlService.FileStatusChanged += VersionControlService_FileStatusChanged;
 			return mainView;
+		}
+
+		public override void Dispose ()
+		{
+			VersionControlService.FileStatusChanged -= VersionControlService_FileStatusChanged;
+			base.Dispose ();
+		}
+
+		void VersionControlService_FileStatusChanged (object sender, FileUpdateEventArgs args)
+		{
+
+			foreach (var file in args) {
+				if (!vcInfo.Document.FilePath.IsNullOrEmpty && vcInfo.Document.FilePath.Equals (file.FilePath)) {
+					Runtime.RunInMainThread (async () => {
+						await UpdateSubviewsAsync ();
+					});
+				}
+			}
+		}
+
+		bool showSubviews;
+		async Task UpdateSubviewsAsync ()
+		{
+			var hasVersionInfo = repo.TryGetVersionInfo (this.vcInfo.Document.FilePath, out var info);
+			if (hasVersionInfo)
+				vcInfo.Item.VersionInfo = info;
+
+			if (!hasVersionInfo || !info.IsVersioned) {
+				if (!showSubviews)
+					return;
+				showSubviews = false;
+				if (diffViewRef.TryGetTarget (out var diffView) && diffView != null) {
+					mainView.AttachedViews.Remove (diffView);
+					diffView.Dispose ();
+					diffViewRef.SetTarget (null);
+				}
+
+				if (blameViewRef.TryGetTarget (out var blameView) && blameView != null) {
+					mainView.AttachedViews.Remove (blameView);
+					blameView.Dispose ();
+					blameViewRef.SetTarget (null);
+				}
+
+				if (logViewRef.TryGetTarget (out var logView) && logView != null) {
+					mainView.AttachedViews.Remove (logView);
+					logView.Dispose ();
+					logViewRef.SetTarget (null);
+				}
+
+				if (mergeViewRef.TryGetTarget (out var mergeView) && mergeView != null) {
+					mainView.AttachedViews.Remove (mergeView);
+					mergeView.Dispose ();
+					mergeViewRef.SetTarget (null);
+				}
+			} else {
+				if (showSubviews)
+					return;
+				showSubviews = true;
+				diffViewRef.SetTarget (await TryAttachView (mainView, vcInfo, DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository")));
+				blameViewRef.SetTarget (await TryAttachView (mainView, vcInfo, BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file")));
+				logViewRef.SetTarget (await TryAttachView (mainView, vcInfo, LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file")));
+				mergeViewRef.SetTarget (await TryAttachView (mainView, vcInfo, MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file")));
+			}
 		}
 
 		async Task<DocumentView> TryAttachView (DocumentView mainView, VersionControlDocumentInfo info, string type, string title, string description)
