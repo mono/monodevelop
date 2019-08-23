@@ -57,8 +57,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler<CGPoint> MenuOpened;
 		public event EventHandler ActivateSelectedItem;
 
-		IPadWindow container;
-		
 		MacToolboxWidgetDataSource dataSource;
 
 		bool listMode;
@@ -125,9 +123,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public MacToolboxWidget (IPadWindow container)
+		public MacToolboxWidget ()
 		{
-			this.container = container;
 			Initialize ();
 		}
 
@@ -153,7 +150,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		// Shared initialization code
 		public void Initialize ()
 		{
-			TranslatesAutoresizingMaskIntoConstraints = false;
 			AccessibilityRole = NSAccessibilityRoles.ToolbarRole;
 			flowLayout = new NSCollectionViewFlowLayout {
 				SectionHeadersPinToVisibleBounds = false,

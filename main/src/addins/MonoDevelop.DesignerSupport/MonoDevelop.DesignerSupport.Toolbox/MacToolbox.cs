@@ -511,7 +511,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				DragSourceSet?.Invoke (this, targetTable);
 
 			Refilter (true);
-
+		
 			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
 		
