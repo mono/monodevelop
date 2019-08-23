@@ -784,7 +784,7 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			if (File.Exists (iconFile)) {
-				ApplicationIcon = new NSImage (iconFile, true);
+				ApplicationIcon = new NSImage (iconFile, lazy: true);
 			}
 		}
 
