@@ -67,8 +67,6 @@ namespace Mono.Instrumentation.Monitor
 			
 			if (MacIntegration.PlatformDetection.IsMac) {
 				try {
-					Carbon.SetProcessName ("MDMonitor");
-					
 					ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e) {
 						Application.Quit ();
 						e.Handled = true;
