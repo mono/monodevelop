@@ -32,6 +32,7 @@ using ObjCRuntime;
 using AppKit;
 using Xwt;
 using Xwt.Drawing;
+using Xwt.Mac;
 
 namespace MonoDevelop.Components.Mac
 {
