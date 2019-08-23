@@ -1,4 +1,4 @@
-//  Project.cs
+﻿//  Project.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -369,11 +369,11 @@ namespace MonoDevelop.Projects
 		{
 			// If the project doesn't have a Default run configuration, create one
 			if (!defaultRunConfigurationCreated) {
-				defaultRunConfigurationCreated = true;
 				if (!runConfigurations.Any (c => c.IsDefaultConfiguration)) {
 					var rc = CreateRunConfigurationInternal ("Default");
 					ImportDefaultRunConfiguration (rc);
 					runConfigurations.Insert (0, rc);
+					defaultRunConfigurationCreated = true;
 				}
 			}
 		}
@@ -3070,6 +3070,8 @@ namespace MonoDevelop.Projects
 			runConfig.Read (grp);
 		}
 
+		//TODO: OnRunConfigurationsAdded: hand items in the same way than NotifyItemsAdded.
+		//NOTE that this method does not call ProjectExtension since OnRunConfigurationAdded does not exist
 		internal void OnRunConfigurationsAdded (IEnumerable<SolutionItemRunConfiguration> items)
 		{
 			// Initialize the property group only if the project is not being loaded (in which case it will
@@ -3083,7 +3085,7 @@ namespace MonoDevelop.Projects
 
 		internal void OnRunConfigurationRemoved (IEnumerable<SolutionItemRunConfiguration> items)
 		{
-
+			ProjectExtension.OnRemoveRunConfiguration (items);
 		}
 
 		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags, HashSet<MSBuildItem> loadedItems)
@@ -4985,6 +4987,10 @@ namespace MonoDevelop.Projects
 			internal protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 			{
 				Project.OnItemsRemoved (objs);
+			}
+
+			internal protected override void OnRemoveRunConfiguration (IEnumerable<SolutionItemRunConfiguration> objs)
+			{
 			}
 		}
 	}
