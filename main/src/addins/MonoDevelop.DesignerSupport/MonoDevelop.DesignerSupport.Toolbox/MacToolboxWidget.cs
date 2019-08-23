@@ -70,24 +70,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal void PerformActivateSelectedItem () => ActivateSelectedItem?.Invoke (this, EventArgs.Empty);
 
-		NSIndexPath selectedIndexPath;
 		public NSIndexPath SelectedIndexPath {
-			get {
-				return selectedIndexPath;
-			}
+			get => SelectionIndexPaths.FirstOrDefault () as NSIndexPath;
 			set {
-				if (selectedIndexPath != value) {
-					selectedIndexPath = value;
+				if (value == null) {
+					SelectionIndexPaths = new NSSet ();
+				} else {
+					SelectionIndexPaths = new NSSet (value);
 				}
 			}
 		}
 
 		public ToolboxWidgetItem SelectedItem {
 			get {
-				if (MacToolboxWidgetDataSource.IsIndexOutOfSync (selectedIndexPath, CategoryVisibilities)) {
+				if (MacToolboxWidgetDataSource.IsIndexOutOfSync (SelectedIndexPath, CategoryVisibilities)) {
 					return null;
 				}
-				return CategoryVisibilities [(int)selectedIndexPath.Section].Items [(int)selectedIndexPath.Item];
+				return CategoryVisibilities [(int)SelectedIndexPath.Section].Items [(int)SelectedIndexPath.Item];
 			}
 		}
 
@@ -145,8 +144,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			if (SelectionIndexPaths.Count > 0) {
 				var collectionViewItem = GetItem ((NSIndexPath)SelectionIndexPaths.ElementAt (0));
-				if (collectionViewItem != null && collectionViewItem.View != null) {
-					collectionViewItem.View.NeedsDisplay = true;
+				if (collectionViewItem != null && collectionViewItem.View is ContentCollectionViewItem contentCollectionView) {
+					contentCollectionView.RefreshLayer ();
 				}
 			}
 		}
