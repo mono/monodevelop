@@ -38,6 +38,7 @@ using AppKit;
 using CoreGraphics;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Mac;
+using Foundation;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -274,11 +275,30 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#endregion
 
+		NSIndexPath GetFirstVisibleItemIndexPath ()
+		{
+			for (int i = 0; i < toolboxWidget.CategoryVisibilities.Count; i++) {
+				if (toolboxWidget.CategoryVisibilities [i].Items.Count > 0) {
+					return NSIndexPath.FromItemSection (0, i);
+				}
+			}
+			return null;
+		}
+
 		private void ToolboxWidget_KeyDownPressed (object sender, NativeViews.NSEventArgs args)
 		{
 			if ((int)args.Event.ModifierFlags == (int)KeyModifierFlag.None && (args.Event.KeyCode == (int)KeyCodes.Enter)) {
-				((MacToolboxWidget)sender).PerformActivateSelectedItem ();
+				toolboxWidget.PerformActivateSelectedItem ();
+				args.Handled = true;
 				return;
+			}
+			if (args.Event.KeyCode == (ushort) NSKey.DownArrow && toolboxWidget.SelectionIndexPaths.Count == 0) {
+				var firstVisibleItemPath = GetFirstVisibleItemIndexPath ();
+				if (firstVisibleItemPath != null) {
+					toolboxWidget.SelectItems (new NSSet (firstVisibleItemPath), NSCollectionViewScrollPosition.CenteredVertically);
+					args.Handled = true;
+					return;
+				}
 			}
 			OnKeyDownKeyLoop (sender, args);
 		}
