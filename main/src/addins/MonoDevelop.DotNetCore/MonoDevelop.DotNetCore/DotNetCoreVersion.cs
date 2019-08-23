@@ -26,7 +26,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
@@ -37,6 +36,10 @@ namespace MonoDevelop.DotNetCore
 		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion22 = new DotNetCoreVersion (2, 2, 202);
 		internal static readonly DotNetCoreVersion MinimumSupportedSdkVersion30 = new DotNetCoreVersion (3, 0, 100) {
 			ReleaseLabel = "preview3-010431",
+			IsPrerelease = true
+		};
+		internal static readonly DotNetCoreVersion MaximumSupportedVersion = new DotNetCoreVersion (3, 0, 100) {
+			ReleaseLabel = "preview7-012821",
 			IsPrerelease = true
 		};
 
