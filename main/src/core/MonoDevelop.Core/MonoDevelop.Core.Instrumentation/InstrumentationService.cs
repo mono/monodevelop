@@ -41,6 +41,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -174,19 +175,31 @@ namespace MonoDevelop.Core.Instrumentation
 			while (!stopping) {
 				Thread.Sleep (interval);
 				lock (counters) {
-					Save (file);
+					Save (file, (fs, data) => new BinaryFormatter ().Serialize (fs, data));
 				}
 			}
 			autoSaveThread = null;
 		}
 
-		internal static void Save (string filePath)
+		internal static void SaveJson (string filePath)
+		{
+			Save (filePath, (fs, data) => {
+				using var writer = new StreamWriter (fs);
+				var serializer = JsonSerializer.Create (new JsonSerializerSettings {
+					ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+					DefaultValueHandling = DefaultValueHandling.Ignore,
+					NullValueHandling = NullValueHandling.Ignore,
+				});
+				serializer.Serialize (writer, data);
+			});
+		}
+
+		static void Save (string filePath, Action<Stream, IInstrumentationService> serializer)
 		{
 			try {
 				FilePath tempPath = filePath + ".tmp";
 				using (Stream fs = File.OpenWrite (tempPath)) {
-					var f = new BinaryFormatter ();
-					f.Serialize (fs, GetServiceData ());
+					serializer (fs, GetServiceData ());
 				}
 				FileService.SystemRename (tempPath, filePath);
 			} catch (Exception ex) {
