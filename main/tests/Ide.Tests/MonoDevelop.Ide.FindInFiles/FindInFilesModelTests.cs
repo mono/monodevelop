@@ -29,6 +29,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -50,5 +51,69 @@ namespace MonoDevelop.Ide.FindInFiles
 			Assert.IsTrue (model.IsFileNameMatching ("a.txt"));
 			Assert.IsFalse (model.IsFileNameMatching ("a.vb"));
 		}
+
+		[Test]
+		public void TestEmptyFileMask ()
+		{
+			var model = new FindInFilesModel ();
+
+			model.FileMask = "";
+			Assert.IsTrue (model.IsFileNameMatching ("a.txt"));
+			Assert.IsTrue (model.IsFileNameMatching ("a.vb"));
+
+			model.FileMask = null;
+			Assert.IsTrue (model.IsFileNameMatching ("a.txt"));
+			Assert.IsTrue (model.IsFileNameMatching ("a.vb"));
+		}
+
+		[Test]
+		public void TestPatternMatcherPattern ()
+		{
+			var model = new FindInFilesModel ();
+
+			model.FindPattern = "foo";
+			string text = "foo foo foo foo";
+
+			Assert.AreEqual (4, model.PatternSearcher.FindAll (null, text).Length);
+		}
+
+
+		[Test]
+		public void TestEmptyFindPattern ()
+		{
+			var model = new FindInFilesModel ();
+
+			model.FindPattern = null;
+			Assert.AreEqual (-1, model.PatternSearcher.Find ("foo", 0, 3));
+		}
+
+		[Test]
+		public void TestCaseSensitivity ()
+		{
+			var model = new FindInFilesModel ();
+
+			model.FindPattern = "fOo";
+			string text = "foo fOo foo fOo";
+			model.CaseSensitive = false;
+			Assert.AreEqual (4, model.PatternSearcher.FindAll (null, text).Length);
+
+			model.CaseSensitive = true;
+			Assert.AreEqual (2, model.PatternSearcher.FindAll (null, text).Length);
+		}
+
+		[Test]
+		public void TestWholeWordsOnly ()
+		{
+			var model = new FindInFilesModel ();
+
+			model.FindPattern = "foo";
+			string text = "foo foofoo foo foo";
+			model.WholeWordsOnly = false;
+			Assert.AreEqual (5, model.PatternSearcher.FindAll (null, text).Length);
+
+			model.WholeWordsOnly = true;
+			Assert.AreEqual (3, model.PatternSearcher.FindAll (null, text).Length);
+		}
+
 	}
 }

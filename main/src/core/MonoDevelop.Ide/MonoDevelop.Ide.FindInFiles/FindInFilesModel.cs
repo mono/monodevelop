@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -46,7 +45,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				file_mask = value;
 				split_file_masks = file_mask?.Split (separators, StringSplitOptions.RemoveEmptyEntries);
 
-				evaluator = FileNameEvaluator.CreateFileNameEvaluator (split_file_masks);
+				evaluator = split_file_masks != null ? FileNameEvaluator.CreateFileNameEvaluator (split_file_masks) : null;
 				FileMaskChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
@@ -71,7 +70,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		PatternSearcher patternSearcher;
 		public PatternSearcher PatternSearcher {
 			get {
-				return patternSearcher ?? (patternSearcher = new PatternSearcher (FindPattern, CaseSensitive, WholeWordsOnly));
+				return patternSearcher ?? (patternSearcher = new PatternSearcher (FindPattern ?? "", CaseSensitive, WholeWordsOnly));
 			}
 		}
 

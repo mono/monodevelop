@@ -81,8 +81,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			Assert.AreEqual (3, indices.Length);
 		}
 
-
-
 		[Test]
 		public void TestWholeWordsOnly ()
 		{
@@ -94,5 +92,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			Assert.AreEqual (3, indices.Length);
 		}
 
+		[Test]
+		public void TestEmptyPattern ()
+		{
+			var searcher = new PatternSearcher ("", true, true);
+
+			string text = "foo fooFoofoo foo foo";
+			var indices = searcher.FindAll (null, text);
+
+			Assert.AreEqual (0, indices.Length);
+			Assert.AreEqual (-1, searcher.Find (text, 0, text.Length));
+		}
 	}
 }

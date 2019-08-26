@@ -72,6 +72,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public ImmutableArray<SearchResult> FindAll (FileProvider provider, ReadOnlySpan<char> text)
 		{
+			if (patternLength == 0)
+				return ImmutableArray<SearchResult>.Empty;
 			var result = ImmutableArray.CreateBuilder<SearchResult> ();
 			int index = 0;
 			int end = text.Length;
@@ -96,6 +98,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			int length = text.Length;
 			if (endIndex > length)
 				throw new ArgumentException ($"end:{endIndex} > length:{length}");
+			if (patternLength == 0)
+				return -1;
 
 			int start = startIndex;
 			int end = endIndex - patternLength;
