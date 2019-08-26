@@ -32,8 +32,8 @@ namespace MonoDevelop.Components.Mac
 {
 	public static class NSStackViewExtensions
 	{
-		const int RenderingPriority = (int)NSLayoutPriority.Required;
-		const int LowPriority = (int)NSLayoutPriority.DefaultLow - 1;
+		const float RenderingPriority = (float)NSLayoutPriority.Required;
+		const float LowPriority = (float)NSLayoutPriority.DefaultLow - 1;
 
 		public static void AddArrangedSubview (this NSStackView stackView, NSView view, bool expandHorizontally, bool expandVertically)
 		{
