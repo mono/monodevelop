@@ -59,9 +59,17 @@ namespace MonoDevelop.Components
 			var dockDomain = NSUserDefaults.StandardUserDefaults.PersistentDomainForName ("com.apple.dock");
 
 			var orientation = (NSString)dockDomain.ValueForKey (new NSString ("orientation"));
-			if (!dockDomain.TryGetValue (new NSString ("tilesize"), out var storedSize))
-				storedSize = NSNumber.FromInt32 (64); // default value is 64.
-			var size = ((NSNumber)storedSize).Int32Value + 11;
+			if (!dockDomain.TryGetValue (new NSString ("tilesize"), out var storedSize)) {
+				storedSize = NSNumber.FromFloat (64); // default value is 64.
+			}
+
+			var size = (int)((NSNumber)storedSize).FloatValue;
+			// Check if we have no size set.
+			if (size == 0)
+				size = 64;
+
+			// Then add the padding
+			size += 11;
 
 			var offsetRect = new CGRect ();
 			if (orientation == "bottom") {
