@@ -628,11 +628,8 @@ namespace MonoDevelop.Components
 
 		static void AddIfNotDuplicate<T> (List<T> list, T item) where T : IEquatable<T>
 		{
-			for (int i = 0; i < list.Count; i++) {
-				if (list[i].Equals (item))
-					return;
-			}
-			list.Add (item);
+			if (!list.Contains (item))
+				list.Add (item);
 		}
 
 		[System.Runtime.InteropServices.DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
