@@ -1377,14 +1377,14 @@ namespace MonoDevelop.Components
 			IntPtr mainBundle = GetMainBundle ();
 			var sel_bundleIdentifier = ObjCRuntime.Selector.GetHandle ("bundleIdentifier");
 
-			result = objc_msgSend_IntPtr (mainBundle, sel_bundleIdentifier) != IntPtr.Zero;
+			result = Messaging.IntPtr_objc_msgSend (mainBundle, sel_bundleIdentifier) != IntPtr.Zero;
 
 			static IntPtr GetMainBundle ()
 			{
 				var class_runningApplication = ObjCRuntime.Class.GetHandle ("NSBundle");
 				var sel_mainBundle = ObjCRuntime.Selector.GetHandle ("mainBundle");
 
-				return objc_msgSend_IntPtr (class_runningApplication, sel_mainBundle);
+				return Messaging.IntPtr_objc_msgSend (class_runningApplication, sel_mainBundle);
 			}
 #endif
 			return result;
