@@ -59,7 +59,9 @@ namespace MonoDevelop.Components
 			var dockDomain = NSUserDefaults.StandardUserDefaults.PersistentDomainForName ("com.apple.dock");
 
 			var orientation = (NSString)dockDomain.ValueForKey (new NSString ("orientation"));
-			var size = ((NSNumber)dockDomain.ValueForKey (new NSString ("tilesize"))).Int32Value + 11;
+			if (!dockDomain.TryGetValue (new NSString ("tilesize"), out var storedSize))
+				storedSize = NSNumber.FromInt32 (64); // default value is 64.
+			var size = ((NSNumber)storedSize).Int32Value + 11;
 
 			var offsetRect = new CGRect ();
 			if (orientation == "bottom") {
