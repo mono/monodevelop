@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		private bool NavigateTo (Document document, TextSpan span)
 		{
-			var proj = ((MonoDevelopWorkspace)document.Project.Solution.Workspace).GetMonoProject (document.Project);
+			var proj = (document.Project.Solution.Workspace as MonoDevelopWorkspace)?.GetMonoProject (document.Project);
 			var task = IdeApp.Workbench.OpenDocument (new Gui.FileOpenInformation (document.FilePath, proj) {
 				Offset = span.Start
 			});
