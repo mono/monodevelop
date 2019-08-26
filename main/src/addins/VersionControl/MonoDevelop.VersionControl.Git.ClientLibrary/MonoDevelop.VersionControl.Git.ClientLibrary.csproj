@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7FBB8B40-2B59-4C11-8C51-47C09B67A2B3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.VersionControl.Git.ClientLibrary</RootNamespace>
+    <AssemblyName>MonoDevelop.VersionControl.Git.ClientLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitCallbackHandler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitCloneOptions.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitCredentials.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitProcess.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitProgressEventArgs.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitResult.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\ProgressParser.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\AbstractGitCallbackHandler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitCallbackHandlerDecorator.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\GitException.cs" />
+    <Compile Include="..\MonoDevelop.VersionControl.Git.AskPass\StreamStringReadWriter.cs">
+      <Link>MonoDevelop.VersionControl.Git.ClientLibrary\StreamStringReadWriter.cs</Link>
+    </Compile>
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Clone\GitClone.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Clone\CloneCallbackHandler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Version\GitVersion.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitStatus.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitStatusCallbackHandler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitFileState.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitStatusCallbackHandler.V1_Handler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitStatusCallbackHandler.V2_Handler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitStatusCode.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitSubmoduleState.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitRenameOrCopyScore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Clone\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Version\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

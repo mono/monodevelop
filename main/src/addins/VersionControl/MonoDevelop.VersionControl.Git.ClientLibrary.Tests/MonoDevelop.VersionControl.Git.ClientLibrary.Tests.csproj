@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\packages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('..\..\..\..\packages\NUnit.3.12.0\build\NUnit.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{72811761-AD0E-475E-8B53-AF24F449AF8D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.VersionControl.Git.ClientLibrary.Tests</RootNamespace>
+    <AssemblyName>MonoDevelop.VersionControl.Git.ClientLibrary.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\GitProcessTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.AskPass\GitAskPassTests.cs" />
+    <Compile Include="..\MonoDevelop.VersionControl.Git.AskPass\ArgumentHandler.cs">
+      <Link>MonoDevelop.VersionControl.Git.AskPass\ArgumentHandler.cs</Link>
+    </Compile>
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\GitVersionTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\Git_v1_StatusTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\Git_v2_StatusTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.VersionControl.Git.ClientLibrary\MonoDevelop.VersionControl.Git.ClientLibrary.csproj">
+      <Project>{7FBB8B40-2B59-4C11-8C51-47C09B67A2B3}</Project>
+      <Name>MonoDevelop.VersionControl.Git.ClientLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.AskPass\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

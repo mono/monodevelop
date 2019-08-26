@@ -990,6 +990,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
+			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
+
 			try {
 				if (args.Any (f => f.FilePath == filepath || (filepath != null && !f.FilePath.IsNullOrEmpty && f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
 					StartUpdate ();
@@ -1000,6 +1002,7 @@ namespace MonoDevelop.VersionControl.Views
 						break;
 				}
 				UpdateControlStatus ();
+				VersionControlService.FileStatusChanged += OnFileStatusChanged;
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}

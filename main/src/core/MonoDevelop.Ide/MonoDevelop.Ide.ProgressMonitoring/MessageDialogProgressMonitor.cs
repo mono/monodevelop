@@ -33,13 +33,21 @@ using MonoDevelop.Ide.Gui.Dialogs;
 namespace MonoDevelop.Ide.ProgressMonitoring
 {
 	// Progress monitor that reports errors and warnings in message dialogs.
-	
-	public class MessageDialogProgressMonitor: ProgressMonitor
+	public enum MessageDialogProgressStyle
+	{
+		ShowRootTaskPercentage,
+		ShowCurrentTaskPercentage
+	}
+
+	public class MessageDialogProgressMonitor : ProgressMonitor
 	{
 		ProgressDialog dialog;
 		bool hideWhenDone;
 		bool showDetails;
-		
+
+		public MessageDialogProgressStyle Style { get; set; } = MessageDialogProgressStyle.ShowRootTaskPercentage;
+
+
 		public MessageDialogProgressMonitor (): this (false)
 		{
 		}
@@ -90,7 +98,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.Message = CurrentTaskName;
-				dialog.Progress = Progress;
+				dialog.Progress = Style == MessageDialogProgressStyle.ShowRootTaskPercentage ? Progress : (CurrentTask?.Progress ?? 1.0);
 			}
 		}
 		
