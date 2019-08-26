@@ -232,6 +232,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (nextPositionInArray == 0)
 				return view;
 			for (int i = 0; i < viewsKeyLoopOrder.Length; i++) {
+
 				if (viewsKeyLoopOrder [i] == view) {
 					var viewId = i + nextPositionInArray;
 					if (viewId <= 0 || viewId > viewsKeyLoopOrder.Length - 1)
@@ -524,8 +525,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			// Default configuration
 			categoryPriorities.Clear ();
-			toolboxAddButton.Hidden = false;
-			
+			AllowEditingComponents = true;
 			toolboxService.Customize (container, this);
 		}
 
@@ -593,6 +593,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			set {
 				toolboxAddButton.Hidden = !value;
+				toolboxAddButton.InvalidateIntrinsicContentSize ();
 			}
 		}
 
