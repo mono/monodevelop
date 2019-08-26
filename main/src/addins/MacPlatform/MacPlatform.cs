@@ -83,7 +83,6 @@ namespace MonoDevelop.MacIntegration
 			set {
 				if (applicationMenuName != value) {
 					applicationMenuName = value;
-					OnApplicationMenuNameChanged ();
 				}
 			}
 		}
@@ -153,9 +152,6 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogFatalError ("Unable to load libxammac");
 
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
-
-			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
-			Carbon.SetProcessName (BrandingService.ApplicationName);
 
 			CheckGtkVersion (2, 24, 14);
 
@@ -618,19 +614,6 @@ namespace MonoDevelop.MacIntegration
 		static string GetHideWindowCommandText ()
 		{
 			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
-		}
-
-		static void OnApplicationMenuNameChanged ()
-		{
-			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
-			if (aboutCommand != null)
-				aboutCommand.Text = GetAboutCommandText ();
-
-			Command hideCommand = IdeApp.CommandService.GetCommand (MacIntegrationCommands.HideWindow);
-			if (hideCommand != null)
-				hideCommand.Text = GetHideWindowCommandText ();
-
-			Carbon.SetProcessName (ApplicationMenuName);
 		}
 
 		// VV/VK: Disable tint based color generation
