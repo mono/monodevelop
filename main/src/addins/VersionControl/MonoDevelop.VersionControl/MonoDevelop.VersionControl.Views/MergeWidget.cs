@@ -53,20 +53,14 @@ namespace MonoDevelop.VersionControl.Views
 		internal override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			base.UndoChange (fromEditor, toEditor, hunk);
-			int i = leftConflicts.IndexOf (hunk);
-			if (i < 0)
-				i = rightConflicts.IndexOf (hunk);
-			// no conflicting change
-			if (i < 0)
-				return;
-			currentConflicts.RemoveAt (i);
-/*			var startLine = MainEditor.Document.GetLineByOffset (hunk.InsertStart);
-			var endline   = MainEditor.Document.GetLineByOffset (hunk.InsertStart + hunk.Inserted);
-			
-			currentConflicts[i].StartSegment.Offset = startLine.EndOffset;
-			currentConflicts[i].EndSegment.Offset = endline.EndOffset;
-						 */
-			UpdateDiff ();
+
+			for (int i = 0; i < currentConflicts.Count; i++) {
+				if (currentConflicts [i].LeftHunk == hunk || currentConflicts [i].RightHunk == hunk) {
+					currentConflicts.RemoveAt (i);
+					UpdateDiff ();
+					break;
+				}
+			}
 		}
 
 		public void Load (VersionControlDocumentInfo info)
@@ -163,6 +157,9 @@ namespace MonoDevelop.VersionControl.Views
 			public ISegment DividerSegment;
 			public ISegment EndSegment;
 
+			public Hunk LeftHunk { get; internal set; }
+			public Hunk RightHunk { get; internal set; }
+
 			public Conflict (ISegment mySegment, ISegment theirSegment, ISegment startSegment, ISegment dividerSegment, ISegment endSegment)
 			{
 				this.MySegment = mySegment;
@@ -203,8 +200,8 @@ namespace MonoDevelop.VersionControl.Views
 				int middleA = MainEditor.Document.OffsetToLineNumber (curConflict.StartSegment.Offset);
 				int middleB = MainEditor.Document.OffsetToLineNumber (curConflict.EndSegment.Offset) + 1;
 
-				LeftDiff.Add (new Hunk (left.RemoveStart, middleA, left.Removed, middleB - middleA));
-				RightDiff.Add (new Hunk (right.RemoveStart, middleA, right.Removed, middleB - middleA));
+				LeftDiff.Add (curConflict.LeftHunk = new Hunk (left.RemoveStart, middleA, left.Removed, middleB - middleA));
+				RightDiff.Add (curConflict.RightHunk = new Hunk (right.RemoveStart, middleA, right.Removed, middleB - middleA));
 			}
 			base.UpdateDiff ();
 			QueueDraw ();
@@ -237,8 +234,8 @@ namespace MonoDevelop.VersionControl.Views
 				int middleA = MainEditor.Document.OffsetToLineNumber (conflict.StartSegment.Offset);
 				int middleB = MainEditor.Document.OffsetToLineNumber (conflict.EndSegment.EndOffset);
 
-				leftConflicts.Add (new Hunk (leftA, middleA, leftB - leftA, middleB - middleA));
-				rightConflicts.Add (new Hunk (rightA, middleA, rightB - rightA, middleB - middleA));
+				leftConflicts.Add (conflict.LeftHunk = new Hunk (leftA, middleA, leftB - leftA, middleB - middleA));
+				rightConflicts.Add (conflict.RightHunk = new Hunk (rightA, middleA, rightB - rightA, middleB - middleA));
 			}
 			int endOffset = 0;
 			if (currentConflicts.Count > 0)
