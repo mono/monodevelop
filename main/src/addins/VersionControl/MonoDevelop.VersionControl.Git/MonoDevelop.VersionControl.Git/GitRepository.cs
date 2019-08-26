@@ -2111,18 +2111,21 @@ namespace MonoDevelop.VersionControl.Git
 				}
 
 				if (sinceCommit == null) {
-					var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (await GetBaseTextAsync (repositoryPath, cancellationToken));
-					var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
-					var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
-					foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
-						list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
-						for (int i = 0; i < hunk.Inserted; ++i) {
-							if (hunk.InsertStart + i >= list.Count)
-								list.Add (nextRev);
-							else
-								list.Insert (hunk.InsertStart - 1, nextRev);
+					var baseText = await GetBaseTextAsync (repositoryPath, cancellationToken);
+					await Runtime.RunInMainThread (delegate {
+						var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (baseText);
+						var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
+						var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+						foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
+							list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+							for (int i = 0; i < hunk.Inserted; ++i) {
+								if (hunk.InsertStart + i >= list.Count)
+									list.Add (nextRev);
+								else
+									list.Insert (hunk.InsertStart - 1, nextRev);
+							}
 						}
-					}
+					});
 				}
 
 				return list.ToArray ();
