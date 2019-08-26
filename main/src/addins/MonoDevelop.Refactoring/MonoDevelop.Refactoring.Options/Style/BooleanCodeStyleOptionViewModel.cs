@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring.Options
 			_truePreview = truePreview;
 			_falsePreview = falsePreview;
 
-			var optionValue = options.GetOption (new OptionKey (option, option.IsPerLanguage ? info.Language : null));
+			var optionValue = GetOptionOrDefault (options, option, info.Language);
 			if (!(optionValue is CodeStyleOption<bool> codeStyleOption))
 				throw new InvalidOperationException (optionValue + " is no CodeStyleOption<bool>. Queried option: " + option);
 			_selectedPreference = Preferences.Single (c => c.IsChecked == codeStyleOption.Value);
@@ -69,6 +69,11 @@ namespace MonoDevelop.Refactoring.Options
 
 			NotifyPropertyChanged (nameof (SelectedPreference));
 			NotifyPropertyChanged (nameof (SelectedNotificationPreference));
+		}
+
+		internal static object GetOptionOrDefault (OptionSet options, IOption option, string language)
+		{
+			return options.GetOption (new OptionKey (option, option.IsPerLanguage ? language : null)) ?? option.DefaultValue;
 		}
 
 		public override CodeStylePreference SelectedPreference {
