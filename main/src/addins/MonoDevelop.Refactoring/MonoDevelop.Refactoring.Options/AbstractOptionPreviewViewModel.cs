@@ -73,7 +73,10 @@ namespace MonoDevelop.Refactoring.Options
 		internal OptionSet ApplyChangedOptions (OptionSet optionSet)
 		{
 			foreach (var optionKey in this.Options.GetChangedOptions (_originalOptions)) {
-				optionSet = optionSet.WithChangedOption (optionKey, this.Options.GetOption (optionKey));
+				var value = this.Options.GetOption (optionKey);
+				if (value == null)
+					continue;
+				optionSet = optionSet.WithChangedOption (optionKey, value);
 			}
 
 			return optionSet;
@@ -82,11 +85,11 @@ namespace MonoDevelop.Refactoring.Options
 		public void SetOptionAndUpdatePreview<T> (T value, IOption option, string preview)
 		{
 			if (option is Option<CodeStyleOption<T>>) {
-				var opt = Options.GetOption ((Option<CodeStyleOption<T>>)option);
+				var opt = (CodeStyleOption<T>)BooleanCodeStyleOptionViewModel.GetOptionOrDefault (Options, option, Language);
 				opt.Value = value;
 				Options = Options.WithChangedOption ((Option<CodeStyleOption<T>>)option, opt);
 			} else if (option is PerLanguageOption<CodeStyleOption<T>>) {
-				var opt = Options.GetOption ((PerLanguageOption<CodeStyleOption<T>>)option, Language);
+				var opt = (CodeStyleOption<T>)BooleanCodeStyleOptionViewModel.GetOptionOrDefault (Options, option, Language); // PerLanguageOption in unwrapped.
 				opt.Value = value;
 				Options = Options.WithChangedOption ((PerLanguageOption<CodeStyleOption<T>>)option, Language, opt);
 			} else if (option is Option<T>) {
