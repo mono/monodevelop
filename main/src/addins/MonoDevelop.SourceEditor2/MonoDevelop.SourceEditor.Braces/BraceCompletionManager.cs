@@ -66,6 +66,11 @@ namespace MonoDevelop.SourceEditor.Braces
 			get { return _stack.TopSession != null; }
 		}
 
+		public int ActiveSessionCount
+		{
+			get { return _stack.Sessions.Count; }
+		}
+
 		public string OpeningBraces {
 			get {
 				return _sessionAggregator.OpeningBraces;
