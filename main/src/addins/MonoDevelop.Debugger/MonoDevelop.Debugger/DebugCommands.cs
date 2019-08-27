@@ -40,6 +40,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Commands;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Debugger
 {
@@ -71,7 +72,7 @@ namespace MonoDevelop.Debugger
 		SetNextStatement,
 		ShowNextStatement,
 		NewCatchpoint,
-		NewFunctionBreakpoint
+		NewFunctionBreakpoint,
 	}
 
 	class DebugHandler: CommandHandler
@@ -355,6 +356,8 @@ namespace MonoDevelop.Debugger
 
 			bp = breakpoints.Toggle (IdeApp.Workbench.ActiveDocument.FileName, caretLine, caretColumn);
 
+			var msg = bp == null ? GettextCatalog.GetString ("Breakpoint removed") : GettextCatalog.GetString ("Breakpoint added");
+			IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (msg);
 			// If the breakpoint could not be inserted in the caret location, move the caret
 			// to the real line of the breakpoint, so that if the Toggle command is run again,
 			// this breakpoint will be removed
