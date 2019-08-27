@@ -361,10 +361,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			Type type = ResultObject.GetType ();
 			PropertyInfo pinfo = type.GetProperty ("RuntimeModel");
 			if (pinfo == null) {
+				LoggingService.LogDebug ($"Could not find 'RuntimeModel' property on {type}");
 				return false;
 			}
 
-			IEnumerable<IRuntimeModel> model = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
+			var pObject = pinfo.GetValue (ResultObject, null);
+			LoggingService.LogDebug ($"'RuntimeModel' property on '{type}' is '{pObject}' and is of type '{pinfo.PropertyType}'");
+			var topRunTimeModels = (IEnumerable<IRuntimeModel>)pObject;
+			var model = AllRuntimes (topRunTimeModels);
+			model = model.Where (x => !x.IsSeparator);
 
 			var runtime = model.FirstOrDefault (r => {
 				var mutableModel = r.GetMutableModel ();
@@ -407,6 +412,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 			return false;
 		}
+
+		IEnumerable<IRuntimeModel> AllRuntimes (IEnumerable<IRuntimeModel> runtimes)
+		{
+			foreach (var runtime in runtimes) {
+				yield return runtime;
+				foreach (var childRuntime in AllRuntimes (runtime.Children))
+					yield return childRuntime;
+			}
+		}
+
 		#endregion
 
 		protected override void Dispose (bool disposing)
