@@ -373,9 +373,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					}
 
 					CGPoint gdkOrigin = ScreenMonitor.GdkPointForNSScreen (searchEntry.Window.Screen);
-
 					entryWidget.Allocation = new Gdk.Rectangle ((int)fullscreenToolbarNsWindow.Frame.X, (int)(gdkOrigin.Y + fullscreenToolbarNsWindow.Frame.Height - 20),
-						(int)(gdkOrigin.X + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
+						(int)(fullscreenToolbarNsWindow.Frame.Width - 16), 0);
 				}
 				return entryWidget;
 			}
