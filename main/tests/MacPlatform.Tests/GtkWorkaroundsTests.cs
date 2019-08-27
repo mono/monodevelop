@@ -58,11 +58,17 @@ namespace MonoDevelop.Components
 		{
 			var dockDomain = NSUserDefaults.StandardUserDefaults.PersistentDomainForName ("com.apple.dock");
 
-			var orientation = (NSString)dockDomain.ValueForKey (new NSString ("orientation"));
+			dockDomain.TryGetValue (new NSString ("orientation"), out var storedOrientation);
+			string orientation = string.IsNullOrWhiteSpace ((NSString)storedOrientation) ? "bottom" : (NSString)storedOrientation;
+
 			dockDomain.TryGetValue (new NSString ("tilesize"), out var storedSize);
 
 			// Check if we have no size set.
 			var size = (int)(storedSize is NSNumber number ? number.FloatValue + 11 : 80);
+
+			if (string.IsNullOrWhiteSpace (orientation)) {
+				orientation = "bottom";
+			}
 
 			var offsetRect = new CGRect ();
 			if (orientation == "bottom") {
@@ -72,6 +78,8 @@ namespace MonoDevelop.Components
 				offsetRect.Width = -size;
 			} else if (orientation == "right") {
 				offsetRect.Width -= size;
+			} else {
+				Assert.Fail ("Unknown orientation {0}", orientation);
 			}
 			return offsetRect;
 		}
