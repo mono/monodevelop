@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-20 13:12:58+0200\n"
+"POT-Creation-Date: 2019-08-27 13:56:34+0200\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -444,9 +444,8 @@ msgid "(working copy)"
 msgstr "(작업 복사본)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:126
-#, fuzzy
 msgid "({0} installing)"
-msgstr "(설치하는 중)"
+msgstr "({0} 설치 중)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:132
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:81
@@ -540,24 +539,17 @@ msgid ".NET Core is not installed"
 msgstr ".NET Core가 설치되어 있지 않습니다."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:201
-#, fuzzy
 msgid ""
 ".NET Core {0} SDK is required to build this application, and is not "
 "installed. Install the latest update to the .NET Core {0} SDK by visiting {1}"
 msgstr ""
-"이 애플리케이션을 빌드하려면 .NET Core {0} SDK가 필요하지만 설치되지 않았습니"
-"다. {1}을(를) 방문하여 .NET Core {0} SDK에 최신 업데이트를 설치하세요."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:187
-#, fuzzy
 msgid ""
 ".NET Core {0}.{1} SDK version {2} is not compatible with this version of "
 "Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} "
 "SDK by visiting {3}"
 msgstr ""
-"NET Core {0}.{1} SDK 버전 {2}은(는) 이 버전의 Mac용 Visual Studio와 호환되지 "
-"않습니다. {3}을(를) 방문하여 .NET Core {0}.{1} SDK에 최신 업데이트를 설치하세"
-"요."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:17
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:35
@@ -1138,7 +1130,7 @@ msgstr ""
 "로그래밍 모델</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2117
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
 msgid "<uncommitted>"
 msgstr "<커밋되지 않음>"
 
@@ -1408,9 +1400,9 @@ msgstr "위 설정의 미리 보기"
 msgid "A profiling tool"
 msgstr "프로파일링 도구"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:178
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:321
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:464
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
 msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr ""
 ".NET Standard를 대상으로 하는 Razor 클래스 라이브러리를 만드는 데 사용되는 프"
@@ -1433,27 +1425,27 @@ msgstr ""
 "다중 플랫폼 라이브러리 프로젝트 및 해당 NuGet 패키지를 만들기 위한 프로젝트 "
 "템플릿입니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:191
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:334
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:477
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular"
 msgstr ""
 "Angular를 사용하여 ASP.NET Core 애플리케이션을 만드는 데 사용되는 프로젝트 템"
 "플릿"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:204
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:347
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:490
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js"
 msgstr ""
 "React.js를 사용하여 ASP.NET Core 애플리케이션을 만드는 데 사용되는 프로젝트 "
 "템플릿"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:217
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:360
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:503
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:229
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:372
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:515
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux"
@@ -1463,13 +1455,13 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:113
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:125
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:268
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:411
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:554
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:642
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
@@ -1479,16 +1471,16 @@ msgstr ""
 "드는 데 사용되는 프로젝트 템플릿입니다. 이 템플릿은 ASP.NET Core MVC 뷰 및 컨"
 "트롤러에도 사용할 수 있습니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:152
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:165
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:438
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:451
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:581
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:594
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:606
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:653
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:665
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
@@ -1498,10 +1490,10 @@ msgstr ""
 "만드는 데 사용되는 프로젝트 템플릿입니다. 이 템플릿은 RESTful HTTP 서비스에"
 "도 사용할 수 있습니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:281
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:424
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:567
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:150
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:436
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:579
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1675,13 +1667,13 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:112
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:267
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:279
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:410
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:422
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:553
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:629
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:565
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
 msgid "API"
 msgstr "API"
 
@@ -2795,16 +2787,23 @@ msgstr "웹 애플리케이션을 구성하는 데 사용되는 appsettings.json
 msgid "An audio application"
 msgstr "오디오 애플리케이션"
 
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
+#, fuzzy
+msgid "An empty project template for creating a worker service."
+msgstr ""
+"React.js를 사용하여 ASP.NET Core 애플리케이션을 만드는 데 사용되는 프로젝트 "
+"템플릿"
+
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:89
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:101
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:244
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:375
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:387
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:518
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:530
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:608
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:620
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:631
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2917,9 +2916,9 @@ msgstr "그리고 다음 식이 변경될 경우"
 msgid "Android"
 msgstr "Android"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:202
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:345
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:488
 msgid "Angular"
 msgstr "Angular"
 
@@ -3608,7 +3607,7 @@ msgstr "자동으로 문장 부호(=\"\", /> 등) 삽입"
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr "병합/다시 지정할 때 자동으로 변경 내용 스태시/스태시 해제"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1926
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr "분기를 전환할 때 자동으로 변경 내용 스태시/스태시 해제"
@@ -3707,8 +3706,8 @@ msgid "Baltic"
 msgstr "발트어"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:117
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:255
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:284
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:249
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:278
 msgid "Base"
 msgstr "기본"
 
@@ -3829,7 +3828,7 @@ msgstr "분기 속성"
 msgid "Branch name too long"
 msgstr "분기 이름이 너무 깁니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:140
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:139
 msgid "Branch switch failed"
 msgstr "분기 전환 실패"
 
@@ -4041,8 +4040,8 @@ msgstr "솔루션 {0}({1})을(를) 빌드하는 중"
 msgid "Building {0}"
 msgstr "{0}을(를) 빌드하는 중"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:622
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:648
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:627
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:653
 msgid "Building {0} ({1})"
 msgstr "{0}({1})을(를) 빌드하는 중"
 
@@ -4934,11 +4933,8 @@ msgid "Check to skip building unmodified projects"
 msgstr "수정되지 않은 프로젝트 빌드를 건너뛰려면 선택합니다."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:144
-#, fuzzy
 msgid "Check to step into framework code"
 msgstr ""
-"프로젝트 코드만 디버그하고 프레임워크 코드를 한 단계씩 실행하지 않으려면 선택"
-"합니다."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:146
 msgid "Check to step over properties and operators"
@@ -5157,7 +5153,7 @@ msgstr "프로젝트를 정리하는 중"
 msgid "Cleaning solution {0} ({1})"
 msgstr "솔루션 {0}({1})을(를) 정리하는 중"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:751
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:756
 msgid "Cleaning {0} ({1})"
 msgstr "{0}({1})을(를) 정리하는 중"
 
@@ -7175,10 +7171,10 @@ msgstr "사용자 지정 도구 네임스페이스"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1339
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1352
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:671
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:685
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:758
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:676
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:690
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:763
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:777
 msgid "Custom command execution failed"
 msgstr "사용자 지정 명령을 실행하지 못했습니다."
 
@@ -7664,9 +7660,8 @@ msgstr "종속성"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:41
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:47
-#, fuzzy
 msgid "Dependency"
-msgstr "종속성 추가"
+msgstr "종속성"
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:50
 msgid "Deploy directory:"
@@ -7953,7 +7948,7 @@ msgstr "이 솔루션에 버전 제어 사용 안 함"
 msgid "Disable Version Control globally"
 msgstr "전역으로 버전 제어 사용 안 함"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:524
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:527
 msgid "Disable _Folding"
 msgstr "접기 사용 안 함(_F)"
 
@@ -8244,7 +8239,7 @@ msgstr "이중 부정이 중복됩니다."
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledInfoBar.cs:46
 #, fuzzy
 msgid "Download .NET Core"
-msgstr ".NET Core 다운로드..."
+msgstr ".NET Core"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:97
 #, fuzzy
@@ -8480,14 +8475,14 @@ msgstr "이모지 및 기호"
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:100
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:231
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:243
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:374
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:386
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:517
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:529
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:607
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:618
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
 msgid "Empty"
 msgstr "비어 있음"
 
@@ -8658,7 +8653,7 @@ msgid "Enable Warnings:"
 msgstr "경고 사용:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:168
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:524
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:527
 msgid "Enable _Folding"
 msgstr "접기 사용(_F)"
 
@@ -9292,7 +9287,7 @@ msgstr "이전 수정 버전을 가져오는 동안 오류가 발생했습니다
 msgid "Error while getting revision text."
 msgstr "수정 버전 텍스트를 가져오는 동안 오류가 발생했습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:294
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:288
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
@@ -9300,7 +9295,7 @@ msgstr ""
 "{0}의 기본 텍스트를 가져오는 동안 오류가 발생했습니다.\n"
 "{1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:196
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:206
 msgid ""
 "Error while getting the text of revision {0}:\n"
 "{1}"
@@ -9942,11 +9937,11 @@ msgstr "웹 참조 '{0}'을(를) 업데이트하지 못했습니다."
 msgid "Failed to write file '{0}'."
 msgstr "'{0}' 파일에 쓰지 못했습니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:109
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:126
 msgid "Failed to write {0}"
 msgstr "{0}을(를) 쓰지 못했습니다."
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:112
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:129
 msgid "Failed to write {0}. Unable to access file or access is denied"
 msgstr ""
 "{0}을(를) 쓰지 못했습니다. 파일에 액세스할 수 없거나 액세스가 거부되었습니다."
@@ -13179,8 +13174,8 @@ msgid "Loading…"
 msgstr "로드하는 중..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:116
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:253
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:276
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:247
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:270
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:101
 msgid "Local"
 msgstr "로컬"
@@ -14175,7 +14170,7 @@ msgstr "코드 탐색 기록에서 이전 지점으로 이동"
 msgid "Move to the next page"
 msgstr "다음 페이지 이동"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2077
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2075
 msgid "Moving files"
 msgstr "파일을 이동하는 중"
 
@@ -16585,19 +16580,19 @@ msgstr "프로젝트"
 msgid "Project '{0}'"
 msgstr "프로젝트 '{0}'"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1778
 msgid "Project Author Company"
 msgstr "프로젝트 작성자 회사"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1777
 msgid "Project Author Copyright"
 msgstr "프로젝트 작성자 저작권"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1776
 msgid "Project Author Email"
 msgstr "프로젝트 작성자 전자 메일"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
 msgid "Project Author Name"
 msgstr "프로젝트 작성자 이름"
 
@@ -16621,11 +16616,11 @@ msgstr "프로젝트 구성 플랫폼"
 msgid "Project Description"
 msgstr "프로젝트 설명"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
 msgid "Project Directory"
 msgstr "프로젝트 디렉터리"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1780
 msgid "Project File"
 msgstr "프로젝트 파일"
 
@@ -16646,7 +16641,7 @@ msgstr "프로젝트 폴더"
 msgid "Project Icons"
 msgstr "프로젝트 아이콘"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs:90
 msgid "Project Name"
 msgstr "프로젝트 이름"
@@ -16677,7 +16672,7 @@ msgstr "프로젝트 참조"
 msgid "Project Templates"
 msgstr "프로젝트 템플릿"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1779
 msgid "Project Trademark"
 msgstr "프로젝트 상표"
 
@@ -16896,7 +16891,7 @@ msgstr "공개 키:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:235
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Dialogs/PublishToFolderDialog.cs:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:678
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:690
 msgid "Publish"
 msgstr "게시"
 
@@ -16909,7 +16904,7 @@ msgstr "게시 작업이 완료되었습니다."
 msgid "Publish to Folder"
 msgstr "폴더에 게시"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:674
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:686
 msgid "Publish to Folder..."
 msgstr "폴더에 게시..."
 
@@ -17141,9 +17136,9 @@ msgstr "래스터 기반 그래픽 애플리케이션"
 msgid "Razor"
 msgstr "Razor"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:189
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:332
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:475
 msgid "Razor Class Library"
 msgstr "Razor 클래스 라이브러리"
 
@@ -17206,15 +17201,15 @@ msgstr "맨 아래에 도달, 맨 위에서 계속"
 msgid "Reached top, continued from bottom"
 msgstr "맨 위에 도달, 맨 아래에서 계속"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:215
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:501
 msgid "React.js"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:228
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:371
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:514
 msgid "React.js and Redux"
 msgstr "React.js 및 Redux"
 
@@ -18254,7 +18249,7 @@ msgstr "프로젝트의 패키지를 복원하는 중..."
 msgid "Restoring packages for solution..."
 msgstr "솔루션의 패키지를 복원하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1894
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1893
 msgid "Restoring stash for branch {0} failed"
 msgstr "{0} 분기에 대한 스태시를 복원하지 못했습니다."
 
@@ -18314,7 +18309,7 @@ msgstr "기록을 검색하는 중"
 msgid "Retrieving history…"
 msgstr "기록을 검색하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:218
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:189
 msgid "Retrieving revision {0}..."
 msgstr "수정 버전 {0}을(를) 검색하는 중..."
 
@@ -18418,7 +18413,7 @@ msgstr "수정 버전"
 msgid "Revision {0}"
 msgstr "수정 버전 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:207
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:214
 #, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "수정 버전 {0}\"t{1}\"t{2}"
@@ -21363,11 +21358,11 @@ msgstr "스태시 및 병합"
 msgid "Stash and Rebase"
 msgstr "스태시 및 다시 지정"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
 msgid "Stash and Switch"
 msgstr "스태시 및 전환"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:176
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:173
 msgid "Stash applied with conflicts"
 msgstr "스태시가 적용되었지만 충돌이 발생했습니다."
 
@@ -21376,11 +21371,11 @@ msgstr "스태시가 적용되었지만 충돌이 발생했습니다."
 msgid "Stash operation failed"
 msgstr "스태시 작업 실패"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:159
 msgid "Stash operation failed."
 msgstr "스태시 작업이 실패했습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:182
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
 msgid "Stash successfully applied"
 msgstr "스태시가 적용되었습니다."
 
@@ -21775,14 +21770,14 @@ msgstr "{0} 탭으로 전환"
 msgid "Switch to {0}"
 msgstr "{0}(으)로 전환"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1916
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1936
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1915
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1935
 msgid "Switching to branch {0}"
 msgstr "{0} 분기로 전환하는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1953
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1957
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1928
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1952
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
 msgid "Switching to branch {0} failed"
 msgstr "{0} 분기로 전환하지 못했습니다."
 
@@ -23857,7 +23852,7 @@ msgstr "다른 사용자의 변경 내용"
 msgid "Themed Icons"
 msgstr "테마 아이콘"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1923
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
@@ -25036,7 +25031,7 @@ msgstr "알 수 없는 파서 오류: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:432
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:789
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:548
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:553
 msgid "Unknown project type"
 msgstr "알 수 없는 프로젝트 형식"
 
@@ -25190,9 +25185,8 @@ msgstr[1] "프로젝트의 새 패키지 만들기"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:203
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:212
-#, fuzzy
 msgid "Update to {0}"
-msgstr "'{0}' 업데이트"
+msgstr "{0}(으)로 업데이트"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs:49
 msgid "Update welcome page from internet"
@@ -25548,7 +25542,7 @@ msgstr ""
 msgid "User schema"
 msgstr "사용자 스키마"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:56
 msgid "User-specific configuration"
 msgstr "사용자별 구성"
 
@@ -25960,11 +25954,11 @@ msgstr ""
 msgid "WARNING: The branch has not yet been merged to HEAD"
 msgstr "경고: 분기가 HEAD에 병합되지 않았습니다."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1606
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1614
 msgid "Waiting for debugger"
 msgstr "디버거를 기다리는 중"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1578
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1586
 msgid "Waiting for debugger to connect..."
 msgstr "디버거가 연결될 때까지 기다리는 중..."
 
@@ -26055,23 +26049,23 @@ msgstr "Web API"
 msgid "Web API Controller Class"
 msgstr "Web API 컨트롤러 클래스"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:435
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:578
 msgid "Web Application"
 msgstr "웹 애플리케이션"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:151
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:294
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:437
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:580
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:640
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:163
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:176
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:319
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:449
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:462
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:592
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:605
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:652
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:664
 msgid "Web Application (Model-View-Controller)"
 msgstr "웹 응용 프로그램(모델-뷰-컨트롤러)"
 
@@ -26384,6 +26378,11 @@ msgstr "Windows Forms 테마"
 #: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:286
 msgid "Word _break mode:"
 msgstr "단어 분리 모드(_B):"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
+#, fuzzy
+msgid "Worker"
+msgstr "작업 영역"
 
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:111
 msgid "Working Directory"
@@ -28584,7 +28583,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "형식 * ptr = {0} 형식 [ expr ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2117
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:637
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:645
 msgid "working copy"
@@ -28913,9 +28912,8 @@ msgstr "이 솔루션에 대한 {0}이(가) 이미 있습니다. 덮어쓸까요
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:179
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNode.cs:183
-#, fuzzy
 msgid "{0} available"
-msgstr "{0}개의 업데이트 사용 가능"
+msgstr "{0}개 사용 가능"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1051
 msgid ""
@@ -29495,28 +29493,3 @@ msgstr "{n}?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:184
 msgid "|"
 msgstr "|"
-
-#~ msgid ""
-#~ ".NET Core SDK is not installed. This is required to build and run .NET "
-#~ "Core projects."
-#~ msgstr ""
-#~ ".NET Core SDK가 설치되어 있지 않습니다. .NET Core 프로젝트를 빌드하고 실행"
-#~ "하는 데 필요합니다."
-
-#~ msgid ".NET Core is required to run this application."
-#~ msgstr "이 애플리케이션을 실행하려면 .NET Core가 있어야 합니다."
-
-#~ msgid "Add Packages"
-#~ msgstr "패키지 추가"
-
-#~ msgid "Add _Packages..."
-#~ msgstr "패키지 추가(_P)..."
-
-#~ msgid "Enable Just My Code"
-#~ msgstr "내 코드만 사용"
-
-#~ msgid "Find Like Selection"
-#~ msgstr "선택 항목과 유사한 항목 찾기"
-
-#~ msgid "Replace Like Selection"
-#~ msgstr "선택 항목과 유사한 항목 바꾸기"
