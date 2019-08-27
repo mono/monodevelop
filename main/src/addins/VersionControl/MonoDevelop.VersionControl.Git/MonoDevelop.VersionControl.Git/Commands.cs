@@ -94,7 +94,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected async override void Run (object dataItem)
 		{
-			await GitService.SwitchToBranch (Repository, (string)dataItem).ConfigureAwait (false);
+			await GitService.SwitchToBranchAsync (Repository, (string)dataItem).ConfigureAwait (false);
 		}
 
 		protected override void Update (CommandArrayInfo info)

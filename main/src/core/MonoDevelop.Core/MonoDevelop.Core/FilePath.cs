@@ -203,10 +203,11 @@ namespace MonoDevelop.Core
 		[Pure]
 		public bool IsChildPathOf (FilePath basePath)
 		{
+			if (string.IsNullOrEmpty (basePath.fileName) || string.IsNullOrEmpty (fileName))
+				return false;
 			bool startsWith = fileName.StartsWith (basePath.fileName, PathComparison);
-			
-			if (startsWith && (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar &&
-				basePath.fileName [basePath.fileName.Length - 1] != Path.AltDirectorySeparatorChar)) {
+			if (startsWith && basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar &&
+				basePath.fileName [basePath.fileName.Length - 1] != Path.AltDirectorySeparatorChar) {
 				// If the last character isn't a path separator character, check whether the string we're searching in
 				// has more characters than the string we're looking for then check the character.
 				// Otherwise, if the path lengths are equal, we return false.

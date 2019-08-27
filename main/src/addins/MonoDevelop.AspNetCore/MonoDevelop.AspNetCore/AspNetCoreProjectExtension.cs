@@ -39,15 +39,47 @@ namespace MonoDevelop.AspNetCore
 	[ExportProjectModelExtension]
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
-		AspNetCoreRunConfiguration aspNetCoreRunConf;
 		public const string TypeScriptCompile = "TypeScriptCompile";
+
+		bool updating;
+		Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
+		LaunchProfileProvider launchProfileProvider;
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
-			if (aspNetCoreRunConf == null) {
-				aspNetCoreRunConf = new AspNetCoreRunConfiguration (name, this.Project);
+			InitLaunchSettingsProvider ();
+
+			if (aspNetCoreRunConfs.TryGetValue (name, out var aspNetCoreRunConfiguration))
+				return aspNetCoreRunConfiguration;
+
+			var profile = new LaunchProfileData ();
+
+			var key = name != "Default" ? name : this.Project.DefaultNamespace;
+
+			if (!launchProfileProvider.Profiles.TryGetValue (key, out var _)) {
+				profile = launchProfileProvider.AddNewProfile (key);
+				launchProfileProvider.Profiles [key] = profile;
+			} else {
+				profile = launchProfileProvider.Profiles [key];
 			}
-			return aspNetCoreRunConf;
+
+			var aspnetconf = new AspNetCoreRunConfiguration (name, profile);
+			aspnetconf.SaveRequested += Aspnetconf_Save;
+			aspNetCoreRunConfs.Add (name, aspnetconf);
+			return aspnetconf;
+		}
+
+		void Aspnetconf_Save (object sender, EventArgs e)
+		{
+			if (sender is AspNetCoreRunConfiguration config && config.IsDirty)
+				launchProfileProvider.SaveLaunchSettings ();
+		}
+
+		void InitLaunchSettingsProvider ()
+		{
+			if (launchProfileProvider == null) {
+				launchProfileProvider = new LaunchProfileProvider (this.Project.BaseDirectory, this.Project.DefaultNamespace);
+			}
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
@@ -76,8 +108,7 @@ namespace MonoDevelop.AspNetCore
 		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 			FilePath outputFileName;
-			var aspnetCoreRunConfiguration = runConfiguration as AspNetCoreRunConfiguration;
-			if (aspnetCoreRunConfiguration == null)
+			if (!(runConfiguration is AspNetCoreRunConfiguration aspnetCoreRunConfiguration))
 				return null;
 			if (aspnetCoreRunConfiguration.StartAction == AssemblyRunConfiguration.StartActions.Program)
 				outputFileName = aspnetCoreRunConfiguration.StartProgram;
@@ -155,22 +186,57 @@ namespace MonoDevelop.AspNetCore
 		{
 			base.OnItemReady ();
 			FileService.FileChanged += FileService_FileChanged;
+
+			InitLaunchSettingsProvider ();
+			updating = true;
+
+			launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.SyncRunConfigurations (Project);
+
+			updating = false;
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
 			FileService.FileChanged -= FileService_FileChanged;
+			foreach (var conf in aspNetCoreRunConfs) {
+				conf.Value.SaveRequested -= Aspnetconf_Save;
+			}
+			aspNetCoreRunConfs.Clear ();
+			aspNetCoreRunConfs = null;
 		}
 
-		void FileService_FileChanged (object sender, FileEventArgs e)
+		async void FileService_FileChanged (object sender, FileEventArgs e)
 		{
-			var launchSettingsPath = aspNetCoreRunConf?.launchProfileProvider?.launchSettingsJsonPath;
+			var launchSettingsPath = launchProfileProvider?.LaunchSettingsJsonPath;
 			var launchSettings = e.FirstOrDefault (x => x.FileName == launchSettingsPath && !x.FileName.IsDirectory);
 			if (launchSettings == null)
 				return;
 
-			aspNetCoreRunConf.RefreshLaunchSettings ();
+			updating = true;
+
+			launchProfileProvider.LoadLaunchSettings ();
+			launchProfileProvider.SyncRunConfigurations (Project);
+
+			await IdeApp.ProjectOperations.SaveAsync (Project);
+
+			updating = false;
+		}
+
+		protected override void OnRemoveRunConfiguration (IEnumerable<SolutionItemRunConfiguration> items)
+		{
+			if (updating || launchProfileProvider == null)
+				return;
+			foreach (var item in items) {
+				launchProfileProvider.Profiles.TryRemove (item.Name, out var _);
+			}
+			launchProfileProvider.SaveLaunchSettings ();
+		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return base.OnGetSupportedFeatures () & ~ProjectFeatures.UserSpecificRunConfigurations;
 		}
 	}
 }
