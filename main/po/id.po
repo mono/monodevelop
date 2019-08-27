@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-20 13:12:58+0200\n"
+"POT-Creation-Date: 2019-08-27 13:56:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Fajrin Azis <fajrin_azis_kudo@yahoo.co.id>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -1195,7 +1195,7 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2117
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
 msgid "<uncommitted>"
 msgstr ""
 
@@ -1467,9 +1467,9 @@ msgstr ""
 msgid "A profiling tool"
 msgstr "Alat profiling"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:178
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:321
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:464
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
 msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr ""
 
@@ -1486,23 +1486,23 @@ msgid ""
 "corresponding NuGet package."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:191
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:334
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:477
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:204
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:347
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:490
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:217
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:360
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:503
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:229
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:372
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:515
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux"
@@ -1510,39 +1510,39 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:113
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:125
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:268
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:411
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:554
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:642
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
 "ASP.NET Core MVC Views and Controllers."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:152
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:165
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:438
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:451
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:581
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:594
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:606
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:653
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:665
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
 "RESTful HTTP services."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:281
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:424
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:567
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:150
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:436
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:579
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1711,13 +1711,13 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:112
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:267
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:279
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:410
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:422
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:553
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:629
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:565
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:641
 msgid "API"
 msgstr ""
 
@@ -2977,16 +2977,20 @@ msgstr "Buat file ASP.NET web.config."
 msgid "An audio application"
 msgstr "Aplikasi audio"
 
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:138
+msgid "An empty project template for creating a worker service."
+msgstr ""
+
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:89
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:101
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:244
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:375
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:256
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:387
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:518
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:399
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:530
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:608
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:542
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:620
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:631
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -3097,9 +3101,9 @@ msgstr "Ikutkan kategori berikut"
 msgid "Android"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:190
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:333
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:476
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:202
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:345
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:488
 #, fuzzy
 msgid "Angular"
 msgstr "Singular"
@@ -3852,7 +3856,7 @@ msgstr ""
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1926
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr ""
@@ -3961,8 +3965,8 @@ msgid "Baltic"
 msgstr "Baltik"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:117
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:255
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:284
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:249
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:278
 msgid "Base"
 msgstr ""
 
@@ -4090,7 +4094,7 @@ msgstr "Bangun Properti"
 msgid "Branch name too long"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:140
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:139
 #, fuzzy
 msgid "Branch switch failed"
 msgstr "Buat class baru"
@@ -4331,8 +4335,8 @@ msgstr "Membangun Solusi {0}"
 msgid "Building {0}"
 msgstr "Membangun {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:622
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:648
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:627
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:653
 #, fuzzy
 msgid "Building {0} ({1})"
 msgstr "Membangun Proyek: {0} ({1})"
@@ -5559,7 +5563,7 @@ msgstr "Membersihkan proyek"
 msgid "Cleaning solution {0} ({1})"
 msgstr "Simpan solusi: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:751
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:756
 #, fuzzy
 msgid "Cleaning {0} ({1})"
 msgstr "Membangun Proyek: {0} ({1})"
@@ -7792,10 +7796,10 @@ msgstr "Nama Modul:"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1339
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1352
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:671
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:685
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:758
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:676
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:690
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:763
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:777
 #, fuzzy
 msgid "Custom command execution failed"
 msgstr "Eksekusi gagal."
@@ -8639,7 +8643,7 @@ msgstr "Buat solusi C kosong"
 msgid "Disable Version Control globally"
 msgstr "Kontrol Versi"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:524
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:527
 #, fuzzy
 msgid "Disable _Folding"
 msgstr "Aktifkan pelipat code"
@@ -9225,14 +9229,14 @@ msgstr "Menjelaskan Simbol:"
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:246
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:100
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:231
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:243
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:374
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:255
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:386
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:517
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:398
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:529
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:607
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:618
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:541
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:619
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:630
 msgid "Empty"
 msgstr "Kosong"
 
@@ -9420,7 +9424,7 @@ msgid "Enable Warnings:"
 msgstr "_Abaikan peringatan:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:168
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:524
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:527
 #, fuzzy
 msgid "Enable _Folding"
 msgstr "Aktifkan pelipat code"
@@ -10136,14 +10140,14 @@ msgstr "Kesalahan ketika mencoba memuat proyek {0}. Pengecualian : {1}"
 msgid "Error while getting revision text."
 msgstr "Kesalahan ketika mencoba memuat proyek {0}. Pengecualian : {1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:294
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:288
 #, fuzzy
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
 msgstr "Kesalahan ketika mencoba memuat proyek {0}. Pengecualian : {1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:196
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:206
 #, fuzzy
 msgid ""
 "Error while getting the text of revision {0}:\n"
@@ -10877,12 +10881,12 @@ msgstr "Update Referensi Web"
 msgid "Failed to write file '{0}'."
 msgstr "Juga pindahkan file '{0}'"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:109
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:126
 #, fuzzy
 msgid "Failed to write {0}"
 msgstr "Juga pindahkan file '{0}'"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:112
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/LaunchProfileProvider.cs:129
 msgid "Failed to write {0}. Unable to access file or access is denied"
 msgstr ""
 
@@ -14448,8 +14452,8 @@ msgid "Loading…"
 msgstr "Memuat..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:116
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:253
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:276
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:247
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:270
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:101
 #, fuzzy
 msgid "Local"
@@ -15563,7 +15567,7 @@ msgstr ""
 msgid "Move to the next page"
 msgstr "Ke baris selanjunya"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2077
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2075
 #, fuzzy
 msgid "Moving files"
 msgstr "GAndakan file..."
@@ -18192,21 +18196,21 @@ msgstr "Proyek"
 msgid "Project '{0}'"
 msgstr "Proyek: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1778
 #, fuzzy
 msgid "Project Author Company"
 msgstr "Direktori _Proyek"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1777
 msgid "Project Author Copyright"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1776
 #, fuzzy
 msgid "Project Author Email"
 msgstr "E-mail translator:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
 #, fuzzy
 msgid "Project Author Name"
 msgstr "Nama Proyek:"
@@ -18236,12 +18240,12 @@ msgstr "_Pusat Direktori Solusi"
 msgid "Project Description"
 msgstr "Opsi Proyek"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
 #, fuzzy
 msgid "Project Directory"
 msgstr "Direktori _Proyek"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1780
 #, fuzzy
 msgid "Project File"
 msgstr "Nama file Proyek"
@@ -18266,7 +18270,7 @@ msgstr "Nama file Proyek"
 msgid "Project Icons"
 msgstr "Ikon Proyek"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs:90
 #, fuzzy
 msgid "Project Name"
@@ -18301,7 +18305,7 @@ msgstr "Referensi Proyek"
 msgid "Project Templates"
 msgstr "Pola Kode"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1779
 #, fuzzy
 msgid "Project Trademark"
 msgstr "Nama file Proyek"
@@ -18519,7 +18523,7 @@ msgstr "Publikasikan..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:62
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:235
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Dialogs/PublishToFolderDialog.cs:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:678
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:690
 #, fuzzy
 msgid "Publish"
 msgstr "Publikasikan..."
@@ -18535,7 +18539,7 @@ msgstr "Operasi mencetak/print gagal."
 msgid "Publish to Folder"
 msgstr "Tambah ke Solusi"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:674
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:686
 #, fuzzy
 msgid "Publish to Folder..."
 msgstr "Pilih Folder"
@@ -18790,9 +18794,9 @@ msgstr "Aplikasi grafis berbasis raster"
 msgid "Razor"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:177
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:320
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:463
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:189
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:332
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:475
 #, fuzzy
 msgid "Razor Class Library"
 msgstr "Library"
@@ -18864,15 +18868,15 @@ msgstr ""
 msgid "Reached top, continued from bottom"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:203
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:346
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:489
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:215
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:501
 msgid "React.js"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:216
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:359
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:502
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:228
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:371
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:514
 msgid "React.js and Redux"
 msgstr ""
 
@@ -20059,7 +20063,7 @@ msgstr "Buat paket baru untuk proyek"
 msgid "Restoring packages for solution..."
 msgstr "Pilih proyek atau solusi."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1894
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1893
 #, fuzzy
 msgid "Restoring stash for branch {0} failed"
 msgstr "Membetulkan history untuk {0}..."
@@ -20131,7 +20135,7 @@ msgstr "Membetulkan history untuk {0}..."
 msgid "Retrieving history…"
 msgstr "Membetulkan history untuk {0}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:218
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:189
 #, fuzzy
 msgid "Retrieving revision {0}..."
 msgstr "Mendapatkan teks dari {0} pada revisi {1}..."
@@ -20252,7 +20256,7 @@ msgstr "Revisi"
 msgid "Revision {0}"
 msgstr "Revisi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:207
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:214
 #, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "Revisi"
@@ -23492,12 +23496,12 @@ msgstr "Tambah file..."
 msgid "Stash and Rebase"
 msgstr "Tambah file..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
 #, fuzzy
 msgid "Stash and Switch"
 msgstr "Simpan dan kelua_r"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:176
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:173
 msgid "Stash applied with conflicts"
 msgstr ""
 
@@ -23507,12 +23511,12 @@ msgstr ""
 msgid "Stash operation failed"
 msgstr "Penyimpanan operasi gagal"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:159
 #, fuzzy
 msgid "Stash operation failed."
 msgstr "Penyimpanan operasi gagal"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:182
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
 #, fuzzy
 msgid "Stash successfully applied"
 msgstr "Solusi sukses di-deploy"
@@ -23949,15 +23953,15 @@ msgstr "Ganti Rancangan Aktif"
 msgid "Switch to {0}"
 msgstr "Ganti Rancangan Aktif"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1916
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1936
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1915
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1935
 #, fuzzy
 msgid "Switching to branch {0}"
 msgstr "Ganti Rancangan Aktif"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1953
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1957
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1928
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1952
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
 #, fuzzy
 msgid "Switching to branch {0} failed"
 msgstr "Ganti Rancangan Aktif"
@@ -25992,7 +25996,7 @@ msgstr ""
 msgid "Themed Icons"
 msgstr "Ikon Tema"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1923
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
@@ -27255,7 +27259,7 @@ msgstr "Target tidk diketahui {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:432
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:789
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:548
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:553
 #, fuzzy
 msgid "Unknown project type"
 msgstr "Tipe paket tidak diketahui"
@@ -27802,7 +27806,7 @@ msgstr ""
 msgid "User schema"
 msgstr "Gunakan ccache"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:56
 #, fuzzy
 msgid "User-specific configuration"
 msgstr "Konfigurasi yang biasa:"
@@ -28195,12 +28199,12 @@ msgstr ""
 msgid "WARNING: The branch has not yet been merged to HEAD"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1606
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1614
 #, fuzzy
 msgid "Waiting for debugger"
 msgstr "Debug"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1578
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:1586
 msgid "Waiting for debugger to connect..."
 msgstr ""
 
@@ -28289,23 +28293,23 @@ msgstr ""
 msgid "Web API Controller Class"
 msgstr "_Ke Baris..."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:280
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:423
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:566
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:435
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:578
 msgid "Web Application"
 msgstr "Aplikasi Web"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:151
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:164
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:294
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:437
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:450
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:580
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:593
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:640
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:163
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:176
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:319
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:449
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:462
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:592
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:605
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:652
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:664
 #, fuzzy
 msgid "Web Application (Model-View-Controller)"
 msgstr "File Konfigurasi Aplikasi"
@@ -28615,6 +28619,10 @@ msgstr "Komponen Form Web dan Jendela"
 #, fuzzy
 msgid "Word _break mode:"
 msgstr "_Wrap mode: "
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
+msgid "Worker"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:111
 #, fuzzy
@@ -31029,7 +31037,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2117
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:637
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:645
 #, fuzzy
