@@ -21,6 +21,7 @@
     <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\Win32\*.cs" />
     <Compile Include="DebugTests.MonoDevelop.cs" />
     <Compile Include="TextFile.cs" />
+    <Compile Include="BreakpointsAndSteppingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">
