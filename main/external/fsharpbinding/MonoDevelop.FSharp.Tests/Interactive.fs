@@ -108,7 +108,7 @@ module Interactive =
             do! session.TextReceived |> Async.AwaitEvent |> Async.Ignore
             let! results = session.TextReceived |> Async.AwaitEvent
             session.KillNow()
-            results |> should equal "val it : O [] = [|{X = \"\";}|]\n"
+            results |> should equal "val it : O [] = [|{ X = \"\" }|]\n"
         } |> toTask
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
