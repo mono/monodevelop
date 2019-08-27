@@ -22,12 +22,17 @@ module Tokens =
         match token with 
         | Some token -> MonoDevelop.FSharp.Shared.Lexer.isNonTipToken token
         | None -> false
-                
+
+
+    //(FSharpTokenInfo list * string) list option         
     let tryGetTokens source defines fileName =
         try
             LoggingService.logDebug "FSharpParser: Processing tokens for %s" (Path.GetFileName fileName)
             let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (source, fileName)
-            let lines = readOnlyDoc.GetLines() |> Seq.map readOnlyDoc.GetLineText
+            let lines = readOnlyDoc.GetLines() 
+                        |> Seq.map readOnlyDoc.GetLineText
+                        |> List.ofSeq
+
             let tokens = MonoDevelop.FSharp.Shared.Lexer.getTokensWithInitialState FSharpTokenizerLexState.Initial lines (Some fileName) defines
             Some(tokens)
         with ex ->
