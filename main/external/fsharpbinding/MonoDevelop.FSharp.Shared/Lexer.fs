@@ -150,22 +150,28 @@ module Lexer =
                     draftToken :: acc, Some draftToken
             ) ([], None)
         |> fst
-    
-    
+
+    let rec parseLine (tokenizer:FSharpLineTokenizer) tokens state =
+      match tokenizer.ScanToken(state) with
+      | Some tok, state ->
+          parseLine tokenizer (tok::tokens) state
+      | None, state -> tokens, state
+
+    let rec parseLines (sourceTok:FSharpSourceTokenizer) tokens state lines filename defines =
+        [ match lines with
+          | line::lines ->
+              // Create tokenizer & tokenize single line
+              let tokenizer = sourceTok.CreateLineTokenizer(line)
+              let tokens, state = parseLine tokenizer [] state
+              yield tokens, line
+              // Tokenize the rest of the lines using the new state
+              yield! parseLines sourceTok tokens state lines filename defines
+          | [] -> () ]
+
     let getTokensWithInitialState state lines filename defines =
-        [ let mutable state = state
-          let sourceTok = FSharpSourceTokenizer(defines, filename)
-          for lineText in lines do
-              let tokenizer = sourceTok.CreateLineTokenizer(lineText)
-              let rec parseLine() =
-                  [ match tokenizer.ScanToken(state) with
-                    | Some(tok), nstate ->
-                        state <- nstate
-                        yield tok
-                        yield! parseLine()
-                    | None, nstate -> state <- nstate ]
-              yield parseLine(), lineText ]
-    
+        let sourceTok = FSharpSourceTokenizer(defines, filename)
+        parseLines sourceTok [] state lines filename defines
+
     let findTokenAt col (tokens:FSharpTokenInfo list) =
         let isTokenAtOffset col (t:FSharpTokenInfo) = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
         tokens |> List.tryFindBack (isTokenAtOffset col)
