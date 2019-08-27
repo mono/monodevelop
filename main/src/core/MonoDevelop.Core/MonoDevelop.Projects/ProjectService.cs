@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 
 		TargetFramework defaultTargetFramework;
 		
-		string defaultPlatformTarget = "x86";
+		string defaultPlatformTarget = "anycpu";
 		static readonly TargetFrameworkMoniker DefaultTargetFrameworkId = TargetFrameworkMoniker.NET_4_7;
 		
 		public const string BuildTarget = "Build";
