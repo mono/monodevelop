@@ -58,9 +58,6 @@ namespace MonoDevelop.DotNetCore
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
 			SdkRootPath = Path.Combine (rootDirectory, "sdk");
 
-			if (!Directory.Exists (SdkRootPath))
-				return;
-
 			SdkVersions = GetInstalledSdkVersions ()
 				.OrderByDescending (version => version)
 				.ToArray ();
