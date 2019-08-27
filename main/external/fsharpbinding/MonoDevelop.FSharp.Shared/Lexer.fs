@@ -155,7 +155,7 @@ module Lexer =
       match tokenizer.ScanToken(state) with
       | Some tok, state ->
           parseLine tokenizer (tok::tokens) state
-      | None, state -> tokens, state
+      | None, state -> tokens |> List.rev, state
 
     let rec parseLines (sourceTok:FSharpSourceTokenizer) tokens state lines filename defines =
         [ match lines with
