@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui
 		List<SdiWorkspaceWindow> viewContentCollection = new List<SdiWorkspaceWindow> ();
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
-		static ConditionalWeakTable<DockItem, PadWindow> itemToWindow = new ConditionalWeakTable<DockItem, PadWindow> ();
+		static readonly ConditionalWeakTable<DockItem, PadWindow> itemToWindow = new ConditionalWeakTable<DockItem, PadWindow> ();
 		
 		IWorkbenchWindow lastActive;
 
