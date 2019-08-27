@@ -388,8 +388,12 @@ namespace MonoDevelop.Projects
 				var sw = FileWatcherService.Timings.Get ();
 				sw.Restart ();
 				NotifyNode (rootNode, e.FullPath, (id, path) => {
-					if (id is Project project) {
-						project.OnFileCreated (path);
+					try {
+						if (id is Project project) {
+							project.OnFileCreated (path);
+						}
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Exception in file watcher handler", e);
 					}
 				});
 				sw.Stop ();
@@ -414,8 +418,12 @@ namespace MonoDevelop.Projects
 					var sw = FileWatcherService.Timings.Get ();
 					sw.Restart ();
 					NotifyNode (rootNode, e.FullPath, (id, path) => {
-						if (id is Project project)
-							project.OnFileDeleted (path);
+						try {
+							if (id is Project project)
+								project.OnFileDeleted (path);
+						} catch (Exception e) {
+							LoggingService.LogInternalError ("Exception in file watcher handler", e);
+						}
 					});
 					sw.Stop ();
 					FileWatcherService.Timings.Add (sw, FileService.EventDataKind.Removed);
@@ -438,8 +446,12 @@ namespace MonoDevelop.Projects
 				var sw = FileWatcherService.Timings.Get ();
 				sw.Restart ();
 				NotifyNode (rootNode, (e.OldFullPath, e.FullPath), (id, state) => {
-					if (id is Project project)
-						project.OnFileRenamed (state.OldFullPath, state.FullPath);
+					try {
+						if (id is Project project)
+							project.OnFileRenamed (state.OldFullPath, state.FullPath);
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Exception in file watcher handler", e);
+					}
 				});
 				sw.Stop ();
 				FileWatcherService.Timings.Add (sw, FileService.EventDataKind.Renamed);
