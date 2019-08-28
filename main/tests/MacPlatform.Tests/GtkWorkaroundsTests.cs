@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Runtime.InteropServices;
 using AppKit;
 using CoreGraphics;
 using Foundation;
@@ -35,53 +36,50 @@ namespace MonoDevelop.Components
 	[TestFixture]
 	public class GtkWorkaroundsTests : IdeTestBase
 	{
+		[DllImport (ObjCRuntime.Constants.AppKitLibrary)]
+		static extern void CoreDockGetRect (out CGRect rect);
+
+		[DllImport (ObjCRuntime.Constants.AppKitLibrary)]
+		static extern void CoreDockGetOrientationAndPinning (out int orientation, out int pinning);
+
+		const int DockOrientationBottom = 2;
+		const int DockOrientationLeft = 3;
+		const int DockOrientationRight = 4;
+
 		[Test]
 		public void TestUsableGeometryMac ()
 		{
-			var rectangle = GtkWorkarounds.GetUsableMonitorGeometry (Gdk.Screen.Default, 0);
+			var rectangle = Gdk.Screen.Default.GetUsableMonitorGeometry (0);
 
 			var macScreen = NSScreen.MainScreen;
 
-			var offsetRect = GetDockSize ();
 			var frame = macScreen.Frame;
 
 			frame.Y += NSStatusBar.SystemStatusBar.Thickness + 1;
 			frame.Height -= NSStatusBar.SystemStatusBar.Thickness + 1;
 
-			Assert.That (rectangle.Width, Is.EqualTo (frame.Width).Or.EqualTo (frame.Width + offsetRect.Width));
-			Assert.That (rectangle.Height, Is.EqualTo (frame.Height).Or.EqualTo (frame.Height + offsetRect.Height));
-			Assert.That (rectangle.X, Is.EqualTo (frame.X).Or.EqualTo (frame.X + offsetRect.X));
-			Assert.That (rectangle.Y, Is.EqualTo (frame.Y).Or.EqualTo (frame.Y + offsetRect.Y));
-		}
+			CoreDockGetRect (out CGRect dockRect);
+			CoreDockGetOrientationAndPinning (out int orientation, out _);
 
-		static CGRect GetDockSize ()
-		{
-			var dockDomain = NSUserDefaults.StandardUserDefaults.PersistentDomainForName ("com.apple.dock");
-
-			dockDomain.TryGetValue (new NSString ("orientation"), out var storedOrientation);
-			string orientation = string.IsNullOrWhiteSpace ((NSString)storedOrientation) ? "bottom" : (NSString)storedOrientation;
-
-			dockDomain.TryGetValue (new NSString ("tilesize"), out var storedSize);
-
-			// Check if we have no size set.
-			var size = (int)(storedSize is NSNumber number ? number.FloatValue + 11 : 80);
-
-			if (string.IsNullOrWhiteSpace (orientation)) {
-				orientation = "bottom";
+			switch (orientation) {
+			case DockOrientationBottom:
+				frame.Height -= dockRect.Height;
+				break;
+			case DockOrientationLeft:
+				frame.X += dockRect.Width;
+				goto case DockOrientationRight;
+			case DockOrientationRight:
+				frame.Width -= dockRect.Width;
+				break;
+			default:
+				Assert.Fail ("Unknown orientation value {0}", orientation);
+				break;
 			}
 
-			var offsetRect = new CGRect ();
-			if (orientation == "bottom") {
-				offsetRect.Height = -size;
-			} else if (orientation == "left") {
-				offsetRect.X = size;
-				offsetRect.Width = -size;
-			} else if (orientation == "right") {
-				offsetRect.Width -= size;
-			} else {
-				Assert.Fail ("Unknown orientation {0}", orientation);
-			}
-			return offsetRect;
+			Assert.AreEqual (rectangle.Width, frame.Width);
+			Assert.AreEqual (rectangle.Height, frame.Height);
+			Assert.AreEqual (rectangle.X, frame.X);
+			Assert.AreEqual (rectangle.Y, frame.Y);
 		}
 	}
 }
