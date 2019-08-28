@@ -32,6 +32,7 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1249,6 +1250,28 @@ namespace MonoDevelop.Projects
 				// Change project's ItemDirectory. This will change the ProjectFile's Include.
 				project.FileName = project.BaseDirectory.Combine ("Source", "Project.csproj");
 				Assert.AreEqual ("Changed.cs", projectFile.Include);
+			}
+		}
+
+		/// <summary>
+		/// Adding a new project to an existing solution does not call the Project's TargetFramework setter
+		/// so the TargetFrameworkMonikers was not initialized. When the TargetFramework's getter sets the
+		/// TargetFramework we also initialize the TargetFrameworkMonikers.
+		/// </summary>
+		[Test]
+		public void TargetFrameworkMonikers_NewProject_DoesNotThrowNullReferenceException ()
+		{
+			using (DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#")) {
+				var moniker = p.TargetFrameworkMonikers.Single ();
+				Assert.AreEqual (p.TargetFramework.Id, moniker);
+
+				// Ensure target framework moniker is updated if the project's target framework is changed.
+				var newTargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5);
+				Assert.AreNotEqual (p.TargetFramework.Id, newTargetFramework.Id);
+				p.TargetFramework = newTargetFramework;
+
+				moniker = p.TargetFrameworkMonikers.Single ();
+				Assert.AreEqual (newTargetFramework.Id, moniker);
 			}
 		}
 

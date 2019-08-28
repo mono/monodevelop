@@ -98,6 +98,17 @@ namespace MonoDevelop.Projects
 				languageName = MSBuildProjectService.GetLanguageFromGuid (TypeGuid);
 		}
 
+		protected override void OnItemReady ()
+		{
+			// This is done here not in OnInitialize since it needs the extension chain initialized to
+			// be able to access the TargetFramework if it is not set. OnItemReady is always called both
+			// when loading an existing project or creating a new one.
+			if (!HasMultipleTargetFrameworks)
+				targetFrameworkMonikers = ImmutableArray.Create (TargetFramework.Id);
+
+			base.OnItemReady ();
+		}
+
 		ImmutableArray<TargetFrameworkMoniker> targetFrameworkMonikers;
 
 		void EvaluateTargetFrameworkMonikers ()
@@ -435,8 +446,8 @@ namespace MonoDevelop.Projects
 					return;
 				bool updateReferences = targetFramework != null;
 				targetFramework = value;
-				if (targetFrameworkMonikers.IsDefaultOrEmpty)
-					targetFrameworkMonikers = ImmutableArray.Create<TargetFrameworkMoniker> (targetFramework.Id);
+				if (!HasMultipleTargetFrameworks)
+					targetFrameworkMonikers = ImmutableArray.Create (targetFramework.Id);
 				if (updateReferences)
 					UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
