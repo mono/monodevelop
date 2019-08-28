@@ -963,12 +963,7 @@ namespace MonoDevelop.MacIntegration
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
 
-			NSUrl url = null;
-			if (Uri.TryCreate (filename, UriKind.Absolute, out Uri hyperlink) && !hyperlink.IsFile) {
-				url = NSUrl.FromString (filename);
-			} else {
-				url = NSUrl.FromFilename (filename);
-			}
+			NSUrl url = CreateNSUrl (filename);
 
 			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (url);
 
@@ -995,6 +990,14 @@ namespace MonoDevelop.MacIntegration
 			return apps;
 		}
 
+		static NSUrl CreateNSUrl (string filename)
+		{
+			if (Uri.TryCreate (filename, UriKind.Absolute, out Uri hyperlink) && !hyperlink.IsFile)
+				return NSUrl.FromString (filename);
+
+			return NSUrl.FromFilename (filename);
+		}
+
 		class MacDesktopApplication : DesktopApplication
 		{
 			public MacDesktopApplication (string app, string name, bool isDefault) : base (app, name, isDefault)
@@ -1004,7 +1007,7 @@ namespace MonoDevelop.MacIntegration
 			public override void Launch (params string[] files)
 			{
 				NSWorkspace.SharedWorkspace.OpenUrls (
-					Array.ConvertAll (files, file => NSUrl.FromString (file)),
+					Array.ConvertAll (files, file => CreateNSUrl (file)),
 					NSBundle.FromPath (Id).BundleIdentifier,
 					NSWorkspaceLaunchOptions.Default,
 					NSAppleEventDescriptor.DescriptorWithBoolean (true));
