@@ -187,9 +187,16 @@ namespace MonoDevelop.DotNetCore
 				return GettextCatalog.GetString ("NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} SDK by visiting {3}.", currentVersion.Major, currentVersion.Minor, currentVersion.ToString (), DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (currentVersion));
 			}
 
+			string GetTooNewVersionMessage (DotNetCoreVersion currentVersion)
+			{
+				return GettextCatalog.GetString (".NET Core {0}.{1} SDK version {2} is not compatible with this version of Visual Studio for Mac. Install the latest update to Visual Studio for Mac by visiting https://aka.ms/vs/mac/download", currentVersion.Major, currentVersion.Minor, currentVersion.OriginalString);
+			}
+
 			var installedVersion = Versions.OrderByDescending (x => x).FirstOrDefault ();
 			if (installedVersion != null) {
-				if (installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion) {
+				if (installedVersion >= DotNetCoreVersion.MaximumSupportedVersion) {
+					return GetTooNewVersionMessage (installedVersion);
+				} else if (installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion) {
 					return GetMessage (installedVersion);
 				} else if (installedVersion.Major == 2 && installedVersion.Minor == 2 && installedVersion < DotNetCoreVersion.MinimumSupportedSdkVersion22) {
 					return GetMessage (installedVersion);

@@ -93,7 +93,15 @@ namespace MonoDevelop.DotNetCore
 
 		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
+			bool hasUnsupportedSdk = DotNetCoreSdk.Versions.Any (version => version > DotNetCoreVersion.MaximumSupportedVersion);
 			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
+				if (runtimeVersion.Major == 3) {
+					// Special case 3.0, as we only support up to preview7 SDK
+					if (hasUnsupportedSdk) {
+						LoggingService.LogWarning ($"Ignoring runtime version {runtimeVersion.ToString (2)} because installed SDK is higher than latest supported ({DotNetCoreVersion.MaximumSupportedVersion.OriginalString})");
+						continue;
+					}
+				}
 				yield return CreateTargetFramework (".NETCoreApp", runtimeVersion.ToString (2));
 			}
 		}
