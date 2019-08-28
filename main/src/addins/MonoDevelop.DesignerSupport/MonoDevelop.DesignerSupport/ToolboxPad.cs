@@ -78,7 +78,12 @@ namespace MonoDevelop.DesignerSupport
 
 #if MAC
 
-		void Container_PadContentShown (object sender, EventArgs args) => toolbox.Hidden = false;
+		void Container_PadContentShown (object sender, EventArgs args)
+		{
+			//sanity check
+			isDragging = false;
+			toolbox.Hidden = false;
+		}
 		void Container_PadContentHidden (object sender, EventArgs args) => toolbox.Hidden = true;
 
 		private void Widget_DragEnd (object o, DragEndArgs args)
