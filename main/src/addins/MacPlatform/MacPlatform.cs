@@ -963,11 +963,18 @@ namespace MonoDevelop.MacIntegration
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
 
-			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (NSUrl.FromString (filename));
+			NSUrl url = null;
+			if (Uri.TryCreate (filename, UriKind.Absolute, out Uri hyperlink) && !hyperlink.IsFile) {
+				url = NSUrl.FromString (filename);
+			} else {
+				url = NSUrl.FromFilename (filename);
+			}
+
+			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (url);
 
 			var apps = new List<DesktopApplication> ();
 
-			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (NSUrl.FromString (filename), global::CoreServices.LSRoles.All);
+			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (url, global::CoreServices.LSRoles.All);
 			if (retrievedApps != null) {
 				foreach (var app in retrievedApps) {
 					if (string.IsNullOrEmpty (app.Path) || !checkUniquePath.Add (app.Path))

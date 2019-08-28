@@ -218,6 +218,22 @@ namespace MacPlatform.Tests
 			if (Directory.Exists ("/Applications/Google Chrome.app"))
 				Assert.True (browsers.Any (x => x.DisplayName.Contains ("Google Chrome")), "Google Chrome is installed but wasn't returned by GetApplications()");
 		}
+
+		[Test]
+		public void GetApplications ()
+		{
+			if (!Directory.Exists ("/Applications/TextEdit.app")) {
+				Assert.Ignore ("TextEdit.app does not exist");
+				return;
+			}
+
+			FilePath directory = Util.CreateTmpDir ("GetApplicationsTest");
+			FilePath filename = directory.Combine ("test.txt");
+			File.WriteAllText (filename, "test");
+
+			var apps = IdeServices.DesktopService.GetApplications (filename);
+			Assert.True (apps.Any (x => x.DisplayName.Contains ("TextEdit")), "TextEdit is installed but wasn't returned by GetApplications()");
+		}
 	}
 }
 
