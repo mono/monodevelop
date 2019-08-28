@@ -314,9 +314,11 @@ main (int argc, char **argv)
 
 		_g_free (mono_version);
 
-		// prepend --debug, MonoDevelop.exe
-		new_argc = argc + 2;
-		new_argv = (char **) malloc (sizeof (char *) * new_argc);
+		new_argc = 1 // argv[0]
+				 + 1 // --debug
+				 + 1 // executable name
+				 + (argc - 1); // initial arguments - argv[0]
+		new_argv = (char **) malloc (sizeof (char *) * (new_argc + 1)); // add null terminator
 
 		int n = 0;
 		new_argv[n++] = argv[0];
