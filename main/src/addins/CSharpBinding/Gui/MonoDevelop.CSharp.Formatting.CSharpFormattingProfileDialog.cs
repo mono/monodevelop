@@ -281,7 +281,6 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			this.DefaultWidth = 880;
 			this.DefaultHeight = 555;
-			this.Hide ();
 		}
 	}
 }
