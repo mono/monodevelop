@@ -473,8 +473,10 @@ namespace MonoDevelop.Ide.Gui
 				Counters.PadsLoaded--;
 				padCodons.Remove (win);
 			}
-			if (item != null)
+			if (item != null) {
 				dock.RemoveItem (item);
+				itemToWindow.Remove (item);
+			}
 			padWindows.Remove (codon);
 		}
 		
