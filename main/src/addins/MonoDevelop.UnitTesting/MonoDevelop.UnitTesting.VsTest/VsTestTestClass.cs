@@ -50,24 +50,20 @@ namespace MonoDevelop.UnitTesting.VsTest
 			FixtureTypeName = vsTestUnit.FixtureTypeName;
 			TestSourceCodeDocumentId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
 
-			if (sourceCodeLocation == null) {
-				IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
-					var className = TestSourceCodeDocumentId;
-
-					var compilation = t.Result;
-					if (compilation == null)
-						return;
-					var cls = compilation.GetTypeByMetadataName (className);
-					if (cls == null)
-						return;
-					var source = cls.Locations.FirstOrDefault (l => l.IsInSource);
-					if (source == null)
-						return;
-					var line = source.GetLineSpan ();
-
-					sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
-				}).Ignore();
-			}
+			IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+				var className = TestSourceCodeDocumentId;
+				var compilation = t.Result;
+				if (compilation == null)
+					return;
+				var cls = compilation.GetTypeByMetadataName (className);
+				if (cls == null)
+					return;
+				var source = cls.Locations.FirstOrDefault (l => l.IsInSource);
+				if (source == null)
+					return;
+				var line = source.GetLineSpan ();
+				sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
+			}).Ignore();
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)
