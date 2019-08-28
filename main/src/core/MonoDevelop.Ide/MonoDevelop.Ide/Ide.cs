@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 
-			CompositionManager.SetMefSafeToQuery ();
+			CompositionManager.ConfigureUninitializedMefHandling (throwException: false);
 		}
 
 		public static Task EnsureInitializedAsync ()
