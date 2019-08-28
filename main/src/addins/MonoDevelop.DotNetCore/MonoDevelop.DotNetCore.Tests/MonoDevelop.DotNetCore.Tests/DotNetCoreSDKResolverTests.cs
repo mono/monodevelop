@@ -103,7 +103,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			if (string.IsNullOrEmpty (DotNetCoreRuntime.FileName))
 				Assert.Inconclusive ($"'DotNetCoreRuntime.FileName' is empty. Unable to run the test. DotNetCore installed? {DotNetCoreRuntime.IsInstalled}");
 
-			var resolver = new DotNetCoreSdkPaths (dotnetCorePath);
+			// initializeSdkLocation: true resets the cached installed versions
+			var resolver = new DotNetCoreSdkPaths (dotnetCorePath, initializeSdkLocation: true);
+
 			if (mockSdkVersions)
 				resolver.SdkVersions = this.SdkVersions;
 
