@@ -56,14 +56,16 @@ namespace MonoDevelop.Ide.Composition
 			new AttributedPartDiscoveryV1 (StandardResolver),
 			new AttributedPartDiscovery (StandardResolver, true));
 
-		static Action HandleMefQueriedBeforeCompletion
-			= () => throw new InvalidOperationException ("MEF queried while it was still being built");
+		static Action HandleMefQueriedBeforeCompletion = UninitializedLogWarning;
 
-		internal static void SetMefSafeToQuery ()
-		{
-			HandleMefQueriedBeforeCompletion
-				= () => LoggingService.LogWarning ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
-		}
+		static void UninitializedLogWarning ()
+			=> LoggingService.LogWarning ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
+
+		static void UninitializedThrowException ()
+			=> throw new InvalidOperationException ("MEF queried while it was still being built");
+
+		internal static void ConfigureUninitializedMefHandling (bool throwException)
+			=> HandleMefQueriedBeforeCompletion = throwException ? new Action (UninitializedThrowException) : new Action (UninitializedLogWarning);
 
 		public static CompositionManager Instance {
 			get {

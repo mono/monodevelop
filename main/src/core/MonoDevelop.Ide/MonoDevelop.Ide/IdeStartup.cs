@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide
 
 		int Run (MonoDevelopOptions options)
 		{
+			CompositionManager.ConfigureUninitializedMefHandling (throwException: true);
+
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", RuntimeVersionInfo.GetRuntimeInfo ());
