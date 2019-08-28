@@ -491,7 +491,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
@@ -499,7 +499,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			ConcurrentOperationFactory.StartNew (action).RunWaitAndCapture ();
+			ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task RunOperationAsync (Action action, bool hasUICallbacks = false)
@@ -507,7 +507,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action);
+			return ExclusiveOperationFactory.StartNew (action);
 		}
 
 		internal T RunOperation<T> (Func<T> action, bool hasUICallbacks = false)
@@ -515,7 +515,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action).RunWaitAndCapture ();
+			return ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task<T> RunOperationAsync<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -523,7 +523,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action, cancellationToken);
+			return ExclusiveOperationFactory.StartNew (action, cancellationToken);
 		}
 
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
@@ -531,7 +531,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal Task<T> RunOperationAsync<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -539,7 +539,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
+			return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
 		}
 
 		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -1518,7 +1518,8 @@ namespace MonoDevelop.VersionControl.Git
 									toCheckout.Add (vi.LocalPath);
 							}
 					} else {
-						var vi = await GetVersionInfoAsync (item, cancellationToken: monitor.CancellationToken);
+						if (!TryGetVersionInfo (item, out var vi))
+							continue;
 						if (vi.Status == VersionStatus.Unversioned)
 							continue;
 
@@ -2110,18 +2111,21 @@ namespace MonoDevelop.VersionControl.Git
 				}
 
 				if (sinceCommit == null) {
-					var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (await GetBaseTextAsync (repositoryPath, cancellationToken));
-					var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
-					var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
-					foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
-						list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
-						for (int i = 0; i < hunk.Inserted; ++i) {
-							if (hunk.InsertStart + i >= list.Count)
-								list.Add (nextRev);
-							else
-								list.Insert (hunk.InsertStart - 1, nextRev);
+					var baseText = await GetBaseTextAsync (repositoryPath, cancellationToken);
+					await Runtime.RunInMainThread (delegate {
+						var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (baseText);
+						var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
+						var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+						foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
+							list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+							for (int i = 0; i < hunk.Inserted; ++i) {
+								if (hunk.InsertStart + i >= list.Count)
+									list.Add (nextRev);
+								else
+									list.Insert (hunk.InsertStart - 1, nextRev);
+							}
 						}
-					}
+					});
 				}
 
 				return list.ToArray ();

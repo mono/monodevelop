@@ -147,9 +147,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			VersionInfo newInfo = null;
 			try {
+				if (args.FilePath.IsNullOrEmpty)
+					return;
 				// Reuse remote status from old version info
 				var token = destroyTokenSource.Token;
-				newInfo = await changeSet.Repository.GetVersionInfoAsync (args.FilePath, cancellationToken: token);
+				changeSet.Repository.TryGetVersionInfo (args.FilePath, out newInfo);
 				if (token.IsCancellationRequested)
 					return;
 				await AddFile (newInfo);

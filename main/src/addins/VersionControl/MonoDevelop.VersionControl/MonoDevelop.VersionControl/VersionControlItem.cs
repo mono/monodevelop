@@ -99,11 +99,9 @@ namespace MonoDevelop.VersionControl
 			if (versionInfo != null)
 				return versionInfo;
 			try {
-				if (Repository.TryGetVersionInfo (Path, out versionInfo))
-					return versionInfo;
-				versionInfo = await Repository.GetVersionInfoAsync (Path, VersionInfoQueryFlags.IgnoreCache, cancellationToken).ConfigureAwait (false);
-				if (versionInfo == null)
+				if (!Repository.TryGetVersionInfo (Path, out versionInfo))
 					versionInfo = new VersionInfo (Path, "", IsDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
+				return versionInfo;
 			} catch (OperationCanceledException) {
 				return null;
 			} catch (Exception ex) {
