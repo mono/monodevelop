@@ -316,6 +316,9 @@ namespace MonoDevelop.Ide
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 
 			CompositionManager.ConfigureUninitializedMefHandling (throwException: false);
+
+			// Make sure the composition manager started initializing
+			Runtime.GetService<CompositionManager> ();
 		}
 
 		public static Task EnsureInitializedAsync ()

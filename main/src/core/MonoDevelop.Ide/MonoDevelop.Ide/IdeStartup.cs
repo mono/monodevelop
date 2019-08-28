@@ -438,9 +438,6 @@ namespace MonoDevelop.Ide
 
 		static bool OnIdle ()
 		{
-			// Make sure the composition manager started initializing
-			Runtime.GetService<CompositionManager> ();
-
 			// OpenDocuments appears when the app is idle.
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
