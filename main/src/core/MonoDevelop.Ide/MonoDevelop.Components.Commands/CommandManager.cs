@@ -807,7 +807,7 @@ namespace MonoDevelop.Components.Commands
 			}
 #endif
 
-			if (w == lastFocused.nativeWidget)
+			if (w == lastFocused?.nativeWidget)
 				lastFocused = null;
 		}
 		
