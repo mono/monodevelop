@@ -29,6 +29,7 @@ using MonoDevelop.Projects;
 using Gtk;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -50,6 +51,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			TriggerLine = line;
 			TriggerLineOffset = lineOffset;
 			TriggerWordLength = wordLength;
+		}
+
+		ITimeTracker timer;
+		internal ITimeTracker BeginTiming () => timer = Counters.ProcessCodeCompletion.BeginTiming ();
+		internal void Trace (string text)
+		{
+			if (timer != null)
+				timer.Trace (text);
+			else
+				Counters.ProcessCodeCompletion.Trace (text);
 		}
 
 		public static readonly CodeCompletionContext Invalid = new CodeCompletionContext ();

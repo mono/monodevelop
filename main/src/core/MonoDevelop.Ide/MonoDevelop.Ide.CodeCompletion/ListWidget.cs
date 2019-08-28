@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public IReadOnlyList<int> FilteredItems { get; }
 		public string OldCompletionString { get; }
 		public string CompletionString { get; }
+		internal Action<string> Tracer { get; set; }
 
 		public CompletionListFilterInput (ICompletionDataList dataList, IReadOnlyList<int> filteredItems, string oldCompletionString, string completionString)
 		{

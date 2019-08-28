@@ -536,12 +536,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (!(treeView.DataSource is BuildOutputDataSource dataSource))
 				return;
 
-			using (Counters.SearchBuildLog.BeginTiming ()) {
+			using (var timer = Counters.SearchBuildLog.BeginTiming ()) {
 				// Cleanup previous search
 				if (currentSearch != null) {
 					currentSearch.Cancel ();
 					RefreshSearchMatches (dataSource, currentSearch);
-					Counters.SearchBuildLog.Trace ("Cleared previous search matches");
+					timer.Trace ("Cleared previous search matches");
 				}
 
 				currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);

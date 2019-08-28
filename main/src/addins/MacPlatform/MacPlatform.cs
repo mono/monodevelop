@@ -1,4 +1,4 @@
-﻿//
+//
 // MacPlatformService.cs
 //
 // Author:
@@ -65,14 +65,15 @@ namespace MonoDevelop.MacIntegration
 	public class MacPlatformService : PlatformService
 	{
 		const string monoDownloadUrl = "http://www.mono-project.com/download/";
+		static readonly TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
+		static readonly TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
 
-		TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
-		TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
+		readonly ITimeTracker initTracker;
 
 		static bool initedGlobal;
 		bool setupFail, initedApp;
 
-		Lazy<Dictionary<string, string>> mimemap;
+		readonly Lazy<Dictionary<string, string>> mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMap);
 
 		static string applicationMenuName;
 
@@ -144,14 +145,12 @@ namespace MonoDevelop.MacIntegration
 				throw new Exception ("Only one MacPlatformService instance allowed");
 			initedGlobal = true;
 
-			timer.BeginTiming ();
+			initTracker = timer.BeginTiming ();
 
 			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
 
 			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0) == IntPtr.Zero)
 				LoggingService.LogFatalError ("Unable to load libxammac");
-
-			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 
 			CheckGtkVersion (2, 24, 14);
 
@@ -292,9 +291,9 @@ namespace MonoDevelop.MacIntegration
 			RegisterUncaughtExceptionHandler ();
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
-			timer.Trace ("Installing App Event Handlers");
+			initTracker.Trace ("Installing App Event Handlers");
 			GlobalSetup ();
-			timer.EndTiming ();
+			initTracker.End ();
 
 			var appDelegate = NSApplication.SharedApplication.Delegate as Xwt.Mac.AppDelegate;
 			if (appDelegate != null) {
@@ -444,7 +443,7 @@ namespace MonoDevelop.MacIntegration
 			get { return "OSX"; }
 		}
 
-		Dictionary<string, string> LoadMimeMapAsync ()
+		static Dictionary<string, string> LoadMimeMap ()
 		{
 			var map = new Dictionary<string, string> ();
 			// All recent Macs should have this file; if not we'll just die silently
@@ -453,14 +452,13 @@ namespace MonoDevelop.MacIntegration
 				return map;
 			}
 
-			mimeTimer.BeginTiming ();
+			using var time = mimeTimer.BeginTiming ();
 			try {
 				var loader = new MimeMapLoader (map);
 				loader.LoadMimeMap ("/etc/apache2/mime.types");
 			} catch (Exception ex){
 				LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
-			mimeTimer.EndTiming ();
 			return map;
 		}
 

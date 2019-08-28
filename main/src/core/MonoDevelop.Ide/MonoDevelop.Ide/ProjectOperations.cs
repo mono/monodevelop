@@ -1112,8 +1112,7 @@ namespace MonoDevelop.Ide
 			metadata.BuildWithoutPrompting = IdeApp.Preferences.BuildBeforeExecuting;
 
 			metadata.SetSuccess ();
-			Counters.BuildAndDeploy.BeginTiming ("Execute", metadata);
-			Counters.TrackingBuildAndDeploy = true;
+			var timer = Counters.BuildAndDeployTracker = Counters.BuildAndDeploy.BeginTiming ("Execute", metadata);
 
 			if (configuration == null)
 				configuration = workspace.ActiveConfiguration;
@@ -1124,8 +1123,8 @@ namespace MonoDevelop.Ide
 				var h = await bth.Configure (rt, context, configuration, runConfiguration);
 				if (h == null) {
 					metadata.SetFailure ();
-					Counters.TrackingBuildAndDeploy = false;
-					Counters.BuildAndDeploy.EndTiming ();
+					timer.End ();
+					Counters.BuildAndDeployTracker = null;
 					return;
 				}
 				context = new ExecutionContext (h, context.ConsoleFactory, context.ExecutionTarget);
@@ -1137,9 +1136,8 @@ namespace MonoDevelop.Ide
 
 				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration)) {
 					metadata.SetFailure ();
-					Counters.TrackingBuildAndDeploy = false;
-					Counters.BuildAndDeploy.EndTiming ();
-					buildTimer.Stop ();
+					timer.End ();
+					Counters.BuildAndDeployTracker = null;
 					return;
 				}
 
@@ -1161,8 +1159,8 @@ namespace MonoDevelop.Ide
 			if (error != null) {
 				IdeApp.Workbench.StatusBar.ShowError (error.DisplayMessage);
 				metadata.SetFailure ();
-				Counters.TrackingBuildAndDeploy = false;
-				Counters.BuildAndDeploy.EndTiming ();
+				timer.End ();
+				Counters.BuildAndDeployTracker = null;
 			}
 			currentRunOperationOwners.Remove (entry);
 		}

@@ -69,7 +69,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 		}
 
-		public T Metadata { get; private set; }
+		public T Metadata { get; }
 
 		public TimeSpan Duration { get; }
 	}
@@ -163,7 +163,7 @@ namespace MonoDevelop.Core.Instrumentation
 			stopWatch.Stop ();
 			Duration = stopWatch.Elapsed;
 
-			if (metadata != null && cancellationToken != CancellationToken.None && cancellationToken.IsCancellationRequested)
+			if (metadata != null && cancellationToken.IsCancellationRequested)
 				metadata.SetUserCancel ();
 
 			if (counter.LogMessages) {

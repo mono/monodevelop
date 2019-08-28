@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide
 			DispatchService.Initialize ();
 
 			// Set initial run flags
-			Counters.Initialization.Trace ("Upgrading Settings");
+			Counters.InitializationTracker.Trace ("Upgrading Settings");
 
 			if (PropertyService.Get ("MonoDevelop.Core.FirstRun", true)) {
 				isInitialRun = true;
@@ -226,14 +226,14 @@ namespace MonoDevelop.Ide
 				PropertyService.SaveProperties ();
 			}
 
-			Counters.Initialization.Trace ("Initializing WelcomePage service");
+			Counters.InitializationTracker.Trace ("Initializing WelcomePage service");
 			WelcomePage.WelcomePageService.Initialize (hideWelcomePage).Ignore ();
 
 			// Pump the UI thread to make the start window visible
 
 			await Task.Yield ();
 
-			Counters.Initialization.Trace ("Creating Services");
+			Counters.InitializationTracker.Trace ("Creating Services");
 
 			var serviceInitialization = Task.WhenAll (
 				Runtime.GetService<DesktopService> (),
@@ -252,10 +252,10 @@ namespace MonoDevelop.Ide
 
 			await serviceInitialization;
 
-			Counters.Initialization.Trace ("Creating Workbench");
+			Counters.InitializationTracker.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 
-			Counters.Initialization.Trace ("Creating Root Workspace");
+			Counters.InitializationTracker.Trace ("Creating Root Workspace");
 
 			CustomToolService.Init ();
 			
@@ -264,11 +264,11 @@ namespace MonoDevelop.Ide
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 3);
 
 			// Before startup commands.
-			Counters.Initialization.Trace ("Running Pre-Startup Commands");
+			Counters.InitializationTracker.Trace ("Running Pre-Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/PreStartupHandlers", OnExtensionChanged);
 			monitor.Step (1);
 
-			Counters.Initialization.Trace ("Initializing Workbench");
+			Counters.InitializationTracker.Trace ("Initializing Workbench");
 			await workbench.Initialize (monitor);
 			monitor.Step (1);
 
@@ -312,7 +312,7 @@ namespace MonoDevelop.Ide
 			initializationTask.SetResult (true);
 
 			// Startup commands
-			Counters.Initialization.Trace ("Running Startup Commands");
+			Counters.InitializationTracker.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 		}
 

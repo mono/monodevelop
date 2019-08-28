@@ -35,12 +35,12 @@ namespace MonoDevelop.Core.Instrumentation
 		public MemoryProbe (Counter c)
 		{
 			this.c = c;
-			c++;
+			c.Inc ();
 		}
 		
 		~MemoryProbe ()
 		{
-			c--;
+			c.Dec ();
 		}
 	}
 }

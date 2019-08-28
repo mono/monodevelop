@@ -36,6 +36,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using MonoDevelop.Components.DockNotebook;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Shell;
@@ -261,9 +262,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var metadata = CreateOpenDocumentTimerMetadata ();
 			var fileDescriptor = new FileDescriptor (info.FileName, null, info.Owner);
 
-			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName, metadata)) {
+			using (var timer = Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName, metadata)) {
 				navigationHistoryManager?.LogActiveDocument ();
-				Counters.OpenDocumentTimer.Trace ("Look for open document");
+				timer.Trace ("Look for open document");
 				foreach (Document doc in Documents) {
 
 					if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer) && doc.TryReuseDocument (fileDescriptor)) {
@@ -289,7 +290,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						break;
 					}
 				}
-				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
+				timer.Trace ("Initializing monitor");
 				var progressMonitorManager = await ServiceProvider.GetService<ProgressMonitorManager> ();
 				var pm = progressMonitorManager.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Opening {0}", info.Owner is SolutionFolderItem item ?
@@ -299,13 +300,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 					true
 				);
 
-				var result = await RealOpenFile (pm, info);
+				var result = await RealOpenFile (pm, info, timer);
 				pm.Dispose ();
 
 				AddOpenDocumentTimerMetadata (metadata, info, result.Content, result.Success);
 
 				if (result.Content != null) {
-					Counters.OpenDocumentTimer.Trace ("Wrapping document");
+					timer.Trace ("Wrapping document");
 					Document doc = result.Content;
 
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront))
@@ -336,7 +337,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			var metadata = CreateOpenDocumentTimerMetadata ();
 
-			using (Counters.OpenDocumentTimer.BeginTiming ("Batch opening file " + fileName, metadata)) {
+			using (var timer = Counters.OpenDocumentTimer.BeginTiming ("Batch opening file " + fileName, metadata)) {
 				var openFileInfo = new FileOpenInformation (fileName, project) {
 					Options = OpenDocumentOptions.OnlyInternalViewer,
 					Line = line,
@@ -344,7 +345,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					DockNotebook = dockNotebook
 				};
 
-				var result = await RealOpenFile (monitor, openFileInfo);
+				var result = await RealOpenFile (monitor, openFileInfo, timer);
 
 				AddOpenDocumentTimerMetadata (metadata, openFileInfo, result.Content, result.Success);
 
@@ -352,13 +353,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		async Task<(bool Success, Document Content)> RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo)
+		async Task<(bool Success, Document Content)> RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo, ITimeTracker<OpenDocumentMetadata> timer)
 		{
 			FilePath fileName;
 
 			await InitDesktopService ();
 
-			Counters.OpenDocumentTimer.Trace ("Checking file");
+			timer.Trace ("Checking file");
 
 			string origName = openFileInfo.FileName;
 
@@ -396,7 +397,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				}
 			}
 
-			Counters.OpenDocumentTimer.Trace ("Looking for binding");
+			timer.Trace ("Looking for binding");
 
 			var documentControllerService = await ServiceProvider.GetService<DocumentControllerService> ();
 
@@ -448,14 +449,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Document newContent = null;
 			try {
 				if (internalBinding != null) {
-					newContent = await LoadFile (fileName, monitor, internalBinding, project, openFileInfo);
+					newContent = await LoadFile (fileName, monitor, internalBinding, project, openFileInfo, timer);
 				} else if (externalBinding != null) {
 					var extBinding = (IExternalDisplayBinding)externalBinding;
 					var app = extBinding.GetApplication (fileName, null, project as Project);
 					app.Launch (fileName);
 				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					try {
-						Counters.OpenDocumentTimer.Trace ("Showing in browser");
+						timer.Trace ("Showing in browser");
 						desktopService.OpenFile (fileName);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error opening file: " + fileName, ex);
@@ -463,7 +464,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						return (false, null);
 					}
 				}
-				Counters.OpenDocumentTimer.Trace ("Adding to recent files");
+				timer.Trace ("Adding to recent files");
 				desktopService.RecentFiles.AddFile (fileName, project);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
@@ -472,7 +473,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return (true, newContent);
 		}
 
-		async Task<Document> LoadFile (FilePath fileName, ProgressMonitor monitor, DocumentControllerDescription binding, WorkspaceObject project, FileOpenInformation fileInfo)
+		async Task<Document> LoadFile (FilePath fileName, ProgressMonitor monitor, DocumentControllerDescription binding, WorkspaceObject project, FileOpenInformation fileInfo, ITimeTracker<OpenDocumentMetadata> timer)
 		{
 			// Make sure composition manager is ready since ScrollToRequestedCaretLocation will use it
 			await Runtime.GetService<CompositionManager> ();
@@ -481,7 +482,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var fileDescriptor = new FileDescriptor (fileName, mimeType, project);
 
 			try {
-				Counters.OpenDocumentTimer.Trace ("Creating content");
+				timer.Trace ("Creating content");
 				DocumentController controller;
 
 				try {
@@ -500,7 +501,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					return null;
 				}
 
-				Counters.OpenDocumentTimer.Trace ("Loading file");
+				timer.Trace ("Loading file");
 
 				try {
 					await controller.Initialize (fileDescriptor, GetStoredMemento (fileName));
@@ -519,7 +520,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return null;
 			}
 
-			Counters.OpenDocumentTimer.Trace ("Showing view");
+			timer.Trace ("Showing view");
 
 			var doc = await ShowView (fileInfo);
 

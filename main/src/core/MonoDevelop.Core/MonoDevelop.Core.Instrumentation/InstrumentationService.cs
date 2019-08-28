@@ -47,25 +47,17 @@ namespace MonoDevelop.Core.Instrumentation
 {
 	public static class InstrumentationService
 	{
-		static Dictionary <string, Counter> counters;
-		static Dictionary <string, Counter> countersByID;
-		static List<CounterCategory> categories;
+		static readonly Dictionary <string, Counter> counters = new Dictionary<string, Counter> ();
+		static readonly Dictionary <string, Counter> countersByID = new Dictionary<string, Counter> ();
+		static readonly List<CounterCategory> categories = new List<CounterCategory> ();
+		static readonly List<InstrumentationConsumer> handlers = new List<InstrumentationConsumer> ();
 		static bool enabled = true;
-		static DateTime startTime;
+		static DateTime startTime = DateTime.Now;
 		static int publicPort = -1;
 		static Thread autoSaveThread;
 		static bool stopping;
 		static int autoSaveInterval;
-		static List<InstrumentationConsumer> handlers = new List<InstrumentationConsumer> ();
 		static bool handlersLoaded;
-		
-		static InstrumentationService ()
-		{
-			counters = new Dictionary <string, Counter> ();
-			countersByID = new Dictionary <string, Counter> ();
-			categories = new List<CounterCategory> ();
-			startTime = DateTime.Now;
-		}
 		
 		internal static void InitializeHandlers ()
 		{
@@ -353,7 +345,6 @@ namespace MonoDevelop.Core.Instrumentation
 		public static TimerCounter CreateTimerCounter (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null)
 		{
 			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, id, true);
-			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;
 			return c;
@@ -362,7 +353,6 @@ namespace MonoDevelop.Core.Instrumentation
 		public static TimerCounter<T> CreateTimerCounter<T> (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null) where T:CounterMetadata, new()
 		{
 			var c = (TimerCounter<T>) CreateCounter<T> (name, category, logMessages, id, true);
-			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;
 			return c;
@@ -378,12 +368,9 @@ namespace MonoDevelop.Core.Instrumentation
 		public static Counter GetCounter (string name)
 		{
 			lock (counters) {
-				Counter c;
-				if (counters.TryGetValue (name, out c))
+				if (counters.TryGetValue (name, out var c))
 					return c;
-				c = new Counter (name, null);
-				counters [name] = c;
-				return c;
+				return counters[name] = new Counter (name, null);
 			}
 		}
 

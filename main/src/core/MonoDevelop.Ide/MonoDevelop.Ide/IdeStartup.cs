@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide
 			// failing to load the MonoDevelop.Ide assembly which now uses MSBuild 15 assemblies.
 			ResolveMSBuildAssemblies ();
 
-			Counters.Initialization.BeginTiming ();
+			Counters.InitializationTracker = Counters.Initialization.BeginTiming ();
 
 			if (options.PerfLog) {
 				string logFile = Path.Combine (Environment.CurrentDirectory, "monodevelop.perf-log");
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide
 				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
 
-			Counters.Initialization.Trace ("Initializing GTK");
+			Counters.InitializationTracker.Trace ("Initializing GTK");
 			if (Platform.IsWindows && !CheckWindowsGtk ())
 				return 1;
 			SetupExceptionManager ();
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide
 
 			AddinManager.AddinLoadError += OnAddinError;
 
-			Counters.Initialization.Trace ("Initializing Runtime");
+			Counters.InitializationTracker.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
 			// Register services used by the IDE
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide
 			startupInfo.Restarted = restartRequested;
 			PropertyService.Set ("MonoDevelop.Core.RestartRequested", false);
 
-			Counters.Initialization.Trace ("Initializing theme");
+			Counters.InitializationTracker.Trace ("Initializing theme");
 
 			IdeTheme.SetupGtkTheme ();
 
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
-			Counters.Initialization.Trace ("Initializing Platform Service");
+			Counters.InitializationTracker.Trace ("Initializing Platform Service");
 
 			var desktopService = await Runtime.GetService<DesktopService> ();
 			var commandService = await Runtime.GetService<CommandManager> ();
@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide
 
 			monitor.Step (1);
 
-			Counters.Initialization.Trace ("Checking System");
+			Counters.InitializationTracker.Trace ("Checking System");
 
 			CheckFileWatcher ();
 
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide
 			int reportedFailures = 0;
 
 			try {
-				Counters.Initialization.Trace ("Loading Icons");
+				Counters.InitializationTracker.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				ImageService.Initialize ();
 
@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide
 				// If we display an error dialog before the main workbench window on OS X then a second application menu is created
 				// which is then replaced with a second empty Apple menu.
 				// XBC #33699
-				Counters.Initialization.Trace ("Initializing IdeApp");
+				Counters.InitializationTracker.Trace ("Initializing IdeApp");
 
 				hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				await IdeApp.Initialize (monitor, hideWelcomePage);
@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide
 					return 1;
 
 				// Load requested files
-				Counters.Initialization.Trace ("Opening Files");
+				Counters.InitializationTracker.Trace ("Opening Files");
 
 				// load previous combine
 				RecentFile openedProject = null;
@@ -359,9 +359,10 @@ namespace MonoDevelop.Ide
 			IdeStartupTracker.StartupTracker.MarkSection ("WindowOpened");
 
 			Thread.CurrentThread.Name = "GUI Thread";
-			Counters.Initialization.Trace ("Running IdeApp");
-			Counters.Initialization.EndTiming ();
-				
+			Counters.InitializationTracker.Trace ("Running IdeApp");
+			Counters.InitializationTracker.End ();
+			Counters.InitializationTracker = new NullTimeTracker ();
+
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
 
@@ -442,7 +443,7 @@ namespace MonoDevelop.Ide
 			// OpenDocuments appears when the app is idle.
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
-				Counters.Initialization.Trace ("Showed welcome page");
+				Counters.InitializationTracker.Trace ("Showed welcome page");
 				IdeApp.Workbench.Present ();
 			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
 				IdeApp.Workbench.Present ();

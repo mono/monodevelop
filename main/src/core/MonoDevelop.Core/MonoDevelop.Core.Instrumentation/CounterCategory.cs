@@ -32,26 +32,16 @@ namespace MonoDevelop.Core.Instrumentation
 	[Serializable]
 	public class CounterCategory
 	{
-		string name;
-		List<Counter> counters;
+		readonly List<Counter> counters = new List<Counter> ();
 		
 		internal CounterCategory (string name)
 		{
-			this.name = name;
-			counters = new List<Counter> ();
+			Name = name;
 		}
-		
-		public string Name {
-			get { return name; }
-		}
-		
-		internal void AddCounter (Counter c)
-		{
-			counters.Add (c);
-		}
-		
-		public IEnumerable<Counter> Counters {
-			get { return counters; }
-		}
+
+		internal void AddCounter (Counter c) => counters.Add (c);
+
+		public string Name { get; }
+		public IEnumerable<Counter> Counters => counters;
 	}
 }

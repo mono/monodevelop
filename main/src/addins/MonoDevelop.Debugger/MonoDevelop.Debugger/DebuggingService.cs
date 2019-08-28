@@ -1027,10 +1027,8 @@ namespace MonoDevelop.Debugger
 					sessionManager.StartTimer?.Dispose ();
 					sessionManager.StartTimer = null;
 
-					if (Ide.Counters.TrackingBuildAndDeploy) {
-						Ide.Counters.BuildAndDeploy.EndTiming ();
-						Ide.Counters.TrackingBuildAndDeploy = false;
-					}
+					Ide.Counters.BuildAndDeployTracker?.End ();
+					Ide.Counters.BuildAndDeployTracker = null;
 					break;
 				}
 			} catch (Exception ex) {

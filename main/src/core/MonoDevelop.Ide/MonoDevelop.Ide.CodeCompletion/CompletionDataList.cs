@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input)
 		{
-			return DefaultFilterItems (this, input.FilteredItems, input.OldCompletionString, input.CompletionString, GetCompletionDataMatcher (input.CompletionString));
+			return DefaultFilterItems (this, input.FilteredItems, input.OldCompletionString, input.CompletionString, input.Tracer ?? (text => { }), GetCompletionDataMatcher (input.CompletionString));
 		}
 
 		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			};
 		}
 
-		internal static CompletionListFilterResult DefaultFilterItems (ICompletionDataList dataList, IReadOnlyList<int> currentFilteredItems, string oldCompletionString, string completionString, CompletionDataMatcher matcher = null)
+		internal static CompletionListFilterResult DefaultFilterItems (ICompletionDataList dataList, IReadOnlyList<int> currentFilteredItems, string oldCompletionString, string completionString, Action<string> trace, CompletionDataMatcher matcher = null)
 		{
 			List<int> filteredItems;
 			var newCategories = new List<CategorizedCompletionItems> ();
@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int slice = dataList.Count / numFilterThreads;
 				var results = new(Task, List<int>) [numFilterThreads - 1];
 
-				Counters.ProcessCodeCompletion.Trace ("Begin initial item filtering (" + dataList.Count + " items) (" + (numFilterThreads - 1) + " threads)");
+				trace ("Begin initial item filtering (" + dataList.Count + " items) (" + (numFilterThreads - 1) + " threads)");
 
 				// Start additional threads
 				for (int n = 0; n < numFilterThreads - 1; n++) {
@@ -333,12 +333,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 					filteredItems.AddRange (t.Item2);
 				}
 
-				Counters.ProcessCodeCompletion.Trace ("End initial item filtering");
+				trace ("End initial item filtering");
 			} else {
 				// We are filtering a list that was already filtered, there shouldn't be that many items,
 				// so let's not parallelize.
 
-				Counters.ProcessCodeCompletion.Trace ("Begin item filtering (" + dataList.Count + " items)");
+				trace ("Begin item filtering (" + dataList.Count + " items)");
 
 				var oldItems = currentFilteredItems;
 				filteredItems = new List<int> ();
@@ -346,12 +346,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (string.IsNullOrEmpty (completionString) || matcher.IsMatch (dataList [newSelection]))
 						filteredItems.Add (newSelection);
 				}
-				Counters.ProcessCodeCompletion.Trace ("End item filtering");
+				trace ("End item filtering");
 			}
 			try {
 				// The list of items is filtered. Now sort by rank.
 
-				Counters.ProcessCodeCompletion.Trace ("Begin sorting items (" + filteredItems.Count + " items)");
+				trace ("Begin sorting items (" + filteredItems.Count + " items)");
 				filteredItems.Sort (delegate (int left, int right) {
 					var data1 = dataList [left];
 					var data2 = dataList [right];
@@ -382,7 +382,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 					return CompareTo (dataList, left, right);
 				});
-				Counters.ProcessCodeCompletion.Trace ("End sorting items");
+				trace ("End sorting items");
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while filtering completion items.", e);
 			}
