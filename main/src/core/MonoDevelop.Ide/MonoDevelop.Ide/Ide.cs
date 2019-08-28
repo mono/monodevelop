@@ -314,6 +314,8 @@ namespace MonoDevelop.Ide
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
+
+			CompositionManager.SetMefSafeToQuery ();
 		}
 
 		public static Task EnsureInitializedAsync ()
@@ -423,7 +425,7 @@ namespace MonoDevelop.Ide
 							LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
 						}
 					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
+						LoggingService.LogError ($"Error while running startup handler {args.ExtensionObject.GetType ()}", ex);
 					}
 				});
 			}
