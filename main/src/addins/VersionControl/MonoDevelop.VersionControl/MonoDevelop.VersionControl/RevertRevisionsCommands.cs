@@ -50,7 +50,9 @@ namespace MonoDevelop.VersionControl
 		{
 			try {
 				if (test) {
-					return (await vc.GetVersionInfoAsync (path, cancellationToken: cancellationToken)).CanRevert;
+					if (vc.TryGetVersionInfo (path, out var info))
+						return info.CanRevert;
+					return false;
 				}
 
 				string question = GettextCatalog.GetString (

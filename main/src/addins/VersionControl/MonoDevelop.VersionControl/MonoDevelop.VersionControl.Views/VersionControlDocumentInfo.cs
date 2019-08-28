@@ -83,7 +83,8 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			alreadyStarted = true;
 			Task.Run (async delegate {
-				var versionInfo = await Item.Repository.GetVersionInfoAsync (Item.Path, VersionInfoQueryFlags.IgnoreCache);
+				if (!Item.Repository.TryGetVersionInfo (Item.Path, out var versionInfo))
+					versionInfo = VersionInfo.CreateUnversioned (Item.Path, false);
 				var history = await Item.Repository.GetHistoryAsync (Item.Path, null);
 
 				lock (updateLock) {

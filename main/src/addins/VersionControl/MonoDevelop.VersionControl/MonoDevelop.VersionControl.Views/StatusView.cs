@@ -991,7 +991,7 @@ namespace MonoDevelop.VersionControl.Views
 		async void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
 			try {
-				if (args.Any (f => f.FilePath == filepath || (filepath != null && f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
+				if (args.Any (f => f.FilePath == filepath || (filepath != null && !f.FilePath.IsNullOrEmpty && f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
 					StartUpdate ();
 					return;
 				}
@@ -1007,6 +1007,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		async Task<bool> OnFileStatusChanged (FileUpdateEventInfo args)
 		{
+			if (args.FilePath.IsNullOrEmpty)
+				return false;
 			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
 				return true;
 
@@ -1048,7 +1050,7 @@ namespace MonoDevelop.VersionControl.Views
 			VersionInfo newInfo;
 			try {
 				// Reuse remote status from old version info
-				newInfo = await vc.GetVersionInfoAsync (args.FilePath);
+				vc.TryGetVersionInfo (args.FilePath, out newInfo);
 				if (found && newInfo != null) {
 					VersionInfo oldInfo = statuses [oldStatusIndex];
 					if (oldInfo != null) {

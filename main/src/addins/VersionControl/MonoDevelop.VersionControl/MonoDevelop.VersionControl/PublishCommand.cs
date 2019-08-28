@@ -86,10 +86,8 @@ namespace MonoDevelop.VersionControl
 		public static async Task<bool> CanPublishAsync (Repository vc, string path, bool isDir) {
 			if (!VersionControlService.CheckVersionControlInstalled ())
 				return false;
-
-			if (!(await vc.GetVersionInfoAsync (path)).IsVersioned && isDir)
-				return true;
-			return false;
+			
+			return !(vc.TryGetVersionInfo (path, out var info) && info.IsVersioned && isDir);
 		}
 
 		class PublishWorker : VersionControlTask
