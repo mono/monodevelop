@@ -29,6 +29,10 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
+using MonoDevelop.Ide;
+using System;
+using MonoDevelop.Ide.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.UnitTesting.VsTest
 {
@@ -36,6 +40,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 	{
 		public Project Project { get; private set; }
 		IVsTestTestRunner testRunner;
+		SourceCodeLocation sourceCodeLocation;
 
 		public VsTestTestClass (IVsTestTestRunner testRunner, Project project, VsTestUnitTest vsTestUnit)
 			: base (vsTestUnit.FixtureTypeName)
@@ -44,6 +49,25 @@ namespace MonoDevelop.UnitTesting.VsTest
 			this.testRunner = testRunner;
 			FixtureTypeName = vsTestUnit.FixtureTypeName;
 			TestSourceCodeDocumentId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
+
+			if (sourceCodeLocation == null) {
+				IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+					var className = TestSourceCodeDocumentId;
+
+					var compilation = t.Result;
+					if (compilation == null)
+						return;
+					var cls = compilation.GetTypeByMetadataName (className);
+					if (cls == null)
+						return;
+					var source = cls.Locations.FirstOrDefault (l => l.IsInSource);
+					if (source == null)
+						return;
+					var line = source.GetLineSpan ();
+
+					sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
+				}).Ignore();
+			}
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)
@@ -68,5 +92,12 @@ namespace MonoDevelop.UnitTesting.VsTest
 				}
 			}
 		}
+
+		public override SourceCodeLocation SourceCodeLocation {
+			get {
+				return sourceCodeLocation;
+			}
+		}
+
 	}
 }
