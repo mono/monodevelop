@@ -96,6 +96,10 @@ get_mono_env_options (int *ref_argc, char **ref_argv [], void *libmono)
 {
 	const char *env = getenv ("MONO_ENV_OPTIONS");
 
+	if (!env) {
+		return;
+	}
+
 	mono_parse_options_from _mono_parse_options_from = LOAD_MONO_SYMBOL(mono_parse_options_from, libmono);
 
 	char *ret = _mono_parse_options_from (env, ref_argc, ref_argv);
@@ -310,32 +314,29 @@ main (int argc, char **argv)
 
 		_g_free (mono_version);
 
-		// enable --debug so that we can get useful stack traces and add mono env options
-		int mono_argc = 1;
-		char **mono_argv = (char **) malloc (sizeof (char *) * mono_argc);
-
-		mono_argv[0] = (char *) "--debug";
-		get_mono_env_options (&mono_argc, &mono_argv, libmono);
-
-		// append original arguments
-		new_argc = mono_argc + argc + 1;
+		// prepend --debug, MonoDevelop.exe
+		new_argc = argc + 2;
 		new_argv = (char **) malloc (sizeof (char *) * new_argc);
+
 		int n = 0;
-
 		new_argv[n++] = argv[0];
-		for (int i = 0; i < mono_argc; i++) {
-			new_argv[n++] = strdup (mono_argv[i]);
-			if (i > 0)
-				_g_free (mono_argv [i]);
-		}
-
-		_g_free(mono_argv);
-
-		// append old arguments
+		new_argv[n++] = strdup("--debug");
 		NSString *exePath = [NSString stringWithFormat:@"%@/%@.exe", binDirFullPath, appName];
 		new_argv[n++] = strdup ([exePath UTF8String]);
-		for (int i = 1; i < argc; i++)
+
+		// Append old arguments.
+		for (int i = 1; i < argc; ++i) {
 			new_argv[n++] = argv[i];
+		}
+		// Set argv[n] to NULL.
+		new_argv[n] = NULL;
+
+		// Prepend all the mono options from the environment
+		get_mono_env_options (&new_argc, &new_argv, libmono);
+
+		//for (int i = 0; i < new_argc; ++i) {
+		//	NSLog(@"%lu - %s", strlen(new_argv[i]), new_argv[i]);
+		//}
 
 		//clock_t end = clock();
 		//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
