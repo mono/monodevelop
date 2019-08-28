@@ -207,32 +207,7 @@ namespace MonoDevelop.MacInterop
 		}
 		
 		#endregion
-		
-		#region Internal Mac API for setting process name
-		
-		[DllImport (CarbonLib)]
-		static extern int GetCurrentProcess (out ProcessSerialNumber psn);
-		
-		[DllImport (CarbonLib)]
-		static extern int CPSSetProcessName (ref ProcessSerialNumber psn, string name);
 
-		public static void SetProcessName (string name)
-		{
-			try {
-				if (GetCurrentProcess (out ProcessSerialNumber psn) == 0)
-					CPSSetProcessName (ref psn, name);
-			} catch (TypeLoadException) {} //EntryPointNotFoundException?
-		}
-
-		struct ProcessSerialNumber {
-#pragma warning disable 0169
-			uint highLongOfPSN;
-			uint lowLongOfPSN;
-#pragma warning restore 0169
-		}
-		
-		#endregion
-		
 		public static Dictionary<string,int> GetFileListFromEventRef (IntPtr eventRef)
 		{
 			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
