@@ -1975,6 +1975,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (options.Length > 0) {
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
+					opset.AddItem (ProjectCommands.ToggleFileNesting);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
 					return opset;
@@ -1995,6 +1996,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (!tnav.Clone ().MoveToParent ()) {
 					CommandEntrySet opset = eset.AddItemSet (GettextCatalog.GetString ("Display Options"));
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
+					opset.AddItem (ProjectCommands.ToggleFileNesting);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
 				//	opset.AddItem (ViewCommands.CollapseAllTreeNodes);

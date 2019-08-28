@@ -26,7 +26,8 @@
 
 using System.IO;
 using Mono.Addins;
-using MonoDevelop.Projects.FileNesting;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore
 {
@@ -36,6 +37,12 @@ namespace MonoDevelop.AspNetCore
 		public AspNetCoreNestingRulesProvider ()
 		{
 			SourceFile = AddinManager.CurrentAddin.GetFilePath (Path.Combine ("Resources", "AspNetCore.filenesting.json"));
+		}
+
+		public override bool AppliesToProject (Project project)
+		{
+			var dotnetProj = project as DotNetProject;
+			return dotnetProj != null && dotnetProj.ProjectProperties.HasProperty ("UsingMicrosoftNETSdkWeb");
 		}
 	}
 }

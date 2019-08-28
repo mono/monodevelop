@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects.FileNesting
+namespace MonoDevelop.Ide.Projects.FileNesting
 {
 	public abstract class NestingRulesProvider
 	{
@@ -121,8 +121,14 @@ namespace MonoDevelop.Projects.FileNesting
 			return false;
 		}
 
-		public FilePath GetParentFile (Project project, FilePath inputFile)
+		public virtual bool AppliesToProject (Project project) => true;
+
+		public ProjectFile GetParentFile (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return null;
+			}
+
 			lock (loadingLock) {
 				if (nestingRules == null) {
 					// Create the list here, so that we don't get this path called
@@ -140,9 +146,10 @@ namespace MonoDevelop.Projects.FileNesting
 				}
 			}
 
+			var inDirectory = inputFile.FilePath.ParentDirectory;
 			foreach (var rule in nestingRules) {
-				FilePath parentFile = rule.GetParentFile (project, inputFile);
-				if (!String.IsNullOrEmpty (parentFile)) {
+				var parentFile = rule.GetParentFile (inputFile, inDirectory);
+				if (parentFile != null) {
 					// Stop at the 1st rule found
 					return parentFile;
 				}

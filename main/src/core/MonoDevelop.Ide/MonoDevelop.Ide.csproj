@@ -3031,6 +3031,7 @@
     <EmbeddedResource Include="icons\framework-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\framework-16~sel.png" />
     <EmbeddedResource Include="icons\framework-16~sel%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Ide.Projects.FileNesting\FileNestingExtensionModel.addin.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Components.Commands\ICustomCommandTarget.cs" />
@@ -4269,6 +4270,9 @@
     <Compile Include="MonoDevelop.Components\Mac\NativeToolkitHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Shared\GtkWorkarounds.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.FileNesting\FileNestingService.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.FileNesting\NestingRule.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.FileNesting\NestingRulesProvider.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
@@ -4336,12 +4340,14 @@
     <InternalsVisibleTo Include="IdeUnitTests" />
     <InternalsVisibleTo Include="MacPlatform" />
     <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNetCore.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.AssemblyBrowser" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
@@ -4373,6 +4379,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Components\Shared\" />
+    <Folder Include="MonoDevelop.Ide.Projects.FileNesting\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
