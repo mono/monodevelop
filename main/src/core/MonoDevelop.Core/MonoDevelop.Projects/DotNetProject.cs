@@ -446,8 +446,8 @@ namespace MonoDevelop.Projects
 					return;
 				bool updateReferences = targetFramework != null;
 				targetFramework = value;
-				if (targetFrameworkMonikers.IsDefaultOrEmpty)
-					targetFrameworkMonikers = ImmutableArray.Create<TargetFrameworkMoniker> (targetFramework.Id);
+				if (!HasMultipleTargetFrameworks)
+					targetFrameworkMonikers = ImmutableArray.Create (targetFramework.Id);
 				if (updateReferences)
 					UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
