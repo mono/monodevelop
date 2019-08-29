@@ -44,7 +44,7 @@ type FakeSearchResult(solution: Solution, match', matchedString, rank, scriptPat
         fakeProcess.Exited.Add(fun _ -> monitor.Dispose())
 
 type FakeSearchCategory() =
-    inherit SearchCategory("FAKE", sortOrder = SearchCategory.FirstCategory)
+    inherit SearchCategory("FAKE", sortOrder = SearchCategory.FirstCategoryOrder)
 
     override x.get_Tags() = [|"fake"|]
 
