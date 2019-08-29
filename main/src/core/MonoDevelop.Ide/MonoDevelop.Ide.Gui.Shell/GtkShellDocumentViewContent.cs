@@ -156,6 +156,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 				pathDoc.PathChanged -= HandlePathChange;
 				pathDoc = null;
 			}
+
+			pathDocPending = null;
 		}
 
 		void HandlePathChange (object sender, DocumentPathChangedEventArgs args)
@@ -175,6 +177,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 		protected override void OnDestroyed ()
 		{
 			DetachPathedDocument ();
+			pathBar = null;
+			box = null;
+			contentLoader = null;
+
 			base.OnDestroyed ();
 		}
 
