@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
@@ -40,16 +42,20 @@ namespace MonoDevelop.UnitTesting.VsTest
 		public Project Project { get; private set; }
 		IVsTestTestRunner testRunner;
 		SourceCodeLocation sourceCodeLocation;
+		CancellationTokenSource cts;
 
 		public VsTestTestClass (IVsTestTestRunner testRunner, Project project, VsTestUnitTest vsTestUnit)
 			: base (vsTestUnit.FixtureTypeName)
 		{
-			this.Project = project;
+			Project = project;
 			this.testRunner = testRunner;
 			FixtureTypeName = vsTestUnit.FixtureTypeName;
 			TestSourceCodeDocumentId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
-
-			IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+			cts = new CancellationTokenSource ();
+			var token = cts.Token;
+			IdeApp.TypeSystemService.GetCompilationAsync (Project, token).ContinueWith ((t) => {
+				if (token.IsCancellationRequested)
+					return;
 				var className = TestSourceCodeDocumentId;
 				var compilation = t.Result;
 				if (compilation == null)
@@ -62,7 +68,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 					return;
 				var line = source.GetLineSpan ();
 				sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
-			}).Ignore();
+			}, token, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Default).Ignore ();
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)
@@ -92,6 +98,16 @@ namespace MonoDevelop.UnitTesting.VsTest
 			get {
 				return sourceCodeLocation;
 			}
+		}
+
+		public override void Dispose ()
+		{
+			if (cts != null) {
+				cts.Cancel ();
+				cts.Dispose ();
+				cts = null;
+			}
+			base.Dispose ();
 		}
 
 	}
