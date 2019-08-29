@@ -384,7 +384,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		internal static bool PathExistsInProject (Project project, FilePath path)
 		{
 			string basePath = path.ToRelative (project.BaseDirectory);
-			return project.Files.GetFilesInVirtualPath (basePath).Any () || project.Files.GetFile (path) != null;
+			return project.Files.GetFile (path) != null || project.Files.GetFilesInVirtualPath (basePath).Any ();
 		}
 
 		internal static bool ContainsDirectorySeparator (string name)
