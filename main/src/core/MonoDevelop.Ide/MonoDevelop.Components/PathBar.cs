@@ -842,6 +842,8 @@ namespace MonoDevelop.Components
 
 		protected override void OnDestroyed ()
 		{
+			createMenuForItem = null;
+
 			base.OnDestroyed ();
 
 			DisposeProxies ();
