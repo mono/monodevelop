@@ -1275,6 +1275,16 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public void EmptyFolderExistsInProject()
+		{
+			// Test case for bug #970095
+			var p = Services.ProjectService.CreateProject ("C#");
+			p.AddDirectory ("Model");
+			Assert.True(p.PathExistsInProject ("Model"));
+			p.Dispose ();
+		}
+
 		class TestGetReferencesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
