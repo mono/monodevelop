@@ -37,7 +37,7 @@ namespace MonoDevelop.Refactoring.Options
 		public CheckBoxOptionViewModel (IOption option, string description, string truePreview, string falsePreview, AbstractOptionPreviewViewModel info, OptionSet options)
 			: base (option, description, truePreview, falsePreview, info)
 		{
-			SetProperty (ref _isChecked, (bool)options.GetOption (new OptionKey (option, option.IsPerLanguage ? info.Language : null)));
+			SetProperty (ref _isChecked, (bool)BooleanCodeStyleOptionViewModel.GetOptionOrDefault (options, option, info.Language));
 		}
 
 		public override bool IsChecked {
