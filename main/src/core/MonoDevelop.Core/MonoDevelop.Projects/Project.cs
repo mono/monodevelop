@@ -4757,6 +4757,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public bool PathExistsInProject (FilePath path)
+		{
+			string basePath = path.ToRelative (BaseDirectory);
+			return files.GetFile(path) != null || files.GetFilesInVirtualPath (basePath).Any ();
+		}
+
 		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
 
 		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
