@@ -154,10 +154,6 @@ namespace MonoDevelop.Components
 		PathEntry[] rightPath = new PathEntry[0];
 		Pango.Layout layout;
 		Pango.AttrList boldAtts = new Pango.AttrList ();
-		
-		//HACK: a surrogate widget object to pass to style calls instead of "this" when using "button" hint.
-		// This avoids GTK-Criticals in themes which try to cast the widget object to a button.
-		Gtk.Button styleButton = new Gtk.Button ();
 
 		// The widths array contains the widths of the items at the left and the right
 		int[] widths;
@@ -849,7 +845,6 @@ namespace MonoDevelop.Components
 			base.OnDestroyed ();
 
 			DisposeProxies ();
-			styleButton.Destroy ();
 			KillLayout ();
 			this.boldAtts.Dispose ();
 		}
