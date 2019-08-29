@@ -1,4 +1,4 @@
-﻿//
+//
 // VersionControlDocumentController.cs
 //
 // Author:
@@ -43,13 +43,10 @@ namespace MonoDevelop.VersionControl
 	{
 		WorkspaceObject project;
 		Repository repo;
-		VersionControlDocumentInfo vcInfo;
 
-		DocumentView diffView;
-		DocumentView blameView;
-		DocumentView logView;
-		DocumentView mergeView;
-		private DocumentView mainView;
+		DocumentView diffView, blameView, logView, mergeView;
+		DocumentView mainView;
+		VersionControlDocumentInfo vcInfo;
 
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
@@ -116,47 +113,36 @@ namespace MonoDevelop.VersionControl
 				if (!showSubviews)
 					return;
 				showSubviews = false;
-				if (diffView != null) {
-					mainView.AttachedViews.Remove (diffView);
-					diffView.Dispose ();
-					diffView = null;
-				}
-
-				if (blameView != null) {
-					mainView.AttachedViews.Remove (blameView);
-					blameView.Dispose ();
-					blameView = null;
-				}
-
-				if (logView != null) {
-					mainView.AttachedViews.Remove (logView);
-					logView.Dispose ();
-					logView = null;
-				}
-
-				if (mergeView != null) {
-					mainView.AttachedViews.Remove (mergeView);
-					mergeView.Dispose ();
-					mergeView = null;
-				}
-
+				DetachView (mainView, ref diffView);
+				DetachView (mainView, ref blameView);
+				DetachView (mainView, ref logView);
+				DetachView (mainView, ref mergeView);
 			} else {
 				if (showSubviews)
 					return;
 				showSubviews = true;
-				diffView = await TryAttachView (mainView, vcInfo, DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"));
-				blameView = await TryAttachView (mainView, vcInfo, BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"));
-				logView = await TryAttachView (mainView, vcInfo, LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"));
-				mergeView = await TryAttachView (mainView, vcInfo, MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"));
+				diffView = await TryAttachView (DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"));
+				blameView = await TryAttachView (BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"));
+				logView = await TryAttachView (LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"));
+				mergeView = await TryAttachView (MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"));
+			}
+
+			static void DetachView (DocumentView fromView, ref DocumentView attachedView)
+			{
+				if (attachedView != null) {
+					fromView.AttachedViews.Remove (attachedView);
+					attachedView.Dispose ();
+					attachedView = null;
+				}
 			}
 		}
 
-		async Task<DocumentView> TryAttachView (DocumentView mainView, VersionControlDocumentInfo info, string type, string title, string description)
+		async Task<DocumentView> TryAttachView (string type, string title, string description)
 		{
 			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler> (type)
-				.FirstOrDefault (h => h.CanHandle (info.Item, info.VersionControlExtension.Controller));
+				.FirstOrDefault (h => h.CanHandle (vcInfo.Item, vcInfo.VersionControlExtension.Controller));
 			if (handler != null) {
-				var controller = handler.CreateView (info);
+				var controller = handler.CreateView (vcInfo);
 				if (controller == null)
 					return null;
 				await controller.Initialize (null, null);
@@ -193,7 +179,6 @@ namespace MonoDevelop.VersionControl
 		{
 			if (revision != null && diffView?.SourceController is LogView content)
 				content.LogWidget.SelectedRevision = revision;
-
 			logView?.SetActive ();
 		}
 
