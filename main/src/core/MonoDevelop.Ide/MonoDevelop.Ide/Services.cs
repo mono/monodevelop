@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide
 		public static Counter NewEditorEnabled = InstrumentationService.CreateCounter ("New Editor Enabled", "Text Editor", id: "NewTextEditor.Enabled");
 		public static Counter NewEditorDisabled = InstrumentationService.CreateCounter ("New Editor Disabled", "Text Editor", id: "NewTextEditor.Disabled");
 
-		internal static Counter<UpdateCommandInfoCounterMetadata> UpdateCommandTimeoutInfo = InstrumentationService.CreateCounter<UpdateCommandInfoCounterMetadata> ("Time to update a command info", "CommandManager", id: "CommandManager.UpdateCommandInfo");
+		internal static Counter<UpdateCommandInfoCounterMetadata> UpdateCommandTimeoutInfo = InstrumentationService.CreateCounter<UpdateCommandInfoCounterMetadata> ("Slow command update handler timeout", "CommandManager", id: "CommandManager.UpdateCommandInfo.Timeout");
 
 		public static string[] CounterReport ()
 		{
