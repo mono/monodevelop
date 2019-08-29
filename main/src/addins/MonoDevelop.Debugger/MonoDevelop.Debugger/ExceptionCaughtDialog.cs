@@ -195,6 +195,8 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				objValueTreeView.AllowPinning = false;
 				objValueTreeView.AllowEditing = false;
 				objValueTreeView.AllowAdding = false;
+
+				exceptionValueTreeView = objValueTreeView;
 			}
 
 			exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
@@ -388,13 +390,13 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				box.PackStart (CreateInnerExceptionsTree (), false, false, 0);
 				box.PackStart (whiteBackground, true, true, 0);
 				box.Show ();
-				vbox.PackStart (box, true, true, 0);
+				container.PackStart (box, true, true, 0);
 				DefaultWidth = 900;
 				DefaultHeight = 700;
 				WidthRequest = 550;
 				HeightRequest = 450;
 			} else {
-				vbox.PackStart (whiteBackground, true, true, 0);
+				container.PackStart (whiteBackground, true, true, 0);
 			}
 			var actionArea = new HBox (false, 0) { BorderWidth = 14 };
 
