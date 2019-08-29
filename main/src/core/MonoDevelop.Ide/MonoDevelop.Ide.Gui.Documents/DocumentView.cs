@@ -268,7 +268,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			await Task.Yield ();
 
-			if (disposed)
+			// Check again if the view is visible. Maybe it was hidden while processing the events in the previous call
+
+			if (disposed || !shown)
 				return;
 
 			if (SourceController != null)
