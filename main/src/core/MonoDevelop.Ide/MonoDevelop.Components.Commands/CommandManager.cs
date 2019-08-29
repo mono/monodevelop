@@ -578,7 +578,7 @@ namespace MonoDevelop.Components.Commands
 						cinfo.CancelAsyncUpdate ();
 						LoggingService.LogError ("Slow command update task timed out: Command:{0}", commands [i].Id);
 						var metadata = new UpdateCommandInfoCounterMetadata {
-							CommandId = commands [i].Id
+							CommandId = commands [i].Id.ToString ()
 						};
 						Counters.UpdateCommandTimeoutInfo.Inc (metadata);
 						KeyBindingFailed?.Invoke (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("Initializing '{0}' ({1}) command failed.", commands [i].DisplayName, KeyBindingManager.BindingToDisplayLabel (binding.ToString (), false))));

@@ -268,8 +268,8 @@ namespace MonoDevelop.Ide
 
 	class UpdateCommandInfoCounterMetadata : CounterMetadata
 	{
-		public object CommandId {
-			get => GetProperty<object> ("CommandId");
+		public string CommandId {
+			get => GetProperty<string> ();
 			set => SetProperty (value);
 		}
 	}
