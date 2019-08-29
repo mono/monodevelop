@@ -66,7 +66,8 @@ namespace MonoDevelop.Components.Commands
 		KeyboardShortcut[] chords;
 		string chord;
 		internal const int SlowCommandWarningTime = 25;
-		
+		internal const int SlowUpdateCommandTime = 250;
+
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
 		List<ICommandBar> toolbars = new List<ICommandBar> ();
@@ -571,8 +572,19 @@ namespace MonoDevelop.Components.Commands
 
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands [i].Id, new CommandTargetRoute ());
-				if (cinfo.IsUpdatingAsynchronously)
-					cinfo.UpdateTask.Wait (); // Not nice, but we need a synchronous result here
+				if (cinfo.IsUpdatingAsynchronously) {
+					// Not nice, but we need a synchronous result here
+					if (!cinfo.UpdateTask.Wait (SlowUpdateCommandTime)) {
+						cinfo.CancelAsyncUpdate ();
+						LoggingService.LogError ("Slow command update task timed out: Command:{0}", commands [i].Id);
+						var metadata = new UpdateCommandInfoCounterMetadata {
+							CommandId = commands [i].Id.ToString ()
+						};
+						Counters.UpdateCommandTimeoutInfo.Inc (metadata);
+						KeyBindingFailed?.Invoke (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("Initializing '{0}' ({1}) command failed.", commands [i].DisplayName, KeyBindingManager.BindingToDisplayLabel (binding.ToString (), false))));
+					}
+				}
+
 				if (cinfo.Bypass) {
 					bypass = true;
 					continue;
