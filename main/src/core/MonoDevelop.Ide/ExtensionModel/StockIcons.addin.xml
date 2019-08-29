@@ -235,7 +235,7 @@
 	<StockIcon stockid="md-reference-invalid" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-warning" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-property" resource="element-property-16.png" size="Menu" imageid="2429;2431;2434;2435;2436;2437;{42f9e147-4a12-4cea-9c81-a155b6048de5}#102" />
-	<StockIcon stockid="md-reference" resource="reference-16.png" size="Menu" />
+	<StockIcon stockid="md-reference" resource="reference-16.png" size="Menu" imageid="2521" />
 	<StockIcon stockid="md-reference-package" resource="reference-16.png" size="Menu" />
 	<StockIcon stockid="md-region" resource="region-16.png" size="Menu" />
 	<StockIcon stockid="md-regular-file" resource="file-generic-16.png" size="Menu" />
