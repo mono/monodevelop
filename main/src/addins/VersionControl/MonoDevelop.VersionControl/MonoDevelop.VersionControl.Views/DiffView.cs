@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl.Views
 		public int GetLineInCenter (Mono.TextEditor.MonoTextEditor editor)
 		{
 			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
-			return editor.YToLine (midY);
+			return editor.YToLine (midY) - 1;
 		}
 
 		protected override void OnContentShown ()

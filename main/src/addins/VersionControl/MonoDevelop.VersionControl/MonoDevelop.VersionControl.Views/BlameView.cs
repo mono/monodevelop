@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl.Views
 		int GetLineInCenter (MonoTextEditor editor)
 		{
 			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
-			return editor.YToLine (midY);
+			return editor.YToLine (midY) - 1;
 		}
 
 		#endregion
