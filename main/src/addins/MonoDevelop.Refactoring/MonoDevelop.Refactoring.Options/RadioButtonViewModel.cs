@@ -34,7 +34,7 @@ namespace MonoDevelop.Refactoring.Options
 		private readonly TOption _value;
 
 		public RadioButtonViewModel (string description, string preview, string group, TOption value, Option<TOption> option, AbstractOptionPreviewViewModel info, OptionSet options)
-			: base (description, preview, info, options, isChecked: options.GetOption (option).Equals (value), group: group)
+			: base (description, preview, info, options, isChecked: BooleanCodeStyleOptionViewModel.GetOptionOrDefault (options, option, info.Language).Equals (value), group: group)
 		{
 			_value = value;
 			_option = option;
