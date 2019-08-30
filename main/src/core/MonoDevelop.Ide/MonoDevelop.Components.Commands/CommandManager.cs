@@ -559,7 +559,7 @@ namespace MonoDevelop.Components.Commands
 				return false;
 			}
 
-			if (commands == null) {
+			if (commands == null || commands.Count == 0) {
 				return false;
 			}
 
