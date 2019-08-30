@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoFunctionBreakpoint = Mono.Debugging.Client.FunctionBreakpoint;
 using VsCodeFunctionBreakpoint = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.FunctionBreakpoint;
+using System.Net.Sockets;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
@@ -232,7 +233,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			debugAgentProcess = Process.Start (startInfo);
 			debugAgentProcess.EnableRaisingEvents = true;
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
-			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
+			var tcpClient = new TcpClient ("127.0.0.1", 4711);
+			NetworkStream ns = tcpClient.GetStream ();
+			protocolClient = new DebugProtocolHost (ns /*debugAgentProcess.StandardInput.BaseStream*/, debugAgentProcess.StandardOutput.BaseStream);
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
 			protocolClient.Run ();
 			protocolClient.EventReceived += HandleEvent;
