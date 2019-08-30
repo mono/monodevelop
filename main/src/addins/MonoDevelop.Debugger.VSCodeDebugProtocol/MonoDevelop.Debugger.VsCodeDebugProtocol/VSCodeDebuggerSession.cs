@@ -225,6 +225,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var startInfo = new ProcessStartInfo (GetDebugAdapterPath (), GetDebugAdapterArguments ());
 			startInfo.RedirectStandardOutput = true;
 			startInfo.RedirectStandardInput = true;
+
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.UseShellExecute = false;
@@ -235,8 +236,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
 			var tcpClient = new TcpClient ("127.0.0.1", 4711);
 			NetworkStream ns = tcpClient.GetStream ();
-			protocolClient = new DebugProtocolHost (ns /*debugAgentProcess.StandardInput.BaseStream*/, debugAgentProcess.StandardOutput.BaseStream);
+			//protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
+			protocolClient = new DebugProtocolHost (ns, ns);
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
+
 			protocolClient.Run ();
 			protocolClient.EventReceived += HandleEvent;
 			InitializeRequest initRequest = CreateInitRequest ();
