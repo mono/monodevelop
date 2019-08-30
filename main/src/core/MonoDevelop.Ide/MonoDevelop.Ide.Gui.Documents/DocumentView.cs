@@ -512,14 +512,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 				Parent = null;
 			} else if (IsRoot)
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
+
 			if (shellView != null) {
 				shellView.Dispose ();
 				shellView = null;
 			}
 
-			foreach (var c in AttachedViews.ToList ())
-				c.Dispose ();
-			AttachedViews.Clear ();
+			foreach (var view in AttachedViews.ToList ()) {
+				view.Dispose ();
+			}
 
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Dispose ();
