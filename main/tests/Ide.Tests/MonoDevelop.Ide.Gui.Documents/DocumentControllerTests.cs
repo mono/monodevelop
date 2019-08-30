@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.AreEqual (1, controller.Child2.DisposeCount);
 			Assert.AreEqual (1, controller.Child1.Control.DisposeCount);
 			Assert.AreEqual (1, controller.Child2.Control.DisposeCount);
+			Assert.AreEqual (1, controller.Attached.DisposeCount);
 			Assert.AreEqual (1, controller.Attached.Control.DisposeCount);
 		}
 
@@ -445,7 +446,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var view2 = await Child2.GetDocumentView ();
 			container.Views.Add (view2);
 
-			Attached = new ChildDisposableTestController ();
+			Attached = new ChildDisposableTestController { TabPageLabel = "Attached" };
 			await Attached.Initialize (new ModelDescriptor ());
 			var viewAttached = await Attached.GetDocumentView ();
 			container.AttachedViews.Add (viewAttached);
