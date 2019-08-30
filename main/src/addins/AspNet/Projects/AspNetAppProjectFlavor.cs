@@ -692,6 +692,7 @@ namespace MonoDevelop.AspNet.Projects
 				this.name = displayName;
 				this.id = id;
 				this.DesktopApp = app;
+				Image = Ide.Gui.Stock.Browser;
 			}
 
 			public override string Name {
