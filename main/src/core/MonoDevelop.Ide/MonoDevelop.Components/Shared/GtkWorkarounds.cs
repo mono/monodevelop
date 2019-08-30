@@ -34,32 +34,15 @@ namespace MonoDevelop.Components
 {
 	public static partial class GtkWorkarounds
 	{
-		const string LIBOBJC = "/usr/lib/libobjc.dylib";
-
-		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
-		static extern IntPtr objc_msgSend_IntPtr (IntPtr klass, IntPtr selector);
-
-		[DllImport (LIBOBJC, EntryPoint = "sel_registerName")]
-		static extern IntPtr sel_registerName (string selector);
-
-		[DllImport (LIBOBJC, EntryPoint = "objc_getClass")]
-		static extern IntPtr objc_getClass (string klass);
-
-		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
-		static extern void objc_msgSend_NSInt64_NSInt32 (IntPtr klass, IntPtr selector, int arg);
-
-		static void MacTerminate ()
-		{
-			var sel_terminate = sel_registerName ("terminate:");
-			var app = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
-
-			objc_msgSend_NSInt64_NSInt32 (app, sel_terminate, 0);
-		}
-
 		public static void Terminate ()
 		{
-			if (Platform.IsMac)
-				MacTerminate ();
+#if MAC
+			var app = Mac.Messaging.IntPtr_objc_msgSend (
+				ObjCRuntime.Class.GetHandle ("NSApplication"),
+				ObjCRuntime.Selector.GetHandle ("sharedApplication"));
+
+			Mac.Messaging.void_objc_msgSend_IntPtr (app, ObjCRuntime.Selector.GetHandle ("terminate:"), IntPtr.Zero);
+#endif
 		}
 	}
 }

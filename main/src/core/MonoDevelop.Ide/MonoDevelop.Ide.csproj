@@ -3803,7 +3803,6 @@
     <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />

@@ -88,16 +88,16 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern IntPtr class_getInstanceMethod(IntPtr classHandle, IntPtr Selector);
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern IntPtr method_getImplementation(IntPtr method);
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern IntPtr imp_implementationWithBlock(ref BlockLiteral block);
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern void method_setImplementation(IntPtr method, IntPtr imp);
 
 		[MonoNativeFunctionWrapper]
@@ -743,9 +743,6 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		public extern static IntPtr IntPtr_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1);
-
 		private static NSImage applicationIcon;
 		internal static NSImage ApplicationIcon {
 			get {
@@ -785,11 +782,7 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			if (File.Exists (iconFile)) {
-				var image = new NSImage ();
-				var imageFile = new NSString (iconFile);
-
-				IntPtr p = IntPtr_objc_msgSend_IntPtr (image.Handle, Selector.GetHandle ("initByReferencingFile:"), imageFile.Handle);
-				ApplicationIcon = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
+				ApplicationIcon = new NSImage (iconFile, lazy: true);
 			}
 		}
 
