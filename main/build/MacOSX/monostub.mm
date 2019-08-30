@@ -322,7 +322,7 @@ main (int argc, char **argv)
 
 		int n = 0;
 		new_argv[n++] = argv[0];
-		new_argv[n++] = strdup("--debug");
+		new_argv[n++] = (char*)"--debug";
 		NSString *exePath = [NSString stringWithFormat:@"%@/%@.exe", binDirFullPath, appName];
 		new_argv[n++] = strdup ([exePath UTF8String]);
 
