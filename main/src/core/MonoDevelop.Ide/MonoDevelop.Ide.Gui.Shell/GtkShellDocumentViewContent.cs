@@ -144,7 +144,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			DetachPathedDocument ();
 
 			if (pathBar != null) {
-				box.Remove (pathBar);
 				pathBar.Destroy ();
 				pathBar = null;
 			}

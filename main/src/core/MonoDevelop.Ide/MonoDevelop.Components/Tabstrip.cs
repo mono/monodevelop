@@ -530,6 +530,14 @@ namespace MonoDevelop.Components
 
 			if (layout != null)
 				layout.Dispose();
+
+			OnDispose ();
+
+			Tag = null;
+		}
+
+		protected virtual void OnDispose ()
+		{
 		}
 
 		public AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
