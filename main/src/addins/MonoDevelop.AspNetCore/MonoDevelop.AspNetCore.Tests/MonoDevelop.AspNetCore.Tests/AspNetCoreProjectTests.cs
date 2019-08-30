@@ -33,6 +33,7 @@ using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using UnitTests;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore.Tests
@@ -133,6 +134,8 @@ namespace MonoDevelop.AspNetCore.Tests
 					Assert.IsNotNull (matchNetCoreApp30, $"Execution target did not contain Safari netcoreapp3.0");
 					Assert.AreEqual ("/Applications/Safari.app-netcoreapp2.1", matchNetCoreApp21.Id);
 					Assert.AreEqual ("/Applications/Safari.app-netcoreapp3.0", matchNetCoreApp30.Id);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
 				} else if (Directory.Exists ("/Applications/Google Chrome.app")) {
 					var matchNetCoreApp21 = targets.FirstOrDefault (x => x.Name.Contains ("Google Chrome • netcoreapp2.1"));
 					var matchNetCoreApp30 = targets.FirstOrDefault (x => x.Name.Contains ("Google Chrome • netcoreapp3.0"));
@@ -140,6 +143,8 @@ namespace MonoDevelop.AspNetCore.Tests
 					Assert.IsNotNull (matchNetCoreApp30, $"Execution target did not contain Chrome netcoreapp3.0");
 					Assert.AreEqual ("/Applications/Google Chrome.app-netcoreapp2.1", matchNetCoreApp21.Id);
 					Assert.AreEqual ("/Applications/Google Chrome.app-netcoreapp3.0", matchNetCoreApp30.Id);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
 				} else {
 					Assert.Ignore ("No browsers found to run test");
 				}

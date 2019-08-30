@@ -26,6 +26,7 @@
 
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNetCore
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.AspNetCore
 			Name = base.Name + " • " + framework.ShortName;
 			Framework = framework;
 
-			Image = "md-framework-dependency";
+			Image = Stock.Browser;
 		}
 
 		public override string Name { get; }

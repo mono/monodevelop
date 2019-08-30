@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -410,6 +411,9 @@ namespace MonoDevelop.DotNetCore.Tests
 								Assert.True (targets.Any (x => x.Name.Contains ("Safari")), $"Configuration {config.Name} didn't contain Safari");
 							if (System.IO.Directory.Exists ("/Applications/Google Chrome.app"))
 								Assert.True (targets.Any (x => x.Name.Contains ("Google Chrome")), $"Configuration {config.Name} didn't contain Chrome");
+							foreach (var target in targets) {
+								Assert.AreEqual (Stock.Browser.ToString (), target.Image);
+							}
 						}
 					}
 				}
