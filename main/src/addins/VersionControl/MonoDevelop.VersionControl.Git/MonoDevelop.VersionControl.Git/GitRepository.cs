@@ -201,22 +201,37 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void Dispose (bool disposing)
 		{
+			if (IsDisposed)
+				return;
+			var opfactory = ExclusiveOperationFactory; // cache the factory, otherwise it will throw once IsDisposed is true
 			// ensure that no new operations can be started while we wait for the scheduler to shutdown
-			base.IsDisposed = true;
+			IsDisposed = true;
 
 			if (disposing) {
 				ShutdownFileWatcher ();
+				opfactory.StartNew (() => {
+					try {
+						rootRepository?.Dispose ();
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+					}
+					if (cachedSubmodules != null) {
+						foreach (var submodule in cachedSubmodules) {
+							if (submodule?.Item2 != null) {
+								try {
+									submodule?.Item2.Dispose ();
+								} catch (Exception e) {
+									LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+								}
+							}
+						}
+					}
+				}).Ignore ();
 			}
 
 			// now it's safe to dispose the base and release all information caches
+			// this will also wait for the scheduler to finish all operations and shutdown
 			base.Dispose (disposing);
-
-			if (disposing) {
-				rootRepository?.Dispose ();
-				if (cachedSubmodules != null)
-					foreach (var rep in cachedSubmodules)
-						rep.Item2.Dispose ();
-			}
 
 			watcher = null;
 			rootRepository = null;
