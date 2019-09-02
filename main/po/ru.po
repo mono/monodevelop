@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-27 13:56:34+0200\n"
+"POT-Creation-Date: 2019-09-02 10:31:55+0200\n"
 "PO-Revision-Date: 2010-12-26 12:47+0300\n"
 "Last-Translator: Semen Soldatov <simplexe@mail.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -1157,7 +1157,7 @@ msgstr ""
 "состояния, схожая с классическими приложениями</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 msgid "<uncommitted>"
 msgstr "<не зафиксировано>"
 
@@ -1325,6 +1325,11 @@ msgstr "Совместимый метод в классе CodeBehind"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:109
 msgid "A configuration with the name '{0}' already exists."
 msgstr "Конфигурация с именем \"{0}\" уже существует."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
+#, fuzzy
+msgid "A conflicting change has been detected in the index. "
+msgstr "В файле <b>{0}</b> обнаружен конфликт слияния"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:34
 msgid "A cyclic build dependency has been detected."
@@ -1705,7 +1710,7 @@ msgstr ""
 msgid "API"
 msgstr "API"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "API Documentation"
 msgstr "Документация по API"
 
@@ -1901,7 +1906,7 @@ msgid "Abort Update"
 msgstr "Прервать обновление"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:615
+#: ../src/addins/MacPlatform/MacPlatform.cs:611
 msgid "About {0}"
 msgstr "О программе {0}"
 
@@ -1986,39 +1991,39 @@ msgstr "ActionGroup"
 msgid "Actions"
 msgstr "Действия"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:772
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:775
 msgid "Activate 1"
 msgstr "Активировать 1"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:778
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:781
 msgid "Activate 2"
 msgstr "Активировать 2"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:784
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:787
 msgid "Activate 3"
 msgstr "Активировать 3"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:790
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:793
 msgid "Activate 4"
 msgstr "Активировать 4"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:796
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:799
 msgid "Activate 5"
 msgstr "Активировать 5"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:802
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
 msgid "Activate 6"
 msgstr "Активировать 6"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:808
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:811
 msgid "Activate 7"
 msgstr "Активировать 7"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:814
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:817
 msgid "Activate 8"
 msgstr "Активировать 8"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:820
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:823
 msgid "Activate 9"
 msgstr "Активировать 9"
 
@@ -2027,39 +2032,39 @@ msgstr "Активировать 9"
 msgid "Activate document '{0}'"
 msgstr "Сделать документ \"{0}\" активным"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:773
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:776
 msgid "Activate document 1"
 msgstr "Активировать документ 1"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:782
 msgid "Activate document 2"
 msgstr "Активировать документ 2"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:788
 msgid "Activate document 3"
 msgstr "Активировать документ 3"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:791
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:794
 msgid "Activate document 4"
 msgstr "Активировать документ 4"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:797
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:800
 msgid "Activate document 5"
 msgstr "Активировать документ 5"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:803
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:806
 msgid "Activate document 6"
 msgstr "Активировать документ 6"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:809
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:812
 msgid "Activate document 7"
 msgstr "Активировать документ 7"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:815
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:818
 msgid "Activate document 8"
 msgstr "Активировать документ 8"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:821
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:824
 msgid "Activate document 9"
 msgstr "Активировать документ 9"
 
@@ -2081,7 +2086,7 @@ msgstr "Сделать окно \"{0}\" активным"
 msgid "Active Configuration"
 msgstr "Активная конфигурация"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:587
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:590
 msgid "Active Layout"
 msgstr "Активный макет"
 
@@ -2146,7 +2151,7 @@ msgstr "Добавить пользовательский инструмент..
 msgid "Add Dependency"
 msgstr "Добавить зависимость"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:515
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:516
 msgid "Add Existing Folder"
 msgstr "Добавить существующую папку"
 
@@ -2361,7 +2366,7 @@ msgstr "Добавить существующие файлы в проект"
 msgid "Add expression to watch pad"
 msgstr "Добавить выражение на панель контрольных значений"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:404
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:405
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:302
 msgid "Add files"
 msgstr "Добавить файлы"
@@ -2812,7 +2817,7 @@ msgstr ""
 "Приложение уже выполняется, и его потребуется остановить. Вы хотите "
 "продолжить?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:299
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:301
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:92
 msgid "An application is already running. Do you want to stop it?"
 msgstr "Приложение уже запущено. Вы хотите остановить его?"
@@ -2960,7 +2965,7 @@ msgstr "Android"
 msgid "Angular"
 msgstr "Angular"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1215
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
 msgid "Animates the text editor caret to help find it"
 msgstr "Анимирует курсор текстового редактора для упрощения его поиска"
 
@@ -3082,7 +3087,7 @@ msgid "Application to record audio/video files"
 msgstr "Приложение для записи аудио- или видеофайлов"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:795
+#: ../src/addins/MacPlatform/MacPlatform.cs:778
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3147,7 +3152,7 @@ msgstr "Применить к проекту"
 msgid "Apply to all"
 msgstr "Применить ко всем"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:368
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:383
 msgid "Applying stash"
 msgstr "Применение прятания"
 
@@ -3287,7 +3292,7 @@ msgstr "Вы действительно хотите удалить катало
 msgid "Are you sure you want to remove directory {0}?"
 msgstr "Вы действительно хотите удалить каталог {0}?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:320
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:331
 msgid "Are you sure you want to remove file {0} from project {1}?"
 msgstr "Вы действительно хотите удалить файл {0} из проекта {1}?"
 
@@ -3296,7 +3301,7 @@ msgstr "Вы действительно хотите удалить файл {0}
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "Действительно удалить конфигурацию \"{0}\"?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:312
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
 msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
 "from project {1}?"
@@ -3324,7 +3329,7 @@ msgstr ""
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "Вы действительно хотите удалить выбранный элемент?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:327
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
@@ -3332,7 +3337,7 @@ msgstr ""
 "Вы действительно хотите удалить выбранные файлы и их дочерние элементы кода "
 "программной части из проекта?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:334
 msgid "Are you sure you want to remove the selected files from the project?"
 msgstr "Вы действительно хотите удалить выбранные файлы из проекта?"
 
@@ -3348,7 +3353,7 @@ msgstr ""
 msgid "Are you sure you want to remove this template?"
 msgstr "Вы действительно хотите удалить этот шаблон?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:60
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:62
 msgid ""
 "Are you sure you want to revert the changes from the revision selected on "
 "these resources?"
@@ -3360,7 +3365,7 @@ msgstr ""
 msgid "Are you sure you want to revert the changes made in the selected files?"
 msgstr "Вы действительно хотите отменить изменения для выбранных файлов?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:56
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:58
 msgid ""
 "Are you sure you want to revert the selected resources to the revision "
 "specified (all local changes will be discarded)?"
@@ -3494,7 +3499,7 @@ msgstr "Не найдена сборка для платформы {0} (в {1})"
 msgid "Assembly:\t{0}"
 msgstr "Сборка:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:395
+#: ../src/addins/MacPlatform/MacPlatform.cs:391
 msgid "Assistive Technology Detected"
 msgstr "Обнаружено наличие специальных возможностей"
 
@@ -3584,7 +3589,7 @@ msgid "Author:"
 msgstr "Автор:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 msgid "Authors"
 msgstr "Авторы"
 
@@ -3659,13 +3664,13 @@ msgstr "Автоматически вставлять закрывающие т�
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr "Вставлять пунктуацию автоматически (=\"\", /> и т. п.)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1077
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1092
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr ""
 "Автоматически прятать или показывать изменения при слиянии или перемещении "
 "изменений из одной ветви в другую"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1939
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr "Автоматически прятать/показывать изменения при переключении ветвей"
@@ -3715,7 +3720,7 @@ msgstr "Доступно для:"
 msgid "Available in repository:"
 msgstr "Доступно в репозитории:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
 msgid "B_uild {0}"
 msgstr "С_борка {0}"
 
@@ -3890,7 +3895,7 @@ msgstr "Свойства ветви"
 msgid "Branch name too long"
 msgstr "Имя ветви слишком длинное"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:139
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:140
 msgid "Branch switch failed"
 msgstr "Не удалось переключить ветви"
 
@@ -4006,7 +4011,7 @@ msgstr "Выходные данные сборки {0}.binlog"
 msgid "Build _without Saving"
 msgstr "Сб_орка без сохранения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:521
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:99
 msgid "Build action"
 msgstr "Действие при сборке"
@@ -4052,11 +4057,11 @@ msgstr "Выполнить сборку проекта перед проведе
 msgid "Build project before running"
 msgstr "Выполнить сборку проекта перед запуском"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
 msgid "Build project {0}"
 msgstr "Проект сборки {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
 msgid "Build solution {0}"
 msgstr "Выполнить сборку решения {0}"
 
@@ -4081,7 +4086,7 @@ msgstr "Выполнить сборку текущего проекта"
 msgid "Build the projects in the active solution build configuration."
 msgstr "Сборка проектов в активной конфигурации сборки решения."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:223
 msgid "Build {0}"
 msgstr "Компилировать {0}"
 
@@ -4245,11 +4250,11 @@ msgstr "И_звлечь..."
 msgid "C_lean"
 msgstr "О_чистить"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:381
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:383
 msgid "C_lean {0}"
 msgstr "О_чистить {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:450
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:453
 msgid "C_lose"
 msgstr "З_акрыть"
 
@@ -4257,7 +4262,7 @@ msgstr "З_акрыть"
 msgid "C_lose All Solutions"
 msgstr "З_акрыть все решения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:540
 msgid "C_lose Others"
 msgstr "З_акрыть другие"
 
@@ -4269,7 +4274,7 @@ msgstr "З_акрыть проект"
 msgid "C_lose Solution"
 msgstr "З_акрыть решение"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:442
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:445
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:214
 msgid "C_lose Workspace"
 msgstr "За_крыть рабочую область"
@@ -4288,7 +4293,7 @@ msgstr "Ор_ганизация:"
 msgid "C_onnect"
 msgstr "П_одключиться"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:546
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
 msgid "C_opy File Path"
 msgstr "К_опировать путь к файлу"
 
@@ -4323,7 +4328,7 @@ msgstr "Вызвать статический элемент посредств�
 msgid "Camera tools, etc."
 msgstr "Средства камеры и т. п."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1993
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1999
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4332,7 +4337,7 @@ msgstr ""
 "Не удается выполнить \"{0}\". Выбранный режим выполнения не поддерживается "
 "для проектов .NET."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2011
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2017
 msgid ""
 "Can not execute. The run configuration working directory doesn't exist at {0}"
 msgstr ""
@@ -4454,7 +4459,7 @@ msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Не удается создать каталог {0}, так как существует файл с таким именем."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2007
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:177
 msgid "Cannot execute \"{0}\""
 msgstr "Не удается выполнить \"{0}\"."
@@ -4533,7 +4538,7 @@ msgstr ""
 msgid "Celtic"
 msgstr "Кельтский"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:708
 msgid "Center and Focus Document"
 msgstr "Разместить документ по центру и в фокусе"
 
@@ -4631,7 +4636,7 @@ msgstr "Не удается создать записи в журнале изм
 msgid "ChangeLog entry:"
 msgstr "Запись в журнале изменений:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid "Changes"
 msgstr "Изменения"
 
@@ -4736,7 +4741,7 @@ msgstr "Проверять _наличие обновлений для паке�
 msgid "Check for the command to run on an external console"
 msgstr "Установите флажок, чтобы команда выполнялась во внешней консоли"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:896
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
 msgid "Check for updates to MonoDevelop and packages it requires"
 msgstr "Проверяет наличие обновлений для MonoDevelop и требуемые пакеты"
 
@@ -5120,9 +5125,24 @@ msgstr "Установите флажок, чтобы использовать �
 msgid "Check to wrap the lines at 60 characters"
 msgstr "Установите флажок, чтобы переносить строки на 60 символах"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:344
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1433
+#, fuzzy
+msgid "Checking out file '{0}'"
+msgstr "Извлечение файлов"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:359
 msgid "Checking out files"
 msgstr "Извлечение файлов"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1425
+#, fuzzy
+msgid "Checking out repository at '{0}'"
+msgstr "Идет извлечение {0}..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1495
+#, fuzzy
+msgid "Checking out submodule at '{0}'…"
+msgstr "Идет извлечение {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:47
 msgid "Checking out {0}..."
@@ -5149,7 +5169,7 @@ msgstr "Путь извлечения не пуст. Вы хотите удал�
 msgid "Chemistry software"
 msgstr "Программное обеспечение для химии"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1198
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1213
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "Идет отбор изменений {0} — {1}/{2}"
 
@@ -5270,7 +5290,7 @@ msgstr "Имя цели очистки:"
 msgid "Clean the selected project or solution"
 msgstr "Очистить выбранный проект или решение"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:382
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:384
 msgid "Clean {0}"
 msgstr "Очистить {0}"
 
@@ -5328,7 +5348,7 @@ msgstr "Очистить F# Interactive"
 msgid "Clear Icon"
 msgstr "Очистить значок"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:484
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:487
 msgid "Clear Recent Files"
 msgstr "Очистить последние файлы"
 
@@ -5336,11 +5356,11 @@ msgstr "Очистить последние файлы"
 msgid "Clear Recent Searches"
 msgstr "Очистить список последних поисков"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:494
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:497
 msgid "Clear Recent Solutions"
 msgstr "Очистить последние решения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
 msgid "Clear bookmarks"
 msgstr "Очистить закладки"
 
@@ -5352,7 +5372,7 @@ msgstr "Очистить консоль"
 msgid "Clear recent files"
 msgstr "Очистить последние файлы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:489
 msgid "Clear recent files list"
 msgstr "Очистить список последних файлов"
 
@@ -5360,7 +5380,7 @@ msgstr "Очистить список последних файлов"
 msgid "Clear recent projects"
 msgstr "Очистить последние проекты"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
 msgid "Clear recent solutions list"
 msgstr "Очистить список последних решений"
 
@@ -5368,7 +5388,7 @@ msgstr "Очистить список последних решений"
 msgid "Clear results"
 msgstr "Очистить результаты"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:650
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:653
 msgid "Clear the navigation history"
 msgstr "Очистить журнал навигации"
 
@@ -5459,6 +5479,20 @@ msgstr "Требуется сертификат клиента"
 msgid "Clipboard Ring"
 msgstr "Буфер обмена"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Cloning submodules failed"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1487
+#, fuzzy
+msgid "Cloning submodules…"
+msgstr "Идет разрешение символа…"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1415
+#, fuzzy
+msgid "Cloning…"
+msgstr "Выгрузка…"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:449
@@ -5466,13 +5500,13 @@ msgstr "Буфер обмена"
 msgid "Close"
 msgstr "Закрыть"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:556
 #, fuzzy
 msgid "Close All Except _Pinned"
 msgstr "Закрыть все файлы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:436
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:439
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:536
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/DefaultSourceEditorOptions.cs:434
 msgid "Close All Files"
 msgstr "Закрыть все файлы"
@@ -5485,11 +5519,11 @@ msgstr "Закрыть MonoDevelop"
 msgid "Close Project"
 msgstr "Закрыть проект"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:451
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:454
 msgid "Close Workspace Item"
 msgstr "Закрыть элемент рабочей области"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:435
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:438
 msgid "Close _All"
 msgstr "Закрыть _все"
 
@@ -5497,21 +5531,21 @@ msgstr "Закрыть _все"
 msgid "Close _without Saving"
 msgstr "Закрыть _без сохранения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:429
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:432
 msgid "Close active file"
 msgstr "Закрыть активный файл"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:554
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:557
 #, fuzzy
 msgid "Close all files except pinned"
 msgstr "Закрывает все открытые файлы, кроме активного"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:443
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:446
 msgid "Close all solutions open in the current workspace"
 msgstr "Закрыть все решения, открытые в текущей рабочей области"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:89
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:174
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:207
 msgid "Close current workspace"
 msgstr "Закрыть текущую рабочую область"
 
@@ -5523,7 +5557,7 @@ msgstr "Закрыть документ"
 msgid "Close pad"
 msgstr "Закрыть панель"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:452
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
 msgid "Close the active solution or workspace item"
 msgstr "Закрыть активный элемент решения или рабочей области"
 
@@ -5551,7 +5585,7 @@ msgstr "Закрыть рабочую область"
 msgid "Close the {0} pad"
 msgstr "Закрыть панель {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:544
 msgid "Close to the _Right"
 msgstr "Закрыть файлы _справа"
 
@@ -5565,15 +5599,15 @@ msgstr "Закрыть страницу приветствия после отк
 msgid "Close {0}"
 msgstr "Закрыть \"{0}\""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:538
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
 msgid "Closes all opened files except for the active file"
 msgstr "Закрывает все открытые файлы, кроме активного"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:534
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
 msgid "Closes all opened files in a tab"
 msgstr "Закрыть все открытые файлы на вкладке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:542
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
 msgid "Closes all opened files to the right of the active file"
 msgstr "Закрытие всех открытых файлов справа от активного файла"
 
@@ -5642,7 +5676,7 @@ msgstr "Создание базы данных завершения кода"
 msgid "Collapse All"
 msgstr "Свернуть все"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
 msgid "Collapse All Nodes"
 msgstr "Свернуть все узлы"
 
@@ -5716,7 +5750,7 @@ msgstr "Аргументы команды для {0}"
 msgid "Command Line Options"
 msgstr "Параметры командной строки"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:454
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:456
 msgid "Command execution failed"
 msgstr "Сбой при выполнении команды"
 
@@ -5735,7 +5769,7 @@ msgstr "Параметры командной строки:"
 msgid "Command:"
 msgstr "Команда:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:57
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:62
 msgid "Commands"
 msgstr "Команды"
 
@@ -5858,11 +5892,11 @@ msgstr "Параметры компилятора"
 msgid "Compiling resource {0} with {1}"
 msgstr "Компиляция ресурса {0} с {1}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
 msgid "Complete Word"
 msgstr "Завершить слово"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 msgid "Complete current statement"
 msgstr "Завершить текущий оператор"
 
@@ -5874,7 +5908,7 @@ msgstr "Завершить на пробеле"
 msgid "Complete with Space or Punctuation"
 msgstr "Завершение пробелом или знаком пунктуации"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
 msgid "Completes the current statement"
 msgstr "Завершает текущий оператор"
 
@@ -5923,7 +5957,7 @@ msgstr "Конфигурация"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1886
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2270
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2320
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1982
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1988
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Конфигурация \"{0}\" не найдена в проекте \"{1}\""
 
@@ -6022,7 +6056,7 @@ msgstr "Конфликт"
 msgid "Conflict {0}"
 msgstr "Конфликт {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1116
 msgid "Conflicting local changes found"
 msgstr "Обнаружены конфликтующие локальные изменения"
 
@@ -6314,7 +6348,7 @@ msgstr "Копировать более позднюю версию"
 msgid "Copy the assembly to the output directory when building the project"
 msgstr "Скопировать сборку в выходной каталог при сборке проекта"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:548
 msgid "Copy the file path to the clipboard"
 msgstr "Копировать путь к файлу в буфер обмена"
 
@@ -6330,7 +6364,7 @@ msgstr "Копировать выбранный фрагмент"
 msgid "Copy to output directory"
 msgstr "Копировать в выходной каталог"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:368
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2293
 msgid "Copying files..."
@@ -6419,7 +6453,7 @@ msgstr ""
 "Не удалось получить имя сборки для пользовательской сборки \"{0}\". Теперь "
 "отладчик будет отлаживать весь код, а не только пользовательский."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1138
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1140
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:393
 msgid "Could not get diff information. "
 msgstr "Не удалось получить информацию о несовпадении. "
@@ -6651,7 +6685,7 @@ msgid "Create a new empty class"
 msgstr "Создает пустой класс."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:246
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:402
 msgid "Create a new file"
 msgstr "Создать файл"
 
@@ -6659,11 +6693,11 @@ msgstr "Создать файл"
 msgid "Create a new folder"
 msgstr "Создать папку"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:418
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:421
 msgid "Create a new solution"
 msgstr "Создать решение"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:424
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:427
 msgid "Create a new workspace"
 msgstr "Создать рабочую область"
 
@@ -6675,7 +6709,7 @@ msgstr "Создать каталог проекта в каталоге реш�
 msgid "Create a project which can generate packages for a solution"
 msgstr "Создать проект, способный формировать пакеты для решения"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:53
 msgid "Create an initial commit first."
 msgstr "Сначала создайте начальную фиксацию."
 
@@ -6720,7 +6754,7 @@ msgstr "Создать цветовую схему"
 msgid "Create new file"
 msgstr "Создать файл"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:578
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
 msgid "Create new layout"
 msgstr "Создать макет"
 
@@ -7389,7 +7423,7 @@ msgstr "Вырезать"
 msgid "Cut the selection"
 msgstr "Вырезать выбранный фрагмент"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1210
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
@@ -7451,7 +7485,7 @@ msgstr "Дата и время"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -7555,7 +7589,7 @@ msgstr "Отклонить"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -7718,11 +7752,11 @@ msgstr "Удалить задачу"
 msgid "Delete also configurations in solution items"
 msgstr "Удалить также и конфигурации в элементах решения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:583
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:586
 msgid "Delete current layout"
 msgstr "Удалить текущий макет"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
 msgid "Delete entire line"
 msgstr "Удалить всю строку"
 
@@ -7730,27 +7764,27 @@ msgstr "Удалить всю строку"
 msgid "Delete from Disk"
 msgstr "Удалить с диска"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1064
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1067
 msgid "Delete left character"
 msgstr "Удалить левый символ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1189
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1192
 msgid "Delete next subword"
 msgstr "Удалить следующее подслово"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1188
 msgid "Delete next word"
 msgstr "Удалить следующее слово"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 msgid "Delete previous subword"
 msgstr "Удалить предыдущее подслово"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid "Delete previous word"
 msgstr "Удалить предыдущее слово"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1069
 msgid "Delete right character"
 msgstr "Удалить правый символ"
 
@@ -7766,11 +7800,11 @@ msgstr "Удалить файл проекта и весь каталог про
 msgid "Delete the selection"
 msgstr "Удалить выбранный фрагмент"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1105
 msgid "Delete to end of line"
 msgstr "Удалить до конца строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
 msgid "Delete to start of line"
 msgstr "Удалить до начала строки"
 
@@ -7797,7 +7831,7 @@ msgstr ""
 "и сохраняет в имени группы 1 интервал между ранее \n"
 "определенным именем группы 2 и текущей группой."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
 "Удаляет все до конца строки или окончание строки, если курсор уже стоит в "
@@ -8052,7 +8086,7 @@ msgstr ""
 "Каталог {0} уже существует.\n"
 "Вы хотите продолжить создание проекта?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:490
 msgid "Directory {0} is empty, no files have been added."
 msgstr "Каталог {0} пуст, файлы не добавлены."
 
@@ -8144,11 +8178,11 @@ msgstr "Вкладка \"Дизассемблированный код\""
 msgid "Discovery document"
 msgstr "Документ обнаружения"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1996
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1997
 msgid "Display Options"
 msgstr "Параметры отображения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:607
 msgid "Display Options List"
 msgstr "Список параметров отображения"
 
@@ -8184,11 +8218,11 @@ msgstr "Не предпочитать \"this.\""
 msgid "Do not reference mscorlib.dll"
 msgstr "Не ссылаться на mscorlib.dll"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:313
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:314
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "Вы действительно хотите скопировать папку \"{0}\" в папку \"{1}\"?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:311
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:312
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -8196,11 +8230,11 @@ msgstr ""
 "Вы действительно хотите скопировать папку \"{0}\" в корневой каталог проекта "
 "\"{1}\"?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:306
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
 msgstr "Вы действительно хотите переместить папку \"{0}\" в папку \"{1}\"?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:303
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:304
 msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -8268,15 +8302,15 @@ msgstr "Вы хотите удалить ссылку на него из спи�
 msgid "Do you want to save the changes before committing?"
 msgstr "Вы хотите сохранить изменения перед фиксацией?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:359
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:360
 msgid "Do you want to save the file '{0}' before the copy operation?"
 msgstr "Вы хотите сохранить файл \"{0}\" перед операцией копирования?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:355
 msgid "Do you want to save the file '{0}' before the move operation?"
 msgstr "Вы хотите сохранить файл \"{0}\" перед операцией перемещения?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:362
 msgid ""
 "Do you want to save the following files before the copy operation?\n"
 "\n"
@@ -8286,7 +8320,7 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:356
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:357
 msgid ""
 "Do you want to save the following files before the move operation?\n"
 "\n"
@@ -8334,7 +8368,7 @@ msgstr "Закрепить {0}"
 msgid "Document"
 msgstr "Документ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:826
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:829
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:206
 msgid "Document List"
 msgstr "Список документов"
@@ -8378,7 +8412,7 @@ msgstr "Ко_мментарии к документации"
 msgid "Documents"
 msgstr "Документы"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:364
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:53
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:140
 msgid "Don't Save"
@@ -8424,15 +8458,15 @@ msgstr "Сборка {0}"
 msgid "Downloads"
 msgstr "Загрузки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 msgid "Dump Accessibility Tree"
 msgstr "Дамп дерева специальных возможностей"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
 msgid "Dump Accessibility Tree (10s)"
 msgstr "Дамп дерева специальных возможностей (10 с)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
 msgid "Dump UI Tree"
 msgstr "Дамп дерева пользовательского интерфейса"
 
@@ -8450,7 +8484,7 @@ msgstr "Дублирование"
 msgid "Duplicate Configuration"
 msgstr "Повторяющаяся конфигурация"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1206
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 msgid "Duplicate line"
 msgstr "Дублировать строку"
 
@@ -8458,7 +8492,7 @@ msgstr "Дублировать строку"
 msgid "Duplicates:"
 msgstr "Дубликаты:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
 msgid "Dynamic abbrev"
 msgstr "Динамическое сокращение"
 
@@ -8515,7 +8549,7 @@ msgstr "Изменить точку останова..."
 msgid "Edit Custom Modes..."
 msgstr "Изменить пользовательские режимы..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
 msgid "Edit Custom Tools..."
 msgstr "Изменить пользовательские инструменты..."
@@ -8733,7 +8767,7 @@ msgstr "Пустое тело оператора управления"
 msgid "Empty destructor is redundant"
 msgstr "Пустой деструктор является избыточным"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:488
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
 msgid "Empty directory."
 msgstr "Пустой каталог."
 
@@ -8947,7 +8981,7 @@ msgstr "Инкапсулировать поля (и использовать с�
 msgid "Encapsulate fields (but still use field)"
 msgstr "Инкапсулировать поля (но продолжать использовать поле)"
 
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:148
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:181
 msgid "Encoding:"
 msgstr "Кодировка:"
 
@@ -9741,63 +9775,63 @@ msgstr "Развернуть все"
 msgid "Expand matches"
 msgstr "Развернуть совпадения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Expand selection to document end"
 msgstr "Развернуть выделенный фрагмент к концу документа"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
 msgid "Expand selection to document start"
 msgstr "Развернуть выделенный фрагмент к началу документа"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1158
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 msgid "Expand selection to line"
 msgstr "Развернуть выделенный фрагмент на строку"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 msgid "Expand selection to line end"
 msgstr "Развернуть выделенный фрагмент к концу строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1153
 msgid "Expand selection to line start"
 msgstr "Развернуть выделенный фрагмент к началу строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1151
 msgid "Expand selection to next line"
 msgstr "Развернуть выделенный фрагмент до следующей строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1144
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 msgid "Expand selection to next subword"
 msgstr "Развернуть выделенный фрагмент до следующего подслова"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
 msgid "Expand selection to next word"
 msgstr "Развернуть выделенный фрагмент до следующего слова"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1194
 msgid "Expand selection to page down"
 msgstr "Развернуть выделенный фрагмент на страницу вперед"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1193
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Expand selection to page up"
 msgstr "Развернуть выделенный фрагмент на страницу назад"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 msgid "Expand selection to previous line"
 msgstr "Развернуть выделенный фрагмент до предыдущей строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1142
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 msgid "Expand selection to previous subword"
 msgstr "Развернуть выделенный фрагмент до предыдущего подслова"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
 msgid "Expand selection to previous word"
 msgstr "Развернуть выделенный фрагмент до предыдущего слова"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
 msgid "Expand selection to the left"
 msgstr "Развернуть выделенный фрагмент влево"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
 msgid "Expand selection to the right"
 msgstr "Развернуть выделенный фрагмент вправо"
 
@@ -9930,7 +9964,7 @@ msgstr "Методы расширения следует объявлять ст
 msgid "Extension packages"
 msgstr "Пакеты расширений"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:559
+#: ../src/addins/MacPlatform/MacPlatform.cs:555
 msgid "Extensions..."
 msgstr "Расширения..."
 
@@ -10027,7 +10061,7 @@ msgstr "Файл проекта F#"
 msgid "F# script files"
 msgstr "Файлы скриптов F#"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:962
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
 msgid "F_ind in Files..."
 msgstr "Н_айти в файлах..."
 
@@ -10128,7 +10162,7 @@ msgstr "Отзывы"
 msgid "Fetch"
 msgstr "Получить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1046
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1061
 msgid "Fetching"
 msgstr "Извлекается"
 
@@ -10137,7 +10171,7 @@ msgstr "Извлекается"
 msgid "Fetching external item into '{0}'"
 msgstr "Получение внешнего элемента в \"{0}\""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1062
 msgid "Fetching from '{0}'"
 msgstr "Получение из \"{0}\""
 
@@ -10165,7 +10199,7 @@ msgstr "Поле {0}"
 msgid "Fields"
 msgstr "Поля"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:385
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:388
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:676
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:126
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
@@ -10237,6 +10271,11 @@ msgstr "Имя файла"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:47
 msgid "File Name Without Extension"
 msgstr "Имя файла без расширений"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:383
+#, fuzzy
+msgid "File Nesting"
+msgstr "Расширение файла"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:44
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:57
@@ -10343,7 +10382,7 @@ msgstr "Файл не найден."
 msgid "File not found: {0}"
 msgstr "Файл не найден: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:242
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:165
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:171
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:112
@@ -10479,11 +10518,11 @@ msgstr "Найти перегрузки элементов"
 msgid "Find Method Overloads"
 msgstr "Найти перегрузки методов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
 msgid "Find Next Like Selection"
 msgstr "Найти следующий фрагмент, подобный выделенному"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:958
 msgid "Find Previous Like Selection"
 msgstr "Найти предыдущий фрагмент, подобный выделенному"
 
@@ -10495,27 +10534,27 @@ msgstr "Найти расширения типов"
 msgid "Find _Derived Symbols"
 msgstr "Найти _производные символы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:931
 msgid "Find _Next"
 msgstr "Найти _далее"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:941
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
 msgid "Find _Next (Emacs behavior)"
 msgstr "Найти _следующий (поведение Emacs)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:934
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
 msgid "Find _Previous"
 msgstr "Найти _ранее"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 msgid "Find _Previous (Emacs behavior)"
 msgstr "Найти _предыдущий (поведение Emacs)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 msgid "Find and run a specific command."
 msgstr "Найти и запустить определенную команду."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 msgid "Find caret"
 msgstr "Найти курсор"
 
@@ -10607,11 +10646,11 @@ msgstr "Переключить оператор \"{0}\" на \"{1}\""
 msgid "Flush Memory"
 msgstr "Освободить память"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
 msgid "Focus and center current document"
 msgstr "Разместить текущий документ в фокусе и по центру"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
 msgid "Focus current document"
 msgstr "Переместить фокус на текущий документ"
 
@@ -11311,7 +11350,7 @@ msgstr "Перейти на одну страницу назад"
 msgid "Go back to the home page"
 msgstr "Вернуться на домашнюю страницу"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1082
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1085
 msgid "Go down one page"
 msgstr "Перейти на одну страницу вниз"
 
@@ -11319,11 +11358,11 @@ msgstr "Перейти на одну страницу вниз"
 msgid "Go forward one page"
 msgstr "Перейти на одну страницу вперед"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
 msgid "Go left one character"
 msgstr "Перейти на один символ влево"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
 msgid "Go right one character"
 msgstr "Перейти на один символ вправо"
 
@@ -11343,7 +11382,7 @@ msgstr "Перейти к контроллеру"
 msgid "Go to Download Page"
 msgstr "Перейти к странице скачивания"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:990
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 msgid "Go to File..."
 msgstr "Перейти к файлу..."
 
@@ -11351,24 +11390,24 @@ msgstr "Перейти к файлу..."
 msgid "Go to Implementation"
 msgstr "Перейти к реализации"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1027
 msgid "Go to Line..."
 msgstr "Перейти к строке..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
 msgid "Go to Matching Brace"
 msgstr "Перейти к парной фигурной скобке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 msgid "Go to Next Bookmark"
 msgstr "Перейти к следующей закладке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1014
 msgid "Go to Previous Bookmark"
 msgstr "Перейти к предыдущей закладке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:983
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 msgid "Go to Type..."
 msgstr "Перейти к типу..."
 
@@ -11425,23 +11464,23 @@ msgstr "Перейти к жур_налу"
 msgid "Go to _Reference"
 msgstr "Перейти по с_сылке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 msgid "Go to a specific line"
 msgstr "Перейти к определенной строке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Go to beginning of document"
 msgstr "Перейти в начало документа"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1062
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
 msgid "Go to beginning of line"
 msgstr "Перейти в начало строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
 msgid "Go to end of document"
 msgstr "Перейти в конец документа"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Go to end of line"
 msgstr "Перейти в конец строки"
 
@@ -11449,39 +11488,39 @@ msgstr "Перейти в конец строки"
 msgid "Go to failure"
 msgstr "Перейти к ошибке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1018
 msgid "Go to next bookmark"
 msgstr "Перейти к следующей закладке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
 msgid "Go to next line"
 msgstr "Перейти к следующей строке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 msgid "Go to next subword"
 msgstr "Перейти к следующему подслову"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
 msgid "Go to next word"
 msgstr "Перейти к следующему слову"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1009
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
 msgid "Go to previous bookmark"
 msgstr "Перейти к предыдущей закладке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
 msgid "Go to previous line"
 msgstr "Перейти к предыдущей строке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 msgid "Go to previous subword"
 msgstr "Перейти к предыдущему подслову"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
 msgid "Go to previous word"
 msgstr "Перейти к предыдущему слову"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1080
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Go up one page"
 msgstr "Перейти на одну страницу вверх"
 
@@ -11617,7 +11656,7 @@ msgstr "Иврит"
 msgid "Hebrew Visual"
 msgstr "Визуальный иврит"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:870
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:44
 msgid "Help"
 msgstr "Справка"
@@ -11652,7 +11691,7 @@ msgstr "Шестнадцатеричный текстовый редактор"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:264
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:41
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
 msgid "Hidden"
@@ -11671,7 +11710,7 @@ msgstr "Скрыть приложение"
 msgid "Hide Categories"
 msgstr "Скрыть категории"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1226
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1229
 msgid "Hide Current Message"
 msgstr "Скрыть текущее сообщение"
 
@@ -11683,7 +11722,7 @@ msgstr "Скрыть сведения"
 msgid "Hide other applications' windows"
 msgstr "Скрыть окна других приложений"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:620
+#: ../src/addins/MacPlatform/MacPlatform.cs:616
 msgid "Hide {0}"
 msgstr "Скрыть {0}"
 
@@ -12113,7 +12152,7 @@ msgstr "Директива Implements должна иметь непустой �
 msgid "Import Color Theme"
 msgstr "Импорт цветовой схемы"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:474
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:475
 msgid "Import From Folder"
 msgstr "Импортировать из папки"
 
@@ -12375,6 +12414,10 @@ msgid "Initialize readonly auto-property from parameter"
 msgstr ""
 "Инициализировать автоматическое свойство только для чтения из параметра"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:584
+msgid "Initializing '{0}' ({1}) command failed."
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:95
 msgid "Initializing Main Window"
 msgstr "Инициализация главного окна"
@@ -12462,7 +12505,7 @@ msgstr "Вставить разделитель после"
 msgid "Insert Separator Before"
 msgstr "Вставить разделитель перед"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
 msgid "Insert Snippet..."
 msgstr "Вставить фрагмент кода..."
 
@@ -12491,11 +12534,11 @@ msgstr "Вставить курсоры для всех совпадений"
 msgid "Insert format argument"
 msgstr "Вставить аргумент формата"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1173
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
 msgid "Insert line break after the caret"
 msgstr "Вставить разрыв строки после курсора"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
 msgid "Insert new line"
 msgstr "Вставить новую строку"
 
@@ -12590,7 +12633,7 @@ msgstr "Вставлять пробел между скобками для пр�
 msgid "Insert space within square brackets"
 msgstr "Вставлять пробел между квадратными скобками"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
 msgid "Insert tab"
 msgstr "Вставить вкладку"
 
@@ -12598,7 +12641,7 @@ msgstr "Вставить вкладку"
 msgid "Inserts a Guid at caret position"
 msgstr "Вставляет GUID в позиции курсора"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
 msgid "Inserts a snippet"
 msgstr "Вставка фрагмента кода"
 
@@ -12673,7 +12716,7 @@ msgstr "Установка..."
 msgid "Instrumentation"
 msgstr "Инструментирование"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:734
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:737
 msgid "Instrumentation Monitor"
 msgstr "Монитор инструментирования"
 
@@ -12791,7 +12834,7 @@ msgstr "Недопустимый символ \"{0}\" в доступной дл
 msgid "Invalid code page number."
 msgstr "Недопустимый номер кодовой страницы."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
 msgid "Invalid configuration mapping"
 msgstr "Недопустимое сопоставление конфигурации"
 
@@ -12864,7 +12907,7 @@ msgstr ""
 "Недопустимый файл решения. Существует два проекта с одинаковым GUID. Проект "
 "{0} будет пропущен."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:248
 msgid "Invariant"
 msgstr "Инвариантная"
 
@@ -12931,11 +12974,11 @@ msgstr "Соединить строки"
 msgid "Join the current line with the next line"
 msgstr "Соединить текущую строку со следующей"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
 msgid "Jump to a file in the current workspace"
 msgstr "Перейти к файлу в текущей рабочей области"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 msgid "Jump to a item in the current workspace"
 msgstr "Перейти к элементу в текущей рабочей области"
 
@@ -12952,7 +12995,7 @@ msgstr "Перейти к первой ошибке или первому пре
 msgid "Jump to line {0}"
 msgstr "Перейти к строке {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:984
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "Перейти к объявлению типа в текущей рабочей области"
 
@@ -13161,7 +13204,7 @@ msgstr "Запустить скрипт для {0}"
 msgid "Layout"
 msgstr "Макет"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:573
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
 msgid "Layout List"
 msgstr "Список макетов"
 
@@ -13280,7 +13323,7 @@ msgstr "Список"
 msgid "List of changes for this refactoring:"
 msgstr "Список изменений для этого рефакторинга:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
 msgid "List of programs to open with"
 msgstr "Список программ, в которых можно открыть"
 
@@ -13312,6 +13355,11 @@ msgstr "Загрузить/сохранить"
 msgid "Loaded Assemblies"
 msgstr "Загруженные сборки"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:362
+#, fuzzy
+msgid "Loading"
+msgstr "Идет загрузка..."
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:264
 msgid "Loading Workbench"
 msgstr "Идет загрузка Workbench"
@@ -13320,7 +13368,7 @@ msgstr "Идет загрузка Workbench"
 msgid "Loading build log…"
 msgstr "Загрузка журнала сборки…"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1129
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:363
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:485
 msgid "Loading data..."
@@ -13351,6 +13399,10 @@ msgstr "Идет загрузка элемента рабочей области
 #: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:546
 msgid "Loading {0} add-in"
 msgstr "Идет загрузка надстройки {0}"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:346
+msgid "Loading {0} search provider..."
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:51
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:97
@@ -13437,7 +13489,7 @@ msgid "Locking..."
 msgstr "Выполняется блокировка..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Log"
 msgstr "Журнал"
 
@@ -13719,7 +13771,7 @@ msgstr "Восстановить пакеты (решение)"
 msgid "Manage Repositories..."
 msgstr "Управление репозиториями..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:722
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:725
 msgid "Manage extensions"
 msgstr "Управление расширениями"
 
@@ -13749,7 +13801,7 @@ msgstr "Управляемый наблюдатель"
 msgid "Manifest File"
 msgstr "Файл манифеста"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 msgid "Mark Log"
 msgstr "Пометить журнал"
 
@@ -13934,7 +13986,7 @@ msgstr ""
 "группы записи, используемой в этом выражении, конструкция чередования \n"
 "интерпретируется как проверка выражения."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 msgid "Matching _Brace"
 msgstr "П_арная фигурная скобка"
 
@@ -13990,7 +14042,7 @@ msgstr "Категории меню:"
 msgid "Menu entry"
 msgstr "Запись меню"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.MergeDialog.cs:112
 msgid "Merge"
 msgstr "Объединить"
@@ -14003,11 +14055,11 @@ msgstr "Объединить ветвь..."
 msgid "Merge Conflict Resolution"
 msgstr "Разрешение конфликта слияния"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1229
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1244
 msgid "Merging"
 msgstr "Слияние"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:107
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:108
 msgid "Merging branch '{0}'..."
 msgstr "Идет слияние ветви \"{0}\"..."
 
@@ -14056,7 +14108,7 @@ msgstr "Метод {0}"
 msgid "Methods"
 msgstr "Методы"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
@@ -14189,7 +14241,7 @@ msgstr "Имя модуля:"
 msgid "Monitor application/applet that monitors some resource or activity"
 msgstr "Приложение монитора, отслеживающее определенные ресурсы или активность"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Mono"
 msgstr "Mono"
 
@@ -14225,7 +14277,7 @@ msgstr "Среды выполнения Mono не найдена"
 msgid "Mono runtime settings:"
 msgstr "Параметры среды выполнения Mono:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:242
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -14317,16 +14369,16 @@ msgstr "Больше одного корневого элемента"
 msgid "More..."
 msgstr "Дополнительно..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
 msgid "Move caret to EOL and insert new line"
 msgstr "Переместить курсор в конец строки и вставить новую строку"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:618
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:621
 msgid "Move cursor to next error or search match"
 msgstr ""
 "Переместить курсор на следующую ошибку или следующее совпадение при поиске"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:624
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:627
 msgid "Move cursor to previous error or search match"
 msgstr ""
 "Переместить курсор на предыдущую ошибку или предыдущее совпадение при поиске"
@@ -14335,11 +14387,11 @@ msgstr ""
 msgid "Move last caret down"
 msgstr "Переместить последний курсор вниз"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 msgid "Move the line or highlighted selection down"
 msgstr "Переместить строку или выбранный фрагмент вниз"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 msgid "Move the line or highlighted selection up"
 msgstr "Переместить строку или выбранный фрагмент вверх"
 
@@ -14351,19 +14403,19 @@ msgstr "Переместить выбранную папку вниз в спи�
 msgid "Move the selected folder up the list"
 msgstr "Переместить выбранную папку вверх в списке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:689
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:692
 msgid "Move to Next Notebook"
 msgstr "Переместить в следующую записную книжку"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:697
 msgid "Move to Previous Notebook"
 msgstr "Переместить в предыдущую записную книжку"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:641
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
 msgid "Move to next point in code navigation history"
 msgstr "Перейти к следующей точке в журнале навигации по коду"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:634
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:637
 msgid "Move to previous point in code navigation history"
 msgstr "Перейти к предыдущей точке в журнале навигации по коду"
 
@@ -14371,11 +14423,11 @@ msgstr "Перейти к предыдущей точке в журнале на
 msgid "Move to the next page"
 msgstr "Перейти к следующей странице"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2089
 msgid "Moving files"
 msgstr "Перемещение файлов"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2291
 msgid "Moving files..."
 msgstr "Выполняется перемещение файлов..."
@@ -14649,19 +14701,19 @@ msgstr "Собственные"
 msgid "Navigate"
 msgstr "Переход"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
 msgid "Navigate To..."
 msgstr "Перейти к..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:629
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:632
 msgid "Navigate _Back"
 msgstr "Переход _назад"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:636
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:639
 msgid "Navigate _Forward"
 msgstr "Переход _вперед"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:647
 msgid "Navigate _History"
 msgstr "Журнал _навигации"
 
@@ -14669,7 +14721,7 @@ msgstr "Журнал _навигации"
 msgid "Navigation _History"
 msgstr "Жур_нал навигации"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1019
 msgid "Ne_xt"
 msgstr "Д_алее"
 
@@ -14786,7 +14838,7 @@ msgstr "Новая группа"
 msgid "New Group..."
 msgstr "Новая группа..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:366
+#: ../src/addins/MacPlatform/MacPlatform.cs:362
 msgid "New Instance"
 msgstr "Новый экземпляр"
 
@@ -14846,7 +14898,7 @@ msgid "New _Class..."
 msgstr "Создать _файл..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:245
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:396
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
 msgid "New _File..."
 msgstr "Создать _файл..."
 
@@ -14854,11 +14906,11 @@ msgstr "Создать _файл..."
 msgid "New _Folder…"
 msgstr "Создать _папку…"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:419
 msgid "New _Solution..."
 msgstr "Создать р_ешение..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:423
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:426
 msgid "New _Workspace..."
 msgstr "Создать рабо_чую область..."
 
@@ -14948,7 +15000,7 @@ msgstr "Следующий документ"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:394
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14998,8 +15050,8 @@ msgstr "Нет доступных исправлений кода"
 msgid "No completions found"
 msgstr "Варианты завершения не найдены"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1126
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1141
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1128
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1143
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:382
 msgid "No differences found"
 msgstr "Различия не найдены"
@@ -15035,8 +15087,8 @@ msgid ""
 msgstr ""
 "Не найден файл makefile в каталоге проекта. Вы хотите создать его сейчас?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:437
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:598
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:168
 msgid "No matches"
 msgstr "Нет совпадений"
@@ -15203,8 +15255,8 @@ msgstr "Проект не является развертываемым."
 msgid "Not a glade file according to node name."
 msgstr "Согласно имени узла не является файлом Glade."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1032
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1034
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1049
 msgid "Not a valid git repository."
 msgstr "Нет допустимого репозитория Git."
 
@@ -15240,7 +15292,7 @@ msgstr "Возникло исключение NotImplementedException."
 msgid "NotImplementedException({0}) thrown."
 msgstr "Возникло исключение NotImplementedException({0})."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:64
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:66
 msgid ""
 "Note: The reversion will occur in your working copy, so you will still need "
 "to perform a commit to complete it."
@@ -15317,7 +15369,7 @@ msgstr "Программное обеспечение для численног�
 msgid "OK"
 msgstr "ОК"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:514
 msgid "O_pen Containing Folder"
 msgstr "О_ткрыть содержащую папку"
 
@@ -15356,11 +15408,11 @@ msgstr "Один журнал изменений в каждом каталог�
 msgid "One ChangeLog in the project root directory"
 msgstr "Один журнал изменений в корневом каталоге проекта"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:682
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:685
 msgid "One Column"
 msgstr "Один столбец"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:683
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:686
 msgid "One Editor Column"
 msgstr "Один столбец редактора"
 
@@ -15429,7 +15481,7 @@ msgstr "Открывать файлы C# в новом редакторе"
 msgid "Open Glade File"
 msgstr "Открыть файл Glade"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:888
 msgid "Open Log Directory"
 msgstr "Открыть каталог журналов"
 
@@ -15454,7 +15506,7 @@ msgid "Open URL in web browser when app starts:"
 msgstr "Открыть URL-адрес в веб-браузере при запуске приложения:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:185
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:218
 msgid "Open With:"
 msgstr "Открыть с помощью:"
 
@@ -15466,7 +15518,7 @@ msgstr "Открыть с _помощью"
 msgid "Open a file selector to select the project path"
 msgstr "Откройте средство выбора файла для выбора пути проекта"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:395
 msgid "Open file or solution"
 msgstr "Открыть файл или решение"
 
@@ -15482,7 +15534,7 @@ msgstr "Открыть диалоговое окно предпочтений"
 msgid "Open script"
 msgstr "Открыть скрипт"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:600
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:603
 msgid "Open selected document"
 msgstr "Открыть выбранный документ"
 
@@ -15491,8 +15543,8 @@ msgstr "Открыть выбранный документ"
 msgid "Open solution {0}"
 msgstr "Открыть решение {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:411
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:422
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:435
 msgid "Open with '{0}'"
 msgstr "Открыть с помощью \"{0}\""
 
@@ -15511,23 +15563,23 @@ msgstr "Открыть..."
 msgid "Opening {0}"
 msgstr "Открытие {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:505
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
 msgid "Opens a terminal in this folder"
 msgstr "Открывает терминал в этой папке"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
 msgid "Opens the directory where the diagnostic logs are stored"
 msgstr "Открывает каталог, где хранятся журналы диагностики"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
 msgid "Opens the folder in a file manager."
 msgstr "Открывает папку в диспетчере файлов."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:512
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:515
 msgid "Opens the folder that contains this file."
 msgstr "Открывает папку, содержащую этот файл."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:550
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
 msgid "Opens the last tab that has been closed"
 msgstr "Открывает последнюю закрытую вкладку"
 
@@ -15970,7 +16022,7 @@ msgstr "Панели"
 msgid "Page %N of %Q"
 msgstr "Стр. %N из %Q"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:475
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:478
 msgid "Page Set_up"
 msgstr "Параметры стра_ницы"
 
@@ -16183,7 +16235,7 @@ msgstr "Закрепить панель выходных данных"
 msgid "Pin results pad"
 msgstr "Закрепить панель результатов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:559
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:562
 msgid "Pin/Unpin current Tab selected"
 msgstr ""
 
@@ -16350,6 +16402,10 @@ msgstr "Выберите приложение для отладки"
 msgid "Please select which files and folders you want to delete:"
 msgstr "Выберите удаляемые поля и папки:"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Please use the command line client to init the submodules manually."
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:546
 msgid "Plural"
 msgstr "Множественное число"
@@ -16370,7 +16426,7 @@ msgstr "Политики для экспорта:"
 msgid "Policies to set or replace:"
 msgstr "Политики для задания или замены:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:552
 msgid "Policies..."
 msgstr "Политики..."
 
@@ -16395,7 +16451,7 @@ msgstr "Политика:"
 msgid "Pop stash"
 msgstr "Извлечь спрятанное"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:396
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:411
 msgid "Popping stash"
 msgstr "Извлечение спрятанного"
 
@@ -16472,7 +16528,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "Пара_метры..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
 msgid "Pre_vious"
 msgstr "_Назад"
 
@@ -16580,7 +16636,7 @@ msgstr "Предпочитать выражения throw"
 msgid "Preferences"
 msgstr "Параметры"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:555
+#: ../src/addins/MacPlatform/MacPlatform.cs:551
 msgid "Preferences..."
 msgstr "Параметры..."
 
@@ -16684,7 +16740,7 @@ msgstr "Предыдущая проблема в файле"
 msgid "Previous document"
 msgstr "Предыдущий документ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:470
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:473
 msgid "Print Previe_w"
 msgstr "Предварительный пр_осмотр"
 
@@ -16692,7 +16748,7 @@ msgstr "Предварительный пр_осмотр"
 msgid "Print a message and continue"
 msgstr "Распечатать сообщение и продолжить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:464
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:467
 msgid "Print current document"
 msgstr "Печать текущего документа"
 
@@ -16757,7 +16813,7 @@ msgstr "Обработать шаблоны T4..."
 msgid "Process all T4 templates."
 msgstr "Обработать все шаблоны T4."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 msgid "Profile"
 msgstr "Профиль"
@@ -16910,7 +16966,7 @@ msgid "Project Version"
 msgstr "Версия проекта"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 msgid "Project _Options"
 msgstr "Пара_метры проекта"
 
@@ -16963,7 +17019,7 @@ msgstr "Не указано имя проекта."
 msgid "Project name:"
 msgstr "Имя проекта:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:154
 msgid "Project not built in active configuration"
 msgstr "Не выполнена сборка проекта в активной конфигурации"
 
@@ -17121,7 +17177,7 @@ msgstr "Открытый ключ:"
 msgid "Publish"
 msgstr "Опубликовать"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:133
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:131
 msgid "Publish operation completed."
 msgstr "Операция публикации выполнена."
 
@@ -17146,7 +17202,7 @@ msgstr "Публикация приложения в обычной или об�
 msgid "Published"
 msgstr "Опубликовано"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:113
 msgid "Publishing \"{0}\" Project..."
 msgstr "Идет публикация проекта \"{0}\"..."
 
@@ -17171,7 +17227,7 @@ msgstr "URL-адрес отправки:"
 msgid "Push changes to remote repository after commit"
 msgstr "Оправить изменения в удаленный репозиторий после фиксации"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1731
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1745
 msgid "Push operation successfully completed."
 msgstr "Операция отправки выполнена успешно."
 
@@ -17191,7 +17247,7 @@ msgstr "Отправка тега"
 msgid "Pushing Tag '{0}' to '{1}'"
 msgstr "Отправка тега \"{0}\" в \"{1}\""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:65
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:66
 msgid "Pushing changes..."
 msgstr "Выполняется отправка изменений..."
 
@@ -17288,7 +17344,7 @@ msgstr "Тихий режим"
 msgid "Quit"
 msgstr "Выход"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:500
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:503
 msgid "Quit MonoDevelop"
 msgstr "Выйти из MonoDevelop"
 
@@ -17308,7 +17364,7 @@ msgstr "ROX Desktop"
 msgid "R_ebuild"
 msgstr "П_ерестроить"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:258
 msgid "R_ebuild {0}"
 msgstr "П_ерестроить {0}"
 
@@ -17320,7 +17376,7 @@ msgstr "Уд_аление и сортировка директив using"
 msgid "R_eplace"
 msgstr "З_аменить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
 msgid "R_eplace in Files..."
 msgstr "З_аменить в файлах..."
 
@@ -17462,11 +17518,11 @@ msgstr "Переместить изменения из одной ветви в 
 msgid "Rebase to Branch..."
 msgstr "Переместить изменения в ветвь..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1176
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1191
 msgid "Rebasing"
 msgstr "Перемещение изменений из одной ветви в другую"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:102
 msgid "Rebasing branch '{0}'..."
 msgstr "Перемещение изменений для ветви \"{0}\"..."
 
@@ -17478,7 +17534,7 @@ msgstr "Повторно скомпилировать все проекты дл
 msgid "Rebuild the current project"
 msgstr "Перестроить текущий проект"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:259
 msgid "Rebuild {0}"
 msgstr "Перестроить {0}"
 
@@ -17495,11 +17551,11 @@ msgstr "Выполняется перестроение... (Сборка)"
 msgid "Rebuilding... (Clean)"
 msgstr "Выполняется перестроение... (Очистка)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:321
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:336
 msgid "Receiving and indexing objects"
 msgstr "Получение и индексирование объектов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:490
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
 msgid "Recent Pro_jects"
 msgstr "Последние прое_кты"
 
@@ -17515,7 +17571,7 @@ msgstr "Послед_ние решения"
 msgid "Recent Templates"
 msgstr "Последние шаблоны"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:480
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:26
 msgid "Recent _Files"
 msgstr "Последние _файлы"
@@ -17698,7 +17754,7 @@ msgstr "Ссылки"
 msgid "References a strongly-typed model"
 msgstr "Ссылается на строго типизированную модель"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:612
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:305
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:155
@@ -17706,7 +17762,7 @@ msgstr "Ссылается на строго типизированную мод
 msgid "Refresh"
 msgstr "Обновить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:608
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
 msgid "Refresh the tree"
 msgstr "Обновить дерево"
 
@@ -17814,13 +17870,13 @@ msgstr "Удаленные источники"
 msgid "Remote Status"
 msgstr "Удаленное состояние"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:982
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:997
 msgid "Remote server error: {0}"
 msgstr "Ошибка удаленного сервера: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:386
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:397
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:295
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:463
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:472
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:200
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:208
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:74
@@ -17936,7 +17992,7 @@ msgstr "Удалить возвращенное выражение"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr "Удалить подменю (CTRL+СТРЕЛКА ВЛЕВО)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 msgid "Remove tab"
 msgstr "Удалить вкладку"
 
@@ -18126,7 +18182,7 @@ msgstr "Переименовать {0} в {1}"
 msgid "Renamed"
 msgstr "Переименован"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:552
 msgid "Reopen Closed Tab"
 msgstr "Повторно открыть закрытую вкладку"
 
@@ -18271,7 +18327,7 @@ msgstr "Замена \"{0}\" в проекте \"{1}\""
 msgid "Replacing {0}: existing file is older."
 msgstr "Замена {0}: существующий файл более старый."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:742
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:745
 msgid "Replay Session..."
 msgstr "Воспроизвести сеанс..."
 
@@ -18318,7 +18374,7 @@ msgstr "Требовать сертификаты клиентов"
 msgid "Require License Acceptance:"
 msgstr "Требовать принятия условий лицензии:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
 msgid "Require Specific Version"
 msgstr "Требовать конкретную версию"
 
@@ -18350,7 +18406,7 @@ msgstr "Перезапустить тест"
 msgid "Reset"
 msgstr "Сброс"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:606
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
 msgid "Reset Options"
 msgstr "Параметры сброса"
 
@@ -18359,7 +18415,7 @@ msgstr "Параметры сброса"
 msgid "Reset condition"
 msgstr "Сброс условия"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:672
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
 msgid "Resets zoom to default"
 msgstr "Сбрасывает масштаб в значение по умолчанию"
 
@@ -18415,11 +18471,11 @@ msgstr "Перезапустить F# Interactive"
 msgid "Restart With Debugging"
 msgstr "Перезапустить с отладкой"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:275
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
 msgid "Restart Without Debugging"
 msgstr "Перезапустить без отладки"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:393
 msgid "Restart and enable"
 msgstr "Перезапустить и включить"
 
@@ -18467,7 +18523,7 @@ msgstr "Восстановить отсутствующие пакеты"
 msgid "Restored '{0}'"
 msgstr "Восстановлен \"{0}\""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1149
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1164
 msgid "Restoring local changes"
 msgstr "Восстановление локальных изменений"
 
@@ -18483,7 +18539,7 @@ msgstr "Выполняется восстановление пакетов дл�
 msgid "Restoring packages for solution..."
 msgstr "Выполняется восстановление пакетов для решения..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1893
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1907
 msgid "Restoring stash for branch {0} failed"
 msgstr "Не удалось восстановить скрытие для ветви {0}."
 
@@ -18552,7 +18608,7 @@ msgstr "Идет извлечение редакции {0}..."
 msgid "Retry"
 msgstr "Повтор"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:983
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:998
 msgid "Retry authentication?"
 msgstr "Повторить проверку подлинности?"
 
@@ -18570,11 +18626,11 @@ msgstr "Тип возвращаемого значения индексатор�
 msgid "Returns:"
 msgstr "Возвращаемые данные:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:516
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:519
 msgid "Reveal in Finder"
 msgstr "Отобразить в средстве поиска"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:517
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:520
 msgid "Reveals the file in Finder"
 msgstr "Отображает файл в системе поиска"
 
@@ -18595,7 +18651,7 @@ msgid "Revert changes from this revision"
 msgstr "Отменить изменения из этой редакции"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:131
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 msgid "Revert operation completed."
 msgstr "Операция отмены изменений выполнена."
 
@@ -18603,7 +18659,7 @@ msgstr "Операция отмены изменений выполнена."
 msgid "Revert this change"
 msgstr "Отменить это изменение"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:456
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
 msgid "Revert to a saved version of the file"
 msgstr "Вернуться к сохраненной версии файла"
 
@@ -18624,15 +18680,15 @@ msgstr "Отменены изменения \"{0}\""
 msgid "Reverting ..."
 msgstr "Выполняется отмена изменений..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1531
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1545
 msgid "Reverting files"
 msgstr "Выполняется отмена изменений файлов"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:100
 msgid "Reverting revision {0}..."
 msgstr "Выполняется отмена изменений редакции {0}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:96
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
 msgid "Reverting to revision {0}..."
 msgstr "Выполняется возврат к редакции {0}..."
 
@@ -18702,7 +18758,7 @@ msgid "Rotate primary caret up"
 msgstr "Повернуть основной курсор вверх"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -18717,7 +18773,7 @@ msgid "Run All"
 msgstr "Запустить все"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:380
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:591
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:593
 msgid "Run Code Analysis on Project"
 msgstr "Запустить анализ кода для проекта"
 
@@ -18725,7 +18781,7 @@ msgstr "Запустить анализ кода для проекта"
 msgid "Run Code Analysis on Solution"
 msgstr "Запустить анализ кода для решения"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:587
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:589
 msgid "Run Code Analysis on {0}"
 msgstr "Запустить анализ кода для {0}"
 
@@ -18747,11 +18803,11 @@ msgstr "Конфигурации запуска"
 msgid "Run Configurations:"
 msgstr "Конфигурации запуска:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:347
 msgid "Run Project"
 msgstr "Запуск проекта"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:343
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
 msgid "Run Solution"
 msgstr "Запуск решения"
 
@@ -18905,7 +18961,7 @@ msgstr "Выполняются тесты для <b>{0}</b> в конфигур�
 msgid "Running web server..."
 msgstr "Выполняется запуск веб-сервера..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1986
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1992
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:798
 msgid "Running {0} ..."
@@ -19049,7 +19105,7 @@ msgstr "По_казать пробелы"
 msgid "S_trong Name File:"
 msgstr "Файл со с_трогим именем:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:598
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
 msgid "S_witch Maximized/Normal View"
 msgstr "П_ереключиться между развернутым/обычным представлением"
 
@@ -19068,7 +19124,7 @@ msgstr "Насыщенность"
 msgid "Save"
 msgstr "Сохранить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:413
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
 msgid "Save A_ll"
 msgstr "Сохранить _все"
 
@@ -19076,7 +19132,7 @@ msgstr "Сохранить _все"
 msgid "Save As"
 msgstr "Сохранить как"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:579
 msgid "Save Curre_nt Layout..."
 msgstr "Сохрани_ть текущий макет..."
 
@@ -19084,11 +19140,11 @@ msgstr "Сохрани_ть текущий макет..."
 msgid "Save Files"
 msgstr "Сохранить файлы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:462
 msgid "Save _As..."
 msgstr "Сохранить _как..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:412
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:415
 msgid "Save all open files"
 msgstr "Сохранить все открытые файлы"
 
@@ -19134,7 +19190,7 @@ msgstr "Сохранить в новом проекте упаковки"
 msgid "Save location:"
 msgstr "Расположение сохранения:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:373
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:374
 msgid "Save operation failed."
 msgstr "Сбой операции сохранения."
 
@@ -19147,7 +19203,7 @@ msgstr ""
 msgid "Save project {0}"
 msgstr "Сохранить проект {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:405
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:408
 msgid "Save the active document"
 msgstr "Сохранить активный документ"
 
@@ -19159,7 +19215,7 @@ msgstr "Сохранить изменения для документа \"{0}\" 
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "Сохранить изменения для документа \"{0}\" перед созданием решения?"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:460
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
 msgid "Save the current file with a different name"
 msgstr "Сохранить текущий файл с другим именем"
 
@@ -19187,7 +19243,7 @@ msgstr "Идет сохранение рабочей области..."
 msgid "Saving item: {0}"
 msgstr "Сохранение элемента: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1085
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1100
 msgid "Saving local changes"
 msgstr "Сохранение локальных изменений"
 
@@ -19256,27 +19312,27 @@ msgstr "Не указано имя скрипта"
 msgid "Script name:"
 msgstr "Имя скрипта:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
 msgid "Scroll line down"
 msgstr "Прокрутить на строку вниз"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Scroll line up"
 msgstr "Прокрутить на строку вверх"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 msgid "Scroll page down"
 msgstr "Прокрутка страницы вниз"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1093
 msgid "Scroll page up"
 msgstr "Прокрутка страницы вверх"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1099
 msgid "Scroll to bottom"
 msgstr "Прокрутить до нижней границы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1094
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1097
 msgid "Scroll to top"
 msgstr "Прокрутить до верхней границы"
 
@@ -19284,7 +19340,7 @@ msgstr "Прокрутить до верхней границы"
 msgid "Se_t Startup Projects..."
 msgstr "З_адать автозагружаемые проекты..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:241
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:167
@@ -19318,7 +19374,7 @@ msgstr "Искать файлы"
 msgid "Search Members"
 msgstr "Поиск элементов"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:79
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:80
 msgid "Search Packages..."
 msgstr "Искать пакеты..."
 
@@ -19339,15 +19395,15 @@ msgstr "Поиск по панели элементов"
 msgid "Search Types"
 msgstr "Поиск типов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:936
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 msgid "Search backwards for the same text"
 msgstr "Искать назад тот же текст"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "Искать назад тот же текст с поведением Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 msgid "Search backwards for the selected text"
 msgstr "Искать назад выбранный текст"
 
@@ -19367,11 +19423,11 @@ msgstr "Поиск завершен."
 msgid "Search filter menu"
 msgstr "Меню фильтра поиска"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:926
 msgid "Search for and replace text"
 msgstr "Поиск и замена текста"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 msgid "Search for and replace text in all files of a directory"
 msgstr "Поиск и замена текста во всех файлах каталога"
 
@@ -19379,11 +19435,11 @@ msgstr "Поиск и замена текста во всех файлах ка�
 msgid "Search for members"
 msgstr "Поиск элементов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:917
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 msgid "Search for text"
 msgstr "Поиск текста"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
 msgid "Search for text in all files of a directory"
 msgstr "Поиск текста во всех файлах каталога"
 
@@ -19395,27 +19451,27 @@ msgstr "Поиск типов"
 msgid "Search for types and members"
 msgstr "Поиск типов и элементов"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:64
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:65
 msgid "Search for {0} in packages"
 msgstr "Поиск {0} в пакетах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:90
 msgid "Search for {0} in solution"
 msgstr "Поиск {0} в решении"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:930
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search forwards for the same text"
 msgstr "Искать вперед тот же текст"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:943
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:946
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "Искать вперед тот же текст с поведением Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:951
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:954
 msgid "Search forwards for the selected text"
 msgstr "Искать вперед выбранный текст"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:102
 msgid "Search in Solution..."
 msgstr "Искать в решении..."
 
@@ -19469,7 +19525,7 @@ msgstr "Выполняется поиск типов и элементов..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:122
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:53
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/FindReferencesHandler.cs:151
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/StreamingFindUsagesPresenter.cs:40
 msgid "Searching..."
@@ -19664,7 +19720,7 @@ msgstr "Выберите файл ключа."
 msgid "Select a platform"
 msgstr "Выберите платформу"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:646
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:649
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:187
 msgid "Select a point from the navigation history"
 msgstr "Выбрать точку из журнала навигации"
@@ -19738,8 +19794,8 @@ msgstr "Выбрать каталог"
 msgid "Select event to generate the method for."
 msgstr "Выберите событие, для которого требуется создать метод."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:494
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:549
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:495
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:550
 msgid "Select files to add from {0}"
 msgstr "Выберите файлы, добавляемые из {0}"
 
@@ -20256,7 +20312,7 @@ msgstr "По умолчанию"
 msgid "Set as Default"
 msgstr "Использовать по умолчанию"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:594
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:597
 msgid "Set full screen mode"
 msgstr "Установить полноэкранный режим"
 
@@ -20450,7 +20506,7 @@ msgstr "Показать окно предпочтений MonoDevelop"
 msgid "Show More"
 msgstr "Больше"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:620
 msgid "Show Next"
 msgstr "Показать следующий"
 
@@ -20470,7 +20526,7 @@ msgstr "Показать следующий оператор"
 msgid "Show Output"
 msgstr "Показать выходные данные"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 msgid "Show Parameter List"
 msgstr "Показать список параметров"
 
@@ -20486,7 +20542,7 @@ msgstr "Показать тип параметра"
 msgid "Show Parameter Value"
 msgstr "Показать значение параметра"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:623
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:626
 msgid "Show Previous"
 msgstr "Показать предыдущий"
 
@@ -20502,7 +20558,7 @@ msgstr "Показать предыдущий ({0})"
 msgid "Show Remote Status"
 msgstr "Показать удаленное состояние"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1241
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1244
 msgid "Show Scopes"
 msgstr "Показать области"
 
@@ -20556,7 +20612,7 @@ msgstr "Показать _мини-карту"
 msgid "Show _column ruler"
 msgstr "Показать _линейку столбца"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:891
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 msgid "Show about dialog"
 msgstr "Показать диалоговое окно сведений о программе"
 
@@ -20602,7 +20658,7 @@ msgstr "Показывать сигнатуры типов функций"
 msgid "Show fuzzy translations"
 msgstr "Показать нечеткие переводы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:875
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
 msgid "Show help"
 msgstr "Показать справку"
 
@@ -20626,7 +20682,7 @@ msgstr "Показать пузырьки сообщений:"
 msgid "Show missing translations"
 msgstr "Показать отсутствующие переводы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:753
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:756
 msgid "Show next document"
 msgstr "Показать следующий документ"
 
@@ -20642,7 +20698,7 @@ msgstr "Показать окно параметров"
 msgid "Show output"
 msgstr "Показать выходные данные"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:476
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:479
 msgid "Show page setup"
 msgstr "Показать параметры страницы"
 
@@ -20650,11 +20706,11 @@ msgstr "Показать параметры страницы"
 msgid "Show pre-release packages"
 msgstr "Показать пакеты предварительного выпуска"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:760
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:763
 msgid "Show previous document"
 msgstr "Показать предыдущий документ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:471
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:474
 msgid "Show print preview"
 msgstr "Показать предпросмотр печатаемого"
 
@@ -20674,7 +20730,7 @@ msgstr "Показать только общие и защищенные эле�
 msgid "Show public members only"
 msgstr "Показать только общие элементы"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1219
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
 msgid "Show quick info"
 msgstr "Показывать краткие сведения"
 
@@ -20727,7 +20783,7 @@ msgstr "Показать выходные данные теста"
 msgid "Show the {0} pad"
 msgstr "Показать панель {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 msgid "Show tip of the day"
 msgstr "Показать полезный совет"
 
@@ -20748,11 +20804,11 @@ msgstr "Отображать страницу приветствия при за
 msgid "Show {0}"
 msgstr "Показать {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1232
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1235
 msgid "Show/Hide Inline Messages"
 msgstr "Показать/скрыть встроенные сообщения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1227
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1230
 msgid "Show/Hide current Inline Message"
 msgstr "Показать/скрыть текущее встроенное сообщение"
 
@@ -20764,11 +20820,11 @@ msgstr "Отображает возникшие NotImplementedException на п�
 msgid "Shows method and class folds"
 msgstr "Отображение свертываний методов и классов"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 msgid "Shows the authors of the current file"
 msgstr "Показывает авторов текущего файла"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid ""
 "Shows the differences in the code between the current code and the version "
 "in the repository"
@@ -20778,16 +20834,16 @@ msgstr "Показывает различия в коде между текущ�
 msgid "Shows the line numbers for the current file"
 msgstr "Отображение номеров строк для текущего файла"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 msgid "Shows the merge view for the current file"
 msgstr "Показывает представление слияния для текущего файла"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Shows the source control log for the current file"
 msgstr "Показывает журнал управления версиями для текущего файла"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1220
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1223
 msgid "Shows the tooltip at editor positon"
 msgstr "Показывает всплывающую подсказку в редакторе"
 
@@ -20950,7 +21006,7 @@ msgid "Solution Options"
 msgstr "Параметры решения"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:217
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:211
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:244
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:242
 msgid "Solution Workbench"
 msgstr "Workbench решения"
@@ -21022,7 +21078,7 @@ msgstr "Решения"
 msgid "Some additional changes on another file of the project."
 msgstr "Несколько дополнительных изменений в другом файле проекта."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:220
 msgid "Some dependencies need to be updated"
 msgstr "Требуется обновить некоторые зависимости"
 
@@ -21462,7 +21518,7 @@ msgstr "Начать отладку решения"
 msgid "Start Debugging on External Console"
 msgstr "Начать отладку во внешней консоли"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:738
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:741
 msgid "Start Session Recorder"
 msgstr "Запустить средство записи сеансов"
 
@@ -21471,7 +21527,7 @@ msgid "Start Window"
 msgstr "Окно запуска"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:304
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:279
 msgid "Start Without Debugging"
 msgstr "Запустить без отладки"
 
@@ -21553,33 +21609,35 @@ msgstr "Спрятать"
 msgid "Stash Manager"
 msgstr "Диспетчер прятания"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1245
 msgid "Stash and Merge"
 msgstr "Спрятать и выполнить слияние"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1177
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1192
 msgid "Stash and Rebase"
 msgstr "Спрятать и переместить изменения из одной ветви в другую"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1938
 msgid "Stash and Switch"
 msgstr "Спрятать и переключиться"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:173
-msgid "Stash applied with conflicts"
-msgstr "Прятание применено с конфликтами"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:190
+#, fuzzy
+msgid "Stash not applied."
+msgstr "Сбой операции прятания."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:173
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:205
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 msgid "Stash operation failed"
 msgstr "Сбой операции прятания"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:159
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:160
 msgid "Stash operation failed."
 msgstr "Сбой операции прятания."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
-msgid "Stash successfully applied"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:204
+#, fuzzy
+msgid "Stash successfully applied."
 msgstr "Прятание успешно применено"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:33
@@ -21596,7 +21654,7 @@ msgstr ""
 msgid "Stash/unstash local changes before/after the merge"
 msgstr "Спрятать/показать локальные изменения до/после слияния"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:424
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:439
 msgid "Stashing changes"
 msgstr "Прятание изменений"
 
@@ -21869,7 +21927,7 @@ msgstr "Сводка:"
 msgid "Support"
 msgstr "Поддержка"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
 msgid "Surround Selection With..."
 msgstr "Окружить выбранный фрагмент с помощью..."
 
@@ -21878,7 +21936,7 @@ msgstr "Окружить выбранный фрагмент с помощью..
 msgid "Surround With..."
 msgstr "Разместить во фрагменте..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr "Окружает выделение фрагментом кода при выборе"
 
@@ -21886,20 +21944,20 @@ msgstr "Окружает выделение фрагментом кода при
 msgid "Swap parameter"
 msgstr "Переключить параметр"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1199
 msgid "Swaps the characters on either side of the caret"
 msgstr "Меняет местами символы с обеих сторон курсора"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
 msgid "Switch Completion/Suggestion Mode"
 msgstr "Переключатель режима завершения и предложений"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:588
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:591
 msgid "Switch active layout"
 msgstr "Переключить активный макет"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
 msgid "Switch between insert and overwrite caret modes"
 msgstr "Переключиться между режимами вставки и перезаписи для курсора"
 
@@ -21913,7 +21971,7 @@ msgstr ""
 "Переключиться между связанными файлами, такими как CodeBehind, заголовки и "
 "т. д."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 msgid "Switch caret mode"
 msgstr "Переключить режим курсора"
 
@@ -21948,27 +22006,27 @@ msgstr "Переключиться в режим предложений"
 msgid "Switch to layout '{0}'"
 msgstr "Переключиться на макет \"{0}\""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:847
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:848
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:850
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:851
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:203
 msgid "Switch to next document"
 msgstr "Переключиться на следующий документ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:859
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:860
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:862
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:863
 msgid "Switch to next pad"
 msgstr "Перейти к следующей панели"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:853
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:854
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:856
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:857
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:183
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:189
 msgid "Switch to previous document"
 msgstr "Переключиться на предыдущий документ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:865
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:866
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:868
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:869
 msgid "Switch to previous pad"
 msgstr "Перейти к предыдущей панели"
 
@@ -21980,14 +22038,14 @@ msgstr "Переключиться на вкладку {0}"
 msgid "Switch to {0}"
 msgstr "Переключиться на {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1915
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1935
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1949
 msgid "Switching to branch {0}"
 msgstr "Переключение на ветвь {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1928
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1952
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1942
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1966
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1969
 msgid "Switching to branch {0} failed"
 msgstr "Не удалось переключиться на ветвь {0}."
 
@@ -22451,7 +22509,7 @@ msgstr "Тесты"
 msgid "Text"
 msgstr "Текст"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:377
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:404
@@ -22568,7 +22626,7 @@ msgstr ""
 "файлы с жесткого диска. Щелкните \"Удалить из проекта\", если каталог "
 "требуется удалить только из текущего решения."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:317
 msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
 "Remove from Project if you only want to remove it from your current solution."
@@ -22683,7 +22741,7 @@ msgid "The application could not be started"
 msgstr "Не удалось запустить приложение."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2031
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2037
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:171
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:277
@@ -22847,7 +22905,7 @@ msgstr "Файл \"{0}\" уже существует. Вы хотите заме
 msgid "The file '{0}' already exists.\n"
 msgstr "Файл \"{0}\" уже существует.\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:325
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:326
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "Файл \"{0}\" уже существует. Вы хотите перезаписать его?"
 
@@ -22960,6 +23018,11 @@ msgstr ""
 "Поддерживаются следующие форматы цветовых тем: Visual Studio (VSSETTINGS), "
 "Xamarin Studio (JSON), TextMate (TMTHEME). Для применения изменений в папке "
 "темы требуется перезагрузка."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:185
+#, fuzzy
+msgid "The following conflicts have been found:"
+msgstr "Будут зафиксированы следующие файлы:"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:156
 msgid "The following dependencies could not be resolved:"
@@ -23076,11 +23139,11 @@ msgstr "Сбой установки."
 msgid "The installation has completed with warnings."
 msgstr "Установка завершилась с предупреждениями."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:604
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:621
 msgid "The key combination ({0}) has conflicts."
 msgstr "Сочетание клавиш ({0}) создает конфликты."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:542
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:548
 msgid "The key combination ({0}, {1}) is not a command."
 msgstr "Сочетание клавиш ({0} и {1}) не является командой."
 
@@ -23188,8 +23251,8 @@ msgstr ""
 msgid "The name or e-mail of the user has not been configured."
 msgstr "Не указано имя или электронная почта пользователя."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:189
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:249
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:161
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:180
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:110
@@ -23438,6 +23501,16 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:77
 msgid "The source project failed to build."
 msgstr "Ошибка сборки исходного проекта."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:196
+msgid ""
+"The stash application was aborted due to uncommitted changes in the index."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:200
+#, fuzzy
+msgid "The stash index given was not found."
+msgstr "Пакет SDK не найден"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:53
 msgid "The subversion working copy format is too new."
@@ -24129,7 +24202,7 @@ msgstr "Чужой"
 msgid "Themed Icons"
 msgstr "Тематические значки"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1923
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1937
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
@@ -24139,7 +24212,7 @@ msgstr ""
 "зафиксированными в ветви <b>{0}</b>. Вы хотите скрыть изменения и продолжить "
 "извлечение?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1090
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue?"
@@ -24147,7 +24220,7 @@ msgstr ""
 "Существуют локальные изменения, которые конфликтуют с изменениями, "
 "зафиксированными в ветви <b>{0}</b>. Вы хотите скрыть изменения и продолжить?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:51
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
 msgid "There are no changes to push."
 msgstr "Нет изменений для отправки."
 
@@ -24210,7 +24283,7 @@ msgstr ""
 "Вы можете сохранить существующий целевой файл или перезаписать его исходным "
 "файлом."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:533
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:534
 msgid "There is already a file with the name '{0}' in the target directory"
 msgstr "В целевом каталоге уже есть файл с именем \"{0}\""
 
@@ -24222,7 +24295,7 @@ msgstr "Макет с таким именем уже существует"
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "В проекте уже существует ссылка с именем \"{0}\"."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:541
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:542
 msgid "There is already a link with the name '{0}' in the target directory"
 msgstr "В целевом каталоге уже есть ссылка с именем \"{0}\""
 
@@ -24242,7 +24315,7 @@ msgstr ""
 msgid "There was an error renaming the directory."
 msgstr "При переименовании каталога произошла ошибка."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:191
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:202
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
 msgid "There was an error renaming the file."
 msgstr "При переименовании файла произошла ошибка."
@@ -24625,7 +24698,7 @@ msgstr "Сегодня"
 msgid "Toggle Action"
 msgstr "Переключить действие"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 msgid "Toggle Block Selection Mode"
 msgstr "Переключить режим выбора блоков"
 
@@ -24633,7 +24706,7 @@ msgstr "Переключить режим выбора блоков"
 msgid "Toggle Breakpoint"
 msgstr "Переключить точку останова"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1237
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1240
 msgid "Toggle Issues"
 msgstr "Переключить неполадки"
 
@@ -24649,7 +24722,7 @@ msgstr "Переключить _определения"
 msgid "Toggle between search and replace mode"
 msgstr "Переключиться между режимом поиска и замены"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1004
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 msgid "Toggle bookmark"
 msgstr "Переключить закладку"
 
@@ -24701,15 +24774,15 @@ msgstr "Переключает свертывания всех тел метод
 msgid "Toggles the folding at caret position."
 msgstr "Переключает свертывание в позиции курсора."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1233
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1236
 msgid "Toggles the visibility of Inline Messages"
 msgstr "Переключает режим отображения встроенных сообщений"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1228
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
 msgid "Toggles the visibility of the current Inline Message"
 msgstr "Переключает режим отображения текущего встроенного сообщения"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:727
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
 msgid "Tool List"
 msgstr "Список инструментов"
 
@@ -24747,7 +24820,7 @@ msgstr "Элементы панели элементов"
 msgid "Toolbox Toolbar"
 msgstr "Панель инструментов панели элементов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:717
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:720
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:327
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
@@ -24764,7 +24837,7 @@ msgid "Tools like FTP or P2P programs"
 msgstr ""
 "Инструменты, такие как программы для FTP или работы в одноранговой среде"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:986
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1147
 msgid "Top Result"
 msgstr "Лучший результат"
 
@@ -24865,7 +24938,7 @@ msgstr "Выходные данные переводчика"
 msgid "Transmitting file data"
 msgstr "Передача данных файла"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1198
 msgid "Transpose characters"
 msgstr "Транспонировать символы"
 
@@ -24889,11 +24962,11 @@ msgid "Turns on the unsupported security manager (off by default)."
 msgstr ""
 "Включает неподдерживаемый диспетчер безопасности (по умолчанию отключен)."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:678
 msgid "Two Columns"
 msgstr "Два столбца"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:676
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:679
 msgid "Two Editor Columns"
 msgstr "Два столбца редактора"
 
@@ -25017,7 +25090,7 @@ msgstr "Ис_пользовать код страны"
 msgid "Un_pin Tab"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1030
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1045
 msgid "Unable to authorize credentials for the repository."
 msgstr "Не удается авторизовать учетные данные для репозитория."
 
@@ -25296,7 +25369,7 @@ msgstr "Неизвестная запись"
 msgid "Unknown error"
 msgstr "Неизвестная ошибка"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:121
 msgid "Unknown language '{0}'"
 msgstr "Неизвестный язык \"{0}\""
 
@@ -25504,7 +25577,7 @@ msgstr "Обновляет все файлы перевода."
 msgid "Updates this translation."
 msgstr "Обновляет этот перевод."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:962
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:977
 msgid "Updating"
 msgstr "Идет изменение"
 
@@ -25536,7 +25609,7 @@ msgstr "Обновление проекта из файла makefile"
 msgid "Updating repository"
 msgstr "Обновление репозитория"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:686
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:687
 msgid "Updating version control repository"
 msgstr "Обновление репозитория с управлением версиями"
 
@@ -25625,12 +25698,12 @@ msgstr "Используйте \"{0}\" для повышения произво�
 msgid "Use Default"
 msgstr "Использовать значение по умолчанию"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 #, fuzzy
 msgid "Use Selection for Find"
 msgstr "Выделенный фрагмент в верхнем регистре"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
 #, fuzzy
 msgid "Use Selection for Replace"
 msgstr "Параметры перехода на новую строку для фигурных скобок"
@@ -25864,11 +25937,11 @@ msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr ""
 "Использует более короткий вызов string.IsNullOrEmpty вместо длинного условия"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Uses the current selection as find string"
 msgstr "Использует выделенный фрагмент для поиска строки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Uses the current selection as replace string"
 msgstr "Использует выделенный фрагмент для замены строки"
 
@@ -26022,7 +26095,7 @@ msgstr "Ограничение версии"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:42
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:108
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:296
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:676
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:677
 msgid "Version Control"
 msgstr "Управление версиями"
 
@@ -26049,7 +26122,7 @@ msgstr "Ограничение версии для пакета."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:38
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:50
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:435
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:76
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnlockCommand.cs:81
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:64
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:131
@@ -26084,7 +26157,7 @@ msgstr "Программное обеспечение для видеоконф�
 msgid "Vietnamese"
 msgstr "Вьетнамский"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:564
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:567
 msgid "View"
 msgstr "Вид"
 
@@ -26105,7 +26178,7 @@ msgstr "Просмотреть журнал изменений..."
 msgid "View License"
 msgstr "Просмотреть лицензию"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:569
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:572
 msgid "View List"
 msgstr "Список представлений"
 
@@ -26397,7 +26470,7 @@ msgstr "Веб-ссылка уже существует"
 msgid "Web service not found."
 msgstr "Веб-служба не найдена."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:715
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:52
 msgid "Welcome Page"
 msgstr "Страница приветствия"
@@ -26595,7 +26668,7 @@ msgstr "Мини-приложения"
 msgid "Win32 Icon:"
 msgstr "Значок Win32:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:747
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:750
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:5
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:5
 msgid "Window"
@@ -26606,7 +26679,7 @@ msgstr "Окно"
 msgid "Window Designer"
 msgstr "Конструктор окон"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:766
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:769
 msgid "Window List"
 msgstr "Список окон"
 
@@ -26795,7 +26868,7 @@ msgstr "Веб-сервер XSP"
 msgid "Xamarin News"
 msgstr "Новости Xamarin"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -26803,12 +26876,12 @@ msgstr ""
 "Проекты Xamarin.Mac не поддерживаются в MonoDevelop для Windows. Вам следует "
 "использовать Xamarin Studio для Mac."
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -26970,7 +27043,7 @@ msgstr ""
 "Например, (?<=19)99 соответствует экземплярам числа 99, следующего за 19.\n"
 "Эта конструкция не осуществляет обратное отслеживание."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:664
 msgid "Zoom _Out"
 msgstr "У_меньшить"
 
@@ -26978,11 +27051,11 @@ msgstr "У_меньшить"
 msgid "Zoom the Window"
 msgstr "Масштабировать окно"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:658
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
 msgid "Zooms view in"
 msgstr "Увеличивает масштаб представления"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:665
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
 msgid "Zooms view out"
 msgstr "Уменьшает масштаб представления"
 
@@ -27194,7 +27267,7 @@ msgstr "\\z"
 msgid "^"
 msgstr "^"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:893
 msgid "_About"
 msgstr "_О программе"
 
@@ -27356,7 +27429,7 @@ msgstr "_Кодировка символов:"
 msgid "_Charset:"
 msgstr "_Кодировка:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
 msgid "_Check for Updates..."
 msgstr "_Проверить наличие обновлений..."
 
@@ -27368,12 +27441,12 @@ msgstr "_Извлечь"
 msgid "_Clean All"
 msgstr "_Очистить все"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
 msgid "_Clear"
 msgstr "_Очистить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:648
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:651
 msgid "_Clear Navigation History"
 msgstr "_Очистить журнал навигации"
 
@@ -27381,7 +27454,7 @@ msgstr "_Очистить журнал навигации"
 msgid "_Close"
 msgstr "_Закрыть"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:428
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:431
 msgid "_Close File"
 msgstr "_Закрыть файл"
 
@@ -27389,7 +27462,7 @@ msgstr "_Закрыть файл"
 msgid "_Collapse All"
 msgstr "_Свернуть все"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
 msgid "_Command..."
 msgstr "_Команда..."
 
@@ -27428,7 +27501,7 @@ msgstr "_Копировать"
 msgid "_Copy Revision"
 msgstr "_Копировать редакцию"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
 msgid "_Copy to Output Directory"
 msgstr "_Копировать в выходной каталог"
 
@@ -27445,7 +27518,7 @@ msgstr "_Создать каталог для решения"
 msgid "_Current Project"
 msgstr "_Текущий проект"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:706
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
 msgid "_Cursor Position"
 msgstr "_Позиция курсора"
 
@@ -27472,7 +27545,7 @@ msgstr "_Отложенная подпись сборки"
 msgid "_Delete"
 msgstr "_Удалить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:584
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "_Delete Current Layout"
 msgstr "_Удалить текущий макет"
@@ -27538,12 +27611,12 @@ msgstr "_Исключить все"
 msgid "_Expand All"
 msgstr "_Развернуть все"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1162
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 msgid "_Expand selection"
 msgstr "_Развернуть выбранный фрагмент"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:723
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:726
 msgid "_Extensions..."
 msgstr "_Расширения..."
 
@@ -27555,7 +27628,7 @@ msgstr "_Файл"
 msgid "_File Mask:"
 msgstr "_Маска файла:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:989
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 msgid "_File..."
 msgstr "_Файл..."
 
@@ -27579,7 +27652,7 @@ msgstr "_Найти ссылки"
 msgid "_Find References of All Overloads"
 msgstr "_Найти ссылки для всех перегрузок"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "_Find..."
 msgstr "_Найти..."
 
@@ -27595,7 +27668,7 @@ msgstr "_Исправить все"
 msgid "_Flat"
 msgstr "_Без иерархии"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:699
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
 msgid "_Focus Document"
 msgstr "_Поместить фокус на документ"
 
@@ -27616,7 +27689,7 @@ msgstr "_Форматировать выбранный фрагмент"
 msgid "_Format document on save"
 msgstr "_Форматировать документ при сохранении"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:592
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:595
 msgid "_Full Screen"
 msgstr "_Во весь экран"
 
@@ -27776,7 +27849,7 @@ msgstr "_Преобразование окончания строки:"
 msgid "_Line endings:"
 msgstr "_Окончания строк:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 msgid "_Line..."
 msgstr "_Строка..."
 
@@ -27858,7 +27931,7 @@ msgstr "_Имя:"
 msgid "_New name:"
 msgstr "_Новое имя:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:751
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:754
 msgid "_Next Document"
 msgstr "_Следующий документ"
 
@@ -27866,11 +27939,11 @@ msgstr "_Следующий документ"
 msgid "_Next Tip"
 msgstr "_Следующий совет"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1234
 msgid "_None"
 msgstr "_Нет"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:671
 msgid "_Normal Size"
 msgstr "_Обычный размер"
 
@@ -27878,7 +27951,7 @@ msgstr "_Обычный размер"
 msgid "_Only show my code."
 msgstr "_Показать только мой код."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:39
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:40
 msgid "_Open"
@@ -27889,7 +27962,7 @@ msgstr "_Открыть"
 msgid "_Open All"
 msgstr "_Открыть все"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:510
 msgid "_Open Folder"
 msgstr "_Открыть папку"
 
@@ -27901,11 +27974,11 @@ msgstr "_Открыть URL-адрес..."
 msgid "_Open XSLT"
 msgstr "_Открыть XSLT"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:504
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
 msgid "_Open in Terminal"
 msgstr "_Открыть в терминале"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:389
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
 msgid "_Open..."
 msgstr "_Открыть..."
 
@@ -27958,7 +28031,7 @@ msgstr "_Вставить"
 msgid "_Path:"
 msgstr "_Путь:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:561
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileTabCommands.cs:166
 msgid "_Pin Tab"
 msgstr ""
@@ -27980,11 +28053,11 @@ msgstr "_Политика:"
 msgid "_Preview"
 msgstr "_Предварительный просмотр"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:758
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:761
 msgid "_Previous Document"
 msgstr "_Предыдущий документ"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:466
 msgid "_Print..."
 msgstr "_Печать..."
 
@@ -28012,7 +28085,7 @@ msgstr "_Запросить аргументы"
 msgid "_Prompt to save changes to open documents"
 msgstr "_Запрос на сохранение изменений для открытых документов"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
 msgid "_Properties"
 msgstr "_Свойства"
 
@@ -28032,7 +28105,7 @@ msgstr "_Отправить"
 msgid "_Quick Properties"
 msgstr "_Быстрые свойства"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:502
 msgid "_Quit"
 msgstr "_Выход"
 
@@ -28075,7 +28148,7 @@ msgstr "_Перезагрузить с диска"
 msgid "_Remove"
 msgstr "_Удалить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1021
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
 msgid "_Remove All Bookmarks"
 msgstr "_Удалить все закладки"
 
@@ -28095,7 +28168,7 @@ msgstr "_Удалить конечные пробелы"
 msgid "_Remove Unnecessary Usings"
 msgstr "_Удалить ненужные директивы Using"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:300
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:311
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:194
 msgid "_Remove from Project"
 msgstr "_Удалить из проекта"
@@ -28112,7 +28185,7 @@ msgstr "_Удалить конечные пробелы"
 msgid "_Replace"
 msgstr "_Заменить"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:921
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 msgid "_Replace..."
 msgstr "_Заменить..."
 
@@ -28132,7 +28205,7 @@ msgstr "_Восстановить"
 msgid "_Restore NuGet Packages"
 msgstr "_Восстановить пакеты NuGet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:458
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:125
 msgid "_Revert"
 msgstr "_Отменить изменения"
@@ -28160,7 +28233,7 @@ msgstr "_Запустить все"
 msgid "_Run Item"
 msgstr "_Запустить элемент"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:406
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:409
 msgid "_Save"
 msgstr "_Сохранить"
 
@@ -28271,7 +28344,7 @@ msgstr "_Подписать эту сборку"
 msgid "_Smart semicolon placement"
 msgstr "_Интеллектуальное размещение точек с запятой"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 msgid "_Snippet..."
 msgstr "_Фрагмент кода..."
 
@@ -28303,7 +28376,7 @@ msgstr "_Строго типизированный"
 msgid "_Suppress"
 msgstr "_Скрыть"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "_Surround With..."
 msgstr "_Разместить во фрагменте..."
 
@@ -28324,7 +28397,7 @@ msgstr "Ширина _вкладки:"
 msgid "_Template:"
 msgstr "_Шаблон:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
 msgid "_Tip of the Day"
 msgstr "_Полезный совет"
 
@@ -28332,7 +28405,7 @@ msgstr "_Полезный совет"
 msgid "_Title:"
 msgstr "_Заголовок:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 msgid "_Toggle Bookmark"
 msgstr "_Переключить закладку"
 
@@ -28374,7 +28447,7 @@ msgstr "_Перевод (msgstr):"
 msgid "_Translator name:"
 msgstr "_Имя переводчика:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:985
 msgid "_Type..."
 msgstr "_Тип..."
 
@@ -28498,7 +28571,7 @@ msgstr "_XML"
 msgid "_Zoom"
 msgstr "_Масштаб"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:654
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:657
 msgid "_Zoom In"
 msgstr "_Увеличить"
 
@@ -28838,7 +28911,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "тип * указатель = {0} тип [ выражение ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:637
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:645
 msgid "working copy"
@@ -29148,7 +29221,7 @@ msgstr[1] "Предупреждений: {0}"
 msgid "{0} [expression];"
 msgstr "{0} [выражение];"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 msgid "{0} _Options"
 msgstr "_Параметры {0}"
 
@@ -29289,7 +29362,7 @@ msgstr[1] ""
 "Всего обработано файлов: {0}. Успешно создано: {1}, с предупреждениями: {2}, "
 "с ошибками: {3}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:396
+#: ../src/addins/MacPlatform/MacPlatform.cs:392
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -29521,7 +29594,7 @@ msgstr ""
 msgid "{0} removed with warnings."
 msgstr "Удалено с предупреждениями: {0}."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:225
+#: ../src/addins/MacPlatform/MacPlatform.cs:221
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -29558,6 +29631,10 @@ msgstr "Перенацелено с предупреждениями: {0}."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
 msgid "{0} return-type"
 msgstr "{0} тип_возвращаемого_значения"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:350
+msgid "{0} search provider..."
+msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1116
 msgid "{0} statement {1} (expression);"
@@ -29755,3 +29832,6 @@ msgstr "{n}?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:184
 msgid "|"
 msgstr "|"
+
+#~ msgid "Stash applied with conflicts"
+#~ msgstr "Прятание применено с конфликтами"
