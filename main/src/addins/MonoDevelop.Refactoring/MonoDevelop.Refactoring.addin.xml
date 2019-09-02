@@ -215,4 +215,8 @@
 			</ItemSet>
 		</Condition>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Core/SystemInformation">
+		<Class class="MonoDevelop.Refactoring.RoslynInformationProvider" />
+	</Extension>
 </ExtensionModel>
