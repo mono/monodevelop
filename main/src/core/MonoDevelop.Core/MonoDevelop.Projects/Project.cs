@@ -4501,7 +4501,7 @@ namespace MonoDevelop.Projects
 			eventsEnabled = false;
 		}
 
-		internal virtual void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
+		internal virtual void OnFileRenamed (FilePath sourceFile, FilePath targetFile, bool isDirectory)
 		{
 			if (!eventsEnabled)
 				return;
@@ -4509,7 +4509,7 @@ namespace MonoDevelop.Projects
 			Debug.Assert (!Runtime.IsMainThread);
 
 			try {
-				if (Directory.Exists (targetFile)) {
+				if (isDirectory && Directory.Exists (targetFile)) {
 					OnDirectoryRenamedExternally (sourceFile, targetFile);
 					return;
 				}
@@ -4517,7 +4517,7 @@ namespace MonoDevelop.Projects
 				LoggingService.LogError ("OnFileRenamed error.", ex);
 			}
 
-			bool exists = File.Exists (sourceFile) || Directory.Exists (sourceFile);
+			bool exists = isDirectory ? Directory.Exists (sourceFile) : File.Exists (sourceFile);
 
 			OnFileCreatedExternally (targetFile);
 			if (!exists) {
@@ -4525,7 +4525,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal virtual void OnFileCreated (FilePath filePath)
+		internal virtual void OnFileCreated (FilePath filePath, bool isDirectory)
 		{
 			if (!eventsEnabled)
 				return;
@@ -4533,7 +4533,7 @@ namespace MonoDevelop.Projects
 			Debug.Assert (!Runtime.IsMainThread);
 
 			try {
-				if (Directory.Exists (filePath))
+				if (isDirectory)
 					return;
 
 				var fileName = ((string)filePath).AsSpan ();

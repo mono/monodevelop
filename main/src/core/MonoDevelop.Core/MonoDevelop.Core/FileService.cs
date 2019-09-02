@@ -420,17 +420,50 @@ namespace MonoDevelop.Core
 			return nx;
 		}
 
-		internal static void NotifyFileCreated (string fileName)
+		internal static void NotifyChanged (FilePath fileName, bool isDirectory)
 		{
-			OnFileCreated (new FileEventArgs (fileName, false));
+			try {
+				OnFileChanged (new FileEventArgs (fileName, isDirectory));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("File change notification failed", ex);
+			}
+		}
+
+		internal static void NotifyCreated (string fileName, bool isDirectory)
+		{
+			try {
+				var args = new FileEventArgs (fileName, isDirectory);
+				OnFileCreated (args);
+
+				// The native file watcher sometimes generates a single Created event for a file when it is renamed
+				// from a non-monitored directory to a monitored directory. So this is turned into a Changed
+				// event so the file will be reloaded.
+				OnFileChanged (args);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("File create notification failed", ex);
+			}
+		}
+
+		internal static void NotifyRemoved (string fileName, bool isDirectory)
+		{
+			try {
+				var args = new FileEventArgs (fileName, isDirectory);
+				OnFileRemoved (args);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("File delete notification failed", ex);
+			}
 		}
 
 		/// <summary>
 		/// Special case files renamed externally to prevent the IDE modifying the project.
 		/// </summary>
-		internal static void NotifyFileRenamedExternally (string oldPath, string newPath)
+		internal static void NotifyRenamedExternally (string oldPath, string newPath, bool isDirectory)
 		{
-			OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, false) { IsExternal = true });
+			try {
+				OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, isDirectory) { IsExternal = true });
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("File rename notification failed", ex);
+			}
 		}
 
 /*

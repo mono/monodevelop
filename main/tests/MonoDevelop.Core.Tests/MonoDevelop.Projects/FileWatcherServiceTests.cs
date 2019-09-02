@@ -242,11 +242,11 @@ namespace MonoDevelop.Projects
 				Renamed.Clear ();
 			}
 
-			internal override void OnFileCreated (FilePath filePath) => Created.Add (filePath);
+			internal override void OnFileCreated (FilePath filePath, bool isDirectory) => Created.Add (filePath);
 
 			internal override void OnFileDeleted (FilePath filePath) => Deleted.Add (filePath);
 
-			internal override void OnFileRenamed (FilePath sourceFile, FilePath targetFile) => Renamed.Add ((sourceFile, targetFile));
+			internal override void OnFileRenamed (FilePath sourceFile, FilePath targetFile, bool isDirectory) => Renamed.Add ((sourceFile, targetFile));
 		}
 	}
 }
