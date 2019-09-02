@@ -83,7 +83,6 @@ namespace MonoDevelop.MacIntegration
 			set {
 				if (applicationMenuName != value) {
 					applicationMenuName = value;
-					OnApplicationMenuNameChanged ();
 				}
 			}
 		}
@@ -153,9 +152,6 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogFatalError ("Unable to load libxammac");
 
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
-
-			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
-			Carbon.SetProcessName (BrandingService.ApplicationName);
 
 			CheckGtkVersion (2, 24, 14);
 
@@ -620,19 +616,6 @@ namespace MonoDevelop.MacIntegration
 			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
 		}
 
-		static void OnApplicationMenuNameChanged ()
-		{
-			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
-			if (aboutCommand != null)
-				aboutCommand.Text = GetAboutCommandText ();
-
-			Command hideCommand = IdeApp.CommandService.GetCommand (MacIntegrationCommands.HideWindow);
-			if (hideCommand != null)
-				hideCommand.Text = GetHideWindowCommandText ();
-
-			Carbon.SetProcessName (ApplicationMenuName);
-		}
-
 		// VV/VK: Disable tint based color generation
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
 		void PatchGtkTheme ()
@@ -980,11 +963,13 @@ namespace MonoDevelop.MacIntegration
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
 
-			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (NSUrl.FromString (filename));
+			NSUrl url = CreateNSUrl (filename);
+
+			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (url);
 
 			var apps = new List<DesktopApplication> ();
 
-			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (NSUrl.FromString (filename), global::CoreServices.LSRoles.All);
+			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (url, global::CoreServices.LSRoles.All);
 			if (retrievedApps != null) {
 				foreach (var app in retrievedApps) {
 					if (string.IsNullOrEmpty (app.Path) || !checkUniquePath.Add (app.Path))
@@ -1005,6 +990,14 @@ namespace MonoDevelop.MacIntegration
 			return apps;
 		}
 
+		static NSUrl CreateNSUrl (string filename)
+		{
+			if (Uri.TryCreate (filename, UriKind.Absolute, out Uri hyperlink) && !hyperlink.IsFile)
+				return NSUrl.FromString (filename);
+
+			return NSUrl.FromFilename (filename);
+		}
+
 		class MacDesktopApplication : DesktopApplication
 		{
 			public MacDesktopApplication (string app, string name, bool isDefault) : base (app, name, isDefault)
@@ -1014,7 +1007,7 @@ namespace MonoDevelop.MacIntegration
 			public override void Launch (params string[] files)
 			{
 				NSWorkspace.SharedWorkspace.OpenUrls (
-					Array.ConvertAll (files, file => NSUrl.FromString (file)),
+					Array.ConvertAll (files, file => CreateNSUrl (file)),
 					NSBundle.FromPath (Id).BundleIdentifier,
 					NSWorkspaceLaunchOptions.Default,
 					NSAppleEventDescriptor.DescriptorWithBoolean (true));

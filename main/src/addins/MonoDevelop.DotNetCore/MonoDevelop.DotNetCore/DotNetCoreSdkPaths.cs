@@ -58,9 +58,6 @@ namespace MonoDevelop.DotNetCore
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
 			SdkRootPath = Path.Combine (rootDirectory, "sdk");
 
-			if (!Directory.Exists (SdkRootPath))
-				return;
-
 			SdkVersions = GetInstalledSdkVersions ()
 				.OrderByDescending (version => version)
 				.ToArray ();
@@ -190,6 +187,9 @@ namespace MonoDevelop.DotNetCore
 
 		IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions (string sdkRootPath)
 		{
+			if (!Directory.Exists (sdkRootPath))
+				return Enumerable.Empty<DotNetCoreVersion> ();
+
 			return Directory.EnumerateDirectories (sdkRootPath)
 				.Select (directory => {
 					if (!directory.Contains ("NuGetFallbackFolder"))

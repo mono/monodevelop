@@ -201,22 +201,37 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void Dispose (bool disposing)
 		{
+			if (IsDisposed)
+				return;
+			var opfactory = ExclusiveOperationFactory; // cache the factory, otherwise it will throw once IsDisposed is true
 			// ensure that no new operations can be started while we wait for the scheduler to shutdown
-			base.IsDisposed = true;
+			IsDisposed = true;
 
 			if (disposing) {
 				ShutdownFileWatcher ();
+				opfactory.StartNew (() => {
+					try {
+						rootRepository?.Dispose ();
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+					}
+					if (cachedSubmodules != null) {
+						foreach (var submodule in cachedSubmodules) {
+							if (submodule?.Item2 != null) {
+								try {
+									submodule?.Item2.Dispose ();
+								} catch (Exception e) {
+									LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+								}
+							}
+						}
+					}
+				}).Ignore ();
 			}
 
 			// now it's safe to dispose the base and release all information caches
+			// this will also wait for the scheduler to finish all operations and shutdown
 			base.Dispose (disposing);
-
-			if (disposing) {
-				rootRepository?.Dispose ();
-				if (cachedSubmodules != null)
-					foreach (var rep in cachedSubmodules)
-						rep.Item2.Dispose ();
-			}
 
 			watcher = null;
 			rootRepository = null;
@@ -491,7 +506,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
@@ -499,7 +514,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			ConcurrentOperationFactory.StartNew (action).RunWaitAndCapture ();
+			ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task RunOperationAsync (Action action, bool hasUICallbacks = false)
@@ -507,7 +522,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action);
+			return ExclusiveOperationFactory.StartNew (action);
 		}
 
 		internal T RunOperation<T> (Func<T> action, bool hasUICallbacks = false)
@@ -515,7 +530,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action).RunWaitAndCapture ();
+			return ExclusiveOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task<T> RunOperationAsync<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -523,7 +538,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (action, cancellationToken);
+			return ExclusiveOperationFactory.StartNew (action, cancellationToken);
 		}
 
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
@@ -531,7 +546,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal Task<T> RunOperationAsync<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -539,7 +554,7 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return ConcurrentOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
+			return ExclusiveOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
 		}
 
 		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
@@ -1397,31 +1412,48 @@ namespace MonoDevelop.VersionControl.Git
 			int checkoutProgress = 0;
 
 			try {
-				monitor.BeginTask ("Cloning...", 2);
-
+				monitor.BeginTask (GettextCatalog.GetString ("Cloning…"), 2);
+				bool skipSubmodules = false;
 				RunOperation (() => RetryUntilSuccess (monitor, credType => {
+					var options = new CloneOptions {
+						CredentialsProvider = (url, userFromUrl, types) => {
+							transferProgress = checkoutProgress = 0;
+							return GitCredentials.TryGet (url, userFromUrl, types, credType);
+						},
+						RepositoryOperationStarting = ctx => {
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out repository at '{0}'"), ctx.RepositoryPath);
+							});
+							return true;
+						},
+						OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
+						OnCheckoutProgress = (path, completedSteps, totalSteps) => {
+							OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out file '{0}'"), path);
+							});
+						}
+					};
+
 					try {
-						RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
-							CredentialsProvider = (url, userFromUrl, types) => {
-								transferProgress = checkoutProgress = 0;
-								return GitCredentials.TryGet (url, userFromUrl, types, credType);
-							},
-							RepositoryOperationStarting = ctx => {
-								Runtime.RunInMainThread (() => {
-									monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
-								});
-								return true;
-							},
-							OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
-							OnCheckoutProgress = (path, completedSteps, totalSteps) => {
-								OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
-								Runtime.RunInMainThread (() => {
-									monitor.Log.WriteLine ("Checking out file '{0}'", path);
-								});
-							},
-						});
+						RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, options);
+					} catch (UserCancelledException) {
+						return;
+					}
+					var updateOptions = new SubmoduleUpdateOptions {
+						Init = true,
+						CredentialsProvider = options.CredentialsProvider,
+						OnTransferProgress = options.OnTransferProgress,
+						OnCheckoutProgress = options.OnCheckoutProgress,
+					};
+					monitor.Step (1);
+					try {
+						if (!skipSubmodules)
+							RecursivelyCloneSubmodules (RootPath, updateOptions, monitor);
 					} catch (Exception e) {
-						LoggingService.LogInternalError ("Error while cloning repository " + rev + " recuse: " + recurse, e);
+						LoggingService.LogError ("Cloning submodules failed", e);
+						FileService.DeleteDirectory (RootPath);
+						skipSubmodules = true;
 						throw e;
 					}
 				}), true);
@@ -1429,13 +1461,13 @@ namespace MonoDevelop.VersionControl.Git
 				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
 					return Task.CompletedTask;
 
-				monitor.Step (1);
-
 				RootPath = RootPath.CanonicalPath.ParentDirectory;
+
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
 				InitFileWatcher ();
-
-				RunOperation (() => RecursivelyCloneSubmodules (RootRepository, monitor), true);
+				if (skipSubmodules) {
+					MessageService.ShowError (GettextCatalog.GetString("Cloning submodules failed"), GettextCatalog.GetString ("Please use the command line client to init the submodules manually."));
+				}
 				return Task.CompletedTask;
 			} catch (Exception e) {
 				LoggingService.LogInternalError ("Error while cloning repository " + rev + " recuse: " + recurse, e);
@@ -1445,57 +1477,38 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		static void RecursivelyCloneSubmodules (LibGit2Sharp.Repository rootRepository, ProgressMonitor monitor)
+		static void RecursivelyCloneSubmodules (string repoPath, SubmoduleUpdateOptions updateOptions, ProgressMonitor monitor)
 		{
 			var submodules = new List<string> ();
-			RetryUntilSuccess (monitor, credType => {
+			using (var repo = new LibGit2Sharp.Repository (repoPath)) {
+				// Iterate through the submodules (where the submodule is in the index),
+				// and clone them.
+				var submoduleArray = repo.Submodules.Where (sm => sm.RetrieveStatus ().HasFlag (SubmoduleStatus.InIndex)).ToArray ();
+				monitor.BeginTask (GettextCatalog.GetString ("Cloning submodules…"), submoduleArray.Length);
 				try {
-					int transferProgress = 0, checkoutProgress = 0;
-					SubmoduleUpdateOptions updateOptions = new SubmoduleUpdateOptions () {
-						Init = true,
-						CredentialsProvider = (url, userFromUrl, types) => {
-							transferProgress = checkoutProgress = 0;
-							return GitCredentials.TryGet (url, userFromUrl, types, credType);
-						},
-						OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
-						OnCheckoutProgress = (file, completedSteps, totalSteps) => {
-							OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
-							Runtime.RunInMainThread (() => {
-								monitor.Log.WriteLine ("Checking out file '{0}'", file);
-							});
-						},
-					};
-
-					// Iterate through the submodules (where the submodule is in the index),
-					// and clone them.
-					var submoduleArray = rootRepository.Submodules.Where (sm => sm.RetrieveStatus ().HasFlag (SubmoduleStatus.InIndex)).ToArray ();
-					monitor.BeginTask (submoduleArray.Length);
 					foreach (var sm in submoduleArray) {
 						if (monitor.CancellationToken.IsCancellationRequested) {
 							throw new UserCancelledException ("Recursive clone of submodules was cancelled.");
 						}
 
 						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine ("Checking out submodule at '{0}'", sm.Path);
+							monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out submodule at '{0}'…", sm.Path));
+							monitor.Step (1);
 						});
-						rootRepository.Submodules.Update (sm.Name, updateOptions);
-						monitor.Step (1);
+						repo.Submodules.Update (sm.Name, updateOptions);
 
-						submodules.Add (Path.Combine (rootRepository.Info.WorkingDirectory, sm.Path));
+						submodules.Add (Path.Combine (repo.Info.WorkingDirectory, sm.Path));
 					}
+				} finally {
 					monitor.EndTask ();
-				} catch (Exception e) {
-					LoggingService.LogInternalError ("Error RecursivelyCloneSubmodules " + rootRepository, e);
-					throw e;
 				}
-			});
+			}
 
 			// If we are continuing the recursive operation, then
 			// recurse into nested submodules.
 			// Check submodules to see if they have their own submodules.
 			foreach (string path in submodules) {
-				using (var submodule = new LibGit2Sharp.Repository (path))
-					RecursivelyCloneSubmodules (submodule, monitor);
+				RecursivelyCloneSubmodules (path, updateOptions, monitor);
 			}
 		}
 
@@ -1518,7 +1531,8 @@ namespace MonoDevelop.VersionControl.Git
 									toCheckout.Add (vi.LocalPath);
 							}
 					} else {
-						var vi = await GetVersionInfoAsync (item, cancellationToken: monitor.CancellationToken);
+						if (!TryGetVersionInfo (item, out var vi))
+							continue;
 						if (vi.Status == VersionStatus.Unversioned)
 							continue;
 
@@ -2110,18 +2124,21 @@ namespace MonoDevelop.VersionControl.Git
 				}
 
 				if (sinceCommit == null) {
-					var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (await GetBaseTextAsync (repositoryPath, cancellationToken));
-					var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
-					var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
-					foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
-						list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
-						for (int i = 0; i < hunk.Inserted; ++i) {
-							if (hunk.InsertStart + i >= list.Count)
-								list.Add (nextRev);
-							else
-								list.Insert (hunk.InsertStart - 1, nextRev);
+					var baseText = await GetBaseTextAsync (repositoryPath, cancellationToken);
+					await Runtime.RunInMainThread (delegate {
+						var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (baseText);
+						var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
+						var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+						foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
+							list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+							for (int i = 0; i < hunk.Inserted; ++i) {
+								if (hunk.InsertStart + i >= list.Count)
+									list.Add (nextRev);
+								else
+									list.Insert (hunk.InsertStart - 1, nextRev);
+							}
 						}
-					}
+					});
 				}
 
 				return list.ToArray ();

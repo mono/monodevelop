@@ -80,29 +80,32 @@ namespace MonoDevelop.VersionControl
 			items = items.Clone ();
 			
 			List<DiffInfo> diffs = new List<DiffInfo> ();
-			
-			object[] exts = AddinManager.GetExtensionObjects ("/MonoDevelop/VersionControl/CommitDialogExtensions", typeof(CommitDialogExtension), false);
-			List<CommitDialogExtension> activeExtensions = new List<CommitDialogExtension> ();
-			try {
-				foreach (CommitDialogExtension ext in exts) {
-					if (ext.Initialize (items)) {
-						activeExtensions.Add (ext);
-						if (!ext.OnBeginCommit (items))
-							break;
-					} else
+
+			await Runtime.RunInMainThread (async () => {
+				object [] exts = AddinManager.GetExtensionObjects ("/MonoDevelop/VersionControl/CommitDialogExtensions", typeof(CommitDialogExtension), false);
+				List<CommitDialogExtension> activeExtensions = new List<CommitDialogExtension> ();
+				try {
+					foreach (CommitDialogExtension ext in exts) {
+						if (ext.Initialize (items)) {
+							activeExtensions.Add (ext);
+							if (!ext.OnBeginCommit (items))
+								break;
+						} else
+							ext.Destroy ();
+					}
+					diffs.AddRange (await repo.PathDiffAsync (items, false, cancellationToken));
+				} finally {
+					foreach (CommitDialogExtension ext in activeExtensions) {
+						ext.OnEndCommit (items, false);
 						ext.Destroy ();
+					}
 				}
-				diffs.AddRange (await repo.PathDiffAsync (items, false, cancellationToken));
-			} finally {
-				foreach (CommitDialogExtension ext in activeExtensions) {
-					ext.OnEndCommit (items, false);
-					ext.Destroy ();
-				}
-			}
-			
+			});
+
+
 			string patch = repo.CreatePatch (diffs);
 			string filename = string.Format ("{0}.diff", ((string)items.BaseLocalPath.FullPath).TrimEnd (Path.DirectorySeparatorChar));
-			IdeApp.Workbench.NewDocument (filename, "text/x-diff", patch);
+			await Runtime.RunInMainThread (() => IdeApp.Workbench.NewDocument (filename, "text/x-diff", patch));
 			return can;
 		}
 		
@@ -113,9 +116,11 @@ namespace MonoDevelop.VersionControl
 		static async Task<bool> CanCreatePatchAsync (ChangeSet items, CancellationToken cancellationTokent)
 		{
 			if (null == items || 0 == items.Count){ return false; }
-			
-			var vinfos = await items.Repository.GetVersionInfoAsync (items.Items.Select (i => i.LocalPath), cancellationToken: cancellationTokent);
-			return vinfos.All (i => i.CanRevert);
+			foreach (var item in items.Items.Select (i => i.LocalPath)) {
+				if (!items.Repository.TryGetVersionInfo (item, out var info) || !info.CanRevert)
+					return false;
+			}
+			return true;
 		}
 		
 		/// <summary>

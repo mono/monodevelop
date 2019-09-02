@@ -91,7 +91,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public FileViewer SelectedViewer {
 			get { return data.SelectedViewer; }
 		}
-		
+
+		/// <summary>
+		/// Set to true if we want change the default behaviour to center dialog to parent window
+		/// </summary>
+		public bool CenterToParent {
+			get { return data.CenterToParent; }
+			set { data.CenterToParent = value; }
+		}
+
 		protected override bool RunDefault ()
 		{
 			var win = new FileSelectorDialog (Title, Action.ToGtkAction ());

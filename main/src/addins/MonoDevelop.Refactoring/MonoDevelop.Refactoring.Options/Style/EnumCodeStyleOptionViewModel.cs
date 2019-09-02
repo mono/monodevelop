@@ -105,7 +105,7 @@ namespace MonoDevelop.Refactoring.Options
 			_enumValues = enumValues.ToImmutableArray ();
 			_previews = previews.ToImmutableArray ();
 
-			var codeStyleOption = (CodeStyleOption<T>)options.GetOption (new OptionKey (option, language));
+			var codeStyleOption = (CodeStyleOption<T>)BooleanCodeStyleOptionViewModel.GetOptionOrDefault (options, option, language);
 
 			var enumIndex = _enumValues.IndexOf (codeStyleOption.Value);
 			if (enumIndex < 0 || enumIndex >= Preferences.Count) {

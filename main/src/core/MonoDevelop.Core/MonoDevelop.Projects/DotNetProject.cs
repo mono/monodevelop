@@ -444,7 +444,13 @@ namespace MonoDevelop.Projects
 		}
 
 		public ImmutableArray<TargetFrameworkMoniker> TargetFrameworkMonikers {
-			get { return targetFrameworkMonikers; }
+			get {
+				// Adding a new project to an existing solution will not call the TargetFramework's setter which
+				// initializes this array, so handle this here if the array is not initialized.
+				if (targetFrameworkMonikers.IsDefaultOrEmpty)
+					targetFrameworkMonikers = ImmutableArray.Create<TargetFrameworkMoniker> (TargetFramework.Id);
+				return targetFrameworkMonikers;
+			}
 		}
 
 		public TargetRuntime TargetRuntime {

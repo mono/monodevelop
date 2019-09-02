@@ -1252,6 +1252,30 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Adding a new project to an existing solution does not call the Project's TargetFramework setter
+		/// so the TargetFrameworkMonikers was not initialized. When the TargetFramework's getter sets the
+		/// TargetFramework we also initialize the TargetFrameworkMonikers.
+		/// </summary>
+		[Test]
+		public void TargetFrameworkMonikers_NewProject_DoesNotThrowNullReferenceException ()
+		{
+			using (DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#")) {
+				var moniker = p.TargetFrameworkMonikers.Single ();
+				Assert.AreEqual (p.TargetFramework.Id, moniker);
+			}
+		}
+
+		[Test]
+		public void EmptyFolderExistsInProject()
+		{
+			// Test case for bug #970095
+			var p = Services.ProjectService.CreateProject ("C#");
+			p.AddDirectory ("Model");
+			Assert.True(p.PathExistsInProject ("Model"));
+			p.Dispose ();
+		}
+
 		class TestGetReferencesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)

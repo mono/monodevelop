@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -153,8 +154,8 @@ namespace MonoDevelop.VersionControl.Git
 			var t = Task.Run (delegate {
 				try {
 					var res = repo.ApplyStash (monitor, s);
-					ReportStashResult (res);
-					return true;
+					ReportStashResult (repo, res, null);
+					return res == StashApplyStatus.Applied;
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
 					monitor.ReportError (msg, ex);
@@ -167,20 +168,72 @@ namespace MonoDevelop.VersionControl.Git
 			return t;
 		}
 
-		public static void ReportStashResult (StashApplyStatus status)
+		public static void ReportStashResult (Repository repo, StashApplyStatus status, int? stashCount)
 		{
-			if (status == StashApplyStatus.Conflicts) {
-				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
-				Runtime.RunInMainThread (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
-				});
+			string msg;
+			StashResultType stashResultType;
+
+			switch (status) {
+			case StashApplyStatus.Conflicts:
+				bool stashApplied = false;
+				StringBuilder info = new StringBuilder (GettextCatalog.GetString ("A conflicting change has been detected in the index. "));
+				// Include conflicts in the msg
+				if (stashCount != null && repo is GitRepository gitRepo) {
+					int actualStashCount = gitRepo.GetStashes ().Count ();
+					stashApplied = actualStashCount != stashCount;
+					if (stashApplied) {
+						info.AppendLine (GettextCatalog.GetString ("The following conflicts have been found:"));
+						foreach (var conflictFile in gitRepo.RootRepository.Index.Conflicts) {
+							info.AppendLine (conflictFile.Ancestor.Path);
+						}
+					} else
+						info.Append (GettextCatalog.GetString ("Stash not applied."));
+				}
+				msg = info.ToString ();
+				stashResultType = !stashApplied ? StashResultType.Error : StashResultType.Warning;
+				break;
+			case StashApplyStatus.UncommittedChanges:
+				msg = GettextCatalog.GetString ("The stash application was aborted due to uncommitted changes in the index.");
+				stashResultType = StashResultType.Warning;
+				break;
+			case StashApplyStatus.NotFound:
+				msg = GettextCatalog.GetString ("The stash index given was not found.");
+				stashResultType = StashResultType.Error;
+				break;
+			default:
+				msg = GettextCatalog.GetString ("Stash successfully applied.");
+				stashResultType = StashResultType.Message;
+				break;
 			}
-			else {
-				string msg = GettextCatalog.GetString ("Stash successfully applied");
-				Runtime.RunInMainThread (delegate {
-					IdeApp.Workbench.StatusBar.ShowMessage (msg);
-				});
-			}
+
+			ShowStashResult (msg, stashResultType);
+		}
+
+		enum StashResultType
+		{
+			Error,
+			Message,
+			Warning
+		}
+
+		static void ShowStashResult (string msg, StashResultType stashResultType)
+		{
+			Runtime.RunInMainThread (delegate {
+				switch (stashResultType)
+				{
+					case StashResultType.Error:
+						IdeApp.Workbench.StatusBar.ShowError (msg);
+					    MessageService.ShowError (msg);
+						break;
+					case StashResultType.Message:
+						IdeApp.Workbench.StatusBar.ShowMessage (msg);
+						break;
+					case StashResultType.Warning:
+						IdeApp.Workbench.StatusBar.ShowWarning (msg);
+					    MessageService.ShowWarning (msg);
+					    break;
+				}
+			});
 		}
 	}
 }

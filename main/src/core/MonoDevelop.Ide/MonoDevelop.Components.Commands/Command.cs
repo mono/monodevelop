@@ -40,6 +40,7 @@ namespace MonoDevelop.Components.Commands
 		object id;
 		string text;
 		string displayName;
+		string cachedDisplayName;
 		string description;
 		IconId icon;
 		string accelKey;
@@ -66,7 +67,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public string Text {
 			get { return text; }
-			set { text = value; }
+			set { text = value; cachedDisplayName = null; }
 		}
 		
 		public IconId Icon {
@@ -136,7 +137,12 @@ namespace MonoDevelop.Components.Commands
 		}
 
 		public string DisplayName {
-			get { return String.IsNullOrWhiteSpace (displayName) ? text.Replace ("_", String.Empty) : displayName; }
+			get {
+				if (string.IsNullOrWhiteSpace (displayName)) {
+					return cachedDisplayName ?? (cachedDisplayName = text.Replace ("_", string.Empty));
+				}
+				return displayName; 
+			}
 			set { displayName = value; }
 		}
 		

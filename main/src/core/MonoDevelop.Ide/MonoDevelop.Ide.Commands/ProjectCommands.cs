@@ -44,6 +44,7 @@ using System.Linq;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.FeatureConfiguration;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -91,6 +92,7 @@ namespace MonoDevelop.Ide.Commands
 		Unload,
 		SetStartupProjects,
 		AddEmptyClass,
+		ToggleFileNesting
 	}
 
 	internal class SolutionOptionsHandler : CommandHandler
@@ -597,6 +599,25 @@ namespace MonoDevelop.Ide.Commands
 			var context = new ProjectOperationContext ();
 			context.GlobalProperties.SetValue ("RunCodeAnalysisOnce", "true");
 			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedProject, context);
+		}
+	}
+
+	internal class ToggleFileNestingHandler : CommandHandler
+	{
+		const string PropertyName = "MonoDevelop.Ide.FileNesting.Enabled";
+		protected override void Update (CommandInfo info)
+		{
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			info.Visible = solution != null && solution.GetAllProjects ().Any (FileNestingService.AppliesToProject);
+			if (info.Visible) {
+				info.Checked = IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.GetValue<bool> (PropertyName, true);
+			}
+		}
+
+		protected override void Run ()
+		{
+			bool enabled = IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.GetValue<bool> (PropertyName, true);
+			IdeApp.ProjectOperations.CurrentSelectedSolution.UserProperties.SetValue (PropertyName, !enabled);
 		}
 	}
 }

@@ -33,12 +33,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.CodeAnalysis;
-using MonoDevelop;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.FileNesting;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.Policies;
 
@@ -453,16 +448,6 @@ namespace MonoDevelop.Projects
 					return true;
 				}
 
-				dependsOnFile = Project.Files.GetFile (parentPath);
-				if (dependsOnFile != null) {
-					if (dependsOnFile.dependentChildren == null)
-						dependsOnFile.dependentChildren = new List<ProjectFile> ();
-					dependsOnFile.dependentChildren.Add (this);
-					return true;
-				}
-			} else {
-				// File nesting
-				var parentPath = FileNestingService.GetParentFile (Project, Name);
 				dependsOnFile = Project.Files.GetFile (parentPath);
 				if (dependsOnFile != null) {
 					if (dependsOnFile.dependentChildren == null)

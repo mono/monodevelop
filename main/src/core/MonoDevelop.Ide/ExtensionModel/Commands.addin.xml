@@ -378,6 +378,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject"
 			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisProjectHandler"
 			_label = "Run Code Analysis on Project" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ToggleFileNesting"
+			 defaultHandler = "MonoDevelop.Ide.Commands.ToggleFileNestingHandler"
+			 _label = "File Nesting" />
 	</Category>
 
 
