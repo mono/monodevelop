@@ -742,6 +742,7 @@
     <Compile Include="MonoDevelop.Projects\DotNetProjectFrameworkConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Core.Execution\TargetFrameworkExecutionTarget.cs" />
     <Compile Include="MonoDevelop.Projects\FrameworkReference.cs" />
+    <Compile Include="MonoDevelop.Core\DedicatedThreadScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
