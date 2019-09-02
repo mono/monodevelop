@@ -40,6 +40,7 @@ namespace MonoDevelop.AspNetCore
 	{
 		readonly string baseDirectory;
 		readonly string defaultNamespace;
+		readonly DotNetProject project;
 		readonly object fileLocker = new object ();
 		public IDictionary<string, JToken> GlobalSettings { get; private set; }
 		internal JObject ProfilesObject { get; private set; }
@@ -61,10 +62,11 @@ namespace MonoDevelop.AspNetCore
 			}
 		}
 
-		public LaunchProfileProvider (string baseDirectory, string defaultNamespace)
+		public LaunchProfileProvider (DotNetProject project)
 		{
-			this.baseDirectory = baseDirectory;
-			this.defaultNamespace = defaultNamespace;
+			this.project = project;
+			this.baseDirectory = project.BaseDirectory;
+			this.defaultNamespace = project.DefaultNamespace;
 			GlobalSettings = new Dictionary<string, JToken> ();
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 		}
@@ -160,7 +162,22 @@ namespace MonoDevelop.AspNetCore
 			};
 
 			defaultProfile.EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
-			defaultProfile.OtherSettings.Add ("applicationUrl", "https://localhost:5001;http://localhost:5000");
+			var anyConfigurationUsesHttps = false;
+			foreach (var runConfiguration in project.RunConfigurations) {
+				if (AspNetCoreCertificateManager.UsingHttps (runConfiguration)) {
+					anyConfigurationUsesHttps = true;
+					break;
+				}
+			}
+
+			string applicationUrl;
+
+			if (anyConfigurationUsesHttps)
+				applicationUrl = "https://localhost:5001;http://localhost:5000";
+			else
+				applicationUrl = "http://localhost:5000";
+
+			defaultProfile.OtherSettings.Add ("applicationUrl", applicationUrl);
 
 			return defaultProfile;
 		}
@@ -178,9 +195,8 @@ namespace MonoDevelop.AspNetCore
 		/// <summary>
 		/// Updates Project.RunConfigurations
 		/// </summary>
-		/// <param name="project"></param>
-		internal void SyncRunConfigurations (DotNetProject project)
-		{
+		internal void SyncRunConfigurations()
+        {
 			foreach (var profile in this.Profiles) {
 
 				if (profile.Value.CommandName != "Project")

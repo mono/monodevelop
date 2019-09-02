@@ -370,10 +370,10 @@ namespace MonoDevelop.Projects
 			// If the project doesn't have a Default run configuration, create one
 			if (!defaultRunConfigurationCreated) {
 				if (!runConfigurations.Any (c => c.IsDefaultConfiguration)) {
+					defaultRunConfigurationCreated = true;
 					var rc = CreateRunConfigurationInternal ("Default");
 					ImportDefaultRunConfiguration (rc);
 					runConfigurations.Insert (0, rc);
-					defaultRunConfigurationCreated = true;
 				}
 			}
 		}
