@@ -798,6 +798,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (workspaceLoadLock) {
 				if (++workspacesLoading == 1) {
+					LoggingService.LogInfo ("BeginWorkspaceLoad:" + Environment.NewLine + Environment.StackTrace);
 					workspaceLoadTaskSource = new TaskCompletionSource<bool> ();
 					UpdateTypeInformationGatheringIcon ();
 				}
