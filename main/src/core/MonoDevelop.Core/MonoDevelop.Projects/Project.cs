@@ -532,8 +532,10 @@ namespace MonoDevelop.Projects
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
 			var evaluatedCompileItems = coreCompileResult.SourceFiles;
 
-			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
+			// Add Compile items first to avoid using potential duplicate None items which would break code completion.
+			var results = new HashSet<ProjectFile> (evaluatedItems.Length, ProjectFileFilePathComparer.Instance);
 			results.UnionWith (evaluatedCompileItems);
+			results.UnionWith (evaluatedItems);
 
 			return results.ToImmutableArray ();
 		}
