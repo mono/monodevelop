@@ -32,7 +32,7 @@ namespace MonoDevelop.Refactoring
 {
 	sealed class RoslynInformationProvider : ISystemInformationProvider
 	{
-		public string Title => "Roslyn";
+		public string Title => "Roslyn (Language Service)";
 
 		public string Description
 			=> typeof (Microsoft.CodeAnalysis.Compilation)
