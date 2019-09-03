@@ -161,10 +161,10 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			var builder = await currentBuilderTask;
+			var builder = await currentBuilderTask.ConfigureAwait (false);
 			if (builder == null) {
 				// The builder was shutdown just after creation. Try again.
-				return await InternalGetRemoteProjectBuilder (projectFile, create);
+				return await InternalGetRemoteProjectBuilder (projectFile, create).ConfigureAwait (false);
 			}
 
 			if (createdNew) {
@@ -177,7 +177,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			// The builder was shutdown. Try again.
-			return await InternalGetRemoteProjectBuilder (projectFile, create);
+			return await InternalGetRemoteProjectBuilder (projectFile, create).ConfigureAwait (false);
 
 		}
 
