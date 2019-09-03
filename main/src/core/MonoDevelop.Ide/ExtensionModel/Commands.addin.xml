@@ -571,6 +571,7 @@
 			type="array"
 			_label = "View List" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList"
+			noshellEnabled = "false"
 			defaultHandler = "MonoDevelop.Ide.Commands.LayoutListHandler"
 			type="radio|array"
 			_label = "Layout List" />
