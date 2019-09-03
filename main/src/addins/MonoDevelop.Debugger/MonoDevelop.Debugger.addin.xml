@@ -70,7 +70,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "Debug" id = "Debug">
+		<Category _name = "Debug" id = "Debug" noshellEnabled = "false">
 
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugApplication"
 				defaultHandler = "MonoDevelop.Debugger.DebugApplicationHandler"
