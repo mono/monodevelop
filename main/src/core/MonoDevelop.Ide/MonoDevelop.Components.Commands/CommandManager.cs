@@ -1850,9 +1850,12 @@ namespace MonoDevelop.Components.Commands
 				info.Enabled = false;
 			return info;
 		}
-		
+
 		void DefaultUpdateCommandInfo (ActionCommand cmd, CommandInfo info)
 		{
+			info.NoShellEnabled = cmd.NoShellEnabled;
+			info.NoShellVisible = cmd.NoShellVisible;
+
 			if (cmd.DefaultHandler == null) {
 				if (cmd.DefaultHandlerType == null) {
 					info.Enabled = false;
