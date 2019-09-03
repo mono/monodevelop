@@ -166,12 +166,12 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				builder = await engine.GetOrCreateRemoteProjectBuilder (projectFile).ConfigureAwait (false);
 			} catch {
-				ReleaseProjectBuilder (engine).Ignore ();
+				await ReleaseProjectBuilder (engine).ConfigureAwait (false);
 				throw;
 			}
 
 			if (builder == null) {
-				ReleaseProjectBuilder (engine).Ignore ();
+				await ReleaseProjectBuilder (engine).ConfigureAwait (false);
 				if (engine.IsShuttingDown) {
 					// The engine was shut down. Try again, using a new engine.
 					return await GetRemoteProjectBuilder (projectFile, solutionFile, runtime, minToolsVersion, buildSessionId, setBusy, allowBusy).ConfigureAwait (false);
