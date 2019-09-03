@@ -107,9 +107,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (wob == null)
 				return;
 			if (((wob is WorkspaceItem) && ((WorkspaceItem)wob).ParentWorkspace == null) ||
-			    (wob.BaseDirectory.CanonicalPath == repo.RootPath.CanonicalPath))
-			{
-				string currentBranch = repo.GetCurrentBranch ();
+			    (wob.BaseDirectory.CanonicalPath == repo.RootPath.CanonicalPath)) {
+
+				string currentBranch = GitRepository.DefaultNoBranchName;
+				var getBranch = repo.GetCurrentBranchAsync ();
+				if (getBranch.Wait (250))
+					currentBranch = getBranch.Result;
+
 				foreach (Branch branch in repo.GetBranches ()) {
 					CommandInfo ci = info.Add (branch.FriendlyName, branch.FriendlyName);
 					if (branch.FriendlyName == currentBranch)
