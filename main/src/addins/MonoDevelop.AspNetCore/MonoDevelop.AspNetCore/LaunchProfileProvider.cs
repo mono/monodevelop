@@ -196,7 +196,7 @@ namespace MonoDevelop.AspNetCore
 		/// Updates Project.RunConfigurations
 		/// </summary>
 		internal void SyncRunConfigurations()
-        {
+		{
 			foreach (var profile in this.Profiles) {
 
 				if (profile.Value.CommandName != "Project")
