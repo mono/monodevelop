@@ -149,6 +149,7 @@ namespace MonoDevelop.VersionControl.Git
 			watcher.Created += HandleGitLockCreated;
 			watcher.Deleted += HandleGitLockDeleted;
 			watcher.Renamed += HandleGitLockRenamed;
+			watcher.Changed += HandleGitChanged;
 			watcher.EnableRaisingEvents = true;
 		}
 
@@ -186,6 +187,8 @@ namespace MonoDevelop.VersionControl.Git
 				OnGitUnlocked ();
 			if (ShouldLock (e.OldName))
 				OnGitUnlocked ();
+			if (e.Name == "HEAD" && e.OldName == "HEAD.lock")
+				Runtime.RunInMainThread (() => BranchSelectionChanged?.Invoke (this, EventArgs.Empty));
 		}
 
 		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
@@ -194,6 +197,12 @@ namespace MonoDevelop.VersionControl.Git
 				OnGitUnlocked ();
 			if (ShouldLock (e.FullPath))
 				OnGitUnlocked ();
+		}
+
+		void HandleGitChanged (object sender, FileSystemEventArgs e)
+		{
+			if (e.Name == "HEAD")
+				Runtime.RunInMainThread (() => BranchSelectionChanged?.Invoke (this, EventArgs.Empty));
 		}
 
 		readonly ManualResetEvent gitLock = new ManualResetEvent (true);
@@ -1981,9 +1990,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			monitor.Step (1);
-			await Runtime.RunInMainThread (() => {
-				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
-			});
 		}
 
 		public async Task<bool> SwitchToBranchAsync (ProgressMonitor monitor, string branch)
