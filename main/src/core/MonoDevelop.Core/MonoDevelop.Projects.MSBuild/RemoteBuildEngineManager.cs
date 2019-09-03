@@ -376,7 +376,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (b != null)
 					result.Add (b);
 				else
-					ReleaseProjectBuilder (engine).Ignore ();
+					await ReleaseProjectBuilder (engine);
 			}
 			return result;
 		}
@@ -721,7 +721,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal static async Task ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
 			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
-				await ReleaseProjectBuilderNoLock (engine).ConfigureAwait (false);
+				ReleaseProjectBuilderNoLock (engine);
 			}
 		}
 
@@ -744,12 +744,11 @@ namespace MonoDevelop.Projects.MSBuild
 			engine.ReferenceCount++;
 		}
 
-		static Task ReleaseProjectBuilderNoLock (RemoteBuildEngine engine)
+		static void ReleaseProjectBuilderNoLock (RemoteBuildEngine engine)
 		{
-			if (shutDown)
-				return Task.CompletedTask;
-			if (--engine.ReferenceCount != 0)
-				return Task.CompletedTask;
+			if (shutDown || --engine.ReferenceCount != 0)
+				return;
+
 			if (engine.IsShuttingDown) {
 				// If the engine is being shut down, dispose it now.
 				builders.Remove (engine);
@@ -771,7 +770,6 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}, TaskContinuationOptions.NotOnCanceled);
 			}
-			return Task.CompletedTask;
 		}
 	}
 }
