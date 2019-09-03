@@ -525,18 +525,6 @@ namespace MonoDevelop.VersionControl.Git
 			get { return Thread.CurrentThread == GitScheduler.DedicatedThread; }
 		}
 
-		internal void RunSafeOperation (Action action)
-		{
-			EnsureInitialized ();
-			action ();
-		}
-
-		internal T RunSafeOperation<T> (Func<T> action)
-		{
-			EnsureInitialized ();
-			return action ();
-		}
-
 		internal void RunOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
 			EnsureInitialized ();
@@ -1783,7 +1771,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public async Task<string> GetCurrentRemoteAsync (CancellationToken cancellationToken = default)
 		{
-			var headRemote = RunSafeOperation (() => RootRepository.Head?.RemoteName);
+			var headRemote = await RunOperationAsync (() => RootRepository.Head?.RemoteName);
 			if (!string.IsNullOrEmpty (headRemote))
 				return headRemote;
 
@@ -1958,9 +1946,18 @@ namespace MonoDevelop.VersionControl.Git
 				.ToArray ();
 		}
 
-		public string GetCurrentBranch ()
+		internal string GetCurrentBranch ()
 		{
-			return RunSafeOperation (() => RootRepository.Head.FriendlyName);
+			return RunOperation (() => RootRepository.Head.FriendlyName);
+		}
+
+		internal string CachedCurrentBranch { get; private set; } = DefaultNoBranchName; //"(no branch)" is the default libgit string
+
+		internal static string DefaultNoBranchName = "(no branch)"; //"(no branch)" is the default libgit string
+
+		public Task<string> GetCurrentBranchAsync (CancellationToken cancellationToken = default)
+		{
+			return RunOperationAsync (() => CachedCurrentBranch = RootRepository.Head.FriendlyName, cancellationToken: cancellationToken);
 		}
 
 		async Task SwitchBranchInternalAsync (ProgressMonitor monitor, string branch)
