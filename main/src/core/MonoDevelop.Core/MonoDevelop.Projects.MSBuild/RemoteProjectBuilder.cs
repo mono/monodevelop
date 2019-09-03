@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (--references == 0) {
 					if (shuttingDown)
 						Dispose ();
-					RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Ignore ();
+					RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Wait ();
 				}
 			}
 		}
