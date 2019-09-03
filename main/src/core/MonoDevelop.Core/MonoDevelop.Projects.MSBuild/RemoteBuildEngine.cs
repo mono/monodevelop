@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			CancelScheduledDisposal ();
 			disposalCancelSource = new CancellationTokenSource ();
-			await Task.Delay (waitTime, disposalCancelSource.Token);
+			await Task.Delay (waitTime, disposalCancelSource.Token).ConfigureAwait (false);
 		}
 
 		/// <summary>
@@ -209,7 +209,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile }).ConfigureAwait (false)).ProjectId;
 				return pid;
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects.MSBuild
 			} catch (Exception ex) {
 				if (alive)
 					LoggingService.LogError ("Project unloading failed", ex);
-				if (!await CheckDisconnected ())
+				if (!await CheckDisconnected ().ConfigureAwait (false))
 					throw;
 			}
 		}
@@ -266,9 +266,9 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task CancelTask (int taskId)
 		{
 			try {
-				await connection.SendMessage (new CancelTaskRequest { TaskId = taskId });
+				await connection.SendMessage (new CancelTaskRequest { TaskId = taskId }).ConfigureAwait (false);
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -279,9 +279,9 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task SetGlobalProperties (Dictionary<string, string> properties)
 		{
 			try {
-				await connection.SendMessage (new SetGlobalPropertiesRequest { Properties = properties });
+				await connection.SendMessage (new SetGlobalPropertiesRequest { Properties = properties }).ConfigureAwait (false);
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -300,7 +300,7 @@ namespace MonoDevelop.Projects.MSBuild
 					EnabledLogEvents = logger != null ? logger.EnabledEvents : MSBuildEvent.None,
 					Verbosity = verbosity,
 					Configurations = configurations
-				});
+				}).ConfigureAwait (false);
 
 				monitor.LogObject (new BuildSessionStartedEvent {
 					SessionId = buildSessionLoggerId,
@@ -309,7 +309,7 @@ namespace MonoDevelop.Projects.MSBuild
 				});
 			} catch {
 				UnregisterLogger (buildSessionLoggerId);
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -321,15 +321,15 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task EndBuildOperation (ProgressMonitor monitor)
 		{
 			try {
-				await connection.SendMessage (new EndBuildRequest ());
-				await connection.ProcessPendingMessages ();
+				await connection.SendMessage (new EndBuildRequest ()).ConfigureAwait (false);
+				await connection.ProcessPendingMessages ().ConfigureAwait (false);
 
 				monitor.LogObject (new BuildSessionFinishedEvent {
 					SessionId = buildSessionLoggerId,
 					TimeStamp = DateTime.Now
 				});
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			} finally {
 				UnregisterLogger (buildSessionLoggerId);
@@ -343,7 +343,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <returns>The ping.</returns>
 		public async Task Ping ()
 		{
-			await connection.SendMessage (new PingRequest ());
+			await connection.SendMessage (new PingRequest ()).ConfigureAwait (false);
 		}
 
 		async Task<bool> CheckAlive ()
@@ -351,7 +351,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!alive)
 				return false;
 			try {
-				await Ping ();
+				await Ping ().ConfigureAwait (false);
 				return true;
 			} catch {
 				alive = false;
@@ -361,9 +361,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal async Task<bool> CheckDisconnected ()
 		{
-			if (!await CheckAlive ()) {
+			if (!await CheckAlive ().ConfigureAwait (false)) {
 				foreach (AsyncEventHandler d in Disconnected.GetInvocationList ())
-					await d (this, EventArgs.Empty);
+					await d (this, EventArgs.Empty).ConfigureAwait (false);
 				return true;
 			}
 			return false;
