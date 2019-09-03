@@ -39,6 +39,7 @@
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="DotNetProject">
 			<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Add"
+						 _label = "Web Reference..."
 						 insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"/>
 			<SeparatorItem/>
 		</Condition>

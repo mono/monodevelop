@@ -66,33 +66,33 @@
 	<SeparatorItem id = "AddSectionStart" />
 	<ItemSet id = "Add" _label = "_Add" autohide="True">
 		<Condition id="ItemType" value="Workspace">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddItem" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution" _label = "New Solution..."/>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace" _label = "New Workspace..."/>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddItem" _label = "Existing _Item..."/>
 		</Condition>
 		<Condition id="ItemType" value="Solution|SolutionFolder">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"  _label = "New Project..."/>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" _label = "Existing _Project..."/>
 			<SeparatorItem id = "Separator1" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder" _label ="Solution _Folder"/>
 		</Condition>
 		<Condition id="ItemType" value="Project|ProjectFolder|Solution|SolutionFolder">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
 				<Condition id="ItemType" value="Project|ProjectFolder">
 					<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddEmptyClass" />
 				</Condition>
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" _label = "Existing Files..."/>
 		</Condition>
 		<Condition id="ItemType" value="Project">
 				<SeparatorItem/>
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-						 _label = "Add Reference..."/>
+						 _label = "Reference..."/>
 		</Condition>
 		<Condition id="ItemType" value="Project|ProjectFolder">
 			<SeparatorItem/>
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFilesFromFolder" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddExistingFolder" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFilesFromFolder" _label = "Files from Folder..."/>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddExistingFolder" _label = "Existing Folder..."/>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"/>
 		</Condition>
 	</ItemSet>
 	<Condition id="ItemType" value="ProjectReferenceCollection">
