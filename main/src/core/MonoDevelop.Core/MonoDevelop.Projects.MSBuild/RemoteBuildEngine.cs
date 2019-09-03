@@ -126,15 +126,17 @@ namespace MonoDevelop.Projects.MSBuild
 			return InternalGetRemoteProjectBuilder (projectFile, false);
 		}
 
+		readonly Task<RemoteProjectBuilder> nullRemoteBuilderTask = Task.FromResult<RemoteProjectBuilder> (null);
+
 		/// <summary>
 		/// Gets or creates a project builder for the provided project
 		/// </summary>
 		/// <returns>The remote project builder.</returns>
 		/// <param name="projectFile">Project to build.</param>
-		async Task<RemoteProjectBuilder> InternalGetRemoteProjectBuilder (string projectFile, bool create)
+		Task<RemoteProjectBuilder> InternalGetRemoteProjectBuilder (string projectFile, bool create)
 		{
 			if (IsShuttingDown)
-				return null;
+				return nullRemoteBuilderTask;
 
 			Task<RemoteProjectBuilder> currentBuilderTask;
 
@@ -143,7 +145,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (currentBuilderTask.IsCompleted) {
 						var reusableBuilder = currentBuilderTask.Result;
 						if (reusableBuilder != null && reusableBuilder.AddReference ())
-							return reusableBuilder;
+							return currentBuilderTask;
 						else {
 							// Project builder is shutting down. Remove it from the reusable list and start a new one if requested
 							remoteProjectBuilders.Remove (projectFile);
@@ -153,7 +155,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				if (currentBuilderTask == null) {
 					if (!create)
-						return null;
+						return nullRemoteBuilderTask;
 					currentBuilderTask = CreateRemoteProjectBuilder (projectFile);
 					remoteProjectBuilders.Add (projectFile, currentBuilderTask);
 				} else {
@@ -167,6 +169,11 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
+			return GetBuilderFromTaskOrRecurse (currentBuilderTask, projectFile, create);
+		}
+
+		async Task<RemoteProjectBuilder> GetBuilderFromTaskOrRecurse (Task<RemoteProjectBuilder> currentBuilderTask, string projectFile, bool create)
+		{
 			var builder = await currentBuilderTask.ConfigureAwait (false);
 			if (builder != null) {
 				// The new builder already has a reference, either when created or added when the task is finished.
