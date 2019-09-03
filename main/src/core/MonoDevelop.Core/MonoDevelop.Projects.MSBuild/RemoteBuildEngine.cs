@@ -198,7 +198,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 				return pb;
 			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
+				LoggingService.LogInternalError ("Failed to create remote builder", ex);
 				return null;
 			}
 		}
