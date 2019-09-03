@@ -376,7 +376,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (b != null)
 					result.Add (b);
 				else
-					await ReleaseProjectBuilder (engine);
+					await ReleaseProjectBuilder (engine).ConfigureAwait (false);
 			}
 			return result;
 		}
