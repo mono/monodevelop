@@ -72,7 +72,8 @@ namespace MonoDevelop.VersionControl.Git
 							if (!getBranch.Wait (250)) {
 								cts.Cancel ();
 								LoggingService.LogError ("Getting current Git branch timed out");
-							}
+							} else if (!getBranch.IsFaulted)
+								branch = getBranch.Result;
 						}
 
 						if (branch == GitRepository.DefaultNoBranchName) {
