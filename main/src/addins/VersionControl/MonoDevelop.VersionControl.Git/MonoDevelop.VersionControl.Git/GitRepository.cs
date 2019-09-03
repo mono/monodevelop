@@ -556,11 +556,9 @@ namespace MonoDevelop.VersionControl.Git
 				DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
-		internal Task RunOperationAsync (Action action, bool hasUICallbacks = false)
+		internal Task RunOperationAsync (Action action)
 		{
 			EnsureInitialized ();
-			if (hasUICallbacks)
-				EnsureBackgroundThread ();
 			if (IsGitThread) {
 				action ();
 				return Task.CompletedTask;
@@ -578,11 +576,9 @@ namespace MonoDevelop.VersionControl.Git
 			return DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
-		internal Task<T> RunOperationAsync<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
+		internal Task<T> RunOperationAsync<T> (Func<T> action, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
-			if (hasUICallbacks)
-				EnsureBackgroundThread ();
 			if (IsGitThread)
 				return Task.FromResult (action ());
 			return DedicatedOperationFactory.StartNew (action, cancellationToken);
@@ -598,11 +594,9 @@ namespace MonoDevelop.VersionControl.Git
 			return DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
-		internal Task<T> RunOperationAsync<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
+		internal Task<T> RunOperationAsync<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
-			if (hasUICallbacks)
-				EnsureBackgroundThread ();
 			if (IsGitThread)
 				return Task.FromResult (action (GetRepository (localPath)));
 			return DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
@@ -1976,7 +1970,7 @@ namespace MonoDevelop.VersionControl.Git
 				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 				OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
 				CheckoutNotifyFlags = refreshFlags,
-			}), true, monitor.CancellationToken);
+			}), monitor.CancellationToken);
 
 			if (GitService.StashUnstashWhenSwitchingBranches) {
 				try {
