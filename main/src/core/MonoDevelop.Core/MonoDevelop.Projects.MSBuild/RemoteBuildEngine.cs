@@ -70,11 +70,11 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Schedules this builder for disposal. The builder will be disposed after the provided time.
 		/// If disposal is cancelled, a TaskCancelledException will be thrown.
 		/// </summary>
-		internal async Task ScheduleForDisposal (int waitTime)
+		internal Task ScheduleForDisposal (int waitTime)
 		{
 			CancelScheduledDisposal ();
 			disposalCancelSource = new CancellationTokenSource ();
-			await Task.Delay (waitTime, disposalCancelSource.Token).ConfigureAwait (false);
+			return Task.Delay (waitTime, disposalCancelSource.Token);
 		}
 
 		/// <summary>
@@ -137,7 +137,6 @@ namespace MonoDevelop.Projects.MSBuild
 				return null;
 
 			Task<RemoteProjectBuilder> currentBuilderTask;
-			bool createdNew = false;
 
 			lock (remoteProjectBuilders) {
 				if (remoteProjectBuilders.TryGetValue (projectFile, out currentBuilderTask)) {
@@ -155,23 +154,27 @@ namespace MonoDevelop.Projects.MSBuild
 				if (currentBuilderTask == null) {
 					if (!create)
 						return null;
-					createdNew = true;
 					currentBuilderTask = CreateRemoteProjectBuilder (projectFile);
 					remoteProjectBuilders.Add (projectFile, currentBuilderTask);
+				} else {
+					currentBuilderTask = currentBuilderTask.ContinueWith (t => {
+						var b = t.Result;
+						if (b == null || !b.AddReference ())
+							return null;
+
+						return b;
+					}, TaskScheduler.Default);
 				}
 			}
 
 			var builder = await currentBuilderTask.ConfigureAwait (false);
 			if (builder != null) {
-				if (createdNew || builder.AddReference ()) {
-					// The new builder already has a reference, nothing else to do
-					return builder;
-				}
+				// The new builder already has a reference, either when created or added when the task is finished.
+				return builder;
 			}
 
 			// The builder was shutdown. Try again.
 			return await InternalGetRemoteProjectBuilder (projectFile, create).ConfigureAwait (false);
-
 		}
 
 		async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
