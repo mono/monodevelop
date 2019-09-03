@@ -521,6 +521,10 @@ namespace MonoDevelop.VersionControl.Git
 				InitFileWatcher ();
 		}
 
+		bool IsGitThread {
+			get { return Thread.CurrentThread == GitScheduler.DedicatedThread; }
+		}
+
 		internal void RunSafeOperation (Action action)
 		{
 			EnsureInitialized ();
@@ -538,7 +542,10 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			if (IsGitThread)
+				action (GetRepository (localPath));
+			else
+				DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
@@ -546,7 +553,10 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
+			if (IsGitThread)
+				action ();
+			else
+				DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal Task RunOperationAsync (Action action, bool hasUICallbacks = false)
@@ -554,6 +564,10 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (IsGitThread) {
+				action ();
+				return Task.CompletedTask;
+			}
 			return DedicatedOperationFactory.StartNew (action);
 		}
 
@@ -562,6 +576,8 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (IsGitThread)
+				return action ();
 			return DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
@@ -570,6 +586,8 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (IsGitThread)
+				return Task.FromResult (action ());
 			return DedicatedOperationFactory.StartNew (action, cancellationToken);
 		}
 
@@ -578,6 +596,8 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (IsGitThread)
+				return action (GetRepository (localPath));
 			return DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
@@ -586,6 +606,8 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
+			if (IsGitThread)
+				return Task.FromResult (action (GetRepository (localPath)));
 			return DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
 		}
 
@@ -596,8 +618,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (!WaitAndFreezeEvents (cancellationToken))
 				return;
 			try {
-
-				DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
+				if (IsGitThread)
+					action ();
+				else
+					DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
 			}
@@ -611,7 +635,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (!WaitAndFreezeEvents (cancellationToken))
 				return;
 			try {
-				DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+				if (IsGitThread)
+					action (GetRepository (localPath));
+				else
+					DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
 			}
@@ -625,6 +652,8 @@ namespace MonoDevelop.VersionControl.Git
 			if (!WaitAndFreezeEvents (cancellationToken))
 				return default;
 			try {
+				if (IsGitThread)
+					return action ();
 				return DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
@@ -639,6 +668,8 @@ namespace MonoDevelop.VersionControl.Git
 			if (!WaitAndFreezeEvents (cancellationToken))
 				return default;
 			try {
+				if (IsGitThread)
+					return action (GetRepository (localPath));
 				return DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 			} finally {
 				ThawEvents ();
