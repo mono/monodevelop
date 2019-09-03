@@ -37,5 +37,11 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	{
 		[NodeAttribute ("_name", true, "Name", Localizable=true)]
 		public string Name { get; private set; }
+
+		[NodeAttribute ("noshellEnabled", "Makes the button enabled or not in shell")]
+		public bool NoShellEnabled { get; private set; } = true;
+
+		[NodeAttribute ("noshellVisible", "Makes the button visible or not in shell")]
+		public bool NoShellVisible { get; private set; } = true;
 	}
 }
