@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-27 13:56:34+0200\n"
+"POT-Creation-Date: 2019-09-02 10:31:55+0200\n"
 "PO-Revision-Date: 2010-10-13 23:48:17+0200\n"
 "Last-Translator: André Offringa <offringa@gmail.com>\n"
 "Language-Team: Dutch\n"
@@ -1204,7 +1204,7 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 msgid "<uncommitted>"
 msgstr ""
 
@@ -1370,6 +1370,10 @@ msgstr "Geen veranderingen gemaakt in CodeBehind klassen."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:109
 msgid "A configuration with the name '{0}' already exists."
 msgstr "Er bestaat al een configuratie met de naam '{0}'."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
+msgid "A conflicting change has been detected in the index. "
+msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:34
 msgid "A cyclic build dependency has been detected."
@@ -1731,7 +1735,7 @@ msgstr ""
 msgid "API"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 #, fuzzy
 msgid "API Documentation"
 msgstr "Documentatie"
@@ -1953,7 +1957,7 @@ msgid "Abort Update"
 msgstr "_Over MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:615
+#: ../src/addins/MacPlatform/MacPlatform.cs:611
 #, fuzzy
 msgid "About {0}"
 msgstr "_Over MonoDevelop"
@@ -2044,47 +2048,47 @@ msgstr "Actiegroep"
 msgid "Actions"
 msgstr "Acties"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:772
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:775
 #, fuzzy
 msgid "Activate 1"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:778
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:781
 #, fuzzy
 msgid "Activate 2"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:784
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:787
 #, fuzzy
 msgid "Activate 3"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:790
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:793
 #, fuzzy
 msgid "Activate 4"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:796
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:799
 #, fuzzy
 msgid "Activate 5"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:802
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
 #, fuzzy
 msgid "Activate 6"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:808
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:811
 #, fuzzy
 msgid "Activate 7"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:814
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:817
 #, fuzzy
 msgid "Activate 8"
 msgstr "(Actief)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:820
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:823
 #, fuzzy
 msgid "Activate 9"
 msgstr "(Actief)"
@@ -2095,47 +2099,47 @@ msgstr "(Actief)"
 msgid "Activate document '{0}'"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:773
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:776
 #, fuzzy
 msgid "Activate document 1"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:782
 #, fuzzy
 msgid "Activate document 2"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:788
 #, fuzzy
 msgid "Activate document 3"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:791
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:794
 #, fuzzy
 msgid "Activate document 4"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:797
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:800
 #, fuzzy
 msgid "Activate document 5"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:803
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:806
 #, fuzzy
 msgid "Activate document 6"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:809
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:812
 #, fuzzy
 msgid "Activate document 7"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:815
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:818
 #, fuzzy
 msgid "Activate document 8"
 msgstr "Activeer dit scherm"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:821
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:824
 #, fuzzy
 msgid "Activate document 9"
 msgstr "Activeer dit scherm"
@@ -2159,7 +2163,7 @@ msgstr "Activeer dit scherm"
 msgid "Active Configuration"
 msgstr "Actieve configuratie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:587
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:590
 msgid "Active Layout"
 msgstr "Actieve layout"
 
@@ -2231,7 +2235,7 @@ msgstr "Ander beleid"
 msgid "Add Dependency"
 msgstr "Internetpagina's voor ontwikkeling"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:515
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:516
 #, fuzzy
 msgid "Add Existing Folder"
 msgstr "Voeg aan oplossing toe"
@@ -2485,7 +2489,7 @@ msgstr "Voeg bestaand _project toe"
 msgid "Add expression to watch pad"
 msgstr "Expressie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:404
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:405
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:302
 msgid "Add files"
 msgstr "Bestanden toevoegen"
@@ -2978,7 +2982,7 @@ msgstr ""
 "Het project '{0}' is gewijzigd door een extern programma. Wilt u deze "
 "herladen? Alle projectbestanden worden gesloten."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:299
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:301
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:92
 #, fuzzy
 msgid "An application is already running. Do you want to stop it?"
@@ -3125,7 +3129,7 @@ msgstr ""
 msgid "Angular"
 msgstr "Eenvoud"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1215
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
 msgid "Animates the text editor caret to help find it"
 msgstr ""
 
@@ -3252,7 +3256,7 @@ msgid "Application to record audio/video files"
 msgstr "Toepassing om audio- of videobestanden op te nemen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:795
+#: ../src/addins/MacPlatform/MacPlatform.cs:778
 #, fuzzy
 msgid "ApplicationIcon"
 msgstr "Toepassing"
@@ -3325,7 +3329,7 @@ msgstr "Leeg C-project"
 msgid "Apply to all"
 msgstr "Toepassen op alle"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:368
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:383
 #, fuzzy
 msgid "Applying stash"
 msgstr "Toepassen op alle"
@@ -3477,7 +3481,7 @@ msgstr "Weet u zeker dat u bestand {0} uit project {1} wilt verwijderen?"
 msgid "Are you sure you want to remove directory {0}?"
 msgstr "Weet u zeker dat u bestand {0} uit project {1} wilt verwijderen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:320
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:331
 msgid "Are you sure you want to remove file {0} from project {1}?"
 msgstr "Weet u zeker dat u bestand {0} uit project {1} wilt verwijderen?"
 
@@ -3487,7 +3491,7 @@ msgstr "Weet u zeker dat u bestand {0} uit project {1} wilt verwijderen?"
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "Weet u zeker dat u deze configuratie wilt verwijderen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:312
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
 #, fuzzy
 msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
@@ -3517,14 +3521,14 @@ msgstr "Wilt u echt de map '{0}' naar de map '{1}' verplaatsen?"
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "Weet u zeker dat u het bestand uit het project wilt verwijderen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:327
 #, fuzzy
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
 msgstr "Weet u zeker dat u het bestand uit het project wilt verwijderen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:334
 #, fuzzy
 msgid "Are you sure you want to remove the selected files from the project?"
 msgstr "Weet u zeker dat u het bestand uit het project wilt verwijderen?"
@@ -3541,7 +3545,7 @@ msgstr "Weet u zeker dat u het bestand uit het project wilt verwijderen?"
 msgid "Are you sure you want to remove this template?"
 msgstr "Weet u zeker dat u dit bestand wilt verwijderen?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:60
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:62
 #, fuzzy
 msgid ""
 "Are you sure you want to revert the changes from the revision selected on "
@@ -3557,7 +3561,7 @@ msgstr ""
 "Weet u zeker dat u de wijzigingen ongedaan wilt maken in de geselecteerde "
 "bestanden?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:56
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:58
 #, fuzzy
 msgid ""
 "Are you sure you want to revert the selected resources to the revision "
@@ -3704,7 +3708,7 @@ msgstr "Assembly niet beschikbaar voor {0} (in {1})"
 msgid "Assembly:\t{0}"
 msgstr "Assembly"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:395
+#: ../src/addins/MacPlatform/MacPlatform.cs:391
 msgid "Assistive Technology Detected"
 msgstr ""
 
@@ -3801,7 +3805,7 @@ msgid "Author:"
 msgstr "Auteur"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 #, fuzzy
 msgid "Authors"
 msgstr "Auteur"
@@ -3888,12 +3892,12 @@ msgstr "Automatisch gevonden bestanden toevoegen"
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1077
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1092
 #, fuzzy
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr "Automatisch gevonden bestanden toevoegen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1939
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr ""
@@ -3947,7 +3951,7 @@ msgstr "Beschikbare coderingen:"
 msgid "Available in repository:"
 msgstr "Beschikbare coderingen:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
 #, fuzzy
 msgid "B_uild {0}"
 msgstr "Bouw {0}"
@@ -4132,7 +4136,7 @@ msgstr "Eigenschappen voor bouwen"
 msgid "Branch name too long"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:139
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:140
 #, fuzzy
 msgid "Branch switch failed"
 msgstr "Een nieuwe klasse aanmaken"
@@ -4264,7 +4268,7 @@ msgstr "Uitvoer van bouwen"
 msgid "Build _without Saving"
 msgstr "S_luit oplossing"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:521
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:99
 #, fuzzy
 msgid "Build action"
@@ -4318,12 +4322,12 @@ msgstr "Oplossing bouwen alvorens uit te voeren"
 msgid "Build project before running"
 msgstr "Oplossing bouwen alvorens uit te voeren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
 #, fuzzy
 msgid "Build project {0}"
 msgstr "Bouw project {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
 #, fuzzy
 msgid "Build solution {0}"
 msgstr "Bouw oplossing {0}"
@@ -4352,7 +4356,7 @@ msgstr "Wis recente projecten"
 msgid "Build the projects in the active solution build configuration."
 msgstr "De oplossing heeft geen actieve configuratie."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:223
 msgid "Build {0}"
 msgstr "Bouw {0}"
 
@@ -4525,12 +4529,12 @@ msgstr "Uit-checken..."
 msgid "C_lean"
 msgstr "Schoonmaken"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:381
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:383
 #, fuzzy
 msgid "C_lean {0}"
 msgstr "Maak {0} schoon"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:450
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:453
 #, fuzzy
 msgid "C_lose"
 msgstr "Sluit _alles"
@@ -4540,7 +4544,7 @@ msgstr "Sluit _alles"
 msgid "C_lose All Solutions"
 msgstr "S_luit oplossing"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:540
 #, fuzzy
 msgid "C_lose Others"
 msgstr "_Sluit bestand"
@@ -4555,7 +4559,7 @@ msgstr "Consoleproject"
 msgid "C_lose Solution"
 msgstr "S_luit oplossing"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:442
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:445
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:214
 #, fuzzy
 msgid "C_lose Workspace"
@@ -4578,7 +4582,7 @@ msgstr "Broncode sjablonen"
 msgid "C_onnect"
 msgstr "Commentaar"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:546
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
 #, fuzzy
 msgid "C_opy File Path"
 msgstr "Bestandspad"
@@ -4614,7 +4618,7 @@ msgstr ""
 msgid "Camera tools, etc."
 msgstr "Camera hulpmiddelen, enz."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1993
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1999
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4623,7 +4627,7 @@ msgstr ""
 "Kan \"{0}\" niet uitvoeren. De geselecteerde uitvoerings modus wordt niet "
 "ondersteund voor .NET projecten."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2011
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2017
 msgid ""
 "Can not execute. The run configuration working directory doesn't exist at {0}"
 msgstr ""
@@ -4758,7 +4762,7 @@ msgstr ""
 "De map {0} kon niet aangemaakt worden, omdat er al een bestand met deze naam "
 "bestaat."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2007
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:177
 #, fuzzy
 msgid "Cannot execute \"{0}\""
@@ -4839,7 +4843,7 @@ msgstr ""
 msgid "Celtic"
 msgstr "Keltisch"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:708
 #, fuzzy
 msgid "Center and Focus Document"
 msgstr "Documenten"
@@ -4951,7 +4955,7 @@ msgstr "De invoer voor het wijzigingslogboek kon niet worden gegenereerd."
 msgid "ChangeLog entry:"
 msgstr "Wijzigingslogboek invoer:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 #, fuzzy
 msgid "Changes"
 msgstr "Wijzigingslogboek"
@@ -5045,7 +5049,7 @@ msgstr ""
 msgid "Check for the command to run on an external console"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:896
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
 msgid "Check for updates to MonoDevelop and packages it requires"
 msgstr ""
 
@@ -5423,9 +5427,24 @@ msgstr ""
 msgid "Check to wrap the lines at 60 characters"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:344
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1433
+#, fuzzy
+msgid "Checking out file '{0}'"
+msgstr "Uit-checken..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:359
 #, fuzzy
 msgid "Checking out files"
+msgstr "Uit-checken..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1425
+#, fuzzy
+msgid "Checking out repository at '{0}'"
+msgstr "Uit-checken..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1495
+#, fuzzy
+msgid "Checking out submodule at '{0}'…"
 msgstr "Uit-checken..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:47
@@ -5457,7 +5476,7 @@ msgstr "Weet u zeker dat u deze configuratie wilt verwijderen?"
 msgid "Chemistry software"
 msgstr "Scheikundige software"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1198
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1213
 #, fuzzy
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "Uitvoeren van: {0} {1} {2}"
@@ -5596,7 +5615,7 @@ msgstr "Doelnaam voor schoonmaken:"
 msgid "Clean the selected project or solution"
 msgstr "Kies aub een project of oplossing."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:382
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:384
 msgid "Clean {0}"
 msgstr "Maak {0} schoon"
 
@@ -5660,7 +5679,7 @@ msgstr "Gebruikersinterface"
 msgid "Clear Icon"
 msgstr "Wis icoon"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:484
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:487
 #, fuzzy
 msgid "Clear Recent Files"
 msgstr "Wis recente bestanden"
@@ -5670,12 +5689,12 @@ msgstr "Wis recente bestanden"
 msgid "Clear Recent Searches"
 msgstr "_Wis recente bestanden"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:494
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:497
 #, fuzzy
 msgid "Clear Recent Solutions"
 msgstr "_Wis recente oplossingen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
 msgid "Clear bookmarks"
 msgstr "Wis markeringen"
 
@@ -5687,7 +5706,7 @@ msgstr "Wis console"
 msgid "Clear recent files"
 msgstr "Wis recente bestanden"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:489
 #, fuzzy
 msgid "Clear recent files list"
 msgstr "Wis recente bestanden"
@@ -5696,7 +5715,7 @@ msgstr "Wis recente bestanden"
 msgid "Clear recent projects"
 msgstr "Wis recente projecten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
 #, fuzzy
 msgid "Clear recent solutions list"
 msgstr "_Wis recente oplossingen"
@@ -5705,7 +5724,7 @@ msgstr "_Wis recente oplossingen"
 msgid "Clear results"
 msgstr "Wis resultaten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:650
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:653
 msgid "Clear the navigation history"
 msgstr "Leegmaken Navigatie Geschiedenis"
 
@@ -5801,6 +5820,19 @@ msgstr "Certificaat van client vereist"
 msgid "Clipboard Ring"
 msgstr "Programmeren"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Cloning submodules failed"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1487
+msgid "Cloning submodules…"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1415
+#, fuzzy
+msgid "Cloning…"
+msgstr "Laden..."
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:449
@@ -5809,13 +5841,13 @@ msgstr "Programmeren"
 msgid "Close"
 msgstr "_Sluit bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:556
 #, fuzzy
 msgid "Close All Except _Pinned"
 msgstr "_Sluit bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:436
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:439
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:536
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/DefaultSourceEditorOptions.cs:434
 #, fuzzy
 msgid "Close All Files"
@@ -5831,12 +5863,12 @@ msgstr "MonoDevelop"
 msgid "Close Project"
 msgstr "Consoleproject"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:451
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:454
 #, fuzzy
 msgid "Close Workspace Item"
 msgstr "Werkruimte"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:435
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:438
 #, fuzzy
 msgid "Close _All"
 msgstr "Sluit _alles"
@@ -5846,22 +5878,22 @@ msgstr "Sluit _alles"
 msgid "Close _without Saving"
 msgstr "S_luit oplossing"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:429
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:432
 #, fuzzy
 msgid "Close active file"
 msgstr "Bestand verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:554
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:557
 #, fuzzy
 msgid "Close all files except pinned"
 msgstr "Sluit alle geopende bestanden exclusief het actieve bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:443
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:446
 msgid "Close all solutions open in the current workspace"
 msgstr "Alle oplossingen binnen de huidige werkruimte sluiten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:89
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:174
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:207
 #, fuzzy
 msgid "Close current workspace"
 msgstr "Huidige pagina opnieuw laden"
@@ -5876,7 +5908,7 @@ msgstr "Documenten"
 msgid "Close pad"
 msgstr "_Sluit bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:452
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
 msgid "Close the active solution or workspace item"
 msgstr "Sluit de actieve oplossing of werkruimte"
 
@@ -5907,7 +5939,7 @@ msgstr "Werkruimte"
 msgid "Close the {0} pad"
 msgstr "_Sluit bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:544
 #, fuzzy
 msgid "Close to the _Right"
 msgstr "_Sluit bestand"
@@ -5923,16 +5955,16 @@ msgstr ""
 msgid "Close {0}"
 msgstr "Maak {0} schoon"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:538
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
 msgid "Closes all opened files except for the active file"
 msgstr "Sluit alle geopende bestanden exclusief het actieve bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:534
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
 #, fuzzy
 msgid "Closes all opened files in a tab"
 msgstr "Sluit alle geopende bestanden exclusief het actieve bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:542
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
 #, fuzzy
 msgid "Closes all opened files to the right of the active file"
 msgstr "Sluit alle geopende bestanden exclusief het actieve bestand"
@@ -6011,7 +6043,7 @@ msgstr ""
 msgid "Collapse All"
 msgstr "Alles invouwen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
 msgid "Collapse All Nodes"
 msgstr "Alles invouwen"
 
@@ -6092,7 +6124,7 @@ msgstr "Argumenten voor het commando {0}"
 msgid "Command Line Options"
 msgstr "Compileropties"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:454
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:456
 #, fuzzy
 msgid "Command execution failed"
 msgstr "Uitvoeren mislukt."
@@ -6114,7 +6146,7 @@ msgstr "Compileropties"
 msgid "Command:"
 msgstr "Commando:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:57
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:62
 #, fuzzy
 msgid "Commands"
 msgstr "Commando"
@@ -6248,12 +6280,12 @@ msgstr "Compileropties"
 msgid "Compiling resource {0} with {1}"
 msgstr "Bezig met compileren van resource {0} met {1}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
 #, fuzzy
 msgid "Complete Word"
 msgstr "Geneste naamruimtes"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 #, fuzzy
 msgid "Complete current statement"
 msgstr "Het huidige statement completeren"
@@ -6267,7 +6299,7 @@ msgstr "Geneste naamruimtes"
 msgid "Complete with Space or Punctuation"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
 msgid "Completes the current statement"
 msgstr "Het huidige statement completeren"
 
@@ -6321,7 +6353,7 @@ msgstr "Configuratie"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1886
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2270
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2320
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1982
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1988
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Bezig met aanmaken van {0} voor project {1}"
@@ -6430,7 +6462,7 @@ msgstr "Conflict"
 msgid "Conflict {0}"
 msgstr "Conflict"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1116
 #, fuzzy
 msgid "Conflicting local changes found"
 msgstr "Bestanden toevoegen..."
@@ -6760,7 +6792,7 @@ msgstr "Kopiëren indien nieuwer"
 msgid "Copy the assembly to the output directory when building the project"
 msgstr "Kopieer de assembly naar de uitvoer map bij het bouwen van het project"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:548
 msgid "Copy the file path to the clipboard"
 msgstr "Kopieert de locaite van het bestand naar het plakbord"
 
@@ -6777,7 +6809,7 @@ msgstr "Kopiëer de selectie"
 msgid "Copy to output directory"
 msgstr "<b>Uitvoermap</b>"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:368
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2293
 msgid "Copying files..."
@@ -6869,7 +6901,7 @@ msgid ""
 "all code, not just user code."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1138
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1140
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:393
 msgid "Could not get diff information. "
 msgstr "Kon geen informatie over het verschil verkrijgen."
@@ -7124,7 +7156,7 @@ msgid "Create a new empty class"
 msgstr "Maakt een lege klasse aan."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:246
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:402
 msgid "Create a new file"
 msgstr "Nieuw bestand aanmaken"
 
@@ -7133,12 +7165,12 @@ msgstr "Nieuw bestand aanmaken"
 msgid "Create a new folder"
 msgstr "Maak nieuwe map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:418
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:421
 #, fuzzy
 msgid "Create a new solution"
 msgstr "In oplossing aanmaken:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:424
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:427
 #, fuzzy
 msgid "Create a new workspace"
 msgstr "Maak nieuwe map"
@@ -7152,7 +7184,7 @@ msgstr "_Afzonderlijke submap voor oplossing aanmaken"
 msgid "Create a project which can generate packages for a solution"
 msgstr "Maakt een project aan dat pakketten kan genereren voor een oplossing"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:53
 #, fuzzy
 msgid "Create an initial commit first."
 msgstr "Maakt een Gtk-venster aan"
@@ -7206,7 +7238,7 @@ msgstr "Maak nieuwe map"
 msgid "Create new file"
 msgstr "Nieuw bestand aanmaken"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:578
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
 msgid "Create new layout"
 msgstr "Nieuwe layout aanmaken"
 
@@ -7932,7 +7964,7 @@ msgstr "K_nippen"
 msgid "Cut the selection"
 msgstr "Knip de selectie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1210
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
@@ -7994,7 +8026,7 @@ msgstr "Tijd"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -8115,7 +8147,7 @@ msgstr "Beschrijving"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -8291,12 +8323,12 @@ msgstr "Taak verwijderen"
 msgid "Delete also configurations in solution items"
 msgstr "Tevens configuraties in oplossingonderdelen verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:583
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:586
 #, fuzzy
 msgid "Delete current layout"
 msgstr "Huidige layout verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
 msgid "Delete entire line"
 msgstr "Hele regel verwijderen"
 
@@ -8305,30 +8337,30 @@ msgstr "Hele regel verwijderen"
 msgid "Delete from Disk"
 msgstr "Bestanden verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1064
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1067
 msgid "Delete left character"
 msgstr "Linker karakter verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1189
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1192
 #, fuzzy
 msgid "Delete next subword"
 msgstr "Verwijder map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1188
 #, fuzzy
 msgid "Delete next word"
 msgstr "Verwijder map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 #, fuzzy
 msgid "Delete previous subword"
 msgstr "Kies repository"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid "Delete previous word"
 msgstr "Verwijder vorig woord"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1069
 msgid "Delete right character"
 msgstr "Rechter karakter verwijderen"
 
@@ -8346,11 +8378,11 @@ msgstr "Een enkel wijzigingslogboek in de hoofdmap van het project"
 msgid "Delete the selection"
 msgstr "Selectie verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1105
 msgid "Delete to end of line"
 msgstr "Tot het eind van de regel verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
 #, fuzzy
 msgid "Delete to start of line"
 msgstr "Tot het eind van de regel verwijderen"
@@ -8381,7 +8413,7 @@ msgstr ""
 "en bewaart in group naam1 het interval tussen de eerder gedefinieerde \n"
 "naam2 groep en de hudige groep."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
 "Verwijderen tot het einde van de regel, of, indien aan het einde, verwijder "
@@ -8650,7 +8682,7 @@ msgstr ""
 "Het bestand {0} bestaat al, wilt u het huidige\n"
 "bestand overschrijven?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:490
 msgid "Directory {0} is empty, no files have been added."
 msgstr ""
 
@@ -8757,11 +8789,11 @@ msgstr "Assembly"
 msgid "Discovery document"
 msgstr "Bewaar het actieve document"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1996
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1997
 msgid "Display Options"
 msgstr "Opties voor weergave"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:607
 msgid "Display Options List"
 msgstr "Lijst van opties weergeven"
 
@@ -8799,21 +8831,21 @@ msgstr ""
 msgid "Do not reference mscorlib.dll"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:313
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:314
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "Wilt u echt de map '{0}' naar de map '{1}' kopiëeren?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:311
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:312
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
 msgstr "Wilt u echt de map '{0}' naar de hoofdmap van project '{1}' kopiëeren?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:306
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
 msgstr "Wilt u echt de map '{0}' naar de map '{1}' verplaatsen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:303
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:304
 msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -8888,17 +8920,17 @@ msgstr "Weet u zeker dat u het bestand uit het project wilt verwijderen?"
 msgid "Do you want to save the changes before committing?"
 msgstr "Wilt u de gemaakte wijzigingen opslaan?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:359
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:360
 msgid "Do you want to save the file '{0}' before the copy operation?"
 msgstr ""
 "Wilt u het bestand '{0}' bewaren voordat de kopiëeroperatie wordt uitgevoerd?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:355
 msgid "Do you want to save the file '{0}' before the move operation?"
 msgstr ""
 "Wilt u het bestand '{0}' opslaan voordat de verplaatsing wordt uitgevoerd?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:362
 msgid ""
 "Do you want to save the following files before the copy operation?\n"
 "\n"
@@ -8908,7 +8940,7 @@ msgstr ""
 "uitgevoerd?\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:356
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:357
 msgid ""
 "Do you want to save the following files before the move operation?\n"
 "\n"
@@ -8957,7 +8989,7 @@ msgstr "Dock"
 msgid "Document"
 msgstr "Documenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:826
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:829
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:206
 #, fuzzy
 msgid "Document List"
@@ -9009,7 +9041,7 @@ msgstr "Documentatie"
 msgid "Documents"
 msgstr "Documenten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:364
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:53
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:140
 msgid "Don't Save"
@@ -9056,17 +9088,17 @@ msgstr "Bezig met bouwen van {0}"
 msgid "Downloads"
 msgstr "<b>Lettertype</b>"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 #, fuzzy
 msgid "Dump Accessibility Tree"
 msgstr "Bereikbaarheid"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
 #, fuzzy
 msgid "Dump Accessibility Tree (10s)"
 msgstr "Bereikbaarheid"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
 msgid "Dump UI Tree"
 msgstr ""
 
@@ -9086,7 +9118,7 @@ msgstr "Bouw: "
 msgid "Duplicate Configuration"
 msgstr "Configuratie verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1206
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 #, fuzzy
 msgid "Duplicate line"
 msgstr "Bouw: "
@@ -9096,7 +9128,7 @@ msgstr "Bouw: "
 msgid "Duplicates:"
 msgstr "Bouw: "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
 msgid "Dynamic abbrev"
 msgstr ""
 
@@ -9158,7 +9190,7 @@ msgstr "Schakel breakpoint aan of uit"
 msgid "Edit Custom Modes..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
 #, fuzzy
 msgid "Edit Custom Tools..."
@@ -9401,7 +9433,7 @@ msgstr ""
 msgid "Empty destructor is redundant"
 msgstr "Lege mapnaam"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:488
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
 #, fuzzy
 msgid "Empty directory."
 msgstr "Lege struct"
@@ -9639,7 +9671,7 @@ msgstr "Maak property"
 msgid "Encapsulate fields (but still use field)"
 msgstr ""
 
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:148
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:181
 #, fuzzy
 msgid "Encoding:"
 msgstr "Programmeren"
@@ -10537,70 +10569,70 @@ msgstr "Alles uitvouwen"
 msgid "Expand matches"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Expand selection to document end"
 msgstr "Selectie uitbreiden tot einde van document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
 msgid "Expand selection to document start"
 msgstr "Selectie uitbreiden tot begin van document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1158
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 #, fuzzy
 msgid "Expand selection to line"
 msgstr "Selectie uitbreiden tot regel einde"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 msgid "Expand selection to line end"
 msgstr "Selectie uitbreiden tot regel einde"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1153
 msgid "Expand selection to line start"
 msgstr "Selectie uitbreiden tot regel aanvang"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1151
 #, fuzzy
 msgid "Expand selection to next line"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1144
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 #, fuzzy
 msgid "Expand selection to next subword"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
 #, fuzzy
 msgid "Expand selection to next word"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1194
 msgid "Expand selection to page down"
 msgstr "Selectie uitbreiden een pagina naar beneden"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1193
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Expand selection to page up"
 msgstr "Selectie uitbreiden een pagina omhoog"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 #, fuzzy
 msgid "Expand selection to previous line"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1142
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 #, fuzzy
 msgid "Expand selection to previous subword"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
 #, fuzzy
 msgid "Expand selection to previous word"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
 msgid "Expand selection to the left"
 msgstr "Selectie uitbreiden naar links"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
 msgid "Expand selection to the right"
 msgstr "Selectie uitbreiden naar rechts"
 
@@ -10755,7 +10787,7 @@ msgstr ""
 msgid "Extension packages"
 msgstr "Bewerk pakketten"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:559
+#: ../src/addins/MacPlatform/MacPlatform.cs:555
 #, fuzzy
 msgid "Extensions..."
 msgstr "Uitbreiding"
@@ -10869,7 +10901,7 @@ msgstr "Project"
 msgid "F# script files"
 msgstr "Kies bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:962
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
 msgid "F_ind in Files..."
 msgstr "Zoek in _bestanden..."
 
@@ -10977,7 +11009,7 @@ msgstr ""
 msgid "Fetch"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1046
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1061
 #, fuzzy
 msgid "Fetching"
 msgstr "Overeenkomstig met:"
@@ -10988,7 +11020,7 @@ msgstr "Overeenkomstig met:"
 msgid "Fetching external item into '{0}'"
 msgstr "(in externe terminal)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1062
 #, fuzzy
 msgid "Fetching from '{0}'"
 msgstr "(in externe terminal)"
@@ -11023,7 +11055,7 @@ msgstr "Bouw {0}"
 msgid "Fields"
 msgstr "Veld"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:385
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:388
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:676
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:126
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
@@ -11107,6 +11139,11 @@ msgstr "Volledige naam"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:47
 #, fuzzy
 msgid "File Name Without Extension"
+msgstr "Uitbreiding"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:383
+#, fuzzy
+msgid "File Nesting"
 msgstr "Uitbreiding"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:44
@@ -11227,7 +11264,7 @@ msgstr "Bestand niet gevonden: {0}"
 msgid "File not found: {0}"
 msgstr "Bestand niet gevonden: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:242
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:165
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:171
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:112
@@ -11380,12 +11417,12 @@ msgstr "_Zoek verwijzingen"
 msgid "Find Method Overloads"
 msgstr "_Zoek verwijzingen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
 #, fuzzy
 msgid "Find Next Like Selection"
 msgstr "Zoek volgende selectie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:958
 #, fuzzy
 msgid "Find Previous Like Selection"
 msgstr "Zoek vori_ge selectie"
@@ -11400,29 +11437,29 @@ msgstr "Uitbreiding"
 msgid "Find _Derived Symbols"
 msgstr "Definieer symbolen:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:931
 msgid "Find _Next"
 msgstr "Zoek vol_gende"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:941
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
 msgid "Find _Next (Emacs behavior)"
 msgstr "Zoek _Volgende (Emacs stijl)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:934
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
 msgid "Find _Previous"
 msgstr "Zoek vori_ge"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 #, fuzzy
 msgid "Find _Previous (Emacs behavior)"
 msgstr "Zoek vori_ge selectie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 #, fuzzy
 msgid "Find and run a specific command."
 msgstr "_Vraag om argumenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 #, fuzzy
 msgid "Find caret"
 msgstr "Zoek vol_gende"
@@ -11524,12 +11561,12 @@ msgstr "_Vraag om argumenten"
 msgid "Flush Memory"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
 #, fuzzy
 msgid "Focus and center current document"
 msgstr "Print huidige document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
 #, fuzzy
 msgid "Focus current document"
 msgstr "Print huidige document"
@@ -12306,7 +12343,7 @@ msgstr "Ga een pagina terug"
 msgid "Go back to the home page"
 msgstr "Ga terug naar thuispagina"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1082
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1085
 msgid "Go down one page"
 msgstr "Ga een pagina omlaag"
 
@@ -12314,11 +12351,11 @@ msgstr "Ga een pagina omlaag"
 msgid "Go forward one page"
 msgstr "Ga een pagina vooruit"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
 msgid "Go left one character"
 msgstr "Ga een karakter naar links"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
 msgid "Go right one character"
 msgstr "Ga een karakter naar rechts"
 
@@ -12341,7 +12378,7 @@ msgstr "Ga naar _regel..."
 msgid "Go to Download Page"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:990
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 #, fuzzy
 msgid "Go to File..."
 msgstr "Ga naar _regel..."
@@ -12351,28 +12388,28 @@ msgstr "Ga naar _regel..."
 msgid "Go to Implementation"
 msgstr "<b>Inspringen</b>"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1027
 #, fuzzy
 msgid "Go to Line..."
 msgstr "Ga naar _regel..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
 #, fuzzy
 msgid "Go to Matching Brace"
 msgstr "Ga naar ander _haakje"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 #, fuzzy
 msgid "Go to Next Bookmark"
 msgstr "Volgende markering"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1014
 #, fuzzy
 msgid "Go to Previous Bookmark"
 msgstr "Vorige markering"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:983
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 msgid "Go to Type..."
 msgstr "Ga naar type..."
 
@@ -12440,24 +12477,24 @@ msgstr "_Ga naar regel"
 msgid "Go to _Reference"
 msgstr "Foutreferenties weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 #, fuzzy
 msgid "Go to a specific line"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Go to beginning of document"
 msgstr "Ga naar het begin van het document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1062
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
 msgid "Go to beginning of line"
 msgstr "Ga naar het begin van de regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
 msgid "Go to end of document"
 msgstr "Ga naar het eind van het document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Go to end of line"
 msgstr "Ga naar het eind van de regel"
 
@@ -12466,45 +12503,45 @@ msgstr "Ga naar het eind van de regel"
 msgid "Go to failure"
 msgstr "Ga naar regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1018
 #, fuzzy
 msgid "Go to next bookmark"
 msgstr "Volgende markering"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
 msgid "Go to next line"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 #, fuzzy
 msgid "Go to next subword"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
 #, fuzzy
 msgid "Go to next word"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1009
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
 #, fuzzy
 msgid "Go to previous bookmark"
 msgstr "Vorige markering"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
 msgid "Go to previous line"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 #, fuzzy
 msgid "Go to previous subword"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
 #, fuzzy
 msgid "Go to previous word"
 msgstr "Ga naar de vorige regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1080
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Go up one page"
 msgstr "Ga een pagina omhoog"
 
@@ -12652,7 +12689,7 @@ msgstr "Hebreeuws"
 msgid "Hebrew Visual"
 msgstr "Hebreeuws visueel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:870
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:44
 msgid "Help"
 msgstr "Help"
@@ -12692,7 +12729,7 @@ msgstr "Tekstbewerker"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:264
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:41
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
 #, fuzzy
@@ -12714,7 +12751,7 @@ msgstr "Webapplicatie"
 msgid "Hide Categories"
 msgstr "NUnit-categoriën"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1226
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1229
 #, fuzzy
 msgid "Hide Current Message"
 msgstr "Huidige pagina opnieuw laden"
@@ -12729,7 +12766,7 @@ msgstr "Details"
 msgid "Hide other applications' windows"
 msgstr "Windows"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:620
+#: ../src/addins/MacPlatform/MacPlatform.cs:616
 #, fuzzy
 msgid "Hide {0}"
 msgstr "Bouw {0}"
@@ -13155,7 +13192,7 @@ msgstr ""
 msgid "Import Color Theme"
 msgstr "Bezig met creëeren van configure-script"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:474
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:475
 msgid "Import From Folder"
 msgstr ""
 
@@ -13444,6 +13481,10 @@ msgstr ""
 msgid "Initialize readonly auto-property from parameter"
 msgstr ""
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:584
+msgid "Initializing '{0}' ({1}) command failed."
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:95
 msgid "Initializing Main Window"
 msgstr "Bezig met het initialiseren van het hoofdscherm"
@@ -13540,7 +13581,7 @@ msgstr "Voeg scheiding toe (na)"
 msgid "Insert Separator Before"
 msgstr "Voeg scheiding toe (voor)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
 #, fuzzy
 msgid "Insert Snippet..."
 msgstr "_Sjabloon"
@@ -13573,11 +13614,11 @@ msgstr ""
 msgid "Insert format argument"
 msgstr "_Vraag om argumenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1173
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
 msgid "Insert line break after the caret"
 msgstr "Voeg een regeleinde in na de cursor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
 #, fuzzy
 msgid "Insert new line"
 msgstr "Voor toevoegen"
@@ -13679,7 +13720,7 @@ msgstr ""
 msgid "Insert space within square brackets"
 msgstr "_Bijbehorende haakje oplichten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
 #, fuzzy
 msgid "Insert tab"
 msgstr "Achter toevoegen"
@@ -13689,7 +13730,7 @@ msgstr "Achter toevoegen"
 msgid "Inserts a Guid at caret position"
 msgstr "In-/uitvouwen op cursor positie."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
 #, fuzzy
 msgid "Inserts a snippet"
 msgstr "_Sjabloon"
@@ -13776,7 +13817,7 @@ msgstr "_Deinstalleer..."
 msgid "Instrumentation"
 msgstr "<b>Inspringen</b>"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:734
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:737
 msgid "Instrumentation Monitor"
 msgstr ""
 
@@ -13901,7 +13942,7 @@ msgstr ""
 msgid "Invalid code page number."
 msgstr "Onjuiste nummer van codepagina."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
 #, fuzzy
 msgid "Invalid configuration mapping"
 msgstr "Configuraties"
@@ -13980,7 +14021,7 @@ msgstr ""
 "Ongeldige oplossing bestand. Er zijn twee projecten met dezelfde GUID. Het "
 "project {0} zal worden genegeerd."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:248
 msgid "Invariant"
 msgstr "Invariant"
 
@@ -14057,12 +14098,12 @@ msgstr "Naar _commentaar"
 msgid "Join the current line with the next line"
 msgstr "Regel samenvoegen met volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
 #, fuzzy
 msgid "Jump to a file in the current workspace"
 msgstr "Open een bestand in de huidige oplossing..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 #, fuzzy
 msgid "Jump to a item in the current workspace"
 msgstr "Open een bestand in de huidige oplossing..."
@@ -14082,7 +14123,7 @@ msgstr "Spring naar de eerste fout of waarschuwing:"
 msgid "Jump to line {0}"
 msgstr "Oplossing openen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:984
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "Spring naar declaratie van het type binnen de huidige werkruimte"
 
@@ -14308,7 +14349,7 @@ msgstr "Voer script uit voor {0}"
 msgid "Layout"
 msgstr "Layout"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:573
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
 msgid "Layout List"
 msgstr "Layout lijst"
 
@@ -14438,7 +14479,7 @@ msgstr "Weergeven"
 msgid "List of changes for this refactoring:"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
 msgid "List of programs to open with"
 msgstr "Lijst van programma's om mee te openen"
 
@@ -14474,6 +14515,11 @@ msgstr "Opvragen/opslaan"
 msgid "Loaded Assemblies"
 msgstr "Assemblies"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:362
+#, fuzzy
+msgid "Loading"
+msgstr " (inladen)"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:264
 msgid "Loading Workbench"
 msgstr "Bezig met laden van werkruimte"
@@ -14483,7 +14529,7 @@ msgstr "Bezig met laden van werkruimte"
 msgid "Loading build log…"
 msgstr "Laden..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1129
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:363
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:485
 msgid "Loading data..."
@@ -14518,6 +14564,11 @@ msgstr "Bezig met laden van oplossingonderdeel: {0}"
 #, fuzzy
 msgid "Loading {0} add-in"
 msgstr "Downloaden van add-ins..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:346
+#, fuzzy
+msgid "Loading {0} search provider..."
+msgstr "Fout bij inladen:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:51
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:97
@@ -14614,7 +14665,7 @@ msgid "Locking..."
 msgstr "Laden..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 #, fuzzy
 msgid "Log"
 msgstr "Logboek"
@@ -14923,7 +14974,7 @@ msgstr "Kies aub een project of oplossing."
 msgid "Manage Repositories..."
 msgstr "_Repositories..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:722
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:725
 #, fuzzy
 msgid "Manage extensions"
 msgstr "Doelextensie"
@@ -14956,7 +15007,7 @@ msgstr ""
 msgid "Manifest File"
 msgstr "Doelnaam"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 #, fuzzy
 msgid "Mark Log"
 msgstr "Berichtenlogboek"
@@ -15146,7 +15197,7 @@ msgstr ""
 "in deze expresse, wordt de alternatieve constructie geïnterpreteerd als \n"
 "een expressietest."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 #, fuzzy
 msgid "Matching _Brace"
 msgstr "Ga naar ander _haakje"
@@ -15206,7 +15257,7 @@ msgstr "Menu categoriën"
 msgid "Menu entry"
 msgstr "Menuinvoer"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.MergeDialog.cs:112
 msgid "Merge"
 msgstr ""
@@ -15220,11 +15271,11 @@ msgstr ""
 msgid "Merge Conflict Resolution"
 msgstr "Huidige kolom"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1229
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1244
 msgid "Merging"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:107
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:108
 #, fuzzy
 msgid "Merging branch '{0}'..."
 msgstr "Bezig met verkrijgen van tekst voor {0} op revisie {1}..."
@@ -15280,7 +15331,7 @@ msgstr "Methode <b>{0}</b>"
 msgid "Methods"
 msgstr "Maanden"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 #, fuzzy
 msgid "Microsoft Visual Studio"
 msgstr "Visual Studio"
@@ -15424,7 +15475,7 @@ msgstr "Modulenaam:"
 msgid "Monitor application/applet that monitors some resource or activity"
 msgstr "Monitortoepassing/applet die een bron of activiteit monitoort"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 #, fuzzy
 msgid "Mono"
 msgstr "Maanden"
@@ -15467,7 +15518,7 @@ msgstr "Bestand niet gevonden: {0}"
 msgid "Mono runtime settings:"
 msgstr "Bestand niet gevonden: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:242
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -15573,15 +15624,15 @@ msgstr ""
 msgid "More..."
 msgstr "Meer..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
 msgid "Move caret to EOL and insert new line"
 msgstr "Cursor naar regeleinde en voeg een nieuwe regel in"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:618
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:621
 msgid "Move cursor to next error or search match"
 msgstr "Verplaats cursor naar de volgende fout of zoekresultaat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:624
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:627
 msgid "Move cursor to previous error or search match"
 msgstr "Verplaats cursor naar de vorige fout of zoekresultaat"
 
@@ -15590,11 +15641,11 @@ msgstr "Verplaats cursor naar de vorige fout of zoekresultaat"
 msgid "Move last caret down"
 msgstr "Laatste actie ongedaan maken"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 msgid "Move the line or highlighted selection down"
 msgstr "Verplaats de regel of selectie omlaag"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 msgid "Move the line or highlighted selection up"
 msgstr "Verplaats de regel of selectie omhoog"
 
@@ -15608,21 +15659,21 @@ msgstr "Knip de selectie"
 msgid "Move the selected folder up the list"
 msgstr "Selectie omzetten naar hoofdletters"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:689
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:692
 #, fuzzy
 msgid "Move to Next Notebook"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:697
 #, fuzzy
 msgid "Move to Previous Notebook"
 msgstr "Vorige markering"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:641
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
 msgid "Move to next point in code navigation history"
 msgstr "Verplaatsen naar het volgende punt in de code navigatie geschiedenis"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:634
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:637
 msgid "Move to previous point in code navigation history"
 msgstr "Verplaatsen naar het vorige punt in de code navigatie geschiedenis"
 
@@ -15631,12 +15682,12 @@ msgstr "Verplaatsen naar het vorige punt in de code navigatie geschiedenis"
 msgid "Move to the next page"
 msgstr "Ga naar de volgende regel"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2089
 #, fuzzy
 msgid "Moving files"
 msgstr "Bezig met bestanden kopiëren..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2291
 #, fuzzy
 msgid "Moving files..."
@@ -15929,20 +15980,20 @@ msgstr "Naam"
 msgid "Navigate"
 msgstr "Navigeer _vooruit"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
 #, fuzzy
 msgid "Navigate To..."
 msgstr "Navigeer"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:629
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:632
 msgid "Navigate _Back"
 msgstr "Navigeer _terug"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:636
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:639
 msgid "Navigate _Forward"
 msgstr "Navigeer _vooruit"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:647
 #, fuzzy
 msgid "Navigate _History"
 msgstr "Navigeer _vooruit"
@@ -15952,7 +16003,7 @@ msgstr "Navigeer _vooruit"
 msgid "Navigation _History"
 msgstr "Navigeer"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1019
 msgid "Ne_xt"
 msgstr ""
 
@@ -16081,7 +16132,7 @@ msgstr "Nieuwe groep"
 msgid "New Group..."
 msgstr "Nieuwe groep..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:366
+#: ../src/addins/MacPlatform/MacPlatform.cs:362
 #, fuzzy
 msgid "New Instance"
 msgstr "Nieuwe naam:"
@@ -16147,7 +16198,7 @@ msgid "New _Class..."
 msgstr "_Nieuw bestand"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:245
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:396
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
 msgid "New _File..."
 msgstr "_Nieuw bestand"
 
@@ -16156,12 +16207,12 @@ msgstr "_Nieuw bestand"
 msgid "New _Folder…"
 msgstr "Nieuwe map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:419
 #, fuzzy
 msgid "New _Solution..."
 msgstr "Ni_euwe oplossing..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:423
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:426
 #, fuzzy
 msgid "New _Workspace..."
 msgstr "Werkruimte"
@@ -16266,7 +16317,7 @@ msgstr "Documenten"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:394
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 #, fuzzy
@@ -16321,8 +16372,8 @@ msgstr "Mono documentatiebibliotheek"
 msgid "No completions found"
 msgstr "Aanvulscherm weergeven"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1126
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1141
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1128
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1143
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:382
 msgid "No differences found"
 msgstr "Geen verschil gevonden"
@@ -16361,8 +16412,8 @@ msgid ""
 "now?"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:437
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:598
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:168
 #, fuzzy
 msgid "No matches"
@@ -16536,8 +16587,8 @@ msgstr "Geen uitrolbaar project."
 msgid "Not a glade file according to node name."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1032
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1034
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1049
 #, fuzzy
 msgid "Not a valid git repository."
 msgstr "Registreer een lokale repository"
@@ -16578,7 +16629,7 @@ msgstr ""
 msgid "NotImplementedException({0}) thrown."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:64
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:66
 msgid ""
 "Note: The reversion will occur in your working copy, so you will still need "
 "to perform a commit to complete it."
@@ -16655,7 +16706,7 @@ msgstr "Numerieke analyse-software"
 msgid "OK"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:514
 #, fuzzy
 msgid "O_pen Containing Folder"
 msgstr "_Open bijbehorende map"
@@ -16698,12 +16749,12 @@ msgstr "Een wijzigingslogboek in iedere map"
 msgid "One ChangeLog in the project root directory"
 msgstr "Een enkel wijzigingslogboek in de hoofdmap van het project"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:682
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:685
 #, fuzzy
 msgid "One Column"
 msgstr "Kolommen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:683
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:686
 msgid "One Editor Column"
 msgstr ""
 
@@ -16775,7 +16826,7 @@ msgstr ""
 msgid "Open Glade File"
 msgstr "Bestand _opnieuw inladen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:888
 #, fuzzy
 msgid "Open Log Directory"
 msgstr "Doelmap:"
@@ -16804,7 +16855,7 @@ msgid "Open URL in web browser when app starts:"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:185
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:218
 msgid "Open With:"
 msgstr "Open met:"
 
@@ -16817,7 +16868,7 @@ msgstr "Open met"
 msgid "Open a file selector to select the project path"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:395
 msgid "Open file or solution"
 msgstr "Open bestand of oplossing"
 
@@ -16835,7 +16886,7 @@ msgstr "Referenties _updaten:"
 msgid "Open script"
 msgstr "Beschrijving"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:600
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:603
 #, fuzzy
 msgid "Open selected document"
 msgstr "Bewaar het actieve document"
@@ -16846,8 +16897,8 @@ msgstr "Bewaar het actieve document"
 msgid "Open solution {0}"
 msgstr "Oplossing openen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:411
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:422
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:435
 #, fuzzy
 msgid "Open with '{0}'"
 msgstr "Bezig met openen van {0}"
@@ -16869,24 +16920,24 @@ msgstr "O_pen..."
 msgid "Opening {0}"
 msgstr "Bezig met openen van {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:505
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
 msgid "Opens a terminal in this folder"
 msgstr "Opent een terminal in deze map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
 msgid "Opens the directory where the diagnostic logs are stored"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
 msgid "Opens the folder in a file manager."
 msgstr "Opent de map in de bestands verkenner"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:512
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:515
 #, fuzzy
 msgid "Opens the folder that contains this file."
 msgstr "Hernoem het bestand met de publieke klasse"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:550
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
 msgid "Opens the last tab that has been closed"
 msgstr ""
 
@@ -17361,7 +17412,7 @@ msgstr "Plakken"
 msgid "Page %N of %Q"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:475
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:478
 msgid "Page Set_up"
 msgstr "Pagina _Instellingen"
 
@@ -17587,7 +17638,7 @@ msgstr "Pin uitvoerbord vast"
 msgid "Pin results pad"
 msgstr "Pin resultatenbord vast"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:559
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:562
 msgid "Pin/Unpin current Tab selected"
 msgstr ""
 
@@ -17765,6 +17816,10 @@ msgstr "Kies aub een pakkettype,"
 msgid "Please select which files and folders you want to delete:"
 msgstr "Kies het soort Makefile dat u wilt genereren:"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Please use the command line client to init the submodules manually."
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:546
 msgid "Plural"
 msgstr "Meervoud"
@@ -17787,7 +17842,7 @@ msgstr ""
 msgid "Policies to set or replace:"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:552
 #, fuzzy
 msgid "Policies..."
 msgstr "Standaard C-compiler:"
@@ -17815,7 +17870,7 @@ msgstr ""
 msgid "Pop stash"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:396
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:411
 msgid "Popping stash"
 msgstr ""
 
@@ -17895,7 +17950,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "Voorkeuren"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
 #, fuzzy
 msgid "Pre_vious"
 msgstr "Vorige weergeven ({0})"
@@ -18017,7 +18072,7 @@ msgstr "ASP.NET opties"
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:555
+#: ../src/addins/MacPlatform/MacPlatform.cs:551
 #, fuzzy
 msgid "Preferences..."
 msgstr "Voorkeuren"
@@ -18132,7 +18187,7 @@ msgstr ""
 msgid "Previous document"
 msgstr "Documenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:470
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:473
 msgid "Print Previe_w"
 msgstr "Print_voorbeeld"
 
@@ -18140,7 +18195,7 @@ msgstr "Print_voorbeeld"
 msgid "Print a message and continue"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:464
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:467
 msgid "Print current document"
 msgstr "Print huidige document"
 
@@ -18213,7 +18268,7 @@ msgstr "Sjabloon"
 msgid "Process all T4 templates."
 msgstr "Sjabloon"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 #, fuzzy
 msgid "Profile"
@@ -18390,7 +18445,7 @@ msgid "Project Version"
 msgstr "Projectversie:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 #, fuzzy
 msgid "Project _Options"
 msgstr "Projectopties"
@@ -18440,7 +18495,7 @@ msgstr "Projectnaam niet opgegeven."
 msgid "Project name:"
 msgstr "Projectnaam:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:154
 #, fuzzy
 msgid "Project not built in active configuration"
 msgstr "De oplossing heeft geen actieve configuratie."
@@ -18595,7 +18650,7 @@ msgstr "Publiceren..."
 msgid "Publish"
 msgstr "Publiceren..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:133
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:131
 #, fuzzy
 msgid "Publish operation completed."
 msgstr "Printopdracht mislukt."
@@ -18624,7 +18679,7 @@ msgstr ""
 msgid "Published"
 msgstr "Publiceren..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:113
 msgid "Publishing \"{0}\" Project..."
 msgstr ""
 
@@ -18653,7 +18708,7 @@ msgstr "Url:"
 msgid "Push changes to remote repository after commit"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1731
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1745
 #, fuzzy
 msgid "Push operation successfully completed."
 msgstr "Operatie succesvol uitgevoerd."
@@ -18677,7 +18732,7 @@ msgstr "Bestanden toevoegen..."
 msgid "Pushing Tag '{0}' to '{1}'"
 msgstr "Hernoemen van map '{0}' in '{1}' is niet gelukt"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:65
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:66
 #, fuzzy
 msgid "Pushing changes..."
 msgstr "Bestanden toevoegen..."
@@ -18780,7 +18835,7 @@ msgstr ""
 msgid "Quit"
 msgstr "_Afsluiten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:500
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:503
 #, fuzzy
 msgid "Quit MonoDevelop"
 msgstr "Over MonoDevelop"
@@ -18804,7 +18859,7 @@ msgstr "ROX bureaublad"
 msgid "R_ebuild"
 msgstr "Bouw opnieuw"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:258
 #, fuzzy
 msgid "R_ebuild {0}"
 msgstr "Bouw {0} opnieuw"
@@ -18819,7 +18874,7 @@ msgstr "Schakel breakpoint aan of uit"
 msgid "R_eplace"
 msgstr "Vervang"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
 msgid "R_eplace in Files..."
 msgstr "V_ervang in bestand..."
 
@@ -18972,11 +19027,11 @@ msgstr "Verwijderen"
 msgid "Rebase to Branch..."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1176
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1191
 msgid "Rebasing"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:102
 #, fuzzy
 msgid "Rebasing branch '{0}'..."
 msgstr "Bezig met verkrijgen van tekst voor {0} op revisie {1}..."
@@ -18991,7 +19046,7 @@ msgstr "Kies aub een project of oplossing."
 msgid "Rebuild the current project"
 msgstr "Huidige pagina opnieuw laden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:259
 msgid "Rebuild {0}"
 msgstr "Bouw {0} opnieuw"
 
@@ -19011,11 +19066,11 @@ msgstr "Bezig met bouwen..."
 msgid "Rebuilding... (Clean)"
 msgstr "Bezig met bouwen..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:321
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:336
 msgid "Receiving and indexing objects"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:490
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
 #, fuzzy
 msgid "Recent Pro_jects"
 msgstr "Recente projecten"
@@ -19034,7 +19089,7 @@ msgstr "Recen_te oplossingen"
 msgid "Recent Templates"
 msgstr "Broncode sjablonen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:480
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:26
 msgid "Recent _Files"
 msgstr "Recente _bestanden"
@@ -19238,7 +19293,7 @@ msgstr "Referenties"
 msgid "References a strongly-typed model"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:612
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:305
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:155
@@ -19246,7 +19301,7 @@ msgstr ""
 msgid "Refresh"
 msgstr "Ververs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:608
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
 #, fuzzy
 msgid "Refresh the tree"
 msgstr "Ververs"
@@ -19365,14 +19420,14 @@ msgstr "Status"
 msgid "Remote Status"
 msgstr "Status"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:982
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:997
 #, fuzzy
 msgid "Remote server error: {0}"
 msgstr "Onbekend doel {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:386
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:397
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:295
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:463
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:472
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:200
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:208
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:74
@@ -19510,7 +19565,7 @@ msgstr "ASP.NET opties"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr "Submenu verwijderen (Ctrl+pijltje links)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 #, fuzzy
 msgid "Remove tab"
 msgstr "Verwijderen"
@@ -19722,7 +19777,7 @@ msgstr "Hernoemen van map '{0}' in '{1}' is niet gelukt"
 msgid "Renamed"
 msgstr "Hernoem"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:552
 msgid "Reopen Closed Tab"
 msgstr ""
 
@@ -19894,7 +19949,7 @@ msgstr "Bezig met het vervangen van '{0}' in {1}."
 msgid "Replacing {0}: existing file is older."
 msgstr "{0} wordt vervangen: bestaande bestand is ouder."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:742
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:745
 #, fuzzy
 msgid "Replay Session..."
 msgstr "_Vervang..."
@@ -19945,7 +20000,7 @@ msgstr "Vereis clientcertificaten"
 msgid "Require License Acceptance:"
 msgstr "_Extra argumenten:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
 #, fuzzy
 msgid "Require Specific Version"
 msgstr "Versie"
@@ -19979,7 +20034,7 @@ msgstr "Test uitvoeren"
 msgid "Reset"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:606
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
 msgid "Reset Options"
 msgstr "Reset opties"
 
@@ -19989,7 +20044,7 @@ msgstr "Reset opties"
 msgid "Reset condition"
 msgstr "Configuratie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:672
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
 #, fuzzy
 msgid "Resets zoom to default"
 msgstr "Herstel standaard"
@@ -20054,11 +20109,11 @@ msgstr "Interface hernoemen"
 msgid "Restart With Debugging"
 msgstr "Debug"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:275
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
 msgid "Restart Without Debugging"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:393
 #, fuzzy
 msgid "Restart and enable"
 msgstr "Interface hernoemen"
@@ -20115,7 +20170,7 @@ msgstr "Een nieuwe klasse aanmaken"
 msgid "Restored '{0}'"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1149
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1164
 msgid "Restoring local changes"
 msgstr ""
 
@@ -20133,7 +20188,7 @@ msgstr "Nieuwe pakketten voor het project aanmaken"
 msgid "Restoring packages for solution..."
 msgstr "Kies aub een project of oplossing."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1893
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1907
 #, fuzzy
 msgid "Restoring stash for branch {0} failed"
 msgstr "Bezig met geschieden voor {0} op te vragen..."
@@ -20215,7 +20270,7 @@ msgstr "Bezig met verkrijgen van tekst voor {0} op revisie {1}..."
 msgid "Retry"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:983
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:998
 #, fuzzy
 msgid "Retry authentication?"
 msgstr "Autenticatiedomein:"
@@ -20236,12 +20291,12 @@ msgstr "_Tip van de dag"
 msgid "Returns:"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:516
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:519
 #, fuzzy
 msgid "Reveal in Finder"
 msgstr "V_ervang in bestand..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:517
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:520
 #, fuzzy
 msgid "Reveals the file in Finder"
 msgstr "Opent de map in de bestands verkenner"
@@ -20265,7 +20320,7 @@ msgid "Revert changes from this revision"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:131
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 #, fuzzy
 msgid "Revert operation completed."
 msgstr "Het bewaren is mislukt."
@@ -20275,7 +20330,7 @@ msgstr "Het bewaren is mislukt."
 msgid "Revert this change"
 msgstr "Veranderingen weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:456
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
 msgid "Revert to a saved version of the file"
 msgstr "Teruggaan naar een bewaarde versie van het bestand"
 
@@ -20299,17 +20354,17 @@ msgstr "Herstel"
 msgid "Reverting ..."
 msgstr "Zoeken..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1531
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1545
 #, fuzzy
 msgid "Reverting files"
 msgstr "Zoeken..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:100
 #, fuzzy
 msgid "Reverting revision {0}..."
 msgstr "Bezig met verkrijgen van tekst voor {0} op revisie {1}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:96
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
 #, fuzzy
 msgid "Reverting to revision {0}..."
 msgstr "Bezig met verkrijgen van tekst voor {0} op revisie {1}..."
@@ -20382,7 +20437,7 @@ msgid "Rotate primary caret up"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -20398,7 +20453,7 @@ msgid "Run All"
 msgstr "Bouw opnieuw"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:380
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:591
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:593
 #, fuzzy
 msgid "Run Code Analysis on Project"
 msgstr "ILAsm-consoleproject"
@@ -20408,7 +20463,7 @@ msgstr "ILAsm-consoleproject"
 msgid "Run Code Analysis on Solution"
 msgstr "S_luit oplossing"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:587
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:589
 msgid "Run Code Analysis on {0}"
 msgstr ""
 
@@ -20434,12 +20489,12 @@ msgstr "Configuraties"
 msgid "Run Configurations:"
 msgstr "Configuraties"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:347
 #, fuzzy
 msgid "Run Project"
 msgstr "Mono-project"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:343
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
 #, fuzzy
 msgid "Run Solution"
 msgstr "Oplossing"
@@ -20612,7 +20667,7 @@ msgstr "Uitvoeren van tests voor <b>{0}</b> configuratie <b>{1}</b>"
 msgid "Running web server..."
 msgstr "Bezig met uitvoeren "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1986
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1992
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:798
 #, fuzzy
@@ -20775,7 +20830,7 @@ msgstr "Berichten weergeven"
 msgid "S_trong Name File:"
 msgstr "Sterk naambestand:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:598
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
 #, fuzzy
 msgid "S_witch Maximized/Normal View"
 msgstr "Verander gemaximaliseerde/normale stand"
@@ -20798,7 +20853,7 @@ msgstr "Configuratie"
 msgid "Save"
 msgstr "Opslaan"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:413
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
 #, fuzzy
 msgid "Save A_ll"
 msgstr "Alles opslaan"
@@ -20808,7 +20863,7 @@ msgstr "Alles opslaan"
 msgid "Save As"
 msgstr "Opslaan _als..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:579
 #, fuzzy
 msgid "Save Curre_nt Layout..."
 msgstr "Huidige layout _verwijderen"
@@ -20817,11 +20872,11 @@ msgstr "Huidige layout _verwijderen"
 msgid "Save Files"
 msgstr "Bewaar bestanden"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:462
 msgid "Save _As..."
 msgstr "Opslaan _als..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:412
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:415
 msgid "Save all open files"
 msgstr "Sla alle open bestanden op"
 
@@ -20873,7 +20928,7 @@ msgstr "Opslaan in een nieuw pakketconstructieproject"
 msgid "Save location:"
 msgstr "Locatie:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:373
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:374
 msgid "Save operation failed."
 msgstr "Het bewaren is mislukt."
 
@@ -20886,7 +20941,7 @@ msgstr ""
 msgid "Save project {0}"
 msgstr "Bezig met opslaan van project: {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:405
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:408
 msgid "Save the active document"
 msgstr "Bewaar het actieve document"
 
@@ -20900,7 +20955,7 @@ msgstr "_Bewaar wijzigingen in open documenten"
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "_Bewaar wijzigingen in open documenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:460
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
 msgid "Save the current file with a different name"
 msgstr "Het huidige bestand opslaan met een andere naam"
 
@@ -20931,7 +20986,7 @@ msgstr "Opslaan..."
 msgid "Saving item: {0}"
 msgstr "Bezig met opslaan van oplossingonderdeel: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1085
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1100
 #, fuzzy
 msgid "Saving local changes"
 msgstr "Bestanden toevoegen..."
@@ -21006,29 +21061,29 @@ msgstr "Scriptnaam niet opgegeven"
 msgid "Script name:"
 msgstr "Scriptnaam:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
 msgid "Scroll line down"
 msgstr "Scroll regel omlaag"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Scroll line up"
 msgstr "Scroll regel omhoog"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 #, fuzzy
 msgid "Scroll page down"
 msgstr "Scroll regel omlaag"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1093
 #, fuzzy
 msgid "Scroll page up"
 msgstr "Scroll regel omhoog"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1099
 msgid "Scroll to bottom"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1094
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1097
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Scroll regel omhoog"
@@ -21038,7 +21093,7 @@ msgstr "Scroll regel omhoog"
 msgid "Se_t Startup Projects..."
 msgstr "Als opstartproject instellen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:241
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:167
@@ -21077,7 +21132,7 @@ msgstr "Zoek _bestanden"
 msgid "Search Members"
 msgstr "Zoeken..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:79
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:80
 #, fuzzy
 msgid "Search Packages..."
 msgstr "Pakket aanmaken..."
@@ -21102,17 +21157,17 @@ msgstr "Zoek in:"
 msgid "Search Types"
 msgstr "Zoek _types"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:936
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 #, fuzzy
 msgid "Search backwards for the same text"
 msgstr "_Start een blok van broncode op dezelfde regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
 #, fuzzy
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "_Start een blok van broncode op dezelfde regel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 msgid "Search backwards for the selected text"
 msgstr "Terug zoeken naar de geselecteerde tekst"
 
@@ -21135,12 +21190,12 @@ msgstr "Zoekopdracht afgerond. "
 msgid "Search filter menu"
 msgstr "Zoeken..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:926
 #, fuzzy
 msgid "Search for and replace text"
 msgstr "Zoekopdracht afgerond. "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 msgid "Search for and replace text in all files of a directory"
 msgstr "Zoeken naar en vervangen van tekst in alle bestanden of een map"
 
@@ -21149,12 +21204,12 @@ msgstr "Zoeken naar en vervangen van tekst in alle bestanden of een map"
 msgid "Search for members"
 msgstr "Zoeken..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:917
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 #, fuzzy
 msgid "Search for text"
 msgstr "Zoekopdracht afgerond. "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
 #, fuzzy
 msgid "Search for text in all files of a directory"
 msgstr "Zoek naar nieuwe _bestanden tijdens inladen"
@@ -21169,29 +21224,29 @@ msgstr "Zoekopdracht afgerond. "
 msgid "Search for types and members"
 msgstr "Zoekopdracht afgerond. "
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:64
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:65
 #, fuzzy
 msgid "Search for {0} in packages"
 msgstr "Zoeken..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:90
 #, fuzzy
 msgid "Search for {0} in solution"
 msgstr "Zoek in:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:930
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search forwards for the same text"
 msgstr "Vooruit zoeken naar dezelfde tekst"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:943
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:946
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "Vooruit zoeken naar dezelfde tekst in emacs stijl"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:951
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:954
 msgid "Search forwards for the selected text"
 msgstr "Vooruit zoeken naar de geselecteerde tekst"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:102
 #, fuzzy
 msgid "Search in Solution..."
 msgstr "Zoek in:"
@@ -21255,7 +21310,7 @@ msgstr "Zoeken..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:122
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:53
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/FindReferencesHandler.cs:151
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/StreamingFindUsagesPresenter.cs:40
 msgid "Searching..."
@@ -21478,7 +21533,7 @@ msgstr "Project-bestandsnaam"
 msgid "Select a platform"
 msgstr "Selecteer niets"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:646
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:649
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:187
 msgid "Select a point from the navigation history"
 msgstr "Selecteer een punt in de code navigatie geschiedenis"
@@ -21560,8 +21615,8 @@ msgstr "Kies map"
 msgid "Select event to generate the method for."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:494
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:549
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:495
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:550
 #, fuzzy
 msgid "Select files to add from {0}"
 msgstr "Kies de bestanden om door te voeren:"
@@ -22141,7 +22196,7 @@ msgstr "Standaard"
 msgid "Set as Default"
 msgstr "Standaard"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:594
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:597
 msgid "Set full screen mode"
 msgstr "Volledig scherm instellen"
 
@@ -22351,7 +22406,7 @@ msgstr "MonoDevelop voorkeuren"
 msgid "Show More"
 msgstr "Fouten weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:620
 #, fuzzy
 msgid "Show Next"
 msgstr "Volgende weergeven ({0})"
@@ -22374,7 +22429,7 @@ msgstr "_Weergeven tijdens opstarten"
 msgid "Show Output"
 msgstr "Uitvoer weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 msgid "Show Parameter List"
 msgstr "Parameterlijst weergeven"
 
@@ -22393,7 +22448,7 @@ msgstr "Parameterlijst weergeven"
 msgid "Show Parameter Value"
 msgstr "Parameterlijst weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:623
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:626
 #, fuzzy
 msgid "Show Previous"
 msgstr "Vorige weergeven ({0})"
@@ -22412,7 +22467,7 @@ msgstr "Vorige weergeven ({0})"
 msgid "Show Remote Status"
 msgstr "_Weergeven tijdens opstarten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1241
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1244
 #, fuzzy
 msgid "Show Scopes"
 msgstr "Fouten weergeven"
@@ -22473,7 +22528,7 @@ msgstr ""
 msgid "Show _column ruler"
 msgstr "_Kolomlineal weergeven,"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:891
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 msgid "Show about dialog"
 msgstr ""
 
@@ -22524,7 +22579,7 @@ msgstr ""
 msgid "Show fuzzy translations"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:875
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
 #, fuzzy
 msgid "Show help"
 msgstr "Resultatenbord weergeven"
@@ -22550,7 +22605,7 @@ msgstr "Berichten weergeven"
 msgid "Show missing translations"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:753
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:756
 #, fuzzy
 msgid "Show next document"
 msgstr "Bewaar het actieve document"
@@ -22568,7 +22623,7 @@ msgstr "Aanvulscherm weergeven"
 msgid "Show output"
 msgstr "Uitvoer weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:476
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:479
 #, fuzzy
 msgid "Show page setup"
 msgstr "_Weergeven tijdens opstarten"
@@ -22578,12 +22633,12 @@ msgstr "_Weergeven tijdens opstarten"
 msgid "Show pre-release packages"
 msgstr "Gekozen pakketten:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:760
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:763
 #, fuzzy
 msgid "Show previous document"
 msgstr "Aanvulscherm weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:471
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:474
 #, fuzzy
 msgid "Show print preview"
 msgstr "Print_voorbeeld"
@@ -22606,7 +22661,7 @@ msgstr "Enkel publieke members weergeven"
 msgid "Show public members only"
 msgstr "Enkel publieke members weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1219
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
 msgid "Show quick info"
 msgstr ""
 
@@ -22665,7 +22720,7 @@ msgstr "Uitvoer weergeven"
 msgid "Show the {0} pad"
 msgstr "Toon {0} "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 #, fuzzy
 msgid "Show tip of the day"
 msgstr "_Tip van de dag"
@@ -22689,12 +22744,12 @@ msgstr "Welkomstpagina weergeven bij opstarten"
 msgid "Show {0}"
 msgstr "Toon {0} "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1232
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1235
 #, fuzzy
 msgid "Show/Hide Inline Messages"
 msgstr "Berichten weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1227
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1230
 msgid "Show/Hide current Inline Message"
 msgstr ""
 
@@ -22707,12 +22762,12 @@ msgstr "Implementeer interface (expliciet)"
 msgid "Shows method and class folds"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 #, fuzzy
 msgid "Shows the authors of the current file"
 msgstr "Identifier voor het huidige element"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid ""
 "Shows the differences in the code between the current code and the version "
 "in the repository"
@@ -22722,16 +22777,16 @@ msgstr ""
 msgid "Shows the line numbers for the current file"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 msgid "Shows the merge view for the current file"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Shows the source control log for the current file"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1220
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1223
 #, fuzzy
 msgid "Shows the tooltip at editor positon"
 msgstr "In-/uitvouwen op cursor positie."
@@ -22909,7 +22964,7 @@ msgid "Solution Options"
 msgstr "Oplossing opties"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:217
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:211
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:244
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:242
 msgid "Solution Workbench"
 msgstr "Oplossing-werkbank"
@@ -22984,7 +23039,7 @@ msgstr "Oplossing"
 msgid "Some additional changes on another file of the project."
 msgstr "Er zijn geen extra mogelijkheden beschikbaar voor dit project."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:220
 #, fuzzy
 msgid "Some dependencies need to be updated"
 msgstr "Cyclische projectreferenties zijn niet toegestaan."
@@ -23448,7 +23503,7 @@ msgstr "Debug"
 msgid "Start Debugging on External Console"
 msgstr "Op externe console uitvoeren"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:738
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:741
 msgid "Start Session Recorder"
 msgstr ""
 
@@ -23458,7 +23513,7 @@ msgid "Start Window"
 msgstr "_Volgend venster"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:304
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:279
 msgid "Start Without Debugging"
 msgstr ""
 
@@ -23551,39 +23606,40 @@ msgstr ""
 msgid "Stash Manager"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1245
 #, fuzzy
 msgid "Stash and Merge"
 msgstr "Bestanden toevoegen..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1177
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1192
 #, fuzzy
 msgid "Stash and Rebase"
 msgstr "Bestanden toevoegen..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1938
 #, fuzzy
 msgid "Stash and Switch"
 msgstr "_Bewaar en beëindig"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:173
-msgid "Stash applied with conflicts"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:190
+#, fuzzy
+msgid "Stash not applied."
+msgstr "Het bewaren is mislukt."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:173
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:205
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 #, fuzzy
 msgid "Stash operation failed"
 msgstr "Het bewaren is mislukt."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:159
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:160
 #, fuzzy
 msgid "Stash operation failed."
 msgstr "Het bewaren is mislukt."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:204
 #, fuzzy
-msgid "Stash successfully applied"
+msgid "Stash successfully applied."
 msgstr "Oplossing is succesvol uitgerold"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:33
@@ -23598,7 +23654,7 @@ msgstr ""
 msgid "Stash/unstash local changes before/after the merge"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:424
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:439
 #, fuzzy
 msgid "Stashing changes"
 msgstr "Bestanden toevoegen..."
@@ -23896,7 +23952,7 @@ msgstr "Samenvatting"
 msgid "Support"
 msgstr "Gtk#-ondersteuning"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
 #, fuzzy
 msgid "Surround Selection With..."
 msgstr "Om_ringen Met..."
@@ -23907,7 +23963,7 @@ msgstr "Om_ringen Met..."
 msgid "Surround With..."
 msgstr "Om_ringen Met..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr ""
 
@@ -23916,21 +23972,21 @@ msgstr ""
 msgid "Swap parameter"
 msgstr "Parameterlijst weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1199
 msgid "Swaps the characters on either side of the caret"
 msgstr "Omwisselen karakters aan weerszijden van de cursor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
 msgid "Switch Completion/Suggestion Mode"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:588
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:591
 #, fuzzy
 msgid "Switch active layout"
 msgstr "Verander huidige layout"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
 msgid "Switch between insert and overwrite caret modes"
 msgstr ""
 
@@ -23942,7 +23998,7 @@ msgstr ""
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 msgid "Switch caret mode"
 msgstr "Schakel cursor modus"
 
@@ -23984,30 +24040,30 @@ msgstr "Bewaar het actieve document"
 msgid "Switch to layout '{0}'"
 msgstr "Verander huidige layout"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:847
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:848
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:850
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:851
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:203
 #, fuzzy
 msgid "Switch to next document"
 msgstr "Bewaar het actieve document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:859
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:860
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:862
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:863
 #, fuzzy
 msgid "Switch to next pad"
 msgstr "Bewaar het actieve document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:853
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:854
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:856
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:857
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:183
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:189
 #, fuzzy
 msgid "Switch to previous document"
 msgstr "Aanvulscherm weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:865
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:866
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:868
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:869
 #, fuzzy
 msgid "Switch to previous pad"
 msgstr "Aanvulscherm weergeven"
@@ -24022,15 +24078,15 @@ msgstr "Verander huidige layout"
 msgid "Switch to {0}"
 msgstr "Verander huidige layout"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1915
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1935
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1949
 #, fuzzy
 msgid "Switching to branch {0}"
 msgstr "Verander huidige layout"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1928
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1952
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1942
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1966
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1969
 #, fuzzy
 msgid "Switching to branch {0} failed"
 msgstr "Verander huidige layout"
@@ -24549,7 +24605,7 @@ msgstr "Test uitvoeren"
 msgid "Text"
 msgstr "Tekst"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:377
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:404
@@ -24674,7 +24730,7 @@ msgstr ""
 "Klik Verwijderen uit Project om het alleen uit uw huidige oplossing wilt "
 "verwijderen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:317
 msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
 "Remove from Project if you only want to remove it from your current solution."
@@ -24769,7 +24825,7 @@ msgid "The application could not be started"
 msgstr "Het project kon niet gemaakt worden"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2031
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2037
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:171
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:277
@@ -24939,7 +24995,7 @@ msgstr "Het bestand '{0}' bestaat al. Wilt u het overschrijven?"
 msgid "The file '{0}' already exists.\n"
 msgstr "Het bestand {0} kon niet worden verwijderd"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:325
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:326
 #, fuzzy
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "Het bestand '{0}' bestaat al. Wilt u het overschrijven?"
@@ -25059,6 +25115,11 @@ msgid ""
 "vssettings), Xamarin Studio (.json), TextMate (.tmTheme). Changes in the "
 "theme folder require a restart."
 msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:185
+#, fuzzy
+msgid "The following conflicts have been found:"
+msgstr "Het volgende wijzigingslogboek-bestand zal worden geupdate:"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:156
 #, fuzzy
@@ -25180,12 +25241,12 @@ msgstr "Het bewaren is mislukt."
 msgid "The installation has completed with warnings."
 msgstr "Operatie uitgevoerd met waarschuwingen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:604
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:621
 #, fuzzy
 msgid "The key combination ({0}) has conflicts."
 msgstr "Deze toestcombinatie is al toegewezen aan het commando '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:542
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:548
 #, fuzzy
 msgid "The key combination ({0}, {1}) is not a command."
 msgstr "Deze toestcombinatie is al toegewezen aan het commando '{0}'"
@@ -25298,8 +25359,8 @@ msgstr ""
 msgid "The name or e-mail of the user has not been configured."
 msgstr "De naam of e-mail van de gebruiker is niet geconfigureerd."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:189
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:249
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:161
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:180
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:110
@@ -25557,6 +25618,16 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:77
 msgid "The source project failed to build."
 msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:196
+msgid ""
+"The stash application was aborted due to uncommitted changes in the index."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:200
+#, fuzzy
+msgid "The stash index given was not found."
+msgstr "Bestand niet gevonden: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:53
 msgid "The subversion working copy format is too new."
@@ -26098,20 +26169,20 @@ msgstr ""
 msgid "Themed Icons"
 msgstr "Thema-iconen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1923
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1937
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
 "checkout?"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1090
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue?"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:51
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
 #, fuzzy
 msgid "There are no changes to push."
 msgstr "Het bestand {0} kan niet gecompileerd worden."
@@ -26179,7 +26250,7 @@ msgstr ""
 "Er is al een bestand in de doelmap met dezelfde naam als het bronbestand. U "
 "kan het bestaande doelbestand behouden of overschrijven met het bronbestand."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:533
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:534
 #, fuzzy
 msgid "There is already a file with the name '{0}' in the target directory"
 msgstr "Er bestaat al een layout met die naam"
@@ -26193,7 +26264,7 @@ msgstr "Er bestaat al een layout met die naam"
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Er bestaat al een layout met die naam"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:541
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:542
 #, fuzzy
 msgid "There is already a link with the name '{0}' in the target directory"
 msgstr "Er bestaat al een layout met die naam"
@@ -26212,7 +26283,7 @@ msgstr ""
 msgid "There was an error renaming the directory."
 msgstr "Er trad een fout op bij het hernoemen van de map."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:191
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:202
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
 msgid "There was an error renaming the file."
 msgstr "Er trad een fout op bij het hernoemen van het bestand."
@@ -26624,7 +26695,7 @@ msgstr ""
 msgid "Toggle Action"
 msgstr "Verander actie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 #, fuzzy
 msgid "Toggle Block Selection Mode"
 msgstr "Verander actie"
@@ -26633,7 +26704,7 @@ msgstr "Verander actie"
 msgid "Toggle Breakpoint"
 msgstr "Schakel breakpoint aan of uit"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1237
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1240
 #, fuzzy
 msgid "Toggle Issues"
 msgstr "Verander actie"
@@ -26652,7 +26723,7 @@ msgstr "Verander actie"
 msgid "Toggle between search and replace mode"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1004
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 msgid "Toggle bookmark"
 msgstr "Markeer"
 
@@ -26709,17 +26780,17 @@ msgstr "Alle methoden en properties invouwen"
 msgid "Toggles the folding at caret position."
 msgstr "In-/uitvouwen op cursor positie."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1233
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1236
 #, fuzzy
 msgid "Toggles the visibility of Inline Messages"
 msgstr "Wijzig de zichtbaarheid van de 'regel'-kolom"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1228
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
 #, fuzzy
 msgid "Toggles the visibility of the current Inline Message"
 msgstr "Wijzig de zichtbaarheid van de 'pad'-kolom"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:727
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
 msgid "Tool List"
 msgstr "Lijst van hulpmiddelen"
 
@@ -26760,7 +26831,7 @@ msgstr "Item toevoegen..."
 msgid "Toolbox Toolbar"
 msgstr "Gereedschapskist"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:717
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:720
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:327
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
@@ -26777,7 +26848,7 @@ msgstr "Anders"
 msgid "Tools like FTP or P2P programs"
 msgstr "Hulpmiddelen zoals FTP or P2P-programma's"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:986
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1147
 #, fuzzy
 msgid "Top Result"
 msgstr "Resultaat"
@@ -26886,7 +26957,7 @@ msgstr "Vertaleruitvoer"
 msgid "Transmitting file data"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1198
 #, fuzzy
 msgid "Transpose characters"
 msgstr "Ga een karakter naar rechts"
@@ -26911,12 +26982,12 @@ msgstr "Turks"
 msgid "Turns on the unsupported security manager (off by default)."
 msgstr "Schakel de niet-ondersteunde security manager in (standaard uit)."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:678
 #, fuzzy
 msgid "Two Columns"
 msgstr "Kolommen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:676
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:679
 msgid "Two Editor Columns"
 msgstr ""
 
@@ -27056,7 +27127,7 @@ msgstr "_Gebruik landcode"
 msgid "Un_pin Tab"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1030
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1045
 #, fuzzy
 msgid "Unable to authorize credentials for the repository."
 msgstr ""
@@ -27353,7 +27424,7 @@ msgstr "Onbekende invoer"
 msgid "Unknown error"
 msgstr "Onbekende invoer"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:121
 #, fuzzy
 msgid "Unknown language '{0}'"
 msgstr "Onbekend doel {0}"
@@ -27587,7 +27658,7 @@ msgstr "Alle vertaal-bestanden updaten."
 msgid "Updates this translation."
 msgstr "Vertaling updaten"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:962
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:977
 #, fuzzy
 msgid "Updating"
 msgstr "Updaten van {0}"
@@ -27623,7 +27694,7 @@ msgstr "Bezig met updaten van project volgens makefile"
 msgid "Updating repository"
 msgstr "Bezig met updaten van versiebeheer repository"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:686
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:687
 msgid "Updating version control repository"
 msgstr "Bezig met updaten van versiebeheer repository"
 
@@ -27720,12 +27791,12 @@ msgstr ""
 msgid "Use Default"
 msgstr "Standaard"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 #, fuzzy
 msgid "Use Selection for Find"
 msgstr "Selectie naar _hoofdletters"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
 #, fuzzy
 msgid "Use Selection for Replace"
 msgstr "Selecteer sjabloon:"
@@ -27955,11 +28026,11 @@ msgstr "Gebruikersnaam:"
 msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Uses the current selection as find string"
 msgstr "Gebruikt de huidige selectie als de zoektekst"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Uses the current selection as replace string"
 msgstr "Gebruikt de huidige selectie als de vervangings tekst"
 
@@ -28133,7 +28204,7 @@ msgstr "Versiebeheer"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:42
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:108
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:296
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:676
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:677
 msgid "Version Control"
 msgstr "Versiebeheer"
 
@@ -28165,7 +28236,7 @@ msgstr "_Onderteken deze assembly"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:38
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:50
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:435
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:76
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnlockCommand.cs:81
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:64
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:131
@@ -28204,7 +28275,7 @@ msgstr "Videoconferentiesoftware"
 msgid "Vietnamese"
 msgstr "Vietnamees"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:564
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:567
 msgid "View"
 msgstr "Weergeven"
 
@@ -28228,7 +28299,7 @@ msgstr "Bekijk wijzigingslogboek"
 msgid "View License"
 msgstr "Lijst weergeven"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:569
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:572
 msgid "View List"
 msgstr "Lijst weergeven"
 
@@ -28521,7 +28592,7 @@ msgstr "De referentienaam '{0}' bestaat al."
 msgid "Web service not found."
 msgstr "Webservice niet gevonden."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:715
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:52
 msgid "Welcome Page"
 msgstr "Welkomstpagina"
@@ -28701,7 +28772,7 @@ msgstr "Widgets"
 msgid "Win32 Icon:"
 msgstr "Win32-icoon:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:747
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:750
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:5
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:5
 msgid "Window"
@@ -28713,7 +28784,7 @@ msgstr "Venster"
 msgid "Window Designer"
 msgstr "Widget-ontwerper"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:766
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:769
 msgid "Window List"
 msgstr "Vensterlijst"
 
@@ -28914,18 +28985,18 @@ msgstr "XSP Webserver"
 msgid "Xamarin News"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
 msgstr ""
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -29087,7 +29158,7 @@ msgstr ""
 "Bijvoorbeeld, (?<=19)99 komt overeen met instanties van 99 die \n"
 "gevolgd door 19. Deze constructie kijkt niet terug ('no backtracking')."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:664
 msgid "Zoom _Out"
 msgstr "Uitz_oomen"
 
@@ -29096,11 +29167,11 @@ msgstr "Uitz_oomen"
 msgid "Zoom the Window"
 msgstr "Zoomt de weergave in"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:658
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
 msgid "Zooms view in"
 msgstr "Zoomt de weergave in"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:665
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
 msgid "Zooms view out"
 msgstr "Zoomt de weergave uit"
 
@@ -29298,7 +29369,7 @@ msgstr "\\z"
 msgid "^"
 msgstr "^"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:893
 msgid "_About"
 msgstr "_Over MonoDevelop"
 
@@ -29478,7 +29549,7 @@ msgstr "_Karaktercodering:"
 msgid "_Charset:"
 msgstr "Karakterset:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
 #, fuzzy
 msgid "_Check for Updates..."
 msgstr "Bestanden toevoegen..."
@@ -29493,13 +29564,13 @@ msgstr "Uit-checken..."
 msgid "_Clean All"
 msgstr "_Open map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
 #, fuzzy
 msgid "_Clear"
 msgstr "Schoonmaken"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:648
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:651
 msgid "_Clear Navigation History"
 msgstr "_Leegmaken Navigatie Geschiedenis"
 
@@ -29508,7 +29579,7 @@ msgstr "_Leegmaken Navigatie Geschiedenis"
 msgid "_Close"
 msgstr "_Sluit bestand"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:428
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:431
 msgid "_Close File"
 msgstr "_Sluit bestand"
 
@@ -29517,7 +29588,7 @@ msgstr "_Sluit bestand"
 msgid "_Collapse All"
 msgstr "Alles invouwen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
 #, fuzzy
 msgid "_Command..."
 msgstr "_Commando:"
@@ -29562,7 +29633,7 @@ msgstr "_Kopiëren"
 msgid "_Copy Revision"
 msgstr "Revisie"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
 #, fuzzy
 msgid "_Copy to Output Directory"
 msgstr "<b>Uitvoermap</b>"
@@ -29583,7 +29654,7 @@ msgstr "In oplossing aanmaken:"
 msgid "_Current Project"
 msgstr "Wis recente projecten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:706
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
 #, fuzzy
 msgid "_Cursor Position"
 msgstr "Huidige kolom"
@@ -29615,7 +29686,7 @@ msgstr "_Onderteken deze assembly"
 msgid "_Delete"
 msgstr "_Verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:584
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "_Delete Current Layout"
 msgstr "Huidige layout _verwijderen"
@@ -29690,13 +29761,13 @@ msgstr "Alles uitvouwen"
 msgid "_Expand All"
 msgstr "Alles uitvouwen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1162
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 #, fuzzy
 msgid "_Expand selection"
 msgstr "Selectie uitbreiden een pagina omhoog"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:723
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:726
 #, fuzzy
 msgid "_Extensions..."
 msgstr "Uitbreiding"
@@ -29710,7 +29781,7 @@ msgstr "_Bestand"
 msgid "_File Mask:"
 msgstr "Bestandsmasker:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:989
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 #, fuzzy
 msgid "_File..."
 msgstr "_Nieuw bestand"
@@ -29740,7 +29811,7 @@ msgstr "_Zoek verwijzingen"
 msgid "_Find References of All Overloads"
 msgstr "_Zoek verwijzingen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "_Find..."
 msgstr "_Zoeken..."
 
@@ -29758,7 +29829,7 @@ msgstr ""
 msgid "_Flat"
 msgstr "Zwevend"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:699
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
 #, fuzzy
 msgid "_Focus Document"
 msgstr "Documenten"
@@ -29784,7 +29855,7 @@ msgstr "Selectie naar k_leine letters"
 msgid "_Format document on save"
 msgstr "Documenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:592
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:595
 msgid "_Full Screen"
 msgstr "_Volledig scherm"
 
@@ -29969,7 +30040,7 @@ msgstr "Beschikbare coderingen:"
 msgid "_Line endings:"
 msgstr "Beschikbare coderingen:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 #, fuzzy
 msgid "_Line..."
 msgstr "_Nieuw bestand"
@@ -30061,7 +30132,7 @@ msgstr "_Naam:"
 msgid "_New name:"
 msgstr "_Nieuwe naam:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:751
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:754
 #, fuzzy
 msgid "_Next Document"
 msgstr "Documenten"
@@ -30070,12 +30141,12 @@ msgstr "Documenten"
 msgid "_Next Tip"
 msgstr "_Volgende tip"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1234
 #, fuzzy
 msgid "_None"
 msgstr "Geen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:671
 #, fuzzy
 msgid "_Normal Size"
 msgstr "Normaal"
@@ -30084,7 +30155,7 @@ msgstr "Normaal"
 msgid "_Only show my code."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:39
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:40
 #, fuzzy
@@ -30097,7 +30168,7 @@ msgstr "Open"
 msgid "_Open All"
 msgstr "_Open map"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:510
 msgid "_Open Folder"
 msgstr "_Open map"
 
@@ -30110,11 +30181,11 @@ msgstr "O_pen..."
 msgid "_Open XSLT"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:504
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
 msgid "_Open in Terminal"
 msgstr "_Open in terminal"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:389
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
 #, fuzzy
 msgid "_Open..."
 msgstr "O_pen..."
@@ -30177,7 +30248,7 @@ msgstr "_Plakken"
 msgid "_Path:"
 msgstr "Pad:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:561
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileTabCommands.cs:166
 msgid "_Pin Tab"
 msgstr ""
@@ -30201,12 +30272,12 @@ msgstr ""
 msgid "_Preview"
 msgstr "Print_voorbeeld"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:758
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:761
 #, fuzzy
 msgid "_Previous Document"
 msgstr "Documenten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:466
 msgid "_Print..."
 msgstr "_Afdrukken..."
 
@@ -30237,7 +30308,7 @@ msgstr "_Vraag om argumenten"
 msgid "_Prompt to save changes to open documents"
 msgstr "_Navragen of wijzigingen in open documenten moeten worden opgeslagen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
 #, fuzzy
 msgid "_Properties"
 msgstr "Eigenschappen"
@@ -30261,7 +30332,7 @@ msgstr ""
 msgid "_Quick Properties"
 msgstr "Eigenschappen voor bouwen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:502
 msgid "_Quit"
 msgstr "_Afsluiten"
 
@@ -30311,7 +30382,7 @@ msgstr "_Verwijder van disk"
 msgid "_Remove"
 msgstr "Verwijderen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1021
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
 #, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "Wis markeringen"
@@ -30335,7 +30406,7 @@ msgstr "Achteropkomende witruimte verwijderen"
 msgid "_Remove Unnecessary Usings"
 msgstr "Schakel breakpoint aan of uit"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:300
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:311
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:194
 #, fuzzy
 msgid "_Remove from Project"
@@ -30354,7 +30425,7 @@ msgstr "Achteropkomende witruimte verwijderen"
 msgid "_Replace"
 msgstr "Ve_rvang"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:921
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 msgid "_Replace..."
 msgstr "_Vervang..."
 
@@ -30377,7 +30448,7 @@ msgstr "Resources"
 msgid "_Restore NuGet Packages"
 msgstr "Systeempakketten"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:458
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:125
 #, fuzzy
 msgid "_Revert"
@@ -30411,7 +30482,7 @@ msgstr "Bouw opnieuw"
 msgid "_Run Item"
 msgstr "Item hernoemen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:406
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:409
 #, fuzzy
 msgid "_Save"
 msgstr "Opslaan"
@@ -30540,7 +30611,7 @@ msgstr "_Onderteken deze assembly"
 msgid "_Smart semicolon placement"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 #, fuzzy
 msgid "_Snippet..."
 msgstr "Project: {0}"
@@ -30578,7 +30649,7 @@ msgstr ""
 msgid "_Suppress"
 msgstr "Open met bestandsbrowser"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "_Surround With..."
 msgstr "Om_ringen Met..."
 
@@ -30600,7 +30671,7 @@ msgstr "_Tab breedte:"
 msgid "_Template:"
 msgstr "_Sjabloon"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
 msgid "_Tip of the Day"
 msgstr "_Tip van de dag"
 
@@ -30608,7 +30679,7 @@ msgstr "_Tip van de dag"
 msgid "_Title:"
 msgstr "_Titel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 #, fuzzy
 msgid "_Toggle Bookmark"
 msgstr "Markeer"
@@ -30656,7 +30727,7 @@ msgstr "Vertaald (msgstr):"
 msgid "_Translator name:"
 msgstr "Naam van vertaler:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:985
 #, fuzzy
 msgid "_Type..."
 msgstr "Ga naar type..."
@@ -30798,7 +30869,7 @@ msgstr "XML"
 msgid "_Zoom"
 msgstr "In_zoomen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:654
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:657
 msgid "_Zoom In"
 msgstr "In_zoomen"
 
@@ -31175,7 +31246,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:637
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:645
 #, fuzzy
@@ -31454,7 +31525,7 @@ msgstr[1] "{0} waarschuwingen"
 msgid "{0} [expression];"
 msgstr "Schakel breakpoint aan of uit"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 #, fuzzy
 msgid "{0} _Options"
 msgstr "Opties"
@@ -31598,7 +31669,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:396
+#: ../src/addins/MacPlatform/MacPlatform.cs:392
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -31822,7 +31893,7 @@ msgstr ""
 msgid "{0} removed with warnings."
 msgstr "_Negeer waarschuwingen:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:225
+#: ../src/addins/MacPlatform/MacPlatform.cs:221
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -31849,6 +31920,10 @@ msgstr "Operatie uitgevoerd met waarschuwingen."
 #, fuzzy
 msgid "{0} return-type"
 msgstr "Wijzigingslogboek invoer:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:350
+msgid "{0} search provider..."
+msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1116
 msgid "{0} statement {1} (expression);"
@@ -34599,10 +34674,6 @@ msgstr "|"
 #~ msgstr "Adres inladen"
 
 #, fuzzy
-#~ msgid "Loading error"
-#~ msgstr "Fout bij inladen:"
-
-#, fuzzy
 #~ msgid "Loading error: {0}"
 #~ msgstr "Fout bij inladen:"
 
@@ -36573,10 +36644,6 @@ msgstr "|"
 #, fuzzy
 #~ msgid "The following add-ins will be installed:"
 #~ msgstr "De volgende add-ins zijn op het moment geïnstalleerd:"
-
-#, fuzzy
-#~ msgid "The following files had merge conflicts"
-#~ msgstr "Het volgende wijzigingslogboek-bestand zal worden geupdate:"
 
 #~ msgid "The following filter will be applied when running the tests:"
 #~ msgstr ""
