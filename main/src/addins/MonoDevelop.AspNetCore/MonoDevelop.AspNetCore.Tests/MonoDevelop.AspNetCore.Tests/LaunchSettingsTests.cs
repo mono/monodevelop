@@ -205,6 +205,17 @@ namespace MonoDevelop.AspNetCore.Tests
 			Assert.False (project.RunConfigurations [1].StoreInUserFile);
 		}
 
+		[Test]
+		public async Task CreateProfile_creates_http_only ()
+		{
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = (DotNetProject)solution.GetAllProjects ().Single ();
+			var launchProfileProvider = new LaunchProfileProvider (project);
+			var launchProfile = launchProfileProvider.CreateDefaultProfile ();
+			launchProfile.OtherSettings ["applicationUrl"] = "http://localhost:5000";
+		}
+
 		[TearDown]
 		public override void TearDown ()
 		{
