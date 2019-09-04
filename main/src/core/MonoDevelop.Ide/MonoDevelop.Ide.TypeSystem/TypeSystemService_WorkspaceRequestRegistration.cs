@@ -41,14 +41,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal async Task<MonoDevelopWorkspace> GetWorkspaceAsync (CancellationToken token)
 			{
-				using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource (src.Token, token);
-
 				var tcs = new TaskCompletionSource<MonoDevelopWorkspace> ();
 				lock (requests) {
 					requests.Add (tcs);
 				}
 
 				try {
+					using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource (src.Token, token);
 					using (linkedTokenSource.Token.Register (() => tcs.TrySetCanceled (linkedTokenSource.Token))) {
 						var workspace = await tcs.Task;
 						return workspace;

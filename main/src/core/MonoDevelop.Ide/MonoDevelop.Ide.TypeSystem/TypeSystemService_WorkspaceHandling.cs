@@ -193,8 +193,10 @@ namespace MonoDevelop.Ide.TypeSystem
 						result.Dispose ();
 					}
 
-					if (solution.ExtendedProperties [typeof (WorkspaceRequestRegistration)] is WorkspaceRequestRegistration registration) {
-						registration.Dispose ();
+					lock (solution.ExtendedProperties.SyncRoot) {
+						if (solution.ExtendedProperties [typeof (WorkspaceRequestRegistration)] is WorkspaceRequestRegistration registration) {
+							registration.Dispose ();
+						}
 					}
 
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
