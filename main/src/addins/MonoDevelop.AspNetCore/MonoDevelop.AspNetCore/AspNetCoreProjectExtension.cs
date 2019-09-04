@@ -78,7 +78,7 @@ namespace MonoDevelop.AspNetCore
 		void InitLaunchSettingsProvider ()
 		{
 			if (launchProfileProvider == null) {
-				launchProfileProvider = new LaunchProfileProvider (this.Project.BaseDirectory, this.Project.DefaultNamespace);
+				launchProfileProvider = new LaunchProfileProvider (this.Project);
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace MonoDevelop.AspNetCore
 			updating = true;
 
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations (Project);
+			launchProfileProvider.SyncRunConfigurations();
 
 			updating = false;
 		}
@@ -217,7 +217,7 @@ namespace MonoDevelop.AspNetCore
 			updating = true;
 
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations (Project);
+			launchProfileProvider.SyncRunConfigurations();
 
 			await IdeApp.ProjectOperations.SaveAsync (Project);
 
