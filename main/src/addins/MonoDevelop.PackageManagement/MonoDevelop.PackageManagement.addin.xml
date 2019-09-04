@@ -128,7 +128,8 @@
 		<Condition id="ItemType" value="Project">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages"
-				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				_label = "NuGet _Packages..."				
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</Condition>
 	</Extension>

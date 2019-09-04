@@ -239,7 +239,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			_description = "Add and remove project references"
 			icon = "md-reference"
-			_label = "_Edit References..."
+			_label = "_Add Reference..."
 			defaultHandler = "MonoDevelop.Ide.Commands.EditReferencesHandler" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"
 			_label = "New _File..."
