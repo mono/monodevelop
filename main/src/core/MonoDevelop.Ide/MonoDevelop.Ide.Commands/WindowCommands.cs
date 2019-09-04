@@ -249,9 +249,13 @@ namespace MonoDevelop.Ide.Commands
 
 	internal class OpenWindowListHandler : CommandHandler
 	{
+	
 		protected override void Update (CommandArrayInfo info)
 		{
 			foreach (Components.Window window in IdeApp.CommandService.TopLevelWindowStack) {
+				//we don't want include hidden windows
+				if (!window.IsRealized || !window.IsVisible || Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window))
+					continue;
 
 				//Create CommandInfo object
 				var commandInfo = new CommandInfo ();

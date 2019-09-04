@@ -777,11 +777,11 @@ namespace MonoDevelop.Components.Commands
 			// before doing any change to the topLevelWindows list
 			EndWaitingForUserInteraction ();
 
-			var node = topLevelWindows.Find (win);
+			var node = topLevelWindows.FirstOrDefault (s => s.nativeWidget.Equals (win.nativeWidget));
 			if (node != null) {
 				if (win.HasFocus) {
 					topLevelWindows.Remove (node);
-					topLevelWindows.AddFirst (node);
+					topLevelWindows.AddFirst (win);
 				}
 			} else {
 				topLevelWindows.AddFirst (win);
