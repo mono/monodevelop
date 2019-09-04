@@ -77,9 +77,20 @@ namespace UnitTests
 			string srcDir = Path.Combine (Path.Combine (TestsRootDir, "test-projects"), Combine (projectName));
 			string projDir = srcDir;
 			srcDir = Path.GetDirectoryName (srcDir);
+
+			DeleteSubDirectory (srcDir, ".vs");
+			DeleteSubDirectory (srcDir, ".svn");
+
 			string tmpDir = CreateTmpDir (Path.GetFileName (projDir));
 			CopyDir (srcDir, tmpDir);
 			return Path.Combine (tmpDir, Path.GetFileName (projDir));
+		}
+
+		static void DeleteSubDirectory (string directory, string subDirectory)
+		{
+			var path = Path.Combine (directory, subDirectory);
+			if (Directory.Exists (path))
+				Directory.Delete (path, true);
 		}
 		
 		public static string GetSampleProjectPath (params string[] projectName)
@@ -132,17 +143,22 @@ namespace UnitTests
 		
 		static void CopyDir (string src, string dst)
 		{
-			if (Path.GetFileName (src) == ".svn")
-				return;
-			
-			if (!Directory.Exists (dst))
-				Directory.CreateDirectory (dst);
-			
-			foreach (string file in Directory.GetFiles (src))
-				File.Copy (file, Path.Combine (dst, Path.GetFileName (file)), overwrite: true);
-			
-			foreach (string dir in Directory.GetDirectories (src))
-				CopyDir (dir, Path.Combine (dst, Path.GetFileName (dir)));
+			Directory.CreateDirectory (dst);
+
+			foreach (var directory in Directory.EnumerateDirectories (src, "*", SearchOption.AllDirectories)) {
+				Directory.CreateDirectory (RelocatePath (directory, src, dst));
+			}
+
+			foreach (string file in Directory.EnumerateFiles (src, "*", SearchOption.AllDirectories)) {
+				File.Copy (file, RelocatePath (file, src, dst), overwrite: true);
+			}
+
+			static string RelocatePath (string path, string src, string dst)
+			{
+				// Add the path separator too.
+				var relativePath = path.Substring (src.Length + 1);
+				return Path.Combine (dst, relativePath);
+			}
 		}
 		
 
