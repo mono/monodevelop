@@ -208,7 +208,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		[Test]
 		public async Task CreateProfile_creates_http_only ()
 		{
-			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-22", "aspnetcore-empty-22.sln");
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-30", "aspnetcore-empty-30.sln");
 			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 			var launchProfileProvider = new LaunchProfileProvider (project);
