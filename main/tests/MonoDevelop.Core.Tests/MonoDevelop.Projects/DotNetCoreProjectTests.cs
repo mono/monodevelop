@@ -318,9 +318,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
 
-			var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore \"{solFile}\"");
 
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (Project)sol.Items [0];
@@ -345,9 +343,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
 
-			var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore \"{solFile}\"");
 
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (Project)sol.Items [0];
@@ -395,9 +391,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
 
-			var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore \"{solFile}\"");
 
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (Project)sol.Items [0];
@@ -450,9 +444,7 @@ namespace MonoDevelop.Projects
 				// No DependsOn set until NuGet restore and re-evaluation.
 				Assert.AreEqual (string.Empty, xamlCSharpFile.DependsOn);
 
-				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-				Assert.AreEqual (0, process.ExitCode);
+				Util.RunMSBuild ($"/t:Restore \"{solFile}\"");
 
 				await p.ReevaluateProject (Util.GetMonitor ());
 
@@ -496,9 +488,7 @@ namespace MonoDevelop.Projects
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (Project)sol.Items [0];
 
-				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-				Assert.AreEqual (0, process.ExitCode);
+				Util.RunMSBuild ($"/t:Restore \"{solFile}\"");
 
 				await p.ReevaluateProject (Util.GetMonitor ());
 
@@ -523,9 +513,7 @@ namespace MonoDevelop.Projects
 				var p = (Project)sol.Items [0];
 				Assert.AreEqual ("DotNetCoreNoMainPropertyGroup", p.Name);
 
-				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
-				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-				Assert.AreEqual (0, process.ExitCode);
+				Util.RunMSBuild ($"/t:Restore \"{solFile}\"");
 
 				await p.ReevaluateProject (Util.GetMonitor ());
 

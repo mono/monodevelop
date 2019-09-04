@@ -1021,9 +1021,7 @@ namespace MonoDevelop.Projects
 			FilePath solFile = Util.GetSampleProject ("iOSImmutableCollections", "iOSImmutableCollections.sln");
 			CreateNuGetConfigFile (solFile.ParentDirectory);
 
-			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (DotNetProject) sol.Items [0];

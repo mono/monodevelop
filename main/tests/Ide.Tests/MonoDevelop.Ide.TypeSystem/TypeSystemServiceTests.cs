@@ -53,7 +53,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			var symlinkFileSource = Path.GetFullPath (Path.Combine (solutionDirectory, data [1]));
 
 			File.Delete (symlinkFileName);
-			Process.Start ("ln", $"-s '{symlinkFileSource}' '{symlinkFileName}'").WaitForExit ();
+			Process.Start (new ProcessStartInfo ("ln", $"-s '{symlinkFileSource}' '{symlinkFileName}'") {
+				UseShellExecute = false,
+			}).WaitForExit ();
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
