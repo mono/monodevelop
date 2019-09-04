@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide
 {
 	[TestFixture]
 	[RequireService(typeof(RootWorkspace))]
+	[RequireService(typeof(TypeSystemService))]
 	class TypeSystemServiceTests : IdeTestBase
 	{
 		class TrackTestProject : DotNetProject
@@ -103,12 +104,16 @@ namespace MonoDevelop.Ide
 				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
 				Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
 
-				using (var workspace = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-					var projectId = workspace.GetProjectId (csharpApp);
+				try {
+					using (var workspace = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+						var projectId = workspace.GetProjectId (csharpApp);
 
-					var analysisProject = workspace.CurrentSolution.GetProject (projectId);
-					var refs = analysisProject.MetadataReferences.Select (r => new FilePath(r.Display).FileName);
-					Assert.That (refs, Contains.Item ("fslib.dll"));
+						var analysisProject = workspace.CurrentSolution.GetProject (projectId);
+						var refs = analysisProject.MetadataReferences.Select (r => new FilePath (r.Display).FileName);
+						Assert.That (refs, Contains.Item ("fslib.dll"));
+					}
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
 			}
 		}
@@ -629,6 +634,86 @@ namespace MonoDevelop.Ide
 				}
 				return refs;
 			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceRegistrationFlow ()
+		{
+			FilePath solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			var typeSystemService = await Runtime.GetService<TypeSystemService> ();
+			var compositionManager = await Runtime.GetService<Composition.CompositionManager> ();
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Task cancelledOnDispose;
+			using (sol) {
+				// Initially, there's no request
+				// We can't test this because Razor attaches a request in Solution.
+				// https://github.com/aspnet/AspNetCore-Tooling/blob/02221c21da9dbd325fddc1895d360acb41fb6df3/src/Razor/src/Microsoft.VisualStudio.Mac.RazorAddin/RazorProjectExtension.cs#L47
+				//Assert.IsNull (sol.ExtendedProperties [typeof (TypeSystemService.WorkspaceRequestRegistration)]);
+
+				// We don't have a workspace result until completion is done.
+				var workspaceTasks = new [] {
+					typeSystemService.GetWorkspaceAsync (sol),
+					typeSystemService.GetWorkspaceAsync (sol),
+					typeSystemService.GetWorkspaceAsync (sol),
+				};
+				Assert.That (workspaceTasks.Select (x => x.IsCompleted), Is.All.EqualTo (false));
+
+				// We have a registration created in the solution.
+				var request = (TypeSystemService.WorkspaceRequestRegistration)sol.ExtendedProperties [typeof (TypeSystemService.WorkspaceRequestRegistration)];
+				Assert.IsNotNull (request);
+
+				var ws = new MonoDevelopWorkspace (compositionManager.HostServices, sol, typeSystemService);
+				using (ws) {
+					request.Complete (ws);
+
+					// A newly requested task is already completed on request, as the mapping is done
+					Assert.That (workspaceTasks.Select (x => x.IsCompleted), Is.All.EqualTo (true));
+					Assert.That (await Task.WhenAll (workspaceTasks), Is.All.EqualTo (ws));
+				}
+
+				cancelledOnDispose = typeSystemService.GetWorkspaceAsync (sol);
+				Assert.IsFalse (cancelledOnDispose.IsCompleted);
+			}
+
+			try {
+				await cancelledOnDispose;
+				Assert.Fail ("The task should have thrown on dispose");
+			} catch (OperationCanceledException) {
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceRegistrationCancellation ()
+		{
+			using var registration = new TypeSystemService.WorkspaceRequestRegistration ();
+
+			using var cts1 = new CancellationTokenSource ();
+			using var cts2 = new CancellationTokenSource ();
+
+			var task1 = registration.GetWorkspaceAsync (cts1.Token);
+			var task2 = registration.GetWorkspaceAsync (cts2.Token);
+			var task3 = registration.GetWorkspaceAsync (CancellationToken.None);
+
+			// Initially, none of them is cancelled.
+			Assert.IsFalse (task1.IsCanceled);
+			Assert.IsFalse (task2.IsCanceled);
+			Assert.IsFalse (task3.IsCanceled);
+
+			// Cancelling one token only cancels its corresponding task
+			cts1.Cancel ();
+
+			Assert.IsTrue (task1.IsCanceled);
+			Assert.IsFalse (task2.IsCanceled);
+			Assert.IsFalse (task3.IsCanceled);
+
+			// When disposing the registration,
+			registration.Dispose ();
+
+			Assert.IsTrue (task1.IsCanceled);
+			Assert.IsTrue (task2.IsCanceled);
+			Assert.IsTrue (task3.IsCanceled);
 		}
 	}
 }
