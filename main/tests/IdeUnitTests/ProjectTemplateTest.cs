@@ -91,25 +91,10 @@ namespace IdeUnitTests
 
 			// RestoreDisableParallel prevents parallel restores which sometimes cause
 			// the restore to fail on Mono.
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{Solution.FileName}\"");
-			RunMSBuild ($"/t:Build \"{Solution.FileName}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{Solution.FileName}\"");
+			Util.RunMSBuild ($"/t:Build \"{Solution.FileName}\"");
 
 			return template;
-		}
-
-		void RunMSBuild (string arguments)
-		{
-			var process = new Process ();
-			process.StartInfo = new ProcessStartInfo ("msbuild", arguments) {
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				UseShellExecute = false
-			};
-			process.Start ();
-			var standardError = $"Error: {process.StandardOutput.ReadToEnd ()}";
-
-			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
-			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed. Exit code: {process.ExitCode}. {standardError}");
 		}
 
 		protected virtual string GetExtraNuGetSources () => string.Empty;

@@ -31,6 +31,8 @@ using System.Collections;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Diagnostics;
+using NUnit.Framework;
 
 namespace UnitTests
 {
@@ -195,6 +197,19 @@ namespace UnitTests
 			for (int n=1; n<paths.Length; n++)
 				p = Path.Combine (p, paths [n]);
 			return p;
+		}
+
+		public static void RunMSBuild (string arguments)
+		{
+			using var process = Process.Start (new ProcessStartInfo ("msbuild", arguments) {
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false
+			});
+			var standardError = $"Error: {process.StandardOutput.ReadToEnd ()}";
+
+			Assert.IsTrue (process.WaitForExit (240000), $"Timed out waiting for 'msbuild {arguments}'.");
+			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed. Exit code: {process.ExitCode}. {standardError}");
 		}
 	}
 }

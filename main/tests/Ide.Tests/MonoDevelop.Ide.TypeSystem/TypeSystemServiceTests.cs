@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath solFile = Util.GetSampleProject ("multi-target-netframework", "multi-target.sln");
 
 			CreateNuGetConfigFile (solFile.ParentDirectory);
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath solFile = Util.GetSampleProject ("multi-target-project-ref", "multi-target.sln");
 
 			CreateNuGetConfigFile (solFile.ParentDirectory);
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath solFile = Util.GetSampleProject ("multi-target-netframework", "multi-target.sln");
 
 			CreateNuGetConfigFile (solFile.ParentDirectory);
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath solFile = Util.GetSampleProject ("multi-target", "multi-target.sln");
 
 			CreateNuGetConfigFile (solFile.ParentDirectory);
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath solFile = Util.GetSampleProject ("netstandard-project", "NetStandardTest.sln");
 
 			CreateNuGetConfigFile (solFile.ParentDirectory);
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -364,13 +364,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				"</configuration>";
 
 			File.WriteAllText (fileName, xml);
-		}
-
-		void RunMSBuild (string arguments)
-		{
-			var process = Process.Start ("msbuild", arguments);
-			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
-			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
 		}
 	}
 }

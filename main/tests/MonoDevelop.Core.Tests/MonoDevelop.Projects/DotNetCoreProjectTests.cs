@@ -786,9 +786,7 @@ namespace MonoDevelop.Projects
 		{
 			CreateNuGetConfigFile (fileName.ParentDirectory);
 
-			var process = Process.Start ("msbuild", $"/t:Restore \"{fileName}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore \"{fileName}\"");
 		}
 
 		/// <summary>
