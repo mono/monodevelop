@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Kirill Osenkov"
+	language="JavaScript"
+	created="2019/09/04"
+	lastModified="2019/09/04">
+
+	<TemplateConfiguration>
+		<_Name>JavaScript file</_Name>
+		<Icon>md-file-js</Icon>
+		<_Category>Web</_Category>
+		<_Description>A blank JavaScript source file.</_Description>
+		<DefaultFilename>EmptyJSFile</DefaultFilename>
+	</TemplateConfiguration>
+
+	<TemplateFiles>
+		<File DefaultExtension=".js"><![CDATA[]]></File>
+	</TemplateFiles>
+</Template>
