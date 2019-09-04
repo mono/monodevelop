@@ -362,7 +362,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
-			if (desktopService !=null)
+			if (desktopService != null)
 				desktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			if (workspace != null) {
