@@ -1265,6 +1265,7 @@
 
 	<Extension path="/MonoDevelop/Core/SystemInformation">
 		<Class class="MonoDevelop.DotNetCore.DotNetCoreSystemInformation" />
+		<Class class="MonoDevelop.DotNetCore.DotNetCoreRuntimeSystemInformation" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
