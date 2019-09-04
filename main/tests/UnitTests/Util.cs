@@ -81,9 +81,26 @@ namespace UnitTests
 			DeleteSubDirectory (srcDir, ".vs");
 			DeleteSubDirectory (srcDir, ".svn");
 
+			CreateDirectoryBuildMSBuildFiles ();
+
 			string tmpDir = CreateTmpDir (Path.GetFileName (projDir));
 			CopyDir (srcDir, tmpDir);
 			return Path.Combine (tmpDir, Path.GetFileName (projDir));
+		}
+
+		static void CreateDirectoryBuildMSBuildFiles ()
+		{
+			Directory.CreateDirectory (TmpDir);
+
+			WriteEmptyProjectFile (Path.Combine (TmpDir, "Directory.Build.props"));
+			WriteEmptyProjectFile (Path.Combine (TmpDir, "Directory.Build.targets"));
+
+			static void WriteEmptyProjectFile (string fileName)
+			{
+				// This is needed so we don't inherit properties from the monodevelop source tree.
+				if (!File.Exists (fileName))
+					File.WriteAllText (fileName, "<Project></Project>");
+			}
 		}
 
 		static void DeleteSubDirectory (string directory, string subDirectory)
