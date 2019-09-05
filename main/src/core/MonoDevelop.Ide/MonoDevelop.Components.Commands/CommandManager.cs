@@ -1509,6 +1509,7 @@ namespace MonoDevelop.Components.Commands
 			return DispatchCommand (commandId, dataItem, initialTarget, source, null, sourceUpdateInfo);
 		}
 
+		readonly Stopwatch dispatchStopwatch = new Stopwatch ();
 		internal bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, uint? time, CommandInfo sourceUpdateInfo)
 		{
 			// (*) Before executing the command, DispatchCommand executes the command update handler to make sure the command is enabled in the given
@@ -1596,22 +1597,24 @@ namespace MonoDevelop.Components.Commands
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									var t = DateTime.Now;
+									dispatchStopwatch.Restart ();
 									try {
 										chi.Run (localTarget, cmd, dataItem);
 									} finally {
-										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+										dispatchStopwatch.Stop ();
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, dispatchStopwatch.Elapsed);
 									}
 								});
 							}
 							else {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									var t = DateTime.Now;
+									dispatchStopwatch.Restart ();
 									try {
 										chi.Run (localTarget, cmd);
 									} finally {
-										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+										dispatchStopwatch.Stop ();
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, dispatchStopwatch.Elapsed);
 									}
 								});
 							}
@@ -1668,11 +1671,12 @@ namespace MonoDevelop.Components.Commands
 			}
 			OnCommandActivating (cmd.Id, info, dataItem, target, source);
 
-			var t = DateTime.Now;
+			dispatchStopwatch.Restart ();
 			try {
 				cmd.DefaultHandler.InternalRun (dataItem);
 			} finally {
-				OnCommandActivated (cmd.Id, info, dataItem, target, source, DateTime.Now - t);
+				dispatchStopwatch.Stop ();
+				OnCommandActivated (cmd.Id, info, dataItem, target, source, dispatchStopwatch.Elapsed);
 			}
 			return true;
 		}
