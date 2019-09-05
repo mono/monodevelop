@@ -37,7 +37,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal sealed class WorkspaceRequestRegistration : IDisposable
 		{
 			readonly List<TaskCompletionSource<MonoDevelopWorkspace>> requests = new List<TaskCompletionSource<MonoDevelopWorkspace>> ();
-			CancellationTokenSource src = new CancellationTokenSource ();
+			CancellationTokenSource src;
+			readonly CancellationToken disposeToken;
+
+			public WorkspaceRequestRegistration ()
+			{
+				src = new CancellationTokenSource ();
+				disposeToken = src.Token;
+			}
 
 			internal async Task<MonoDevelopWorkspace> GetWorkspaceAsync (CancellationToken token)
 			{
@@ -47,7 +54,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				try {
-					using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource (src.Token, token);
+					using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource (disposeToken, token);
 					using (linkedTokenSource.Token.Register (() => tcs.TrySetCanceled (linkedTokenSource.Token))) {
 						var workspace = await tcs.Task;
 						return workspace;
@@ -74,10 +81,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void Dispose ()
 			{
-				// Requests are removed when canceled.
-				src.Cancel ();
-				src.Dispose ();
-				src = new CancellationTokenSource ();
+				if (src != null) {
+					// Requests are removed when canceled.
+					src.Cancel ();
+					src.Dispose ();
+					src = null;
+				}
 			}
 		}
 	}
