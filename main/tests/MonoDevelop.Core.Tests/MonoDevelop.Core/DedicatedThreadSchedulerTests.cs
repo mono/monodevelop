@@ -74,6 +74,7 @@ namespace MonoDevelop.Core
 
 			var testThread = TestScheduler.DedicatedThread;
 
+			Assert.IsTrue (testThread.IsBackground);
 			Assert.IsTrue (testThread.IsAlive);
 			Assert.IsFalse (testThread.IsThreadPoolThread);
 			Assert.AreEqual (DedicatedThreadName, testThread.Name);

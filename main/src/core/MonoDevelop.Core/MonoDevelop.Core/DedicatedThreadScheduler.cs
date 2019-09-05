@@ -63,7 +63,7 @@ namespace MonoDevelop.Core
 			AssertDisposed (false);
 			if (dedicatedThread == null) {
 				cancellationToken = cancellation.Token;
-				dedicatedThread = new Thread (Run);
+				dedicatedThread = new Thread (Run) { IsBackground = true };
 				if (!string.IsNullOrEmpty (threadName))
 					dedicatedThread.Name = threadName;
 				dedicatedThread.Start ();
