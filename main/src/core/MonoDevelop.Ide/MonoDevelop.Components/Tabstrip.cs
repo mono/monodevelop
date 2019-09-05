@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Shell;
+using Gdk;
 
 namespace MonoDevelop.Components
 {
@@ -58,11 +59,17 @@ namespace MonoDevelop.Components
 			set {
 				if (activeTab == value)
 					return;
-				if (activeTab != -1)
+
+				//we want ensure our last/current active tab is in tab array
+				if (IsInSync (activeTab))
 					tabs [activeTab].Active = false;
-				activeTab = value;
-				if (activeTab != -1)
+				
+				if (!IsInSync (value)) {
+					activeTab = -1;
+				} else {
+					activeTab = value;
 					tabs [activeTab].Active = true;
+				}
 				QueueDraw ();
 			}
 		}
@@ -80,7 +87,7 @@ namespace MonoDevelop.Components
 		public Tabstrip ()
 		{
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
-			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.FocusChangeMask;
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | EventMask.EnterNotifyMask |  Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.FocusChangeMask;
 			CanFocus = true;
 		}
 		
@@ -97,7 +104,7 @@ namespace MonoDevelop.Components
 
 		public void InsertTab (int index, Tab tab)
 		{
-			if (index < 0 || index >= tabs.Count) {
+			if (!IsInSync (index)) {
 				tabs.Add (tab);
 				tabSizes.Add (tab.Size);
 			} else {
@@ -125,6 +132,7 @@ namespace MonoDevelop.Components
 
 		public void RemoveTab (int index)
 		{
+			//in case of same index than active tab we set the active tab to next element
 			if (activeTab == index) {
 				if (index < tabs.Count - 1)
 					ActiveTab = index + 1;
@@ -132,6 +140,7 @@ namespace MonoDevelop.Components
 					ActiveTab = index - 1;
 			}
 
+			//in case of same index than active tab we in/decrement value
 			if (focusedTab == index) {
 				if (index == tabs.Count - 1)
 					focusedTab--;
@@ -139,6 +148,12 @@ namespace MonoDevelop.Components
 				focusedTab--;
 
 			var tab = tabs [index];
+
+			//we reset hovert 
+			if (hoverTab == tab) {
+				hoverTab = null;
+			}
+
 			tabs.RemoveAt (index);
 			tabSizes.RemoveAt (index);
 			if (activeTab > index)
@@ -238,13 +253,22 @@ namespace MonoDevelop.Components
 			Accessible.SetTabs (proxies.ToArray ());
 		}
 
+		bool IsInSync (int i) =>
+			i >= 0 && i < tabs.Count;
+
 		Cairo.Rectangle GetBounds (Tab tab)
 		{
 			if (tab == null)
-				return new Cairo.Rectangle (0, 0, 0, 0);
+				return default;
 			
 			int spacerWidth = 0;
 			int idx = tabs.IndexOf (tab);
+
+			//tabs are unsync
+			if (!IsInSync (idx)) {
+				return default;
+			}
+
 			double distance = 0;
 			for (int i = 0; i < idx; i++) {
 				var t = tabs [i];
@@ -276,12 +300,16 @@ namespace MonoDevelop.Components
 			
 			if (hoverTab != oldHoverTab && oldHoverTab != null) {
 				var oldBounds = GetBounds (oldHoverTab);
-				QueueDrawArea ((int)oldBounds.X, (int)oldBounds.Y, (int)oldBounds.Width, (int)oldBounds.Height);
+				//we don't want draw removed tabs
+				if (oldBounds != default)
+					QueueDrawArea ((int)oldBounds.X, (int)oldBounds.Y, (int)oldBounds.Width, (int)oldBounds.Height);
 			}
 			
 			if (hoverTab != null) {
 				var bounds = GetBounds (hoverTab);
-				QueueDrawArea ((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
+				//we don't want draw removed tabs
+				if (bounds != default)
+					QueueDrawArea ((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
 			}
 			
 			return base.OnMotionNotifyEvent (evnt);
@@ -298,7 +326,23 @@ namespace MonoDevelop.Components
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
-		
+
+		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+			mx = evnt.X;
+			my = evnt.Y;
+			foreach (var tab in tabs) {
+				if (tab.IsSeparator || !tab.Visible)
+					continue;
+				var bounds = GetBounds (tab);
+				if (bounds.X < mx && mx < bounds.X + bounds.Width) {
+					hoverTab = tab;
+					break;
+				}
+			}
+			return base.OnEnterNotifyEvent (evnt);
+		}
+
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			if (hoverTab != null) {
@@ -324,6 +368,7 @@ namespace MonoDevelop.Components
 
 				Tab active = null;
 				for (int i = tabs.Count; i --> 0;) {
+
 					if (i == ActiveTab) {
 						active = tabs [i];
 						continue;
@@ -382,7 +427,7 @@ namespace MonoDevelop.Components
 
 			if (ret) {
 				GrabFocus ();
-				if (oldFocus >= 0 && oldFocus < tabs.Count) {
+				if (IsInSync (oldFocus)) {
 					tabs [oldFocus].Focused = false;
 				}
 
@@ -405,7 +450,7 @@ namespace MonoDevelop.Components
 
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
-			if (focusedTab > -1 && focusedTab <= tabs.Count) {
+			if (IsInSync (focusedTab)) {
 				tabs [focusedTab].Focused = false;
 			}
 			focusedTab = -1;
@@ -415,9 +460,7 @@ namespace MonoDevelop.Components
 
 		protected override void OnActivate ()
 		{
-			if (focusedTab >= 0 && focusedTab < tabs.Count) {
-				ActiveTab = focusedTab;
-			}
+			ActiveTab = focusedTab;
 			base.OnActivate ();
 		}
 	}
