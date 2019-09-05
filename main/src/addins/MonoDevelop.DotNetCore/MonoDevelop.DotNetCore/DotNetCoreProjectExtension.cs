@@ -283,7 +283,6 @@ namespace MonoDevelop.DotNetCore
 		protected override void OnItemReady ()
 		{
 			base.OnItemReady ();
-			FileService.FileChanged += FileService_FileChanged;
 
 			if (!IdeApp.IsInitialized)
 				return;
@@ -304,6 +303,7 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath;
+			FileService.FileChanged += FileService_FileChanged;
 			DetectSDK ();
 		}
 
