@@ -74,7 +74,7 @@ namespace MonoDevelop.UnitTesting.Commands
 	{
 		protected override void Run ()
 		{
-			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				if (test != null)
@@ -84,7 +84,7 @@ namespace MonoDevelop.UnitTesting.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				info.Enabled = (test != null);
