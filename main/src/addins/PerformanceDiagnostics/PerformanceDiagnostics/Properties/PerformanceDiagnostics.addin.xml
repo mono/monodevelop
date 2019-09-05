@@ -31,14 +31,14 @@
 			<CommandItem id="PerformanceDiagnosticsAddIn.SpinDumpFor5SecondsHandler" />
 		</ItemSet>
 
-		<Condition id="FeatureSwitch" name="WidgetLeaks">
+		<Condition id="FeatureSwitch" name="WidgetLeaks" optIn="true">
 			<ItemSet id="Diagnostics" _label="_Diagnostics">
 				<CommandItem id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler" />
 			</ItemSet>
 		</Condition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/PreStartupHandlers">
-		<Condition id="FeatureSwitch" name="WidgetLeaks">
+		<Condition id="FeatureSwitch" name="WidgetLeaks" optIn="true">
 			<Class class="PerformanceDiagnosticsAddIn.InitializeGtkHelperHandler" />
 		</Condition>
 	</Extension>
@@ -55,7 +55,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Condition id="FeatureSwitch" value="WidgetLeaks">
+		<Condition id="FeatureSwitch" name="WidgetLeaks" optIn="true">
 			<Pad id = "PerformanceDiagnosticsAddIn.LeakTrackerPad"
 				_label="Leak Tracker"
 				icon="md-errors-list"
@@ -65,7 +65,7 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts/Solution">
-		<Condition id="FeatureSwitch" value="WidgetLeaks">
+		<Condition id="FeatureSwitch" name="WidgetLeaks" optIn="true">
 			<LayoutPad id="PerformanceDiagnosticsAddIn.LeakTrackerPad" status="AutoHide" />
 		</Condition>
 	</Extension>
