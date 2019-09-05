@@ -150,14 +150,22 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal ProjectData CreateData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences)
+			internal ProjectData ReplaceData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences, out ProjectData oldData)
+			{
+				var result = new ProjectData (id, metadataReferences, Workspace);
+				oldData = ReplaceData (id, result);
+				return result;
+			}
+
+			internal ProjectData ReplaceData (ProjectId id, ProjectData newData)
 			{
 				lock (updatingProjectDataLock) {
-					var result = new ProjectData (id, metadataReferences, Workspace);
-					projectDataMap [id] = result;
-					return result;
+					var oldData = RemoveData (id);
+					projectDataMap [id] = newData;
+					return oldData;
 				}
 			}
+
 			internal ProjectId[] GetProjectIds ()
 			{
 				lock (updatingProjectDataLock) {
