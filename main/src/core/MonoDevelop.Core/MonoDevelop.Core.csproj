@@ -104,7 +104,7 @@
     <!-- remove this as it conflicts with the one in mscorlib. mono bug? -->
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" ExcludeAssets="all" />
     <!-- update this to a version that doesn't crash -->
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.3.52" ExcludeAssets="all" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0-preview4.19216.2" PrivateAssets="runtime" />
   </ItemGroup>
   <ItemGroup>
