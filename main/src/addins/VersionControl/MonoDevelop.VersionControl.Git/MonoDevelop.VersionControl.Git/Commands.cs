@@ -114,9 +114,9 @@ namespace MonoDevelop.VersionControl.Git
 				if (getBranch.Wait (250))
 					currentBranch = getBranch.Result;
 
-				foreach (Branch branch in repo.GetBranches ()) {
-					CommandInfo ci = info.Add (branch.FriendlyName, branch.FriendlyName);
-					if (branch.FriendlyName == currentBranch)
+				foreach (var branch in repo.GetLocalBranchNamesAsync ().Result) {
+					CommandInfo ci = info.Add (branch, branch);
+					if (branch == currentBranch)
 						ci.Checked = true;
 				}
 			}
@@ -219,11 +219,11 @@ namespace MonoDevelop.VersionControl.Git
 			});
 		}
 
-		protected override void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
 			var repo = UpdateVisibility (info);
 			if (repo != null)
-				info.Enabled = repo.GetStashes ().Any ();
+				info.Enabled = (await repo.GetStashesAsync (cancelToken)).Any ();
 		}
 	}
 
