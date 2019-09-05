@@ -139,24 +139,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var loader = workspace.Services.GetService<IAnalyzerService> ().GetLoader ();
 
-				ProjectData projectData;
-				List<DocumentInfo> mainDocuments, additionalDocuments;
-				try {
-					await workspace.LoadLock.WaitAsync ().ConfigureAwait (false);
-					//when reloading e.g. after a save, preserve document IDs
-					projectData = projectMap.ReplaceData (projectId, cacheInfo.References, out var oldProjectData);
-
-					var documents = await CreateDocuments (projectData, p, token, cacheInfo.SourceFiles, oldProjectData).ConfigureAwait (false);
-					if (documents == null) {
-						// Restore old document data if cancellation happens here.
-						projectMap.ReplaceData (projectId, oldProjectData);
-						return null;
-					}
-
-					mainDocuments = documents.Item1;
-					additionalDocuments = documents.Item2;
-				} finally {
-					workspace.LoadLock.Release ();
+				var (mainDocuments, additionalDocuments) = await ReplaceProjectDataAsync (projectId, p, cacheInfo.References, cacheInfo.SourceFiles, token);
+				if (token.IsCancellationRequested || mainDocuments == null) {
+					return null;
 				}
 
 				// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
@@ -181,6 +166,31 @@ namespace MonoDevelop.Ide.TypeSystem
 					additionalDocuments: additionalDocuments
 				);
 				return info;
+			}
+
+			internal async Task<(List<DocumentInfo>, List<DocumentInfo>)> ReplaceProjectDataAsync (ProjectId projectId, MonoDevelop.Projects.Project project, ImmutableArray<MonoDevelopMetadataReference> references, ImmutableArray<ProjectFile> sourceFiles, CancellationToken token)
+			{
+				ProjectData projectData;
+				List<DocumentInfo> mainDocuments, additionalDocuments;
+				try {
+					await workspace.LoadLock.WaitAsync ().ConfigureAwait (false);
+					//when reloading e.g. after a save, preserve document IDs
+					projectData = projectMap.ReplaceData (projectId, references, out var oldProjectData);
+
+					var documents = await CreateDocuments (projectData, project, token, sourceFiles, oldProjectData).ConfigureAwait (false);
+					if (documents == null) {
+						// Restore old document data if cancellation happens here.
+						projectMap.ReplaceData (projectId, oldProjectData);
+						return (null, null);
+					}
+
+					mainDocuments = documents.Item1;
+					additionalDocuments = documents.Item2;
+				} finally {
+					workspace.LoadLock.Release ();
+				}
+
+				return (mainDocuments, additionalDocuments);
 			}
 
 			static string GetProjectInfoName (string name, string framework)
