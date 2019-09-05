@@ -94,10 +94,7 @@ namespace MonoDevelop.UnitTesting
 			VBox vbox = new VBox ();
 			DockItemToolbar topToolbar = Window.GetToolbar (DockPositionType.Top);
 
-			var hbox = new HBox { Spacing = 6 };
-			hbox.PackStart (new ImageView (ImageService.GetIcon ("md-execute-all", IconSize.Menu)), false, false, 0);
-			hbox.PackStart (new Label (GettextCatalog.GetString ("Run All")), false, false, 0);
-			buttonRunAll = new Button (hbox);
+			buttonRunAll = new Button (new ImageView (ImageService.GetIcon ("md-execute-all", IconSize.Menu)));
 			buttonRunAll.Accessible.Name = "TestPad.RunAll";
 			buttonRunAll.Accessible.Description = GettextCatalog.GetString ("Start a test run and run all the tests");
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
@@ -105,7 +102,7 @@ namespace MonoDevelop.UnitTesting
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Add (buttonRunAll);
 			
-			buttonDebugAll = new Button (GettextCatalog.GetString ("Debug All"));
+			buttonDebugAll = new Button (new ImageView (ImageService.GetIcon ("md-debug-all", IconSize.Menu)));
 			buttonDebugAll.Accessible.Name = "TestPad.DebugAll";
 			buttonDebugAll.Accessible.Description = GettextCatalog.GetString ("Debug all the tests");
 			buttonDebugAll.Clicked += new EventHandler (OnDebugAllClicked);
