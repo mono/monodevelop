@@ -175,28 +175,30 @@ namespace MonoDevelop.VersionControl.Git
 
 		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
 		{
-			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal))
-				OnGitLocked ();
-			if (ShouldLock (e.FullPath))
-				OnGitLocked ();
+			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.FullPath))
+				OnGitLocked (e.FullPath);
 		}
 
 		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
 		{
-			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) && !e.Name.EndsWith (".lock", StringComparison.Ordinal))
-				OnGitUnlocked ();
-			if (ShouldLock (e.OldName))
-				OnGitUnlocked ();
+			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.OldName)) {
+				if (!e.Name.EndsWith (".lock", StringComparison.Ordinal)) {
+					OnGitUnlocked (e.OldFullPath);
+				} else {
+					lock (lockedPathes) {
+						lockedPathes.Remove (e.OldFullPath);
+						lockedPathes.Add (e.FullPath);
+					}
+				}
+			}
 			if (e.Name == "HEAD" && e.OldName == "HEAD.lock")
 				Runtime.RunInMainThread (() => BranchSelectionChanged?.Invoke (this, EventArgs.Empty));
 		}
 
 		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
 		{
-			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal))
-				OnGitUnlocked ();
-			if (ShouldLock (e.FullPath))
-				OnGitUnlocked ();
+			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.FullPath))
+				OnGitUnlocked (e.FullPath);
 		}
 
 		void HandleGitChanged (object sender, FileSystemEventArgs e)
@@ -205,23 +207,69 @@ namespace MonoDevelop.VersionControl.Git
 				Runtime.RunInMainThread (() => BranchSelectionChanged?.Invoke (this, EventArgs.Empty));
 		}
 
-		readonly ManualResetEvent gitLock = new ManualResetEvent (true);
+		readonly ManualResetEventSlim gitLock = new ManualResetEventSlim (true);
+		readonly HashSet<FilePath> lockedPathes = new HashSet<FilePath> ();
 
-		void OnGitLocked ()
+		void OnGitLocked (string path)
 		{
-			gitLock.Reset ();
-			FileService.FreezeEvents ();
+			lock (lockedPathes) {
+				if (lockedPathes.Add (path) && lockedPathes.Count == 1 && gitLock.IsSet) {
+					gitLock.Reset ();
+					FileService.FreezeEvents ();
+				}
+			}
 		}
 
-		void OnGitUnlocked ()
+		void OnGitUnlocked (string file)
 		{
-			gitLock.Set ();
-			ThawEvents ();
+			lock (lockedPathes) {
+				lockedPathes.Remove (file);
+				if (!gitLock.IsSet && lockedPathes.Count == 0) {
+					gitLock.Set ();
+					ThawEvents ();
+				}
+			}
 		}
+
+		/// <summary>
+		/// Checks if the lock-files still exist, or if FSW has skipped an event
+		/// </summary>
+		/// <returns><c>true</c> if any locked file exists. Resets the event, cleans the list and returns <c>false</c> otherwise</returns>
+		bool GetHasValidLocks ()
+		{
+			lock (lockedPathes) {
+				if (lockedPathes.Count > 0) {
+					lockedPathes.RemoveWhere (path => {
+						try {
+							// we don't care about files or folders, so just remove if this fails
+							File.GetAttributes (path);
+							return false;
+						} catch (FileNotFoundException) {
+							return true;
+						}
+					});
+				}
+				var result = lockedPathes.Count > 0;
+				if (!result && !gitLock.IsSet) {
+					gitLock.Set ();
+				}
+				return result;
+			}
+		}
+
+		readonly int recheckLocksTimeout = 250;
 
 		bool WaitAndFreezeEvents (CancellationToken cancellationToken)
 		{
-			WaitHandle.WaitAny (new WaitHandle [] { gitLock, cancellationToken.WaitHandle });
+			// checking locks is expensive, rely on FSW to be right first and check only after timeout
+			// this will block until all locks are released
+			bool recheck = false;
+			while (!gitLock.IsSet && (!recheck || GetHasValidLocks ())) {
+				if (gitLock.Wait (recheckLocksTimeout, cancellationToken)) {
+					break;
+				}
+				recheck = true;
+			}
 			if (cancellationToken.IsCancellationRequested)
 				return false;
 
@@ -242,6 +290,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			if (disposing) {
 				ShutdownFileWatcher ();
+				gitLock?.Dispose ();
 				if (rootRepository != null) {
 					DedicatedOperationFactory.StartNew (() => {
 						try {
