@@ -559,28 +559,36 @@ namespace MonoDevelop.UnitTesting
 		{
 			RunTest (TreeView.GetRootNode (), null);
 		}
-		
-		void OnDebugAllClicked (object sender, EventArgs args)
+
+		async void OnDebugAllClicked (object sender, EventArgs args)
 		{
 			var nav = TreeView.GetRootNode ();
 			if (nav == null)
 				return;
 
-			var test = nav.DataItem as UnitTest;
-			if (test == null)
+			var testGroup = nav.DataItem as UnitTestGroup;
+			var tests = testGroup.Tests;
+			if (tests == null)
 				return;
 
 			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 			if (debugModeSet == null)
 				return;
 
-			foreach (var mode in debugModeSet.ExecutionModes) {
-				if (test.CanRun (mode.ExecutionHandler)) {
-					RunTest (test, mode.ExecutionHandler);
-					return;
+			this.buttonRunAll.Sensitive = false;
+			this.buttonDebugAll.Sensitive = false;
+			this.buttonStop.Sensitive = true;
+
+			foreach (UnitTest test in tests) {
+				foreach (var mode in debugModeSet.ExecutionModes) {
+					if (test.CanRun (mode.ExecutionHandler)) {
+						ExecutionContext context = new ExecutionContext (mode.ExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+						await UnitTestService.RunTests (new UnitTest [] { test }, context, true).Task;
+					}
 				}
 			}
 			
+			OnTestSessionCompleted ();
 		}
 
 		void RunSelectedTest (IExecutionHandler mode)

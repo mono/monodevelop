@@ -95,24 +95,27 @@ namespace MonoDevelop.UnitTesting.Commands
 
 	class DebugAllTestsHandler : CommandHandler
 	{
-		protected override void Run ()
+		protected async override void Run ()
 		{
-			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder;
 			if (ob != null) {
-				UnitTest test = UnitTestService.FindRootTest (ob);
-				if (test != null) {
-					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
-					if (debugModeSet == null)
-						return;
+				var testGroup = UnitTestService.FindRootTest (ob) as UnitTestGroup;
+				var tests = testGroup.Tests;
+				if (tests == null)
+					return;
+
+				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+				if (debugModeSet == null)
+					return;
+
+				foreach (UnitTest test in tests) {
 					foreach (var mode in debugModeSet.ExecutionModes) {
 						if (test.CanRun (mode.ExecutionHandler)) {
-							ExecutionContext context = new ExecutionContext (mode, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
-							UnitTestService.RunTest (test, context);
-							return;
+							ExecutionContext context = new ExecutionContext (mode.ExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+							await UnitTestService.RunTests (new UnitTest [] { test }, context, true).Task;
 						}
 					}
 				}
-
 			}
 		}
 
