@@ -161,6 +161,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				lock (updatingProjectDataLock) {
 					var oldData = RemoveData (id);
+					newData.Connect ();
 					projectDataMap [id] = newData;
 					return oldData;
 				}
