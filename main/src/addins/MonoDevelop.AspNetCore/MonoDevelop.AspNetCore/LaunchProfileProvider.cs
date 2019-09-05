@@ -51,6 +51,9 @@ namespace MonoDevelop.AspNetCore
     						""anonymousAuthentication"": true
   							}";
 
+		const string defaultHttpUrl = "http://localhost:5000";
+		const string defaultHttpsUrl = "https://localhost:5001";
+
 		public LaunchProfileData DefaultProfile {
 			get {
 				if (!Profiles.ContainsKey (defaultNamespace)) {
@@ -71,6 +74,11 @@ namespace MonoDevelop.AspNetCore
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 		}
 
+		bool ApplicationUrlIsDefault(string applicationUrl)
+		{
+			return applicationUrl != null && applicationUrl.Contains (defaultHttpUrl) || applicationUrl.Contains (defaultHttpsUrl);
+		}
+
 		public void LoadLaunchSettings ()
 		{
 			if (!File.Exists (LaunchSettingsJsonPath)) {
@@ -81,7 +89,28 @@ namespace MonoDevelop.AspNetCore
 			var launchSettingsJson = TryParse ();
 
 			GlobalSettings.Clear ();
+			var newHttpUrl = "";
+			var newHttpsUrl = "";
+			var saveNeeded = false;
 			foreach (var token in launchSettingsJson) {
+				if (token.Key == "iisSettings") {
+					var iisSettingsTokens = token.Value as JObject;
+					foreach (var iisSettingsToken in iisSettingsTokens) {
+						if (iisSettingsToken.Key == "iisExpress") {
+							var iisExpressTokens = iisSettingsToken.Value as JObject;
+							foreach (var iisExpressToken in iisExpressTokens) {
+								if (iisExpressToken.Key == "applicationUrl") {
+									newHttpUrl = (string)iisExpressToken.Value;
+									saveNeeded = true;
+								}
+								if (iisExpressToken.Key == "sslPort") {
+									newHttpsUrl = "https://localhost:" + (int)iisExpressToken.Value;
+									saveNeeded = true;
+								}
+							}
+						}
+					}
+				}
 				if (token.Key == "profiles") {
 					ProfilesObject = token.Value as JObject;
 					continue;
@@ -90,6 +119,14 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (LaunchProfileData.DeserializeProfiles (ProfilesObject));
+			if (saveNeeded && Profiles.ContainsKey (defaultNamespace)) {
+				var applicationUrl = DefaultProfile.OtherSettings ["applicationUrl"] as string;
+				if (ApplicationUrlIsDefault (applicationUrl)) {
+					applicationUrl = applicationUrl.Replace (defaultHttpUrl, newHttpUrl);
+					applicationUrl = applicationUrl.Replace (defaultHttpsUrl, newHttpsUrl);
+					DefaultProfile.OtherSettings ["applicationUrl"] = applicationUrl;
+				}
+			}
 		}
 
 		JObject TryParse ()
