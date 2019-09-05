@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				lock (metadataReferences) {
 					foreach (var metadataReference in metadataReferences) {
-						AddMetadataReference_NoLock (metadataReference, ws);
+						metadataReference.SnapshotUpdated += OnMetadataReferenceUpdated;
 					}
 				}
 			}
