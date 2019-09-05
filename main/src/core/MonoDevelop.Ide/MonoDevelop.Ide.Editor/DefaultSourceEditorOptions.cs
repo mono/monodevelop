@@ -419,12 +419,12 @@ namespace MonoDevelop.Ide.Editor
 
 				if (!value) {
 					messageText = GettextCatalog.GetString (
-						"The New Editor Preview has been enabled, but already opened files " +
+						"The modern editor has been enabled, but already opened files " +
 						"will need to be closed and re-opened for the change to take effect.");
 					Counters.NewEditorEnabled.Inc ();
 				} else {
 					messageText = GettextCatalog.GetString (
-						"The New Editor Preview has been disabled, but already opened files " +
+						"The legacy editor has been enabled, but already opened files " +
 						"will need to be closed and re-opened for the change to take effect.");
 					Counters.NewEditorDisabled.Inc ();
 				}

@@ -34,7 +34,7 @@ namespace MonoDevelop.TextEditor
 		[NodeAttribute ("buildAction", Description = "If specified, the file must have this build action")]
 		public string BuildAction { get; private set; }
 
-		[NodeAttribute ("featureFlag", Description = "ID of a feature flag that can be used to enable/disable editing of this file type in the new editor")]
+		[NodeAttribute ("featureFlag", Description = "ID of a feature flag that can be used to enable/disable editing of this file type in the modern editor")]
 		public string FeatureFlag { get; private set; }
 
 		[NodeAttribute ("featureFlagDefault", Description = "Default value of the feature flag")]

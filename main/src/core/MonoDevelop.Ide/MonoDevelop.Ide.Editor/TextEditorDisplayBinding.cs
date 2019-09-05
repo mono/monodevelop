@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			return list.Add (new DocumentControllerDescription {
-				 Name = GettextCatalog.GetString ("Source Code Editor"),
+				 Name = GettextCatalog.GetString ("Legacy Source Code Editor"),
 				 Role = DocumentControllerRole.Source,
 				 CanUseAsDefault = true
 			});

@@ -55,7 +55,7 @@ namespace MonoDevelop.TextEditor
 				);
 
 			if (supported) {
-				yield return new DocumentControllerDescription (GettextCatalog.GetString ("New Source Code Editor"), true, DocumentControllerRole.Source);
+				yield return new DocumentControllerDescription (GettextCatalog.GetString ("Modern Source Code Editor"), true, DocumentControllerRole.Source);
 			}
 
 			bool ExtensionMatch (SupportedFileTypeExtensionNode node) =>
