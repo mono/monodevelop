@@ -196,7 +196,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			var launchProfileProvider = new LaunchProfileProvider (project);
 			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations();
+			launchProfileProvider.SyncRunConfigurations ();
 
 			Assert.That (project.RunConfigurations, Has.Count.EqualTo (2));
 			Assert.That (project.RunConfigurations [0].Name, Is.EqualTo ("Kestrel Staging"));
@@ -214,6 +214,48 @@ namespace MonoDevelop.AspNetCore.Tests
 			var launchProfileProvider = new LaunchProfileProvider (project);
 			var launchProfile = launchProfileProvider.CreateDefaultProfile ();
 			launchProfile.OtherSettings ["applicationUrl"] = "http://localhost:5000";
+		}
+
+		[Test]
+		public async Task New_project_uses_iisexpress_ports_to_launch ()
+		{
+			/*
+			{
+			  "iisSettings": {
+				"windowsAuthentication": false,
+				"anonymousAuthentication": true,
+				"iisExpress": {
+				  "applicationUrl": "http://localhost:30229",
+				  "sslPort": 44355
+				}
+			  },
+			  "profiles": {
+				"IIS Express": {
+				  "commandName": "IISExpress",
+				  "launchBrowser": true,
+				  "environmentVariables": {
+					"ASPNETCORE_ENVIRONMENT": "Development"
+				  }
+				},
+				"aspnetcore_empty_30": {
+				  "commandName": "Project",
+				  "launchBrowser": true,
+				  "environmentVariables": {
+					"ASPNETCORE_ENVIRONMENT": "Development"
+				  },
+				  "applicationUrl": "https://localhost:5001;http://localhost:5000"
+				}
+			  }
+			}
+
+						 */
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-30", "aspnetcore-empty-30.sln");
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = (DotNetProject)solution.GetAllProjects ().Single ();
+			var launchProfileProvider = new LaunchProfileProvider (project);
+			launchProfileProvider.LoadLaunchSettings ();
+			var applicationUrl = launchProfileProvider.DefaultProfile.OtherSettings ["applicationUrl"];
+			Assert.That (applicationUrl, Is.EqualTo ("https://localhost:44355;http://localhost:30229"));
 		}
 
 		[TearDown]
