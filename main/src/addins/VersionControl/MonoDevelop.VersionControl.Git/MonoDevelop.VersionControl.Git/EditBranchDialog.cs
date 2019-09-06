@@ -72,16 +72,20 @@ namespace MonoDevelop.VersionControl.Git
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("comboStore__Branch", "comboStore__Icon", "comboStore__Name", "comboStore__Tracking");
 			TypeDescriptor.AddAttributes (comboStore, modelAttr);
 
-			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
-			}
 			var token = destroyTokenSource.Token;
-			repo.GetRemotesAsync (token).ContinueWith (t => {
+
+			repo.GetLocalBranchNamesAsync (token).ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
+				foreach (var b in t.Result)
+					AddValues (b, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
+			}, token, TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted, Runtime.MainTaskScheduler).Ignore ();
+
+			repo.GetRemoteBranchFullNamesAsync (token).ContinueWith (t => {
 				if (token.IsCancellationRequested)
 					return;
 				foreach (var r in t.Result) {
-					foreach (string b in repo.GetRemoteBranches (r.Name))
-						AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
+					AddValues (r, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
 				}
 			}, token, TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted, Runtime.MainTaskScheduler).Ignore ();
 
@@ -126,11 +130,17 @@ namespace MonoDevelop.VersionControl.Git
 			get { return entryName.Text; }
 		}
 
-		void UpdateStatus ()
+		async void UpdateStatus ()
 		{
 			comboSources.Sensitive = checkTrack.Active;
 			buttonOk.Sensitive = entryName.Text.Length > 0;
-			if (oldName != entryName.Text && repo.GetBranches ().Any (b => b.FriendlyName == entryName.Text)) {
+
+			var token = destroyTokenSource.Token;
+			bool branchExists = oldName != entryName.Text && (await repo.GetLocalBranchNamesAsync (token)).Any (b => b == entryName.Text);
+			if (token.IsCancellationRequested)
+				return;
+
+			if (branchExists) {
 				labelError.Markup = "<span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;

@@ -79,10 +79,15 @@ namespace MonoDevelop.VersionControl.Git
 				return;
 			}
 			branchCombo.Sensitive = true;
-			var list = new List<string> (repo.GetRemoteBranches (remoteCombo.ActiveText));
-			foreach (string s in list)
-				branchCombo.AppendText (s);
-			branchCombo.Active = list.IndexOf (repo.GetCurrentBranch ());
+			var token = destroyTokenSource.Token;
+			repo.GetRemoteBranchesAsync (remoteCombo.ActiveText).ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
+				var list = t.Result;
+				foreach (string s in list)
+					branchCombo.AppendText (s);
+				branchCombo.Active = list.IndexOf (repo.GetCurrentBranch ());
+			}, token, TaskContinuationOptions.NotOnCanceled, Runtime.MainTaskScheduler).Ignore ();
 		}
 
 		void UpdateChangeSet ()
