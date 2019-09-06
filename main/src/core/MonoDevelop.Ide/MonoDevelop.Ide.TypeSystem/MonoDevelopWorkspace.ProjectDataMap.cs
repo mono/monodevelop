@@ -150,14 +150,33 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal ProjectData CreateData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences)
+			/// <summary>
+			/// Construct, connect to, and return a new <see cref="ProjectData"/> based on
+			/// <paramref name="metadataReferences"/>. This replaces any old <see cref="ProjectData"/> for
+			/// <paramref name="id"/>.
+			/// </summary>
+			internal ProjectData ReplaceData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences, out ProjectData oldData)
+			{
+				var result = new ProjectData (id, metadataReferences, Workspace);
+				ReplaceData (id, result, out oldData);
+				return result;
+			}
+
+			/// <summary>
+			/// Remove the old <see cref="ProjectData"/> for <paramref name="id"/>, replace it with
+			/// <paramref name="newData"/>, and and connect to <paramref name="newData"/>.
+			/// </summary>
+			internal void ReplaceData (ProjectId id, ProjectData newData, out ProjectData oldData)
 			{
 				lock (updatingProjectDataLock) {
-					var result = new ProjectData (id, metadataReferences, Workspace);
-					projectDataMap [id] = result;
-					return result;
+					oldData = RemoveData (id);
+					if (newData != null) {
+						newData.Connect ();
+						projectDataMap [id] = newData;
+					}
 				}
 			}
+
 			internal ProjectId[] GetProjectIds ()
 			{
 				lock (updatingProjectDataLock) {
