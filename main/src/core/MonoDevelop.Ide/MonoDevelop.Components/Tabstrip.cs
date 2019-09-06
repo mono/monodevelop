@@ -37,7 +37,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Shell;
-using Gdk;
 
 namespace MonoDevelop.Components
 {
@@ -87,7 +86,7 @@ namespace MonoDevelop.Components
 		public Tabstrip ()
 		{
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
-			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | EventMask.EnterNotifyMask |  Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.FocusChangeMask;
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask |  Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.FocusChangeMask;
 			CanFocus = true;
 		}
 		
@@ -104,6 +103,8 @@ namespace MonoDevelop.Components
 
 		public void InsertTab (int index, Tab tab)
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsInSync (index)) {
 				tabs.Add (tab);
 				tabSizes.Add (tab.Size);
@@ -132,6 +133,8 @@ namespace MonoDevelop.Components
 
 		public void RemoveTab (int index)
 		{
+			Runtime.AssertMainThread ();
+
 			//in case of same index than active tab we set the active tab to next element
 			if (activeTab == index) {
 				if (index < tabs.Count - 1)
@@ -149,7 +152,7 @@ namespace MonoDevelop.Components
 
 			var tab = tabs [index];
 
-			//we reset hovert 
+			//removes current hover item
 			if (hoverTab == tab) {
 				hoverTab = null;
 			}
@@ -174,6 +177,8 @@ namespace MonoDevelop.Components
 
 		public void ReplaceTab (int position, Tab tab)
 		{
+			Runtime.AssertMainThread ();
+
 			var oldTab = tabs [position];
 			tabs [position] = tab;
 			tabSizes [position] = tab.Size;
@@ -201,6 +206,8 @@ namespace MonoDevelop.Components
 
 		internal void ReorderTabs (int currentIndex, int newIndex)
 		{
+			Runtime.AssertMainThread ();
+
 			if (currentIndex == newIndex)
 				return;
 
@@ -327,7 +334,7 @@ namespace MonoDevelop.Components
 			return base.OnButtonPressEvent (evnt);
 		}
 
-		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			mx = evnt.X;
 			my = evnt.Y;
@@ -368,7 +375,6 @@ namespace MonoDevelop.Components
 
 				Tab active = null;
 				for (int i = tabs.Count; i --> 0;) {
-
 					if (i == ActiveTab) {
 						active = tabs [i];
 						continue;
