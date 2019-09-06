@@ -58,6 +58,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="LibGit2Sharp.dll" />
+  </ItemGroup>
   <Choose>
     <When Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
       <ItemGroup>
