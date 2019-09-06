@@ -269,7 +269,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 			await PostCommit (Repo2);
 
-			await Task.Run(async () => await Repo.UpdateAsync (Repo.RootPath, true, monitor));
+			await Repo.UpdateAsync (Repo.RootPath, true, monitor);
 			Assert.True (File.Exists (LocalPath + "testfile2"));
 
 			Repo2.Dispose ();
@@ -337,7 +337,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 			// Revert to head.
 			File.WriteAllText (added, content);
-			await Task.Run (async () => await Repo.RevertAsync (added, false, monitor));
+			await Repo.RevertAsync (added, false, monitor);
 			Assert.AreEqual (await Repo.GetBaseTextAsync (added), File.ReadAllText (added));
 		}
 
@@ -355,7 +355,7 @@ namespace MonoDevelop.VersionControl.Tests
 			// Force cache evaluation.
 			await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache);
 
-			await Task.Run (() => Repo.RevertAsync (added, false, monitor));
+			await Repo.RevertAsync (added, false, monitor);
 			Assert.AreEqual (VersionStatus.Unversioned, (await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache)).Status);
 		}
 
@@ -383,7 +383,7 @@ namespace MonoDevelop.VersionControl.Tests
 			string added = LocalPath + "testfile2";
 			await AddFileAsync ("testfile", "text", true, true);
 			await AddFileAsync ("testfile2", "text2", true, true);
-			Task.Run (async () => await Repo.RevertRevisionAsync (added, GetHeadRevision (), monitor)).Wait ();
+			await Repo.RevertRevisionAsync (added, GetHeadRevision (), monitor);
 			Assert.IsFalse (File.Exists (added));
 		}
 
@@ -650,8 +650,8 @@ namespace MonoDevelop.VersionControl.Tests
 			string dirFile = Path.Combine (dir, "testfile");
 			await AddFileAsync ("testfile", "test", true, true);
 			await AddDirectoryAsync ("testdir", true, false);
-			await Task.Run (() => Repo.MoveFileAsync (added, dirFile, true, monitor));
-			await Task.Run (() => Repo.MoveFileAsync (dirFile, added, true, monitor));
+			await Repo.MoveFileAsync (added, dirFile, true, monitor);
+			await Repo.MoveFileAsync (dirFile, added, true, monitor);
 
 			Assert.AreEqual (VersionStatus.Unversioned, (await Repo.GetVersionInfoAsync (dirFile, VersionInfoQueryFlags.IgnoreCache)).Status);
 			Assert.AreEqual (VersionStatus.Versioned, (await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache)).Status);
@@ -667,8 +667,8 @@ namespace MonoDevelop.VersionControl.Tests
 			// Force cache update.
 			await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache);
 
-			await Task.Run (() => Repo.DeleteFileAsync (added, true, monitor, false));
-			await Task.Run (() => Repo.RevertAsync (added, false, monitor));
+			await Repo.DeleteFileAsync (added, true, monitor, false);
+			await Repo.RevertAsync (added, false, monitor);
 
 			Assert.AreEqual (VersionStatus.Versioned, (await Repo.GetVersionInfoAsync (added, VersionInfoQueryFlags.IgnoreCache)).Status);
 		}
@@ -681,11 +681,11 @@ namespace MonoDevelop.VersionControl.Tests
 			string dstFile = LocalPath.Combine ("TESTFILE");
 			await AddFileAsync ("testfile", "test", true, true);
 
-			await Task.Run (() => Repo.MoveFileAsync (srcFile, dstFile, true, monitor));
+			await Repo.MoveFileAsync (srcFile, dstFile, true, monitor);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, (await Repo.GetVersionInfoAsync (dstFile, VersionInfoQueryFlags.IgnoreCache)).Status & VersionStatus.ScheduledAdd);
 			Assert.AreEqual (VersionStatus.ScheduledDelete, (await Repo.GetVersionInfoAsync (srcFile, VersionInfoQueryFlags.IgnoreCache)).Status & VersionStatus.ScheduledDelete);
 
-			await Task.Run (() => Repo.MoveFileAsync (dstFile, srcFile, true, monitor));
+			await Repo.MoveFileAsync (dstFile, srcFile, true, monitor);
 			Assert.AreEqual (VersionStatus.Unversioned, (await Repo.GetVersionInfoAsync (dstFile, VersionInfoQueryFlags.IgnoreCache)).Status);
 			Assert.AreEqual (VersionStatus.Versioned, (await Repo.GetVersionInfoAsync (srcFile, VersionInfoQueryFlags.IgnoreCache)).Status);
 			
@@ -763,9 +763,7 @@ namespace MonoDevelop.VersionControl.Tests
 			var monitor = new ProgressMonitor ();
 			using (var mockRepo = (UrlBasedRepository)GetRepo ()) {
 				mockRepo.Url = url;
-				await Task.Run (async () => {
-					await mockRepo.CheckoutAsync (path, true, monitor);
-				});
+				await mockRepo.CheckoutAsync (path, true, monitor);
 			}
 
 			var _repo = GetRepo (path, url);
