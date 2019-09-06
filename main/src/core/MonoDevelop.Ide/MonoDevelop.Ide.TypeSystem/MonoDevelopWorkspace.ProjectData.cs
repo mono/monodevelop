@@ -46,11 +46,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projectId = projectId;
 				workspaceRef = new WeakReference<MonoDevelopWorkspace> (ws);
 				DocumentData = new DocumentMap (projectId);
-				this.metadataReferences = new List<MonoDevelopMetadataReference> (metadataReferences.Length);
+				this.metadataReferences = new List<MonoDevelopMetadataReference> (metadataReferences);
+			}
 
-				lock (this.metadataReferences) {
+			internal void Connect ()
+			{
+				if (!workspaceRef.TryGetTarget (out var ws))
+					return;
+
+				lock (metadataReferences) {
 					foreach (var metadataReference in metadataReferences) {
-						AddMetadataReference_NoLock (metadataReference, ws);
+						metadataReference.SnapshotUpdated += OnMetadataReferenceUpdated;
 					}
 				}
 			}
