@@ -74,7 +74,7 @@ namespace MonoDevelop.UnitTesting.Commands
 	{
 		protected override void Run ()
 		{
-			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				if (test != null)
@@ -84,7 +84,7 @@ namespace MonoDevelop.UnitTesting.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				info.Enabled = (test != null);
@@ -97,7 +97,7 @@ namespace MonoDevelop.UnitTesting.Commands
 	{
 		protected async override void Run ()
 		{
-			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
 			if (ob != null) {
 				var testGroup = UnitTestService.FindRootTest (ob) as UnitTestGroup;
 				var tests = testGroup.Tests;
@@ -121,7 +121,7 @@ namespace MonoDevelop.UnitTesting.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				info.Enabled = (test != null);
