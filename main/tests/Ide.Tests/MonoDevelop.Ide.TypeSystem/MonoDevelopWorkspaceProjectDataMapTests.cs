@@ -136,17 +136,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				Assert.IsNull (data);
 				Assert.IsFalse (map.Contains (pid));
 
-				data = map.CreateData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty);
+				data = map.ReplaceData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, out var oldData);
 
 				Assert.IsNotNull (data);
 				Assert.IsTrue (map.Contains (pid));
+				Assert.IsNull (oldData);
 
 				map.RemoveData (pid);
 
-				data = map.GetData (pid);
+				oldData = map.GetData (pid);
 
-				Assert.IsNull (data);
+				Assert.IsNull (oldData);
 				Assert.IsFalse (map.Contains (pid));
+				
+				map.ReplaceData (pid, data, out oldData);
+				
+				Assert.IsNull (oldData);
+				Assert.AreSame (data, map.GetData (pid));
 			}
 		}
 
@@ -170,15 +176,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				Assert.IsNull (data2);
 				Assert.IsFalse (map.Contains (pid2));
 
-				data = map.CreateData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty);
+				data = map.ReplaceData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, out var oldData);
 
 				Assert.IsNotNull (data);
 				Assert.IsTrue (map.Contains (pid));
+				Assert.IsNull (oldData);
 
-				data2 = map.CreateData (pid2, ImmutableArray<MonoDevelopMetadataReference>.Empty);
+				data2 = map.ReplaceData (pid2, ImmutableArray<MonoDevelopMetadataReference>.Empty, out var oldData2);
 
 				Assert.IsNotNull (data2);
 				Assert.IsTrue (map.Contains (pid2));
+				Assert.IsNull (oldData2);
 
 				map.RemoveData (pid);
 
