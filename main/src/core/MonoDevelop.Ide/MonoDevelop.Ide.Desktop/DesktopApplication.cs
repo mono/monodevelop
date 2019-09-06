@@ -35,6 +35,16 @@ using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Desktop
 {
+	[Flags]
+	public enum DesktopApplicationRole
+	{
+		None   = 0,
+		Viewer = 1,
+		Editor = 2,
+		Shell  = 4,
+		All    = Viewer | Editor | Shell
+	}
+
 	public abstract class DesktopApplication
 	{
 		public DesktopApplication (string id, string displayName, bool isDefault)
