@@ -144,17 +144,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					await workspace.LoadLock.WaitAsync ().ConfigureAwait (false);
 					//when reloading e.g. after a save, preserve document IDs
-					oldProjectData = projectMap.RemoveData (projectId);
-					projectData = projectMap.CreateData (projectId, cacheInfo.References);
+					projectData = projectMap.ReplaceData (projectId, cacheInfo.References, out oldProjectData);
 
 					var documents = await CreateDocuments (projectData, p, token, cacheInfo.SourceFiles, oldProjectData).ConfigureAwait (false);
-					if (documents == null)
+					if (documents == null) {
+						// Restore old document data if cancellation happens here.
+						projectMap.ReplaceData (projectId, oldProjectData, out _);
 						return null;
+					}
 
 					mainDocuments = documents.Item1;
 					additionalDocuments = documents.Item2;
 				} finally {
 					workspace.LoadLock.Release ();
+				}
+
+				if (token.IsCancellationRequested || mainDocuments == null) {
+					return null;
 				}
 
 				// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
