@@ -139,6 +139,11 @@ namespace MonoDevelop.Ide
 			return PlatformService.GetApplications (filename);
 		}
 
+		public IEnumerable<DesktopApplication> GetApplications (string filename, DesktopApplicationRole role)
+		{
+			return PlatformService.GetApplications (filename, role);
+		}
+
 		internal string DefaultMonospaceFont {
 			get { return PlatformService.DefaultMonospaceFont; }
 		}

@@ -210,7 +210,7 @@ namespace MacPlatform.Tests
 		[Test]
 		public void GetBrowsers ()
 		{
-			var browsers = IdeServices.DesktopService.GetApplications ("https://localhost");
+			var browsers = IdeServices.DesktopService.GetApplications ("https://localhost", MonoDevelop.Ide.Desktop.DesktopApplicationRole.Viewer);
 			Assert.NotNull (browsers);
 			Assert.That (browsers.Count (), Is.AtLeast (1));
 			if (Directory.Exists ("/Applications/Safari.app"))
