@@ -218,7 +218,7 @@ namespace MonoDevelop.UnitTesting
 		protected void OnUpdateShowTest (CommandInfo info)
 		{
 			UnitTest test = CurrentNode.DataItem as UnitTest;
-			info.Enabled = test.SourceCodeLocation != null;
+			info.Enabled = test?.SourceCodeLocation != null;
 		}
 
 		[CommandHandler (TestCommands.GoToFailure)]
