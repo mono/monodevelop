@@ -1509,6 +1509,11 @@ namespace MonoDevelop.Ide.TypeSystem
 										ProjectInfo newProjectContents = t.Result;
 										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
+										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id)) {
+											if (CurrentSolution.GetDocument (docId) == null) {
+												ClearOpenDocument (docId);
+											}
+										}
 										Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
 									}
 								} catch (Exception e) {
