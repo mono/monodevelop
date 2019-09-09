@@ -138,12 +138,12 @@ namespace MonoDevelop.AspNetCore
 		/// <returns>The next free port.</returns>
 		int GetNextFreePort ()
 		{
-			var otherProjects = Enumerable.Empty<Project> ();
+			var projects = Enumerable.Empty<Project> ();
 
 			if (project.ParentSolution != null)
-				otherProjects = project.ParentSolution.GetAllProjects ().Where (p => p != project);
+				projects = project.ParentSolution.GetAllProjects ();
 
-			var runConfigurations = otherProjects.SelectMany (p => p.RunConfigurations).OfType<AspNetCoreRunConfiguration> ();
+			var runConfigurations = projects.SelectMany (p => p.RunConfigurations).OfType<AspNetCoreRunConfiguration> ();
 			var applicationUrls =
 				runConfigurations.Select (r => r.CurrentProfile.TryGetApplicationUrl ())
 				.Where (a => a != null)
