@@ -28,6 +28,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -53,6 +55,7 @@ namespace MonoDevelop.AspNetCore
 
 		const string defaultHttpUrl = "http://localhost:5000";
 		const string defaultHttpsUrl = "https://localhost:5001";
+		bool allocatedPorts = false;
 
 		public LaunchProfileData DefaultProfile {
 			get {
@@ -74,9 +77,39 @@ namespace MonoDevelop.AspNetCore
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 		}
 
-		bool ApplicationUrlIsDefault(string applicationUrl)
+		bool ApplicationUrlIsDefault (string applicationUrl)
 		{
 			return applicationUrl != null && applicationUrl.Contains (defaultHttpUrl) || applicationUrl.Contains (defaultHttpsUrl);
+		}
+
+		bool TryAllocatePort (int testPort)
+		{
+			Socket testSocket = null;
+
+			try {
+				if (Socket.OSSupportsIPv4) {
+					testSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				} else if (Socket.OSSupportsIPv6) {
+					testSocket = new Socket (AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+				}
+			} catch {
+				testSocket?.Dispose ();
+				return false;
+			}
+
+			if (testSocket != null) {
+				var endPoint = new IPEndPoint (testSocket.AddressFamily == AddressFamily.InterNetworkV6 ? IPAddress.IPv6Any : IPAddress.Any, testPort);
+
+				try {
+					testSocket.Bind (endPoint);
+					return true;
+				} catch {
+					testSocket?.Dispose ();
+					return false;
+				}
+			}
+
+			return false;
 		}
 
 		public void LoadLaunchSettings ()
@@ -87,30 +120,9 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			var launchSettingsJson = TryParse ();
-
 			GlobalSettings.Clear ();
-			var newHttpUrl = "";
-			var newHttpsUrl = "";
-			var saveNeeded = false;
+
 			foreach (var token in launchSettingsJson) {
-				if (token.Key == "iisSettings") {
-					var iisSettingsTokens = token.Value as JObject;
-					foreach (var iisSettingsToken in iisSettingsTokens) {
-						if (iisSettingsToken.Key == "iisExpress") {
-							var iisExpressTokens = iisSettingsToken.Value as JObject;
-							foreach (var iisExpressToken in iisExpressTokens) {
-								if (iisExpressToken.Key == "applicationUrl") {
-									newHttpUrl = (string)iisExpressToken.Value;
-									saveNeeded = true;
-								}
-								if (iisExpressToken.Key == "sslPort") {
-									newHttpsUrl = "https://localhost:" + (int)iisExpressToken.Value;
-									saveNeeded = true;
-								}
-							}
-						}
-					}
-				}
 				if (token.Key == "profiles") {
 					ProfilesObject = token.Value as JObject;
 					continue;
@@ -119,12 +131,53 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (LaunchProfileData.DeserializeProfiles (ProfilesObject));
-			if (saveNeeded && Profiles.ContainsKey (defaultNamespace)) {
+		}
+
+		/// <summary>
+		/// Gets the next free port taking into account which ports are in use by other projects
+		/// </summary>
+		/// <returns>The next free port.</returns>
+		int GetNextFreePort ()
+		{
+			var otherProjects = Enumerable.Empty<Project> ();
+
+			if (project.ParentSolution != null)
+				otherProjects = project.ParentSolution.GetAllProjects ().Where (p => p != project);
+
+			var runConfigurations = otherProjects.SelectMany (p => p.RunConfigurations).OfType<AspNetCoreRunConfiguration> ();
+			var applicationUrls =
+				runConfigurations.Select (r => r.CurrentProfile.TryGetApplicationUrl ())
+				.Where (a => a != null)
+				.SelectMany (u => u.Split (';'));
+
+			var portsInUse = applicationUrls.Select (url => new Uri (url).Port).ToArray ();
+			var validPortRange = Enumerable.Range (5000, 100);
+			int port = validPortRange.Except (portsInUse).First (TryAllocatePort);
+			return port;
+		}
+
+		bool ShouldGenerateNewPort (string applicationUrl)
+		{
+			if (!allocatedPorts && project.ParentSolution != null && ApplicationUrlIsDefault (applicationUrl)) {
+				var allProjects = project.ParentSolution.GetAllProjects ().ToArray();
+				if (allProjects.Length > 1 && allProjects [0] == project) {
+					return false;
+				}
+				return true;
+			}
+			return false;
+		}
+
+		internal void FixPortNumbers ()
+		{
+			if (Profiles.ContainsKey (defaultNamespace)) {
 				var applicationUrl = DefaultProfile.OtherSettings ["applicationUrl"] as string;
-				if (ApplicationUrlIsDefault (applicationUrl)) {
-					applicationUrl = applicationUrl.Replace (defaultHttpUrl, newHttpUrl);
-					applicationUrl = applicationUrl.Replace (defaultHttpsUrl, newHttpsUrl);
+
+				if (ShouldGenerateNewPort(applicationUrl)) {
+					applicationUrl = applicationUrl.Replace (defaultHttpUrl, "http://localhost:" + GetNextFreePort ());
+					applicationUrl = applicationUrl.Replace (defaultHttpsUrl, "https://localhost:" + GetNextFreePort ());
 					DefaultProfile.OtherSettings ["applicationUrl"] = applicationUrl;
+					allocatedPorts = true;
 				}
 			}
 		}
@@ -209,10 +262,12 @@ namespace MonoDevelop.AspNetCore
 
 			string applicationUrl;
 
+			var httpPort = GetNextFreePort ();
+			var httpsPort = GetNextFreePort ();
 			if (anyConfigurationUsesHttps)
-				applicationUrl = "https://localhost:5001;http://localhost:5000";
+				applicationUrl = $"https://localhost:{httpsPort};http://localhost:{httpPort}";
 			else
-				applicationUrl = "http://localhost:5000";
+				applicationUrl = $"http://localhost:{httpPort}";
 
 			defaultProfile.OtherSettings.Add ("applicationUrl", applicationUrl);
 
@@ -232,7 +287,7 @@ namespace MonoDevelop.AspNetCore
 		/// <summary>
 		/// Updates Project.RunConfigurations
 		/// </summary>
-		internal void SyncRunConfigurations()
+		internal void SyncRunConfigurations ()
 		{
 			foreach (var profile in this.Profiles) {
 

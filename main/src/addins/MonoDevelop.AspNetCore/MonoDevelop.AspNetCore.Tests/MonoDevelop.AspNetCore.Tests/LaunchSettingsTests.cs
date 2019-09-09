@@ -217,45 +217,24 @@ namespace MonoDevelop.AspNetCore.Tests
 		}
 
 		[Test]
-		public async Task New_project_uses_iisexpress_ports_to_launch ()
+		public async Task Project_ports_do_not_clash ()
 		{
-			/*
-			{
-			  "iisSettings": {
-				"windowsAuthentication": false,
-				"anonymousAuthentication": true,
-				"iisExpress": {
-				  "applicationUrl": "http://localhost:30229",
-				  "sslPort": 44355
-				}
-			  },
-			  "profiles": {
-				"IIS Express": {
-				  "commandName": "IISExpress",
-				  "launchBrowser": true,
-				  "environmentVariables": {
-					"ASPNETCORE_ENVIRONMENT": "Development"
-				  }
-				},
-				"aspnetcore_empty_30": {
-				  "commandName": "Project",
-				  "launchBrowser": true,
-				  "environmentVariables": {
-					"ASPNETCORE_ENVIRONMENT": "Development"
-				  },
-				  "applicationUrl": "https://localhost:5001;http://localhost:5000"
-				}
-			  }
-			}
-
-						 */
-			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-30", "aspnetcore-empty-30.sln");
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-two-projects", "aspnetcore-two-projects.sln");
 			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
-			var project = (DotNetProject)solution.GetAllProjects ().Single ();
-			var launchProfileProvider = new LaunchProfileProvider (project);
-			launchProfileProvider.LoadLaunchSettings ();
-			var applicationUrl = launchProfileProvider.DefaultProfile.OtherSettings ["applicationUrl"];
-			Assert.That (applicationUrl, Is.EqualTo ("https://localhost:44355;http://localhost:30229"));
+			var projects = solution.GetAllProjects ().Cast<DotNetProject> ().ToArray ();
+			var executionCommand = GetExecutionCommand (projects [0]);
+			Assert.That (executionCommand.ApplicationURLs, Is.EqualTo ("https://localhost:5001;http://localhost:5000"));
+			var executionCommand2 = GetExecutionCommand (projects [1]);
+			Assert.That (executionCommand2.ApplicationURLs, Is.EqualTo ("https://localhost:5003;http://localhost:5002"));
+		}
+
+		private static AspNetCoreExecutionCommand GetExecutionCommand (DotNetProject project)
+		{
+			var config = project.Configurations.OfType<DotNetProjectConfiguration> ().FirstOrDefault ();
+			var configSel = ConfigurationSelector.Default;
+			var runConfig = project.RunConfigurations.First ();
+			var executionCommand = project.CreateExecutionCommand (configSel, config, runConfig) as AspNetCoreExecutionCommand;
+			return executionCommand;
 		}
 
 		[TearDown]

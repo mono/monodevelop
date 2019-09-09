@@ -116,6 +116,7 @@ namespace MonoDevelop.AspNetCore
 			else
 				outputFileName = GetOutputFileName (configuration);
 
+			launchProfileProvider.FixPortNumbers ();
 			var applicationUrl = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl ();
 
 			return new AspNetCoreExecutionCommand (
