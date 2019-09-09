@@ -149,7 +149,7 @@ namespace MonoDevelop.AspNetCore
 				.Where (a => a != null)
 				.SelectMany (u => u.Split (';'));
 
-			var portsInUse = applicationUrls.Select (url => new Uri (url).Port).ToArray ();
+			var portsInUse = applicationUrls.Select (url => new Uri (url).Port);
 			var validPortRange = Enumerable.Range (5000, 100);
 			int port = validPortRange.Except (portsInUse).First (TryAllocatePort);
 			return port;
