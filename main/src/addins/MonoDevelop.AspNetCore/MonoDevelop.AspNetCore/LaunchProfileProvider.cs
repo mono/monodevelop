@@ -159,7 +159,16 @@ namespace MonoDevelop.AspNetCore
 		{
 			if (project.ParentSolution != null && ApplicationUrlIsDefault (applicationUrl)) {
 				var allProjects = project.ParentSolution.GetAllProjects ().ToArray();
+				if (allProjects.Length == 1) {
+					return false;
+				}
 				if (allProjects.Length > 1 && allProjects [0] == project) {
+					// If we have more than one project and we are currently on the first
+					// then we don't do anything.
+	 				// If we are on the 2nd (or higher) project and that has default ports, 
+	 				// then we need to change them if necessary. 
+	 				// If the 2nd project uses default ports but no other does, then GetNextFreePort will start
+					// numbering from 5000 so it will result in no changes being made.
 					return false;
 				}
 				return true;
