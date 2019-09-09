@@ -97,6 +97,7 @@ namespace MonoDevelop.TextEditor
 
 		protected EditorOperationsInterface EditorOperations { get; private set; }
 		protected IEditorOptions EditorOptions { get; private set; }
+		protected IEditorOptions TextBufferOptions { get; private set; }
 
 		protected override Type FileModelType => typeof (TextBufferFileModel);
 
@@ -159,6 +160,7 @@ namespace MonoDevelop.TextEditor
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 			EditorOperations = (EditorOperationsInterface)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
 			EditorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
+			TextBufferOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView.TextBuffer);
 			UpdateTextEditorOptions (this, EventArgs.Empty);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
@@ -393,14 +395,26 @@ namespace MonoDevelop.TextEditor
 			await UpdateOptionsFromEditorConfigAsync (null, null);
 		}
 
+		void ClearOptionValue(string optionName)
+		{
+			TextBufferOptions.ClearOptionValue (optionName);
+			EditorOptions.ClearOptionValue (optionName);
+		}
+
+		void SetOptionValue (string optionName, object optionValue)
+		{
+			TextBufferOptions.SetOptionValue (optionName, optionValue);
+			EditorOptions.SetOptionValue (optionName, optionValue);
+		}
+
 		private void UpdateOptionsFromPolicy()
 		{
 			if (policyContainer == null) {
-				EditorOptions.ClearOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName);
-				EditorOptions.ClearOptionValue (DefaultOptions.TabSizeOptionName);
-				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
-				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
-				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+				ClearOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName);
+				ClearOptionValue (DefaultOptions.TabSizeOptionName);
+				ClearOptionValue (DefaultOptions.IndentSizeOptionName);
+				ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
+				ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
 #if !WINDOWS
 				EditorOptions.ClearOptionValue (DefaultTextViewOptions.VerticalRulersName);
 #endif
@@ -411,11 +425,11 @@ namespace MonoDevelop.TextEditor
 			var mimeTypes = IdeServices.DesktopService.GetMimeTypeInheritanceChain (MimeType);
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 
-			EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
-			EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
-			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
-			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
-			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
+			SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
+			SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
+			SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
+			SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
+			SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
 
 #if !WINDOWS
 			EditorOptions.SetOptionValue (
@@ -433,15 +447,15 @@ namespace MonoDevelop.TextEditor
 				return Task.FromResult (false);
 
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetIndentStyle (out var indentStyle))
-				EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, indentStyle == IndentStyle.Spaces);
+				SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, indentStyle == IndentStyle.Spaces);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetTabWidth (out var tabWidth))
-				EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, tabWidth);
+				SetOptionValue (DefaultOptions.TabSizeOptionName, tabWidth);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetIndentSize (out var indentSize))
-				EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, indentSize);
+				SetOptionValue (DefaultOptions.IndentSizeOptionName, indentSize);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetLineEnding (out var lineEnding))
-				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
+				SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
-				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
+				SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
 
 			var setVerticalRulers = false;
 			int [] verticalRulers = null;
