@@ -21,14 +21,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.FeatureConfiguration;
-using System.Linq;
 
 namespace MonoDevelop.TextEditor
 {
@@ -36,37 +37,77 @@ namespace MonoDevelop.TextEditor
 		where TImports : TextViewImports
 	{
 		ThemeToClassification themeToClassification;
+		readonly Dictionary<(string addinId, string providerType), ILegacyEditorSupportProvider> legacyEditorSupportProviders =
+			new Dictionary<(string addinId, string providerType), ILegacyEditorSupportProvider> ();
 
 		public override string Id => "MonoDevelop.TextEditor.TextViewControllerFactory";
 
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
-			var nodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
+			// First, check if legacy editor even has support for the file. If not, always use modern editor.
 
-			bool supported =
+			var legacySupportEnabled = !DefaultSourceEditorOptions.Instance.EnableNewEditor;
+			var legacySupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<LegacyEditorSupportExtensionNode> ("/MonoDevelop/TextEditor/LegacyEditorSupport");
+
+			var preferLegacy =
 				(
 					modelDescriptor.FilePath.IsNotNull
 					&& IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType)
-					&& nodes.Any (n => ExtensionMatch (n) && BuildActionAndFeatureFlagMatch (n))
+					&& legacySupportNodes.Any (n => (ExtensionMatch (n) && (n.IsLegacyOnly || legacySupportEnabled)) || ProviderPrefersLegacyEditor (n))
 				) || (
 					!string.IsNullOrEmpty (modelDescriptor.MimeType)
 					&& IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType)
-					&& nodes.Any (n => MimeMatch (n) && BuildActionAndFeatureFlagMatch (n))
+					&& legacySupportNodes.Any (n => (MimeMatch (n) && (n.IsLegacyOnly || legacySupportEnabled)) || ProviderPrefersLegacyEditor (n))
 				);
 
-			if (supported) {
+			// Next, check if there is an explicit directive to prefer the modern editor even if legacy is supported.
+
+			if (preferLegacy) {
+				var nodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
+
+				preferLegacy =
+					!((
+						modelDescriptor.FilePath.IsNotNull
+						&& IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType)
+						&& nodes.Any (n => ExtensionMatch (n) && BuildActionAndFeatureFlagMatch (n))
+					) || (
+						!string.IsNullOrEmpty (modelDescriptor.MimeType)
+						&& IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType)
+						&& nodes.Any (n => MimeMatch (n) && BuildActionAndFeatureFlagMatch (n))
+					));
+			}
+
+			if (!preferLegacy) {
 				yield return new DocumentControllerDescription (GettextCatalog.GetString ("Modern Source Code Editor"), true, DocumentControllerRole.Source);
 			}
 
-			bool ExtensionMatch (SupportedFileTypeExtensionNode node) =>
+			bool ExtensionMatch (MatchingFileTypeExtensionNode node) =>
 				node.Extensions != null
 				&& node.Extensions.Any (ext => modelDescriptor.FilePath.HasExtension (ext));
 
-			bool MimeMatch (SupportedFileTypeExtensionNode node) =>
+			bool MimeMatch (MatchingFileTypeExtensionNode node) =>
 				node.MimeTypes != null
 				&& node.MimeTypes.Any (
 					mime => string.Equals (modelDescriptor.MimeType, mime, StringComparison.OrdinalIgnoreCase)
 				);
+
+			bool ProviderPrefersLegacyEditor (LegacyEditorSupportExtensionNode node)
+			{
+				if (!string.IsNullOrEmpty (node.ProviderType)) {
+					try {
+						var key = (node.Addin.Id, node.ProviderType);
+						if (!legacyEditorSupportProviders.TryGetValue (key, out var provider)) {
+							provider = (ILegacyEditorSupportProvider)Activator.CreateInstance (node.Addin.GetType (node.ProviderType));
+							legacyEditorSupportProviders [key] = provider;
+						}
+						return provider.PreferLegacyEditor (modelDescriptor);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error loading legacy editor support provider", e);
+					}
+				}
+
+				return false;
+			}
 
 			bool BuildActionAndFeatureFlagMatch (SupportedFileTypeExtensionNode node)
 			{

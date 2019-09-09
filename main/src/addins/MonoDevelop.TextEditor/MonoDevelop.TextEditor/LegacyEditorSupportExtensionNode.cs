@@ -23,24 +23,17 @@ using Mono.Addins;
 
 namespace MonoDevelop.TextEditor
 {
-	class MatchingFileTypeExtensionNode : ExtensionNode
+	sealed class LegacyEditorSupportExtensionNode : MatchingFileTypeExtensionNode
 	{
-		[NodeAttribute ("extensions", "Comma separated list of file extensions. The file must match one of these or one of the mime types.")]
-		public string [] Extensions { get; private set; }
+		[NodeAttribute ("legacyOnly", "Set this to true if modern editor is unsupported for files matching this node")]
+		public bool IsLegacyOnly { get; private set; }
 
-		[NodeAttribute ("mimeTypes", "Comma separated list of mime types. The file must match one of these or one of the extensions.")]
-		public string [] MimeTypes { get; private set; }
+		[NodeAttribute("providerType", "Set this to an the type name for a MonoDevelop.TextEditor.ILegacyEditorSupportProvider implementation")]
+		public string ProviderType { get; private set; }
 	}
 
-	sealed class SupportedFileTypeExtensionNode : MatchingFileTypeExtensionNode
+	public interface ILegacyEditorSupportProvider
 	{
-		[NodeAttribute ("buildAction", Description = "If specified, the file must have this build action")]
-		public string BuildAction { get; private set; }
-
-		[NodeAttribute ("featureFlag", Description = "ID of a feature flag that can be used to enable/disable editing of this file type in the modern editor")]
-		public string FeatureFlag { get; private set; }
-
-		[NodeAttribute ("featureFlagDefault", Description = "Default value of the feature flag")]
-		public bool FeatureFlagDefault { get; private set; }
+		public bool PreferLegacyEditor (Ide.Gui.Documents.FileDescriptor modelDescriptor);
 	}
 }

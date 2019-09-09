@@ -19,28 +19,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.Addins;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.TextEditor;
 
-namespace MonoDevelop.TextEditor
+namespace MonoDevelop.Xml.Editor
 {
-	class MatchingFileTypeExtensionNode : ExtensionNode
+	public class LegacyEditorSupportProvider : ILegacyEditorSupportProvider
 	{
-		[NodeAttribute ("extensions", "Comma separated list of file extensions. The file must match one of these or one of the mime types.")]
-		public string [] Extensions { get; private set; }
+		public bool PreferLegacyEditor (FileDescriptor modelDescriptor)
+		{
+			var mimeType = modelDescriptor.MimeType;
+			if (string.IsNullOrEmpty (mimeType))
+				mimeType = MimeTypeCatalog.Instance.FindMimeTypeForFile (modelDescriptor.FilePath)?.Id;
 
-		[NodeAttribute ("mimeTypes", "Comma separated list of mime types. The file must match one of these or one of the extensions.")]
-		public string [] MimeTypes { get; private set; }
-	}
+			if (!string.IsNullOrEmpty (mimeType) && MimeTypeCatalog.Instance.GetMimeTypeIsSubtype (
+				mimeType,
+				MimeTypeCatalog.ApplicationXml))
+				return true;
 
-	sealed class SupportedFileTypeExtensionNode : MatchingFileTypeExtensionNode
-	{
-		[NodeAttribute ("buildAction", Description = "If specified, the file must have this build action")]
-		public string BuildAction { get; private set; }
 
-		[NodeAttribute ("featureFlag", Description = "ID of a feature flag that can be used to enable/disable editing of this file type in the modern editor")]
-		public string FeatureFlag { get; private set; }
-
-		[NodeAttribute ("featureFlagDefault", Description = "Default value of the feature flag")]
-		public bool FeatureFlagDefault { get; private set; }
+			return XmlFileAssociationManager.GetAssociationForFileName (modelDescriptor.FilePath) != null;
+		}
 	}
 }
