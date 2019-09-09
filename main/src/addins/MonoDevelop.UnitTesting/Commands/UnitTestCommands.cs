@@ -113,6 +113,7 @@ namespace MonoDevelop.UnitTesting.Commands
 						if (test.CanRun (mode.ExecutionHandler)) {
 							ExecutionContext context = new ExecutionContext (mode.ExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
 							await UnitTestService.RunTests (new UnitTest [] { test }, context, true).Task;
+							continue;
 						}
 					}
 				}
