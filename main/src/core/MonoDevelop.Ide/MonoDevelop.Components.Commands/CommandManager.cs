@@ -310,6 +310,13 @@ namespace MonoDevelop.Components.Commands
 #if MAC
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
+			// Protect against non-keyevents being passed here. See VSTS #935180. It seems that certain
+			// keyboard remapper applications such as Ukuele can cause non-keyevents to be sent to key event handlers.
+			if (ev.Type != AppKit.NSEventType.KeyDown && ev.Type != AppKit.NSEventType.KeyUp) {
+				LoggingService.LogInternalError (new Exception ($"Event is type {ev.Type} and not a KeyEvent"));
+				return null;
+			}
+
 			// If we have a native window that can handle this command, let it process
 			// the keys itself and do not go through the command manager.
 			// Events in Gtk windows do not pass through here except when they're done
