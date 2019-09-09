@@ -55,7 +55,6 @@ namespace MonoDevelop.AspNetCore
 
 		const string defaultHttpUrl = "http://localhost:5000";
 		const string defaultHttpsUrl = "https://localhost:5001";
-		bool allocatedPorts = false;
 
 		public LaunchProfileData DefaultProfile {
 			get {
@@ -158,7 +157,7 @@ namespace MonoDevelop.AspNetCore
 
 		bool ShouldGenerateNewPort (string applicationUrl)
 		{
-			if (!allocatedPorts && project.ParentSolution != null && ApplicationUrlIsDefault (applicationUrl)) {
+			if (project.ParentSolution != null && ApplicationUrlIsDefault (applicationUrl)) {
 				var allProjects = project.ParentSolution.GetAllProjects ().ToArray();
 				if (allProjects.Length > 1 && allProjects [0] == project) {
 					return false;
@@ -177,7 +176,7 @@ namespace MonoDevelop.AspNetCore
 					applicationUrl = applicationUrl.Replace (defaultHttpUrl, "http://localhost:" + GetNextFreePort ());
 					applicationUrl = applicationUrl.Replace (defaultHttpsUrl, "https://localhost:" + GetNextFreePort ());
 					DefaultProfile.OtherSettings ["applicationUrl"] = applicationUrl;
-					allocatedPorts = true;
+					SaveLaunchSettings ();
 				}
 			}
 		}
