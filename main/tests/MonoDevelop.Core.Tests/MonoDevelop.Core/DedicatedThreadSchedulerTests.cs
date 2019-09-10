@@ -93,7 +93,7 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
-		[Timeout (5000)]
+		[Timeout (20000)]
 		public async Task TestTasksExecuteSequentially ()
 		{
 			int runTasks = 50;
