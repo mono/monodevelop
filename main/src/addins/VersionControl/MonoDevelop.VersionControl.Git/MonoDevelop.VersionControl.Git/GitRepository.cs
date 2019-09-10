@@ -2406,7 +2406,7 @@ namespace MonoDevelop.VersionControl.Git
 			get; private set;
 		}
 
-		public GitRevision (Repository repo, string gitRepository, Commit commit) : base(repo, commit.Author.When.DateTime, commit.Author.Name, commit.Message)
+		public GitRevision (Repository repo, string gitRepository, Commit commit) : base(repo, commit?.Author.When.DateTime ?? DateTime.Now, commit?.Author.Name, commit?.Message)
 		{
 			GitRepository = gitRepository;
 			rev = commit != null ? commit.Id.Sha : "";
