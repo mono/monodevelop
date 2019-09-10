@@ -76,12 +76,6 @@ namespace MonoDevelop.TextEditor.Cocoa
         ICommandHandler<WordDeleteToEndCommandArgs>,
         ICommandHandler<WordDeleteToStartCommandArgs>,
         ICommandHandler<FindReferencesCommandArgs>
-#if !WINDOWS
-        ,
-		ICommandHandler<ProvideEditorFeedbackCommandArgs>,
-		ICommandHandler<DisableEditorPreviewCommandArgs>,
-		ICommandHandler<LearnAboutTheEditorCommandArgs>
-#endif
 	{
         [Import]
         private IEditorOperationsFactoryService OperationsService { get; set; }
@@ -475,40 +469,5 @@ namespace MonoDevelop.TextEditor.Cocoa
             GetOperations(args.TextView).DeleteToBeginningOfLine();
             return true;
         }
-
-		#region Preview Editor Commands
-
-#if !WINDOWS
-
-		CommandState ICommandHandler<ProvideEditorFeedbackCommandArgs>.GetCommandState (ProvideEditorFeedbackCommandArgs args)
-			=> CommandState.Available;
-
-		bool ICommandHandler<ProvideEditorFeedbackCommandArgs>.ExecuteCommand (ProvideEditorFeedbackCommandArgs args, CommandExecutionContext executionContext)
-		{
-			IdeServices.DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/report-problem");
-			return true;
-		}
-
-		CommandState ICommandHandler<LearnAboutTheEditorCommandArgs>.GetCommandState (LearnAboutTheEditorCommandArgs args)
-			=> CommandState.Available;
-
-		bool ICommandHandler<LearnAboutTheEditorCommandArgs>.ExecuteCommand (LearnAboutTheEditorCommandArgs args, CommandExecutionContext executionContext)
-		{
-			IdeServices.DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/learn-more");
-			return true;
-		}
-
-		CommandState ICommandHandler<DisableEditorPreviewCommandArgs>.GetCommandState (DisableEditorPreviewCommandArgs args)
-			=> CommandState.Available;
-
-		bool ICommandHandler<DisableEditorPreviewCommandArgs>.ExecuteCommand (DisableEditorPreviewCommandArgs args, CommandExecutionContext executionContext)
-		{
-			DefaultSourceEditorOptions.Instance.EnableNewEditor = false;
-			return true;
-		}
-
-#endif
-
-#endregion
 	}
 }

@@ -402,55 +402,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> preferLegacyEditor = ConfigurationProperty.Create ("PreferLegacyEditor", false);
-		public bool EnableNewEditor {
-			// NOTE: as we're making this editor the default, we've switched to a new configuration property,
-			// and we'll simply flip the value that we're getting from that. The code below might be a bit convoluted,
-			// but it means we don't have additional changes
-			get {
-				return !preferLegacyEditor;
-			}
-			set {
-				value = !value; //see notes above
-				if (!preferLegacyEditor.Set (value))
-					return;
-
-				string messageText;
-
-				if (!value) {
-					messageText = GettextCatalog.GetString (
-						"The modern editor has been enabled, but already opened files " +
-						"will need to be closed and re-opened for the change to take effect.");
-					Counters.NewEditorEnabled.Inc ();
-				} else {
-					messageText = GettextCatalog.GetString (
-						"The legacy editor has been enabled, but already opened files " +
-						"will need to be closed and re-opened for the change to take effect.");
-					Counters.NewEditorDisabled.Inc ();
-				}
-
-				if (IdeApp.Workbench?.Documents?.Count > 0) {
-					Gtk.Application.Invoke ((o, e) => {
-						var closeAllFilesButton = new AlertButton (GettextCatalog.GetString ("Close All Files"));
-
-						var message = new MessageDescription {
-							Text = messageText
-						};
-
-						message.Buttons.Add (closeAllFilesButton);
-						message.Buttons.Add (AlertButton.Ok);
-						message.DefaultButton = 1;
-
-						if (new AlertDialog (message).Run () == closeAllFilesButton)
-							IdeApp.Workbench.CloseAllDocuments (false);
-					});
-				}
-
-				OnChanged (EventArgs.Empty);
-			}
-		}
-
-
 		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> enableSemanticHighlighting = ConfigurationProperty.Create ("EnableSemanticHighlighting", true);
 		public bool EnableSemanticHighlighting {
