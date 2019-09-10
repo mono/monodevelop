@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId AssetsFolder = "md-folder-assets";
 		public static readonly IconId AddNamespace = "md-add-namespace";
 		public static readonly IconId BreakPoint = "md-break-point";
+		public static readonly IconId Browser = "md-browser";
 		public static readonly IconId BuildCombine = "md-build-combine";
 		public static readonly IconId Class = "md-class";
 		public static readonly IconId ClearAllBookmarks = "md-bookmark-clear-all";
