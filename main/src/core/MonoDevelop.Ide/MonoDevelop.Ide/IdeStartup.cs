@@ -442,9 +442,9 @@ namespace MonoDevelop.Ide
 
 			// OpenDocuments appears when the app is idle.
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
+				IdeApp.Workbench.Present ();
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.InitializationTracker.Trace ("Showed welcome page");
-				IdeApp.Workbench.Present ();
 			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
 				IdeApp.Workbench.Present ();
 			}

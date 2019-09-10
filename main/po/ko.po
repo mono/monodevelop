@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-27 13:56:34+0200\n"
+"POT-Creation-Date: 2019-09-02 10:31:55+0200\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -1130,7 +1130,7 @@ msgstr ""
 "로그래밍 모델</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 msgid "<uncommitted>"
 msgstr "<커밋되지 않음>"
 
@@ -1293,6 +1293,11 @@ msgstr "CodeBehind 클래스의 호환되는 메서드"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:109
 msgid "A configuration with the name '{0}' already exists."
 msgstr "이름이 '{0}'인 구성이 이미 있습니다."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
+#, fuzzy
+msgid "A conflicting change has been detected in the index. "
+msgstr "병합 충돌이 <b>{0}</b> 파일에서 검색되었습니다."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:34
 msgid "A cyclic build dependency has been detected."
@@ -1677,7 +1682,7 @@ msgstr ""
 msgid "API"
 msgstr "API"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "API Documentation"
 msgstr "API 문서"
 
@@ -1872,7 +1877,7 @@ msgid "Abort Update"
 msgstr "업데이트 중단"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:615
+#: ../src/addins/MacPlatform/MacPlatform.cs:611
 msgid "About {0}"
 msgstr "{0} 정보"
 
@@ -1957,39 +1962,39 @@ msgstr "ActionGroup"
 msgid "Actions"
 msgstr "작업"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:772
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:775
 msgid "Activate 1"
 msgstr "활성화 1"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:778
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:781
 msgid "Activate 2"
 msgstr "활성화 2"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:784
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:787
 msgid "Activate 3"
 msgstr "활성화 3"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:790
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:793
 msgid "Activate 4"
 msgstr "활성화 4"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:796
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:799
 msgid "Activate 5"
 msgstr "활성화 5"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:802
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
 msgid "Activate 6"
 msgstr "활성화 6"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:808
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:811
 msgid "Activate 7"
 msgstr "활성화 7"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:814
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:817
 msgid "Activate 8"
 msgstr "활성화 8"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:820
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:823
 msgid "Activate 9"
 msgstr "활성화 9"
 
@@ -1998,39 +2003,39 @@ msgstr "활성화 9"
 msgid "Activate document '{0}'"
 msgstr "'{0}' 문서 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:773
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:776
 msgid "Activate document 1"
 msgstr "문서 1 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:782
 msgid "Activate document 2"
 msgstr "문서 2 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:788
 msgid "Activate document 3"
 msgstr "문서 3 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:791
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:794
 msgid "Activate document 4"
 msgstr "문서 4 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:797
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:800
 msgid "Activate document 5"
 msgstr "문서 5 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:803
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:806
 msgid "Activate document 6"
 msgstr "문서 6 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:809
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:812
 msgid "Activate document 7"
 msgstr "문서 7 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:815
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:818
 msgid "Activate document 8"
 msgstr "문서 8 활성화"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:821
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:824
 msgid "Activate document 9"
 msgstr "문서 9 활성화"
 
@@ -2052,7 +2057,7 @@ msgstr "'{0}' 창 활성화"
 msgid "Active Configuration"
 msgstr "활성 구성"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:587
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:590
 msgid "Active Layout"
 msgstr "활성 레이아웃"
 
@@ -2117,7 +2122,7 @@ msgstr "사용자 지정 도구 추가..."
 msgid "Add Dependency"
 msgstr "종속성 추가"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:515
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:516
 msgid "Add Existing Folder"
 msgstr "기존 폴더 추가"
 
@@ -2332,7 +2337,7 @@ msgstr "프로젝트에 기존 파일 추가"
 msgid "Add expression to watch pad"
 msgstr "조사식 패드에 식 추가"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:404
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:405
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:302
 msgid "Add files"
 msgstr "파일 추가"
@@ -2774,7 +2779,7 @@ msgid ""
 "to continue?"
 msgstr "애플리케이션이 이미 실행되고 있으며 중지되어야 합니다. 계속할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:299
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:301
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:92
 msgid "An application is already running. Do you want to stop it?"
 msgstr "애플리케이션이 이미 실행되고 있습니다. 애플리케이션을 중지할까요?"
@@ -2922,7 +2927,7 @@ msgstr "Android"
 msgid "Angular"
 msgstr "Angular"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1215
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
 msgid "Animates the text editor caret to help find it"
 msgstr "쉽게 찾을 수 있도록 텍스트 편집기 캐럿에 애니메이션 효과를 줍니다."
 
@@ -3040,7 +3045,7 @@ msgid "Application to record audio/video files"
 msgstr "오디오/비디오 파일 녹음/녹화 애플리케이션"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:795
+#: ../src/addins/MacPlatform/MacPlatform.cs:778
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3105,7 +3110,7 @@ msgstr "프로젝트에 적용"
 msgid "Apply to all"
 msgstr "모두에 적용"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:368
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:383
 msgid "Applying stash"
 msgstr "스태시를 적용하는 중"
 
@@ -3239,7 +3244,7 @@ msgstr "{1} 프로젝트에서 {0} 디렉터리를 제거할까요?"
 msgid "Are you sure you want to remove directory {0}?"
 msgstr "{0} 디렉터리를 제거할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:320
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:331
 msgid "Are you sure you want to remove file {0} from project {1}?"
 msgstr "{1} 프로젝트에서 {0} 파일을 제거할까요?"
 
@@ -3248,7 +3253,7 @@ msgstr "{1} 프로젝트에서 {0} 파일을 제거할까요?"
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "'{0}' 구성을 제거할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:312
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
 msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
 "from project {1}?"
@@ -3273,13 +3278,13 @@ msgstr "{0} 형식에 대한 서식 정책을 제거할까요?"
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "선택한 항목을 제거할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:327
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
 msgstr "선택한 파일과 해당 코드 숨김 하위 항목을 프로젝트에서 제거할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:334
 msgid "Are you sure you want to remove the selected files from the project?"
 msgstr "선택한 파일을 프로젝트에서 제거할까요?"
 
@@ -3293,7 +3298,7 @@ msgstr "선택한 항목을 버전 제어 시스템에서 제거할까요?"
 msgid "Are you sure you want to remove this template?"
 msgstr "이 템플릿을 제거할까요?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:60
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:62
 msgid ""
 "Are you sure you want to revert the changes from the revision selected on "
 "these resources?"
@@ -3303,7 +3308,7 @@ msgstr "이러한 리소스에서 선택한 수정 버전에서 변경 내용을
 msgid "Are you sure you want to revert the changes made in the selected files?"
 msgstr "선택한 파일에 수행한 변경 내용을 되돌리시겠습니까?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:56
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:58
 msgid ""
 "Are you sure you want to revert the selected resources to the revision "
 "specified (all local changes will be discarded)?"
@@ -3438,7 +3443,7 @@ msgstr "프레임워크 {0}에 대한 어셈블리를 찾을 수 없습니다(�
 msgid "Assembly:\t{0}"
 msgstr "어셈블리:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:395
+#: ../src/addins/MacPlatform/MacPlatform.cs:391
 msgid "Assistive Technology Detected"
 msgstr "보조 기술이 검색됨"
 
@@ -3528,7 +3533,7 @@ msgid "Author:"
 msgstr "만든 이:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 msgid "Authors"
 msgstr "작성자"
 
@@ -3603,11 +3608,11 @@ msgstr "자동으로 닫는 태그 삽입"
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr "자동으로 문장 부호(=\"\", /> 등) 삽입"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1077
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1092
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr "병합/다시 지정할 때 자동으로 변경 내용 스태시/스태시 해제"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1939
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr "분기를 전환할 때 자동으로 변경 내용 스태시/스태시 해제"
@@ -3655,7 +3660,7 @@ msgstr "사용 가능한 대상:"
 msgid "Available in repository:"
 msgstr "리포지토리에서 사용 가능:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
 msgid "B_uild {0}"
 msgstr "{0} 빌드(_U)"
 
@@ -3828,7 +3833,7 @@ msgstr "분기 속성"
 msgid "Branch name too long"
 msgstr "분기 이름이 너무 깁니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:139
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:140
 msgid "Branch switch failed"
 msgstr "분기 전환 실패"
 
@@ -3944,7 +3949,7 @@ msgstr "빌드 출력 {0}.binlog"
 msgid "Build _without Saving"
 msgstr "저장하지 않고 빌드(_W)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:521
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:99
 msgid "Build action"
 msgstr "빌드 작업"
@@ -3990,11 +3995,11 @@ msgstr "단위 테스트를 실행하기 전에 프로젝트 빌드"
 msgid "Build project before running"
 msgstr "실행하기 전에 프로젝트 빌드"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
 msgid "Build project {0}"
 msgstr "{0} 프로젝트 빌드"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
 msgid "Build solution {0}"
 msgstr "{0} 솔루션 빌드"
 
@@ -4019,7 +4024,7 @@ msgstr "현재 프로젝트 빌드"
 msgid "Build the projects in the active solution build configuration."
 msgstr "활성 솔루션 빌드 구성에서 프로젝트를 빌드합니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:223
 msgid "Build {0}"
 msgstr "{0} 빌드"
 
@@ -4180,11 +4185,11 @@ msgstr "체크 아웃(_H)..."
 msgid "C_lean"
 msgstr "정리(_L)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:381
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:383
 msgid "C_lean {0}"
 msgstr "{0} 정리(_L)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:450
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:453
 msgid "C_lose"
 msgstr "닫기(_L)"
 
@@ -4192,7 +4197,7 @@ msgstr "닫기(_L)"
 msgid "C_lose All Solutions"
 msgstr "모든 솔루션 닫기(_L)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:540
 msgid "C_lose Others"
 msgstr "다른 파일 닫기(_L)"
 
@@ -4204,7 +4209,7 @@ msgstr "프로젝트 닫기(_L)"
 msgid "C_lose Solution"
 msgstr "솔루션 닫기(_L)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:442
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:445
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:214
 msgid "C_lose Workspace"
 msgstr "작업 영역 닫기(_L)"
@@ -4223,7 +4228,7 @@ msgstr "회사(_O):"
 msgid "C_onnect"
 msgstr "연결(_O)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:546
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
 msgid "C_opy File Path"
 msgstr "파일 경로 복사(_O)"
 
@@ -4257,7 +4262,7 @@ msgstr "파생 클래스를 통해 정적 멤버 호출"
 msgid "Camera tools, etc."
 msgstr "카메라 도구 등"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1993
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1999
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4266,7 +4271,7 @@ msgstr ""
 "\"{0}\"을(를) 실행할 수 없습니다. 선택한 실행 모드가 .NET 프로젝트에 지원되"
 "지 않습니다."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2011
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2017
 msgid ""
 "Can not execute. The run configuration working directory doesn't exist at {0}"
 msgstr "실행할 수 있습니다. 실행 구성 작업 디렉터리가 {0}에 없습니다."
@@ -4383,7 +4388,7 @@ msgstr "작업을 취소하는 중..."
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr "해당 이름의 파일이 있으므로 {0} 디렉터리를 만들 수 없습니다."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2007
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:177
 msgid "Cannot execute \"{0}\""
 msgstr "\"{0}\"을(를) 실행할 수 없습니다."
@@ -4458,7 +4463,7 @@ msgstr "중단점이 적중될 때 프로그램이 메시지를 인쇄하고 계
 msgid "Celtic"
 msgstr "켈트어"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:708
 msgid "Center and Focus Document"
 msgstr "문서 가운데 맞춤 및 포커스 설정"
 
@@ -4555,7 +4560,7 @@ msgstr "변경 로그 항목을 생성할 수 없습니다."
 msgid "ChangeLog entry:"
 msgstr "변경 로그 항목:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid "Changes"
 msgstr "변경 내용"
 
@@ -4654,7 +4659,7 @@ msgstr "솔루션을 열 때 패키지 업데이트를 확인합니다(_U)."
 msgid "Check for the command to run on an external console"
 msgstr "외부 콘솔에서 실행할 명령 확인"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:896
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
 msgid "Check for updates to MonoDevelop and packages it requires"
 msgstr "MonoDevelop의 업데이트와 필요한 패키지 확인"
 
@@ -4984,9 +4989,24 @@ msgstr "솔루션과 같은 버전을 사용하려면 선택합니다."
 msgid "Check to wrap the lines at 60 characters"
 msgstr "60자 단위로 줄을 바꾸려면 선택합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:344
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1433
+#, fuzzy
+msgid "Checking out file '{0}'"
+msgstr "파일을 체크 아웃하는 중"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:359
 msgid "Checking out files"
 msgstr "파일을 체크 아웃하는 중"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1425
+#, fuzzy
+msgid "Checking out repository at '{0}'"
+msgstr "{0}을(를) 체크 아웃하는 중..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1495
+#, fuzzy
+msgid "Checking out submodule at '{0}'…"
+msgstr "{0}을(를) 체크 아웃하는 중..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:47
 msgid "Checking out {0}..."
@@ -5012,7 +5032,7 @@ msgstr "체크 아웃 경로가 비어 있지 않습니다. 해당 콘텐츠를 
 msgid "Chemistry software"
 msgstr "화학 소프트웨어"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1198
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1213
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "{0} Cherry-Pick 중 - {1}/{2}"
 
@@ -5132,7 +5152,7 @@ msgstr "정리 대상 이름:"
 msgid "Clean the selected project or solution"
 msgstr "선택한 프로젝트 또는 솔루션 정리"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:382
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:384
 msgid "Clean {0}"
 msgstr "{0} 정리"
 
@@ -5188,7 +5208,7 @@ msgstr "F# 대화형 지우기"
 msgid "Clear Icon"
 msgstr "아이콘 지우기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:484
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:487
 msgid "Clear Recent Files"
 msgstr "최근 파일 지우기"
 
@@ -5196,11 +5216,11 @@ msgstr "최근 파일 지우기"
 msgid "Clear Recent Searches"
 msgstr "최근 검색 지우기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:494
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:497
 msgid "Clear Recent Solutions"
 msgstr "최근 솔루션 지우기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
 msgid "Clear bookmarks"
 msgstr "책갈피 지우기"
 
@@ -5212,7 +5232,7 @@ msgstr "콘솔 지우기"
 msgid "Clear recent files"
 msgstr "최근 파일 지우기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:489
 msgid "Clear recent files list"
 msgstr "최근 파일 목록 지우기"
 
@@ -5220,7 +5240,7 @@ msgstr "최근 파일 목록 지우기"
 msgid "Clear recent projects"
 msgstr "최근 프로젝트 지우기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
 msgid "Clear recent solutions list"
 msgstr "최근 솔루션 목록 지우기"
 
@@ -5228,7 +5248,7 @@ msgstr "최근 솔루션 목록 지우기"
 msgid "Clear results"
 msgstr "결과 지우기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:650
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:653
 msgid "Clear the navigation history"
 msgstr "탐색 기록 지우기"
 
@@ -5318,6 +5338,20 @@ msgstr "클라이언트 인증서 필요"
 msgid "Clipboard Ring"
 msgstr "클립보드 링"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Cloning submodules failed"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1487
+#, fuzzy
+msgid "Cloning submodules…"
+msgstr "기호를 확인하는 중..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1415
+#, fuzzy
+msgid "Cloning…"
+msgstr "언로드 중..."
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:449
@@ -5325,13 +5359,13 @@ msgstr "클립보드 링"
 msgid "Close"
 msgstr "닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:556
 #, fuzzy
 msgid "Close All Except _Pinned"
 msgstr "모든 파일 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:436
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:439
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:536
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/DefaultSourceEditorOptions.cs:434
 msgid "Close All Files"
 msgstr "모든 파일 닫기"
@@ -5344,11 +5378,11 @@ msgstr "MonoDevelop 닫기"
 msgid "Close Project"
 msgstr "프로젝트 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:451
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:454
 msgid "Close Workspace Item"
 msgstr "작업 영역 항목 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:435
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:438
 msgid "Close _All"
 msgstr "모두 닫기(_A)"
 
@@ -5356,21 +5390,21 @@ msgstr "모두 닫기(_A)"
 msgid "Close _without Saving"
 msgstr "저장하지 않고 닫기(_W)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:429
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:432
 msgid "Close active file"
 msgstr "활성 파일 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:554
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:557
 #, fuzzy
 msgid "Close all files except pinned"
 msgstr "활성 파일을 제외하고 모든 열린 파일을 닫습니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:443
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:446
 msgid "Close all solutions open in the current workspace"
 msgstr "현재 작업 영역에 열려 있는 모든 솔루션 닫기"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:89
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:174
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:207
 msgid "Close current workspace"
 msgstr "현재 작업 영역 닫기"
 
@@ -5382,7 +5416,7 @@ msgstr "문서 닫기"
 msgid "Close pad"
 msgstr "패드 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:452
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
 msgid "Close the active solution or workspace item"
 msgstr "활성 솔루션 또는 작업 영역 항목 닫기"
 
@@ -5410,7 +5444,7 @@ msgstr "작업 영역 닫기"
 msgid "Close the {0} pad"
 msgstr "{0} 패드 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:544
 msgid "Close to the _Right"
 msgstr "오른쪽에 있는 항목 닫기(_R)"
 
@@ -5424,15 +5458,15 @@ msgstr "솔루션을 연 후 시작 페이지 닫기"
 msgid "Close {0}"
 msgstr "{0} 닫기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:538
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
 msgid "Closes all opened files except for the active file"
 msgstr "활성 파일을 제외하고 모든 열린 파일을 닫습니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:534
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
 msgid "Closes all opened files in a tab"
 msgstr "탭의 모든 열린 파일을 닫습니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:542
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
 msgid "Closes all opened files to the right of the active file"
 msgstr "활성 파일의 오른쪽에 열린 모든 파일을 닫습니다."
 
@@ -5500,7 +5534,7 @@ msgstr "코드 완성 데이터베이스 생성"
 msgid "Collapse All"
 msgstr "모두 축소"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
 msgid "Collapse All Nodes"
 msgstr "모든 노드 축소"
 
@@ -5573,7 +5607,7 @@ msgstr "{0}의 명령 인수"
 msgid "Command Line Options"
 msgstr "명령줄 옵션"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:454
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:456
 msgid "Command execution failed"
 msgstr "명령을 실행하지 못했습니다."
 
@@ -5592,7 +5626,7 @@ msgstr "명령줄 매개 변수:"
 msgid "Command:"
 msgstr "명령:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:57
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:62
 msgid "Commands"
 msgstr "명령"
 
@@ -5715,11 +5749,11 @@ msgstr "컴파일러 옵션"
 msgid "Compiling resource {0} with {1}"
 msgstr "{1}을(를) 사용하여 {0} 리소스를 컴파일하는 중"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
 msgid "Complete Word"
 msgstr "단어 자동 완성"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 msgid "Complete current statement"
 msgstr "현재 문 완성"
 
@@ -5731,7 +5765,7 @@ msgstr "공백에서 완료"
 msgid "Complete with Space or Punctuation"
 msgstr "공백 또는 문장 부호로 완성"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
 msgid "Completes the current statement"
 msgstr "현재 문을 완성합니다."
 
@@ -5780,7 +5814,7 @@ msgstr "구성"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1886
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2270
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2320
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1982
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1988
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "'{1}' 프로젝트에서 '{0}' 구성을 찾을 수 없습니다."
 
@@ -5877,7 +5911,7 @@ msgstr "충돌"
 msgid "Conflict {0}"
 msgstr "{0} 충돌"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1116
 msgid "Conflicting local changes found"
 msgstr "충돌하는 로컬 변경 내용을 찾았습니다."
 
@@ -6166,7 +6200,7 @@ msgstr "새 버전이면 복사"
 msgid "Copy the assembly to the output directory when building the project"
 msgstr "프로젝트를 빌드할 때 출력 디렉터리에 어셈블리 복사"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:548
 msgid "Copy the file path to the clipboard"
 msgstr "파일 경로를 클립보드에 복사합니다."
 
@@ -6182,7 +6216,7 @@ msgstr "선택 영역 복사"
 msgid "Copy to output directory"
 msgstr "출력 디렉터리에 복사"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:368
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2293
 msgid "Copying files..."
@@ -6271,7 +6305,7 @@ msgstr ""
 "사용자 어셈블리 '{0}'에 대한 어셈블리 이름을 가져올 수 없습니다. 디버거는 이"
 "제 사용자 코드뿐만 아니라 모든 코드를 디버깅합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1138
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1140
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:393
 msgid "Could not get diff information. "
 msgstr "diff 정보를 가져올 수 없습니다."
@@ -6503,7 +6537,7 @@ msgid "Create a new empty class"
 msgstr "빈 클래스를 만듭니다."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:246
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:402
 msgid "Create a new file"
 msgstr "새 파일 만들기"
 
@@ -6511,11 +6545,11 @@ msgstr "새 파일 만들기"
 msgid "Create a new folder"
 msgstr "새 폴더 만들기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:418
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:421
 msgid "Create a new solution"
 msgstr "새 솔루션 만들기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:424
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:427
 msgid "Create a new workspace"
 msgstr "새 작업 영역 만들기"
 
@@ -6527,7 +6561,7 @@ msgstr "솔루션 디렉터리 내에 프로젝트 디렉터리를 만듭니다.
 msgid "Create a project which can generate packages for a solution"
 msgstr "솔루션의 패키지를 생성할 수 있는 프로젝트 만들기"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:53
 msgid "Create an initial commit first."
 msgstr "초기 커밋을 먼저 만듭니다."
 
@@ -6572,7 +6606,7 @@ msgstr "새로운 색 구성표 만들기"
 msgid "Create new file"
 msgstr "새 파일 만들기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:578
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
 msgid "Create new layout"
 msgstr "새 레이아웃 만들기"
 
@@ -7233,7 +7267,7 @@ msgstr "잘라내기"
 msgid "Cut the selection"
 msgstr "선택 영역 잘라내기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1210
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr "열린 모든 파일의 일치하는 단어에서 현재 단어 완성을 반복합니다."
@@ -7293,7 +7327,7 @@ msgstr "날짜/시간"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -7397,7 +7431,7 @@ msgstr "거절"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -7560,11 +7594,11 @@ msgstr "작업 삭제"
 msgid "Delete also configurations in solution items"
 msgstr "솔루션 항목의 구성도 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:583
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:586
 msgid "Delete current layout"
 msgstr "현재 레이아웃 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
 msgid "Delete entire line"
 msgstr "전체 줄 삭제"
 
@@ -7572,27 +7606,27 @@ msgstr "전체 줄 삭제"
 msgid "Delete from Disk"
 msgstr "디스크에서 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1064
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1067
 msgid "Delete left character"
 msgstr "왼쪽 문자 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1189
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1192
 msgid "Delete next subword"
 msgstr "다음 부분 단어 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1188
 msgid "Delete next word"
 msgstr "다음 단어 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 msgid "Delete previous subword"
 msgstr "이전 부분 단어 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid "Delete previous word"
 msgstr "이전 단어 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1069
 msgid "Delete right character"
 msgstr "오른쪽 문자 삭제"
 
@@ -7608,11 +7642,11 @@ msgstr "프로젝트 파일 및 전체 프로젝트 디렉터리 삭제:"
 msgid "Delete the selection"
 msgstr "선택 영역 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1105
 msgid "Delete to end of line"
 msgstr "줄의 끝까지 삭제"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
 msgid "Delete to start of line"
 msgstr "줄의 시작까지 삭제"
 
@@ -7639,7 +7673,7 @@ msgstr ""
 "이전에 정의된 name2 그룹과 현재 그룹 간의 간격을\n"
 "name1 그룹에 저장합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr "줄 끝까지 삭제하거나, 끝에 있는 경우 줄 끝을 삭제합니다."
 
@@ -7888,7 +7922,7 @@ msgstr ""
 "{0} 디렉터리가 이미 있습니다.\n"
 "계속 프로젝트를 만들까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:490
 msgid "Directory {0} is empty, no files have been added."
 msgstr "{0} 디렉터리가 비어 있습니다. 파일이 추가되지 않았습니다."
 
@@ -7992,11 +8026,11 @@ msgstr "디스어셈블리 탭"
 msgid "Discovery document"
 msgstr "검색 문서"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1996
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1997
 msgid "Display Options"
 msgstr "옵션 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:607
 msgid "Display Options List"
 msgstr "옵션 목록 표시"
 
@@ -8032,21 +8066,21 @@ msgstr "'this'를 기본으로 사용하지 마세요."
 msgid "Do not reference mscorlib.dll"
 msgstr "mscorlib.dll을 참조하지 않음"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:313
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:314
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "'{0}' 폴더를 '{1}' 폴더에 복사할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:311
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:312
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
 msgstr "'{0}' 폴더를 '{1}' 프로젝트의 루트 폴더에 복사할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:306
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
 msgstr "'{0}' 폴더를 '{1}' 폴더로 이동할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:303
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:304
 msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -8109,15 +8143,15 @@ msgstr "최근 목록에서 해당 참조를 제거할까요?"
 msgid "Do you want to save the changes before committing?"
 msgstr "커밋하기 전에 변경 내용을 저장할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:359
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:360
 msgid "Do you want to save the file '{0}' before the copy operation?"
 msgstr "복사 작업 전에 '{0}' 파일을 저장할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:355
 msgid "Do you want to save the file '{0}' before the move operation?"
 msgstr "이동 작업 전에 '{0}' 파일을 저장할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:362
 msgid ""
 "Do you want to save the following files before the copy operation?\n"
 "\n"
@@ -8127,7 +8161,7 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:356
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:357
 msgid ""
 "Do you want to save the following files before the move operation?\n"
 "\n"
@@ -8169,7 +8203,7 @@ msgstr "{0} 도킹"
 msgid "Document"
 msgstr "문서"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:826
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:829
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:206
 msgid "Document List"
 msgstr "문서 목록"
@@ -8213,7 +8247,7 @@ msgstr "문서 주석(_C)"
 msgid "Documents"
 msgstr "문서"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:364
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:53
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:140
 msgid "Don't Save"
@@ -8259,15 +8293,15 @@ msgstr "{0}을(를) 빌드하는 중"
 msgid "Downloads"
 msgstr "다운로드"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 msgid "Dump Accessibility Tree"
 msgstr "접근성 트리 덤프"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
 msgid "Dump Accessibility Tree (10s)"
 msgstr "접근성 트리 덤프(10초)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
 msgid "Dump UI Tree"
 msgstr "UI 트리 덤프"
 
@@ -8285,7 +8319,7 @@ msgstr "복제"
 msgid "Duplicate Configuration"
 msgstr "중복 구성"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1206
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 msgid "Duplicate line"
 msgstr "중복된 줄"
 
@@ -8293,7 +8327,7 @@ msgstr "중복된 줄"
 msgid "Duplicates:"
 msgstr "중복:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
 msgid "Dynamic abbrev"
 msgstr "동적 약어"
 
@@ -8350,7 +8384,7 @@ msgstr "중단점 편집..."
 msgid "Edit Custom Modes..."
 msgstr "사용자 지정 모드 편집..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
 msgid "Edit Custom Tools..."
 msgstr "사용자 지정 도구 편집..."
@@ -8565,7 +8599,7 @@ msgstr "비어 있는 제어문 본문"
 msgid "Empty destructor is redundant"
 msgstr "빈 소멸자가 중복됩니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:488
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
 msgid "Empty directory."
 msgstr "빈 디렉터리입니다."
 
@@ -8779,7 +8813,7 @@ msgstr "필드 캡슐화(그리고 속성을 사용함)"
 msgid "Encapsulate fields (but still use field)"
 msgstr "필드 캡슐화(그러나 여전히 필드를 사용함)"
 
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:148
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:181
 msgid "Encoding:"
 msgstr "인코딩:"
 
@@ -9574,63 +9608,63 @@ msgstr "모두 확장"
 msgid "Expand matches"
 msgstr "일치 항목 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Expand selection to document end"
 msgstr "문서 끝까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
 msgid "Expand selection to document start"
 msgstr "문서 시작까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1158
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 msgid "Expand selection to line"
 msgstr "줄까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 msgid "Expand selection to line end"
 msgstr "줄 끝까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1153
 msgid "Expand selection to line start"
 msgstr "줄 시작까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1151
 msgid "Expand selection to next line"
 msgstr "다음 줄까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1144
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 msgid "Expand selection to next subword"
 msgstr "다음 부분 단어까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
 msgid "Expand selection to next word"
 msgstr "다음 단어까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1194
 msgid "Expand selection to page down"
 msgstr "페이지 아래까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1193
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Expand selection to page up"
 msgstr "페이지 위까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 msgid "Expand selection to previous line"
 msgstr "이전 줄까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1142
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 msgid "Expand selection to previous subword"
 msgstr "이전 부분 단어까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
 msgid "Expand selection to previous word"
 msgstr "이전 단어까지 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
 msgid "Expand selection to the left"
 msgstr "왼쪽으로 선택 영역 확장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
 msgid "Expand selection to the right"
 msgstr "오른쪽으로 선택 영역 확장"
 
@@ -9763,7 +9797,7 @@ msgstr "확장 메서드는 static으로 선언해야 합니다."
 msgid "Extension packages"
 msgstr "확장 패키지"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:559
+#: ../src/addins/MacPlatform/MacPlatform.cs:555
 msgid "Extensions..."
 msgstr "확장..."
 
@@ -9860,7 +9894,7 @@ msgstr "F# 프로젝트 파일"
 msgid "F# script files"
 msgstr "F# 스크립트 파일"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:962
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
 msgid "F_ind in Files..."
 msgstr "파일에서 찾기(_I)..."
 
@@ -9958,7 +9992,7 @@ msgstr "피드백"
 msgid "Fetch"
 msgstr "가져오기"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1046
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1061
 msgid "Fetching"
 msgstr "페치하는 중"
 
@@ -9967,7 +10001,7 @@ msgstr "페치하는 중"
 msgid "Fetching external item into '{0}'"
 msgstr "'{0}'(으)로 외부 항목을 가져오는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1062
 msgid "Fetching from '{0}'"
 msgstr "'{0}'에서 가져오는 중"
 
@@ -9995,7 +10029,7 @@ msgstr "필드 {0}"
 msgid "Fields"
 msgstr "필드"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:385
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:388
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:676
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:126
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
@@ -10069,6 +10103,11 @@ msgstr "파일 이름"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:47
 msgid "File Name Without Extension"
 msgstr "확장명 없는 파일 이름"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:383
+#, fuzzy
+msgid "File Nesting"
+msgstr "파일 확장명"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:44
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:57
@@ -10175,7 +10214,7 @@ msgstr "파일을 찾을 수 없습니다."
 msgid "File not found: {0}"
 msgstr "파일을 찾을 수 없음: ({0})"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:242
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:165
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:171
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:112
@@ -10310,11 +10349,11 @@ msgstr "멤버 오버로드 찾기"
 msgid "Find Method Overloads"
 msgstr "메서드 오버로드 찾기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
 msgid "Find Next Like Selection"
 msgstr "선택 항목과 유사한 다음 항목 찾기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:958
 msgid "Find Previous Like Selection"
 msgstr "선택 항목과 유사한 이전 항목 찾기"
 
@@ -10326,27 +10365,27 @@ msgstr "형식 확장 찾기"
 msgid "Find _Derived Symbols"
 msgstr "파생 기호 찾기(_D)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:931
 msgid "Find _Next"
 msgstr "다음 찾기(_N)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:941
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
 msgid "Find _Next (Emacs behavior)"
 msgstr "다음 찾기(Emacs 동작)(_N)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:934
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
 msgid "Find _Previous"
 msgstr "이전 찾기(_P)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 msgid "Find _Previous (Emacs behavior)"
 msgstr "이전 찾기(Emacs 동작)(_P)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 msgid "Find and run a specific command."
 msgstr "특정 명령을 찾아 실행합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 msgid "Find caret"
 msgstr "캐럿 찾기"
 
@@ -10436,11 +10475,11 @@ msgstr "'{0}' 연산자를 '{1}'(으)로 대칭 이동"
 msgid "Flush Memory"
 msgstr "메모리 플러시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
 msgid "Focus and center current document"
 msgstr "현재 문서 포커스 설정 및 가운데 맞춤"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
 msgid "Focus current document"
 msgstr "현재 문서에 포커스 설정"
 
@@ -11133,7 +11172,7 @@ msgstr "한 페이지 뒤로 이동"
 msgid "Go back to the home page"
 msgstr "홈페이지로 돌아가기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1082
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1085
 msgid "Go down one page"
 msgstr "한 페이지 아래로 이동"
 
@@ -11141,11 +11180,11 @@ msgstr "한 페이지 아래로 이동"
 msgid "Go forward one page"
 msgstr "한 페이지 앞으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
 msgid "Go left one character"
 msgstr "한 문자 왼쪽으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
 msgid "Go right one character"
 msgstr "한 문자 오른쪽으로 이동"
 
@@ -11165,7 +11204,7 @@ msgstr "컨트롤러로 이동"
 msgid "Go to Download Page"
 msgstr "다운로드 페이지로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:990
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 msgid "Go to File..."
 msgstr "파일로 이동..."
 
@@ -11173,24 +11212,24 @@ msgstr "파일로 이동..."
 msgid "Go to Implementation"
 msgstr "구현으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1027
 msgid "Go to Line..."
 msgstr "줄로 이동..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
 msgid "Go to Matching Brace"
 msgstr "일치하는 중괄호로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 msgid "Go to Next Bookmark"
 msgstr "다음 책갈피로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1014
 msgid "Go to Previous Bookmark"
 msgstr "이전 책갈피로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:983
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 msgid "Go to Type..."
 msgstr "형식으로 이동..."
 
@@ -11247,23 +11286,23 @@ msgstr "로그로 이동(_L)"
 msgid "Go to _Reference"
 msgstr "참조로 이동(_R)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 msgid "Go to a specific line"
 msgstr "특정 줄로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Go to beginning of document"
 msgstr "문서의 시작으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1062
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
 msgid "Go to beginning of line"
 msgstr "줄의 시작으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
 msgid "Go to end of document"
 msgstr "문서의 끝으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Go to end of line"
 msgstr "줄의 끝으로 이동"
 
@@ -11271,39 +11310,39 @@ msgstr "줄의 끝으로 이동"
 msgid "Go to failure"
 msgstr "실패로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1018
 msgid "Go to next bookmark"
 msgstr "다음 책갈피로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
 msgid "Go to next line"
 msgstr "다음 줄로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 msgid "Go to next subword"
 msgstr "다음 부분 단어로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
 msgid "Go to next word"
 msgstr "다음 단어로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1009
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
 msgid "Go to previous bookmark"
 msgstr "이전 책갈피로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
 msgid "Go to previous line"
 msgstr "이전 줄로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 msgid "Go to previous subword"
 msgstr "이전 부분 단어로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
 msgid "Go to previous word"
 msgstr "이전 단어로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1080
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Go up one page"
 msgstr "한 페이지 위로 이동"
 
@@ -11439,7 +11478,7 @@ msgstr "히브리어"
 msgid "Hebrew Visual"
 msgstr "히브리어(오른쪽에서 왼쪽으로 표기)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:870
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:44
 msgid "Help"
 msgstr "도움말"
@@ -11475,7 +11514,7 @@ msgstr "16진수 텍스트 편집기"
 # command type
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:264
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:41
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
 msgid "Hidden"
@@ -11494,7 +11533,7 @@ msgstr "애플리케이션 숨기기"
 msgid "Hide Categories"
 msgstr "범주 숨기기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1226
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1229
 msgid "Hide Current Message"
 msgstr "현재 메시지 숨기기"
 
@@ -11506,7 +11545,7 @@ msgstr "세부 정보 숨기기"
 msgid "Hide other applications' windows"
 msgstr "다른 애플리케이션의 창 숨기기"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:620
+#: ../src/addins/MacPlatform/MacPlatform.cs:616
 msgid "Hide {0}"
 msgstr "{0} 숨기기"
 
@@ -11925,7 +11964,7 @@ msgstr "Implements 지시문에는 비어 있지 않은 'interface' 특성이 �
 msgid "Import Color Theme"
 msgstr "색 테마 가져오기"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:474
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:475
 msgid "Import From Folder"
 msgstr "폴더에서 가져오기"
 
@@ -12182,6 +12221,10 @@ msgstr "매개 변수에서 필드 초기화"
 msgid "Initialize readonly auto-property from parameter"
 msgstr "매개 변수에서 읽기 전용 auto 속성 초기화"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:584
+msgid "Initializing '{0}' ({1}) command failed."
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:95
 msgid "Initializing Main Window"
 msgstr "주 창을 초기화하는 중"
@@ -12269,7 +12312,7 @@ msgstr "뒤에 구분 기호 삽입"
 msgid "Insert Separator Before"
 msgstr "앞에 구분 기호 삽입"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
 msgid "Insert Snippet..."
 msgstr "코드 조각 삽입..."
 
@@ -12298,11 +12341,11 @@ msgstr "일치하는 모든 항목에 캐럿 삽입"
 msgid "Insert format argument"
 msgstr "서식 인수 삽입"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1173
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
 msgid "Insert line break after the caret"
 msgstr "캐럿 뒤에 줄 바꿈 삽입"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
 msgid "Insert new line"
 msgstr "새 줄 삽입"
 
@@ -12393,7 +12436,7 @@ msgstr "형식 캐스트의 괄호 내부에 공백 삽입"
 msgid "Insert space within square brackets"
 msgstr "대괄호 안에 공백 삽입"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
 msgid "Insert tab"
 msgstr "탭 삽입"
 
@@ -12401,7 +12444,7 @@ msgstr "탭 삽입"
 msgid "Inserts a Guid at caret position"
 msgstr "캐럿 위치에 Guid를 삽입합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
 msgid "Inserts a snippet"
 msgstr "코드 조각 삽입"
 
@@ -12476,7 +12519,7 @@ msgstr "설치하는 중..."
 msgid "Instrumentation"
 msgstr "계측"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:734
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:737
 msgid "Instrumentation Monitor"
 msgstr "계측 모니터"
 
@@ -12595,7 +12638,7 @@ msgstr "번역 가능한 문자열의 '{0}' 문자가 잘못됨: '{1}'"
 msgid "Invalid code page number."
 msgstr "코드 페이지 번호가 잘못되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
 msgid "Invalid configuration mapping"
 msgstr "잘못된 구성 매핑"
 
@@ -12669,7 +12712,7 @@ msgstr ""
 "젝트가 무시됩니다."
 
 # used for project model (not of C# term).
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:248
 msgid "Invariant"
 msgstr "고정"
 
@@ -12736,11 +12779,11 @@ msgstr "문자열 연결"
 msgid "Join the current line with the next line"
 msgstr "현재 줄을 다음 줄과 연결"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
 msgid "Jump to a file in the current workspace"
 msgstr "현재 작업 영역에서 파일로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 msgid "Jump to a item in the current workspace"
 msgstr "현재 작업 영역에서 항목으로 이동"
 
@@ -12757,7 +12800,7 @@ msgstr "첫 번째 오류 또는 경고로 이동:"
 msgid "Jump to line {0}"
 msgstr "{0} 줄로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:984
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "현재 작업 영역에서 형식의 선언으로 이동"
 
@@ -12966,7 +13009,7 @@ msgstr "{0}에 대한 시작 스크립트"
 msgid "Layout"
 msgstr "레이아웃"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:573
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
 msgid "Layout List"
 msgstr "레이아웃 목록"
 
@@ -13085,7 +13128,7 @@ msgstr "목록 뷰"
 msgid "List of changes for this refactoring:"
 msgstr "이 리팩터링의 변경 목록:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
 msgid "List of programs to open with"
 msgstr "여는 데 사용할 프로그램의 목록"
 
@@ -13117,6 +13160,11 @@ msgstr "로드/저장"
 msgid "Loaded Assemblies"
 msgstr "로드된 어셈블리"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:362
+#, fuzzy
+msgid "Loading"
+msgstr "로드하는 중..."
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:264
 msgid "Loading Workbench"
 msgstr "Workbench를 로드하는 중"
@@ -13125,7 +13173,7 @@ msgstr "Workbench를 로드하는 중"
 msgid "Loading build log…"
 msgstr "빌드 로그를 로드하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1129
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:363
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:485
 msgid "Loading data..."
@@ -13156,6 +13204,10 @@ msgstr "작업 영역 항목을 로드하는 중: {0}"
 #: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:546
 msgid "Loading {0} add-in"
 msgstr "{0} 추가 기능을 로드하는 중"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:346
+msgid "Loading {0} search provider..."
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:51
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:97
@@ -13242,7 +13294,7 @@ msgid "Locking..."
 msgstr "잠그는 중..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Log"
 msgstr "로그"
 
@@ -13525,7 +13577,7 @@ msgstr "패키지(솔루션) 복원"
 msgid "Manage Repositories..."
 msgstr "리포지토리 관리..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:722
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:725
 msgid "Manage extensions"
 msgstr "확장 관리"
 
@@ -13555,7 +13607,7 @@ msgstr "관리되는 관찰자"
 msgid "Manifest File"
 msgstr "매니페스트 파일"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 msgid "Mark Log"
 msgstr "로그 표시"
 
@@ -13736,7 +13788,7 @@ msgstr ""
 "이름이나 번호에 해당하지 않는 경우 교체 구문이\n"
 "식 테스트로 해석됩니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 msgid "Matching _Brace"
 msgstr "일치하는 중괄호(_B)"
 
@@ -13792,7 +13844,7 @@ msgstr "메뉴 범주:"
 msgid "Menu entry"
 msgstr "메뉴 항목"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.MergeDialog.cs:112
 msgid "Merge"
 msgstr "병합"
@@ -13805,11 +13857,11 @@ msgstr "분기 병합..."
 msgid "Merge Conflict Resolution"
 msgstr "병합 충돌 해결"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1229
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1244
 msgid "Merging"
 msgstr "병합하는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:107
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:108
 msgid "Merging branch '{0}'..."
 msgstr "'{0}' 분기를 병합하는 중..."
 
@@ -13858,7 +13910,7 @@ msgstr "방법 {0}"
 msgid "Methods"
 msgstr "메서드"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
@@ -13991,7 +14043,7 @@ msgstr "모듈 이름:"
 msgid "Monitor application/applet that monitors some resource or activity"
 msgstr "리소스 또는 활동을 모니터링하는 모니터 애플리케이션/애플릿"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Mono"
 msgstr "Mono"
 
@@ -14027,7 +14079,7 @@ msgstr "Mono 런타임을 찾을 수 없습니다."
 msgid "Mono runtime settings:"
 msgstr "Mono 런타임 설정:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:242
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -14118,15 +14170,15 @@ msgstr "둘 이상의 루트 요소"
 msgid "More..."
 msgstr "자세히..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
 msgid "Move caret to EOL and insert new line"
 msgstr "EOL로 캐럿을 이동하고 새 줄 삽입"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:618
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:621
 msgid "Move cursor to next error or search match"
 msgstr "다음 오류 또는 검색 일치 항목으로 커서 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:624
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:627
 msgid "Move cursor to previous error or search match"
 msgstr "이전 오류 또는 검색 일치 항목으로 커서 이동"
 
@@ -14134,11 +14186,11 @@ msgstr "이전 오류 또는 검색 일치 항목으로 커서 이동"
 msgid "Move last caret down"
 msgstr "마지막 캐럿 아래로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 msgid "Move the line or highlighted selection down"
 msgstr "줄 또는 강조 표시된 선택 영역을 아래로 이동합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 msgid "Move the line or highlighted selection up"
 msgstr "줄 또는 강조 표시된 선택 영역을 위로 이동합니다."
 
@@ -14150,19 +14202,19 @@ msgstr "목록에서 선택한 폴더를 아래로 이동합니다."
 msgid "Move the selected folder up the list"
 msgstr "목록에서 선택한 폴더를 위로 이동합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:689
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:692
 msgid "Move to Next Notebook"
 msgstr "다음 노트로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:697
 msgid "Move to Previous Notebook"
 msgstr "이전 노트로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:641
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
 msgid "Move to next point in code navigation history"
 msgstr "코드 탐색 기록에서 다음 지점으로 이동"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:634
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:637
 msgid "Move to previous point in code navigation history"
 msgstr "코드 탐색 기록에서 이전 지점으로 이동"
 
@@ -14170,11 +14222,11 @@ msgstr "코드 탐색 기록에서 이전 지점으로 이동"
 msgid "Move to the next page"
 msgstr "다음 페이지 이동"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2089
 msgid "Moving files"
 msgstr "파일을 이동하는 중"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2291
 msgid "Moving files..."
 msgstr "파일을 이동하는 중..."
@@ -14445,19 +14497,19 @@ msgstr "네이티브"
 msgid "Navigate"
 msgstr "탐색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
 msgid "Navigate To..."
 msgstr "탐색..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:629
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:632
 msgid "Navigate _Back"
 msgstr "뒤로 탐색(_B)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:636
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:639
 msgid "Navigate _Forward"
 msgstr "앞으로 탐색(_F)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:647
 msgid "Navigate _History"
 msgstr "기록 탐색(_H)"
 
@@ -14465,7 +14517,7 @@ msgstr "기록 탐색(_H)"
 msgid "Navigation _History"
 msgstr "탐색 기록(_H)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1019
 msgid "Ne_xt"
 msgstr "다음(_X)"
 
@@ -14582,7 +14634,7 @@ msgstr "새 그룹"
 msgid "New Group..."
 msgstr "새 그룹..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:366
+#: ../src/addins/MacPlatform/MacPlatform.cs:362
 msgid "New Instance"
 msgstr "새 인스턴스"
 
@@ -14642,7 +14694,7 @@ msgid "New _Class..."
 msgstr "새 파일(_F)..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:245
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:396
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
 msgid "New _File..."
 msgstr "새 파일(_F)..."
 
@@ -14650,11 +14702,11 @@ msgstr "새 파일(_F)..."
 msgid "New _Folder…"
 msgstr "새 폴더(_F)..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:419
 msgid "New _Solution..."
 msgstr "새 솔루션(_S)..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:423
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:426
 msgid "New _Workspace..."
 msgstr "새 작업 영역(_W)..."
 
@@ -14744,7 +14796,7 @@ msgstr "다음 문서"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:394
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14794,8 +14846,8 @@ msgstr "사용할 수 있는 코드 수정 없음"
 msgid "No completions found"
 msgstr "완료된 항목을 찾을 수 없습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1126
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1141
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1128
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1143
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:382
 msgid "No differences found"
 msgstr "차이점을 찾을 수 없습니다."
@@ -14832,8 +14884,8 @@ msgstr ""
 "프로젝트 디렉터리에서 메이크파일을 찾을 수 없습니다. 지금 메이크파일을 생성할"
 "까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:437
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:598
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:168
 msgid "No matches"
 msgstr "일치 항목 없음"
@@ -14995,8 +15047,8 @@ msgstr "배포 가능한 프로젝트가 아닙니다."
 msgid "Not a glade file according to node name."
 msgstr "노드 이름에 따른 glade 파일이 아닙니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1032
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1034
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1049
 msgid "Not a valid git repository."
 msgstr "유효한 git 리포지토리가 아닙니다."
 
@@ -15032,7 +15084,7 @@ msgstr "NotImplementedException이 throw되었습니다."
 msgid "NotImplementedException({0}) thrown."
 msgstr "NotImplementedException({0})이 throw되었습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:64
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:66
 msgid ""
 "Note: The reversion will occur in your working copy, so you will still need "
 "to perform a commit to complete it."
@@ -15108,7 +15160,7 @@ msgstr "수치 해석 소프트웨어"
 msgid "OK"
 msgstr "확인"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:514
 msgid "O_pen Containing Folder"
 msgstr "포함 폴더 열기(_P)"
 
@@ -15147,11 +15199,11 @@ msgstr "각 디렉터리에 하나의 변경 로그"
 msgid "One ChangeLog in the project root directory"
 msgstr "프로젝트 루트 디렉터리에 하나의 변경 로그"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:682
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:685
 msgid "One Column"
 msgstr "한 개의 열"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:683
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:686
 msgid "One Editor Column"
 msgstr "한 개의 편집기 열"
 
@@ -15220,7 +15272,7 @@ msgstr "새 편집기에서 C# 파일 열기"
 msgid "Open Glade File"
 msgstr "Glade 파일 열기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:888
 msgid "Open Log Directory"
 msgstr "로그 디렉터리 열기"
 
@@ -15245,7 +15297,7 @@ msgid "Open URL in web browser when app starts:"
 msgstr "앱 시작 시 웹 브라우저에서 URL 열기:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:185
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:218
 msgid "Open With:"
 msgstr "연결 프로그램:"
 
@@ -15257,7 +15309,7 @@ msgstr "연결 프로그램(_W)"
 msgid "Open a file selector to select the project path"
 msgstr "파일 선택기를 열어 프로젝트 경로 선택"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:395
 msgid "Open file or solution"
 msgstr "파일 또는 솔루션 열기"
 
@@ -15273,7 +15325,7 @@ msgstr "기본 설정 대화 상자 열기"
 msgid "Open script"
 msgstr "스크립트 열기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:600
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:603
 msgid "Open selected document"
 msgstr "선택한 문서 열기"
 
@@ -15282,8 +15334,8 @@ msgstr "선택한 문서 열기"
 msgid "Open solution {0}"
 msgstr "{0} 솔루션 열기"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:411
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:422
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:435
 msgid "Open with '{0}'"
 msgstr "'{0}'(으)로 열기"
 
@@ -15302,23 +15354,23 @@ msgstr "열기..."
 msgid "Opening {0}"
 msgstr "{0}을(를) 여는 중"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:505
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
 msgid "Opens a terminal in this folder"
 msgstr "이 폴더에서 터미널을 엽니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
 msgid "Opens the directory where the diagnostic logs are stored"
 msgstr "진단 로그가 저장된 디렉터리를 엽니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
 msgid "Opens the folder in a file manager."
 msgstr "파일 관리자에서 폴더를 엽니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:512
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:515
 msgid "Opens the folder that contains this file."
 msgstr "이 파일이 포함된 폴더를 엽니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:550
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
 msgid "Opens the last tab that has been closed"
 msgstr "마지막으로 닫힌 탭을 엽니다."
 
@@ -15761,7 +15813,7 @@ msgstr "패드"
 msgid "Page %N of %Q"
 msgstr "%N/%Q 페이지"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:475
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:478
 msgid "Page Set_up"
 msgstr "페이지 설정(_U)"
 
@@ -15974,7 +16026,7 @@ msgstr "출력 패드 고정"
 msgid "Pin results pad"
 msgstr "결과 패드 고정"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:559
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:562
 msgid "Pin/Unpin current Tab selected"
 msgstr ""
 
@@ -16131,6 +16183,10 @@ msgstr "디버깅할 애플리케이션을 선택하세요."
 msgid "Please select which files and folders you want to delete:"
 msgstr "삭제할 파일 및 폴더 선택:"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Please use the command line client to init the submodules manually."
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:546
 msgid "Plural"
 msgstr "복수형"
@@ -16151,7 +16207,7 @@ msgstr "내보낼 정책:"
 msgid "Policies to set or replace:"
 msgstr "설정하거나 바꿀 정책:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:552
 msgid "Policies..."
 msgstr "정책..."
 
@@ -16176,7 +16232,7 @@ msgstr "정책:"
 msgid "Pop stash"
 msgstr "스태시 적용 및 제거"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:396
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:411
 msgid "Popping stash"
 msgstr "스태시를 적용하고 삭제하는 중"
 
@@ -16251,7 +16307,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "기본 설정(_E)..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
 msgid "Pre_vious"
 msgstr "이전(_V)"
 
@@ -16355,7 +16411,7 @@ msgstr "throw 식 기본 사용"
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:555
+#: ../src/addins/MacPlatform/MacPlatform.cs:551
 msgid "Preferences..."
 msgstr "기본 설정..."
 
@@ -16459,7 +16515,7 @@ msgstr "파일의 이전 문제"
 msgid "Previous document"
 msgstr "이전 문서"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:470
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:473
 msgid "Print Previe_w"
 msgstr "인쇄 미리 보기(_W)"
 
@@ -16467,7 +16523,7 @@ msgstr "인쇄 미리 보기(_W)"
 msgid "Print a message and continue"
 msgstr "메시지를 인쇄하고 계속하기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:464
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:467
 msgid "Print current document"
 msgstr "현재 문서 인쇄"
 
@@ -16532,7 +16588,7 @@ msgstr "T4 템플릿 처리..."
 msgid "Process all T4 templates."
 msgstr "모든 T4 템플릿을 처리합니다."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 msgid "Profile"
 msgstr "프로필"
@@ -16685,7 +16741,7 @@ msgid "Project Version"
 msgstr "프로젝트 버전"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 msgid "Project _Options"
 msgstr "프로젝트 옵션(_O)"
 
@@ -16738,7 +16794,7 @@ msgstr "프로젝트 이름이 제공되지 않았습니다."
 msgid "Project name:"
 msgstr "프로젝트 이름:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:154
 msgid "Project not built in active configuration"
 msgstr "프로젝트가 활성 구성에서 빌드되지 않았습니다."
 
@@ -16895,7 +16951,7 @@ msgstr "공개 키:"
 msgid "Publish"
 msgstr "게시"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:133
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:131
 msgid "Publish operation completed."
 msgstr "게시 작업이 완료되었습니다."
 
@@ -16920,7 +16976,7 @@ msgstr "앱을 폴더 또는 파일 공유에 게시"
 msgid "Published"
 msgstr "게시됨"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:113
 msgid "Publishing \"{0}\" Project..."
 msgstr "\"{0} \" 프로젝트를 게시하는 중..."
 
@@ -16945,7 +17001,7 @@ msgstr "URL 푸시:"
 msgid "Push changes to remote repository after commit"
 msgstr "커밋 후 원격 리포지토리에 변경 내용 푸시"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1731
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1745
 msgid "Push operation successfully completed."
 msgstr "푸시 작업이 완료되었습니다."
 
@@ -16965,7 +17021,7 @@ msgstr "태그를 푸시하는 중"
 msgid "Pushing Tag '{0}' to '{1}'"
 msgstr "'{0}' 태그를 '{1}'(으)로 푸시하는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:65
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:66
 msgid "Pushing changes..."
 msgstr "변경 내용을 푸시하는 중..."
 
@@ -17061,7 +17117,7 @@ msgstr "자동"
 msgid "Quit"
 msgstr "끝내기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:500
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:503
 msgid "Quit MonoDevelop"
 msgstr "MonoDevelop 끝내기"
 
@@ -17081,7 +17137,7 @@ msgstr "ROX 데스크톱"
 msgid "R_ebuild"
 msgstr "다시 빌드(_E)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:258
 msgid "R_ebuild {0}"
 msgstr "{0} 다시 빌드(_E)"
 
@@ -17093,7 +17149,7 @@ msgstr "Using 제거 및 정렬(_E)"
 msgid "R_eplace"
 msgstr "바꾸기(_E)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
 msgid "R_eplace in Files..."
 msgstr "파일에서 바꾸기(_E)..."
 
@@ -17235,11 +17291,11 @@ msgstr "기준 주소 다시 지정"
 msgid "Rebase to Branch..."
 msgstr "분기로 기준 주소 다시 지정..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1176
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1191
 msgid "Rebasing"
 msgstr "기준 주소를 다시 지정하는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:102
 msgid "Rebasing branch '{0}'..."
 msgstr "'{0}' 분기의 기준 주소를 다시 지정하는 중..."
 
@@ -17251,7 +17307,7 @@ msgstr "모든 솔루션의 모든 프로젝트 다시 빌드"
 msgid "Rebuild the current project"
 msgstr "현재 프로젝트 다시 빌드"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:259
 msgid "Rebuild {0}"
 msgstr "{0} 다시 빌드"
 
@@ -17268,11 +17324,11 @@ msgstr "다시 빌드하는 중...(빌드)"
 msgid "Rebuilding... (Clean)"
 msgstr "다시 빌드하는 중...(클린)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:321
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:336
 msgid "Receiving and indexing objects"
 msgstr "개체를 받고 인덱싱하는 중"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:490
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
 msgid "Recent Pro_jects"
 msgstr "최근 프로젝트(_J)"
 
@@ -17288,7 +17344,7 @@ msgstr "최근 솔루션(_T)"
 msgid "Recent Templates"
 msgstr "최근 템플릿"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:480
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:26
 msgid "Recent _Files"
 msgstr "최근 파일(_F)"
@@ -17470,7 +17526,7 @@ msgstr "참조"
 msgid "References a strongly-typed model"
 msgstr "강력한 형식의 모델을 참조합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:612
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:305
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:155
@@ -17478,7 +17534,7 @@ msgstr "강력한 형식의 모델을 참조합니다."
 msgid "Refresh"
 msgstr "새로 고침"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:608
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
 msgid "Refresh the tree"
 msgstr "트리 새로 고침"
 
@@ -17584,13 +17640,13 @@ msgstr "원격 소스"
 msgid "Remote Status"
 msgstr "원격 상태"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:982
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:997
 msgid "Remote server error: {0}"
 msgstr "원격 서버 오류: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:386
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:397
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:295
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:463
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:472
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:200
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:208
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:74
@@ -17706,7 +17762,7 @@ msgstr "반환된 식 제거"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr "하위 메뉴 제거(Ctrl+왼쪽 화살표)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 msgid "Remove tab"
 msgstr "탭 제거"
 
@@ -17894,7 +17950,7 @@ msgstr "{0} 이름을 {1}(으)로 바꾸기"
 msgid "Renamed"
 msgstr "이름이 변경됨"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:552
 msgid "Reopen Closed Tab"
 msgstr "닫힌 탭 다시 열기"
 
@@ -18039,7 +18095,7 @@ msgstr "'{1}' 프로젝트에서 '{0}'을(를) 바꾸는 중"
 msgid "Replacing {0}: existing file is older."
 msgstr "{0}을(를) 바꾸는 중: 기존 파일이 이전 버전입니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:742
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:745
 msgid "Replay Session..."
 msgstr "세션 재생..."
 
@@ -18084,7 +18140,7 @@ msgstr "클라이언트 인증서 필요"
 msgid "Require License Acceptance:"
 msgstr "라이선스 승인 필요:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
 msgid "Require Specific Version"
 msgstr "특정 버전 필요"
 
@@ -18116,7 +18172,7 @@ msgstr "테스트 다시 실행"
 msgid "Reset"
 msgstr "다시 설정"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:606
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
 msgid "Reset Options"
 msgstr "옵션 다시 설정"
 
@@ -18125,7 +18181,7 @@ msgstr "옵션 다시 설정"
 msgid "Reset condition"
 msgstr "조건 다시 설정"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:672
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
 msgid "Resets zoom to default"
 msgstr "확대/축소를 기본값으로 다시 설정합니다."
 
@@ -18181,11 +18237,11 @@ msgstr "F# 대화형 다시 시작"
 msgid "Restart With Debugging"
 msgstr "디버그하고 다시 시작"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:275
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
 msgid "Restart Without Debugging"
 msgstr "디버깅하지 않고 다시 시작"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:393
 msgid "Restart and enable"
 msgstr "다시 시작 및 사용"
 
@@ -18233,7 +18289,7 @@ msgstr "누락된 패키지 복원"
 msgid "Restored '{0}'"
 msgstr "'{0}'을(를) 복원함"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1149
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1164
 msgid "Restoring local changes"
 msgstr "로컬 변경 내용을 복원하는 중"
 
@@ -18249,7 +18305,7 @@ msgstr "프로젝트의 패키지를 복원하는 중..."
 msgid "Restoring packages for solution..."
 msgstr "솔루션의 패키지를 복원하는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1893
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1907
 msgid "Restoring stash for branch {0} failed"
 msgstr "{0} 분기에 대한 스태시를 복원하지 못했습니다."
 
@@ -18318,7 +18374,7 @@ msgstr "수정 버전 {0}을(를) 검색하는 중..."
 msgid "Retry"
 msgstr "다시 시도"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:983
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:998
 msgid "Retry authentication?"
 msgstr "인증을 다시 시도하시겠어요?"
 
@@ -18336,11 +18392,11 @@ msgstr "인덱서의 반환 형식"
 msgid "Returns:"
 msgstr "반환:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:516
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:519
 msgid "Reveal in Finder"
 msgstr "Finder에 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:517
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:520
 msgid "Reveals the file in Finder"
 msgstr "Finder에 파일을 표시합니다."
 
@@ -18361,7 +18417,7 @@ msgid "Revert changes from this revision"
 msgstr "이 수정 버전에서 변경 내용 되돌리기"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:131
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 msgid "Revert operation completed."
 msgstr "되돌리기 작업이 완료되었습니다."
 
@@ -18369,7 +18425,7 @@ msgstr "되돌리기 작업이 완료되었습니다."
 msgid "Revert this change"
 msgstr "이 변경 내용 되돌리기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:456
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
 msgid "Revert to a saved version of the file"
 msgstr "파일의 저장된 버전으로 되돌리기"
 
@@ -18390,15 +18446,15 @@ msgstr "'{0}'을(를) 되돌림"
 msgid "Reverting ..."
 msgstr "되돌리는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1531
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1545
 msgid "Reverting files"
 msgstr "파일을 되돌리는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:100
 msgid "Reverting revision {0}..."
 msgstr "수정 버전 {0}(을)를 되돌리는 중..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:96
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
 msgid "Reverting to revision {0}..."
 msgstr "수정 버전 {0}(으)로 되돌리는 중..."
 
@@ -18468,7 +18524,7 @@ msgid "Rotate primary caret up"
 msgstr "기본 캐럿 위로 회전"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -18483,7 +18539,7 @@ msgid "Run All"
 msgstr "모두 실행"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:380
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:591
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:593
 msgid "Run Code Analysis on Project"
 msgstr "프로젝트에서 코드 분석 실행"
 
@@ -18491,7 +18547,7 @@ msgstr "프로젝트에서 코드 분석 실행"
 msgid "Run Code Analysis on Solution"
 msgstr "솔루션에서 코드 분석 실행"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:587
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:589
 msgid "Run Code Analysis on {0}"
 msgstr "{0}에서 코드 분석 실행"
 
@@ -18513,11 +18569,11 @@ msgstr "실행 구성"
 msgid "Run Configurations:"
 msgstr "실행 구성:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:347
 msgid "Run Project"
 msgstr "프로젝트 실행"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:343
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
 msgid "Run Solution"
 msgstr "솔루션 실행"
 
@@ -18669,7 +18725,7 @@ msgstr "<b>{0}</b> 구성 <b>{1}</b>에 대한 테스트를 실행하는 중"
 msgid "Running web server..."
 msgstr "웹 서버를 실행하는 중..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1986
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1992
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:798
 msgid "Running {0} ..."
@@ -18812,7 +18868,7 @@ msgstr "공백 표시(_H)"
 msgid "S_trong Name File:"
 msgstr "강력한 이름 파일(_T):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:598
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
 msgid "S_witch Maximized/Normal View"
 msgstr "최대화된/일반 뷰 전환(_W)"
 
@@ -18831,7 +18887,7 @@ msgstr "채도"
 msgid "Save"
 msgstr "저장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:413
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
 msgid "Save A_ll"
 msgstr "모두 저장(_L)"
 
@@ -18839,7 +18895,7 @@ msgstr "모두 저장(_L)"
 msgid "Save As"
 msgstr "다른 이름으로 저장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:579
 msgid "Save Curre_nt Layout..."
 msgstr "현재 레이아웃 저장(_N)..."
 
@@ -18847,11 +18903,11 @@ msgstr "현재 레이아웃 저장(_N)..."
 msgid "Save Files"
 msgstr "파일 저장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:462
 msgid "Save _As..."
 msgstr "다른 이름으로 저장(_A)..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:412
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:415
 msgid "Save all open files"
 msgstr "모든 열린 파일 저장"
 
@@ -18963,7 +19019,7 @@ msgstr "새 패키징 프로젝트에서 저장"
 msgid "Save location:"
 msgstr "저장 위치:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:373
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:374
 msgid "Save operation failed."
 msgstr "저장 작업이 실패했습니다."
 
@@ -18975,7 +19031,7 @@ msgstr "새 사용자 지정 정책 집합으로 프로젝트 정책 저장"
 msgid "Save project {0}"
 msgstr "{0} 프로젝트 저장"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:405
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:408
 msgid "Save the active document"
 msgstr "활성 문서 저장"
 
@@ -18987,7 +19043,7 @@ msgstr "닫기 전에 '{0}' 문서에 변경 내용을 저장할까요?"
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "새 솔루션을 만들기 전에 '{0}' 문서에 변경 내용을 저장할까요?"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:460
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
 msgid "Save the current file with a different name"
 msgstr "다른 이름으로 현재 파일 저장"
 
@@ -19015,7 +19071,7 @@ msgstr "작업 영역을 저장하는 중..."
 msgid "Saving item: {0}"
 msgstr "항목을 저장하는 중: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1085
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1100
 msgid "Saving local changes"
 msgstr "로컬 변경 내용을 저장하는 중"
 
@@ -19084,27 +19140,27 @@ msgstr "스크립트 이름이 제공되지 않았습니다."
 msgid "Script name:"
 msgstr "스크립트 이름:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
 msgid "Scroll line down"
 msgstr "아래로 줄 스크롤"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Scroll line up"
 msgstr "위로 줄 스크롤"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 msgid "Scroll page down"
 msgstr "아래로 페이지 스크롤"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1093
 msgid "Scroll page up"
 msgstr "위로 페이지 스크롤"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1099
 msgid "Scroll to bottom"
 msgstr "맨 아래로 스크롤"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1094
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1097
 msgid "Scroll to top"
 msgstr "맨 위로 스크롤"
 
@@ -19112,7 +19168,7 @@ msgstr "맨 위로 스크롤"
 msgid "Se_t Startup Projects..."
 msgstr "시작 프로젝트 설정(_T)..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:241
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:167
@@ -19146,7 +19202,7 @@ msgstr "파일 검색"
 msgid "Search Members"
 msgstr "맴버 검색"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:79
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:80
 msgid "Search Packages..."
 msgstr "패키지 검색..."
 
@@ -19167,15 +19223,15 @@ msgstr "검색 도구 상자"
 msgid "Search Types"
 msgstr "형식 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:936
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 msgid "Search backwards for the same text"
 msgstr "동일한 텍스트를 뒤로 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "emacs 동작을 사용하여 동일한 텍스트를 뒤로 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 msgid "Search backwards for the selected text"
 msgstr "선택한 텍스트를 뒤로 검색"
 
@@ -19195,11 +19251,11 @@ msgstr "검색이 완료되었습니다."
 msgid "Search filter menu"
 msgstr "필터 메뉴 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:926
 msgid "Search for and replace text"
 msgstr "텍스트 검색 및 바꾸기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 msgid "Search for and replace text in all files of a directory"
 msgstr "디렉터리의 모든 파일에서 텍스트 검색 및 바꾸기"
 
@@ -19207,11 +19263,11 @@ msgstr "디렉터리의 모든 파일에서 텍스트 검색 및 바꾸기"
 msgid "Search for members"
 msgstr "맴버 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:917
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 msgid "Search for text"
 msgstr "텍스트 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
 msgid "Search for text in all files of a directory"
 msgstr "디렉터리의 모든 파일에서 텍스트를 검색합니다."
 
@@ -19223,27 +19279,27 @@ msgstr "형식 검색"
 msgid "Search for types and members"
 msgstr "형식 및 맴버 검색"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:64
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:65
 msgid "Search for {0} in packages"
 msgstr "패키지에서 {0} 검색"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:90
 msgid "Search for {0} in solution"
 msgstr "솔루션에서 {0} 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:930
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search forwards for the same text"
 msgstr "동일한 텍스트를 앞으로 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:943
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:946
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "emacs 동작을 사용하여 동일한 텍스트를 앞으로 검색"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:951
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:954
 msgid "Search forwards for the selected text"
 msgstr "선택한 텍스트를 앞으로 검색"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:102
 msgid "Search in Solution..."
 msgstr "솔루션에서 검색..."
 
@@ -19297,7 +19353,7 @@ msgstr "형식 및 맴버를 검색하는 중..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:122
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:53
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/FindReferencesHandler.cs:151
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/StreamingFindUsagesPresenter.cs:40
 msgid "Searching..."
@@ -19492,7 +19548,7 @@ msgstr "키 파일 선택"
 msgid "Select a platform"
 msgstr "플랫폼을 선택합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:646
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:649
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:187
 msgid "Select a point from the navigation history"
 msgstr "탐색 기록에서 지점 선택"
@@ -19566,8 +19622,8 @@ msgstr "디렉터리 선택"
 msgid "Select event to generate the method for."
 msgstr "메서드를 생성할 이벤트를 선택하세요."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:494
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:549
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:495
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:550
 msgid "Select files to add from {0}"
 msgstr "{0}에서 추가할 파일 선택"
 
@@ -20069,7 +20125,7 @@ msgstr "기본값으로 설정"
 msgid "Set as Default"
 msgstr "기본값으로 설정"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:594
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:597
 msgid "Set full screen mode"
 msgstr "전체 화면 모드 설정"
 
@@ -20257,7 +20313,7 @@ msgstr "MonoDevelop 기본 설정 창 표시"
 msgid "Show More"
 msgstr "자세히 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:620
 msgid "Show Next"
 msgstr "다음 표시"
 
@@ -20277,7 +20333,7 @@ msgstr "다음 문 표시"
 msgid "Show Output"
 msgstr "출력 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 msgid "Show Parameter List"
 msgstr "매개 변수 목록 표시"
 
@@ -20293,7 +20349,7 @@ msgstr "매개 변수 형식 표시"
 msgid "Show Parameter Value"
 msgstr "매개 변수 값 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:623
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:626
 msgid "Show Previous"
 msgstr "이전 표시"
 
@@ -20309,7 +20365,7 @@ msgstr "이전 표시({0})"
 msgid "Show Remote Status"
 msgstr "원격 상태 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1241
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1244
 msgid "Show Scopes"
 msgstr "범위 표시"
 
@@ -20362,7 +20418,7 @@ msgstr "미니맵 표시(_M)"
 msgid "Show _column ruler"
 msgstr "열 눈금자 표시(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:891
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 msgid "Show about dialog"
 msgstr "정보 대화 상자 표시"
 
@@ -20408,7 +20464,7 @@ msgstr "함수 형식 시그니처 표시"
 msgid "Show fuzzy translations"
 msgstr "퍼지 번역 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:875
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
 msgid "Show help"
 msgstr "도움말 표시"
 
@@ -20432,7 +20488,7 @@ msgstr "메시지 풍선 표시:"
 msgid "Show missing translations"
 msgstr "누락된 번역 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:753
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:756
 msgid "Show next document"
 msgstr "다음 문서 표시"
 
@@ -20448,7 +20504,7 @@ msgstr "옵션 창 표시"
 msgid "Show output"
 msgstr "출력 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:476
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:479
 msgid "Show page setup"
 msgstr "페이지 설정 표시"
 
@@ -20456,11 +20512,11 @@ msgstr "페이지 설정 표시"
 msgid "Show pre-release packages"
 msgstr "시험판 패키지 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:760
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:763
 msgid "Show previous document"
 msgstr "이전 문서 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:471
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:474
 msgid "Show print preview"
 msgstr "인쇄 미리 보기 표시"
 
@@ -20480,7 +20536,7 @@ msgstr "public 및 protected 멤버만 표시"
 msgid "Show public members only"
 msgstr "public 멤버만 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1219
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
 msgid "Show quick info"
 msgstr "요약 정보 표시"
 
@@ -20532,7 +20588,7 @@ msgstr "테스트 출력 표시"
 msgid "Show the {0} pad"
 msgstr "{0} 패드 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 msgid "Show tip of the day"
 msgstr "유용한 정보 표시"
 
@@ -20553,11 +20609,11 @@ msgstr "시작 시 시작 페이지 표시"
 msgid "Show {0}"
 msgstr "{0} 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1232
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1235
 msgid "Show/Hide Inline Messages"
 msgstr "인라인 메시지 표시/숨기기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1227
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1230
 msgid "Show/Hide current Inline Message"
 msgstr "현재 인라인 메시지 표시/숨기기"
 
@@ -20569,11 +20625,11 @@ msgstr "빠른 작업 표시줄에 NotImplementedException throw를 표시합니
 msgid "Shows method and class folds"
 msgstr "메서드 및 클래스 접기를 표시합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 msgid "Shows the authors of the current file"
 msgstr "현재 파일의 작성자를 표시합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid ""
 "Shows the differences in the code between the current code and the version "
 "in the repository"
@@ -20583,16 +20639,16 @@ msgstr "현재 코드와 리포지토리의 버전 사이에 존재하는 코드
 msgid "Shows the line numbers for the current file"
 msgstr "현재 파일에 대한 줄 번호를 표시합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 msgid "Shows the merge view for the current file"
 msgstr "현재 파일의 병합 보기 표시"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Shows the source control log for the current file"
 msgstr "현재 파일의 소스 제어 로그 표시"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1220
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1223
 msgid "Shows the tooltip at editor positon"
 msgstr "편집기 위치에 도구 설명을 표시합니다."
 
@@ -20754,7 +20810,7 @@ msgid "Solution Options"
 msgstr "솔루션 옵션"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:217
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:211
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:244
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:242
 msgid "Solution Workbench"
 msgstr "솔루션 Workbench"
@@ -20826,7 +20882,7 @@ msgstr "솔루션"
 msgid "Some additional changes on another file of the project."
 msgstr "프로젝트의 다른 파일에 추가 변경 내용이 있습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:220
 msgid "Some dependencies need to be updated"
 msgstr "일부 종속성을 업데이트해야 합니다."
 
@@ -21259,7 +21315,7 @@ msgstr "솔루션 디버그 시작"
 msgid "Start Debugging on External Console"
 msgstr "외부 콘솔에서 디버깅 시작"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:738
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:741
 msgid "Start Session Recorder"
 msgstr "세션 레코더 시작"
 
@@ -21268,7 +21324,7 @@ msgid "Start Window"
 msgstr "시작 윈도"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:304
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:279
 msgid "Start Without Debugging"
 msgstr "디버깅하지 않고 시작"
 
@@ -21350,33 +21406,35 @@ msgstr "스태시"
 msgid "Stash Manager"
 msgstr "스태시 관리자"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1245
 msgid "Stash and Merge"
 msgstr "스태시 및 병합"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1177
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1192
 msgid "Stash and Rebase"
 msgstr "스태시 및 다시 지정"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1938
 msgid "Stash and Switch"
 msgstr "스태시 및 전환"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:173
-msgid "Stash applied with conflicts"
-msgstr "스태시가 적용되었지만 충돌이 발생했습니다."
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:190
+#, fuzzy
+msgid "Stash not applied."
+msgstr "스태시 작업이 실패했습니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:173
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:205
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 msgid "Stash operation failed"
 msgstr "스태시 작업 실패"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:159
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:160
 msgid "Stash operation failed."
 msgstr "스태시 작업이 실패했습니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
-msgid "Stash successfully applied"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:204
+#, fuzzy
+msgid "Stash successfully applied."
 msgstr "스태시가 적용되었습니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:33
@@ -21391,7 +21449,7 @@ msgstr "기준 주소 다시 지정 전/후 로컬 변경 내용 스태시/스�
 msgid "Stash/unstash local changes before/after the merge"
 msgstr "병합 전/후 로컬 변경 내용 스태시/스태시 해제"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:424
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:439
 msgid "Stashing changes"
 msgstr "변경 내용을 스태시하는 중"
 
@@ -21661,7 +21719,7 @@ msgstr "요약:"
 msgid "Support"
 msgstr "지원"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
 msgid "Surround Selection With..."
 msgstr "다음으로 선택 항목 둘러싸기..."
 
@@ -21670,7 +21728,7 @@ msgstr "다음으로 선택 항목 둘러싸기..."
 msgid "Surround With..."
 msgstr "코드 감싸기..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr "항목이 선택되면 코드 조각으로 선택 영역 감싸기"
 
@@ -21678,20 +21736,20 @@ msgstr "항목이 선택되면 코드 조각으로 선택 영역 감싸기"
 msgid "Swap parameter"
 msgstr "매개 변수 바꾸기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1199
 msgid "Swaps the characters on either side of the caret"
 msgstr "캐럿의 양쪽에 있는 문자를 맞바꿉니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
 msgid "Switch Completion/Suggestion Mode"
 msgstr "완료/제안 모드 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:588
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:591
 msgid "Switch active layout"
 msgstr "활성 레이아웃 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
 msgid "Switch between insert and overwrite caret modes"
 msgstr "삽입 캐럿 모드 및 덮어쓰기 캐럿 모드 간 전환"
 
@@ -21703,7 +21761,7 @@ msgstr "관련 파일 간 전환"
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr "CodeBehind, 헤더 등과 같은 관련 파일 간 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 msgid "Switch caret mode"
 msgstr "캐럿 모드 전환"
 
@@ -21738,27 +21796,27 @@ msgstr "제안 모드로 전환"
 msgid "Switch to layout '{0}'"
 msgstr "'{0}' 레이아웃으로 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:847
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:848
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:850
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:851
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:203
 msgid "Switch to next document"
 msgstr "다음 문서로 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:859
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:860
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:862
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:863
 msgid "Switch to next pad"
 msgstr "다음 패드로 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:853
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:854
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:856
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:857
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:183
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:189
 msgid "Switch to previous document"
 msgstr "이전 문서로 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:865
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:866
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:868
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:869
 msgid "Switch to previous pad"
 msgstr "이전 패드로 전환"
 
@@ -21770,14 +21828,14 @@ msgstr "{0} 탭으로 전환"
 msgid "Switch to {0}"
 msgstr "{0}(으)로 전환"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1915
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1935
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1949
 msgid "Switching to branch {0}"
 msgstr "{0} 분기로 전환하는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1928
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1952
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1942
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1966
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1969
 msgid "Switching to branch {0} failed"
 msgstr "{0} 분기로 전환하지 못했습니다."
 
@@ -22240,7 +22298,7 @@ msgstr "테스트"
 msgid "Text"
 msgstr "텍스트"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:377
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:404
@@ -22356,7 +22414,7 @@ msgstr ""
 "으로 제거합니다. 현재 솔루션에서만 제거하려면 [프로젝트에서 제거]5D;를 클릭하"
 "세요."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:317
 msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
 "Remove from Project if you only want to remove it from your current solution."
@@ -22466,7 +22524,7 @@ msgid "The application could not be started"
 msgstr "애플리케이션을 시작할 수 없습니다."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2031
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2037
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:171
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:277
@@ -22625,7 +22683,7 @@ msgstr "'{0}' 파일이 이미 있습니다. 이 파일을 바꿀까요?"
 msgid "The file '{0}' already exists.\n"
 msgstr "'{0}' 파일이 이미 있습니다.\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:325
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:326
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "'{0}' 파일이 이미 있습니다. 해당 파일을 덮어쓸까요?"
 
@@ -22732,6 +22790,11 @@ msgid ""
 msgstr ""
 "지원되는 색 테마 형식: Visual Studio(.vssettings), Xamarin Studio(.json), "
 "TextMate(.tmTheme). 테마 폴더를 변경하는 경우 다시 시작해야 합니다."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:185
+#, fuzzy
+msgid "The following conflicts have been found:"
+msgstr "다음 파일이 커밋됩니다."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:156
 msgid "The following dependencies could not be resolved:"
@@ -22844,11 +22907,11 @@ msgstr "설치하지 못했습니다."
 msgid "The installation has completed with warnings."
 msgstr "설치가 완료되었지만 경고가 발생했습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:604
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:621
 msgid "The key combination ({0}) has conflicts."
 msgstr "키 조합({0})에 충돌이 있습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:542
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:548
 msgid "The key combination ({0}, {1}) is not a command."
 msgstr "키 조합({0}, {1})은 명령이 아닙니다."
 
@@ -22955,8 +23018,8 @@ msgid "The name or e-mail of the user has not been configured."
 msgstr "사용자의 이름이나 전자 메일이 구성되지 않았습니다."
 
 #  new file name with wildcard (*, ?) characters in it
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:189
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:249
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:161
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:180
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:110
@@ -23202,6 +23265,16 @@ msgstr "소스 파일이 보다 최근에 수정된 경우 기존 대상 파일�
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:77
 msgid "The source project failed to build."
 msgstr "소스 프로젝트를 빌드하지 못했습니다."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:196
+msgid ""
+"The stash application was aborted due to uncommitted changes in the index."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:200
+#, fuzzy
+msgid "The stash index given was not found."
+msgstr "SDK를 찾지 못했습니다."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:53
 msgid "The subversion working copy format is too new."
@@ -23852,7 +23925,7 @@ msgstr "다른 사용자의 변경 내용"
 msgid "Themed Icons"
 msgstr "테마 아이콘"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1923
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1937
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
@@ -23861,7 +23934,7 @@ msgstr ""
 "<b>{0}</b> 분기에서 커밋한 변경 내용과 충돌하는 로컬 변경 내용이 있습니다. 변"
 "경 내용을 스태시하고 체크 아웃을 계속하시겠습니까?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1090
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue?"
@@ -23869,7 +23942,7 @@ msgstr ""
 "<b>{0}</b> 분기에서 커밋한 변경 내용과 충돌하는 로컬 변경 내용이 있습니다. 변"
 "경 내용을 스태시하고 계속하시겠습니까?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:51
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
 msgid "There are no changes to push."
 msgstr "푸시할 변경 내용이 없습니다."
 
@@ -23930,7 +24003,7 @@ msgstr ""
 "대상 디렉터리에 소스 파일과 이름이 같은 파일이 이미 있습니다. 기존 대상 파일"
 "을 유지하거나 소스 파일로 덮어쓸 수 있습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:533
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:534
 msgid "There is already a file with the name '{0}' in the target directory"
 msgstr "이름이 '{0}'인 파일이 대상 디렉터리에 이미 있습니다."
 
@@ -23942,7 +24015,7 @@ msgstr "해당 이름의 레이아웃이 이미 있습니다."
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "이름이 '{0}'인 링크가 프로젝트에 이미 있습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:541
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:542
 msgid "There is already a link with the name '{0}' in the target directory"
 msgstr "이름이 '{0}'인 링크가 대상 디렉터리에 이미 있습니다."
 
@@ -23962,7 +24035,7 @@ msgstr ""
 msgid "There was an error renaming the directory."
 msgstr "디렉터리 이름을 바꾸는 동안 오류가 발생했습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:191
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:202
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
 msgid "There was an error renaming the file."
 msgstr "파일 이름을 바꾸는 동안 오류가 발생했습니다."
@@ -24340,7 +24413,7 @@ msgstr "오늘"
 msgid "Toggle Action"
 msgstr "작업 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 msgid "Toggle Block Selection Mode"
 msgstr "블록 선택 모드 전환"
 
@@ -24348,7 +24421,7 @@ msgstr "블록 선택 모드 전환"
 msgid "Toggle Breakpoint"
 msgstr "중단점 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1237
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1240
 msgid "Toggle Issues"
 msgstr "문제 전환"
 
@@ -24364,7 +24437,7 @@ msgstr "정의 전환(_D)"
 msgid "Toggle between search and replace mode"
 msgstr "검색 및 바꾸기 모드 간 전환"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1004
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 msgid "Toggle bookmark"
 msgstr "책갈피 전환"
 
@@ -24416,15 +24489,15 @@ msgstr "모든 메서드 및 속성 본문의 접기를 전환합니다."
 msgid "Toggles the folding at caret position."
 msgstr "캐럿 위치에서 접기를 전환합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1233
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1236
 msgid "Toggles the visibility of Inline Messages"
 msgstr "인라인 메시지의 표시 유형을 전환합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1228
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
 msgid "Toggles the visibility of the current Inline Message"
 msgstr "현재 인라인 메시지의 표시 유형을 전환합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:727
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
 msgid "Tool List"
 msgstr "도구 목록"
 
@@ -24462,7 +24535,7 @@ msgstr "도구 상자 항목"
 msgid "Toolbox Toolbar"
 msgstr "도구 상자 도구 모음"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:717
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:720
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:327
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
@@ -24478,7 +24551,7 @@ msgstr "도구(사용자 지정)"
 msgid "Tools like FTP or P2P programs"
 msgstr "FTP 또는 P2P 프로그램과 같은 도구"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:986
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1147
 msgid "Top Result"
 msgstr "상위 결과"
 
@@ -24579,7 +24652,7 @@ msgstr "번역기 출력"
 msgid "Transmitting file data"
 msgstr "파일 데이터를 전송하는 중"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1198
 msgid "Transpose characters"
 msgstr "문자 바꾸기"
 
@@ -24602,11 +24675,11 @@ msgstr "터키어"
 msgid "Turns on the unsupported security manager (off by default)."
 msgstr "지원되지 않는 보안 관리자를 켭니다(기본적으로 꺼짐)."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:678
 msgid "Two Columns"
 msgstr "두 개의 열"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:676
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:679
 msgid "Two Editor Columns"
 msgstr "두 개의 편집기 열"
 
@@ -24736,7 +24809,7 @@ msgstr "국가 코드 사용(_S)"
 msgid "Un_pin Tab"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1030
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1045
 msgid "Unable to authorize credentials for the repository."
 msgstr "리포지토리의 자격 증명에 권한을 부여할 수 없습니다."
 
@@ -25009,7 +25082,7 @@ msgstr "알 수 없는 항목"
 msgid "Unknown error"
 msgstr "알 수 없는 오류"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:121
 msgid "Unknown language '{0}'"
 msgstr "'{0}' 언어를 알 수 없음"
 
@@ -25215,7 +25288,7 @@ msgstr "모든 번역 파일을 업데이트합니다."
 msgid "Updates this translation."
 msgstr "이 번역을 업데이트합니다."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:962
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:977
 msgid "Updating"
 msgstr "업데이트하는 중"
 
@@ -25247,7 +25320,7 @@ msgstr "메이크파일에서 프로젝트를 업데이트하는 중"
 msgid "Updating repository"
 msgstr "리포지토리를 업데이트하는 중"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:686
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:687
 msgid "Updating version control repository"
 msgstr "버전 제어 리포지토리를 업데이트하는 중"
 
@@ -25336,12 +25409,12 @@ msgstr "성능 향상을 위해 '{0}' 사용"
 msgid "Use Default"
 msgstr "기본값 사용"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 #, fuzzy
 msgid "Use Selection for Find"
 msgstr "대문자 선택"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
 #, fuzzy
 msgid "Use Selection for Replace"
 msgstr "중괄호에 대한 줄 바꿈 옵션"
@@ -25567,11 +25640,11 @@ msgstr "사용자 이름:"
 msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr "자세한 조건 대신 간단한 string.IsNullOrEmpty 호출을 사용합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Uses the current selection as find string"
 msgstr "현재 선택 항목을 찾기 문자열로 사용합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Uses the current selection as replace string"
 msgstr "현재 선택 항목을 바꾸기 문자열로 사용합니다."
 
@@ -25742,7 +25815,7 @@ msgstr "버전 제약 조건"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:42
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:108
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:296
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:676
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:677
 msgid "Version Control"
 msgstr "버전 제어"
 
@@ -25799,7 +25872,7 @@ msgstr "패키지에 대한 버전 제약 조건입니다."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:38
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:50
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:435
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:76
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnlockCommand.cs:81
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:64
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:131
@@ -25840,7 +25913,7 @@ msgstr "화상 회의 소프트웨어"
 msgid "Vietnamese"
 msgstr "베트남어"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:564
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:567
 msgid "View"
 msgstr "뷰"
 
@@ -25861,7 +25934,7 @@ msgstr "변경 로그 보기..."
 msgid "View License"
 msgstr "라이선스 보기"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:569
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:572
 msgid "View List"
 msgstr "뷰 목록"
 
@@ -26146,7 +26219,7 @@ msgstr "웹 참조가 이미 있습니다."
 msgid "Web service not found."
 msgstr "웹 서비스를 찾을 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:715
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:52
 msgid "Welcome Page"
 msgstr "시작 페이지"
@@ -26342,7 +26415,7 @@ msgstr "위젯"
 msgid "Win32 Icon:"
 msgstr "Win32 아이콘:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:747
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:750
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:5
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:5
 msgid "Window"
@@ -26353,7 +26426,7 @@ msgstr "창"
 msgid "Window Designer"
 msgstr "창 디자이너"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:766
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:769
 msgid "Window List"
 msgstr "창 목록"
 
@@ -26540,7 +26613,7 @@ msgstr "XSP 웹 서버"
 msgid "Xamarin News"
 msgstr "Xamarin 뉴스"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -26548,12 +26621,12 @@ msgstr ""
 "Xamarin.Mac 프로젝트는 Windows의 MonoDevelop에서 지원되지 않습니다. Mac에서 "
 "Xamarin Studio를 사용해야 합니다."
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -26713,7 +26786,7 @@ msgstr ""
 "예를 들어 (?<=19)99는 19 뒤에 99가 나오는 항목을 찾습니다.\n"
 "이 구문은 역추적하지 않습니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:664
 msgid "Zoom _Out"
 msgstr "축소(_O)"
 
@@ -26721,11 +26794,11 @@ msgstr "축소(_O)"
 msgid "Zoom the Window"
 msgstr "창 확대/축소"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:658
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
 msgid "Zooms view in"
 msgstr "뷰를 확대합니다."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:665
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
 msgid "Zooms view out"
 msgstr "뷰를 축소합니다."
 
@@ -26928,7 +27001,7 @@ msgstr "\\z"
 msgid "^"
 msgstr "^"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:893
 msgid "_About"
 msgstr "정보(_A)"
 
@@ -27091,7 +27164,7 @@ msgstr "문자 코딩(_C):"
 msgid "_Charset:"
 msgstr "문자 집합(_C):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
 msgid "_Check for Updates..."
 msgstr "업데이트 확인(_C)..."
 
@@ -27103,12 +27176,12 @@ msgstr "체크 아웃(_C)"
 msgid "_Clean All"
 msgstr "모두 정리(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
 msgid "_Clear"
 msgstr "지우기(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:648
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:651
 msgid "_Clear Navigation History"
 msgstr "탐색 기록 지우기(_C)"
 
@@ -27116,7 +27189,7 @@ msgstr "탐색 기록 지우기(_C)"
 msgid "_Close"
 msgstr "닫기(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:428
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:431
 msgid "_Close File"
 msgstr "파일 닫기(_C)"
 
@@ -27124,7 +27197,7 @@ msgstr "파일 닫기(_C)"
 msgid "_Collapse All"
 msgstr "모두 축소(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
 msgid "_Command..."
 msgstr "명령(_C)..."
 
@@ -27163,7 +27236,7 @@ msgstr "복사(_C)"
 msgid "_Copy Revision"
 msgstr "수정 내용 복사(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
 msgid "_Copy to Output Directory"
 msgstr "출력 디렉터리에 복사(_C)"
 
@@ -27180,7 +27253,7 @@ msgstr "솔루션의 디렉터리 만들기(_C)"
 msgid "_Current Project"
 msgstr "현재 프로젝트(_C)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:706
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
 msgid "_Cursor Position"
 msgstr "커서 위치(_C)"
 
@@ -27207,7 +27280,7 @@ msgstr "어셈블리 서명 연기(_D)"
 msgid "_Delete"
 msgstr "삭제(_D)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:584
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "_Delete Current Layout"
 msgstr "현재 레이아웃 삭제(_D)"
@@ -27273,12 +27346,12 @@ msgstr "모두 제외(_E)"
 msgid "_Expand All"
 msgstr "모두 확장(_E)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1162
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 msgid "_Expand selection"
 msgstr "선택 영역 확장(_E)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:723
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:726
 msgid "_Extensions..."
 msgstr "확장(_E)..."
 
@@ -27290,7 +27363,7 @@ msgstr "파일(_F)"
 msgid "_File Mask:"
 msgstr "파일 마스크(_F):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:989
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 msgid "_File..."
 msgstr "파일(_F)..."
 
@@ -27314,7 +27387,7 @@ msgstr "참조 찾기(_F)"
 msgid "_Find References of All Overloads"
 msgstr "모든 오버로드의 참조 찾기(_F)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "_Find..."
 msgstr "찾기(_F)..."
 
@@ -27330,7 +27403,7 @@ msgstr "모두 수정(_F)"
 msgid "_Flat"
 msgstr "플랫(_F)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:699
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
 msgid "_Focus Document"
 msgstr "문서에 포커스 설정(_F)"
 
@@ -27351,7 +27424,7 @@ msgstr "선택 영역 서식(_F)"
 msgid "_Format document on save"
 msgstr "저장 시 문서 서식 지정(_F)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:592
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:595
 msgid "_Full Screen"
 msgstr "전체 화면(_F)"
 
@@ -27511,7 +27584,7 @@ msgstr "줄 끝 변환(_L):"
 msgid "_Line endings:"
 msgstr "줄 끝(_L):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 msgid "_Line..."
 msgstr "줄(_L)..."
 
@@ -27593,7 +27666,7 @@ msgstr "이름(_N):"
 msgid "_New name:"
 msgstr "새 이름(_N):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:751
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:754
 msgid "_Next Document"
 msgstr "다음 문서(_N)"
 
@@ -27601,11 +27674,11 @@ msgstr "다음 문서(_N)"
 msgid "_Next Tip"
 msgstr "다음 팁(_N)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1234
 msgid "_None"
 msgstr "없음(_N)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:671
 msgid "_Normal Size"
 msgstr "보통 크기(_N)"
 
@@ -27613,7 +27686,7 @@ msgstr "보통 크기(_N)"
 msgid "_Only show my code."
 msgstr "내 코드만 표시합니다(_O)."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:39
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:40
 msgid "_Open"
@@ -27624,7 +27697,7 @@ msgstr "열기(_O)"
 msgid "_Open All"
 msgstr "모두 열기(_O)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:510
 msgid "_Open Folder"
 msgstr "폴더 열기(_O)"
 
@@ -27636,11 +27709,11 @@ msgstr "URL 열기(_O)..."
 msgid "_Open XSLT"
 msgstr "XSLT 열기(_O)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:504
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
 msgid "_Open in Terminal"
 msgstr "터미널에서 열기(_O)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:389
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
 msgid "_Open..."
 msgstr "열기(_O)..."
 
@@ -27693,7 +27766,7 @@ msgstr "붙여넣기(_P)"
 msgid "_Path:"
 msgstr "경로(_P):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:561
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileTabCommands.cs:166
 msgid "_Pin Tab"
 msgstr ""
@@ -27715,11 +27788,11 @@ msgstr "정책(_P):"
 msgid "_Preview"
 msgstr "미리 보기(_P)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:758
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:761
 msgid "_Previous Document"
 msgstr "이전 문서(_P)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:466
 msgid "_Print..."
 msgstr "인쇄(_P)..."
 
@@ -27747,7 +27820,7 @@ msgstr "인수 확인(_P)"
 msgid "_Prompt to save changes to open documents"
 msgstr "열린 문서에 변경 내용 저장 여부 묻기(_P)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
 msgid "_Properties"
 msgstr "속성(_P)"
 
@@ -27773,7 +27846,7 @@ msgstr "푸시(_P)"
 msgid "_Quick Properties"
 msgstr "빠른 속성(_Q)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:502
 msgid "_Quit"
 msgstr "끝내기(_Q)"
 
@@ -27816,7 +27889,7 @@ msgstr "디스크에서 다시 로드(_R)"
 msgid "_Remove"
 msgstr "제거(_R)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1021
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
 msgid "_Remove All Bookmarks"
 msgstr "모든 책갈피 제거(_R)"
 
@@ -27836,7 +27909,7 @@ msgstr "후행 공백 제거(_R)"
 msgid "_Remove Unnecessary Usings"
 msgstr "불필요한 Using 제거(_R)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:300
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:311
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:194
 msgid "_Remove from Project"
 msgstr "프로젝트에서 제거(_R)"
@@ -27853,7 +27926,7 @@ msgstr "후행 공백 제거(_R)"
 msgid "_Replace"
 msgstr "바꾸기(_R)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:921
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 msgid "_Replace..."
 msgstr "바꾸기(_R)..."
 
@@ -27873,7 +27946,7 @@ msgstr "복원(_R)"
 msgid "_Restore NuGet Packages"
 msgstr "NuGet 패키지 복원(_R)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:458
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:125
 msgid "_Revert"
 msgstr "되돌리기(_R)"
@@ -27901,7 +27974,7 @@ msgstr "모두 실행(_R)"
 msgid "_Run Item"
 msgstr "항목 실행(_R)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:406
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:409
 msgid "_Save"
 msgstr "저장(_S)"
 
@@ -28012,7 +28085,7 @@ msgstr "이 어셈블리에 서명(_S)"
 msgid "_Smart semicolon placement"
 msgstr "스마트 세미콜론 배치(_S)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 msgid "_Snippet..."
 msgstr "코드 조각(_S)..."
 
@@ -28044,7 +28117,7 @@ msgstr "강력한 형식(_S)"
 msgid "_Suppress"
 msgstr "표시 안 함(_S)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "_Surround With..."
 msgstr "코드 감싸기(_S)..."
 
@@ -28065,7 +28138,7 @@ msgstr "탭 너비(_T):"
 msgid "_Template:"
 msgstr "템플릿(_T):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
 msgid "_Tip of the Day"
 msgstr "잠깐만(_T)"
 
@@ -28073,7 +28146,7 @@ msgstr "잠깐만(_T)"
 msgid "_Title:"
 msgstr "제목(_T):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 msgid "_Toggle Bookmark"
 msgstr "책갈피 전환(_T)"
 
@@ -28115,7 +28188,7 @@ msgstr "번역됨(msgstr)(_T):"
 msgid "_Translator name:"
 msgstr "번역기 이름(_T):"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:985
 msgid "_Type..."
 msgstr "형식(_T)..."
 
@@ -28245,7 +28318,7 @@ msgstr "XML(_X)"
 msgid "_Zoom"
 msgstr "확대/축소(_Z)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:654
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:657
 msgid "_Zoom In"
 msgstr "확대(_Z)"
 
@@ -28583,7 +28656,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "형식 * ptr = {0} 형식 [ expr ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:637
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:645
 msgid "working copy"
@@ -28893,7 +28966,7 @@ msgstr[1] "경고 {0}개"
 msgid "{0} [expression];"
 msgstr "{0} [식];"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 msgid "{0} _Options"
 msgstr "{0} 옵션(_O)"
 
@@ -29035,7 +29108,7 @@ msgstr[1] ""
 "총 {0}개 파일이 처리되었습니다. {1}개가 성공적으로 생성되었으며 {2}개는 경고"
 "가, {3}개는 오류가 발생했습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:396
+#: ../src/addins/MacPlatform/MacPlatform.cs:392
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -29261,7 +29334,7 @@ msgstr "{0} 범위-변수2 {1} 범위2 {2} 문1 {3} 문2 [ {4} 그룹-이름 ]"
 msgid "{0} removed with warnings."
 msgstr "{0}이(가) 제거되었지만 경고가 발생했습니다."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:225
+#: ../src/addins/MacPlatform/MacPlatform.cs:221
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -29296,6 +29369,10 @@ msgstr "{0}의 대상이 변경되었지만 경고가 발생했습니다."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
 msgid "{0} return-type"
 msgstr "{0} 반환-형식"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:350
+msgid "{0} search provider..."
+msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1116
 msgid "{0} statement {1} (expression);"
@@ -29493,3 +29570,6 @@ msgstr "{n}?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:184
 msgid "|"
 msgstr "|"
+
+#~ msgid "Stash applied with conflicts"
+#~ msgstr "스태시가 적용되었지만 충돌이 발생했습니다."

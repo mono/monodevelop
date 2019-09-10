@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNetCore
 				UsingHttps (runConfiguration);
 		}
 
-		static bool UsingHttps (SolutionItemRunConfiguration runConfiguration)
+		internal static bool UsingHttps (SolutionItemRunConfiguration runConfiguration)
 		{
 			var aspNetCoreRunConfiguration = runConfiguration as AspNetCoreRunConfiguration;
 			return aspNetCoreRunConfiguration?.UsingHttps () == true;
@@ -125,13 +125,13 @@ namespace MonoDevelop.AspNetCore
 			if (checkResult == CertificateCheckResult.Untrusted) {
 				return new QuestionMessage {
 					Text = GettextCatalog.GetString ("HTTPS development certificate is not trusted"),
-					SecondaryText = GettextCatalog.GetString ("The HTTPS development certificate will be trusted by running 'dotnet-dev-certs https --trust'. Running this command may prompt you for your password to install the certificate on the system keychain.\n\nDo you want to trust this certificate?"),
+					SecondaryText = GettextCatalog.GetString ("The HTTPS development certificate will be trusted by running 'dotnet dev-certs https --trust'. Running this command may prompt you for your password to install the certificate on the system keychain.\n\nDo you want to trust this certificate?"),
 				};
 			}
 
 			return new QuestionMessage {
 				Text = GettextCatalog.GetString ("HTTPS development certificate was not found"),
-				SecondaryText = GettextCatalog.GetString ("The HTTPS development certificate will be installed and trusted by running 'dotnet-dev-certs https --trust'. Running this command may prompt you for your password to install the certificate on the system keychain.\n\nDo you want to install and trust this certificate?"),
+				SecondaryText = GettextCatalog.GetString ("The HTTPS development certificate will be installed and trusted by running 'dotnet dev-certs https --trust'. Running this command may prompt you for your password to install the certificate on the system keychain.\n\nDo you want to install and trust this certificate?"),
 			};
 		}
 	}

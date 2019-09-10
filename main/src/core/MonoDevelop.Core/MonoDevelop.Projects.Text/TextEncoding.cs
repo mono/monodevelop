@@ -41,13 +41,12 @@ namespace MonoDevelop.Projects.Text
 		
 		string name;
 		string id;
-		int codePage;
+		Encoding encoding;
 		
 		internal TextEncoding (string id, string name)
 		{
 			this.id = id;
 			this.name = name;
-			codePage = -2;
 		}
 		
 		public string Name {
@@ -60,30 +59,50 @@ namespace MonoDevelop.Projects.Text
 		
 		public int CodePage {
 			get {
-				if (codePage == -2) {
-					codePage = -1;
-					try {
-						Encoding e = Encoding.GetEncoding(id);
-						if (e != null)
-							codePage = e.CodePage;
-					} catch {
-						// Ignore
-					}
-				}
-				return codePage;
+				return Encoding.CodePage;
 			}
 		}
-		
+
+		public Encoding Encoding {
+			get {
+				if (encoding != null)
+					return encoding;
+				try {
+					switch (id) {
+					case UTF8NoBomId:
+						encoding = new UTF8Encoding (false);
+						break;
+					default:
+						encoding = Encoding.GetEncoding (id);
+						break;
+					}
+				 	
+				} catch (Exception e) {
+					LoggingService.LogError ("Encoding " + id + " not found.", e);
+					encoding = Encoding.UTF8;
+				}
+				return encoding;
+   			} 
+		}
+
 		// Returns a list of encodings supported by MD
-		
+
 		public static TextEncoding[] SupportedEncodings {
 			get {
 				if (supported == null) {
-					supported = new TextEncoding [encodings.GetUpperBound (0)];
-					for (int n=0; n<encodings.GetUpperBound (0); n++)
-						supported[n] = new TextEncoding (encodings[n,0], encodings[n,1]);
+					var allSupported = new List<TextEncoding> ();
+					for (int n = 0; n < encodings.GetUpperBound (0); n++) {
+						try {
+							var id = encodings [n, 0];
+							if (id == UTF8NoBomId || Encoding.GetEncoding (id) != null)
+								allSupported.Add (new TextEncoding (id, encodings [n, 1]));
+						} catch {
+							// ignore - OS dependant
+						}
+					}
+					supported = allSupported.ToArray ();
 				}
-				return supported ?? new TextEncoding[0];
+				return supported ?? Array.Empty<TextEncoding> ();
 			}
 		}
 		
@@ -136,6 +155,16 @@ namespace MonoDevelop.Projects.Text
 			return null;
 		}
 
+		public static TextEncoding GetEncoding (Encoding encoding)
+		{
+			foreach (TextEncoding e in SupportedEncodings) {
+				if (e.Encoding == encoding) {
+					return e;
+				}
+			}
+			return null;
+		}
+
 		public static TextEncoding GetEncoding (int codePage)
 		{
 			foreach (TextEncoding e in SupportedEncodings) {
@@ -148,11 +177,12 @@ namespace MonoDevelop.Projects.Text
 		public static string DefaultEncoding {
 			get { return "UTF-8"; }
 		}
-		
+
 		static string[] defaultEncodings = {"UTF-8", "ISO-8859-15", "UTF-16"};
-		
-		static string[,] encodings = {
-		
+
+		const string UTF8NoBomId = "UTF-8 (No BOM)";
+
+		static string [,] encodings = {
 		  { "ISO-8859-1", GettextCatalog.GetString("Western") },
 		  { "ISO-8859-2", GettextCatalog.GetString("Central European") },
 		  { "ISO-8859-3", GettextCatalog.GetString("South European") },
@@ -171,6 +201,7 @@ namespace MonoDevelop.Projects.Text
 
 		  { "UTF-7", GettextCatalog.GetString("Unicode") },
 		  { "UTF-8", GettextCatalog.GetString("Unicode") },
+		  { UTF8NoBomId, GettextCatalog.GetString("Unicode") },
 		  { "UTF-16", GettextCatalog.GetString("Unicode") },
 		  { "UTF-16BE", GettextCatalog.GetString("Unicode") },
 		  { "UTF-16LE", GettextCatalog.GetString("Unicode") },
@@ -227,6 +258,5 @@ namespace MonoDevelop.Projects.Text
 		  { "WINDOWS-1257", GettextCatalog.GetString("Baltic") },
 		  { "WINDOWS-1258", GettextCatalog.GetString("Vietnamese") }
 		};
-		
 	}
 }

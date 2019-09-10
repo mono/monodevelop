@@ -106,6 +106,7 @@
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.RectangleMarker.cs" />
     <Compile Include="MonoDevelop.Refactoring\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Refactoring\CommandArgsFactories.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RoslynInformationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

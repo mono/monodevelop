@@ -88,16 +88,16 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern IntPtr class_getInstanceMethod(IntPtr classHandle, IntPtr Selector);
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern IntPtr method_getImplementation(IntPtr method);
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern IntPtr imp_implementationWithBlock(ref BlockLiteral block);
 
-		[DllImport("/usr/lib/libobjc.dylib")]
+		[DllImport(Constants.ObjectiveCLibrary)]
 		private static extern void method_setImplementation(IntPtr method, IntPtr imp);
 
 		[MonoNativeFunctionWrapper]
@@ -743,9 +743,6 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		public extern static IntPtr IntPtr_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1);
-
 		private static NSImage applicationIcon;
 		internal static NSImage ApplicationIcon {
 			get {
@@ -785,11 +782,7 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			if (File.Exists (iconFile)) {
-				var image = new NSImage ();
-				var imageFile = new NSString (iconFile);
-
-				IntPtr p = IntPtr_objc_msgSend_IntPtr (image.Handle, Selector.GetHandle ("initByReferencingFile:"), imageFile.Handle);
-				ApplicationIcon = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
+				ApplicationIcon = new NSImage (iconFile, lazy: true);
 			}
 		}
 
@@ -961,11 +954,13 @@ namespace MonoDevelop.MacIntegration
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
 
-			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (NSUrl.FromString (filename));
+			NSUrl url = CreateNSUrl (filename);
+
+			var def = global::CoreServices.LaunchServices.GetDefaultApplicationUrlForUrl (url);
 
 			var apps = new List<DesktopApplication> ();
 
-			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (NSUrl.FromString (filename), global::CoreServices.LSRoles.All);
+			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (url, global::CoreServices.LSRoles.All);
 			if (retrievedApps != null) {
 				foreach (var app in retrievedApps) {
 					if (string.IsNullOrEmpty (app.Path) || !checkUniquePath.Add (app.Path))
@@ -986,6 +981,14 @@ namespace MonoDevelop.MacIntegration
 			return apps;
 		}
 
+		static NSUrl CreateNSUrl (string filename)
+		{
+			if (Uri.TryCreate (filename, UriKind.Absolute, out Uri hyperlink) && !hyperlink.IsFile)
+				return NSUrl.FromString (filename);
+
+			return NSUrl.FromFilename (filename);
+		}
+
 		class MacDesktopApplication : DesktopApplication
 		{
 			public MacDesktopApplication (string app, string name, bool isDefault) : base (app, name, isDefault)
@@ -995,7 +998,7 @@ namespace MonoDevelop.MacIntegration
 			public override void Launch (params string[] files)
 			{
 				NSWorkspace.SharedWorkspace.OpenUrls (
-					Array.ConvertAll (files, file => NSUrl.FromString (file)),
+					Array.ConvertAll (files, file => CreateNSUrl (file)),
 					NSBundle.FromPath (Id).BundleIdentifier,
 					NSWorkspaceLaunchOptions.Default,
 					NSAppleEventDescriptor.DescriptorWithBoolean (true));

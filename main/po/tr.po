@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 1.0\n"
 "Report-Msgid-Bugs-To: ealtin@gmail.com\n"
-"POT-Creation-Date: 2019-08-27 13:56:34+0200\n"
+"POT-Creation-Date: 2019-09-02 10:31:55+0200\n"
 "PO-Revision-Date: 2008-02-24 00:46+0200\n"
 "Last-Translator: Enver ALTIN <ealtin@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -1148,7 +1148,7 @@ msgstr ""
 "bilgisi olan programlama modeli</span>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 msgid "<uncommitted>"
 msgstr "<yürütülmedi>"
 
@@ -1313,6 +1313,11 @@ msgstr "CodeBehind sınıflarında uyumlu bir yöntem"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:109
 msgid "A configuration with the name '{0}' already exists."
 msgstr "'{0}' adına sahip bir yapılandırma zaten var."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
+#, fuzzy
+msgid "A conflicting change has been detected in the index. "
+msgstr "<b>{0}</b> dosyasında bir birleştirme çakışması algılandı"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:34
 msgid "A cyclic build dependency has been detected."
@@ -1700,7 +1705,7 @@ msgstr ""
 msgid "API"
 msgstr "API"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "API Documentation"
 msgstr "API Belgeleri"
 
@@ -1895,7 +1900,7 @@ msgid "Abort Update"
 msgstr "Güncelleştirmeyi Durdur"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:615
+#: ../src/addins/MacPlatform/MacPlatform.cs:611
 msgid "About {0}"
 msgstr "{0} Hakkında"
 
@@ -1980,39 +1985,39 @@ msgstr "ActionGroup"
 msgid "Actions"
 msgstr "Eylemler"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:772
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:775
 msgid "Activate 1"
 msgstr "1'i etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:778
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:781
 msgid "Activate 2"
 msgstr "2'yi etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:784
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:787
 msgid "Activate 3"
 msgstr "3'ü etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:790
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:793
 msgid "Activate 4"
 msgstr "4'ü etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:796
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:799
 msgid "Activate 5"
 msgstr "5'i etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:802
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
 msgid "Activate 6"
 msgstr "6'yı etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:808
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:811
 msgid "Activate 7"
 msgstr "7'yi etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:814
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:817
 msgid "Activate 8"
 msgstr "8'i etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:820
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:823
 msgid "Activate 9"
 msgstr "9'u etkinleştir"
 
@@ -2021,39 +2026,39 @@ msgstr "9'u etkinleştir"
 msgid "Activate document '{0}'"
 msgstr "'{0}' belgesini etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:773
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:776
 msgid "Activate document 1"
 msgstr "Belge 1'i etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:782
 msgid "Activate document 2"
 msgstr "Belge 2'yi etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:788
 msgid "Activate document 3"
 msgstr "Belge 3'ü etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:791
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:794
 msgid "Activate document 4"
 msgstr "Belge 4'ü etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:797
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:800
 msgid "Activate document 5"
 msgstr "Belge 5'i etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:803
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:806
 msgid "Activate document 6"
 msgstr "Belge 6'yı etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:809
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:812
 msgid "Activate document 7"
 msgstr "Belge 7'yi etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:815
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:818
 msgid "Activate document 8"
 msgstr "Belge 8'i etkinleştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:821
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:824
 msgid "Activate document 9"
 msgstr "Belge 9'u etkinleştir"
 
@@ -2075,7 +2080,7 @@ msgstr "'{0}' penceresini etkinleştir"
 msgid "Active Configuration"
 msgstr "Etkin Yapılandırma"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:587
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:590
 msgid "Active Layout"
 msgstr "Etkin Düzen"
 
@@ -2140,7 +2145,7 @@ msgstr "Özel Araç Ekle..."
 msgid "Add Dependency"
 msgstr "Bağımlılık Ekle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:515
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:516
 msgid "Add Existing Folder"
 msgstr "Mevcut Klasörü Ekle"
 
@@ -2355,7 +2360,7 @@ msgstr "Projeye mevcut dosyaları ekle"
 msgid "Add expression to watch pad"
 msgstr "İfadeyi izleme paneline ekle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:404
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:405
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:302
 msgid "Add files"
 msgstr "Dosyalar ekle"
@@ -2799,7 +2804,7 @@ msgstr ""
 "Bir uygulama zaten çalışıyor ve durdurulması gerekir. Devam etmek istiyor "
 "musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:299
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:301
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:92
 msgid "An application is already running. Do you want to stop it?"
 msgstr "Bir uygulama zaten çalışıyor. Durdurmak ister misiniz?"
@@ -2952,7 +2957,7 @@ msgstr "Android"
 msgid "Angular"
 msgstr "Angular"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1215
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
 msgid "Animates the text editor caret to help find it"
 msgstr ""
 "Bulunmasına yardımcı olmak için metin düzenleyici giriş işaretini canlandırır"
@@ -3072,7 +3077,7 @@ msgid "Application to record audio/video files"
 msgstr "Ses/video dosyalarını kaydetmek için bir uygulama"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:795
+#: ../src/addins/MacPlatform/MacPlatform.cs:778
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3138,7 +3143,7 @@ msgstr "Projeye Uygula"
 msgid "Apply to all"
 msgstr "Tümüne uygula"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:368
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:383
 msgid "Applying stash"
 msgstr "Hazırlama uygulanıyor"
 
@@ -3277,7 +3282,7 @@ msgstr "{0} dizinini {1} adlı projeden kaldırmak istediğinizden emin misiniz?
 msgid "Are you sure you want to remove directory {0}?"
 msgstr "{0} dizinini kaldırmak istediğinizden emin misiniz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:320
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:331
 msgid "Are you sure you want to remove file {0} from project {1}?"
 msgstr "{0} dosyasını {1} projesinden kaldırmak istediğinizden emin misiniz?"
 
@@ -3286,7 +3291,7 @@ msgstr "{0} dosyasını {1} projesinden kaldırmak istediğinizden emin misiniz?
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "'{0}' yapılandırmasını kaldırmak istediğinizden emin misiniz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:312
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
 msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
 "from project {1}?"
@@ -3315,7 +3320,7 @@ msgstr ""
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "Seçili öğeyi kaldırmak istediğinizden emin misiniz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:327
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
@@ -3323,7 +3328,7 @@ msgstr ""
 "Seçili dosyaları ve projedeki arka plan kodu alt öğelerini kaldırmak "
 "istediğinizden emin misiniz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:334
 msgid "Are you sure you want to remove the selected files from the project?"
 msgstr "Seçili dosyaları projeden kaldırmak istediğinizden emin misiniz?"
 
@@ -3339,7 +3344,7 @@ msgstr ""
 msgid "Are you sure you want to remove this template?"
 msgstr "Bu şablonu kaldırmak istediğinizden emin misiniz?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:60
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:62
 msgid ""
 "Are you sure you want to revert the changes from the revision selected on "
 "these resources?"
@@ -3353,7 +3358,7 @@ msgstr ""
 "Seçili dosyalarda yapılan değişiklikleri geri almak istediğinizden emin "
 "misiniz?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:56
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:58
 msgid ""
 "Are you sure you want to revert the selected resources to the revision "
 "specified (all local changes will be discarded)?"
@@ -3489,7 +3494,7 @@ msgstr "{0} çerçevesi için bütünleştirilmiş kod bulunamadı ({1} içinde)
 msgid "Assembly:\t{0}"
 msgstr "Bütünleştirilmiş kod:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:395
+#: ../src/addins/MacPlatform/MacPlatform.cs:391
 msgid "Assistive Technology Detected"
 msgstr "Yardımcı Teknoloji Algılandı"
 
@@ -3579,7 +3584,7 @@ msgid "Author:"
 msgstr "Yazar:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 msgid "Authors"
 msgstr "Yazarlar"
 
@@ -3654,13 +3659,13 @@ msgstr "Kapanan etiketleri otomatik olarak ekle"
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
 msgstr "Noktalama işaretlerini (=\"\", /> vs.) otomatik ekle"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1077
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1092
 msgid "Automatically stash/unstash changes when merging/rebasing"
 msgstr ""
 "Birleştirirken/yeniden temellendirirken değişiklikleri otomatik olarak "
 "hazırla/hazırlamayı geri al"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1925
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1939
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:29
 msgid "Automatically stash/unstash changes when switching branches"
 msgstr ""
@@ -3711,7 +3716,7 @@ msgstr "Şunun için kullanılabilir:"
 msgid "Available in repository:"
 msgstr "Depoda kullanılabilir olanlar:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
 msgid "B_uild {0}"
 msgstr "{0} _Öğesini Derle"
 
@@ -3889,7 +3894,7 @@ msgstr "Dal Özellikleri"
 msgid "Branch name too long"
 msgstr "Dal adı çok uzun"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:139
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:140
 msgid "Branch switch failed"
 msgstr "Dal geçişi başarısız oldu"
 
@@ -4005,7 +4010,7 @@ msgstr "Derleme Çıktısı {0}.binlog"
 msgid "Build _without Saving"
 msgstr "Kaydetmeden _Oluştur"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:521
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:99
 msgid "Build action"
 msgstr "Derleme eylemi"
@@ -4051,11 +4056,11 @@ msgstr "Projeyi birim testlerini yürütmeden önce derle"
 msgid "Build project before running"
 msgstr "Çalıştırmadan önce projeyi derle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
 msgid "Build project {0}"
 msgstr "{0} projesini derle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:217
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
 msgid "Build solution {0}"
 msgstr "{0} çözümünü derle"
 
@@ -4080,7 +4085,7 @@ msgstr "Geçerli projeyi derle"
 msgid "Build the projects in the active solution build configuration."
 msgstr "Projeleri etkin çözüm derlemesi yapılandırmasında derleyin."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:223
 msgid "Build {0}"
 msgstr "{0} öğesini derle"
 
@@ -4246,11 +4251,11 @@ msgstr "K_ullanıma Al..."
 msgid "C_lean"
 msgstr "T_emizle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:381
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:383
 msgid "C_lean {0}"
 msgstr "{0} _Öğesini Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:450
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:453
 msgid "C_lose"
 msgstr "K_apat"
 
@@ -4258,7 +4263,7 @@ msgstr "K_apat"
 msgid "C_lose All Solutions"
 msgstr "C_lose Tüm Çözümler"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:540
 msgid "C_lose Others"
 msgstr "Diğerlerini K_apat"
 
@@ -4270,7 +4275,7 @@ msgstr "C_lose Projesi"
 msgid "C_lose Solution"
 msgstr "C_lose Çözümü"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:442
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:445
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:214
 msgid "C_lose Workspace"
 msgstr "Çalışma Alanını K_apat"
@@ -4289,7 +4294,7 @@ msgstr "Ş_irket:"
 msgid "C_onnect"
 msgstr "B_ağlan"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:546
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
 msgid "C_opy File Path"
 msgstr "Dosya Yolunu K_opyala"
 
@@ -4325,7 +4330,7 @@ msgstr "Türetilmiş sınıf üzerinden statik üye çağrısı"
 msgid "Camera tools, etc."
 msgstr "Kamera araçları vs."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1993
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1999
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4334,7 +4339,7 @@ msgstr ""
 "\"{0}\" yürütülemiyor. Seçilen yürütme modu .NET projeleri için "
 "desteklenmiyor."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2011
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2017
 msgid ""
 "Can not execute. The run configuration working directory doesn't exist at {0}"
 msgstr "Yürütülemiyor. Çalışma yapılandırması çalışma dizini {0} konumunda yok"
@@ -4451,7 +4456,7 @@ msgstr "İşlem iptal ediliyor..."
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr "Aynı adda bir dosya olduğu için {0} dizini oluşturulamıyor."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2007
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:177
 msgid "Cannot execute \"{0}\""
 msgstr "\"{0}\" yürütülemiyor"
@@ -4528,7 +4533,7 @@ msgstr ""
 msgid "Celtic"
 msgstr "Kelt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:708
 msgid "Center and Focus Document"
 msgstr "Belgeyi Ortala ve Odakla"
 
@@ -4626,7 +4631,7 @@ msgstr "ChangeLog girdileri oluşturulamıyor."
 msgid "ChangeLog entry:"
 msgstr "ChangeLog girdisi:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid "Changes"
 msgstr "Değişiklikler"
 
@@ -4730,7 +4735,7 @@ msgstr "Bir çözüm açılırken paket _güncelleştirmelerini denetle."
 msgid "Check for the command to run on an external console"
 msgstr "Komutu bir dış konsol üzerinde yürütmek için işaretleyin"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:896
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
 msgid "Check for updates to MonoDevelop and packages it requires"
 msgstr "MonoDevelop ve gerektirdiği paketlerin güncelleştirmelerini denetleme"
 
@@ -5089,9 +5094,24 @@ msgstr "Çözümle aynı sürümü kullanmak için işaretleyin"
 msgid "Check to wrap the lines at 60 characters"
 msgstr "Satırları 60 karakterde kaydırmak için işaretleyin"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:344
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1433
+#, fuzzy
+msgid "Checking out file '{0}'"
+msgstr "Dosyalar kullanıma alınıyor"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:359
 msgid "Checking out files"
 msgstr "Dosyalar kullanıma alınıyor"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1425
+#, fuzzy
+msgid "Checking out repository at '{0}'"
+msgstr "{0} kullanıma alınıyor..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1495
+#, fuzzy
+msgid "Checking out submodule at '{0}'…"
+msgstr "{0} kullanıma alınıyor..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:47
 msgid "Checking out {0}..."
@@ -5117,7 +5137,7 @@ msgstr "Kullanıma alma yolu boş değil. İçeriğini silmek ister misiniz?"
 msgid "Chemistry software"
 msgstr "Kimya yazılımı"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1198
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1213
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "{0} için seçerek uygulama gerçekleştiriliyor - {1}/{2}"
 
@@ -5237,7 +5257,7 @@ msgstr "Temizleme hedefi adı:"
 msgid "Clean the selected project or solution"
 msgstr "Seçilen projeyi veya çözümü temizle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:382
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:384
 msgid "Clean {0}"
 msgstr "{0} öğesini temizle"
 
@@ -5295,7 +5315,7 @@ msgstr "F# Etkileşimli'yi Temizle"
 msgid "Clear Icon"
 msgstr "Simgeyi Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:484
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:487
 msgid "Clear Recent Files"
 msgstr "Son Dosyaları Temizle"
 
@@ -5303,11 +5323,11 @@ msgstr "Son Dosyaları Temizle"
 msgid "Clear Recent Searches"
 msgstr "Son Aramaları Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:494
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:497
 msgid "Clear Recent Solutions"
 msgstr "Son Çözümleri Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
 msgid "Clear bookmarks"
 msgstr "Yer işaretlerini temizle"
 
@@ -5319,7 +5339,7 @@ msgstr "Konsolu temizle"
 msgid "Clear recent files"
 msgstr "Son dosyaları temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:489
 msgid "Clear recent files list"
 msgstr "Son dosyalar listesini temizle"
 
@@ -5327,7 +5347,7 @@ msgstr "Son dosyalar listesini temizle"
 msgid "Clear recent projects"
 msgstr "En son projeleri temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
 msgid "Clear recent solutions list"
 msgstr "Son çözümler listesini temizle"
 
@@ -5335,7 +5355,7 @@ msgstr "Son çözümler listesini temizle"
 msgid "Clear results"
 msgstr "Sonuçları temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:650
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:653
 msgid "Clear the navigation history"
 msgstr "Gezinti geçmişini temizleme"
 
@@ -5427,6 +5447,20 @@ msgstr "İstemci Sertifikası Gerekli"
 msgid "Clipboard Ring"
 msgstr "Pano Halkası"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Cloning submodules failed"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1487
+#, fuzzy
+msgid "Cloning submodules…"
+msgstr "Semboller Çözümleniyor…"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1415
+#, fuzzy
+msgid "Cloning…"
+msgstr "Yükleme kaldırılıyor…"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:449
@@ -5434,13 +5468,13 @@ msgstr "Pano Halkası"
 msgid "Close"
 msgstr "Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:556
 #, fuzzy
 msgid "Close All Except _Pinned"
 msgstr "Tüm Dosyaları Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:436
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:439
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:536
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/DefaultSourceEditorOptions.cs:434
 msgid "Close All Files"
 msgstr "Tüm Dosyaları Kapat"
@@ -5453,11 +5487,11 @@ msgstr "MonoDevelop'u Kapat"
 msgid "Close Project"
 msgstr "Projeyi Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:451
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:454
 msgid "Close Workspace Item"
 msgstr "Çalışma Alanı Öğesini Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:435
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:438
 msgid "Close _All"
 msgstr "_Tümünü Kapat"
 
@@ -5465,21 +5499,21 @@ msgstr "_Tümünü Kapat"
 msgid "Close _without Saving"
 msgstr "Kaydetmeden _Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:429
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:432
 msgid "Close active file"
 msgstr "Etkin dosyayı kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:554
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:557
 #, fuzzy
 msgid "Close all files except pinned"
 msgstr "Etkin dosya dışındaki tüm dosyaları kapatır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:443
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:446
 msgid "Close all solutions open in the current workspace"
 msgstr "Geçerli çalışma alanında açık olan tüm çözümleri kapatma"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:89
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:174
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:207
 msgid "Close current workspace"
 msgstr "Etkin çalışma alanını kapat"
 
@@ -5491,7 +5525,7 @@ msgstr "Belgeyi kapat"
 msgid "Close pad"
 msgstr "Paneli kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:452
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
 msgid "Close the active solution or workspace item"
 msgstr "Etkin çözümü veya çalışma alanı öğesini kapatma"
 
@@ -5519,7 +5553,7 @@ msgstr "Çalışma alanını kapat"
 msgid "Close the {0} pad"
 msgstr "{0} panelini kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:544
 msgid "Close to the _Right"
 msgstr "_Sağ tarafa kapat"
 
@@ -5533,15 +5567,15 @@ msgstr "Bir çözümü açtıktan sonra karşılama sayfasını kapat"
 msgid "Close {0}"
 msgstr "{0} öğesini kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:538
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:541
 msgid "Closes all opened files except for the active file"
 msgstr "Etkin dosya dışındaki tüm dosyaları kapatır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:534
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:537
 msgid "Closes all opened files in a tab"
 msgstr "Bir sekmede açılan tüm dosyaları kapatır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:542
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
 msgid "Closes all opened files to the right of the active file"
 msgstr "Tüm açık dosyaları etkin dosyanın sağına kapatır"
 
@@ -5609,7 +5643,7 @@ msgstr "Kod tamamlama veritabanı oluşturma"
 msgid "Collapse All"
 msgstr "Tümünü Daralt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
 msgid "Collapse All Nodes"
 msgstr "Tüm Düğümleri Daralt"
 
@@ -5684,7 +5718,7 @@ msgstr "{0} için Komut Bağımsız Değişkenleri"
 msgid "Command Line Options"
 msgstr "Komut Satırı Seçenekleri"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:454
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:456
 msgid "Command execution failed"
 msgstr "Komut yürütülemedi"
 
@@ -5703,7 +5737,7 @@ msgstr "Komut satırı parametreleri:"
 msgid "Command:"
 msgstr "Komut:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:57
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:62
 msgid "Commands"
 msgstr "Komutlar"
 
@@ -5826,11 +5860,11 @@ msgstr "Derleyici Seçenekleri"
 msgid "Compiling resource {0} with {1}"
 msgstr "{0} kaynağı {1} ile derleniyor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
 msgid "Complete Word"
 msgstr "Tam Sözcük"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 msgid "Complete current statement"
 msgstr "Geçerli deyimi tamamla"
 
@@ -5842,7 +5876,7 @@ msgstr "Boşluğu tamamla"
 msgid "Complete with Space or Punctuation"
 msgstr "Boşluk veya Noktalamayla Tamamla"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
 msgid "Completes the current statement"
 msgstr "Geçerli deyimi tamamlar"
 
@@ -5891,7 +5925,7 @@ msgstr "Yapılandırma"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1886
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2270
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2320
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1982
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1988
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "'{1}' adlı projede '{0}' yapılandırması bulunamadı"
 
@@ -5989,7 +6023,7 @@ msgstr "Çakışma"
 msgid "Conflict {0}"
 msgstr "{0} çakışması"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1116
 msgid "Conflicting local changes found"
 msgstr "Çakışan yerel değişiklikler bulundu"
 
@@ -6278,7 +6312,7 @@ msgstr "Daha yeniyse kopyala"
 msgid "Copy the assembly to the output directory when building the project"
 msgstr "Projeyi derlerken bütünleştirilmiş kodu çıktı klasörüne kopyala"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:545
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:548
 msgid "Copy the file path to the clipboard"
 msgstr "Dosya yolunu panoya kopyalama"
 
@@ -6294,7 +6328,7 @@ msgstr "Seçimi kopyala"
 msgid "Copy to output directory"
 msgstr "Çıkış dizinine kopyala"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:368
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2293
 msgid "Copying files..."
@@ -6384,7 +6418,7 @@ msgstr ""
 "alınamadı. Hata ayıklayıcısı yalnızca kullanıcı kodunun değil tüm kodun "
 "hatalarını ayıklayacak."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1138
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1140
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:393
 msgid "Could not get diff information. "
 msgstr "Fark bilgisi alınamadı."
@@ -6614,7 +6648,7 @@ msgid "Create a new empty class"
 msgstr "Boş bir sınıf oluşturur."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:246
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:402
 msgid "Create a new file"
 msgstr "Yeni dosya oluştur"
 
@@ -6622,11 +6656,11 @@ msgstr "Yeni dosya oluştur"
 msgid "Create a new folder"
 msgstr "Yeni klasör oluştur"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:418
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:421
 msgid "Create a new solution"
 msgstr "Yeni çözüm oluştur"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:424
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:427
 msgid "Create a new workspace"
 msgstr "Yeni çalışma alanı oluştur"
 
@@ -6638,7 +6672,7 @@ msgstr "Çözüm dizini içinde bir proje dizini oluştur."
 msgid "Create a project which can generate packages for a solution"
 msgstr "Çözüm için paketler üretebilecek bir paketleme projesi oluşturun"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:53
 msgid "Create an initial commit first."
 msgstr "Önce bir ilk işleme oluşturun."
 
@@ -6683,7 +6717,7 @@ msgstr "Yeni renk düzeni oluştur"
 msgid "Create new file"
 msgstr "Yeni dosya oluştur"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:578
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
 msgid "Create new layout"
 msgstr "Yeni düzen oluştur"
 
@@ -7349,7 +7383,7 @@ msgstr "Kes"
 msgid "Cut the selection"
 msgstr "Seçimi kes"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1210
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
@@ -7411,7 +7445,7 @@ msgstr "Tarih/Saat"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:316
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:331
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:553
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:184
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:149
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
@@ -7515,7 +7549,7 @@ msgstr "Reddet"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:71
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Shell/DefaultWorkbench.cs:104
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CSharpLanguageVersionHelper.cs:37
@@ -7678,11 +7712,11 @@ msgstr "Görevi Sil"
 msgid "Delete also configurations in solution items"
 msgstr "Çözüm öğelerindeki yapılandırmaları da sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:583
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:586
 msgid "Delete current layout"
 msgstr "Geçerli düzeni sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
 msgid "Delete entire line"
 msgstr "Tüm satırı sil"
 
@@ -7690,27 +7724,27 @@ msgstr "Tüm satırı sil"
 msgid "Delete from Disk"
 msgstr "Diskten Sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1064
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1067
 msgid "Delete left character"
 msgstr "Soldaki karakteri sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1189
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1192
 msgid "Delete next subword"
 msgstr "Sonraki alt sözcüğü sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1188
 msgid "Delete next word"
 msgstr "Sonraki sözcüğü sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 msgid "Delete previous subword"
 msgstr "Önceki alt sözcüğü sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1183
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid "Delete previous word"
 msgstr "Önceki sözcüğü sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1069
 msgid "Delete right character"
 msgstr "Sağdaki karakteri sil"
 
@@ -7726,11 +7760,11 @@ msgstr "Proje dosyasını ve tüm proje dizinini silin:"
 msgid "Delete the selection"
 msgstr "Seçimi sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1105
 msgid "Delete to end of line"
 msgstr "Satır sonuna kadar sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
 msgid "Delete to start of line"
 msgstr "Satır başına kadar sil"
 
@@ -7757,7 +7791,7 @@ msgstr ""
 "daha önce tanımlanmış grup adı2 grubu ile geçerli grup\n"
 "arasındaki aralığı grup adı1 içinde depolar."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr "Satır sonuna kadar siler veya sondaysa satır sonunu siler"
 
@@ -8010,7 +8044,7 @@ msgstr ""
 "{0} dizini zaten var.\n"
 "Projeyi oluşturmaya devam etmek istiyor musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:490
 msgid "Directory {0} is empty, no files have been added."
 msgstr "{0} dizini boş, hiçbir dosya eklenmemiş."
 
@@ -8102,11 +8136,11 @@ msgstr "Ayrıştırma Sekmesi"
 msgid "Discovery document"
 msgstr "Bulma belgesi"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1996
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1997
 msgid "Display Options"
 msgstr "Görüntüleme Seçenekleri"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:607
 msgid "Display Options List"
 msgstr "Seçenekler Listesini Göster"
 
@@ -8142,11 +8176,11 @@ msgstr "'This' öğesini tercih etme."
 msgid "Do not reference mscorlib.dll"
 msgstr "mscorlib.dll dosyasına başvurma"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:313
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:314
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "'{0}' dosyasını '{1}' dosyasına kopyalamak istiyor musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:311
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:312
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -8154,11 +8188,11 @@ msgstr ""
 "'{0}' klasörünü '{1}' projesinin kök klasörüne gerçekten kopyalamak istiyor "
 "musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:306
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
 msgstr "'{0}' dosyasını '{1}' dosyasına taşımak istiyor musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:303
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:304
 msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -8230,15 +8264,15 @@ msgstr ""
 msgid "Do you want to save the changes before committing?"
 msgstr "Teslim etmeden önce değişlikleri kaydetmek ister misiniz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:359
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:360
 msgid "Do you want to save the file '{0}' before the copy operation?"
 msgstr "Kopyalama işleminden önce '{0}' dosyasını kaydetmek istiyor musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:355
 msgid "Do you want to save the file '{0}' before the move operation?"
 msgstr "Taşıma işleminden önce '{0}' dosyasını kaydetmek istiyor musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:362
 msgid ""
 "Do you want to save the following files before the copy operation?\n"
 "\n"
@@ -8248,7 +8282,7 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:356
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:357
 msgid ""
 "Do you want to save the following files before the move operation?\n"
 "\n"
@@ -8296,7 +8330,7 @@ msgstr "{0} öğesini yerleştir"
 msgid "Document"
 msgstr "Belge"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:826
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:829
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:206
 msgid "Document List"
 msgstr "Belge Listesi"
@@ -8340,7 +8374,7 @@ msgstr "Belge _Yorumları"
 msgid "Documents"
 msgstr "Belgeler"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:364
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:53
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:140
 msgid "Don't Save"
@@ -8386,15 +8420,15 @@ msgstr "{0} derleniyor"
 msgid "Downloads"
 msgstr "İndirmeler"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 msgid "Dump Accessibility Tree"
 msgstr "Döküm Erişilebilirlik Ağacı"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
 msgid "Dump Accessibility Tree (10s)"
 msgstr "Döküm Erişilebilirlik Ağacı (10s)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:902
 msgid "Dump UI Tree"
 msgstr "Döküm UI Ağacı"
 
@@ -8412,7 +8446,7 @@ msgstr "Yinele"
 msgid "Duplicate Configuration"
 msgstr "Yineleme Yapılandırması"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1206
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 msgid "Duplicate line"
 msgstr "Satırı Yinele"
 
@@ -8420,7 +8454,7 @@ msgstr "Satırı Yinele"
 msgid "Duplicates:"
 msgstr "Yinelenenler:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
 msgid "Dynamic abbrev"
 msgstr "Dinamik kısaltma"
 
@@ -8477,7 +8511,7 @@ msgstr "Kesme Noktasını Düzenle..."
 msgid "Edit Custom Modes..."
 msgstr "Özel Modları Düzenle..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
 msgid "Edit Custom Tools..."
 msgstr "Özel Araçları Düzenle..."
@@ -8692,7 +8726,7 @@ msgstr "Boş denetim deyimi gövdesi"
 msgid "Empty destructor is redundant"
 msgstr "Boş yıkıcı gereksiz"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:488
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:489
 msgid "Empty directory."
 msgstr "Boş dizin."
 
@@ -8906,7 +8940,7 @@ msgstr "Alanları kapsülle (ve özellik kullan)"
 msgid "Encapsulate fields (but still use field)"
 msgstr "Alanları kapsülle (ancak yine de alan kullan)"
 
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:148
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:181
 msgid "Encoding:"
 msgstr "Kodlama:"
 
@@ -9703,63 +9737,63 @@ msgstr "Tümünü Genişlet"
 msgid "Expand matches"
 msgstr "Eşleşmeleri genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Expand selection to document end"
 msgstr "Seçimi belge sonuna genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
 msgid "Expand selection to document start"
 msgstr "Seçimi belge başına genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1158
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 msgid "Expand selection to line"
 msgstr "Seçimi satıra genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 msgid "Expand selection to line end"
 msgstr "Seçimi satır sonuna genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1153
 msgid "Expand selection to line start"
 msgstr "Seçimi satır başına genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1151
 msgid "Expand selection to next line"
 msgstr "Seçimi sonraki satıra genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1144
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 msgid "Expand selection to next subword"
 msgstr "Seçimi sonraki alt sözcüğe genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
 msgid "Expand selection to next word"
 msgstr "Seçimi sonraki sözcüğe genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1194
 msgid "Expand selection to page down"
 msgstr "Seçimi alt sayfaya genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1193
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Expand selection to page up"
 msgstr "Seçimi üst sayfaya genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 msgid "Expand selection to previous line"
 msgstr "Seçimi önceki satıra genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1142
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 msgid "Expand selection to previous subword"
 msgstr "Seçimi önceki alt sözcüğe genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
 msgid "Expand selection to previous word"
 msgstr "Seçimi önceki sözcüğe genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
 msgid "Expand selection to the left"
 msgstr "Seçimi sola genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
 msgid "Expand selection to the right"
 msgstr "Seçimi sağa genişlet"
 
@@ -9892,7 +9926,7 @@ msgstr "Genişletme yöntemleri statik olarak bildirilmelidir"
 msgid "Extension packages"
 msgstr "Uzantı paketleri"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:559
+#: ../src/addins/MacPlatform/MacPlatform.cs:555
 msgid "Extensions..."
 msgstr "Uzantılar..."
 
@@ -9989,7 +10023,7 @@ msgstr "F# Proje Dosyası"
 msgid "F# script files"
 msgstr "F# betik dosyaları"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:962
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
 msgid "F_ind in Files..."
 msgstr "Dosyalarda B_ul..."
 
@@ -10086,7 +10120,7 @@ msgstr "Geri bildirim"
 msgid "Fetch"
 msgstr "Getir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1046
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1061
 msgid "Fetching"
 msgstr "Getiriliyor"
 
@@ -10095,7 +10129,7 @@ msgstr "Getiriliyor"
 msgid "Fetching external item into '{0}'"
 msgstr "Dış öğe '{0}' konumuna getiriliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1062
 msgid "Fetching from '{0}'"
 msgstr "'{0}'dan alınıyor"
 
@@ -10123,7 +10157,7 @@ msgstr "Alan {0}"
 msgid "Fields"
 msgstr "Alanlar"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:385
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:388
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:676
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:126
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
@@ -10195,6 +10229,11 @@ msgstr "Dosya Adı"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:47
 msgid "File Name Without Extension"
 msgstr "Uzantısız Dosya Adı"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:383
+#, fuzzy
+msgid "File Nesting"
+msgstr "Dosya Uzantısı"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:44
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:57
@@ -10301,7 +10340,7 @@ msgstr "Dosya bulunamadı."
 msgid "File not found: {0}"
 msgstr "Dosya bulunamadı: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:242
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:165
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:171
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:112
@@ -10436,11 +10475,11 @@ msgstr "Üye Yüklerini Bul"
 msgid "Find Method Overloads"
 msgstr "Metotlarda Aşırı Yükleri Bul"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
 msgid "Find Next Like Selection"
 msgstr "Seçime Benzeyen Sonrakini Bul"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:958
 msgid "Find Previous Like Selection"
 msgstr "Seçime Benzeyen Öncekini Bul"
 
@@ -10452,27 +10491,27 @@ msgstr "Tür Uzantılarını Bul"
 msgid "Find _Derived Symbols"
 msgstr "Türetilmiş _Sembolleri Bul"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:931
 msgid "Find _Next"
 msgstr "_Sonrakini Bul"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:941
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
 msgid "Find _Next (Emacs behavior)"
 msgstr "_Sonrakini Bul (Emacs davranışı)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:934
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
 msgid "Find _Previous"
 msgstr "Öncekini B_ul"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 msgid "Find _Previous (Emacs behavior)"
 msgstr "Öncekini B_ul (Emacs davranışı)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 msgid "Find and run a specific command."
 msgstr "Belirli bir komutu bulun ve çalıştırın."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 msgid "Find caret"
 msgstr "Giriş işaretini bul"
 
@@ -10564,11 +10603,11 @@ msgstr "'{0}' işlecini '{1}' ile değiştir"
 msgid "Flush Memory"
 msgstr "Belleği Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
 msgid "Focus and center current document"
 msgstr "Geçerli belgeyi odaklama ve ortalama"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:705
 msgid "Focus current document"
 msgstr "Geçerli belgeyi odakla"
 
@@ -11263,7 +11302,7 @@ msgstr "Bir sayfa geri git"
 msgid "Go back to the home page"
 msgstr "Ana sayfaya geri git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1082
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1085
 msgid "Go down one page"
 msgstr "Bir sayfa aşağı git"
 
@@ -11271,11 +11310,11 @@ msgstr "Bir sayfa aşağı git"
 msgid "Go forward one page"
 msgstr "Bir sayfa ileri git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
 msgid "Go left one character"
 msgstr "Tek karakter sola git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
 msgid "Go right one character"
 msgstr "Tek karakter sağa git"
 
@@ -11295,7 +11334,7 @@ msgstr "Denetleyiciye Git"
 msgid "Go to Download Page"
 msgstr "İndirmeler Sayfasına Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:990
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 msgid "Go to File..."
 msgstr "Dosyaya git..."
 
@@ -11303,24 +11342,24 @@ msgstr "Dosyaya git..."
 msgid "Go to Implementation"
 msgstr "Uygulamaya git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1027
 msgid "Go to Line..."
 msgstr "Satıra Git..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
 msgid "Go to Matching Brace"
 msgstr "Eşleşen Ayraca Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 msgid "Go to Next Bookmark"
 msgstr "Sonraki Yer İşaretine Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1014
 msgid "Go to Previous Bookmark"
 msgstr "Önceki Yer İşaretine Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:983
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 msgid "Go to Type..."
 msgstr "Türe git..."
 
@@ -11377,23 +11416,23 @@ msgstr "_Günlüğe Git"
 msgid "Go to _Reference"
 msgstr "_Başvuruya Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 msgid "Go to a specific line"
 msgstr "Belirli bir satıra git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Go to beginning of document"
 msgstr "Belgenin başına git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1062
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
 msgid "Go to beginning of line"
 msgstr "Satır başına git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
 msgid "Go to end of document"
 msgstr "Belgenin sonuna git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Go to end of line"
 msgstr "Satır sonuna git"
 
@@ -11401,39 +11440,39 @@ msgstr "Satır sonuna git"
 msgid "Go to failure"
 msgstr "Hataya git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1018
 msgid "Go to next bookmark"
 msgstr "Sonraki yer işaretine git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
 msgid "Go to next line"
 msgstr "Sonraki satıra git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 msgid "Go to next subword"
 msgstr "Sonraki alt sözcüğe git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
 msgid "Go to next word"
 msgstr "Sonraki sözcüğe git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1009
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
 msgid "Go to previous bookmark"
 msgstr "Önceki yer işaretine git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
 msgid "Go to previous line"
 msgstr "Önceki satıra git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 msgid "Go to previous subword"
 msgstr "Önceki alt sözcüğe git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
 msgid "Go to previous word"
 msgstr "Önceki sözcüğe git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1080
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Go up one page"
 msgstr "Bir sayfa yukarı git"
 
@@ -11569,7 +11608,7 @@ msgstr "İbranice"
 msgid "Hebrew Visual"
 msgstr "Görsel İbranice"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:870
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:873
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:44
 msgid "Help"
 msgstr "Yardım"
@@ -11604,7 +11643,7 @@ msgstr "Onaltılık Metin Düzenleyici"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:264
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:50
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/CommandSearchCategory.cs:41
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:189
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:115
 msgid "Hidden"
@@ -11623,7 +11662,7 @@ msgstr "Uygulamayı Gizle"
 msgid "Hide Categories"
 msgstr "Kategorileri Gizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1226
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1229
 msgid "Hide Current Message"
 msgstr "Geçerli İletiyi Gizle"
 
@@ -11635,7 +11674,7 @@ msgstr "Detayları Gizle"
 msgid "Hide other applications' windows"
 msgstr "Diğer uygulamaların pencerelerini gizle"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:620
+#: ../src/addins/MacPlatform/MacPlatform.cs:616
 msgid "Hide {0}"
 msgstr "{0} öğesini gizle"
 
@@ -12059,7 +12098,7 @@ msgstr "Implements yönergesinin 'interface' özniteliği boş olmamalıdır"
 msgid "Import Color Theme"
 msgstr "Renk Temasını İçeri Aktar"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:474
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:475
 msgid "Import From Folder"
 msgstr "Klasörden İçeri Aktar"
 
@@ -12320,6 +12359,10 @@ msgstr "Alanı parametreden başlat"
 msgid "Initialize readonly auto-property from parameter"
 msgstr "Parametreden salt okunur otomatik özelliği başlat"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:584
+msgid "Initializing '{0}' ({1}) command failed."
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:95
 msgid "Initializing Main Window"
 msgstr "Ana Pencere Başlatılıyor"
@@ -12407,7 +12450,7 @@ msgstr "Sonrasına ayraç iliştir"
 msgid "Insert Separator Before"
 msgstr "Öncesine ayraç iliştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
 msgid "Insert Snippet..."
 msgstr "Kod Parçacığı Ekle..."
 
@@ -12436,11 +12479,11 @@ msgstr "Tüm eşleşmelerde giriş işaretlerini ekle"
 msgid "Insert format argument"
 msgstr "Biçim bağımsız değişkeni ekle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1173
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
 msgid "Insert line break after the caret"
 msgstr "Giriş işaretinden sonra satır sonu ekle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
 msgid "Insert new line"
 msgstr "Yeni satır ekle"
 
@@ -12534,7 +12577,7 @@ msgstr "Tür yayını parantezlerinin içine boşluk ekleyin"
 msgid "Insert space within square brackets"
 msgstr "Köşeli ayraç içine boşluk ekle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
 msgid "Insert tab"
 msgstr "Sekme ekle"
 
@@ -12542,7 +12585,7 @@ msgstr "Sekme ekle"
 msgid "Inserts a Guid at caret position"
 msgstr "Şapka konumuna bir Guid ekler"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
 msgid "Inserts a snippet"
 msgstr "Bir kod parçacığı ekler"
 
@@ -12617,7 +12660,7 @@ msgstr "Yükleniyor..."
 msgid "Instrumentation"
 msgstr "İzleme"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:734
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:737
 msgid "Instrumentation Monitor"
 msgstr "Araç İzleyicisi"
 
@@ -12736,7 +12779,7 @@ msgstr "Çevrilebilir '{1}' dizesinde geçersiz '{0}' karakteri"
 msgid "Invalid code page number."
 msgstr "Geçersiz kod sayfası numarası."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
 msgid "Invalid configuration mapping"
 msgstr "Geçersiz yapılandırma eşlemesi"
 
@@ -12808,7 +12851,7 @@ msgstr ""
 "Geçersiz çözüm dosyası. Aynı GUID'e sahip iki proje bulunmaktadır. {0} "
 "projesi yok sayılacak."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:253
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:248
 msgid "Invariant"
 msgstr "Sabit"
 
@@ -12875,11 +12918,11 @@ msgstr "Dizeleri birleştir"
 msgid "Join the current line with the next line"
 msgstr "Sonraki satır ile geçerli satırı birleştirme"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
 msgid "Jump to a file in the current workspace"
 msgstr "Geçerli çalışma alanındaki bir dosyaya atla"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 msgid "Jump to a item in the current workspace"
 msgstr "Geçerli çalışma alanındaki bir öğeye atla"
 
@@ -12896,7 +12939,7 @@ msgstr "İlk hata veya uyarıya atla:"
 msgid "Jump to line {0}"
 msgstr "{0}. satıra atla"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:984
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "Geçerli çalışma alanındaki tür bildirimine atla"
 
@@ -13105,7 +13148,7 @@ msgstr "{0} için başlatma betiği"
 msgid "Layout"
 msgstr "Düzen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:573
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
 msgid "Layout List"
 msgstr "Düzen Listesi"
 
@@ -13224,7 +13267,7 @@ msgstr "Liste Görünümü"
 msgid "List of changes for this refactoring:"
 msgstr "Bu yeniden düzenlemedeki değişikliklerin listesi:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:614
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
 msgid "List of programs to open with"
 msgstr "Açmak için kullanılacak programların listesi"
 
@@ -13256,6 +13299,11 @@ msgstr "Yükle/Kaydet"
 msgid "Loaded Assemblies"
 msgstr "Yüklü Derlemeler"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:362
+#, fuzzy
+msgid "Loading"
+msgstr "Yükleniyor..."
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:264
 msgid "Loading Workbench"
 msgstr "Workbench Yükleniyor"
@@ -13264,7 +13312,7 @@ msgstr "Workbench Yükleniyor"
 msgid "Loading build log…"
 msgstr "Derleme günlüğü yükleniyor..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1129
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:363
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:485
 msgid "Loading data..."
@@ -13295,6 +13343,10 @@ msgstr "Çalışma alanı öğesi yükleniyor: {0}"
 #: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:546
 msgid "Loading {0} add-in"
 msgstr "{0} eklenti yükleniyor"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:346
+msgid "Loading {0} search provider..."
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:51
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:97
@@ -13381,7 +13433,7 @@ msgid "Locking..."
 msgstr "Kilitleniyor..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Log"
 msgstr "Günlük"
 
@@ -13663,7 +13715,7 @@ msgstr "Paketleri Geri Yükle (Çözüm)"
 msgid "Manage Repositories..."
 msgstr "Depoları Yönet..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:722
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:725
 msgid "Manage extensions"
 msgstr "Uzantıları yönetin"
 
@@ -13693,7 +13745,7 @@ msgstr "Yönetilen İzleyici"
 msgid "Manifest File"
 msgstr "Bildirim Dosyası"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:908
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 msgid "Mark Log"
 msgstr "Günlüğü İşaretle"
 
@@ -13877,7 +13929,7 @@ msgstr ""
 "grubunun adına veya numarasına karşılık gelmiyorsa, dönüşümlülük\n"
 "kurgusu bir ifade testi olarak yorumlanır."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 msgid "Matching _Brace"
 msgstr "Eşleşen _Ayraç"
 
@@ -13933,7 +13985,7 @@ msgstr "Menü kategorileri:"
 msgid "Menu entry"
 msgstr "Menü girdisi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.MergeDialog.cs:112
 msgid "Merge"
 msgstr "Birleştir"
@@ -13946,11 +13998,11 @@ msgstr "Dalı Birleştir..."
 msgid "Merge Conflict Resolution"
 msgstr "Çakışma Çözümünü Birleştir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1229
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1244
 msgid "Merging"
 msgstr "Birleştiriliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:107
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:108
 msgid "Merging branch '{0}'..."
 msgstr "Dal '{0}' birleştiriliyor..."
 
@@ -13999,7 +14051,7 @@ msgstr "{0} metodu"
 msgid "Methods"
 msgstr "Metotlar"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:244
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:239
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
@@ -14133,7 +14185,7 @@ msgid "Monitor application/applet that monitors some resource or activity"
 msgstr ""
 "Bir kaynak veya etkinliği izleyen bir izleme uygulaması/küçük uygulaması"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:250
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Mono"
 msgstr "Mono"
 
@@ -14169,7 +14221,7 @@ msgstr "Mono çalışma zamanı bulunamadı"
 msgid "Mono runtime settings:"
 msgstr "Mono çalışma zamanı ayarları:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:247
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:242
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:298
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
@@ -14259,15 +14311,15 @@ msgstr "Birden fazla kök öğe"
 msgid "More..."
 msgstr "Daha fazla..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1179
 msgid "Move caret to EOL and insert new line"
 msgstr "Giriş işaretini satır sonuna taşı ve yeni satır ekle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:618
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:621
 msgid "Move cursor to next error or search match"
 msgstr "İmleci sonraki hataya taşıma veya eşleşme arama"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:624
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:627
 msgid "Move cursor to previous error or search match"
 msgstr "İmleci önceki hataya taşıma veya eşleşmeyi arama"
 
@@ -14275,11 +14327,11 @@ msgstr "İmleci önceki hataya taşıma veya eşleşmeyi arama"
 msgid "Move last caret down"
 msgstr "Son giriş işaretini aşağı taşı"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 msgid "Move the line or highlighted selection down"
 msgstr "Satırı veya vurgulanan seçimi aşağı taşı"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 msgid "Move the line or highlighted selection up"
 msgstr "Satırı veya vurgulanan seçimi yukarı taşı"
 
@@ -14291,19 +14343,19 @@ msgstr "Seçili klasörü listede aşağı taşı"
 msgid "Move the selected folder up the list"
 msgstr "Seçili klasörü listede yukarı taşı"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:689
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:692
 msgid "Move to Next Notebook"
 msgstr "Sonraki Not Defterine Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:697
 msgid "Move to Previous Notebook"
 msgstr "Önceki Not Defterine Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:641
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
 msgid "Move to next point in code navigation history"
 msgstr "Kod gezinti geçmişinde sonraki noktaya gitme"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:634
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:637
 msgid "Move to previous point in code navigation history"
 msgstr "Kod gezinti geçmişinde önceki noktaya gitme"
 
@@ -14311,11 +14363,11 @@ msgstr "Kod gezinti geçmişinde önceki noktaya gitme"
 msgid "Move to the next page"
 msgstr "Sonraki sayfaya ilerle"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2089
 msgid "Moving files"
 msgstr "Dosyalar taşınıyor"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:386
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2291
 msgid "Moving files..."
 msgstr "Dosyalar kopyalanıyor..."
@@ -14587,19 +14639,19 @@ msgstr "Yerel"
 msgid "Navigate"
 msgstr "Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:996
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
 msgid "Navigate To..."
 msgstr "Şuna Git..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:629
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:632
 msgid "Navigate _Back"
 msgstr "_Geri Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:636
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:639
 msgid "Navigate _Forward"
 msgstr "_İleri Git"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:644
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:647
 msgid "Navigate _History"
 msgstr "_Geçmişe Git"
 
@@ -14607,7 +14659,7 @@ msgstr "_Geçmişe Git"
 msgid "Navigation _History"
 msgstr "Gezinme _Geçmişi"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1019
 msgid "Ne_xt"
 msgstr "İl_eri"
 
@@ -14724,7 +14776,7 @@ msgstr "Yeni Grup"
 msgid "New Group..."
 msgstr "Yeni Grup..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:366
+#: ../src/addins/MacPlatform/MacPlatform.cs:362
 msgid "New Instance"
 msgstr "Yeni Örnek"
 
@@ -14784,7 +14836,7 @@ msgid "New _Class..."
 msgstr "Yeni _Dosya..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:245
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:396
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:399
 msgid "New _File..."
 msgstr "Yeni _Dosya..."
 
@@ -14792,11 +14844,11 @@ msgstr "Yeni _Dosya..."
 msgid "New _Folder…"
 msgstr "Yeni _Klasör..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:419
 msgid "New _Solution..."
 msgstr "Yeni _Çözüm..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:423
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:426
 msgid "New _Workspace..."
 msgstr "Yeni _Çalışma Alanı..."
 
@@ -14886,7 +14938,7 @@ msgstr "Sonraki belge"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:394
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14936,8 +14988,8 @@ msgstr "Kullanılabilir kod düzeltmesi yok"
 msgid "No completions found"
 msgstr "Tamamlama bulunamadı"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1126
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1141
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1128
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:1143
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:382
 msgid "No differences found"
 msgstr "Fark bulunamadı"
@@ -14974,8 +15026,8 @@ msgstr ""
 "Proje dizininde hiçbir derleme görevleri dosyası bulunamadı. Şimdi "
 "oluşturmak istiyor musunuz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:437
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:598
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:168
 msgid "No matches"
 msgstr "Eşleşme yok"
@@ -15137,8 +15189,8 @@ msgstr "Dağıtılabilir bir proje değil."
 msgid "Not a glade file according to node name."
 msgstr "Düğüm adına göre bir glade dosyası değil."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1032
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1034
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1047
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1049
 msgid "Not a valid git repository."
 msgstr "Geçerli bir git deposu değil."
 
@@ -15174,7 +15226,7 @@ msgstr "NotImplementedException özel durumu oluştu."
 msgid "NotImplementedException({0}) thrown."
 msgstr "NotImplementedException({0}) özel durumu oluştu."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:64
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:66
 msgid ""
 "Note: The reversion will occur in your working copy, so you will still need "
 "to perform a commit to complete it."
@@ -15251,7 +15303,7 @@ msgstr "Sayısal analiz yazılımı"
 msgid "OK"
 msgstr "Tamam"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:514
 msgid "O_pen Containing Folder"
 msgstr "Kapsayan Kla_sörü Aç"
 
@@ -15290,11 +15342,11 @@ msgstr "Her dizinde bir ChangeLog"
 msgid "One ChangeLog in the project root directory"
 msgstr "Proje kök dizininde bir ChangeLog var"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:682
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:685
 msgid "One Column"
 msgstr "Bir Sütun"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:683
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:686
 msgid "One Editor Column"
 msgstr "Bir Düzenleyici Sütunu"
 
@@ -15364,7 +15416,7 @@ msgstr "C# dosyalarını Yeni Düzenleyicide aç"
 msgid "Open Glade File"
 msgstr "Glade Dosyasını Aç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:888
 msgid "Open Log Directory"
 msgstr "Günlük Dizinini Aç"
 
@@ -15389,7 +15441,7 @@ msgid "Open URL in web browser when app starts:"
 msgstr "Uygulama başlatıldığında URL'yi web tarayıcısında aç:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:185
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:218
 msgid "Open With:"
 msgstr "Birlikte Aç:"
 
@@ -15401,7 +15453,7 @@ msgstr "Birlikte _Aç"
 msgid "Open a file selector to select the project path"
 msgstr "Proje yolunu seçmek için bir dosya seçici aç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:395
 msgid "Open file or solution"
 msgstr "Dosya veya çözüm aç"
 
@@ -15417,7 +15469,7 @@ msgstr "Tercihler iletişim kutusunu aç"
 msgid "Open script"
 msgstr "Betik aç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:600
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:603
 msgid "Open selected document"
 msgstr "Seçilen belgeyi aç"
 
@@ -15426,8 +15478,8 @@ msgstr "Seçilen belgeyi aç"
 msgid "Open solution {0}"
 msgstr "{0} çözümünü aç"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:411
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:422
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:435
 msgid "Open with '{0}'"
 msgstr "{0} ile aç"
 
@@ -15446,23 +15498,23 @@ msgstr "Aç..."
 msgid "Opening {0}"
 msgstr "{0} açılıyor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:505
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
 msgid "Opens a terminal in this folder"
 msgstr "Bu klasörde bir terminal açar"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
 msgid "Opens the directory where the diagnostic logs are stored"
 msgstr "Tanılama günlüklerinin saklandığı dizini açar"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:511
 msgid "Opens the folder in a file manager."
 msgstr "Klasörü bir dosya yöneticisinde açar."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:512
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:515
 msgid "Opens the folder that contains this file."
 msgstr "Bu dosyayı içeren klasörü açar."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:550
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
 msgid "Opens the last tab that has been closed"
 msgstr "Kapatılmış olan son sekmeyi açar"
 
@@ -15902,7 +15954,7 @@ msgstr "Bölmeler"
 msgid "Page %N of %Q"
 msgstr "Sayfa %N / %Q"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:475
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:478
 msgid "Page Set_up"
 msgstr "Sayfa Ya_pısı"
 
@@ -16113,7 +16165,7 @@ msgstr "Çıktı doldurmasını sabitle"
 msgid "Pin results pad"
 msgstr "Sonuç altlığını sabitle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:559
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:562
 msgid "Pin/Unpin current Tab selected"
 msgstr ""
 
@@ -16272,6 +16324,10 @@ msgstr "Lütfen hataları ayıklanacak uygulamayı seçin"
 msgid "Please select which files and folders you want to delete:"
 msgstr "Lütfen silmek istediğiniz dosya ve klasörleri seçin:"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1469
+msgid "Please use the command line client to init the submodules manually."
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:546
 msgid "Plural"
 msgstr "Çoğul"
@@ -16292,7 +16348,7 @@ msgstr "Dışarı aktarılacak ilkeler:"
 msgid "Policies to set or replace:"
 msgstr "Ayarlanacak veya değiştirilecek ilkeler:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:552
 msgid "Policies..."
 msgstr "İlkeler..."
 
@@ -16317,7 +16373,7 @@ msgstr "İlke:"
 msgid "Pop stash"
 msgstr "Hazırlama dosyasından al"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:396
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:411
 msgid "Popping stash"
 msgstr "Hazırlama dosyasından alınıyor"
 
@@ -16394,7 +16450,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "Te_rcihler..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
 msgid "Pre_vious"
 msgstr "Ön_ceki"
 
@@ -16498,7 +16554,7 @@ msgstr "Throw ifadesini tercih et"
 msgid "Preferences"
 msgstr "Tercihler"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:555
+#: ../src/addins/MacPlatform/MacPlatform.cs:551
 msgid "Preferences..."
 msgstr "Tercihler..."
 
@@ -16602,7 +16658,7 @@ msgstr "Dosyadaki Önceki Sorun"
 msgid "Previous document"
 msgstr "Önceki belge"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:470
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:473
 msgid "Print Previe_w"
 msgstr "Baskı Önizlem_e"
 
@@ -16610,7 +16666,7 @@ msgstr "Baskı Önizlem_e"
 msgid "Print a message and continue"
 msgstr "İleti yazdır ve devam et"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:464
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:467
 msgid "Print current document"
 msgstr "Geçerli belgeyi yazdır"
 
@@ -16675,7 +16731,7 @@ msgstr "T4 Şablonlarını işle..."
 msgid "Process all T4 templates."
 msgstr "Tüm T4 şablonlarını işle."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:180
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
 msgid "Profile"
 msgstr "Profil"
@@ -16828,7 +16884,7 @@ msgid "Project Version"
 msgstr "Proje Sürümü"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 msgid "Project _Options"
 msgstr "Proje _Seçenekleri"
 
@@ -16881,7 +16937,7 @@ msgstr "Proje adı belirtilmemiş."
 msgid "Project name:"
 msgstr "Proje adı:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:154
 msgid "Project not built in active configuration"
 msgstr "Proje etkin yapılandırmada derlenmedi"
 
@@ -17041,7 +17097,7 @@ msgstr "Ortak Anahtar:"
 msgid "Publish"
 msgstr "Yayımla"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:133
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:131
 msgid "Publish operation completed."
 msgstr "Yayımlama işlemi tamamlandı."
 
@@ -17066,7 +17122,7 @@ msgstr "Uygulamanızı bir klasörde veya dosya paylaşımında yayımlayın"
 msgid "Published"
 msgstr "Yayımlandı"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:113
 msgid "Publishing \"{0}\" Project..."
 msgstr "\"{0}\" Projesi yayımlanıyor..."
 
@@ -17091,7 +17147,7 @@ msgstr "Gönderme URL'si:"
 msgid "Push changes to remote repository after commit"
 msgstr "Yürütmeden sonra değişiklikleri uzak depoya gönder"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1731
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1745
 msgid "Push operation successfully completed."
 msgstr "Gönderme işlemi başarıyla tamamlandı."
 
@@ -17111,7 +17167,7 @@ msgstr "Etiket Gönderiliyor"
 msgid "Pushing Tag '{0}' to '{1}'"
 msgstr "'{0}' Etiketi '{1}' öğesine gönderiliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:65
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:66
 msgid "Pushing changes..."
 msgstr "Değişiklikler gönderiliyor..."
 
@@ -17209,7 +17265,7 @@ msgstr "Sessiz"
 msgid "Quit"
 msgstr "Çıkış"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:500
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:503
 msgid "Quit MonoDevelop"
 msgstr "MonoDevelop'tan çık"
 
@@ -17229,7 +17285,7 @@ msgstr "ROX Masaüstü"
 msgid "R_ebuild"
 msgstr "Y_eniden Derle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:258
 msgid "R_ebuild {0}"
 msgstr "{0} _Öğesini Yeniden Derle"
 
@@ -17241,7 +17297,7 @@ msgstr "Using'leri K_aldır ve Sırala"
 msgid "R_eplace"
 msgstr "D_eğiştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
 msgid "R_eplace in Files..."
 msgstr "Dosyalarda D_eğiştir..."
 
@@ -17383,11 +17439,11 @@ msgstr "Yeniden Temellendir"
 msgid "Rebase to Branch..."
 msgstr "Dalda Yeniden Temellendir..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1176
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1191
 msgid "Rebasing"
 msgstr "Yeniden temellendiriliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:101
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:102
 msgid "Rebasing branch '{0}'..."
 msgstr "Dal '{0}' yeniden temellendiriliyor..."
 
@@ -17399,7 +17455,7 @@ msgstr "Tüm çözümlerin tüm projelerini yeniden derle"
 msgid "Rebuild the current project"
 msgstr "Geçerli projeyi yeniden derle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:259
 msgid "Rebuild {0}"
 msgstr "{0} öğesini yeniden derle"
 
@@ -17416,11 +17472,11 @@ msgstr "Yeniden oluşturuluyor... (Derleme)"
 msgid "Rebuilding... (Clean)"
 msgstr "Yeniden oluşturuluyor... (Temiz)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:321
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:336
 msgid "Receiving and indexing objects"
 msgstr "Nesneler alınıyor ve dizin oluşturuluyor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:490
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
 msgid "Recent Pro_jects"
 msgstr "Son Pro_jeler"
 
@@ -17436,7 +17492,7 @@ msgstr "Son _Çözümler"
 msgid "Recent Templates"
 msgstr "Son Şablonlar"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:480
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:26
 msgid "Recent _Files"
 msgstr "Son _Dosyalar"
@@ -17620,7 +17676,7 @@ msgstr "Başvurular"
 msgid "References a strongly-typed model"
 msgstr "Kesin tür belirtilmiş bir modele başvurur"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:612
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:305
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:155
@@ -17628,7 +17684,7 @@ msgstr "Kesin tür belirtilmiş bir modele başvurur"
 msgid "Refresh"
 msgstr "Yenile"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:608
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
 msgid "Refresh the tree"
 msgstr "Ağacı yenile"
 
@@ -17734,13 +17790,13 @@ msgstr "Uzak Kaynaklar"
 msgid "Remote Status"
 msgstr "Uzaktaki Durum"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:982
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:997
 msgid "Remote server error: {0}"
 msgstr "Uzak sunucu hatası: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:386
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:397
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:295
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:463
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:472
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:200
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:208
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:74
@@ -17856,7 +17912,7 @@ msgstr "Döndürülen ifadeyi kaldır"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr "Alt menüyü kaldır (Ctrl+Sol)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 msgid "Remove tab"
 msgstr "Sekmeyi Kaldır"
 
@@ -18044,7 +18100,7 @@ msgstr "{0} öğesini {1} olarak yeniden adlandır"
 msgid "Renamed"
 msgstr "Yeniden adlandırıldı"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:549
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:552
 msgid "Reopen Closed Tab"
 msgstr "Kapatılan Sekmeyi Yeniden Aç"
 
@@ -18189,7 +18245,7 @@ msgstr "'{1}' projesinde '{0}' değiştiriliyor"
 msgid "Replacing {0}: existing file is older."
 msgstr "{0} değiştiriliyor: Mevcut dosya daha eski."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:742
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:745
 msgid "Replay Session..."
 msgstr "Oturumu Yeniden Yürüt..."
 
@@ -18236,7 +18292,7 @@ msgstr "İstemci Sertifikası Gerektir"
 msgid "Require License Acceptance:"
 msgstr "Lisans Kabulü İste:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
 msgid "Require Specific Version"
 msgstr "Belirli Bir Sürüm Gerektir"
 
@@ -18268,7 +18324,7 @@ msgstr "Testi yeniden çalıştır"
 msgid "Reset"
 msgstr "Sıfırla"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:606
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:609
 msgid "Reset Options"
 msgstr "Sıfırlama Seçenekleri"
 
@@ -18277,7 +18333,7 @@ msgstr "Sıfırlama Seçenekleri"
 msgid "Reset condition"
 msgstr "Koşulu sıfırla"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:672
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
 msgid "Resets zoom to default"
 msgstr "Yakınlaştırmayı varsayılan değere sıfırlar"
 
@@ -18333,11 +18389,11 @@ msgstr "F# Etkileşimli'yi yeniden başlat"
 msgid "Restart With Debugging"
 msgstr "Hata Ayıklama ile Yeniden Başlat"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:275
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
 msgid "Restart Without Debugging"
 msgstr "Hata Ayıklama Olmadan Yeniden Başlat"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:393
 msgid "Restart and enable"
 msgstr "Yeniden başlat ve etkinleştir"
 
@@ -18385,7 +18441,7 @@ msgstr "Eksik paketleri geri yükle"
 msgid "Restored '{0}'"
 msgstr "'{0}' geri yüklendi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1149
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1164
 msgid "Restoring local changes"
 msgstr "Yerel değişiklikler geri yükleniyor"
 
@@ -18401,7 +18457,7 @@ msgstr "Proje için paketler geri yükleniyor..."
 msgid "Restoring packages for solution..."
 msgstr "Çözüm için paketler geri yükleniyor..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1893
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1907
 msgid "Restoring stash for branch {0} failed"
 msgstr "{0} dalının hazırlaması geri yüklenemedi"
 
@@ -18470,7 +18526,7 @@ msgstr "{0} düzeltmesi alınıyor..."
 msgid "Retry"
 msgstr "Yeniden dene"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:983
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:998
 msgid "Retry authentication?"
 msgstr "Kimlik doğrulaması yeniden denensin mi?"
 
@@ -18488,11 +18544,11 @@ msgstr "Dizin oluşturucunun döndürme türü"
 msgid "Returns:"
 msgstr "Döndürülenler:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:516
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:519
 msgid "Reveal in Finder"
 msgstr "Finder'da Göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:517
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:520
 msgid "Reveals the file in Finder"
 msgstr "Dosyayı Finder'da gösterir"
 
@@ -18513,7 +18569,7 @@ msgid "Revert changes from this revision"
 msgstr "Bu düzeltmeden değişiklikleri geri al"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:131
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 msgid "Revert operation completed."
 msgstr "Geri alma işlemi tamamlandı."
 
@@ -18521,7 +18577,7 @@ msgstr "Geri alma işlemi tamamlandı."
 msgid "Revert this change"
 msgstr "Bu değişikliği geri al"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:456
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
 msgid "Revert to a saved version of the file"
 msgstr "Dosyanın kaydedilmiş bir sürümüne geri dönme"
 
@@ -18542,15 +18598,15 @@ msgstr "'{0}' geri döndürüldü"
 msgid "Reverting ..."
 msgstr "Geri Alınıyor ..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1531
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1545
 msgid "Reverting files"
 msgstr "Dosyalar geri çevriliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:100
 msgid "Reverting revision {0}..."
 msgstr "{0} düzeltmesi geri alınıyor..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:96
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:98
 msgid "Reverting to revision {0}..."
 msgstr "{0} düzeltmesine geri alınıyor..."
 
@@ -18620,7 +18676,7 @@ msgid "Rotate primary caret up"
 msgstr "Birincil giriş işaretini yukarı döndür"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/IExecutionModeSet.cs:57
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:183
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:178
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:75
@@ -18635,7 +18691,7 @@ msgid "Run All"
 msgstr "Tümünü Çalıştır"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:380
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:591
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:593
 msgid "Run Code Analysis on Project"
 msgstr "Projede Kod Analizi Çalıştır"
 
@@ -18643,7 +18699,7 @@ msgstr "Projede Kod Analizi Çalıştır"
 msgid "Run Code Analysis on Solution"
 msgstr "Çözümde Kod Analizi Çalıştır"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:587
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:589
 msgid "Run Code Analysis on {0}"
 msgstr "{0} Öğesinde Kod Analizini Çalıştır"
 
@@ -18665,11 +18721,11 @@ msgstr "Çalışma Yapılandırmaları"
 msgid "Run Configurations:"
 msgstr "Çalışma Yapılandırmaları:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:347
 msgid "Run Project"
 msgstr "Projeyi Çalıştır"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:343
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
 msgid "Run Solution"
 msgstr "Çözümü Çalıştır"
 
@@ -18823,7 +18879,7 @@ msgstr "<b>{1}</b> yapılandırması ile <b>{0}</b> için testler çalıştırı
 msgid "Running web server..."
 msgstr "Web sunucusu çalıştırılıyor..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1986
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1992
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:798
 msgid "Running {0} ..."
@@ -18967,7 +19023,7 @@ msgstr "B_oşlukları göster"
 msgid "S_trong Name File:"
 msgstr "T_anımlayıcı Ad Dosyası:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:598
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
 msgid "S_witch Maximized/Normal View"
 msgstr "Ekranı Kaplayan Görünüm ve Normal Görünüm Arasında Geçiş _Yap"
 
@@ -18986,7 +19042,7 @@ msgstr "Doygunluk"
 msgid "Save"
 msgstr "Kaydet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:413
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:416
 msgid "Save A_ll"
 msgstr "Tümü_nü Kaydet"
 
@@ -18994,7 +19050,7 @@ msgstr "Tümü_nü Kaydet"
 msgid "Save As"
 msgstr "Farklı Kaydet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:576
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:579
 msgid "Save Curre_nt Layout..."
 msgstr "Geçer_li Düzeni Kaydet..."
 
@@ -19002,11 +19058,11 @@ msgstr "Geçer_li Düzeni Kaydet..."
 msgid "Save Files"
 msgstr "Dosyaları Kaydet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:459
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:462
 msgid "Save _As..."
 msgstr "Farklı _Kaydet..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:412
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:415
 msgid "Save all open files"
 msgstr "Tüm açık dosyaları kaydet"
 
@@ -19052,7 +19108,7 @@ msgstr "Yeni bir Paketleme Projesi içerisine kaydet"
 msgid "Save location:"
 msgstr "Kaydetme konumu:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:373
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:374
 msgid "Save operation failed."
 msgstr "Kaydetme işlemi başarısız oldu."
 
@@ -19064,7 +19120,7 @@ msgstr "Proje ilkelerini yeni bir özel ilke kümesi olarak kaydet"
 msgid "Save project {0}"
 msgstr "{0} projesini kaydet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:405
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:408
 msgid "Save the active document"
 msgstr "Etkin belgeyi kaydet"
 
@@ -19078,7 +19134,7 @@ msgstr ""
 "Yeni bir çözüm oluşturmadan önce '{0}'  belgesindeki değişiklikler "
 "kaydedilsin mi?"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:460
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
 msgid "Save the current file with a different name"
 msgstr "Geçerli dosyayı farklı bir adla kaydetme"
 
@@ -19106,7 +19162,7 @@ msgstr "Çalışma Alanı Kaydediliyor..."
 msgid "Saving item: {0}"
 msgstr "Öğe kaydediliyor: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1085
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1100
 msgid "Saving local changes"
 msgstr "Yerel değişiklikler kaydediliyor"
 
@@ -19175,27 +19231,27 @@ msgstr "Betik adı belirtilmemiş"
 msgid "Script name:"
 msgstr "Betik adı:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
 msgid "Scroll line down"
 msgstr "Bir satır aşağı kaydır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Scroll line up"
 msgstr "Bir satır yukarı kaydır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 msgid "Scroll page down"
 msgstr "Bir sayfa aşağı kaydır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1090
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1093
 msgid "Scroll page up"
 msgstr "Bir sayfa yukarı kaydır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1099
 msgid "Scroll to bottom"
 msgstr "En alta kaydır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1094
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1097
 msgid "Scroll to top"
 msgstr "En üste kaydır"
 
@@ -19203,7 +19259,7 @@ msgstr "En üste kaydır"
 msgid "Se_t Startup Projects..."
 msgstr "Başlangıç Projelerini Ay_arla..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:241
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:167
@@ -19237,7 +19293,7 @@ msgstr "Dosyaları Ara"
 msgid "Search Members"
 msgstr "Üyeleri Ara"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:79
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:80
 msgid "Search Packages..."
 msgstr "Paketleri Ara..."
 
@@ -19258,15 +19314,15 @@ msgstr "Araç Kutusunda Ara"
 msgid "Search Types"
 msgstr "Türleri Ara"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:936
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 msgid "Search backwards for the same text"
 msgstr "Aynı metni geriye doğru ara"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "Emacs davranışıyla aynı metni geriye doğru ara"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 msgid "Search backwards for the selected text"
 msgstr "Seçili metin için geriye doğru arama"
 
@@ -19286,11 +19342,11 @@ msgstr "Arama tamamlandı."
 msgid "Search filter menu"
 msgstr "Arama filtresi menüsü"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:926
 msgid "Search for and replace text"
 msgstr "Metin ara ve değiştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 msgid "Search for and replace text in all files of a directory"
 msgstr "Dizinin tüm dosyalarında metni arama veya değiştirme"
 
@@ -19298,11 +19354,11 @@ msgstr "Dizinin tüm dosyalarında metni arama veya değiştirme"
 msgid "Search for members"
 msgstr "Üyeleri ara"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:917
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 msgid "Search for text"
 msgstr "Metin ara"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:968
 msgid "Search for text in all files of a directory"
 msgstr "Metni bir dizinin tüm dosyalarında ara"
 
@@ -19314,27 +19370,27 @@ msgstr "Türleri ara"
 msgid "Search for types and members"
 msgstr "Tür ve üyeleri ara"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:64
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:65
 msgid "Search for {0} in packages"
 msgstr "Paketlerde {0} ara"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:90
 msgid "Search for {0} in solution"
 msgstr "Çözümde {0} ara"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:930
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search forwards for the same text"
 msgstr "Aynı metin için ileriye doğru arama"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:943
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:946
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "Emacs davranışına sahip aynı metin için ileriye doğru arama"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:951
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:954
 msgid "Search forwards for the selected text"
 msgstr "Seçili metin için ileriye doğru arama"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:102
 msgid "Search in Solution..."
 msgstr "Çözümde Ara..."
 
@@ -19388,7 +19444,7 @@ msgstr "Türler ve üyeler aranıyor..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:122
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:53
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1077
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1238
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/FindReferencesHandler.cs:151
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/StreamingFindUsagesPresenter.cs:40
 msgid "Searching..."
@@ -19583,7 +19639,7 @@ msgstr "Anahtar dosyası seçin"
 msgid "Select a platform"
 msgstr "Platform seçin"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:646
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:649
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:187
 msgid "Select a point from the navigation history"
 msgstr "Gezinti geçmişinden bir nokta seçme"
@@ -19657,8 +19713,8 @@ msgstr "Dizin seçin"
 msgid "Select event to generate the method for."
 msgstr "Kendisi için metodun üretileceği olayı seçin."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:494
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:549
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:495
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:550
 msgid "Select files to add from {0}"
 msgstr "{0} öğesinden eklenecek dosyaları seçin"
 
@@ -20173,7 +20229,7 @@ msgstr "Varsayılana Ayarla"
 msgid "Set as Default"
 msgstr "Varsayılan Olarak Ayarla"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:594
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:597
 msgid "Set full screen mode"
 msgstr "Tam ekran modunu ayarlama"
 
@@ -20363,7 +20419,7 @@ msgstr "MonoDevelop tercihleri penceresini göster"
 msgid "Show More"
 msgstr "Daha Fazlasını Göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:617
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:620
 msgid "Show Next"
 msgstr "Sonrakini Göster"
 
@@ -20383,7 +20439,7 @@ msgstr "Sonraki Bildirimi Göster"
 msgid "Show Output"
 msgstr "Çıktıyı Göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 msgid "Show Parameter List"
 msgstr "Parametre Listesini Göster"
 
@@ -20399,7 +20455,7 @@ msgstr "Parametre Türünü Göster"
 msgid "Show Parameter Value"
 msgstr "Parametre Değerini Göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:623
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:626
 msgid "Show Previous"
 msgstr "Öncekini Göster"
 
@@ -20415,7 +20471,7 @@ msgstr "Önceki ({0}) Öğesini Göster"
 msgid "Show Remote Status"
 msgstr "Uzaktaki Durumu Göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1241
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1244
 msgid "Show Scopes"
 msgstr "Kapsamları Göster"
 
@@ -20468,7 +20524,7 @@ msgstr "_Mini Haritayı Göster"
 msgid "Show _column ruler"
 msgstr "Sütun cetvelini _göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:891
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 msgid "Show about dialog"
 msgstr "Hakkında iletişim kutusunu gösterme"
 
@@ -20514,7 +20570,7 @@ msgstr "İşlev türü imzalarını göster"
 msgid "Show fuzzy translations"
 msgstr "Kesin olmayan çevirileri göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:875
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
 msgid "Show help"
 msgstr "Yardımı göster"
 
@@ -20538,7 +20594,7 @@ msgstr "İleti balonlarını göster:"
 msgid "Show missing translations"
 msgstr "Eksik çevirileri göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:753
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:756
 msgid "Show next document"
 msgstr "Sonraki belgeyi göster"
 
@@ -20554,7 +20610,7 @@ msgstr "Seçenekler penceresini göster"
 msgid "Show output"
 msgstr "Çıktıyı göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:476
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:479
 msgid "Show page setup"
 msgstr "Sayfa yapısını göster"
 
@@ -20562,11 +20618,11 @@ msgstr "Sayfa yapısını göster"
 msgid "Show pre-release packages"
 msgstr "Ön sürüm paketleri göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:760
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:763
 msgid "Show previous document"
 msgstr "Önceki belgeyi göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:471
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:474
 msgid "Show print preview"
 msgstr "Baskı önizlemeyi göster"
 
@@ -20586,7 +20642,7 @@ msgstr "Sadece ortak ve korunan üyeleri göster"
 msgid "Show public members only"
 msgstr "Sadece ortak üyeleri göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1219
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
 msgid "Show quick info"
 msgstr "Hızlı bilgileri göster"
 
@@ -20638,7 +20694,7 @@ msgstr "Test çıkışını göster"
 msgid "Show the {0} pad"
 msgstr "{0} panelini göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 msgid "Show tip of the day"
 msgstr "Günün ipucunu göster"
 
@@ -20659,11 +20715,11 @@ msgstr "Başlangıçta karşılama sayfasını göster"
 msgid "Show {0}"
 msgstr "{0} öğesini göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1232
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1235
 msgid "Show/Hide Inline Messages"
 msgstr "Satır İçi İletileri Göster/Gizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1227
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1230
 msgid "Show/Hide current Inline Message"
 msgstr "Geçerli Satır İçi İletiyi Göster/Gizle"
 
@@ -20675,11 +20731,11 @@ msgstr "NotImplementedException hatalarını hızlı görev çubuğunda gösteri
 msgid "Shows method and class folds"
 msgstr "Metot ve sınıf katlamalarını gösterir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:148
 msgid "Shows the authors of the current file"
 msgstr "Geçerli dosyanın yazarlarını gösterir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:86
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:147
 msgid ""
 "Shows the differences in the code between the current code and the version "
 "in the repository"
@@ -20689,16 +20745,16 @@ msgstr "Geçerli kod ve depodaki sürüm arasındaki kod farklılıklarını gö
 msgid "Shows the line numbers for the current file"
 msgstr "Geçerli dosya için satır numaralarını gösterir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:89
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:150
 msgid "Shows the merge view for the current file"
 msgstr "Geçerli dosya için birleştirme görünümünü gösterir"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:44
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlDocumentController.cs:149
 msgid "Shows the source control log for the current file"
 msgstr "Geçerli dosya için kaynak denetimi günlüğünü gösterir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1220
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1223
 msgid "Shows the tooltip at editor positon"
 msgstr "Düzenleyici konumunda araç ipucunu gösterir"
 
@@ -20860,7 +20916,7 @@ msgid "Solution Options"
 msgstr "Çözüm Seçenekleri"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:217
-#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:211
+#: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:244
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:242
 msgid "Solution Workbench"
 msgstr "Çözüm Workbench'i"
@@ -20932,7 +20988,7 @@ msgstr "Çözümler"
 msgid "Some additional changes on another file of the project."
 msgstr "Projedeki başka bir dosyada ek değişiklikler yapıldı."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:220
 msgid "Some dependencies need to be updated"
 msgstr "Bazı bağımlılıkların güncelleştirilmesi gerekiyor"
 
@@ -21367,7 +21423,7 @@ msgstr "Çözümde Hata Ayıklamayı Başlat"
 msgid "Start Debugging on External Console"
 msgstr "Dış Konsolda Hata Ayıklamayı Başlat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:738
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:741
 msgid "Start Session Recorder"
 msgstr "Oturum Kaydedicisini Başlat"
 
@@ -21376,7 +21432,7 @@ msgid "Start Window"
 msgstr "Başlangıç Penceresi"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:304
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:279
 msgid "Start Without Debugging"
 msgstr "Hata Ayıklama Olmadan Başlat"
 
@@ -21459,33 +21515,35 @@ msgstr "Hazırla"
 msgid "Stash Manager"
 msgstr "Hazırlama Yöneticisi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1245
 msgid "Stash and Merge"
 msgstr "Hazırla ve Birleştir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1177
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1192
 msgid "Stash and Rebase"
 msgstr "Hazırla ve Yeniden Temellendir"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1924
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1938
 msgid "Stash and Switch"
 msgstr "Hazırla ve Geç"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:173
-msgid "Stash applied with conflicts"
-msgstr "Hazırlama çakışmalar ile uygulandı"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:190
+#, fuzzy
+msgid "Stash not applied."
+msgstr "Hazırlama işlemi başarısız oldu."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:173
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:205
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 msgid "Stash operation failed"
 msgstr "Hazırlama işlemi başarısız oldu."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:159
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:160
 msgid "Stash operation failed."
 msgstr "Hazırlama işlemi başarısız oldu."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:179
-msgid "Stash successfully applied"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:204
+#, fuzzy
+msgid "Stash successfully applied."
 msgstr "Hazırlama işlemi başarıyla uygulandı"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:33
@@ -21503,7 +21561,7 @@ msgid "Stash/unstash local changes before/after the merge"
 msgstr ""
 "Birleştirmeden önce/sonra yerel değişiklikleri hazırla/hazırlamayı geri al"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:424
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:439
 msgid "Stashing changes"
 msgstr "Değişiklikler hazırlanıyor"
 
@@ -21776,7 +21834,7 @@ msgstr "Özet:"
 msgid "Support"
 msgstr "Destek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
 msgid "Surround Selection With..."
 msgstr "Seçimi Çevrele..."
 
@@ -21785,7 +21843,7 @@ msgstr "Seçimi Çevrele..."
 msgid "Surround With..."
 msgstr "Şununla Çevrele..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr "Bir öğe seçildiğinde seçimi bir kod parçacığı ile çevreler"
 
@@ -21793,20 +21851,20 @@ msgstr "Bir öğe seçildiğinde seçimi bir kod parçacığı ile çevreler"
 msgid "Swap parameter"
 msgstr "Takas parametresi"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1199
 msgid "Swaps the characters on either side of the caret"
 msgstr "Giriş işaretinin her iki tarafındaki karakterleri değiştirir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
 msgid "Switch Completion/Suggestion Mode"
 msgstr "Tamamlanma/Öneri Modunu Değiştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:588
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:591
 msgid "Switch active layout"
 msgstr "Etkin düzeni değiştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
 msgid "Switch between insert and overwrite caret modes"
 msgstr "Ekleme ve üzerine yazma giriş modları arasında geçiş yap"
 
@@ -21818,7 +21876,7 @@ msgstr "İlgili dosyalar arasında geçiş yap "
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr "CodeBehind, üst bilgiler vb. ilgili dosyalar arasında geçiş yap"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 msgid "Switch caret mode"
 msgstr "Giriş işareti modunu değiştir"
 
@@ -21853,27 +21911,27 @@ msgstr "Öneri Moduna Geç"
 msgid "Switch to layout '{0}'"
 msgstr "'{0}' düzenine geç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:847
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:848
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:850
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:851
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:203
 msgid "Switch to next document"
 msgstr "Sonraki belgeye geç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:859
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:860
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:862
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:863
 msgid "Switch to next pad"
 msgstr "Sonraki bölmeye geç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:853
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:854
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:856
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:857
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:183
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/TabStrip.cs:189
 msgid "Switch to previous document"
 msgstr "Önceki belgeye geç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:865
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:866
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:868
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:869
 msgid "Switch to previous pad"
 msgstr "Önceki bölmeye geç"
 
@@ -21885,14 +21943,14 @@ msgstr "{0} sekmesine geçiş yap"
 msgid "Switch to {0}"
 msgstr "{0} öğesine geçiş yap"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1915
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1935
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1929
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1949
 msgid "Switching to branch {0}"
 msgstr "{0} dalına geçiliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1928
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1952
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1955
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1942
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1966
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1969
 msgid "Switching to branch {0} failed"
 msgstr "{0} dalına geçilemedi"
 
@@ -22356,7 +22414,7 @@ msgstr "Testler"
 msgid "Text"
 msgstr "Metin"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:377
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:404
@@ -22473,7 +22531,7 @@ msgstr ""
 "olarak kaldırır. Yalnızca geçerli çözümünüzden kaldırmak istiyorsanız, "
 "Projeden Kaldır'a tıklayın."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:317
 msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
 "Remove from Project if you only want to remove it from your current solution."
@@ -22584,7 +22642,7 @@ msgid "The application could not be started"
 msgstr "Uygulama başlatılamadı"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2031
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2037
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:171
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:277
@@ -22746,7 +22804,7 @@ msgstr "'{0}' dosyası zaten var. Bunu değiştirmek ister misiniz?"
 msgid "The file '{0}' already exists.\n"
 msgstr "'{0}' dosyası zaten var.\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:325
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:326
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "'{0}' dosyası zaten var. Üzerine yazmak istiyor musunuz?"
 
@@ -22854,6 +22912,11 @@ msgstr ""
 "Şu renk teması biçimleri desteklenir: Visual Studio (.vssettings), Xamarin "
 "Studio (.json), TextMate (.tmTheme). Tema klasöründe yapılan değişiklikler "
 "yeniden başlatma gerektirir."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:185
+#, fuzzy
+msgid "The following conflicts have been found:"
+msgstr "Aşağıdaki dosyalar teslim edilecek:"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/InstallDialog.cs:156
 msgid "The following dependencies could not be resolved:"
@@ -22971,11 +23034,11 @@ msgstr "Yükleme başarısız oldu!"
 msgid "The installation has completed with warnings."
 msgstr "Yükleme uyarılarla tamamlandı."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:604
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:621
 msgid "The key combination ({0}) has conflicts."
 msgstr "Tuş birleşiminde ({0}) çakışmalar var."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:542
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:548
 msgid "The key combination ({0}, {1}) is not a command."
 msgstr "({0}, {1}) tuş bileşimi bir komut değil."
 
@@ -23081,8 +23144,8 @@ msgstr ""
 msgid "The name or e-mail of the user has not been configured."
 msgstr "Kullanıcı adı veya e-postası yapılandırılmadı."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:189
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:249
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:161
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:180
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:110
@@ -23329,6 +23392,16 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:77
 msgid "The source project failed to build."
 msgstr "Kaynak proje derlenemedi."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:196
+msgid ""
+"The stash application was aborted due to uncommitted changes in the index."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:200
+#, fuzzy
+msgid "The stash index given was not found."
+msgstr "SDK bulunamadı"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:53
 msgid "The subversion working copy format is too new."
@@ -24020,7 +24093,7 @@ msgstr "Onların"
 msgid "Themed Icons"
 msgstr "Tema Simgeleri"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1923
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1937
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue with the "
@@ -24030,7 +24103,7 @@ msgstr ""
 "çakışıyor. Değişiklikleri hazırlayıp kullanıma alma aşamasına devam etmek "
 "istiyor musunuz?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1075
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1090
 msgid ""
 "There are local changes that conflict with changes committed in the <b>{0}</"
 "b> branch. Would you like to stash the changes and continue?"
@@ -24038,7 +24111,7 @@ msgstr ""
 "Bazı yerel değişiklikler, <b>{0}</b> dalında kabul edilen değişikliklerle "
 "çakışıyor. Değişiklikleri hazırlayıp devam etmek istiyor musunuz?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:51
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:52
 msgid "There are no changes to push."
 msgstr "Gönderilecek değişiklik yok."
 
@@ -24099,7 +24172,7 @@ msgstr ""
 "hedef dosyayı koruyabilir veya hedef dosyanın üzerine kaynak dosyayı "
 "yazabilirsiniz."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:533
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:534
 msgid "There is already a file with the name '{0}' in the target directory"
 msgstr "Hedef dizinde '{0}' adlı bir dosya zaten var"
 
@@ -24111,7 +24184,7 @@ msgstr "Bu ada sahip bir yerleşim zaten var"
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Projede '{0}' adlı bir bağlantı zaten var"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:541
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:542
 msgid "There is already a link with the name '{0}' in the target directory"
 msgstr "Hedef dizinde '{0}' adlı bir bağlantı zaten var"
 
@@ -24131,7 +24204,7 @@ msgstr ""
 msgid "There was an error renaming the directory."
 msgstr "Dizin yeniden adlandırılırken bir hata oluştu."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:191
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:202
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
 msgid "There was an error renaming the file."
 msgstr "Dosya yeniden adlandırılırken bir hata oluştu."
@@ -24513,7 +24586,7 @@ msgstr "Bugün"
 msgid "Toggle Action"
 msgstr "Açma/Kapatma Eylemi"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 msgid "Toggle Block Selection Mode"
 msgstr "Blok Seçimi Moduna Geç"
 
@@ -24521,7 +24594,7 @@ msgstr "Blok Seçimi Moduna Geç"
 msgid "Toggle Breakpoint"
 msgstr "Kesme Noktasını Aç/Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1237
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1240
 msgid "Toggle Issues"
 msgstr "Sorunları Değiştir"
 
@@ -24537,7 +24610,7 @@ msgstr "_Açıklamaları Kapat/Aç"
 msgid "Toggle between search and replace mode"
 msgstr "Arama ve değiştirme modu arasında geçiş yap"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1004
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 msgid "Toggle bookmark"
 msgstr "Yer işaretini değiştir"
 
@@ -24589,15 +24662,15 @@ msgstr "Tüm metot ve özellik gövdelerinin katlamasını değiştirir."
 msgid "Toggles the folding at caret position."
 msgstr "Giriş işareti konumunda katlamayı değiştirir."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1233
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1236
 msgid "Toggles the visibility of Inline Messages"
 msgstr "Satır İçi İletilerin görünürlüğünü açıp kapatır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1228
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
 msgid "Toggles the visibility of the current Inline Message"
 msgstr "Geçerli Satır İçi İletinin görünürlüğünü açıp kapatır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:727
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
 msgid "Tool List"
 msgstr "Araç Listesi"
 
@@ -24635,7 +24708,7 @@ msgstr "Araç Kutusu Öğeleri"
 msgid "Toolbox Toolbar"
 msgstr "Araç Kutusu Araç Çubuğu"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:717
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:720
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Documents/DocumentController.cs:327
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
@@ -24651,7 +24724,7 @@ msgstr "Araçlar (Özel)"
 msgid "Tools like FTP or P2P programs"
 msgstr "FTP veya P2P programları benzeri araçlar"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:986
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:1147
 msgid "Top Result"
 msgstr "En İyi Sonuç"
 
@@ -24752,7 +24825,7 @@ msgstr "Çevirmen Çıkışı"
 msgid "Transmitting file data"
 msgstr "Dosya verileri aktarılıyor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1198
 msgid "Transpose characters"
 msgstr "Karakterin Sırasını Değiştir"
 
@@ -24775,11 +24848,11 @@ msgstr "Türkçe"
 msgid "Turns on the unsupported security manager (off by default)."
 msgstr "Desteklenmeyen güvenlik yöneticisini açar (varsayılan olarak kapalı)."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:675
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:678
 msgid "Two Columns"
 msgstr "İki Sütun"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:676
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:679
 msgid "Two Editor Columns"
 msgstr "İki Düzenleyici Sütunu"
 
@@ -24903,7 +24976,7 @@ msgstr "Ülke Kodu K_ullan"
 msgid "Un_pin Tab"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1030
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1045
 msgid "Unable to authorize credentials for the repository."
 msgstr "Depo için kimlik bilgileri yetkilendirilemedi."
 
@@ -25176,7 +25249,7 @@ msgstr "Bilinmeyen girdi"
 msgid "Unknown error"
 msgstr "Bilinmeyen hata"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:118
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:121
 msgid "Unknown language '{0}'"
 msgstr "'{0}' dili bilinmiyor"
 
@@ -25382,7 +25455,7 @@ msgstr "Tüm çeviri dosyalarını güncelleştirir."
 msgid "Updates this translation."
 msgstr "Bu çeviriyi güncelleştirir."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:962
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:977
 msgid "Updating"
 msgstr "Güncelleştiriliyor"
 
@@ -25414,7 +25487,7 @@ msgstr "Proje, Derleme görevleri dosyasından güncelleştiriliyor"
 msgid "Updating repository"
 msgstr "Depo güncelleştiriliyor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:686
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:687
 msgid "Updating version control repository"
 msgstr "Sürüm denetimi deposu güncelleniyor"
 
@@ -25503,12 +25576,12 @@ msgstr "Yüksek performans için '{0}' kullanın"
 msgid "Use Default"
 msgstr "Varsayılanı Kullan"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 #, fuzzy
 msgid "Use Selection for Find"
 msgstr "Seçimi Büyük Harf Yap"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
 #, fuzzy
 msgid "Use Selection for Replace"
 msgstr "Ayraçlar için yeni satır seçenekleri"
@@ -25731,11 +25804,11 @@ msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr ""
 "Daha uzun bir koşul yerine daha kısa string.IsNullOrEmpty çağrısını kullanır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Uses the current selection as find string"
 msgstr "Geçerli seçimi bulma dizesi olarak kullanır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Uses the current selection as replace string"
 msgstr "Geçerli seçimi değiştirme dizesi olarak kullanır"
 
@@ -25890,7 +25963,7 @@ msgstr "Sürüm Kısıtlaması"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:42
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:108
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:296
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:676
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:677
 msgid "Version Control"
 msgstr "Sürüm Denetimi"
 
@@ -25917,7 +25990,7 @@ msgstr "Paket için sürüm kısıtlaması."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:38
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:50
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:435
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:76
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnlockCommand.cs:81
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:64
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/IgnoreCommand.cs:131
@@ -25952,7 +26025,7 @@ msgstr "Video Konferans yazılımı"
 msgid "Vietnamese"
 msgstr "Vietnamca"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:564
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:567
 msgid "View"
 msgstr "Görünüm"
 
@@ -25973,7 +26046,7 @@ msgstr "ChangeLog'u görüntüle..."
 msgid "View License"
 msgstr "Lisansı Göster"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:569
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:572
 msgid "View List"
 msgstr "Görünüm Listesi"
 
@@ -26265,7 +26338,7 @@ msgstr "Web başvurusu zaten var"
 msgid "Web service not found."
 msgstr "Web servisi bulunamadı."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:712
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:715
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs:52
 msgid "Welcome Page"
 msgstr "Karşılama Sayfası"
@@ -26463,7 +26536,7 @@ msgstr "Pencere Öğeleri"
 msgid "Win32 Icon:"
 msgstr "Win32 Simgesi:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:747
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:750
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:5
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:5
 msgid "Window"
@@ -26474,7 +26547,7 @@ msgstr "Pencere"
 msgid "Window Designer"
 msgstr "Pencere Tasarımcısı"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:766
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:769
 msgid "Window List"
 msgstr "Pencere Listesi"
 
@@ -26664,7 +26737,7 @@ msgstr "XSP Web Sunucusu"
 msgid "Xamarin News"
 msgstr "Xamarin Haberleri"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:290
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -26672,12 +26745,12 @@ msgstr ""
 "Xamarin.Mac projeleri Windows'da çalışan MonoDevelop için desteklenmiyor. "
 "Mac'te Xamarin Studio kullanmanız gerekir."
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:279
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:280
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:281
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:282
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:283
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:284
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:285
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:286
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:287
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:288
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:289
 msgid ""
 "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need "
 "to use Visual Studio, or Xamarin Studio on Mac."
@@ -26839,7 +26912,7 @@ msgstr ""
 "Örneğin (?<=19)99, 99'un 19'un ardından geldiği örneklerle eşleşir.\n"
 "Bu yapı geri iz sürmez."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:664
 msgid "Zoom _Out"
 msgstr "_Uzaklaştır"
 
@@ -26847,11 +26920,11 @@ msgstr "_Uzaklaştır"
 msgid "Zoom the Window"
 msgstr "Pencereyi Yakınlaştır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:658
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:661
 msgid "Zooms view in"
 msgstr "Görünümü yakınlaştırır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:665
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
 msgid "Zooms view out"
 msgstr "Görüntüyü uzaklaştırır"
 
@@ -27063,7 +27136,7 @@ msgstr "\\z"
 msgid "^"
 msgstr "^"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:893
 msgid "_About"
 msgstr "_Hakkında"
 
@@ -27225,7 +27298,7 @@ msgstr "_Karakter Kodlama:"
 msgid "_Charset:"
 msgstr "_Karakter kümesi:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
 msgid "_Check for Updates..."
 msgstr "Güncelleştirmeleri _Denetle..."
 
@@ -27237,12 +27310,12 @@ msgstr "_Kullanıma Al"
 msgid "_Clean All"
 msgstr "_Tümünü Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:483
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:493
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:486
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
 msgid "_Clear"
 msgstr "_Temizle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:648
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:651
 msgid "_Clear Navigation History"
 msgstr "Gezinti Geçmişini _Temizle"
 
@@ -27250,7 +27323,7 @@ msgstr "Gezinti Geçmişini _Temizle"
 msgid "_Close"
 msgstr "_Kapat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:428
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:431
 msgid "_Close File"
 msgstr "Dosyayı _Kapat"
 
@@ -27258,7 +27331,7 @@ msgstr "Dosyayı _Kapat"
 msgid "_Collapse All"
 msgstr "_Tümünü Daralt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
 msgid "_Command..."
 msgstr "_Komut..."
 
@@ -27297,7 +27370,7 @@ msgstr "_Kopyala"
 msgid "_Copy Revision"
 msgstr "_Düzeltmeyi Kopyala"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:530
 msgid "_Copy to Output Directory"
 msgstr "Çıkış Dizinine _Kopyala"
 
@@ -27314,7 +27387,7 @@ msgstr "_Çözüm için dizin oluştur"
 msgid "_Current Project"
 msgstr "_Geçerli Proje"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:706
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:709
 msgid "_Cursor Position"
 msgstr "_İmleç Konumu"
 
@@ -27341,7 +27414,7 @@ msgstr "_Bütünleştirilmiş kod imzasını geciktir"
 msgid "_Delete"
 msgstr "_Sil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:584
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "_Delete Current Layout"
 msgstr "Geçerli Düzeni _Sil"
@@ -27407,12 +27480,12 @@ msgstr "_Tümünü Dışla"
 msgid "_Expand All"
 msgstr "_Tümünü Genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1162
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 msgid "_Expand selection"
 msgstr "_Seçimi genişlet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:723
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:726
 msgid "_Extensions..."
 msgstr "_Uzantılar..."
 
@@ -27424,7 +27497,7 @@ msgstr "_Dosya"
 msgid "_File Mask:"
 msgstr "_Dosya Öaskesi:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:989
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 msgid "_File..."
 msgstr "_Dosya..."
 
@@ -27448,7 +27521,7 @@ msgstr "Referansları _bul"
 msgid "_Find References of All Overloads"
 msgstr "_Tüm Yüklerin Referanslarını Bul"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:915
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "_Find..."
 msgstr "_Bul..."
 
@@ -27464,7 +27537,7 @@ msgstr "_Tümünü düzelt"
 msgid "_Flat"
 msgstr "_Düz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:699
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:702
 msgid "_Focus Document"
 msgstr "Belgeyi _Odakla"
 
@@ -27485,7 +27558,7 @@ msgstr "_Biçim Seçimi"
 msgid "_Format document on save"
 msgstr "_Kayıt sırasında belgeyi biçimlendir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:592
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:595
 msgid "_Full Screen"
 msgstr "_Tam Ekran"
 
@@ -27645,7 +27718,7 @@ msgstr "_Satır sonu dönüştürme:"
 msgid "_Line endings:"
 msgstr "_Satır sonları:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 msgid "_Line..."
 msgstr "_Satır..."
 
@@ -27727,7 +27800,7 @@ msgstr "_Ad"
 msgid "_New name:"
 msgstr "_Yeni ad:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:751
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:754
 msgid "_Next Document"
 msgstr "_Sonraki Belge"
 
@@ -27735,11 +27808,11 @@ msgstr "_Sonraki Belge"
 msgid "_Next Tip"
 msgstr "_Sonraki İpucu"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1231
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1234
 msgid "_None"
 msgstr "_Yok"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:668
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:671
 msgid "_Normal Size"
 msgstr "_Normal Boyut"
 
@@ -27747,7 +27820,7 @@ msgstr "_Normal Boyut"
 msgid "_Only show my code."
 msgstr "_Yalnızca benim kodumu göster."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:601
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:604
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:39
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:40
 msgid "_Open"
@@ -27758,7 +27831,7 @@ msgstr "_Aç"
 msgid "_Open All"
 msgstr "_Tümünü Aç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:510
 msgid "_Open Folder"
 msgstr "Klasörü _Aç"
 
@@ -27770,11 +27843,11 @@ msgstr "URL'yi _Aç..."
 msgid "_Open XSLT"
 msgstr "XSLT'yi _aç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:504
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:507
 msgid "_Open in Terminal"
 msgstr "Terminalde _Aç"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:389
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:392
 msgid "_Open..."
 msgstr "_Aç..."
 
@@ -27827,7 +27900,7 @@ msgstr "_Yapıştır"
 msgid "_Path:"
 msgstr "_Yol:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:561
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileTabCommands.cs:166
 msgid "_Pin Tab"
 msgstr ""
@@ -27849,11 +27922,11 @@ msgstr "_İlke:"
 msgid "_Preview"
 msgstr "_Önizleme"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:758
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:761
 msgid "_Previous Document"
 msgstr "Önce_ki Belge"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:463
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:466
 msgid "_Print..."
 msgstr "_Yazdır..."
 
@@ -27881,7 +27954,7 @@ msgstr "_Bağımsız değişkenler için uyar"
 msgid "_Prompt to save changes to open documents"
 msgstr "_Belgeleri açmak için değişiklikleri kaydetmeden önce sor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:527
 msgid "_Properties"
 msgstr "Öz_ellikler"
 
@@ -27901,7 +27974,7 @@ msgstr "_Gönder"
 msgid "_Quick Properties"
 msgstr "_Hızlı Özellikler"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:502
 msgid "_Quit"
 msgstr "Çı_k"
 
@@ -27944,7 +28017,7 @@ msgstr "Diskten _yeniden yükle"
 msgid "_Remove"
 msgstr "_Kaldır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1021
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
 msgid "_Remove All Bookmarks"
 msgstr "Tüm Yer İşaretlerini _Kaldır"
 
@@ -27964,7 +28037,7 @@ msgstr "Sondaki Boşluğu _Kaldır"
 msgid "_Remove Unnecessary Usings"
 msgstr "Gereksiz Using Deyimlerini Kaldır"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:300
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:311
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:194
 msgid "_Remove from Project"
 msgstr "_Projeden kaldır"
@@ -27981,7 +28054,7 @@ msgstr "Sondaki boşluğu _kaldır"
 msgid "_Replace"
 msgstr "_Değiştir"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:921
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 msgid "_Replace..."
 msgstr "_Değiştir..."
 
@@ -28001,7 +28074,7 @@ msgstr "_Geri Yükle"
 msgid "_Restore NuGet Packages"
 msgstr "_NuGet Paketlerini Geri Yükle"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:455
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:458
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:125
 msgid "_Revert"
 msgstr "_Geri Döndür"
@@ -28029,7 +28102,7 @@ msgstr "Tümünü Ça_lıştır"
 msgid "_Run Item"
 msgstr "Öğe_yi Çalıştır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:406
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:409
 msgid "_Save"
 msgstr "_Kaydet"
 
@@ -28140,7 +28213,7 @@ msgstr "_Bu bütünleştirilmiş kodu imzala"
 msgid "_Smart semicolon placement"
 msgstr "Akıllı noktalı _virgül yerleştirme"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 msgid "_Snippet..."
 msgstr "_Kod Parçacığı..."
 
@@ -28172,7 +28245,7 @@ msgstr "_Türü kesin olarak belirlenmiş"
 msgid "_Suppress"
 msgstr "_Gösterme"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "_Surround With..."
 msgstr "Ş_ununla Çevrele..."
 
@@ -28193,7 +28266,7 @@ msgstr "_Sekme genişliği:"
 msgid "_Template:"
 msgstr "_Şablon:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
 msgid "_Tip of the Day"
 msgstr "Günün _İpucu"
 
@@ -28201,7 +28274,7 @@ msgstr "Günün _İpucu"
 msgid "_Title:"
 msgstr "_Başlık:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 msgid "_Toggle Bookmark"
 msgstr "_Yer İşaretini Değiştir"
 
@@ -28243,7 +28316,7 @@ msgstr "Ç_evrildi (msgstr):"
 msgid "_Translator name:"
 msgstr "_Çevirmen adı:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:985
 msgid "_Type..."
 msgstr "_Tür..."
 
@@ -28367,7 +28440,7 @@ msgstr "_XML"
 msgid "_Zoom"
 msgstr "_Yakınlaştır"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:654
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:657
 msgid "_Zoom In"
 msgstr "_Yakınlaştır"
 
@@ -28707,7 +28780,7 @@ msgid "type * ptr = {0} type [ expr ];"
 msgstr "tür * işaretçi = {0} tür [ ifade ];"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:583
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2115
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:2131
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseRepositoryTests.cs:637
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/BaseGitRepositoryTests.cs:645
 msgid "working copy"
@@ -29015,7 +29088,7 @@ msgstr[1] "{0} Uyarı"
 msgid "{0} [expression];"
 msgstr "{0} [ifade];"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:117
 msgid "{0} _Options"
 msgstr "{0} _Seçenekleri"
 
@@ -29155,7 +29228,7 @@ msgstr[1] ""
 "Toplam {0} dosya işlendi. {1} başarıyla oluşturuldu., {2} uyarı, {3} hata "
 "ile birlikte"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:396
+#: ../src/addins/MacPlatform/MacPlatform.cs:392
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -29387,7 +29460,7 @@ msgstr ""
 msgid "{0} removed with warnings."
 msgstr "{0} uyarılarla kaldırıldı."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:225
+#: ../src/addins/MacPlatform/MacPlatform.cs:221
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -29422,6 +29495,10 @@ msgstr "{0} uyarılarla yeniden hedeflendi."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
 msgid "{0} return-type"
 msgstr "{0} dönüş-türü"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:350
+msgid "{0} search provider..."
+msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1116
 msgid "{0} statement {1} (expression);"
@@ -29618,3 +29695,6 @@ msgstr "{n}?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:184
 msgid "|"
 msgstr "|"
+
+#~ msgid "Stash applied with conflicts"
+#~ msgstr "Hazırlama çakışmalar ile uygulandı"

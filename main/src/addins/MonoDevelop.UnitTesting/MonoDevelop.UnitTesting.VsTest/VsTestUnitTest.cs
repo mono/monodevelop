@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
@@ -44,6 +46,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 		IVsTestTestRunner testRunner;
 		string name;
 		SourceCodeLocation sourceCodeLocation;
+		CancellationTokenSource cts;
 
 		protected VsTestUnitTest(string displayName) : base (displayName)
 		{ }
@@ -62,10 +65,14 @@ namespace MonoDevelop.UnitTesting.VsTest
 		{
 			TestId = test.Id.ToString ();
 			TestSourceCodeDocumentId = test.FullyQualifiedName;
+			cts = new CancellationTokenSource ();
+			var token = cts.Token;
 			if (!string.IsNullOrEmpty (test.CodeFilePath))
 				sourceCodeLocation = new SourceCodeLocation (test.CodeFilePath, test.LineNumber, 0);
 			else {
-				IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+				IdeApp.TypeSystemService.GetCompilationAsync (Project, token).ContinueWith ((t) => {
+					if (token.IsCancellationRequested)
+						return;
 					var dotIndex = test.FullyQualifiedName.LastIndexOf (".", StringComparison.Ordinal);
 					var className = test.FullyQualifiedName.Remove (dotIndex);
 					var methodName = test.FullyQualifiedName.Substring (dotIndex + 1);
@@ -91,7 +98,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 						return;
 					var line = source.GetLineSpan ();
 					sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
-				}).Ignore ();
+				}, token, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Default).Ignore ();
 			}
 			int index = test.FullyQualifiedName.LastIndexOf ('.');
 			if (index > 0) {
@@ -154,6 +161,16 @@ namespace MonoDevelop.UnitTesting.VsTest
 		public IEnumerable<TestCase> GetTests ()
 		{
 			yield return test;
+		}
+
+		public override void Dispose ()
+		{
+			if (cts != null) {
+				cts.Cancel ();
+				cts.Dispose ();
+				cts = null;
+			}
+			base.Dispose ();
 		}
 	}
 }

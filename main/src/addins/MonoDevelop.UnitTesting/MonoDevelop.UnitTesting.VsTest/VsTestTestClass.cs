@@ -23,10 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
 
@@ -36,14 +41,34 @@ namespace MonoDevelop.UnitTesting.VsTest
 	{
 		public Project Project { get; private set; }
 		IVsTestTestRunner testRunner;
+		SourceCodeLocation sourceCodeLocation;
+		CancellationTokenSource cts;
 
 		public VsTestTestClass (IVsTestTestRunner testRunner, Project project, VsTestUnitTest vsTestUnit)
 			: base (vsTestUnit.FixtureTypeName)
 		{
-			this.Project = project;
+			Project = project;
 			this.testRunner = testRunner;
 			FixtureTypeName = vsTestUnit.FixtureTypeName;
 			TestSourceCodeDocumentId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
+			cts = new CancellationTokenSource ();
+			var token = cts.Token;
+			IdeApp.TypeSystemService.GetCompilationAsync (Project, token).ContinueWith ((t) => {
+				if (token.IsCancellationRequested)
+					return;
+				var className = TestSourceCodeDocumentId;
+				var compilation = t.Result;
+				if (compilation == null)
+					return;
+				var cls = compilation.GetTypeByMetadataName (className);
+				if (cls == null)
+					return;
+				var source = cls.Locations.FirstOrDefault (l => l.IsInSource);
+				if (source == null)
+					return;
+				var line = source.GetLineSpan ();
+				sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
+			}, token, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Default).Ignore ();
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)
@@ -68,5 +93,22 @@ namespace MonoDevelop.UnitTesting.VsTest
 				}
 			}
 		}
+
+		public override SourceCodeLocation SourceCodeLocation {
+			get {
+				return sourceCodeLocation;
+			}
+		}
+
+		public override void Dispose ()
+		{
+			if (cts != null) {
+				cts.Cancel ();
+				cts.Dispose ();
+				cts = null;
+			}
+			base.Dispose ();
+		}
+
 	}
 }

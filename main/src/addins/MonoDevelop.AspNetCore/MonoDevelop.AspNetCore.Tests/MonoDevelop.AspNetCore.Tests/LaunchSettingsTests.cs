@@ -87,7 +87,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
-			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+			var launchProfileProvider = new LaunchProfileProvider (project);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.ProfilesObject, Is.Not.Null);
@@ -99,7 +99,7 @@ namespace MonoDevelop.AspNetCore.Tests
 
 			launchProfileProvider.SaveLaunchSettings ();
 
-			launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+			launchProfileProvider = new LaunchProfileProvider (project);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.Profiles, Has.Count.EqualTo (3));
@@ -112,7 +112,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
-			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+			var launchProfileProvider = new LaunchProfileProvider (project);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.ProfilesObject, Is.Not.Null);
@@ -168,7 +168,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = (DotNetProject)solution.GetAllProjects ().Single ();
 
-			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+			var launchProfileProvider = new LaunchProfileProvider (project);
 			launchProfileProvider.LoadLaunchSettings ();
 
 			Assert.That (launchProfileProvider.ProfilesObject, Is.Not.Null);
@@ -192,17 +192,28 @@ namespace MonoDevelop.AspNetCore.Tests
 
 			project.RunConfigurations.Clear ();
 			Assert.That (project.RunConfigurations, Is.Empty);
-			
-			var launchProfileProvider = new LaunchProfileProvider (project.BaseDirectory, project.DefaultNamespace);
+
+			var launchProfileProvider = new LaunchProfileProvider (project);
 			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations (project);
+			launchProfileProvider.SyncRunConfigurations();
 
 			Assert.That (project.RunConfigurations, Has.Count.EqualTo (2));
 			Assert.That (project.RunConfigurations [0].Name, Is.EqualTo ("Kestrel Staging"));
 			Assert.False (project.RunConfigurations [0].StoreInUserFile);
 			Assert.That (project.RunConfigurations [1].Name, Is.EqualTo ("EnvironmentsSample"));
 			Assert.False (project.RunConfigurations [1].StoreInUserFile);
+		}
+
+		[Test]
+		public async Task CreateProfile_creates_http_only ()
+		{
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-empty-30", "aspnetcore-empty-30.sln");
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = (DotNetProject)solution.GetAllProjects ().Single ();
+			var launchProfileProvider = new LaunchProfileProvider (project);
+			var launchProfile = launchProfileProvider.CreateDefaultProfile ();
+			launchProfile.OtherSettings ["applicationUrl"] = "http://localhost:5000";
 		}
 
 		[TearDown]

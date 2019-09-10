@@ -1,10 +1,10 @@
 //
-// GtkWorkarounds.cs
+// RoslynInformationProvider.cs
 //
 // Author:
-//       iain <iaholmes@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.InteropServices;
-
+using System.Reflection;
+using System.Text;
 using MonoDevelop.Core;
 
-// This partial of the GtkWorkarounds class is shared between MonoDevelop.Ide.dll and md-tool.exe
-// Anything that only needs to be in MonoDevelop.Ide should go into the other part.
-namespace MonoDevelop.Components
+namespace MonoDevelop.Refactoring
 {
-	public static partial class GtkWorkarounds
+	sealed class RoslynInformationProvider : ISystemInformationProvider
 	{
-		public static void Terminate ()
-		{
-#if MAC
-			var app = Mac.Messaging.IntPtr_objc_msgSend (
-				ObjCRuntime.Class.GetHandle ("NSApplication"),
-				ObjCRuntime.Selector.GetHandle ("sharedApplication"));
+		public string Title => "Roslyn (Language Service)";
 
-			Mac.Messaging.void_objc_msgSend_IntPtr (app, ObjCRuntime.Selector.GetHandle ("terminate:"), IntPtr.Zero);
-#endif
-		}
+		public string Description
+			=> typeof (Microsoft.CodeAnalysis.Compilation)
+				.Assembly
+				.GetCustomAttribute<AssemblyInformationalVersionAttribute> ()
+				.InformationalVersion;
 	}
 }
