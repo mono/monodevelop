@@ -25,10 +25,7 @@ namespace MonoDevelop.TextEditor
 {
 	sealed class LegacyEditorSupportExtensionNode : MatchingFileTypeExtensionNode
 	{
-		[NodeAttribute ("legacyOnly", "Set this to true if modern editor is unsupported for files matching this node")]
-		public bool IsLegacyOnly { get; private set; }
-
-		[NodeAttribute("providerType", "Set this to an the type name for a MonoDevelop.TextEditor.ILegacyEditorSupportProvider implementation")]
+		[NodeAttribute("providerType", "Set this to the type name for a MonoDevelop.TextEditor.ILegacyEditorSupportProvider implementation, if more dynamic checking is required")]
 		public string ProviderType { get; private set; }
 	}
 

@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.FeatureConfiguration;
@@ -45,26 +44,21 @@ namespace MonoDevelop.TextEditor
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
 			// First, check if legacy editor even has support for the file. If not, always use modern editor.
-
-			var legacySupportEnabled = !DefaultSourceEditorOptions.Instance.EnableNewEditor;
 			var legacySupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<LegacyEditorSupportExtensionNode> ("/MonoDevelop/TextEditor/LegacyEditorSupport");
-
 			var preferLegacy =
 				(
 					modelDescriptor.FilePath.IsNotNull
 					&& IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType)
-					&& legacySupportNodes.Any (n => (ExtensionMatch (n) && (n.IsLegacyOnly || legacySupportEnabled)) || ProviderPrefersLegacyEditor (n))
+					&& legacySupportNodes.Any (n => ExtensionMatch (n) || PrefersLegacyEditor (n))
 				) || (
 					!string.IsNullOrEmpty (modelDescriptor.MimeType)
 					&& IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType)
-					&& legacySupportNodes.Any (n => (MimeMatch (n) && (n.IsLegacyOnly || legacySupportEnabled)) || ProviderPrefersLegacyEditor (n))
+					&& legacySupportNodes.Any (n => MimeMatch (n) || PrefersLegacyEditor (n))
 				);
 
 			// Next, check if there is an explicit directive to prefer the modern editor even if legacy is supported.
-
 			if (preferLegacy) {
 				var nodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
-
 				preferLegacy =
 					!((
 						modelDescriptor.FilePath.IsNotNull
@@ -77,9 +71,7 @@ namespace MonoDevelop.TextEditor
 					));
 			}
 
-			if (!preferLegacy) {
-				yield return new DocumentControllerDescription (GettextCatalog.GetString ("Modern Source Code Editor"), true, DocumentControllerRole.Source);
-			}
+			yield return new EditorDocumentControllerDescription (GettextCatalog.GetString ("Source Code Editor"), true, DocumentControllerRole.Source, preferLegacy);
 
 			bool ExtensionMatch (MatchingFileTypeExtensionNode node) =>
 				node.Extensions != null
@@ -91,19 +83,20 @@ namespace MonoDevelop.TextEditor
 					mime => string.Equals (modelDescriptor.MimeType, mime, StringComparison.OrdinalIgnoreCase)
 				);
 
-			bool ProviderPrefersLegacyEditor (LegacyEditorSupportExtensionNode node)
+			bool PrefersLegacyEditor (LegacyEditorSupportExtensionNode node)
 			{
-				if (!string.IsNullOrEmpty (node.ProviderType)) {
-					try {
-						var key = (node.Addin.Id, node.ProviderType);
-						if (!legacyEditorSupportProviders.TryGetValue (key, out var provider)) {
-							provider = (ILegacyEditorSupportProvider)Activator.CreateInstance (node.Addin.GetType (node.ProviderType));
-							legacyEditorSupportProviders [key] = provider;
-						}
-						return provider.PreferLegacyEditor (modelDescriptor);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error loading legacy editor support provider", e);
+				if (string.IsNullOrEmpty (node.ProviderType))
+					return false;
+
+				try {
+					var key = (node.Addin.Id, node.ProviderType);
+					if (!legacyEditorSupportProviders.TryGetValue (key, out var provider)) {
+						provider = (ILegacyEditorSupportProvider)Activator.CreateInstance (node.Addin.GetType (node.ProviderType));
+						legacyEditorSupportProviders [key] = provider;
 					}
+					return provider.PreferLegacyEditor (modelDescriptor);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error loading legacy editor support provider", e);
 				}
 
 				return false;
@@ -128,6 +121,9 @@ namespace MonoDevelop.TextEditor
 
 		public override Task<DocumentController> CreateController (FileDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
 		{
+			if (controllerDescription is EditorDocumentControllerDescription editorControllerDescription && editorControllerDescription.IsLegacy)
+				return Task.FromResult<DocumentController> (new Ide.Editor.TextEditorViewContent ());
+
 			var imports = Ide.Composition.CompositionManager.Instance.GetExportedValue<TImports> ();
 			if (themeToClassification == null)
 				themeToClassification = CreateThemeToClassification (imports.EditorFormatMapService);
@@ -143,6 +139,17 @@ namespace MonoDevelop.TextEditor
 		{
 			themeToClassification?.Dispose ();
 			themeToClassification = null;
+		}
+
+		class EditorDocumentControllerDescription : DocumentControllerDescription
+		{
+			public bool IsLegacy { get; }
+
+			public EditorDocumentControllerDescription (string name, bool canUseAsDefault = true, DocumentControllerRole role = DocumentControllerRole.Source, bool isLegacy = false)
+				: base (name, canUseAsDefault, role)
+			{
+				IsLegacy = isLegacy;
+			}
 		}
 	}
 }

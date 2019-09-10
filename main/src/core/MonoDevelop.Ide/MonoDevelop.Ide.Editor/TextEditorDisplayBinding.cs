@@ -23,6 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+#if !MAC
+
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -56,7 +59,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			return list.Add (new DocumentControllerDescription {
-				 Name = GettextCatalog.GetString ("Legacy Source Code Editor"),
+				 Name = GettextCatalog.GetString ("Source Code Editor"),
 				 Role = DocumentControllerRole.Source,
 				 CanUseAsDefault = true
 			});
@@ -70,3 +73,5 @@ namespace MonoDevelop.Ide.Editor
 		public override string Id => "MonoDevelop.Ide.Editor.TextEditorDisplayBinding";
 	}
 }
+
+#endif
