@@ -172,7 +172,7 @@ namespace MonoDevelop.AspNetCore
 		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfig)
 		{
 			var result = new List<ExecutionTarget> ();
-			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost")) {
+			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost", Ide.Desktop.DesktopApplicationRole.Viewer)) {
 				if (browser.IsDefault) {
 					if (Project.HasMultipleTargetFrameworks) {
 						result.InsertRange (0, GetMultipleTargetFrameworkExecutionTargets (browser));

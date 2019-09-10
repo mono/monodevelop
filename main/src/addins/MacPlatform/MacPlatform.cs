@@ -951,6 +951,28 @@ namespace MonoDevelop.MacIntegration
 
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
+			return GetApplications (filename, DesktopApplicationRole.All);
+		}
+
+		public override IEnumerable<DesktopApplication> GetApplications (string filename, DesktopApplicationRole role)
+		{
+			static global::CoreServices.LSRoles ToLSRoles (DesktopApplicationRole role)
+			{
+				var lsRole = global::CoreServices.LSRoles.None;
+
+				if (role == DesktopApplicationRole.All)
+					return global::CoreServices.LSRoles.All;
+
+				if (role.HasFlag (DesktopApplicationRole.Viewer))
+					lsRole |= global::CoreServices.LSRoles.Viewer;
+				if (role.HasFlag (DesktopApplicationRole.Editor))
+					lsRole |= global::CoreServices.LSRoles.Editor;
+				if (role.HasFlag (DesktopApplicationRole.Shell))
+					lsRole |= global::CoreServices.LSRoles.Shell;
+
+				return lsRole;
+			}
+
 			//FIXME: we should disambiguate dupliacte apps in different locations and display both
 			//for now, just filter out the duplicates
 			var checkUniqueName = new HashSet<string> ();
@@ -969,7 +991,7 @@ namespace MonoDevelop.MacIntegration
 
 			var apps = new List<DesktopApplication> ();
 
-			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (url, global::CoreServices.LSRoles.All);
+			var retrievedApps = global::CoreServices.LaunchServices.GetApplicationUrlsForUrl (url, ToLSRoles (role));
 			if (retrievedApps != null) {
 				foreach (var app in retrievedApps) {
 					if (string.IsNullOrEmpty (app.Path) || !checkUniquePath.Add (app.Path))
