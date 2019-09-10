@@ -24,14 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using UnitTests;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.AspNetCore.Tests
@@ -110,6 +112,67 @@ namespace MonoDevelop.AspNetCore.Tests
 					project.Files.Remove (parentFile);
 				}
 			}
+		}
+
+		[Test]
+		public async Task MultiTargetFrameworks_ExecutionTargets ()
+		{
+			string solutionFileName = Util.GetSampleProject ("aspnetcore-multi-target-execution", "aspnetcore-multi-target.sln");
+			RestoreNuGetPackages (solutionFileName);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName)) {
+				var project = (DotNetProject)sol.Items[0];
+
+				var targets = project.GetExecutionTargets (ConfigurationSelector.Default)
+					.Cast<AspNetCoreTargetFrameworkExecutionTarget> ()
+					.ToList ();
+
+				if (Directory.Exists ("/Applications/Safari.app")) {
+					var matchNetCoreApp21 = targets.FirstOrDefault (x => x.Name.Contains ("Safari • netcoreapp2.1"));
+					var matchNetCoreApp30 = targets.FirstOrDefault (x => x.Name.Contains ("Safari • netcoreapp3.0"));
+					Assert.IsNotNull (matchNetCoreApp21, $"Execution target did not contain Safari netcoreapp2.1");
+					Assert.IsNotNull (matchNetCoreApp30, $"Execution target did not contain Safari netcoreapp3.0");
+					Assert.AreEqual ("/Applications/Safari.app-netcoreapp2.1", matchNetCoreApp21.Id);
+					Assert.AreEqual ("/Applications/Safari.app-netcoreapp3.0", matchNetCoreApp30.Id);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
+				} else if (Directory.Exists ("/Applications/Google Chrome.app")) {
+					var matchNetCoreApp21 = targets.FirstOrDefault (x => x.Name.Contains ("Google Chrome • netcoreapp2.1"));
+					var matchNetCoreApp30 = targets.FirstOrDefault (x => x.Name.Contains ("Google Chrome • netcoreapp3.0"));
+					Assert.IsNotNull (matchNetCoreApp21, $"Execution target did not contain Chrome netcoreapp2.1");
+					Assert.IsNotNull (matchNetCoreApp30, $"Execution target did not contain Chrome netcoreapp3.0");
+					Assert.AreEqual ("/Applications/Google Chrome.app-netcoreapp2.1", matchNetCoreApp21.Id);
+					Assert.AreEqual ("/Applications/Google Chrome.app-netcoreapp3.0", matchNetCoreApp30.Id);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
+					Assert.AreEqual (Stock.Browser.ToString (), matchNetCoreApp21.Image);
+				} else {
+					Assert.Ignore ("No browsers found to run test");
+				}
+			}
+		}
+
+		static void RestoreNuGetPackages (FilePath solutionFileName)
+		{
+			CreateNuGetConfigFile (solutionFileName.ParentDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solutionFileName}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+		}
+
+		static void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
 		}
 	}
 }

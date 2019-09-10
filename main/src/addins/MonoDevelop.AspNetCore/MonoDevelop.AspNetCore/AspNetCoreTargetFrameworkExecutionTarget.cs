@@ -1,10 +1,10 @@
 //
-// AspNetCoreExecutionTarget.cs
+// AspNetCoreTargetFrameworkExecutionTarget.cs
 //
 // Author:
-//       Rodrigo Moya <rodrigo.moya@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2019 Microsoft, Inc. (http://www.microsoft.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNetCore
 {
-	class AspNetCoreExecutionTarget : ExecutionTarget
+	class AspNetCoreTargetFrameworkExecutionTarget : AspNetCoreExecutionTarget
 	{
-		internal AspNetCoreExecutionTarget (DesktopApplication desktopApplication)
+		public AspNetCoreTargetFrameworkExecutionTarget (
+			DesktopApplication desktopApplication,
+			TargetFrameworkMoniker framework)
+			: base (desktopApplication)
 		{
-			DesktopApplication = desktopApplication;
+			Id = base.Id + "-" + framework.ShortName;
+			Name = base.Name + " • " + framework.ShortName;
+			Framework = framework;
+
 			Image = Stock.Browser;
 		}
 
-		public override string Name => DesktopApplication.DisplayName;
-
-		public override string Id => DesktopApplication.Id;
-
-		public DesktopApplication DesktopApplication { get; }
+		public override string Name { get; }
+		public override string Id { get; }
+		public TargetFrameworkMoniker Framework { get; }
+		public string FrameworkShortName => Framework.ShortName;
 	}
 }
