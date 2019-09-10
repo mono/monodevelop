@@ -39,7 +39,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
 	{
-		readonly Xwt.CheckBox legacyEditorCheckBox;
 		readonly Xwt.CheckBox wordWrapCheckBox;
 		readonly Xwt.CheckBox wordWrapVisualGlyphsCheckBox;
 
@@ -65,13 +64,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			wordWrapVisualGlyphsCheckBox.Toggled += HandleNewEditorOptionToggled;
 			newEditorOptionsBox.PackStart (wordWrapVisualGlyphsCheckBox);
 
-			legacyEditorCheckBox = new Xwt.CheckBox (GettextCatalog.GetString ("Use the legacy text editor where available (not recommended)"));
-			legacyEditorCheckBox.Active = !DefaultSourceEditorOptions.Instance.EnableNewEditor;
-			legacyEditorCheckBox.Toggled += HandleNewEditorOptionToggled;
-			newEditorOptionsBox.PackStart (legacyEditorCheckBox);
-
 			if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.Gtk)
-				experimentalSection.PackStart ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (newEditorOptionsBox), false, false, 0);
+				vbox4.PackStart ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (newEditorOptionsBox), false, false, 0);
 			else
 				LoggingService.LogError ("GeneralOptionsPanel: Xwt.Toolkit.CurrentEngine.Type != Xwt.ToolkitType.Gtk - currently unsupported");
 
@@ -90,8 +84,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			                                                         GettextCatalog.GetString ("Check to fold regions by default"));
 			foldCommentsCheckbutton.SetCommonAccessibilityAttributes ("SourceEditorGeneral.commens", "",
 			                                                          GettextCatalog.GetString ("Check to fold comments by default"));
-			legacyEditorCheckBox.SetCommonAccessibilityAttributes ("SourceEditorGeneral.legacyEditor", "",
-			                                                    GettextCatalog.GetString ("Check to enable legacy text editor"));
 			wordWrapCheckBox.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor.wordWrap", "",
 			                                                   GettextCatalog.GetString ("Check to enable word wrap in the modern editor"));
 			wordWrapVisualGlyphsCheckBox.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor.wordWrap.enableVisualGlyphs", "",
@@ -120,14 +112,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 				HighlightingPanel.UpdateActiveDocument ();
 			}
-
-			DefaultSourceEditorOptions.Instance.EnableNewEditor = !this.legacyEditorCheckBox.Active;
 		}
 
 		void HandleNewEditorOptionToggled (object sender, EventArgs e)
 		{
-			wordWrapCheckBox.Sensitive = !legacyEditorCheckBox.Active;
-			wordWrapVisualGlyphsCheckBox.Sensitive = !legacyEditorCheckBox.Active && wordWrapCheckBox.Active;
+			wordWrapVisualGlyphsCheckBox.Sensitive = wordWrapCheckBox.Active;
 
 			var wrap = DefaultSourceEditorOptions.Instance.WordWrapStyle;
 
