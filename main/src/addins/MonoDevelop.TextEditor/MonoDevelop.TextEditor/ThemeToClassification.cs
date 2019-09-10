@@ -182,6 +182,15 @@ namespace MonoDevelop.TextEditor
 		{
 			var editorFormat = editorFormatMapService.GetEditorFormatMap (appearanceCategory);
 			editorFormat.BeginBatchUpdate ();
+
+			// Reason we do it this way to purge existing values is because there is many possible
+			// value that can be already in ResourceDictionary, Bold, Color, Font... So we would have to explicitly
+			// clear all this values and set them to default before setting new theme, since theme might depend on default
+			// Handling all this is very complicated and error prone, since this whole file should be removed at some point
+			// and replaced with new theming system better adjusted to ITextView
+			// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/980541 for more details
+			(editorFormat as IEditorFormatMap2)?.ClearProperties ();
+
 			var theme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme.Value);
 			var settingsMap = new Dictionary<string, ThemeSetting> ();
 			var defaultSettings = theme.Settings[0];
