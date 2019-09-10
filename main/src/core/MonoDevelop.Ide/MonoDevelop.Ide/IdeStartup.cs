@@ -216,6 +216,8 @@ namespace MonoDevelop.Ide
 
 			IdeApp.IsRunning = true;
 
+			Xwt.Application.TranslationCatalog = new XwtTranslationCatalog ();
+
 			// Load the main menu before running the main loop
 			var commandService = Runtime.GetService<CommandManager> ().Result;
 			var desktopService = Runtime.GetService<DesktopService> ().Result;
