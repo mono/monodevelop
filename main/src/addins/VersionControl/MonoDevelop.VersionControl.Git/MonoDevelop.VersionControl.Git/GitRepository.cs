@@ -2330,13 +2330,16 @@ namespace MonoDevelop.VersionControl.Git
 						var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (baseText);
 						var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (TextFileUtility.GetText (repositoryPath));
 						var nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+						int offsetStart = 0;
 						foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
-							list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
+							list.RemoveRange (offsetStart + hunk.RemoveStart - 1, hunk.Removed);
+							offsetStart -= hunk.Removed;
 							for (int i = 0; i < hunk.Inserted; ++i) {
 								if (hunk.InsertStart + i >= list.Count)
 									list.Add (nextRev);
 								else
-									list.Insert (hunk.InsertStart - 1, nextRev);
+									list.Insert (offsetStart + hunk.InsertStart - 1, nextRev);
+								offsetStart++;
 							}
 						}
 					});
@@ -2403,7 +2406,7 @@ namespace MonoDevelop.VersionControl.Git
 			get; private set;
 		}
 
-		public GitRevision (Repository repo, string gitRepository, Commit commit) : base(repo)
+		public GitRevision (Repository repo, string gitRepository, Commit commit) : base(repo, commit.Author.When.DateTime, commit.Author.Name, commit.Message)
 		{
 			GitRepository = gitRepository;
 			rev = commit != null ? commit.Id.Sha : "";
