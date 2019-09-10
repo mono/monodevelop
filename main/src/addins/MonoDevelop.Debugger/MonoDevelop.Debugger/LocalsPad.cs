@@ -27,6 +27,8 @@
 
 using System.Linq;
 
+using Mono.Debugging.Client;
+
 namespace MonoDevelop.Debugger
 {
 	public class LocalsPad : ObjectValuePad
@@ -44,8 +46,15 @@ namespace MonoDevelop.Debugger
 			if (frame == null)
 				return;
 
+			var locals = frame.GetAllLocals ();
+
+			DebuggerLoggingService.LogMessage ("Begin Local Variables:");
+			foreach (var local in locals)
+				DebuggerLoggingService.LogMessage ("\t{0}", local.Name);
+			DebuggerLoggingService.LogMessage ("End Local Variables");
+
 			tree.ClearValues ();
-			tree.AddValues (frame.GetAllLocals ().Where (l => !string.IsNullOrWhiteSpace (l.Name) && l.Name != "?").ToArray ());
+			tree.AddValues (locals);
 		}
 
 		public override void OnUpdateFrame ()
