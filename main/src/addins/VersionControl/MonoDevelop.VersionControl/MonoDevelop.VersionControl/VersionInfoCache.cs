@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl
 		public async Task SetStatusAsync (VersionInfo versionInfo, bool notify = true, CancellationToken cancellationToken = default)
 		{
 			if (!versionInfo.IsInitialized)
-				await versionInfo.InitAsync (repo, cancellationToken);
+				await versionInfo.InitAsync (repo, cancellationToken).ConfigureAwait (false);
 
 			if (fileStatus.TryGetValue (versionInfo.LocalPath, out var vi) && vi.Equals (versionInfo)) {
 				vi.RequiresRefresh = false;
