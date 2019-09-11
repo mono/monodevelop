@@ -54,7 +54,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			return ParentNode.GetSecondaryLabel ();
+			return string.Empty;
 		}
 
 		public IconId Icon {
