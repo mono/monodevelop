@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
@@ -57,7 +58,12 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var node = (FrameworkReferencesNode)dataObject;
-			treeBuilder.AddChildren (node.GetChildNodes ());
+			AddChildren (treeBuilder, node.GetChildNodes ());
+		}
+
+		protected virtual void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
+		{
+			treeBuilder.AddChildren (dataObjects);
 		}
 	}
 }

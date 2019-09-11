@@ -1,5 +1,5 @@
 //
-// TestableDependenciesNodeBuilder.cs
+// TestableFrameworkReferencesNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -26,45 +26,25 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.DotNetCore.NodeBuilders;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
-	class TestableDependenciesNodeBuilder : DependenciesNodeBuilder
+	class TestableFrameworkReferencesNodeBuilder : FrameworkReferencesNodeBuilder
 	{
 		public List<object> ChildNodes = new List<object> ();
 
-		public PackageDependenciesNode PackageDependencies;
-		public SdkDependenciesNode SdkDependencies;
-		public ProjectDependenciesNode ProjectDependencies;
-		public AssemblyDependenciesNode AssemblyDependencies;
-		public FrameworkReferencesNode FrameworkReferences;
-		public List<TargetFrameworkNode> TargetFrameworks = new List<TargetFrameworkNode> ();
-
-		void AddChild (ITreeBuilder treeBuilder, object dataObject)
+		public IEnumerable<FrameworkReferenceNode> ChildNodesAsFrameworkReferenceNode ()
 		{
-			ChildNodes.Add (dataObject);
-
-			if (dataObject is AssemblyDependenciesNode assemblyDependencies) {
-				AssemblyDependencies = assemblyDependencies;
-			} else if (dataObject is PackageDependenciesNode packageDependencies) {
-				PackageDependencies = packageDependencies;
-			} else if (dataObject is ProjectDependenciesNode projectDependencies) {
-				ProjectDependencies = projectDependencies;
-			} else if (dataObject is SdkDependenciesNode sdkDependencies) {
-				SdkDependencies = sdkDependencies;
-			} else if (dataObject is TargetFrameworkNode targetFramework) {
-				TargetFrameworks.Add (targetFramework);
-			} else if (dataObject is FrameworkReferencesNode frameworkReferences) {
-				FrameworkReferences = frameworkReferences;
-			}
+			return ChildNodes.OfType<FrameworkReferenceNode> ();
 		}
 
 		protected override void AddChildren (ITreeBuilder treeBuilder, IEnumerable dataObjects)
 		{
-			foreach (object dataObject in dataObjects) {
-				AddChild (treeBuilder, dataObject);
+			foreach (var dataObject in dataObjects) {
+				ChildNodes.Add (dataObject);
 			}
 		}
 	}
