@@ -940,9 +940,11 @@ namespace MonoDevelop.VersionControl.Git
 				foreach (var group in groups) {
 					var repositoryRoot = group.Key.Info.WorkingDirectory;
 					GitRevision arev;
-					if (!versionInfoCacheEmptyRevision.TryGetValue (repositoryRoot, out arev)) {
-						arev = new GitRevision (this, repositoryRoot, null);
-						versionInfoCacheEmptyRevision.Add (repositoryRoot, arev);
+					lock (versionInfoCacheEmptyRevision) {
+						if (!versionInfoCacheEmptyRevision.TryGetValue (repositoryRoot, out arev)) {
+							arev = new GitRevision (this, repositoryRoot, null);
+							versionInfoCacheEmptyRevision.Add (repositoryRoot, arev);
+						}
 					}
 					foreach (var p in group) {
 						if (Directory.Exists (p)) {
@@ -962,10 +964,16 @@ namespace MonoDevelop.VersionControl.Git
 						GitRevision rev = null;
 						Commit headCommit = await GetHeadCommitAsync (repository).ConfigureAwait (false);
 						if (headCommit != null) {
-							if (!versionInfoCacheRevision.TryGetValue (repositoryRoot, out rev)) {
-								rev = new GitRevision (this, repositoryRoot, headCommit);
-								versionInfoCacheRevision.Add (repositoryRoot, rev);
-							} else if (await RunOperationAsync (() => rev.GetCommit (repository)).ConfigureAwait (false) != headCommit) {
+							bool runAsync = false;
+							lock (versionInfoCacheRevision) {
+								if (!versionInfoCacheRevision.TryGetValue (repositoryRoot, out rev)) {
+									rev = new GitRevision (this, repositoryRoot, headCommit);
+									versionInfoCacheRevision.Add (repositoryRoot, rev);
+								} else
+									runAsync = true;
+							}
+
+							if (runAsync && await RunOperationAsync (() => rev.GetCommit (repository)).ConfigureAwait (false) != headCommit) {
 								rev = new GitRevision (this, repositoryRoot, headCommit);
 								versionInfoCacheRevision [repositoryRoot] = rev;
 							}
@@ -981,9 +989,11 @@ namespace MonoDevelop.VersionControl.Git
 				// Set directory items as Versioned.
 				GitRevision arev = null;
 				foreach (var group in GroupByRepositoryRoot (directories)) {
-					if (!versionInfoCacheEmptyRevision.TryGetValue (group.Key, out arev)) {
-						arev = new GitRevision (this, group.Key, null);
-						versionInfoCacheEmptyRevision.Add (group.Key, arev);
+					lock (versionInfoCacheEmptyRevision) {
+						if (!versionInfoCacheEmptyRevision.TryGetValue (group.Key, out arev)) {
+							arev = new GitRevision (this, group.Key, null);
+							versionInfoCacheEmptyRevision.Add (group.Key, arev);
+						}
 					}
 					foreach (var p in group)
 						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
@@ -992,12 +1002,23 @@ namespace MonoDevelop.VersionControl.Git
 				var rootRepository = GetRepository (RootPath);
 				Commit headCommit = await GetHeadCommitAsync (rootRepository).ConfigureAwait (false);
 				if (headCommit != null) {
-					if (!versionInfoCacheRevision.TryGetValue (RootPath, out arev)) {
+					bool runAsync = false;
+
+					lock (versionInfoCacheRevision) {
+						if (!versionInfoCacheRevision.TryGetValue (RootPath, out arev)) {
+							arev = new GitRevision (this, RootPath, headCommit);
+							versionInfoCacheRevision.Add (RootPath, arev);
+						} else {
+							runAsync = true;
+						}
+
+					}
+
+					if (runAsync && await RunOperationAsync (() => arev.GetCommit (rootRepository)).ConfigureAwait (false) != headCommit) {
 						arev = new GitRevision (this, RootPath, headCommit);
-						versionInfoCacheRevision.Add (RootPath, arev);
-					} else if (await RunOperationAsync (() => arev.GetCommit (rootRepository)).ConfigureAwait (false) != headCommit) {
-						arev = new GitRevision (this, RootPath, headCommit);
-						versionInfoCacheRevision [RootPath] = arev;
+						lock (versionInfoCacheRevision) {
+							versionInfoCacheRevision [RootPath] = arev;
+						}
 					}
 				}
 
