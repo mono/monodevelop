@@ -694,6 +694,26 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Compile items preferred over None items.
+		/// </summary>
+		[Test]
+		public async Task GetSourceFilesAsync_SdkProjectWithCSharpFileDefindAsNoneThenCompileItem_FileHasCompileBuildAction ()
+		{
+			FilePath solFile = Util.GetSampleProject ("duplicate-none-compile-items", "duplicate-none-compile-items.sln");
+
+			RunMSBuildRestore (solFile);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+
+				var files = await p.GetSourceFilesAsync (ConfigurationSelector.Default);
+				var class1File = files.Single (f => f.FilePath.FileName == "Class1.cs");
+
+				Assert.AreEqual (BuildAction.Compile, class1File.BuildAction);
+			}
+		}
+
 		[Test]
 		public async Task AddNewFileToProjectAndSave_ProjectHas1500CSharpFiles_SavingIsFast ()
 		{
