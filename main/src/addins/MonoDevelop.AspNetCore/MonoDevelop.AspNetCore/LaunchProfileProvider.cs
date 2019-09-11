@@ -76,12 +76,12 @@ namespace MonoDevelop.AspNetCore
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 		}
 
-		bool ApplicationUrlIsDefault (string applicationUrl)
+		static bool ApplicationUrlIsDefault (string applicationUrl)
 		{
 			return applicationUrl != null && applicationUrl.Contains (defaultHttpUrl) || applicationUrl.Contains (defaultHttpsUrl);
 		}
 
-		bool TryAllocatePort (int testPort)
+		static bool TryAllocatePort (int testPort)
 		{
 			Socket testSocket = null;
 
