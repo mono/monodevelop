@@ -713,7 +713,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			window.MaxVisibleRows = 14;
 			if (path [index].Tag != null)
 				window.SelectItem (path [index].Tag);
-			return window;
+			return (Components.Window)window;
 		}
 
 		protected override void Dispose (bool disposing)
