@@ -71,7 +71,7 @@
   </Extension>
 
     <Extension path="/MonoDevelop/TextEditor/LegacyEditorSupport">
-        <LegacyEditorSupport id="fsharp" extensions=".fs,.fsi,.fsx,.fsscript" legacyOnly="true" />
+        <LegacyEditorSupport id="fsharp" extensions=".fs,.fsi,.fsx,.fsscript" />
     </Extension>
 
   <Extension path="/MonoDevelop/Ide/FileTemplates">
