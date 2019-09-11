@@ -872,7 +872,7 @@ namespace MonoDevelop.Xml.Editor
 				window.FixedRowHeight = 22;
 				window.MaxVisibleRows = 14;
 				window.SelectItem (currentPath [index].Tag);
-				return window;
+				return (MonoDevelop.Components.Window)window;
 			} else {
 				if (ownerProjects.Count > 1)
 					index--;
