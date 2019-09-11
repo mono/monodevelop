@@ -43,32 +43,37 @@ namespace MonoDevelop.TextEditor
 
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
+			var isTextByFilePath = modelDescriptor.FilePath.IsNotNull && IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType);
+			var isTextByMimeType = !string.IsNullOrEmpty (modelDescriptor.MimeType) && IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType);
+
+			if (!isTextByFilePath && !isTextByMimeType)
+				yield break;
+
 			// First, check if legacy editor even has support for the file. If not, always use modern editor.
 			var legacySupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<LegacyEditorSupportExtensionNode> ("/MonoDevelop/TextEditor/LegacyEditorSupport");
-			var preferLegacy =
-				(
-					modelDescriptor.FilePath.IsNotNull
-					&& IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType)
-					&& legacySupportNodes.Any (n => ExtensionMatch (n) || PrefersLegacyEditor (n))
-				) || (
-					!string.IsNullOrEmpty (modelDescriptor.MimeType)
-					&& IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType)
-					&& legacySupportNodes.Any (n => MimeMatch (n) || PrefersLegacyEditor (n))
-				);
+			var preferLegacy = false;
+			foreach (var node in legacySupportNodes.OrderByDescending (n => string.IsNullOrEmpty (n.ProviderType))) {
+				if ((isTextByFilePath && ExtensionMatch (node)) || (isTextByMimeType && MimeMatch (node))) {
+					preferLegacy = true;
+					break;
+				}
+
+				// Only attempt a provider check if extension/mimetype checks already failed, as it's more expensive.
+				if (PrefersLegacyEditor (node)) {
+					preferLegacy = true;
+					break;
+				}
+			}
 
 			// Next, check if there is an explicit directive to prefer the modern editor even if legacy is supported.
 			if (preferLegacy) {
-				var nodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
-				preferLegacy =
-					!((
-						modelDescriptor.FilePath.IsNotNull
-						&& IdeServices.DesktopService.GetFileIsText (modelDescriptor.FilePath, modelDescriptor.MimeType)
-						&& nodes.Any (n => ExtensionMatch (n) && BuildActionAndFeatureFlagMatch (n))
-					) || (
-						!string.IsNullOrEmpty (modelDescriptor.MimeType)
-						&& IdeServices.DesktopService.GetMimeTypeIsText (modelDescriptor.MimeType)
-						&& nodes.Any (n => MimeMatch (n) && BuildActionAndFeatureFlagMatch (n))
-					));
+				var explicitModernSupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
+				foreach (var node in explicitModernSupportNodes) {
+					if (((isTextByFilePath && ExtensionMatch (node)) || (isTextByMimeType && MimeMatch (node))) && BuildActionAndFeatureFlagMatch (node)) {
+						preferLegacy = false;
+						break;
+					}
+				}
 			}
 
 			yield return new EditorDocumentControllerDescription (GettextCatalog.GetString ("Source Code Editor"), true, DocumentControllerRole.Source, preferLegacy);
