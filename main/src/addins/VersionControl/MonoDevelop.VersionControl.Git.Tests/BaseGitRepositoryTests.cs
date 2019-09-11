@@ -127,9 +127,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			var repo2 = (GitRepository)repo;
 			var monitor = new ProgressMonitor ();
-			await Task.Run (async () => {
-				repo2.Push (monitor, await repo2.GetCurrentRemoteAsync (), repo2.GetCurrentBranch ());
-			});
+			await repo2.PushAsync (monitor, await repo2.GetCurrentRemoteAsync (), repo2.GetCurrentBranch ());
 		}
 
 		protected override void BlameExtraInternals (Annotation [] annotations)
@@ -380,7 +378,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			await repo2.CreateBranchAsync ("branch3", null, null);
 			await repo2.SwitchToBranchAsync (monitor, "branch3");
 			await AddFileAsync ("file2", "asdf", true, true);
-			await Task.Run (() => repo2.Push (monitor, "origin", "branch3"));
+			await repo2.PushAsync (monitor, "origin", "branch3");
 
 			await repo2.SwitchToBranchAsync (monitor, "master");
 
@@ -601,7 +599,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var monitor = new ProgressMonitor ();
 			var repo2 = (GitRepository)Repo;
 			await AddFileAsync ("init", "init", true, true);
-			await Task.Run (() => repo2.Push (new ProgressMonitor (), "origin", "master"));
+			await repo2.PushAsync (new ProgressMonitor (), "origin", "master");
 			await repo2.CreateBranchAsync ("testBranch", "origin/master", "refs/remotes/origin/master");
 
 			if (exceptionType != null) {
@@ -622,7 +620,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var monitor = new ProgressMonitor ();
 			var repo2 = (GitRepository)Repo;
 			await AddFileAsync ("init", "init", true, true);
-			repo2.Push (new ProgressMonitor (), "origin", "master");
+			await repo2.PushAsync (new ProgressMonitor (), "origin", "master");
 
 			await repo2.SetBranchTrackRefAsync ("testBranch", "origin/master", "refs/remotes/origin/master");
 			var branches = await repo2.GetBranchesAsync ();
@@ -641,16 +639,81 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		// teests bug #30415
 		[TestCase(false, false)]
 		[TestCase(true, false)]
+		[TestCase(true, true)]
 		public async Task BlameDiffWithNotCommitedItem (bool toVcs, bool commit)
 		{
 			string added = LocalPath.Combine ("init");
 
-			await AddFileAsync ("init", "init", toVcs, commit);
+			var contents = string.Join (Environment.NewLine, Enumerable.Repeat ("string", 10));
+			await AddFileAsync ("init", contents, toVcs, commit);
 
-			Assert.AreEqual (string.Empty, await Repo.GetBaseTextAsync (added));
+			var expectedBaseText = commit ? contents : string.Empty;
+			Assert.AreEqual (expectedBaseText, await Repo.GetBaseTextAsync (added));
 			var revisions = (await Repo.GetAnnotationsAsync (added, null)).Select (a => a.Revision);
+
+			string expectedRevision = commit
+				? "Commit #0\n"
+				: GettextCatalog.GetString ("working copy");
+
 			foreach (var rev in revisions)
-				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
+				Assert.AreEqual (expectedRevision, rev.Message);
+		}
+
+		[Test]
+		public async Task BlameWithWorkingChanges ()
+		{
+			string added = LocalPath.Combine ("init");
+
+			/*
+			 * string1 - #0
+			 * string1 - #0
+			 * string1 - #0
+			 * string2 - #0
+			 * string2 - #0
+			 * string2 - #0
+			 * string3 - #0
+			 * string3 - #0
+			 * string3 - #0
+			 */
+			var contents = string.Join (
+				Environment.NewLine,
+				Enumerable.Repeat ("string1", 3)
+					.Concat (Enumerable.Repeat ("string2", 3))
+					.Concat (Enumerable.Repeat ("string3", 3))
+			);
+			await AddFileAsync ("init", contents, true, true);
+
+			contents = string.Join (
+				Environment.NewLine,
+				new [] {
+					"string0", // working copy <- deleted 1, added 1
+					"string1", // #0
+					"string4", // working copy <- deleted 1, added 3
+					"string4", // working copy
+					"string4", // working copy
+					"string1", // #0
+					"string2", // #0           <- deleted 1
+					"string2", // #0
+					"string3", // #0
+					"string4", // working copy
+				});
+			await AddFileAsync ("init", contents, true, false);
+			var annotations = await Repo.GetAnnotationsAsync (added, null);
+
+			string [] expected = {
+				GettextCatalog.GetString ("working copy"),
+				"Commit #0\n",
+				GettextCatalog.GetString ("working copy"),
+				GettextCatalog.GetString ("working copy"),
+				GettextCatalog.GetString ("working copy"),
+				"Commit #0\n",
+				"Commit #0\n",
+				"Commit #0\n",
+				"Commit #0\n",
+				GettextCatalog.GetString ("working copy"),
+			};
+
+			Assert.That (annotations.Select (x => x.Revision?.Message ?? x.Text), Is.EquivalentTo (expected));
 		}
 
 		[Test]
