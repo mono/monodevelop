@@ -127,9 +127,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			var repo2 = (GitRepository)repo;
 			var monitor = new ProgressMonitor ();
-			await Task.Run (async () => {
-				repo2.Push (monitor, await repo2.GetCurrentRemoteAsync (), repo2.GetCurrentBranch ());
-			});
+			await repo2.PushAsync (monitor, await repo2.GetCurrentRemoteAsync (), repo2.GetCurrentBranch ());
 		}
 
 		protected override void BlameExtraInternals (Annotation [] annotations)
@@ -380,7 +378,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			await repo2.CreateBranchAsync ("branch3", null, null);
 			await repo2.SwitchToBranchAsync (monitor, "branch3");
 			await AddFileAsync ("file2", "asdf", true, true);
-			await Task.Run (() => repo2.Push (monitor, "origin", "branch3"));
+			await repo2.PushAsync (monitor, "origin", "branch3");
 
 			await repo2.SwitchToBranchAsync (monitor, "master");
 
@@ -601,7 +599,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var monitor = new ProgressMonitor ();
 			var repo2 = (GitRepository)Repo;
 			await AddFileAsync ("init", "init", true, true);
-			await Task.Run (() => repo2.Push (new ProgressMonitor (), "origin", "master"));
+			await repo2.PushAsync (new ProgressMonitor (), "origin", "master");
 			await repo2.CreateBranchAsync ("testBranch", "origin/master", "refs/remotes/origin/master");
 
 			if (exceptionType != null) {
@@ -622,7 +620,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var monitor = new ProgressMonitor ();
 			var repo2 = (GitRepository)Repo;
 			await AddFileAsync ("init", "init", true, true);
-			repo2.Push (new ProgressMonitor (), "origin", "master");
+			await repo2.PushAsync (new ProgressMonitor (), "origin", "master");
 
 			await repo2.SetBranchTrackRefAsync ("testBranch", "origin/master", "refs/remotes/origin/master");
 			var branches = await repo2.GetBranchesAsync ();

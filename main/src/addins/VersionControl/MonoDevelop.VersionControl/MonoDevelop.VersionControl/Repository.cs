@@ -651,7 +651,7 @@ namespace MonoDevelop.VersionControl
 		// Adds a file or directory to the repository
 		public void Add (FilePath localPath, bool recurse, ProgressMonitor monitor)
 		{
-			AddAsync (new FilePath [] { localPath }, recurse, monitor).Ignore ();
+			AddAsync (new FilePath [] { localPath }, recurse, monitor).Wait ();
 		}
 
 		public Task AddAsync (FilePath localPath, bool recurse, ProgressMonitor monitor)
