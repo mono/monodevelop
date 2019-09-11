@@ -258,7 +258,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (await IsVersionedAsync (path, monitor.CancellationToken).ConfigureAwait (false) && File.Exists (path) && !Directory.Exists (path)) {
 					if (RootPath.IsNull)
 						throw new UserException (GettextCatalog.GetString ("Project publishing failed. There is a stale .svn folder in the path '{0}'", path.ParentDirectory));
-					VersionInfo srcInfo = await GetVersionInfoAsync (path, VersionInfoQueryFlags.IgnoreCache);
+					VersionInfo srcInfo = await GetVersionInfoAsync (path, VersionInfoQueryFlags.IgnoreCache).ConfigureAwait (false));
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
 						// It is a file that was deleted. It can be restored now since it's going
 						// to be added again.
