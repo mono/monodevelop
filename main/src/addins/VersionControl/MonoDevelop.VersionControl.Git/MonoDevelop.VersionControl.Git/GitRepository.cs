@@ -1136,7 +1136,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
 
-			RetryUntilSuccess (monitor, credType => {
+			await RetryUntilSuccessAsync (monitor, credType => {
 
 				try {
 					RootRepository.Network.Push (RootRepository.Head, new PushOptions {
@@ -1151,8 +1151,9 @@ namespace MonoDevelop.VersionControl.Git
 					if (RootPath.Combine (".git").IsDirectory)
 						Directory.Delete (RootPath.Combine (".git"), true);
 					LoggingService.LogError ("Failed to publish to the repository", vcex);
-					throw;
+					return Task.FromException (vcex);
 				}
+				return Task.CompletedTask;
 			});
 
 			return this;
@@ -1186,9 +1187,6 @@ namespace MonoDevelop.VersionControl.Git
 								AlertButton.Yes, AlertButton.No);
 			return ret == AlertButton.Yes;
 		}
-
-		static void RetryUntilSuccess (ProgressMonitor monitor, Action<GitCredentialsType> action, Action onRetry = null)
-			=> RetryUntilSuccessAsync (monitor, gct => { action (gct); return Task.CompletedTask; }, onRetry).Ignore ();
 
 		static async Task RetryUntilSuccessAsync (ProgressMonitor monitor, Func<GitCredentialsType, Task> func, Action onRetry = null)
 		{
@@ -1249,30 +1247,18 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
 
-			await RunOperationAsync (() => {
+			var innerTask = await RunOperationAsync (() => {
 				var refSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification);
-				RetryUntilSuccess (monitor, credType => LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
-					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
-					OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
-				}, string.Empty));
+				return RetryUntilSuccessAsync (monitor, credType => {
+					LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
+						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
+						OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
+					}, string.Empty);
+					return Task.CompletedTask;
+				});
 			}).ConfigureAwait (false);
-			monitor.Step (1);
-			monitor.EndTask ();
-		}
+			await innerTask.ConfigureAwait (false);
 
-		internal void Fetch (ProgressMonitor monitor, string remote)
-		{
-			monitor.BeginTask (GettextCatalog.GetString ("Fetching"), 1);
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
-			int progress = 0;
-
-			RunOperation (() => {
-				var refSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification);
-				RetryUntilSuccess (monitor, credType => LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
-					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
-					OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
-				}, string.Empty));
-			}, true);
 			monitor.Step (1);
 			monitor.EndTask ();
 		}
@@ -1618,7 +1604,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Cloning…"), 2);
 				bool skipSubmodules = false;
-				await RunOperationAsync (() => RetryUntilSuccess (monitor, credType => {
+				var innerTask = await RunOperationAsync (() => RetryUntilSuccessAsync (monitor, credType => {
 					var options = new CloneOptions {
 						CredentialsProvider = (url, userFromUrl, types) => {
 							transferProgress = checkoutProgress = 0;
@@ -1642,7 +1628,7 @@ namespace MonoDevelop.VersionControl.Git
 					try {
 						RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, options);
 					} catch (UserCancelledException) {
-						return;
+						return Task.CompletedTask;
 					}
 					var updateOptions = new SubmoduleUpdateOptions {
 						Init = true,
@@ -1658,9 +1644,12 @@ namespace MonoDevelop.VersionControl.Git
 						LoggingService.LogError ("Cloning submodules failed", e);
 						FileService.DeleteDirectory (RootPath);
 						skipSubmodules = true;
-						throw e;
+						return Task.FromException (e);
 					}
+					return Task.CompletedTask;
 				}), monitor.CancellationToken).ConfigureAwait (false);
+
+				await innerTask.ConfigureAwait (false);
 
 				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
 					return;
@@ -1918,25 +1907,28 @@ namespace MonoDevelop.VersionControl.Git
 			return remotes.Contains ("origin") ? "origin" : remotes [0];
 		}
 
-		public void Push (ProgressMonitor monitor, string remote, string remoteBranch)
+		public async Task PushAsync (ProgressMonitor monitor, string remote, string remoteBranch)
 		{
 			bool success = true;
 
-			RunBlockingOperation (() => {
+			await RunOperationAsync (() => {
 				var branch = RootRepository.Head;
 				if (branch.TrackedBranch == null) {
 					RootRepository.Branches.Update (branch, b => b.TrackedBranch = "refs/remotes/" + remote + "/" + remoteBranch);
 				}
-			}, true, monitor.CancellationToken);
+			}, monitor.CancellationToken).ConfigureAwait (false);
 
-			RunOperation (() => {
-				RetryUntilSuccess (monitor, credType =>
+			var innerTask = await RunOperationAsync (() => {
+				return RetryUntilSuccessAsync (monitor, credType => {
 					RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 						OnPushStatusError = pushStatusErrors => success = false,
 						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
-					})
-				);
-			}, true);
+					});
+					return Task.CompletedTask;
+				});
+			}, monitor.CancellationToken).ConfigureAwait (false);
+
+			await innerTask.ConfigureAwait (false);
 
 			if (!success)
 				return;
@@ -2083,7 +2075,7 @@ namespace MonoDevelop.VersionControl.Git
 				return RetryUntilSuccessAsync (null, async credType => RootRepository.Network.Push (RootRepository.Network.Remotes [await GetCurrentRemoteAsync ().ConfigureAwait (false)], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
 					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 				}));
-			}, cancellationToken);
+			}, cancellationToken).Unwrap ();
 		}
 
 		public Task<List<string>> GetRemoteBranchesAsync (string remoteName, CancellationToken cancellationToken = default)

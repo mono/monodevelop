@@ -452,15 +452,15 @@ namespace MonoDevelop.VersionControl.Git
 				return;
 
 			var monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote..."));
-			await System.Threading.Tasks.Task.Run (() => {
+			await System.Threading.Tasks.Task.Run ((Func<System.Threading.Tasks.Task>)(async () => {
 				try {
-					repo.Fetch (monitor, remoteName);
+					await repo.FetchAsync ((ProgressMonitor)monitor, (string)remoteName);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Fetching remote failed"), ex);
 				} finally {
 					monitor.Dispose ();
 				}
-			});
+			}));
 			FillRemotes ();
 		}
 	}
