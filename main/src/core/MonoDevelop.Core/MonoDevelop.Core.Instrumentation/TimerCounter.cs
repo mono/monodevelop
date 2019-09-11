@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -93,27 +95,27 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public ITimeTracker BeginTiming ()
 		{
-			return BeginTiming (null, (IDictionary<string, object>)null);
+			return BeginTiming (null, null);
 		}
 
 		public ITimeTracker BeginTiming (string message)
 		{
-			return BeginTiming (message, (IDictionary<string, object>)null);
+			return BeginTiming (message, null);
 		}
 
 		[Obsolete ("Use BeginTiming (string, IDictionary<string,object>) instead")]
-		public ITimeTracker BeginTiming (IDictionary<string, string> metadata)
+		public ITimeTracker BeginTiming (IDictionary<string, string>? metadata)
 		{
 			var converted = metadata.ToDictionary (k => k.Key, k => (object)(k.Value));
 			return BeginTiming (null, converted);
 		}
 
-		public ITimeTracker BeginTiming (string message, IDictionary<string, object> metadata)
+		public ITimeTracker BeginTiming (string? message, IDictionary<string, object>? metadata)
 		{
 			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
 		}
 
-		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
+		internal ITimeTracker<T> BeginTiming<T> (string? message, T? metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
 		{
 			if (!Enabled && !LogMessages) {
 				return new DummyTimerCounter<T> (metadata);
@@ -126,7 +128,10 @@ namespace MonoDevelop.Core.Instrumentation
 					count++;
 					totalCount++;
 					int i = StoreValue (message, c, metadata?.Properties);
-					((ITimeCounter)c).TraceList.ValueIndex = i;
+
+					var traceList = ((ITimeCounter)c).TraceList;
+					if (traceList != null)
+						traceList.ValueIndex = i;
 				}
 			} else {
 				if (message != null)
@@ -231,11 +236,20 @@ namespace MonoDevelop.Core.Instrumentation
 		public void SetSuccess () => Result = CounterResult.Success;
 		public void SetUserCancel () => Result = CounterResult.UserCancel;
 
-		protected void SetProperty (object value, [CallerMemberName]string name = null)
-			=> Properties[name] = value;
-
-		protected T GetProperty<T> ([CallerMemberName]string name = null)
+		protected void SetProperty (object value, [CallerMemberName]string? name = null)
 		{
+			if (name == null)
+				throw new ArgumentNullException (nameof (name));
+
+			Properties [name] = value;
+		}
+
+		// [return: MaybeNull]
+		protected T GetProperty<T> ([CallerMemberName]string? name = null)
+		{
+			if (name == null)
+				throw new ArgumentNullException (nameof (name));
+
 			if (Properties.TryGetValue (name, out var result)) {
 				return (T)Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
 			}
@@ -243,8 +257,11 @@ namespace MonoDevelop.Core.Instrumentation
 			return default (T);
 		}
 
-		protected bool ContainsProperty ([CallerMemberName]string propName = null)
+		protected bool ContainsProperty ([CallerMemberName]string? propName = null)
 		{
+			if (propName == null)
+				throw new ArgumentNullException (nameof (propName));
+
 			return Properties.ContainsKey (propName);
 		}
 	}

@@ -23,6 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+#nullable enable
+
 using System;
 
 namespace MonoDevelop.Core.Instrumentation
@@ -55,7 +58,7 @@ namespace MonoDevelop.Core.Instrumentation
 		/// <returns>An IDisposable object that is disposed when the timing operation ends.</returns>
 		/// <param name="counter">The timer counter</param>
 		/// <param name="value">The value</param>
-		public virtual IDisposable BeginTimer (TimerCounter counter, CounterValue value)
+		public virtual IDisposable? BeginTimer (TimerCounter counter, CounterValue value)
 		{
 			return null;
 		}
