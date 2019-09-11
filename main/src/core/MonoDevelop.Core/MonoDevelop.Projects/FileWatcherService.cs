@@ -209,8 +209,9 @@ namespace MonoDevelop.Projects
 				// Add the new ones.
 				foreach (var kvp in newWatchers) {
 					var path = kvp.Key;
-					// Don't modify a watcher that already exists.
-					if (watchers.ContainsKey (path)) {
+					// Don't modify a watcher that already exists, but ensure it is initialized
+					if (watchers.TryGetValue (path, out var existingWatcher)) {
+						tasks.Add (existingWatcher.EnableRaisingEventsAsync ());
 						continue;
 					}
 					var watcher = new FileWatcherWrapper (path, kvp.Value, readerWriterLock);
@@ -393,7 +394,7 @@ namespace MonoDevelop.Projects
 		public Task EnableRaisingEventsAsync ()
 		{
 			lock (enableEventLock) {
-				if (disposed || eventsEnabled)
+				if (disposed || (eventsEnabled && enablingEventsTask == null))
 					return Task.CompletedTask;
 				eventsEnabled = true;
 				if (enablingEventsTask == null) {
