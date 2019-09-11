@@ -8,6 +8,7 @@ open MonoDevelop.Projects.Policies
 open MonoDevelop.Ide.CodeFormatting
 open Fantomas
 open Fantomas.FormatConfig
+open Fantomas.SourceOrigin;
 open FSharp.Compiler
 open FSharp.Compiler.Range
 //open ExtCore.Control
@@ -78,7 +79,7 @@ type FSharpFormatter()  =
             let output =
                 try
                     let parsingOptions, _errors = languageService.Checker.GetParsingOptionsFromProjectOptions(projectOptions)
-                    let formatted = CodeFormatter.FormatDocumentAsync(filename, input, config, parsingOptions, languageService.Checker)
+                    let formatted = CodeFormatter.FormatDocumentAsync(filename, SourceString(input), config, parsingOptions, languageService.Checker)
                                     |> Async.RunSynchronously
 
                     let result = trimIfNeeded input formatted
@@ -115,7 +116,7 @@ type FSharpFormatter()  =
                             let selection = input.Substring(fromOffset, toOffset - fromOffset)
                             let checker = SourceCodeServices.FSharpChecker.Create()
                             let parsingOptions, _errors = checker.GetParsingOptionsFromProjectOptions(projectOptions)
-                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, input, config, parsingOptions, languageService.Checker)
+                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, SourceString(input), config, parsingOptions, languageService.Checker)
                                             |> Async.RunSynchronously
                             let result = trimIfNeeded input formatted
                             match editor with
