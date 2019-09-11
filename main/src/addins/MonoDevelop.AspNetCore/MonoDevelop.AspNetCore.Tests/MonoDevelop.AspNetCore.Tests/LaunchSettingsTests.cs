@@ -222,19 +222,16 @@ namespace MonoDevelop.AspNetCore.Tests
 			var solutionFileName = Util.GetSampleProject ("aspnetcore-two-projects", "aspnetcore-two-projects.sln");
 			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projects = solution.GetAllProjects ().Cast<DotNetProject> ().ToArray ();
-			var executionCommand = GetExecutionCommand (projects [0]);
-			Assert.That (executionCommand.ApplicationURLs, Is.EqualTo ("https://localhost:5001;http://localhost:5000"));
-			var executionCommand2 = GetExecutionCommand (projects [1]);
-			Assert.That (executionCommand2.ApplicationURLs, Is.EqualTo ("https://localhost:5003;http://localhost:5002"));
+			Assert.That (GetExecutionCommand (projects [0]), Is.EqualTo ("https://localhost:5001;http://localhost:5000"));
+			Assert.That (GetExecutionCommand (projects [1]), Is.EqualTo ("https://localhost:5003;http://localhost:5002"));
 		}
 
-		private static AspNetCoreExecutionCommand GetExecutionCommand (DotNetProject project)
+		static string GetExecutionCommand (DotNetProject project)
 		{
-			var config = project.Configurations.OfType<DotNetProjectConfiguration> ().FirstOrDefault ();
-			var configSel = ConfigurationSelector.Default;
-			var runConfig = project.RunConfigurations.First ();
-			var executionCommand = project.CreateExecutionCommand (configSel, config, runConfig) as AspNetCoreExecutionCommand;
-			return executionCommand;
+			var runConfig = project.RunConfigurations.OfType<AspNetCoreRunConfiguration> ().First ();
+			var launchProfileProvider = runConfig.LaunchProfileProvider;
+			launchProfileProvider.FixPortNumbers ();
+			return launchProfileProvider.DefaultProfile.TryGetApplicationUrl ();
 		}
 
 		[TearDown]
