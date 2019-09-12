@@ -106,7 +106,7 @@ namespace MonoDevelop.DotNetCore
 				versionString = input.Substring (0, prereleaseLabelStart);
 				releaseLabel = input.Substring (prereleaseLabelStart + 1);
 				int revisionLabelStart = input.IndexOf ('-', prereleaseLabelStart + 1) + 1;
-				if(revisionLabelStart >= 0) {
+				if (revisionLabelStart > 0) {
 					int revisionLabelEnd = input.IndexOf ('-', revisionLabelStart);
 					string revisionString;
 					if (revisionLabelEnd < 0) {
@@ -114,7 +114,7 @@ namespace MonoDevelop.DotNetCore
 					} else {
 						revisionString = input.Substring (revisionLabelStart, revisionLabelEnd - revisionLabelStart);
 					}
-					if(!int.TryParse (revisionString , out revision)) {
+					if (!int.TryParse (revisionString , out revision)) {
 						throw new FormatException (string.Format ("Invalid .NET Core version: '{0}'", input));
 					}
 				}
