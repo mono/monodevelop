@@ -226,12 +226,12 @@
 		{ "name": "Diff Header(New)", "fore": "Blue", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "Magenta", "weight": "bold" },
 
-		{ "name": "Css Comment", "fore": "base01", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "base00", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "cyan", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "base01", "weight": "bold" },
-		{ "name": "Css String Value", "fore": "cyan", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "keyword-teal", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "base01" },
+		{ "name": "Css Property Name", "fore": "base00" },
+		{ "name": "Css Property Value", "fore": "cyan" },
+		{ "name": "Css Selector", "fore": "base01" },
+		{ "name": "Css String Value", "fore": "cyan" },
+		{ "name": "Css Keyword", "fore": "keyword-teal" },
 
 		{ "name": "Script Comment", "fore": "base01" },
 		{ "name": "Script Keyword", "fore": "green" },

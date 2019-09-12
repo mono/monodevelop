@@ -232,12 +232,12 @@
 		{ "name": "Preview Diff Removed Line", "fore": "#a14d4d", "back": "#fcf8f8" },
 		{ "name": "Preview Diff Added Line", "fore": "#419b41", "back": "#edf8ed" },
 
-		{ "name": "Css Comment", "fore": "comment-gray", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "text-black", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "literal-orange", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "comment-gray", "weight": "bold" },
-		{ "name": "Css String Value", "fore": "literal-orange", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "keyword-teal", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "comment-gray" },
+		{ "name": "Css Property Name", "fore": "text-black" },
+		{ "name": "Css Property Value", "fore": "literal-orange" },
+		{ "name": "Css Selector", "fore": "comment-gray" },
+		{ "name": "Css String Value", "fore": "literal-orange" },
+		{ "name": "Css Keyword", "fore": "keyword-teal" },
 
 		{ "name": "Script Comment", "fore": "comment-gray" },
 		{ "name": "Script Identifier" },
