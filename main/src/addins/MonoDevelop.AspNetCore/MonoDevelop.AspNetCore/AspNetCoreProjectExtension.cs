@@ -65,6 +65,7 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			var aspnetconf = new AspNetCoreRunConfiguration (name, profile);
+			aspnetconf.LaunchProfileProvider = launchProfileProvider;
 			aspnetconf.SaveRequested += Aspnetconf_Save;
 			aspNetCoreRunConfs.Add (name, aspnetconf);
 			return aspnetconf;

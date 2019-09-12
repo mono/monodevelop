@@ -196,7 +196,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			var launchProfileProvider = new LaunchProfileProvider (project);
 			System.IO.File.WriteAllText (launchProfileProvider.LaunchSettingsJsonPath, LaunchSettings);
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations();
+			launchProfileProvider.SyncRunConfigurations ();
 
 			Assert.That (project.RunConfigurations, Has.Count.EqualTo (2));
 			Assert.That (project.RunConfigurations [0].Name, Is.EqualTo ("Kestrel Staging"));
@@ -214,6 +214,24 @@ namespace MonoDevelop.AspNetCore.Tests
 			var launchProfileProvider = new LaunchProfileProvider (project);
 			var launchProfile = launchProfileProvider.CreateDefaultProfile ();
 			launchProfile.OtherSettings ["applicationUrl"] = "http://localhost:5000";
+		}
+
+		[Test]
+		public async Task Project_ports_do_not_clash ()
+		{
+			var solutionFileName = Util.GetSampleProject ("aspnetcore-two-projects", "aspnetcore-two-projects.sln");
+			solution = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var projects = solution.GetAllProjects ().Cast<DotNetProject> ().ToArray ();
+			Assert.That (GetExecutionCommand (projects [0]), Is.EqualTo ("https://localhost:5001;http://localhost:5000"));
+			Assert.That (GetExecutionCommand (projects [1]), Is.EqualTo ("https://localhost:5003;http://localhost:5002"));
+		}
+
+		static string GetExecutionCommand (DotNetProject project)
+		{
+			var runConfig = project.RunConfigurations.OfType<AspNetCoreRunConfiguration> ().First ();
+			var launchProfileProvider = runConfig.LaunchProfileProvider;
+			launchProfileProvider.FixPortNumbers ();
+			return launchProfileProvider.DefaultProfile.TryGetApplicationUrl ();
 		}
 
 		[TearDown]

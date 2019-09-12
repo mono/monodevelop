@@ -48,6 +48,7 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreNestingRulesProvider.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreExecutionTarget.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreTargetFrameworkExecutionTarget.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\AspNetCoreProjectTemplateWizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />

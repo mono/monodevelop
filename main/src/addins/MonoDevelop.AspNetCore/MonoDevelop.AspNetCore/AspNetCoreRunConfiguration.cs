@@ -49,6 +49,8 @@ namespace MonoDevelop.AspNetCore
 
 		public bool IsDirty { get; set; } = true;
 
+		internal LaunchProfileProvider LaunchProfileProvider { get; set; }
+
 		internal event EventHandler SaveRequested;
 
 		internal AspNetCoreRunConfiguration (string name, LaunchProfileData profile)
