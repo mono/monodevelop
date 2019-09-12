@@ -864,17 +864,27 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
 			using (var cr = Gdk.CairoHelper.Create (window)) {
-				if (!widget.HasFocus) {
-					cr.Rectangle (background_area.ToCairoRect ());
-					cr.SetSourceColor (Styles.ObjectValueTreeDisabledBackgroundColor);
-					cr.Fill ();
-				}
+
+				cr.Rectangle (background_area.ToCairoRect ());
 
 				Pango.Rectangle ink, logical;
 				using (var layout = new Pango.Layout (Context)) {
 					layout.FontDescription = font;
 
 					var selected = (flags & CellRendererState.Selected) != 0;
+
+					if (selected) {
+						cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Red,
+											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
+											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue);
+						cr.Fill ();
+					} else {
+						cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
+											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
+											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); 
+						cr.Fill ();
+					}
+
 					var foregroundColor = Styles.GetStackFrameForegroundHexColor (selected, IsUserCode);
 
 					layout.SetMarkup (GetFileMarkup (selected, foregroundColor));
