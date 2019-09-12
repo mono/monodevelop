@@ -449,7 +449,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Jump over tasks with different severity or with no file name
 			while (n != -1 && n < tasks.Count && 
-				(iteratingSeverity != tasks [n].Severity || !IsProjectTaskFile (tasks [n])))
+				(iteratingSeverity != tasks [n].Severity || !IsProjectTaskFileInternal (tasks [n])))
 				n++;
 			
 			TaskListEntry ct = n != -1 && n < tasks.Count ? tasks [n] : null;
@@ -478,7 +478,13 @@ namespace MonoDevelop.Ide.Tasks
 		/// <summary>
 		/// Determines whether the task's file should be opened automatically when jumping to the next error.
 		/// </summary>
+		[Obsolete("This will be removed in a future release", error: true)]
 		public static bool IsProjectTaskFile (TaskListEntry t)
+		{
+			return IsProjectTaskFileInternal (t);
+		}
+
+		internal static bool IsProjectTaskFileInternal (TaskListEntry t)
 		{
 			if (t.FileName.IsNullOrEmpty)
 				return false;
@@ -496,6 +502,8 @@ namespace MonoDevelop.Ide.Tasks
 				return false;
 
 			// only valid files are those that have a way to view them
+			// .Result here is currently safe because none of the actual calls to OnGetSupportedControllers(Async)
+			// is actually requesting the UI thread scheduler.
 			var fileViewers = IdeServices.DisplayBindingService.GetFileViewers (t.FileName, p).Result;
 
 			return fileViewers.Any (viewer => viewer.CanUseAsDefault && !viewer.IsExternal);
