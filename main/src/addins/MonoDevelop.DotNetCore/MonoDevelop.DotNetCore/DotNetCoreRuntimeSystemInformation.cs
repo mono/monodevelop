@@ -51,7 +51,7 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			// .NET Core not installed, so don't offer as new install
-			return new UpdateInfo (ApplicationId, versionId: 0);
+			return null;
 		}
 
 		string GetDescription ()
