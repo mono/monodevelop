@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 #if MAC
 using AppKit;
@@ -142,6 +143,8 @@ namespace MonoDevelop.Components
 
 			var control = GetImplicit<Control, Gtk.Widget>(d);
 			if (control == null) {
+				Debug.Assert (!(d is Gtk.Window));
+
 				control = new Control (d);
 				d.Destroyed += delegate {
 					GC.SuppressFinalize (control);
