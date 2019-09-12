@@ -68,13 +68,11 @@ namespace MonoDevelop.Debugger
 			var bps = new List<Breakpoint> ();
 			var needsUpdate = false;
 
-			lock (breakpointStore) {
-				foreach (var breakpoint in breakpointStore.GetBreakpointsAtFile (textDocument.FilePath)) {
-					if (breakpoint.Line > snapshot.LineCount)
-						continue;
+			foreach (var breakpoint in breakpointStore.GetBreakpointsAtFile (textDocument.FilePath)) {
+				if (breakpoint.Line > snapshot.LineCount)
+					continue;
 
-					bps.Add (breakpoint);
-				}
+				bps.Add (breakpoint);
 			}
 
 			foreach (var breakpoint in bps) {
