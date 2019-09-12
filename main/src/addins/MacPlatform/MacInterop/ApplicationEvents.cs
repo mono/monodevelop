@@ -124,6 +124,7 @@ namespace MonoDevelop.MacInterop
 		
 		static CarbonEventHandlerStatus HandleOpenDocuments (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
+			Console.WriteLine ("Handle open documents");
 			try {
 				var docs = Carbon.GetFileListFromEventRef (eventRef);
 				var args = new ApplicationDocumentEventArgs (docs);

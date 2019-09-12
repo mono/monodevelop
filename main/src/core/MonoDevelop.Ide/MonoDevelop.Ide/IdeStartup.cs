@@ -82,6 +82,8 @@ namespace MonoDevelop.Ide
 			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", RuntimeVersionInfo.GetRuntimeInfo ());
 
+			LoggingService.LogInfo ("Custom 2\n\n\n\n");
+			Console.WriteLine ("Console");
 			//ensure native libs initialized before we hit anything that p/invokes
 			Platform.Initialize ();
 			IdeStartupTracker.StartupTracker.MarkSection ("PlatformInitialization");

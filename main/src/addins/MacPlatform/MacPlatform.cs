@@ -282,6 +282,7 @@ namespace MonoDevelop.MacIntegration
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
+			LoggingService.LogInfo ("Loading native toolkit in MacPlatform\n\n\n\n");
 			var loaded = NativeToolkitHelper.LoadCocoa ();
 
 			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
@@ -292,6 +293,7 @@ namespace MonoDevelop.MacIntegration
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
 			initTracker.Trace ("Installing App Event Handlers");
+			LoggingService.LogInfo ("Installing AE Handlers");
 			GlobalSetup ();
 			initTracker.End ();
 
