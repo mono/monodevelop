@@ -315,6 +315,26 @@ namespace MonoDevelop.MacIntegration
 				appDelegate.ShowDockMenu += AppDelegate_ShowDockMenu;
 			}
 
+			if (appDelegate.FilesQueuedForOpening != null) {
+				GLib.Idle.Add (delegate {
+					Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
+					var trackTTC = IdeStartupTracker.StartupTracker.StartTimeToCodeLoadTimer ();
+					IdeApp.OpenFilesAsync (appDelegate.FilesQueuedForOpening.Select (
+						doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal)),
+						null
+					).ContinueWith ((result) => {
+						if (!trackTTC) {
+							return;
+						}
+
+						var firstFile = appDelegate.FilesQueuedForOpening.First ().Key;
+
+						IdeStartupTracker.StartupTracker.TrackTimeToCode (GetDocumentTypeFromFilename (firstFile));
+					});
+					return false;
+				});
+			}
+
 			// Listen to the AtkCocoa notification for the presence of VoiceOver
 			SwizzleNSApplication ();
 
