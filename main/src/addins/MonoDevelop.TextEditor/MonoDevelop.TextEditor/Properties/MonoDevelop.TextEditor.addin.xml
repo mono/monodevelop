@@ -155,6 +155,11 @@
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelection" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ExpandSelectionCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShrinkSelection" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ContractSelectionCommandArgs" />
+
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextIssueInDocumentCommandArgs" />
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousIssueInDocumentCommandArgs" />
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextErrorInDocumentCommandArgs" />
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousErrorInDocumentCommandArgs" />
 	</Extension>
 
 	<!--
