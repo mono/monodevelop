@@ -743,23 +743,12 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					using (var layout = new Pango.Layout (widget.PangoContext)) {
 						layout.FontDescription = font;
 
-						if ((flags & CellRendererState.Selected) != 0) {
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue); // selected
-							cr.Fill ();
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Blue);
-						} else {
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); // background
-							cr.Fill ();
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeTextColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeTextColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeTextColor.Blue);
-						}
+						var selected = (flags & CellRendererState.Selected) != 0;
+						var backgroundColor = selected ? Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor : Styles.ExceptionCaughtDialog.TreeBackgroundColor;
+						var textColor = selected ? Styles.ExceptionCaughtDialog.TreeSelectedTextColor : Styles.ExceptionCaughtDialog.TreeTextColor;
+						cr.SetSourceColor (backgroundColor.ToCairoColor ());
+						cr.Fill ();
+						cr.SetSourceColor (textColor.ToCairoColor());
 
 						layout.SetMarkup (Text);
 						cr.Translate (cell_area.X + 10, cell_area.Y + 1);
@@ -872,21 +861,10 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					layout.FontDescription = font;
 
 					var selected = (flags & CellRendererState.Selected) != 0;
-
-					if (selected) {
-						cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue);
-						cr.Fill ();
-					} else {
-						cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); 
-						cr.Fill ();
-					}
-
+					var backgroundColor = selected ? Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor : Styles.ExceptionCaughtDialog.TreeBackgroundColor;
+					cr.SetSourceColor (backgroundColor.ToCairoColor ());
+					cr.Fill ();
 					var foregroundColor = Styles.GetStackFrameForegroundHexColor (selected, IsUserCode);
-
 					layout.SetMarkup (GetFileMarkup (selected, foregroundColor));
 					layout.GetPixelExtents (out ink, out logical);
 					var width = widget.Allocation.Width;
