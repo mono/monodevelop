@@ -440,8 +440,6 @@ namespace MonoDevelop.Components.MainToolbar
 			//we want add the search results with a special behaviour
 			newResults.Add (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
 
-			var lastProvSrc = new CancellationTokenSource ();
-
 			//generating the collectors
 			var collectors = new List<SearchResultCollector> ();
 			var token = src.Token;
@@ -449,6 +447,11 @@ namespace MonoDevelop.Components.MainToolbar
 			int total = categories.Count;
 			int current = 0;
 
+			int processingTasks = 0;
+			TaskCompletionSource<bool> processingCompletion = null;
+
+			//we loop over all search categories and we raise the search task...
+			//and end code in continueWith will raise (this doesn't garantee an order)
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
@@ -456,80 +459,114 @@ namespace MonoDevelop.Components.MainToolbar
 				var col = new SearchResultCollector (_cat);
 				collectors.Add (col);
 				col.Task = cat.GetResults (col, pattern, token);
+				
+				//each search engine task, at the end, appends all the resulting items to the current search panel and is executed in ui thread
+				//then we are safe to modify collections
+				col.Task.ContinueWith (async (colTask) => {
 
-				//we append on finished  to process and show the results
-				col.Task.ContinueWith ((colTask) => {
+					processingTasks++;
 
-					//cancel last provider continueWith task
-					lastProvSrc?.Cancel ();
-					
-					if (token.IsCancellationRequested || colTask.IsCanceled)
+					//this is the
+					var currentThreadId = current++;
+
+					//if cancellation is requested nothing more to do
+					if (token.IsCancellationRequested || colTask.IsCanceled) {
 						return;
-					
-					lock (lockObject) {
-
-						current++;
-
-						lastProvSrc = new CancellationTokenSource ();
-
-						//We add the results to the collection or we log the issue
-						if (colTask.IsFaulted) {
-							LoggingService.LogError ($"Error getting search results for {col.Category}", colTask.Exception);
-							return;
-						}
-
-						//we want order the new category processed 
-						var indexToInsert = GetIndexFromCategory (newResults, col.Category);
-						newResults.Insert(indexToInsert, Tuple.Create (col.Category, col.Results));
-
-						//que want remove it all the failed results from the search
-						var calculatedResult = GetTopResult (newResults);
-						if (calculatedResult.failedResults != null) {
-							for (int i = 0; i < calculatedResult.failedResults.Count; i++) {
-								newResults.Remove (calculatedResult.failedResults [i]);
-							}
-						}
-
-						//when a provider is processed we remove the result from the searh provider category group
-						if (searchProvidersCategory != null) {
-
-							//we remove the processed category
-							searchProvidersCategory.Remove (col.Category);
-
-							//we want remove the tuple and recreate
-							newResults.Remove (newResults.FirstOrDefault (s => s.Item1 == searchProvidersCategory));
-
-							if (current < total) {
-								//we want order the new category processed 
-								indexToInsert = GetIndexFromCategory (newResults, searchProvidersCategory);
-								newResults.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
-							}
-						}
-
-						if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
-							return;
-
-						//refresh panel and show results 
-						InvokeAsync (() => {
-							ShowResults (newResults, calculatedResult.topResult);
-
-							//once we processed all the items our search is finished
-							if (current == total) {
-								isInSearch = false;
-							}
-
-							if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
-								return;
-
-							OnPreferredSizeChanged ();
-						}).Ignore ();
 					}
-				}, token, TaskContinuationOptions.NotOnCanceled, TaskScheduler.Default)
+
+					//we store in context last search provider
+					//is there any previous search task not locked? then we cancel to don't update 2 times with the new data added
+
+					//we add this cancellation token so that this thread is cancelable in the event that another search engine finishes before the current one is displayed, with this we avoid refresh the panel too much
+					//we don't want too much refreshes in short times, then we wait a minimum of time to group and show results
+					var fromLastThread = (float) DateTime.UtcNow.Subtract (lastSearch).TotalSeconds;
+					if (fromLastThread < minDelay) {
+						var toSleepMS = (minDelay - fromLastThread) * 1000;
+						await Task.Delay ((int) toSleepMS);
+					}
+					
+					if (colTask.IsFaulted) {
+						processingTasks--;
+						LoggingService.LogError ($"Error getting search results for {col.Category}", colTask.Exception);
+						return;
+					}
+
+					//we order the category based in the SortOrder field
+					var indexToInsert = GetIndexFromCategory (newResults, col.Category);
+					newResults.Insert(indexToInsert, Tuple.Create (col.Category, col.Results));
+
+					//all the failed results should be removed from list
+					var calculatedResult = GetTopResult (newResults);
+					if (calculatedResult.failedResults != null) {
+						for (int i = 0; i < calculatedResult.failedResults.Count; i++) {
+							newResults.Remove (calculatedResult.failedResults [i]);
+						}
+					}
+
+					if (currentThreadId == total) {
+						isInSearch = false;
+					}
+
+					SetResults (newResults, calculatedResult.topResult);
+
+					//each search provider finished we need to remove the "loading"
+					if (searchProvidersCategory != null) {
+						searchProvidersCategory.Remove (col.Category);
+
+						newResults.Remove (newResults.FirstOrDefault (s => s.Item1 == searchProvidersCategory));
+
+						if (currentThreadId < total) {
+							indexToInsert = GetIndexFromCategory (newResults, searchProvidersCategory);
+							newResults.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+						}
+					}
+
+					//at this point we can cancel the search
+					if (token.IsCancellationRequested || colTask.IsCanceled) {
+						return;
+					}
+
+					if (processingCompletion != null) {
+						//if is last item we finish the task completion
+						processingTasks--;
+						if (processingTasks == 1) {
+							processingCompletion.SetResult (true);
+						}
+						return;
+					}
+
+					//no more search pendings not necessary to task completion
+					if (!isInSearch) {
+						using (var timeoutCancellationTokenSource = new CancellationTokenSource (timeoutForWaitingThread)) {
+							processingCompletion = new TaskCompletionSource<bool> ();
+							timeoutCancellationTokenSource.Token.Register (() => {
+								processingCompletion.TrySetCanceled ();
+							});
+
+							//we wait until all other pending task are finished
+							await processingCompletion.Task;
+							//timeoutCancellationTokenSource.Dispose ();
+							processingCompletion = null;
+						}
+					}
+
+					processingTasks--;
+
+					//refresh panel and show results
+					SelectedItem = topItem;
+					ShowTooltip ();
+					OnPreferredSizeChanged ();
+
+					lastSearch = DateTime.UtcNow;
+
+				}, token, TaskContinuationOptions.None, Runtime.MainTaskScheduler)
 					.Ignore ();
 			}
 		}
 
-		readonly object lockObject = new object ();
+		const int timeoutForWaitingThread = 20000;
+		DateTime lastSearch = DateTime.UtcNow;
+		const float minDelay = 0.5f; //In s
 
 		(List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults, ItemIdentifier topResult) GetTopResult (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults)
 		{
@@ -554,12 +591,11 @@ namespace MonoDevelop.Components.MainToolbar
 			return (failedResults, topResult);
 		}
 
-		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
+		void SetResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
 		{
 			results.Clear ();
 			results.AddRange (newResults);
-			SelectedItem = topItem = topResult;
-			ShowTooltip ();
+			topItem = topResult;
 		}
 
 		int calculatedItems;
