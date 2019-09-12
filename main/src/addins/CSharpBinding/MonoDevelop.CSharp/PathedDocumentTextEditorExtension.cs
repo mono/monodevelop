@@ -653,7 +653,7 @@ namespace MonoDevelop.CSharp
 			window.FixedRowHeight = 22;
 			window.MaxVisibleRows = 14;
 			window.SelectItem (path [index].Tag);
-			return window;
+			return (Window)window;
 		}
 
 		PathEntry[] currentPath;
