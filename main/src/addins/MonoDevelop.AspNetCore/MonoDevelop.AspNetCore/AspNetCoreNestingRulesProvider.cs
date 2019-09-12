@@ -42,7 +42,9 @@ namespace MonoDevelop.AspNetCore
 		public override bool AppliesToProject (Project project)
 		{
 			var dotnetProj = project as DotNetProject;
-			return dotnetProj != null && dotnetProj.ProjectProperties.HasProperty ("UsingMicrosoftNETSdkWeb");
+			return dotnetProj != null &&
+				(dotnetProj.ProjectProperties.HasProperty ("UsingMicrosoftNETSdkWeb") ||
+				 dotnetProj.ProjectProperties.HasProperty ("RazorTargetName"));
 		}
 	}
 }
