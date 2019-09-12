@@ -128,19 +128,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		protected void JumpToCurrentLocation (ITextView textView)
 		{
-			var editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
-			var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
-			VirtualSnapshotPoint point;
-			if (offset is SnapshotPoint sp1 && sp1.Snapshot.TextBuffer == textView.TextBuffer) {
-				var currentSnapshot = textView.TextBuffer.CurrentSnapshot;
-				var sp = sp1.TranslateTo (currentSnapshot, PointTrackingMode.Positive);
-				point = new VirtualSnapshotPoint (currentSnapshot, sp);
-			} else {
-				var snapshotLine = textView.TextSnapshot.GetLineFromLineNumber (Math.Min (textView.TextSnapshot.LineCount - 1, this.line));
-				point = new VirtualSnapshotPoint (textView.TextSnapshot, Math.Min (textView.TextSnapshot.Length - 1, snapshotLine.Start.Position + column));
-				offset = point.Position;
-			}
-			editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+			textView.NavigateToLineAndColumn (Math.Max (0, Line - 1), Math.Max (0, Column - 1));
 		}
 
 		public override bool Equals (object o)
