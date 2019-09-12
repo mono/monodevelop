@@ -102,12 +102,12 @@
 
 		{ "name": "Debugger Current Statement", "fore": "#000000", "back": "#FFEE61" },
 
-		{ "name": "Css Comment", "fore": "#006400", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "#FF0000", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "keyword-blue", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "#800000", "weight": "bold" },
-		{ "name": "Css String Value", "fore": "keyword-blue", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "keyword-blue", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "#006400" },
+		{ "name": "Css Property Name", "fore": "#FF0000" },
+		{ "name": "Css Property Value", "fore": "keyword-blue" },
+		{ "name": "Css Selector", "fore": "#800000" },
+		{ "name": "Css String Value", "fore": "keyword-blue" },
+		{ "name": "Css Keyword", "fore": "keyword-blue" },
 
 		{ "name": "Script Comment", "fore": "comment-green" },
 		{ "name": "Script Keyword", "fore": "keyword-blue" },
