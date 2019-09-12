@@ -363,6 +363,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			mainShellView.LostFocus += ShellContentView_LostFocus;
 			if (IsRoot && AttachedViews.Count > 0) {
 				CreateAttachmentsContainer ();
+				InitializeAttachmentsContainer ();
 			} else
 				shellView = mainShellView;
 
@@ -382,12 +383,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 			int pos = 1;
 			foreach (var attachedView in AttachedViews)
 				attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
+			shellView = attachmentsContainer;
+		}
+
+		private void InitializeAttachmentsContainer ()
+		{
 			if (activeAttachedView == this)
 				attachmentsContainer.ActiveView = mainShellView;
 			else
 				attachmentsContainer.ActiveView = activeAttachedView?.ShellView;
 			attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
-			shellView = attachmentsContainer;
 		}
 
 		private void ShellContentView_GotFocus (object sender, EventArgs e)
@@ -448,6 +453,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					CreateAttachmentsContainer ();
 					UpdateTitle ();
 					ReplaceViewInParent ();
+					InitializeAttachmentsContainer ();
 				}
 			} else {
 				if (attachmentsContainer != null) {
