@@ -244,12 +244,12 @@
 		{ "name": "Preview Diff Removed Line", "fore": "#5c2c2c", "back": "#dcb4b4" },
 		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
 
-		{ "name": "Css Comment", "fore": "CommentVim", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "NormalVim", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "StringVim", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "CommentVim", "weight": "bold" },
-		{ "name": "Css String Value", "fore": "StringVim", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "StatementVim", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "CommentVim" },
+		{ "name": "Css Property Name", "fore": "NormalVim" },
+		{ "name": "Css Property Value", "fore": "StringVim" },
+		{ "name": "Css Selector", "fore": "CommentVim" },
+		{ "name": "Css String Value", "fore": "StringVim" },
+		{ "name": "Css Keyword", "fore": "StatementVim" },
 
 		{ "name": "Script Comment", "fore": "CommentVim" },
 		{ "name": "Script Keyword", "fore": "StatementVim" },
