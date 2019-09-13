@@ -4519,11 +4519,10 @@ namespace MonoDevelop.Projects
 
 			bool exists = File.Exists (sourceFile) || Directory.Exists (sourceFile);
 
-			Runtime.RunInMainThread (() => {
-				OnFileCreatedExternally (targetFile);
-				if (!exists)
-					OnFileDeletedExternally (sourceFile);
-			});
+			OnFileCreatedExternally (targetFile);
+			if (!exists) {
+				Runtime.RunInMainThread (() => OnFileDeletedExternally (sourceFile));
+			}
 		}
 
 		internal virtual void OnFileCreated (FilePath filePath)
