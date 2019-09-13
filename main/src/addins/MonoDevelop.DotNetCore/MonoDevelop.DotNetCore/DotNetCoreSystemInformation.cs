@@ -54,11 +54,46 @@ namespace MonoDevelop.DotNetCore
 		{
 			var latestSdkVersion = DotNetCoreSdk.Versions.FirstOrDefault ();
 			if (latestSdkVersion != null) {
-				return new UpdateInfo (ApplicationId, latestSdkVersion.Version);
+				return new UpdateInfo (ApplicationId, GenerateVersionId(latestSdkVersion));
 			}
 
 			// .NET Core not installed, so don't offer as new install
 			return null;
+		}
+
+
+		/// <summary>
+		/// Slightly modified version of GenerateVersionId in UpdateInfo.cs
+		/// to use 6 significant digits for revision.
+		/// </summary>
+		internal static long GenerateVersionId(DotNetCoreVersion version)
+		{
+			// For stable releases (that have no revision number),
+			// we need a version Id that is higher then the previews
+			// (which do have a revision number) to enable the comparison
+			// to work on the feed.
+			var revision = "999999";
+
+			if(version.IsPrerelease) {
+				revision = FixVersionNumber (version.Revision).ToString ("000000");
+			}
+
+			var s = FixVersionNumber (version.Major) +
+					FixVersionNumber (version.Minor).ToString ("00") +
+					FixVersionNumber (version.Patch).ToString ("00") +
+					revision;
+			return long.Parse (s);
+		}
+
+		/// <summary>
+		/// Unspecified version numbers can be -1 so map this to 0 instead.
+		/// </summary>
+		static int FixVersionNumber (int number)
+		{
+			if (number == -1)
+				return 0;
+
+			return number;
 		}
 
 		static bool IsSierraOrHigher () => Platform.IsMac && (Platform.OSVersion >= MacSystemInformation.Sierra);
