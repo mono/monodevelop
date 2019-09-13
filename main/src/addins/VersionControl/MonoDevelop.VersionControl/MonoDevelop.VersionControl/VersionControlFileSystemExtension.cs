@@ -9,6 +9,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using System.IO;
 
 namespace MonoDevelop.VersionControl
 {
@@ -132,7 +133,8 @@ namespace MonoDevelop.VersionControl
 			FileUpdateEventArgs args = new FileUpdateEventArgs ();
 			foreach (var file in files) {
 				var rep = GetRepository (file);
-				if (rep != null && !rep.IsDisposed) {
+				// FIXME: Remove workaround https://devdiv.visualstudio.com/DevDiv/_workitems/edit/982818
+				if (rep != null && !rep.IsDisposed && File.Exists (file)) {
 					rep.ClearCachedVersionInfo (file);
 					if (rep.TryGetFileUpdateEventInfo (rep, file, out var eventInfo))
 						args.Add (eventInfo);
