@@ -236,6 +236,9 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
+		protected override bool ShouldHandleTextViewCommands ()
+			=> textViewHost != null && !textViewHost.MarginViewElementHasInputFocus;
+
 		protected override void InstallAdditionalEditorOperationsCommands ()
 		{
 			base.InstallAdditionalEditorOperationsCommands ();

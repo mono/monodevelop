@@ -198,6 +198,8 @@ namespace MonoDevelop.TextEditor
 			"MonoDevelop.Ide.Commands.TextEditorCommands.RotatePrimaryCaretPrevious"
 		};
 
+		protected virtual bool ShouldHandleTextViewCommands () => true;
+
 		bool CanHandleCommand (object commandId)
 		{
 			// check TextView for null because of https://devdiv.visualstudio.com/DevDiv/_workitems/edit/890051
@@ -208,7 +210,7 @@ namespace MonoDevelop.TextEditor
 				}
 			}
 
-			return true;
+			return ShouldHandleTextViewCommands ();
 		}
 
 		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
