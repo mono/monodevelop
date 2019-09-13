@@ -458,14 +458,16 @@ namespace MonoDevelop.Components.MainToolbar
 				col.Task = cat.GetResults (col, pattern, token);
 
 				//we append on finished  to process and show the results
-				col.Task.ContinueWith ((colTask) => {
+				col.Task.ContinueWith (async (colTask) => {
 
 					//cancel last provider continueWith task
 					lastProvSrc?.Cancel ();
 					
 					if (token.IsCancellationRequested || colTask.IsCanceled)
 						return;
-					
+
+					await nextUpdate;
+
 					lock (lockObject) {
 
 						current++;
@@ -522,12 +524,16 @@ namespace MonoDevelop.Components.MainToolbar
 								return;
 
 							OnPreferredSizeChanged ();
+
+							nextUpdate = Task.Delay (250);
 						}).Ignore ();
 					}
 				}, token, TaskContinuationOptions.NotOnCanceled, TaskScheduler.Default)
 					.Ignore ();
 			}
 		}
+
+		Task nextUpdate = Task.CompletedTask;
 
 		readonly object lockObject = new object ();
 
