@@ -115,6 +115,15 @@ namespace MonoDevelop.AspNetCore.Tests
 		}
 
 		[Test]
+		public async Task RazorClassLib_Supports_FileNesting ()
+		{
+			string projectFileName = Util.GetSampleProject ("aspnetcore-razor-class-lib", "aspnetcore-razor-class-lib.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName)) {
+				Assert.True (FileNestingService.IsEnabledForProject (project));
+			}
+		}
+
+		[Test]
 		public async Task MultiTargetFrameworks_ExecutionTargets ()
 		{
 			string solutionFileName = Util.GetSampleProject ("aspnetcore-multi-target-execution", "aspnetcore-multi-target.sln");
