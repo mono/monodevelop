@@ -139,18 +139,6 @@ namespace MonoDevelop.VersionControl
 		void Monitor (object sender, FileUpdateEventArgs args)
 		{
 			foreach (var uinfo in args) {
-				if (uinfo.RepositoryChanged) {
-					foreach (var kv in pathToObject) {
-						var builder = Context.GetTreeBuilder (kv.Value);
-						if (kv.Value is WorkspaceObject wo) {
-							var rep = VersionControlService.GetRepository (wo);
-							rep.ClearCachedVersionInfo (kv.Key);
-						}
-
-						builder?.Update ();
-					}
-					break;
-				}
 				foreach (var ob in GetObjectsForPath (uinfo.FilePath)) {
 					ITreeBuilder builder = Context.GetTreeBuilder (ob);
 					if (builder != null)
