@@ -60,7 +60,7 @@ namespace Mono.MHex.Data
 			{
 				byteBuffer = new ByteBuffer ();
 				byteBuffer.Replaced += ByteBuffer_Replaced;
-				using (var stream = File.OpenRead (FilePath)) {
+				using (var stream = new FileStream (FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 1024, true)) {
 					byteBuffer.Buffer = await ArrayBuffer.LoadAsync (stream);
 				}
 			}
