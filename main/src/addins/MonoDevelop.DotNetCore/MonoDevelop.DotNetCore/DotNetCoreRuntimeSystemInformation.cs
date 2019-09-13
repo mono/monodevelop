@@ -43,16 +43,16 @@ namespace MonoDevelop.DotNetCore
 
 		public override string Description => GetDescription ();
 
-		public override string Version => DotNetCoreRuntime.Versions.FirstOrDefault ()?.ToString ();
+		public override string Version => version?.ToString ();
 
 		public override string ApplicationId => "392e9bd0-7214-4d2f-8b38-420b38e3b20f";
 
+		readonly DotNetCoreVersion version = DotNetCoreRuntime.Versions.FirstOrDefault (v => v.Major == 2 && v.Minor == 2);
+
 		public override UpdateInfo GetUpdateInfo ()
 		{
-			var latestRuntimeVersion = 
-				DotNetCoreRuntime.Versions.FirstOrDefault(v => v.Major == 2 && v.Minor >= 2);
-			if (latestRuntimeVersion != null) {
-				return new UpdateInfo (ApplicationId, latestRuntimeVersion.Version);
+			if (version != null) {
+				return new UpdateInfo (ApplicationId, version.Version);
 			}
 
 			// Force the install of the 2.2 runtime
