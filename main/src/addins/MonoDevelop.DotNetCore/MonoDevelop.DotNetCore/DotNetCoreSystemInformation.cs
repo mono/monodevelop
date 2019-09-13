@@ -33,9 +33,9 @@ using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSystemInformation : ProductInformationProvider
+	sealed class DotNetCoreSystemInformation : ProductInformationProvider
 	{
-		public override string Title => GettextCatalog.GetString (".NET Core");
+		public override string Title => GettextCatalog.GetString (".NET Core SDK");
 
 		public override string Description => GetDescription ();
 
@@ -102,8 +102,6 @@ namespace MonoDevelop.DotNetCore
 		{
 			var description = new StringBuilder ();
 
-			description.AppendLine (GettextCatalog.GetString ("Runtime: {0}", GetDotNetRuntimeLocation ()));
-			AppendDotNetCoreRuntimeVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("SDK: {0}", GetDotNetSdkLocation ()));
 			AppendDotNetCoreSdkVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("MSBuild SDKs: {0}", GetMSBuildSdksLocation ()));
@@ -111,15 +109,7 @@ namespace MonoDevelop.DotNetCore
 			return description.ToString ();
 		}
 
-		static string GetDotNetRuntimeLocation ()
-		{
-			if (DotNetCoreRuntime.IsInstalled)
-				return DotNetCoreRuntime.FileName;
-
-			return GetNotInstalledString ();
-		}
-
-		static string GetNotInstalledString ()
+		internal static string GetNotInstalledString ()
 		{
 			return GettextCatalog.GetString ("Not installed");
 		}
@@ -143,15 +133,6 @@ namespace MonoDevelop.DotNetCore
 			return GetNotInstalledString ();
 		}
 
-		static void AppendDotNetCoreRuntimeVersions (StringBuilder description)
-		{
-			AppendVersions (
-				description,
-				DotNetCoreRuntime.Versions,
-				version => GettextCatalog.GetString ("Runtime Version: {0}", version),
-				() => GettextCatalog.GetString ("Runtime Versions:"));
-		}
-
 		static void AppendDotNetCoreSdkVersions (StringBuilder description)
 		{
 			AppendVersions (
@@ -161,7 +142,7 @@ namespace MonoDevelop.DotNetCore
 				() => GettextCatalog.GetString ("SDK Versions:"));
 		}
 
-		static void AppendVersions (
+		internal static void AppendVersions (
 			StringBuilder description,
 			DotNetCoreVersion[] versions,
 			Func<DotNetCoreVersion, string> getSingleVersionString,
