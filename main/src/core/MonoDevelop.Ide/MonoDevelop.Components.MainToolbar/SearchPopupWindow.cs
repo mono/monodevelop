@@ -467,7 +467,7 @@ namespace MonoDevelop.Components.MainToolbar
 					processingTasks++;
 
 					//this is the
-					var currentThreadId = current++;
+					var localCurrent = current++;
 
 					//if cancellation is requested nothing more to do
 					if (token.IsCancellationRequested || colTask.IsCanceled) {
@@ -503,7 +503,7 @@ namespace MonoDevelop.Components.MainToolbar
 						}
 					}
 
-					if (currentThreadId == total) {
+					if (localCurrent == total) {
 						isInSearch = false;
 					}
 
@@ -515,7 +515,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 						newResults.Remove (newResults.FirstOrDefault (s => s.Item1 == searchProvidersCategory));
 
-						if (currentThreadId < total) {
+						if (localCurrent < total) {
 							indexToInsert = GetIndexFromCategory (newResults, searchProvidersCategory);
 							newResults.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
 						}
