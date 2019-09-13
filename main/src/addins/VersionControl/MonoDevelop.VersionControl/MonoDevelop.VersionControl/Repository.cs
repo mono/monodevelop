@@ -325,13 +325,13 @@ namespace MonoDevelop.VersionControl
 			}
 			if (pathsToQuery.Count > 0) {
 				ExclusiveOperationFactory.StartNew (async delegate {
-					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
+					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken).ConfigureAwait (false);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
-							await vi.InitAsync (this, cancellationToken);
+							await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
 						}
 					}
-					await infoCache.SetStatusAsync (status, cancellationToken);
+					await infoCache.SetStatusAsync (status, cancellationToken).ConfigureAwait (false);
 				}).Ignore ();
 			}
 			return result;
@@ -361,13 +361,14 @@ namespace MonoDevelop.VersionControl
 			}
 			if (pathsToQuery.Count > 0) {
 				ExclusiveOperationFactory.StartNew (async delegate {
-					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+					// we don't care about initialization and setstatus async to happen on the exclusive thread, as we're not running a query here.
+					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ConfigureAwait (false);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
-							await vi.InitAsync (this);
+							await vi.InitAsync (this).ConfigureAwait (false);
 						}
 					}
-					await infoCache.SetStatusAsync (status);
+					await infoCache.SetStatusAsync (status).ConfigureAwait (false);
 				}).Ignore ();
 			}
 			if (getVersionInfoFailed) {
