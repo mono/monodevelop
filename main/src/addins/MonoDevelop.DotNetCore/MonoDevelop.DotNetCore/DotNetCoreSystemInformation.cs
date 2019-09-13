@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSystemInformation : ProductInformationProvider
+	sealed class DotNetCoreSystemInformation : ProductInformationProvider
 	{
 		public override string Title => GettextCatalog.GetString (".NET Core SDK");
 

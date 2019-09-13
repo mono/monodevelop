@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreRuntimeSystemInformation : ProductInformationProvider
+	sealed class DotNetCoreRuntimeSystemInformation : ProductInformationProvider
 	{
 		public override string Title => GettextCatalog.GetString (".NET Core Runtime");
 
