@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -494,12 +495,10 @@ namespace MonoDevelop.Ide.Tasks
 			if (!IdeServices.DesktopService.GetMimeTypeIsText (mimeType))
 				return false;
 
-			//only files for which we have a default internal display binding
-			var binding = IdeServices.DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
-			if (binding == null || !binding.CanUseAsDefault || binding is IExternalDisplayBinding)
-				return false;
+			// only valid files are those that have a way to view them
+			var fileViewers = IdeServices.DisplayBindingService.GetFileViewers (t.FileName, p).Result;
 
-			return true;
+			return fileViewers.Any (viewer => viewer.CanUseAsDefault && !viewer.IsExternal);
 		}
 		
 		
