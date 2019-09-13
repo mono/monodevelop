@@ -33,6 +33,10 @@ using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.DotNetCore
 {
+	/// <summary>
+	/// Used to fetch a 2.2 runtime for Azure functions as
+	/// 3.0 and later currently don't work for this.
+	/// </summary>
 	sealed class DotNetCoreRuntimeSystemInformation : ProductInformationProvider
 	{
 		public override string Title => GettextCatalog.GetString (".NET Core Runtime");
@@ -45,13 +49,14 @@ namespace MonoDevelop.DotNetCore
 
 		public override UpdateInfo GetUpdateInfo ()
 		{
-			var latestRuntimeVersion = DotNetCoreRuntime.Versions.FirstOrDefault ();
+			var latestRuntimeVersion = 
+				DotNetCoreRuntime.Versions.FirstOrDefault(v => v.Major == 2 && v.Minor >= 2);
 			if (latestRuntimeVersion != null) {
 				return new UpdateInfo (ApplicationId, latestRuntimeVersion.Version);
 			}
 
-			// .NET Core not installed, so don't offer as new install
-			return null;
+			// Force the install of the 2.2 runtime
+			return new UpdateInfo (ApplicationId, versionId: 0);
 		}
 
 		string GetDescription ()
