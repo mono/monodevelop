@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNetCore
 {
-	class AspNetCoreExecutionTarget : ExecutionTarget
+	public class AspNetCoreExecutionTarget : ExecutionTarget
 	{
 		internal AspNetCoreExecutionTarget (DesktopApplication desktopApplication)
 		{
