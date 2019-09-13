@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Projects.FileNesting;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -249,10 +250,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 
-		void OnFileNestingRulesChanged (Project obj)
+		void OnFileNestingRulesChanged (ProjectFile fileToUpdate, ProjectFile newParent)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (obj);
-			tb?.UpdateAll ();
+			Debug.Assert (fileToUpdate != null);
+
+			ITreeBuilder tb = Context.GetTreeBuilder (fileToUpdate);
+			if (tb != null) {
+				tb.MoveToParent ();
+				tb.UpdateAll ();
+			}
+
+			if (newParent != null) {
+				tb = Context.GetTreeBuilder (newParent);
+				tb?.UpdateAll ();
+			}
 		}
 
 		void AddFile (ProjectFile file, Project project)
