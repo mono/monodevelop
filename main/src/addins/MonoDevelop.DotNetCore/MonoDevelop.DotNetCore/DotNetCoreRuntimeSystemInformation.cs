@@ -55,8 +55,11 @@ namespace MonoDevelop.DotNetCore
 				return new UpdateInfo (ApplicationId, version.Version);
 			}
 
-			// Force the install of the 2.2 runtime
-			return new UpdateInfo (ApplicationId, versionId: 0);
+			if (DotNetCoreRuntime.IsInstalled)
+				// Force the install of the 2.2 runtime
+				return new UpdateInfo (ApplicationId, versionId: 0);
+			// Do not force it on users who never installed any dotnet cli and do not need it.
+			return null;
 		}
 
 		string GetDescription ()
