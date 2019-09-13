@@ -140,7 +140,8 @@ namespace MonoDevelop.VersionControl
 						args.Add (eventInfo);
 				}
 			}
-			VersionControlService.NotifyFileStatusChanged (args);
+			if (args.Count > 0)
+				VersionControlService.NotifyFileStatusChanged (args);
 		}
 	}
 }
