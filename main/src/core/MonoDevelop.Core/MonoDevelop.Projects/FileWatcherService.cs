@@ -167,6 +167,9 @@ namespace MonoDevelop.Projects
 						}
 					}
 
+					if (isNop)
+						return;
+
 					using (readerWriterLock.Write ()) {
 						Watch_NoLock (toWatch).Ignore ();
 						return;
