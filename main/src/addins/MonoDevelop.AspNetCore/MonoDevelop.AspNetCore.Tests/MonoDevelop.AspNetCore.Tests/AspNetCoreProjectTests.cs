@@ -180,7 +180,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		{
 			string projectFileName = Util.GetSampleProject ("aspnetcore-razor-class-lib", "aspnetcore-razor-class-lib.csproj");
 			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName)) {
-				Assert.True (FileNestingService.IsEnabledForProject (project));
+				Assert.True (FileNestingService.AppliesToProject (project));
 			}
 		}
 
