@@ -200,6 +200,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			}
 
 			exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
+			exceptionValueTreeView.ModifyBase (StateType.Active, Styles.ObjectValueTreeActiveBackgroundColor.ToGdkColor ());
 			exceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 			exceptionValueTreeView.RulesHint = false;
 			exceptionValueTreeView.CanFocus = true;
