@@ -971,7 +971,7 @@ namespace MonoDevelop.VersionControl.Git
 							}
 						}
 
-						await RunOperationAsync (() => GetFilesVersionInfoCore (repository, rev, group.ToList (), versions)).ConfigureAwait (false);
+						await GetFilesVersionInfoCoreAsync (repository, rev, group.ToList (), versions).ConfigureAwait (false);
 					}
 				}
 			} else {
@@ -1014,7 +1014,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				}
 
-				await RunOperationAsync (() => GetDirectoryVersionInfoCore (rootRepository, arev, localDirectory.CanonicalPath, versions, recursive)).ConfigureAwait (false);
+				await GetDirectoryVersionInfoCoreAsync (rootRepository, arev, localDirectory.CanonicalPath, versions, recursive).ConfigureAwait (false);
 			}
 
 			return versions.ToArray ();
@@ -1610,11 +1610,6 @@ namespace MonoDevelop.VersionControl.Git
 				} else {
 					return;
 				}
-
-				if (monitor.CancellationToken.IsCancellationRequested)
-					return;
-
-				await innerTask.ConfigureAwait (false);
 
 				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
 					return;
