@@ -490,8 +490,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			TableRemoveRow (tableFindAndReplace, row, labelPath, hboxPath, true);
 			// comboboxentryPath and buttonBrowsePaths are destroyed with hboxPath
 			buttonBrowsePaths = null;
-			comboboxentryPath.Entry.Changed -= ComboboxEntryPathChanged;
-			comboboxentryPath = null;
+			if (comboboxentryPath != null) {
+				comboboxentryPath.Entry.Changed -= ComboboxEntryPathChanged;
+				comboboxentryPath = null;
+			}
 			labelPath = null;
 			hboxPath = null;
 		}

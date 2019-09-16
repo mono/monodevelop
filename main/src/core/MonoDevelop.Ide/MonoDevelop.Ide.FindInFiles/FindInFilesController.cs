@@ -64,6 +64,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			model.FindInFilesPathChanged += StartScopeTask;
 
 			currentFindDialog.RequestFindAndReplace += delegate {
+				if (currentScope == null)
+					StartScopeTask (this, EventArgs.Empty);
+				if (currentScope == null) {
+					LoggingService.LogError ("Error current scope not set.");
+					return;
+				}
 				SearchReplace (model, currentScope, fileProviderTask, currentFindDialog.UpdateStopButton, currentFindDialog.UpdateResultPad);
 			};
 

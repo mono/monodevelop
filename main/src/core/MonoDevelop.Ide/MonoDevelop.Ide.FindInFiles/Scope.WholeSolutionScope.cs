@@ -42,60 +42,49 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		sealed class WholeSolutionScope : Scope
 		{
-			public override Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
+			public override async Task<ImmutableArray<FileProvider>> GetFilesAsync (FindInFilesModel filterOptions, CancellationToken cancellationToken = default)
 			{
 				if (!IdeApp.Workspace.IsOpen) {
-					return EmptyFileProviderTask;
+					return ImmutableArray<FileProvider>.Empty;
 				}
 
 				var alreadyVisited = new HashSet<string> ();
 				var results = ImmutableArray.CreateBuilder<FileProvider> ();
 
-				var options = new ParallelOptions ();
-				options.MaxDegreeOfParallelism = 4;
-
 				foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
-					Parallel.ForEach (solution.GetAllItems<SolutionFolderItem> (),
-						options,
-						() => new List<FileProvider> (),
-						(item, loop, providers) => {
-							if (item is SolutionFolder folder) {
-								foreach (var file in folder.Files.Where (f => filterOptions.IsFileNameMatching (f.FileName) && File.Exists (f.FileName))) {
-									if (!IdeServices.DesktopService.GetFileIsText (file.FileName))
+					foreach (var item in solution.GetAllItems<SolutionFolderItem> ()) {
+						if (item is SolutionFolder folder) {
+							foreach (var file in folder.Files.Where (f => filterOptions.IsFileNameMatching (f.FileName) && File.Exists (f.FileName))) {
+								if (!await IdeServices.DesktopService.GetFileIsTextAsync (file.FileName))
+									continue;
+								lock (alreadyVisited) {
+									if (!alreadyVisited.Add (file.FileName))
 										continue;
-									lock (alreadyVisited) {
-										if (!alreadyVisited.Add (file.FileName))
-											continue;
-									}
-									providers.Add (new FileProvider (file.FileName));
 								}
+								results.Add (new FileProvider (file.FileName));
 							}
+						}
 
-							if (item is Project project) {
-								var conf = project.DefaultConfiguration?.Selector;
-								foreach (var file in project.GetSourceFilesAsync (conf).Result) {
-									if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
-										continue;
-									if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
-										continue;
-									if (!filterOptions.IsFileNameMatching (file.Name))
-										continue;
-									if (!IdeServices.DesktopService.GetFileIsText (file.Name))
-										continue;
-									if (!alreadyVisited.Add (file.Name))
-										continue;
-									providers.Add (new FileProvider (file.Name, project));
-								}
+						if (item is Project project) {
+							var conf = project.DefaultConfiguration?.Selector;
+							foreach (var file in await project.GetSourceFilesAsync (conf)) {
+								if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+									continue;
+								if (!filterOptions.IncludeCodeBehind && file.Subtype == Subtype.Designer)
+									continue;
+								if (!filterOptions.IsFileNameMatching (file.Name))
+									continue;
+								if (!await IdeServices.DesktopService.GetFileIsTextAsync (file.Name))
+									continue;
+								if (!alreadyVisited.Add (file.Name))
+									continue;
+								results.Add (new FileProvider (file.Name, project));
 							}
-							return providers;
-						}, (providers) => {
-							lock (results) {
-								results.AddRange (providers);
-							}
-						});
+						}
+					}
 				}
 
-				return Task.FromResult (results.ToImmutable ());
+				return results.ToImmutable ();
 			}
 
 			public override string GetDescription (FindInFilesModel model)
