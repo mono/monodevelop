@@ -166,6 +166,14 @@ namespace MonoDevelop.Components.Mac
 			image.AddRepresentation (imageRep);
 			return image;
 		}
+
+		public static bool IsGdkQuartzWindow (Window window)
+		{
+			if (window.nativeWidget is AppKit.NSWindow nsWindow) {
+				return GetGtkWindow (nsWindow) != null;
+			}
+			return false;
+		}
 	}
 }
 

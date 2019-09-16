@@ -119,8 +119,8 @@
 
 		{ "name": "String Format Items", "fore": "chocolate2" },
 
-		{ "name": "Css Comment", "fore": "aluminium3", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "chameleon3", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "aluminium3" },
+		{ "name": "Css Selector", "fore": "chameleon3" },
 
 		{ "name": "Script Comment", "fore": "aluminium3" },
 		{ "name": "Script Keyword", "fore": "skyblue2" },

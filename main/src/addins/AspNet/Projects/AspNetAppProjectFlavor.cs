@@ -692,6 +692,7 @@ namespace MonoDevelop.AspNet.Projects
 				this.name = displayName;
 				this.id = id;
 				this.DesktopApp = app;
+				Image = Ide.Gui.Stock.Browser;
 			}
 
 			public override string Name {
@@ -708,7 +709,7 @@ namespace MonoDevelop.AspNet.Projects
 		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
 		{
 			var apps = new List<ExecutionTarget> ();
-			foreach (var browser in MonoDevelop.Ide.IdeServices.DesktopService.GetApplications ("https://localhost")) {
+			foreach (var browser in MonoDevelop.Ide.IdeServices.DesktopService.GetApplications ("https://localhost", DesktopApplicationRole.Viewer)) {
 				if (browser.IsDefault)
 					apps.Insert (0, new BrowserExecutionTarget (browser.Id,browser.DisplayName,browser));
 				else

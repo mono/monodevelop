@@ -55,6 +55,18 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		public bool IsVisible {
+			get {
+				if (nativeWidget is Gtk.Window)
+					return ((Gtk.Window)nativeWidget).Visible;
+#if MAC
+				if (nativeWidget is AppKit.NSWindow)
+					return ((AppKit.NSWindow)nativeWidget).IsVisible;
+#endif
+				return false;
+			}
+		}
+
 		public override bool HasFocus {
 			get {
 				if (nativeWidget is Gtk.Window)
@@ -65,6 +77,57 @@ namespace MonoDevelop.Components
 #endif
 				return false;
 			}
+		}
+
+		public string Title {
+			get {
+				if (nativeWidget is Gtk.Window gtkWindow)
+					return gtkWindow.Title;
+#if MAC
+				if (nativeWidget is AppKit.NSWindow nsWindow)
+					return nsWindow.Title;
+#endif
+				return string.Empty;
+			}
+			set {
+
+				if (value == null)
+					return;
+
+				if (nativeWidget is Gtk.Window gtkWindow) {
+					gtkWindow.Title = value;
+					return;
+				}
+#if MAC
+				if (nativeWidget is AppKit.NSWindow nsWindow) {
+					nsWindow.Title = value;
+					return;
+				}
+#endif
+			}
+		}
+
+		public bool HasTopLevelFocus {
+			get {
+				if (nativeWidget is Gtk.Window gtkWindow)
+					return gtkWindow.HasToplevelFocus;
+#if MAC
+				if (nativeWidget is AppKit.NSWindow nsWindow)
+					return AppKit.NSApplication.SharedApplication.KeyWindow == nsWindow;
+#endif
+
+				return false;
+			}
+		}
+
+		public void Present ()
+		{
+			if (nativeWidget is Gtk.Window gtkWindow)
+				gtkWindow.Present ();
+#if MAC
+			if (nativeWidget is AppKit.NSWindow nsWindow)
+				nsWindow.MakeKeyAndOrderFront (nsWindow);
+#endif
 		}
 
 		public static implicit operator Gtk.Window (Window d)

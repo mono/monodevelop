@@ -299,5 +299,26 @@ namespace MonoDevelop.DotNetCore.Tests
 			var result = DotNetCoreVersion.IsSdkSupported (dotnetCoreVersion);
 			Assert.True (result == isSupported);
 		}
+
+		[TestCase ("3.0.100", 0)]
+		[TestCase ("3.0.100-preview-010184", 10184)]
+		[TestCase ("3.0.100-preview3-010431", 10431)]
+		[TestCase ("3.0.100-preview3-010431-22", 10431)]
+		public void ParseRevisionNumber(string version, long expected)
+		{
+			var dotNetCoreVersion = DotNetCoreVersion.Parse (version);
+			Assert.That (dotNetCoreVersion.Revision, Is.EqualTo (expected));
+		}
+
+		[TestCase ("3.0.100", 300100999999)]
+		[TestCase ("3.0.100-preview-010184", 300100010184)]
+		[TestCase ("3.0.100-preview3-010431", 300100010431)]
+		[TestCase ("3.0.100-preview3-010431-22", 300100010431)]
+		public void GetVersionId (string version, long expected)
+		{
+			var dotNetCoreVersion = DotNetCoreVersion.Parse (version);
+			var versionId = DotNetCoreSystemInformation.GenerateVersionId (dotNetCoreVersion);
+			Assert.That (versionId, Is.EqualTo (expected));
+		}
 	}
 }

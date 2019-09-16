@@ -37,6 +37,11 @@ namespace MonoDevelop.Debugger
 		{
 			this.Build ();
 
+			EnvironmentVariables = lastEnvironmentVariables;
+			WorkingDirectory = lastWorkingDirectory;
+			SelectedFile = lastSelectedFile;
+			Arguments = lastArguments;
+
 			SetupAccessibility ();
 		}
 
@@ -62,6 +67,21 @@ namespace MonoDevelop.Debugger
 			buttonOk.Accessible.SetLabel (GettextCatalog.GetString ("Ok"));
 		}
 
+		protected override void OnDestroyed ()
+		{
+			lastEnvironmentVariables = EnvironmentVariables;
+			lastWorkingDirectory = WorkingDirectory;
+			lastSelectedFile = SelectedFile;
+			lastArguments = Arguments;
+
+			base.Destroy ();
+		}
+
+		static Dictionary<string, string> lastEnvironmentVariables;
+		static string lastWorkingDirectory;
+		static string lastSelectedFile;
+		static string lastArguments;
+
 		public Dictionary<string,string> EnvironmentVariables {
 			get {
 				var envVars = new Dictionary<string, string> ();
@@ -83,7 +103,7 @@ namespace MonoDevelop.Debugger
 
 		public string Arguments {
 			get { return this.argsEntry.Text; }
-			set { this.argsEntry.Text = value; }
+			set { this.argsEntry.Text = value ?? string.Empty; }
 		}
 	}
 }

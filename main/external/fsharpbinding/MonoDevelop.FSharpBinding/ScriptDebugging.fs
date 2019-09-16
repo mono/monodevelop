@@ -4,6 +4,7 @@ open System.IO
 open System.Threading
 open System.Threading.Tasks
 open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Text
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
@@ -118,7 +119,7 @@ type FSharpDebugScriptTextEditorExtension() =
     inherit TextEditorExtension()
 
     member x.StartDebugging consoleKind =
-        let buildTarget = ScriptBuildTarget (x.Editor.FileName, consoleKind, x.Editor.Text)
+        let buildTarget = ScriptBuildTarget (x.Editor.FileName, consoleKind, SourceText.ofString x.Editor.Text)
         let debug = IdeApp.ProjectOperations.Debug buildTarget
         debug.Task
 
@@ -148,7 +149,7 @@ type DebugScriptNodeHandler() =
     member x.StartDebugging consoleKind =
         let file = x.CurrentNode.DataItem :?> ProjectFile
         let doc = IdeApp.Workbench.OpenDocument(file.FilePath, null, true) |> Async.AwaitTask |> Async.RunSynchronously
-        let buildTarget = ScriptBuildTarget (file.FilePath, consoleKind, doc.Editor.Text)
+        let buildTarget = ScriptBuildTarget (file.FilePath, consoleKind, SourceText.ofString doc.Editor.Text)
         let debug = IdeApp.ProjectOperations.Debug buildTarget
         debug.Task
 

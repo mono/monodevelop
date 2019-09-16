@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp
 				MaxVisibleRows = 14
 			};
 			window.SelectItem (path [index].Tag);
-			return window;
+			return (Window)window;
 		}
 
 		PathEntry [] currentPath;

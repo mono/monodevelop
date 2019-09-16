@@ -576,8 +576,10 @@ namespace MonoDevelop.VersionControl.Views
 						//							Annotation varname = annotations[i];
 						//							System.Console.WriteLine (i + ":" + varname);
 						//						}
-						minDate = annotations.Min (a => a.Date);
-						maxDate = annotations.Max (a => a.Date);
+						if (annotations.Count > 0) {
+							minDate = annotations.Min (a => a.Date);
+							maxDate = annotations.Max (a => a.Date);
+						}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}

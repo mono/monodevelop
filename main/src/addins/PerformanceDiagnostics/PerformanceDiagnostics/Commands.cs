@@ -175,13 +175,19 @@ namespace PerformanceDiagnosticsAddIn
 	}
 
 #if DEBUG
+	class InduceUIThreadCrashHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			new NSObject ().BeginInvokeOnMainThread (() => throw new Exception ("Diagnostics: UI thread crash"));
+		}
+	}
+
 	class InduceManagedCrashHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			Task.Run (() => {
-				new NSObject ().BeginInvokeOnMainThread (() => throw new Exception ("Diagnostics: Managed crash"));
-			});
+			new Thread (() => { throw new Exception ("Diagnostics: Managed crash"); }).Start ();
 		}
 	}
 
@@ -192,12 +198,10 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			Task.Run (() => {
-				using var x = new NSException ("Native crash", "Diagnostics", null);
-				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+			using var x = new NSException ("Native crash", "Diagnostics", null);
+			var selector = ObjCRuntime.Selector.GetHandle ("raise");
 
-				void_objc_msgSend (x.Handle, selector);
-			});
+			void_objc_msgSend (x.Handle, selector);
 		}
 	}
 

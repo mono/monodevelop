@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide
 
 		int Run (MonoDevelopOptions options)
 		{
+			CompositionManager.ConfigureUninitializedMefHandling (throwException: true);
+
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", RuntimeVersionInfo.GetRuntimeInfo ());
@@ -213,6 +215,8 @@ namespace MonoDevelop.Ide
 			IdeStartupTracker.StartupTracker.MarkSection ("ThemeInitialized");
 
 			IdeApp.IsRunning = true;
+
+			Xwt.Application.TranslationCatalog = new XwtTranslationCatalog ();
 
 			// Load the main menu before running the main loop
 			var commandService = Runtime.GetService<CommandManager> ().Result;
@@ -437,9 +441,6 @@ namespace MonoDevelop.Ide
 
 		static bool OnIdle ()
 		{
-			// Make sure the composition manager started initializing
-			Runtime.GetService<CompositionManager> ();
-
 			// OpenDocuments appears when the app is idle.
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				IdeApp.Workbench.Present ();

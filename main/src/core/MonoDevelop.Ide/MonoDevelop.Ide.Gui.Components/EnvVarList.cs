@@ -70,8 +70,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		public void LoadValues (IDictionary<string, string> values)
 		{
 			store.Clear ();
-			foreach (KeyValuePair<string,string> val in values)
-				store.AppendValues (val.Key, val.Value, true, null);
+			if (values != null) {
+				foreach (KeyValuePair<string,string> val in values)
+					store.AppendValues (val.Key, val.Value, true, null);
+			}
 			AppendInserter ();
 		}
 		

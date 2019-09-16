@@ -26,14 +26,16 @@
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNetCore
 {
-	class AspNetCoreExecutionTarget : ExecutionTarget
+	public class AspNetCoreExecutionTarget : ExecutionTarget
 	{
 		internal AspNetCoreExecutionTarget (DesktopApplication desktopApplication)
 		{
 			DesktopApplication = desktopApplication;
+			Image = Stock.Browser;
 		}
 
 		public override string Name => DesktopApplication.DisplayName;

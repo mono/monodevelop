@@ -33,7 +33,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.DotNetCore.NodeBuilders;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using NUnit.Framework;
 using UnitTests;
@@ -72,10 +74,10 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (0, process.ExitCode);
 		}
 
-		async Task CreateDependenciesNode ()
+		async Task CreateDependenciesNode (IUpdatedNuGetPackagesInWorkspace updatedNuGetPackages = null)
 		{
 			dependenciesNodeBuilder = new TestableDependenciesNodeBuilder ();
-			dependenciesNode = new DependenciesNode (project);
+			dependenciesNode = new DependenciesNode (project, updatedNuGetPackages ?? PackageManagementServices.UpdatedPackagesInWorkspace);
 			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += PackageDependenciesChanged;
 			packageDependenciesChanged = new TaskCompletionSource<bool> ();
 
@@ -470,6 +472,40 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsTrue (newtonsoftNode.IsTopLevel);
 			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
 			Assert.IsTrue (newtonsoftNode.HasDependencies ());
+		}
+
+		[Test]
+		public async Task NetStandard21Library_NewtonsoftJsonNuGetPackageReferenceHasUpdates ()
+		{
+			if (!IsDotNetCoreSdk30OrLaterInstalled ()) {
+				Assert.Ignore (".NET Core 3 SDK is not installed.");
+			}
+
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandard21JsonNet.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+
+			var updatedPackages = new FakeUpdatedPackagesInWorkspace ();
+			updatedPackages.AddUpdatedPackages (new PackageIdentity ("Newtonsoft.Json", NuGetVersion.Parse ("11.0.1")));
+			await CreateDependenciesNode (updatedPackages);
+
+			// Should be no sdk folder node.
+			Assert.IsNull (sdkFolderNode);
+
+			Assert.AreEqual ("(1 update)", dependenciesNode.GetSecondaryLabel ());
+
+			var newtonsoftNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.GetLabel ());
+			Assert.AreEqual ("(10.0.3)", newtonsoftNode.GetSecondaryLabel ());
+			Assert.AreEqual ("md-package-update", newtonsoftNode.GetStatusIconId ().ToString ());
+
+			Assert.AreEqual ("(1 update)", nugetFolderNode.GetSecondaryLabel ());
+
+			var frameworkNode = GetFrameworksFolderChildDependencies ().Single ();
+			Assert.AreEqual ("NETStandard.Library", frameworkNode.GetLabel ());
+
+			// No updates label.
+			Assert.AreEqual (string.Empty, frameworksFolderNode.GetSecondaryLabel ());
 		}
 	}
 }

@@ -33,9 +33,9 @@ using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSystemInformation : ProductInformationProvider
+	sealed class DotNetCoreSystemInformation : ProductInformationProvider
 	{
-		public override string Title => GettextCatalog.GetString (".NET Core");
+		public override string Title => GettextCatalog.GetString (".NET Core SDK");
 
 		public override string Description => GetDescription ();
 
@@ -54,11 +54,46 @@ namespace MonoDevelop.DotNetCore
 		{
 			var latestSdkVersion = DotNetCoreSdk.Versions.FirstOrDefault ();
 			if (latestSdkVersion != null) {
-				return new UpdateInfo (ApplicationId, latestSdkVersion.Version);
+				return new UpdateInfo (ApplicationId, GenerateVersionId(latestSdkVersion));
 			}
 
 			// .NET Core not installed, so don't offer as new install
 			return null;
+		}
+
+
+		/// <summary>
+		/// Slightly modified version of GenerateVersionId in UpdateInfo.cs
+		/// to use 6 significant digits for revision.
+		/// </summary>
+		internal static long GenerateVersionId(DotNetCoreVersion version)
+		{
+			// For stable releases (that have no revision number),
+			// we need a version Id that is higher then the previews
+			// (which do have a revision number) to enable the comparison
+			// to work on the feed.
+			var revision = "999999";
+
+			if(version.IsPrerelease) {
+				revision = FixVersionNumber (version.Revision).ToString ("000000");
+			}
+
+			var s = FixVersionNumber (version.Major) +
+					FixVersionNumber (version.Minor).ToString ("00") +
+					FixVersionNumber (version.Patch).ToString ("00") +
+					revision;
+			return long.Parse (s);
+		}
+
+		/// <summary>
+		/// Unspecified version numbers can be -1 so map this to 0 instead.
+		/// </summary>
+		static int FixVersionNumber (int number)
+		{
+			if (number == -1)
+				return 0;
+
+			return number;
 		}
 
 		static bool IsSierraOrHigher () => Platform.IsMac && (Platform.OSVersion >= MacSystemInformation.Sierra);
@@ -67,8 +102,6 @@ namespace MonoDevelop.DotNetCore
 		{
 			var description = new StringBuilder ();
 
-			description.AppendLine (GettextCatalog.GetString ("Runtime: {0}", GetDotNetRuntimeLocation ()));
-			AppendDotNetCoreRuntimeVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("SDK: {0}", GetDotNetSdkLocation ()));
 			AppendDotNetCoreSdkVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("MSBuild SDKs: {0}", GetMSBuildSdksLocation ()));
@@ -76,15 +109,7 @@ namespace MonoDevelop.DotNetCore
 			return description.ToString ();
 		}
 
-		static string GetDotNetRuntimeLocation ()
-		{
-			if (DotNetCoreRuntime.IsInstalled)
-				return DotNetCoreRuntime.FileName;
-
-			return GetNotInstalledString ();
-		}
-
-		static string GetNotInstalledString ()
+		internal static string GetNotInstalledString ()
 		{
 			return GettextCatalog.GetString ("Not installed");
 		}
@@ -108,15 +133,6 @@ namespace MonoDevelop.DotNetCore
 			return GetNotInstalledString ();
 		}
 
-		static void AppendDotNetCoreRuntimeVersions (StringBuilder description)
-		{
-			AppendVersions (
-				description,
-				DotNetCoreRuntime.Versions,
-				version => GettextCatalog.GetString ("Runtime Version: {0}", version),
-				() => GettextCatalog.GetString ("Runtime Versions:"));
-		}
-
 		static void AppendDotNetCoreSdkVersions (StringBuilder description)
 		{
 			AppendVersions (
@@ -126,7 +142,7 @@ namespace MonoDevelop.DotNetCore
 				() => GettextCatalog.GetString ("SDK Versions:"));
 		}
 
-		static void AppendVersions (
+		internal static void AppendVersions (
 			StringBuilder description,
 			DotNetCoreVersion[] versions,
 			Func<DotNetCoreVersion, string> getSingleVersionString,
