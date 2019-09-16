@@ -60,8 +60,11 @@ namespace MonoDevelop.Projects
 		{
 			Debug.Assert (readerWriterLock.IsWriteLockHeld);
 
-			var toWatch = ComputeItems (item, registerEvent);
+			return Watch_NoLock (ComputeItems (item, registerEvent));
+		}
 
+		static Task Watch_NoLock (List<(object, HashSet<FilePath>)> toWatch)
+		{
 			bool modified = false;
 			foreach (var (id, set) in toWatch) {
 				modified |= RegisterDirectoriesInTree_NoLock (id, set);
@@ -146,8 +149,34 @@ namespace MonoDevelop.Projects
 
 		static void OnRootDirectoriesChanged (object sender, WorkspaceItem.RootDirectoriesChangedEventArgs args)
 		{
-			using (readerWriterLock.Write ()) {
-				if (args.SourceItem is WorkspaceObject item) {
+			if (args.SourceItem is WorkspaceObject item) {
+				if (!args.IsRemove && !args.IsAdd) {
+					// Don't recompute the items if the watched paths hasn't changed.
+					var toWatch = ComputeItems (item, false);
+
+					bool isNop = true;
+					using (readerWriterLock.Read ()) {
+						foreach (var (id, set) in toWatch) {
+							if (!monitoredDirectories.TryGetValue (id, out var currentSet))
+								continue;
+
+							if (!currentSet.SetEquals (set)) {
+								isNop = false;
+								break;
+							}
+						}
+					}
+
+					if (isNop)
+						return;
+
+					using (readerWriterLock.Write ()) {
+						Watch_NoLock (toWatch).Ignore ();
+						return;
+					}
+				}
+
+				using (readerWriterLock.Write ()) {
 					if (args.IsRemove) {
 						Remove_NoLock (item).Ignore ();
 					} else {
