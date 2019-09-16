@@ -374,10 +374,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			var runtime = model.FirstOrDefault (r => {
 				var mutableModel = r.GetMutableModel ();
 				LoggingService.LogDebug ($"[IRuntimeModel.IRuntimeMutableModel] FullDisplayString: '{mutableModel.FullDisplayString}' | DisplayString: '{mutableModel.DisplayString}'");
-				if (mutableModel.FullDisplayString.Contains (runtimeName))
+
+				if (string.IsNullOrEmpty (runtimeName))
+					return false;
+
+				if (mutableModel.FullDisplayString.Contains (runtimeName) || mutableModel.DisplayString.Contains (runtimeName))
 					return true;
-				if (mutableModel.DisplayString.Contains (runtimeName))
-					return true;
+			
 				var execTargetPInfo = r.GetType().GetProperty ("ExecutionTarget");
 				if(execTargetPInfo != null) {
 					if (execTargetPInfo.GetValue (r) is Core.Execution.ExecutionTarget execTarget) {
