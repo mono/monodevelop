@@ -207,6 +207,10 @@ namespace MonoDevelop.TextEditor
 					return commandsSupportedWhenFindPresenterIsFocused.Contains (commandId);
 				}
 			}
+#if !WINDOWS
+			if (TextView is ITextView3 textView3)
+				return textView3.IsKeyboardFocused;
+#endif
 
 			return true;
 		}
