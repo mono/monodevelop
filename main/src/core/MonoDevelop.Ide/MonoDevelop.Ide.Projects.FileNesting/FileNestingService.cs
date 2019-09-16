@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		void NotifyNestingRulesChanged (ProjectFileNestingInfo nestingInfo)
 		{
-			if (nestingInfo == null)
+			if (nestingInfo == null || !FileNestingService.AppliesToProject (nestingInfo.File.Project))
 				return;
 
 			FileNestingService.NotifyNestingRulesChanged (nestingInfo.File, nestingInfo.Parent);
