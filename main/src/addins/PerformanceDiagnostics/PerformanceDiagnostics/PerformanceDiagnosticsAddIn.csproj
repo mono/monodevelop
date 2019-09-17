@@ -26,12 +26,11 @@
     <Compile Include="Options.cs" />
     <Compile Include="LeakHelpers.cs" />
     <Compile Include="LeakTrackerPad.cs" />
-    <Compile Include="LeakTrackerEnabledCondition.cs" />
     <Compile Include="LeakSummaryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml" />
-    <EmbeddedResource Include="Properties\ReliabilityDiagnostics.addin.xml" Condition=" '$(Configuration)' == 'Debug' "/>
+    <EmbeddedResource Include="Properties\ReliabilityDiagnostics.addin.xml" Condition=" '$(Configuration)' == 'Debug' " />
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="UIThreadMonitorDaemon.exe" />

@@ -176,7 +176,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void NetCoreApp_NetCore20Installed ()
 		{
 			CreateWizard ();
-			DotNetCoreRuntimesInstalled ("2.0.1");
+			DotNetCoreRuntimesInstalled ("2.0.3");
+			DotNetCoreSdksInstalled ("2.1.2");
 
 			int pages = wizard.TotalPages;
 
@@ -194,7 +195,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void NetCoreApp_NetCore11Installed ()
 		{
 			CreateWizard ();
-			DotNetCoreRuntimesInstalled ("1.1.0");
+			DotNetCoreRuntimesInstalled ("1.1.1");
+			DotNetCoreSdksInstalled ("1.0.1");
 
 			int pages = wizard.TotalPages;
 
@@ -219,7 +221,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void NetCoreApp_NetCore20AndNetCore1xInstalled ()
 		{
 			CreateWizard ();
-			DotNetCoreRuntimesInstalled ("2.0.1", "1.1.0", "1.0.2");
+			DotNetCoreRuntimesInstalled ("2.0.3", "1.1.2", "1.0.4");
+			DotNetCoreSdksInstalled ("2.1.2", "1.0.4", "1.0.1");
 
 			int pages = wizard.TotalPages;
 
@@ -276,6 +279,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters (supportedParameters);
 			DotNetCoreRuntimesInstalled ("1.1.2");
+			DotNetCoreSdksInstalled ("1.0.4");
 
 			int pages = wizard.TotalPages;
 
@@ -296,6 +300,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters (supportedParameters);
 			DotNetCoreRuntimesInstalled ("2.0.5", "1.1.2");
+			DotNetCoreSdksInstalled ("2.1.4", "1.0.4");
 
 			int pages = wizard.TotalPages;
 
@@ -321,7 +326,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			CreateWizard ();
 			AddSupportedParameters ("NetCoreLibrary");
-			DotNetCoreRuntimesInstalled ("2.0.1");
+			DotNetCoreRuntimesInstalled ("2.0.3");
+			DotNetCoreSdksInstalled ("2.0.3");
 
 			int pages = wizard.TotalPages;
 
@@ -358,6 +364,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			CreateWizard ();
 			DotNetCoreRuntimesInstalled ("2.1.1");
+			DotNetCoreSdksInstalled ("2.1.301");
 
 			int pages = wizard.TotalPages;
 
@@ -386,6 +393,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters ("NetCoreLibrary");
 			DotNetCoreRuntimesInstalled ("2.1.2");
+			DotNetCoreSdksInstalled ("2.1.302");
 
 			int pages = wizard.TotalPages;
 
@@ -416,6 +424,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters (supportedParameters);
 			DotNetCoreRuntimesInstalled ("2.1.5", "1.1.2");
+			DotNetCoreSdksInstalled ("2.1.403", "1.0.4");
 
 			int pages = wizard.TotalPages;
 
@@ -437,6 +446,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			//NOTE: since we are now checking unsupported runtime version
 			// here we set the latest supported one
 			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5");
+			DotNetCoreSdksInstalled ("3.0.0-preview-27324-5");
 
 			int pages = wizard.TotalPages;
 
@@ -469,6 +479,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			CreateWizard ();
 			DotNetCoreRuntimesInstalled ("2.2.0");
+			DotNetCoreSdksInstalled ("2.2.101");
 
 			int pages = wizard.TotalPages;
 
@@ -498,7 +509,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			CreateWizard ();
 			AddSupportedParameters ("NetCoreLibrary");
-			DotNetCoreRuntimesInstalled ("2.2.100");
+			DotNetCoreRuntimesInstalled ("2.2.6");
+			DotNetCoreSdksInstalled ("2.2.401");
 
 			int pages = wizard.TotalPages;
 
@@ -531,6 +543,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters (supportedParameters);
 			DotNetCoreRuntimesInstalled ("2.2.3", "1.1.2");
+			DotNetCoreSdksInstalled ("2.2.202", "1.0.4");
 
 			int pages = wizard.TotalPages;
 
@@ -550,7 +563,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void NetCoreApp_NetCore21AndNetCore20Installed ()
 		{
 			CreateWizard ();
-			DotNetCoreRuntimesInstalled ("2.1.300", "2.0.1");
+			DotNetCoreRuntimesInstalled ("2.1.0", "2.0.3");
+			DotNetCoreSdksInstalled ("2.1.300", "2.0.3");
 
 			int pages = wizard.TotalPages;
 

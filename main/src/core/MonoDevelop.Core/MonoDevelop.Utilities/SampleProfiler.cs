@@ -23,11 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
+
 using System;
-using System.Net.Sockets;
-using System.Net;
 using System.Diagnostics;
-using System.Threading;
 using MonoDevelop.Core;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -35,7 +34,6 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Utilities
 {
@@ -111,7 +109,7 @@ namespace MonoDevelop.Utilities
 
 		[DllImport ("__Internal")]
 		extern static string mono_pmip (long offset);
-		readonly static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
+		readonly static Dictionary<long, string?> methodsCache = new Dictionary<long, string?> ();
 
 		public static void ConvertJITAddressesToMethodNames (string outputPath, string fileName, string profilingType)
 		{
@@ -167,9 +165,9 @@ namespace MonoDevelop.Utilities
 				}
 			}
 
-			static string GetSymbolicatedLine (long offset)
+			static string? GetSymbolicatedLine (long offset)
 			{
-				if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
+				if (!methodsCache.TryGetValue (offset, out string? pmipMethodName)) {
 					pmipMethodName = mono_pmip (offset)?.TrimStart ();
 					if (pmipMethodName != null)
 						pmipMethodName = PmipParser.ToSample (pmipMethodName, offset);
@@ -194,7 +192,6 @@ namespace MonoDevelop.Utilities
 				try {
 					var input = initialInput.AsSpan ();
 					var sb = new StringBuilder ();
-					string filename = null;
 
 					// Cut off wrapper part.
 					if (input.StartsWith ("(wrapper".AsSpan ())) {
@@ -249,6 +246,7 @@ namespace MonoDevelop.Utilities
 					// Skip the rest of the block(s) after the method signature until we get a path.
 					input = input.Slice (input.IndexOf ('[') + 1).TrimStart ();
 
+					string? filename = null;
 					if (input[0] == '/') {
 						// We have a filename
 						var end = input.IndexOf (']');

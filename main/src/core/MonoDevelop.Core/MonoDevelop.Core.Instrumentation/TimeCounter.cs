@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,18 +43,18 @@ namespace MonoDevelop.Core.Instrumentation
 	
 	public interface ITimeTracker<T>: IDisposable, ITimeTracker where T : CounterMetadata
 	{
-		T Metadata { get; }
+		T? Metadata { get; }
 	}
 
 	interface ITimeCounter: ITimeTracker
 	{
 		void AddHandlerTracker (IDisposable t);
-		TimerTraceList TraceList { get; }
+		TimerTraceList? TraceList { get; }
 	}
 	
 	class DummyTimerCounter<T>: ITimeTracker<T> where T : CounterMetadata
 	{
-		public DummyTimerCounter (T metadata)
+		public DummyTimerCounter (T? metadata)
 		{
 			Metadata = metadata;
 		}
@@ -69,23 +71,23 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 		}
 
-		public T Metadata { get; }
+		public T? Metadata { get; }
 
 		public TimeSpan Duration { get; }
 	}
 	
 	class TimeCounter<T>: ITimeTracker<T>, ITimeCounter where T:CounterMetadata, new()
 	{
-		Stopwatch stopWatch = new Stopwatch ();
-		TimerTraceList traceList;
-		TimerTrace lastTrace;
-		TimerCounter counter;
-		object linkedTrackers;
+		readonly Stopwatch stopWatch = new Stopwatch ();
+		TimerTraceList? traceList;
+		TimerTrace? lastTrace;
+		TimerCounter? counter;
+		object? linkedTrackers;
 		long lastTraceTime;
-		T metadata;
+		T? metadata;
 		CancellationToken cancellationToken;
 
-		internal TimeCounter (TimerCounter counter, T metadata, CancellationToken cancellationToken)
+		internal TimeCounter (TimerCounter counter, T? metadata, CancellationToken cancellationToken)
 		{
 			this.counter = counter;
 			this.metadata = metadata;
@@ -123,7 +125,7 @@ namespace MonoDevelop.Core.Instrumentation
 				((List<IDisposable>)linkedTrackers).Add (t);
 		}
 		
-		TimerTraceList ITimeCounter.TraceList {
+		TimerTraceList? ITimeCounter.TraceList {
 			get { return this.traceList; }
 		}
 		
@@ -139,7 +141,7 @@ namespace MonoDevelop.Core.Instrumentation
 					lastTrace.Next = t;
 					lastTrace = t;
 				}
-				traceList.TotalTime = t.Timestamp - traceList.FirstTrace.Timestamp;
+				traceList.TotalTime = t.Timestamp - traceList.FirstTrace!.Timestamp;
 			}
 			if (counter?.LogMessages == true) {
 				var time = stopWatch.ElapsedMilliseconds;
@@ -166,7 +168,7 @@ namespace MonoDevelop.Core.Instrumentation
 			if (metadata != null && cancellationToken.IsCancellationRequested)
 				metadata.SetUserCancel ();
 
-			if (counter.LogMessages) {
+			if (counter!.LogMessages) {
 				var time = stopWatch.ElapsedMilliseconds;
 				InstrumentationService.LogMessage (string.Format ("[{0} (+{1})] END: {2}", time, (time - lastTraceTime), counter.Name));
 			}
@@ -201,19 +203,19 @@ namespace MonoDevelop.Core.Instrumentation
 	[DebuggerDisplay ("{DebuggingText}")]
 	class TimerTraceList
 	{
-		public TimerTrace FirstTrace;
+		public TimerTrace? FirstTrace;
 		public TimeSpan TotalTime;
 		public int ValueIndex;
 
 		// Timer metadata is stored here, since it may change while the timer is alive.
 		// CounterValue will take the metadata from here.
-		public IDictionary<string, object> Metadata;
+		public IDictionary<string, object>? Metadata;
 
 		string DebuggingText {
 			get {
 				var stringBuilder = new StringBuilder ();
 				var current = FirstTrace;
-				TimerTrace previous = null;
+				TimerTrace? previous = null;
 				while (current != null) {
 					stringBuilder.Append (previous == null ? "N/A" : (current.Timestamp - previous.Timestamp).ToString (@"ss\.fff"));
 					stringBuilder.Append (" : ");
@@ -229,8 +231,8 @@ namespace MonoDevelop.Core.Instrumentation
 	[Serializable]
 	public class TimerTrace
 	{
-		internal TimerTrace Next;
+		internal TimerTrace? Next;
 		public DateTime Timestamp { get; set; }
-		public string Message { get; set; }
+		public string? Message { get; set; }
 	}
 }

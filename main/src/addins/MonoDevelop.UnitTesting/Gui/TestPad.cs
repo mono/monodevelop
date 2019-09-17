@@ -82,7 +82,7 @@ namespace MonoDevelop.UnitTesting
 		
 		ArrayList testNavigationHistory = new ArrayList ();
 
-		Button buttonRunAll, buttonStop;
+		Button buttonRunAll, buttonStop,buttonDebugAll;
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
@@ -94,10 +94,7 @@ namespace MonoDevelop.UnitTesting
 			VBox vbox = new VBox ();
 			DockItemToolbar topToolbar = Window.GetToolbar (DockPositionType.Top);
 
-			var hbox = new HBox { Spacing = 6 };
-			hbox.PackStart (new ImageView (ImageService.GetIcon ("md-execute-all", IconSize.Menu)), false, false, 0);
-			hbox.PackStart (new Label (GettextCatalog.GetString ("Run All")), false, false, 0);
-			buttonRunAll = new Button (hbox);
+			buttonRunAll = new Button (new ImageView (ImageService.GetIcon ("md-execute-all", IconSize.Menu)));
 			buttonRunAll.Accessible.Name = "TestPad.RunAll";
 			buttonRunAll.Accessible.Description = GettextCatalog.GetString ("Start a test run and run all the tests");
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
@@ -105,6 +102,14 @@ namespace MonoDevelop.UnitTesting
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Add (buttonRunAll);
 			
+			buttonDebugAll = new Button (new ImageView (ImageService.GetIcon ("md-debug-all", IconSize.Menu)));
+			buttonDebugAll.Accessible.Name = "TestPad.DebugAll";
+			buttonDebugAll.Accessible.Description = GettextCatalog.GetString ("Debug all the tests");
+			buttonDebugAll.Clicked += new EventHandler (OnDebugAllClicked);
+			buttonDebugAll.Sensitive = true;
+			buttonDebugAll.TooltipText = GettextCatalog.GetString ("Debug all tests");
+			topToolbar.Add (buttonDebugAll);
+
 			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonStop.Sensitive = false;
@@ -537,6 +542,7 @@ namespace MonoDevelop.UnitTesting
 				UnitTestService.ResetResult (test.RootTest);
 			
 			this.buttonRunAll.Sensitive = false;
+			this.buttonDebugAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;
 
 			ExecutionContext context = new ExecutionContext (mode, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
@@ -553,7 +559,39 @@ namespace MonoDevelop.UnitTesting
 		{
 			RunTest (TreeView.GetRootNode (), null);
 		}
-		
+
+		async void OnDebugAllClicked (object sender, EventArgs args)
+		{
+			var nav = TreeView.GetRootNode ();
+			if (nav == null)
+				return;
+
+			var testGroup = nav.DataItem as UnitTestGroup;
+			var tests = testGroup.Tests;
+			if (tests == null)
+				return;
+
+			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+			if (debugModeSet == null)
+				return;
+
+			this.buttonRunAll.Sensitive = false;
+			this.buttonDebugAll.Sensitive = false;
+			this.buttonStop.Sensitive = true;
+
+			foreach (UnitTest test in tests) {
+				foreach (var mode in debugModeSet.ExecutionModes) {
+					if (test.CanRun (mode.ExecutionHandler)) {
+						ExecutionContext context = new ExecutionContext (mode.ExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+						await UnitTestService.RunTests (new UnitTest [] { test }, context, true).Task;
+						continue;
+					}
+				}
+			}
+			
+			OnTestSessionCompleted ();
+		}
+
 		void RunSelectedTest (IExecutionHandler mode)
 		{
 			RunTests (TreeView.GetSelectedNodes (), mode);
@@ -565,6 +603,7 @@ namespace MonoDevelop.UnitTesting
 			runningTestOperation = null;
 			this.buttonRunAll.Sensitive = true;
 			this.buttonStop.Sensitive = false;
+			this.buttonDebugAll.Sensitive = true;
 
 		}
 
