@@ -167,22 +167,23 @@ namespace MonoDevelop.VersionControl.Git
 		const string cherryPickHead = "CHERRY_PICK_HEAD";
 		const string revertHead = "REVERT_HEAD";
 
-		static bool ShouldLock (string fullPath)
-		{
-			var fileName = Path.GetFileName (fullPath);
-			return fileName == rebaseApply || fileName == rebaseMerge || fileName == cherryPickHead || fileName == revertHead;
-		}
+		static bool ShouldLock (string fileName)
+			=> fileName.EndsWith (".lock", FilePath.PathComparison)
+			|| fileName == rebaseApply
+			|| fileName == rebaseMerge
+			|| fileName == cherryPickHead
+			|| fileName == revertHead;
 
 		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
 		{
-			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.FullPath))
+			if (ShouldLock (e.Name))
 				OnGitLocked (e.FullPath);
 		}
 
 		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
 		{
-			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.OldName)) {
-				if (!e.Name.EndsWith (".lock", StringComparison.Ordinal)) {
+			if (ShouldLock (e.OldName)) {
+				if (!ShouldLock (e.Name)) {
 					OnGitUnlocked (e.OldFullPath);
 				} else {
 					lock (lockedPathes) {
@@ -197,7 +198,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
 		{
-			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.FullPath))
+			if (ShouldLock (e.Name))
 				OnGitUnlocked (e.FullPath);
 		}
 
@@ -213,7 +214,7 @@ namespace MonoDevelop.VersionControl.Git
 		void OnGitLocked (string path)
 		{
 			lock (lockedPathes) {
-				if (lockedPathes.Add (path) && lockedPathes.Count == 1 && gitLock.IsSet) {
+				if (File.Exists (path) && lockedPathes.Add (path) && lockedPathes.Count == 1 && gitLock.IsSet) {
 					gitLock.Reset ();
 					FileService.FreezeEvents ();
 				}
@@ -224,6 +225,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			lock (lockedPathes) {
 				lockedPathes.Remove (file);
+				lockedPathes.RemoveWhere (path => !File.Exists (path));
+
 				if (!gitLock.IsSet && lockedPathes.Count == 0) {
 					gitLock.Set ();
 					ThawEvents ();
