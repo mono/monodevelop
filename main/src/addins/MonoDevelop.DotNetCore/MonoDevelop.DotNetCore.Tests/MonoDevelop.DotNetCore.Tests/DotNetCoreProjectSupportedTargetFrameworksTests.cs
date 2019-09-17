@@ -114,5 +114,40 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETCoreApp,Version=v2.1", frameworks [0].Id.ToString ());
 			Assert.AreEqual (1, frameworks.Count);
 		}
+
+		[Test]
+		public void GetNetCoreAppTargetFrameworksWithSdkSupport_NetCore30RuntimeInstalled_NoSdkInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5");
+			DotNetCoreSdksNotInstalled ();
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
+
+			Assert.AreEqual (0, frameworks.Count);
+		}
+
+		[Test]
+		public void GetNetCoreAppTargetFrameworksWithSdkSupport_NetCore30And22RuntimeInstalled_30SdkInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5", "2.2.7");
+			DotNetCoreSdksInstalled ("3.0.0-preview-27324-5");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
+
+			Assert.AreEqual (".NETCoreApp,Version=v3.0", frameworks [0].Id.ToString ());
+			Assert.AreEqual (1, frameworks.Count);
+		}
+
+		[Test]
+		public void GetNetCoreAppTargetFrameworksWithSdkSupport_NetCore30And22RuntimeInstalled_22SdkInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5", "2.2.7");
+			DotNetCoreSdksInstalled ("2.2.401");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
+
+			Assert.AreEqual (".NETCoreApp,Version=v2.2", frameworks [0].Id.ToString ());
+			Assert.AreEqual (1, frameworks.Count);
+		}
 	}
 }
