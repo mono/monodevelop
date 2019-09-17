@@ -29,7 +29,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	public class FeatureSwitchCondition : ConditionType
+	class FeatureSwitchCondition : ConditionType
 	{
 		public override bool Evaluate (NodeElement conditionNode)
 		{
@@ -38,7 +38,11 @@ namespace MonoDevelop.Core.FeatureConfiguration
 				return true;
 			}
 
-			return FeatureSwitchService.IsFeatureEnabled (featureName) ?? true;
+			bool enabledByDefault = true;
+			if (bool.TryParse (conditionNode.GetAttribute ("optIn"), out bool optIn))
+				enabledByDefault = !optIn;
+
+			return FeatureSwitchService.IsFeatureEnabled (featureName) ?? enabledByDefault;
 		}
 	}
 }
