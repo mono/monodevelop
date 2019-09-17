@@ -84,7 +84,7 @@ namespace MonoDevelop.DotNetCore.Templating
 					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
 				}
 			} else {
-				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
 
 				if (!SupportsNetCore1x ()) {
 					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
@@ -123,7 +123,7 @@ namespace MonoDevelop.DotNetCore.Templating
 					Parameters [parameter] = "true";
 			} else {
 				if (!SupportsNetCore1x ()) {
-					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
 					if (highestFramework != null && highestFramework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("2.0"))) {
 						var parameter = highestFramework.GetParameterName ();
 						if (!string.IsNullOrEmpty (parameter))
@@ -132,7 +132,7 @@ namespace MonoDevelop.DotNetCore.Templating
 						Parameters [defaultParameterNetCore20] = "true";
 					}
 				} else {
-					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
 					if (highestFramework != null) {
 						var parameter = highestFramework.GetParameterName ();
 						if (!string.IsNullOrEmpty (parameter))
@@ -154,7 +154,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (!IsSupportedParameter ("NetCoreLibrary"))
 				return;
 
-			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
 			if (highestFramework != null) {
 				Parameters ["framework"] = highestFramework.Id.ShortName;
 			} else {

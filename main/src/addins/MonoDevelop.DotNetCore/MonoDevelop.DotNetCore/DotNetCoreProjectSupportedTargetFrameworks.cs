@@ -52,7 +52,7 @@ namespace MonoDevelop.DotNetCore
 			if (framework.IsNetStandard ()) {
 				return GetNetStandardTargetFrameworks ();
 			} else if (framework.IsNetCoreApp ()) {
-				return GetNetCoreAppTargetFrameworks ();
+				return GetNetCoreAppTargetFrameworksWithSdkSupport ();
 			} else if (framework.IsNetFramework ()) {
 				return GetNetFrameworkTargetFrameworks ();
 			}
@@ -94,6 +94,14 @@ namespace MonoDevelop.DotNetCore
 		{
 			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
 				yield return CreateTargetFramework (".NETCoreApp", runtimeVersion.ToString (2));
+			}
+		}
+
+		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworksWithSdkSupport ()
+		{
+			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
+				if (DotNetCoreSdk.Versions.Any(sdkVersion => runtimeVersion.Major == sdkVersion.Major && runtimeVersion.Minor == sdkVersion.Minor))
+					yield return CreateTargetFramework (".NETCoreApp", runtimeVersion.ToString (2));
 			}
 		}
 
