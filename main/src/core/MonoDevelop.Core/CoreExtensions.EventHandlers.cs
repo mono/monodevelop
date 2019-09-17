@@ -23,7 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -97,7 +98,7 @@ namespace System
 			}
 		}
 
-		static void TimeInvoke (Action<Delegate, object, EventArgs> call, Delegate[] del, object sender, EventArgs args, object groupId)
+		static void TimeInvoke (Action<Delegate, object, EventArgs> call, Delegate[] del, object sender, EventArgs args, object? groupId)
 		{
 			var sw = new Diagnostics.Stopwatch ();
 			foreach (var ev in del) {
@@ -113,7 +114,7 @@ namespace System
 			}
 		}
 
-		internal static void TimeInvoke<T> (this EventHandler<T> events, object sender, T args, object groupId = null) where T:EventArgs
+		internal static void TimeInvoke<T> (this EventHandler<T> events, object sender, T args, object? groupId = null) where T:EventArgs
 			=> TimeInvoke (
 				(del, s, a) => ((EventHandler<T>)del).Invoke (s, (T)a),
 				events.GetInvocationList (), // This can be a perf issue, do we have a different way to query it?
@@ -122,7 +123,7 @@ namespace System
 				groupId
 			);
 
-		internal static void TimeInvoke (this EventHandler events, object sender, EventArgs args, object groupId = null)
+		internal static void TimeInvoke (this EventHandler events, object sender, EventArgs args, object? groupId = null)
 			=> TimeInvoke (
 				(del, s, a) => ((EventHandler)del).Invoke (s, a),
 				events.GetInvocationList (), // This can be a perf issue, do we have a different way to query it?

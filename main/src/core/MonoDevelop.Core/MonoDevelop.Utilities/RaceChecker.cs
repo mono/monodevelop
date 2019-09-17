@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
+
 using System;
 using System.Threading;
 using MonoDevelop.Core;
@@ -31,7 +33,7 @@ namespace MonoDevelop.Utilities
 {
 	abstract class RaceChecker
 	{
-		string lockHolderStacktrace;
+		string? lockHolderStacktrace;
 		readonly object lockObject;
 		readonly Disposer lockRelease;
 
@@ -48,7 +50,7 @@ namespace MonoDevelop.Utilities
 			} else {
 				Monitor.Enter (lockObject);
 				var thisTrace = Environment.StackTrace;
-				OnRace (lockHolderStacktrace, thisTrace);
+				OnRace (lockHolderStacktrace!, thisTrace);
 				lockHolderStacktrace = thisTrace;
 			}
 
@@ -57,7 +59,7 @@ namespace MonoDevelop.Utilities
 
 		protected abstract void OnRace (string trace1, string trace2);
 
-		class Disposer : IDisposable
+		sealed class Disposer : IDisposable
 		{
 			readonly object lockObject;
 
@@ -74,7 +76,7 @@ namespace MonoDevelop.Utilities
 		}
 	}
 
-	class LoggingRaceChecker : RaceChecker
+	sealed class LoggingRaceChecker : RaceChecker
 	{
 		protected override void OnRace (string trace1, string trace2)
 		{
