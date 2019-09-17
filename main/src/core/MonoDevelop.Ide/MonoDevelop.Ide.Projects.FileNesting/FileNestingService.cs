@@ -95,17 +95,26 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		public static ProjectFile GetParentFile (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return null;
+			}
 			return GetProjectNestingInfo (inputFile.Project).GetParentForFile (inputFile);
 		}
 
 		public static bool HasChildren (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return false;
+			}
 			var children = GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 			return (children?.Count ?? 0) > 0;
 		}
 
 		public static ProjectFileCollection GetChildren (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return null;
+			}
 			return GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 		}
 	}
@@ -229,10 +238,9 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		void NotifyNestingRulesChanged (ProjectFileNestingInfo nestingInfo)
 		{
-			if (nestingInfo == null || !FileNestingService.AppliesToProject (nestingInfo.File.Project))
-				return;
-
-			FileNestingService.NotifyNestingRulesChanged (nestingInfo.File, nestingInfo.Parent);
+			if (fileNestingEnabled) {
+				FileNestingService.NotifyNestingRulesChanged (nestingInfo.File, nestingInfo.Parent);
+			}
 		}
 
 		void OnUserPropertiesChanged (object sender, Core.PropertyBagChangedEventArgs e)
