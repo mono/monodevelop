@@ -33,17 +33,13 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 		{
 			protected override bool TryParseState (string data, int start, ref int end, out GitFileState state, out string path)
 			{
-				var (sx, sy, origPath, path2) = ParsePath (data, start, end);
+				var (state2, path2) = ParsePath (data, start, end);
+				state = state2;
 				path = path2;
-				if (origPath == null) {
-					state = GitFileState.CreateSimpleState (GetState (sx, sy));
-				} else {
-					state = GitFileState.CreateRenamedState (GetState (sx, sy), GitSubmoduleState.NoSubmodule, 0, 0, 0, origPath, 0);
-				}
 				return true;
 			}
 
-			internal static (char sx, char sy, string origPath, string path) ParsePath (string text, int from, int to)
+			internal static (GitFileState state, string path) ParsePath (string text, int from, int to)
 			{
 				// format to parse is:
 				// XY PATH
@@ -51,18 +47,17 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 
 				char sx = text [from];
 				char sy = text [from + 1];
-				string origPath = null;
-				string path = null;
 				const int headerLength = 3;
+				string path;
 				var arrowIdx = text.IndexOf (" -> ", from + headerLength, to - from - headerLength, StringComparison.Ordinal);
 				if (arrowIdx >= 0) {
-					origPath = text.Substring (from + headerLength, arrowIdx - from - headerLength);
+					var origPath = text.Substring (from + headerLength, arrowIdx - from - headerLength);
 					const int arrowLength = 4;  // " -> ".Length;
 					path = text.Substring (arrowIdx + arrowLength, to - arrowIdx - arrowLength);
-				} else {
-					path = text.Substring (from + headerLength, to - from - headerLength);
-				}
-				return (sx, sy, origPath, path);
+					return (GitFileState.CreateRenamedState (GetState (sx, sy), GitSubmoduleState.NoSubmodule, 0, 0, 0, origPath, 0), path);
+				} 
+				path = text.Substring (from + headerLength, to - from - headerLength);
+				return (GitFileState.CreateSimpleState (GetState (sx, sy)), path);
 			}
 		}
 	}

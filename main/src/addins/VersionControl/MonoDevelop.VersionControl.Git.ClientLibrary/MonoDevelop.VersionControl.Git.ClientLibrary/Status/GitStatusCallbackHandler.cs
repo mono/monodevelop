@@ -38,9 +38,7 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 	{
 		protected readonly static GitFileState IgnoredState = GitFileState.CreateSimpleState (GitStatusCode.Ignored);
 		protected readonly static GitFileState UntrackedState = GitFileState.CreateSimpleState (GitStatusCode.Untracked);
-
-
-		Dictionary<string, GitFileState> fileList = new Dictionary<string, GitFileState> ();
+		readonly Dictionary<string, GitFileState> fileList = new Dictionary<string, GitFileState> ();
 
 		public Dictionary<string, GitFileState> FileList {
 			get {
