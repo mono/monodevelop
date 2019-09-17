@@ -167,22 +167,23 @@ namespace MonoDevelop.VersionControl.Git
 		const string cherryPickHead = "CHERRY_PICK_HEAD";
 		const string revertHead = "REVERT_HEAD";
 
-		static bool ShouldLock (string fullPath)
-		{
-			var fileName = Path.GetFileName (fullPath);
-			return fileName == rebaseApply || fileName == rebaseMerge || fileName == cherryPickHead || fileName == revertHead;
-		}
+		static bool ShouldLock (string fileName)
+			=> fileName.EndsWith (".lock", FilePath.PathComparison)
+			|| fileName == rebaseApply
+			|| fileName == rebaseMerge
+			|| fileName == cherryPickHead
+			|| fileName == revertHead;
 
 		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
 		{
-			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.FullPath))
+			if (ShouldLock (e.Name))
 				OnGitLocked (e.FullPath);
 		}
 
 		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
 		{
-			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.OldName)) {
-				if (!e.Name.EndsWith (".lock", StringComparison.Ordinal)) {
+			if (ShouldLock (e.OldName)) {
+				if (!ShouldLock (e.Name)) {
 					OnGitUnlocked (e.OldFullPath);
 				} else {
 					lock (lockedPathes) {
@@ -197,7 +198,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
 		{
-			if (e.FullPath.EndsWith (".lock", StringComparison.Ordinal) || ShouldLock (e.FullPath))
+			if (ShouldLock (e.Name))
 				OnGitUnlocked (e.FullPath);
 		}
 
@@ -213,7 +214,7 @@ namespace MonoDevelop.VersionControl.Git
 		void OnGitLocked (string path)
 		{
 			lock (lockedPathes) {
-				if (lockedPathes.Add (path) && lockedPathes.Count == 1 && gitLock.IsSet) {
+				if (File.Exists (path) && lockedPathes.Add (path) && lockedPathes.Count == 1 && gitLock.IsSet) {
 					gitLock.Reset ();
 					FileService.FreezeEvents ();
 				}
@@ -224,6 +225,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			lock (lockedPathes) {
 				lockedPathes.Remove (file);
+				lockedPathes.RemoveWhere (path => !File.Exists (path));
+
 				if (!gitLock.IsSet && lockedPathes.Count == 0) {
 					gitLock.Set ();
 					ThawEvents ();
@@ -588,17 +591,6 @@ namespace MonoDevelop.VersionControl.Git
 			get { return Thread.CurrentThread == GitScheduler.DedicatedThread; }
 		}
 
-		internal void RunOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
-		{
-			EnsureInitialized ();
-			if (hasUICallbacks)
-				EnsureBackgroundThread ();
-			if (IsGitThread)
-				action (GetRepository (localPath));
-			else
-				DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
-		}
-
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
 		{
 			EnsureInitialized ();
@@ -656,115 +648,110 @@ namespace MonoDevelop.VersionControl.Git
 			return DedicatedOperationFactory.StartNew (() => action (GetRepository (localPath)), cancellationToken);
 		}
 
-		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
-		{
-			if (hasUICallbacks)
-				EnsureBackgroundThread ();
-			if (!WaitAndFreezeEvents (cancellationToken))
-				return;
-			try {
-				if (IsGitThread)
-					action ();
-				else
-					DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
-			} finally {
-				ThawEvents ();
-			}
-		}
-
 		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			if (!WaitAndFreezeEvents (cancellationToken))
-				return default;
-			try {
-				if (IsGitThread)
+
+			if (IsGitThread) {
+				return RunBlockingOperationInternal (action, cancellationToken);
+			}
+
+			return DedicatedOperationFactory.StartNew (() => RunBlockingOperationInternal (action, cancellationToken))
+				.RunWaitAndCapture ();
+
+			T RunBlockingOperationInternal (Func<T> action, CancellationToken cancellationToken)
+			{
+				if (!WaitAndFreezeEvents (cancellationToken))
+					return default;
+
+				try {
 					return action ();
-				return DedicatedOperationFactory.StartNew (action).RunWaitAndCapture ();
-			} finally {
-				ThawEvents ();
+				} finally {
+					ThawEvents ();
+				}
 			}
 		}
 
 		internal Task RunBlockingOperationAsync (Action action, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
-			try {
-				if (IsGitThread) {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return Task.FromCanceled (cancellationToken);
-					action ();
+			if (IsGitThread) {
+				try {
+					RunBlockingOperationInternal (action, cancellationToken);
 					return Task.CompletedTask;
+				} catch (OperationCanceledException) {
+					return Task.FromCanceled (cancellationToken);
 				}
-				return DedicatedOperationFactory.StartNew (() => {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return;
+			}
+
+			return DedicatedOperationFactory.StartNew (() => RunBlockingOperationInternal (action, cancellationToken));
+
+			void RunBlockingOperationInternal (Action action, CancellationToken cancellationToken)
+			{
+				if (!WaitAndFreezeEvents (cancellationToken))
+					cancellationToken.ThrowIfCancellationRequested ();
+
+				try {
 					action ();
-				}, cancellationToken);
-			} finally {
-				ThawEvents ();
+				} finally {
+					ThawEvents ();
+				}
 			}
 		}
 
 		internal Task RunBlockingOperationAsync (FilePath localPath, Action<LibGit2Sharp.Repository> action, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
-			try {
-				if (IsGitThread) {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return Task.FromCanceled (cancellationToken);
-					action (GetRepository (localPath));
+			if (IsGitThread) {
+				try {
+					RunBlockingOperationInternal (localPath, action, cancellationToken);
 					return Task.CompletedTask;
+				} catch (OperationCanceledException) {
+					return Task.FromCanceled (cancellationToken);
 				}
-				return DedicatedOperationFactory.StartNew (() => {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return;
+			}
+
+			return DedicatedOperationFactory.StartNew (() => RunBlockingOperationInternal (localPath, action, cancellationToken));
+
+			void RunBlockingOperationInternal (FilePath localPath, Action<LibGit2Sharp.Repository> action, CancellationToken cancellationToken)
+			{
+				if (!WaitAndFreezeEvents (cancellationToken))
+					cancellationToken.ThrowIfCancellationRequested ();
+
+				try {
 					action (GetRepository (localPath));
-				});
-			} finally {
-				ThawEvents ();
+				} finally {
+					ThawEvents ();
+				}
 			}
 		}
 
 		internal Task<T> RunBlockingOperationAsync<T> (Func<T> action, CancellationToken cancellationToken = default)
 		{
 			EnsureInitialized ();
-			if (!WaitAndFreezeEvents (cancellationToken))
-				return default;
-			try {
-				if (IsGitThread) {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return Task.FromCanceled<T> (cancellationToken);
-					return Task.FromResult (action ());
-				}
-				return DedicatedOperationFactory.StartNew (() => {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return default;
-					return action ();
-				});
-			} finally {
-				ThawEvents ();
-			}
-		}
 
-		internal Task<T> RunBlockingOperationAsync<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, CancellationToken cancellationToken = default)
-		{
-			EnsureInitialized ();
-			try {
-				if (IsGitThread) {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return Task.FromCanceled<T> (cancellationToken);
-					return Task.FromResult (action (GetRepository (localPath)));
+			if (IsGitThread) {
+				try {
+					return Task.FromResult (RunBlockingOperationInternal (action, cancellationToken));
+				} catch (OperationCanceledException) {
+					return Task.FromCanceled<T> (cancellationToken);
 				}
-				return DedicatedOperationFactory.StartNew (() => {
-					if (!WaitAndFreezeEvents (cancellationToken))
-						return default;
-					return action (GetRepository (localPath));
-				});
-			} finally {
-				ThawEvents ();
+			}
+
+			return DedicatedOperationFactory.StartNew<T> (() => action (), cancellationToken);
+
+			T RunBlockingOperationInternal (Func<T> action, CancellationToken cancellationToken)
+			{
+				if (!WaitAndFreezeEvents (cancellationToken))
+					cancellationToken.ThrowIfCancellationRequested ();
+
+				try {
+					return action ();
+				} finally {
+					ThawEvents ();
+				}
 			}
 		}
 
