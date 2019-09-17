@@ -988,7 +988,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		async void OnFileStatusChanged (object s, FileUpdateEventArgs args)
+		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
 			try {
 				if (args.Any (f => f.FilePath == filepath || (filepath != null && !f.FilePath.IsNullOrEmpty && f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
@@ -996,7 +996,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 				}
 				foreach (FileUpdateEventInfo f in args) {
-					if (!await OnFileStatusChanged (f))
+					if (!OnFileStatusChanged (f))
 						break;
 				}
 				UpdateControlStatus ();
@@ -1005,7 +1005,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		async Task<bool> OnFileStatusChanged (FileUpdateEventInfo args)
+		bool OnFileStatusChanged (FileUpdateEventInfo args)
 		{
 			if (args.FilePath.IsNullOrEmpty)
 				return false;
