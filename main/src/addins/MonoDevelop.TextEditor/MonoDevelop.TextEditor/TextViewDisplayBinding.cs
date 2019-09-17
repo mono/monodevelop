@@ -39,6 +39,9 @@ namespace MonoDevelop.TextEditor
 		readonly Dictionary<(string addinId, string providerType), ILegacyEditorSupportProvider> legacyEditorSupportProviders =
 			new Dictionary<(string addinId, string providerType), ILegacyEditorSupportProvider> ();
 
+		readonly Lazy<bool> alwaysUseLegacyEditor = new Lazy<bool> (
+			() => FeatureSwitchService.IsFeatureEnabled ("AlwaysUseLegacyEditor").GetValueOrDefault ());
+
 		public override string Id => "MonoDevelop.TextEditor.TextViewControllerFactory";
 
 		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
@@ -49,29 +52,33 @@ namespace MonoDevelop.TextEditor
 			if (!isTextByFilePath && !isTextByMimeType)
 				yield break;
 
-			// First, check if legacy editor even has support for the file. If not, always use modern editor.
-			var legacySupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<LegacyEditorSupportExtensionNode> ("/MonoDevelop/TextEditor/LegacyEditorSupport");
-			var preferLegacy = false;
-			foreach (var node in legacySupportNodes.OrderByDescending (n => string.IsNullOrEmpty (n.ProviderType))) {
-				if ((isTextByFilePath && ExtensionMatch (node)) || (isTextByMimeType && MimeMatch (node))) {
-					preferLegacy = true;
-					break;
-				}
-
-				// Only attempt a provider check if extension/mimetype checks already failed, as it's more expensive.
-				if (PrefersLegacyEditor (node)) {
-					preferLegacy = true;
-					break;
-				}
-			}
-
-			// Next, check if there is an explicit directive to prefer the modern editor even if legacy is supported.
-			if (preferLegacy) {
-				var explicitModernSupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
-				foreach (var node in explicitModernSupportNodes) {
-					if (((isTextByFilePath && ExtensionMatch (node)) || (isTextByMimeType && MimeMatch (node))) && BuildActionAndFeatureFlagMatch (node)) {
-						preferLegacy = false;
+			// If feature switch is enabled, don't even bother checking for modern editor support.
+			// This should only be used by automatic testing tooling that hasn't updated to support modern editor yet.
+			var preferLegacy = alwaysUseLegacyEditor.Value;
+			if (!preferLegacy) {
+				// First, check if legacy editor even has support for the file. If not, always use modern editor.
+				var legacySupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<LegacyEditorSupportExtensionNode> ("/MonoDevelop/TextEditor/LegacyEditorSupport");
+				foreach (var node in legacySupportNodes.OrderByDescending (n => string.IsNullOrEmpty (n.ProviderType))) {
+					if ((isTextByFilePath && ExtensionMatch (node)) || (isTextByMimeType && MimeMatch (node))) {
+						preferLegacy = true;
 						break;
+					}
+
+					// Only attempt a provider check if extension/mimetype checks already failed, as it's more expensive.
+					if (PrefersLegacyEditor (node)) {
+						preferLegacy = true;
+						break;
+					}
+				}
+
+				// Next, check if there is an explicit directive to prefer the modern editor even if legacy is supported.
+				if (preferLegacy) {
+					var explicitModernSupportNodes = Mono.Addins.AddinManager.GetExtensionNodes<SupportedFileTypeExtensionNode> ("/MonoDevelop/TextEditor/SupportedFileTypes");
+					foreach (var node in explicitModernSupportNodes) {
+						if (((isTextByFilePath && ExtensionMatch (node)) || (isTextByMimeType && MimeMatch (node))) && BuildActionAndFeatureFlagMatch (node)) {
+							preferLegacy = false;
+							break;
+						}
 					}
 				}
 			}
