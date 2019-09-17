@@ -51,6 +51,7 @@ using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Projects.OptionPanels;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide
 {
@@ -2255,10 +2256,14 @@ namespace MonoDevelop.Ide
 			ProjectFile sourceParent = null;
 			if (filesToMove.Count == 1 && sourceProject != null) {
 				var pf = filesToMove[0];
-				if (pf != null && pf.HasChildren) {
-					foreach (ProjectFile child in pf.DependentChildren) {
-						filesToRemove.Add (child);
-						filesToMove.Add (child);
+				if (pf != null) {
+					var children = FileNestingService.GetDependentOrNestedChildren (pf);
+					if (children != null) {
+
+						foreach (ProjectFile child in children) {
+							filesToRemove.Add (child);
+							filesToMove.Add (child);
+						}
 					}
 				}
 				sourceParent = pf;

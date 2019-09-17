@@ -46,6 +46,7 @@ using Microsoft.CodeAnalysis.Shared.Options;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Projects.FileNesting;
 using MonoDevelop.Ide.RoslynServices;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui.Documents;
@@ -1361,13 +1362,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			MonoDevelop.Projects.ProjectFile file,
 			string newName)
 		{
-			if (!file.HasChildren)
+			var children = FileNestingService.GetDependentOrNestedChildren (file);
+			if (children == null)
 				return null;
 
 			List<(MonoDevelop.Projects.ProjectFile File, string NewName)> files = null;
 
 			string oldName = file.FilePath.FileName;
-			foreach (MonoDevelop.Projects.ProjectFile child in file.DependentChildren) {
+			foreach (MonoDevelop.Projects.ProjectFile child in children) {
 				string oldChildName = child.FilePath.FileName;
 				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
 					string childNewName = newName + oldChildName.Substring (oldName.Length);
