@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 		{
 			return RunTest (async root => {
 				Setup (root);
-				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				var result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions ("newTag", "msg"));
 				Assert.IsTrue (result.Success, result.ErrorMessage);
 			});
 		}
@@ -77,10 +77,10 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 		{
 			return RunTest (async root => {
 				Setup (root);
-				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				var result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions("newTag", "msg"));
 				Assert.IsTrue (result.Success, result.ErrorMessage);
 
-				result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions("newTag", "msg"));
 				Assert.IsFalse (result.Success, "has to fail.");
 			});
 		}
@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 		{
 			return RunTest (async root => {
 				Setup (root);
-				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				var result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions("newTag", "msg"));
 				Assert.IsTrue (result.Success, result.ErrorMessage);
 
 				result = await BranchUtil.DeleteTagAsync (root, "newTag");
@@ -113,19 +113,19 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 		{
 			return RunTest (async root => {
 				Setup (root);
-				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				var result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions("newTag", "msg"));
 				Assert.IsTrue (result.Success, result.ErrorMessage);
-				result = await BranchUtil.CreateNewTagAsync (root, "newTag2");
+				result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions("newTag2", "msg"));
 				Assert.IsTrue (result.Success, result.ErrorMessage);
-				result = await BranchUtil.CreateNewTagAsync (root, "otherTag");
+				result = await BranchUtil.CreateNewTagAsync (root, new CreateTagOptions("otherTag", "msg"));
 				Assert.IsTrue (result.Success, result.ErrorMessage);
 
 				var allTags = await BranchUtil.GetAllTagsAsync (root);
 				Assert.IsTrue (allTags.Count == 3);
 
-				Assert.IsTrue (allTags.Single (t => t.Name == "newTag") != null);
-				Assert.IsTrue (allTags.Single (t => t.Name == "newTag2") != null);
-				Assert.IsTrue (allTags.Single (t => t.Name == "otherTag") != null);
+				Assert.IsTrue (allTags.Any (t => t == "newTag"));
+				Assert.IsTrue (allTags.Any (t => t == "newTag2"));
+				Assert.IsTrue (allTags.Any (t => t == "otherTag"));
 			});
 		}
 

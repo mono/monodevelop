@@ -34,6 +34,40 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Git.ClientLibrary
 {
+	public class CreateTagOptions
+	{
+		/// <summary>
+		/// The name of the new tag.
+		/// </summary>
+		public string Name { get; }
+
+		/// <summary>
+		/// Use the given tag message.
+		/// </summary>
+		public string Message { get; set; }
+
+		/// <summary>
+		/// Make an unsigned, annotated tag object
+		/// </summary>
+		public bool Annotate { get; set; }
+
+		/// <summary>
+		/// Replace an existing tag with the given name (instead of failing)
+		/// </summary>
+		public bool Force { get; set; }
+
+		/// <summary>
+		/// The object that the new tag will refer to, usually a commit. Defaults to HEAD.
+		/// </summary>
+		public string Commit { get; set; }
+
+		public CreateTagOptions (string name, string Message)
+		{
+			this.Name = name ?? throw new ArgumentNullException (nameof (name));
+			this.Message = Message ?? throw new ArgumentNullException (nameof (Message));
+		}
+	}
+
 	public static class BranchUtil
 	{
 		public static async Task<GitLocalBranch> GetCurrentBranchAsync (string rootPath, CancellationToken cancellationToken = default)
@@ -48,12 +82,24 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 		}
 
 		#region Tags
-		public static async Task<GitResult> CreateNewTagAsync (string rootPath, string tagName, CancellationToken cancellationToken = default)
+		public static async Task<GitResult> CreateNewTagAsync (string rootPath, CreateTagOptions createTagOptions, CancellationToken cancellationToken = default)
 		{
+			if (createTagOptions is null)
+				throw new ArgumentNullException (nameof (createTagOptions));
 			var handler = new GitOutputTrackerCallbackHandler ();
 			var arguments = new GitArguments (rootPath);
 			arguments.AddArgument ("tag");
-			arguments.AddArgument (tagName);
+			if (createTagOptions.Annotate)
+				arguments.AddArgument ("-a");
+			if (createTagOptions.Force)
+				arguments.AddArgument ("-f");
+			if (!string.IsNullOrEmpty (createTagOptions.Message))
+				arguments.AddArgument ("\"--message=" + createTagOptions.Message + "\"");
+
+			arguments.AddArgument (createTagOptions.Name);
+
+			if (createTagOptions.Commit != null)
+				arguments.AddArgument (createTagOptions.Commit);
 			return await new GitProcess ().StartAsync (arguments, handler, false, cancellationToken);
 		}
 
@@ -69,15 +115,15 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 
 		class GitTagOutputHandler : GitOutputTrackerCallbackHandler
 		{
-			public List<GitTag> tags = new List<GitTag> ();
+			public List<string> tags = new List<string> ();
 
 			public override void OnOutput (string line)
 			{
-				tags.Add (new GitTag (line));
+				tags.Add (line);
 			}
 		}
 
-		public static async Task<List<GitTag>> GetAllTagsAsync (string rootPath, CancellationToken cancellationToken = default)
+		public static async Task<List<string>> GetAllTagsAsync (string rootPath, CancellationToken cancellationToken = default)
 		{
 			var handler = new GitTagOutputHandler ();
 			var arguments = new GitArguments (rootPath);

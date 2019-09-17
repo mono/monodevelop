@@ -2030,7 +2030,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public Task<List<string>> GetTagsAsync (CancellationToken cancellationToken = default)
 		{
-			return RunOperationAsync (() => RootRepository.Tags.Select (t => t.FriendlyName).ToList (), cancellationToken: cancellationToken);
+			return BranchUtil.GetAllTagsAsync (this.RootPath);
 		}
 
 		public Task AddTagAsync (string name, Revision rev, string message, CancellationToken cancellationToken = default)
@@ -2038,14 +2038,15 @@ namespace MonoDevelop.VersionControl.Git
 			Signature sig = GetSignature ();
 			if (sig == null)
 				return Task.CompletedTask;
-
 			var gitRev = (GitRevision)rev;
-			return RunBlockingOperationAsync (() => RootRepository.Tags.Add (name, gitRev.GetCommit (RootRepository), sig, message), cancellationToken: cancellationToken);
+			var sha = gitRev.GetCommit (RootRepository).Sha;
+
+			return BranchUtil.CreateNewTagAsync (this.RootPath, new CreateTagOptions (name, message) { Commit = sha });
 		}
 
 		public Task RemoveTagAsync (string name, CancellationToken cancellationToken = default)
 		{
-			return RunBlockingOperationAsync (() => RootRepository.Tags.Remove (name), cancellationToken: cancellationToken);
+			return BranchUtil.DeleteTagAsync (RootPath, name);
 		}
 
 		public Task PushTagAsync (string name, CancellationToken cancellationToken = default)
