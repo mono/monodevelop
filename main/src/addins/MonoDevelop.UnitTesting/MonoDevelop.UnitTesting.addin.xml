@@ -62,6 +62,10 @@
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestCommands.DebugTest"
 			_label = "Debug Test"
 			type="array" />
+		<Command id = "MonoDevelop.UnitTesting.Commands.TestCommands.DebugAllTests"
+			_label = "Debug All Tests"
+			_description="Debug all tests of the current selected project."
+			defaultHandler="MonoDevelop.UnitTesting.Commands.DebugAllTestsHandler"/>
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestCommands.RunTest" _label = "Run Test" />
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestCommands.GoToFailure" _label = "Go to failure" />
