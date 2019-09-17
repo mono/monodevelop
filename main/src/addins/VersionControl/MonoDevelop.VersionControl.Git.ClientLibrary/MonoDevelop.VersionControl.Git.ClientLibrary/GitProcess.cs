@@ -119,66 +119,68 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 				throw new ArgumentNullException (nameof (arguments));
 			if (callbackHandler is null)
 				throw new ArgumentNullException (nameof (callbackHandler));
-
-
 			return (askPass ? exclusiveOperationFactory : concurrentOperationFactory).StartNew (delegate {
-				try {
-					this.callbacks = callbackHandler;
-					var startInfo = new ProcessStartInfo ("git");
-					startInfo.WorkingDirectory = arguments.GitRootPath;
-					startInfo.RedirectStandardError = true;
-					startInfo.RedirectStandardOutput = true;
-					startInfo.UseShellExecute = false;
-					startInfo.Arguments = arguments.Arguments;
+				return StartProcess (arguments, callbackHandler, askPass,  cancellationToken);
+			}, cancellationToken);
+		}
 
-					if (askPass) {
-						var passApp = Path.Combine (Path.GetDirectoryName (typeof (GitProcess).Assembly.Location), "GitAskPass");
-						startInfo.EnvironmentVariables.Add ("GIT_ASKPASS", passApp);
-						startInfo.EnvironmentVariables.Add ("SSH_ASKPASS", passApp);
-						startInfo.EnvironmentVariables.Add ("MONODEVELOP_GIT_ASKPASS_PIPE", pipe);
-						server = new NamedPipeServerStream (pipe);
+		GitResult StartProcess (GitArguments arguments, AbstractGitCallbackHandler callbackHandler, bool askPass, CancellationToken cancellationToken)
+		{
+			try {
+				this.callbacks = callbackHandler;
+				var startInfo = new ProcessStartInfo ("git") {
+					WorkingDirectory = arguments.GitRootPath,
+					RedirectStandardError = true,
+					RedirectStandardOutput = true,
+					UseShellExecute = false,
+					Arguments = arguments.Arguments
+				};
+
+				if (askPass) {
+					var passApp = Path.Combine (Path.GetDirectoryName (typeof (GitProcess).Assembly.Location), "GitAskPass");
+					startInfo.EnvironmentVariables.Add ("GIT_ASKPASS", passApp);
+					startInfo.EnvironmentVariables.Add ("SSH_ASKPASS", passApp);
+					startInfo.EnvironmentVariables.Add ("MONODEVELOP_GIT_ASKPASS_PIPE", pipe);
+					server = new NamedPipeServerStream (pipe);
+				}
+				process = Process.Start (startInfo);
+				process.OutputDataReceived += (sender, e) => {
+					if (cancellationToken.IsCancellationRequested) {
+						SafeKillProcess ();
+						cancellationToken.ThrowIfCancellationRequested ();
 					}
-
-					process = Process.Start (startInfo);
-					process.OutputDataReceived += (sender, e) => {
-						if (cancellationToken.IsCancellationRequested) {
-							SafeKillProcess ();
-							cancellationToken.ThrowIfCancellationRequested ();
-						}
-						if (e?.Data == null)
-							return;
+					if (e?.Data == null)
+						return;
+					if (arguments.TrackProgress && ProgressParser.ParseProgress (e.Data, callbackHandler))
+						return;
+					callbackHandler.OnOutput (e.Data);
+				};
+				process.ErrorDataReceived += (sender, e) => {
+					if (cancellationToken.IsCancellationRequested) {
+						SafeKillProcess ();
+						cancellationToken.ThrowIfCancellationRequested ();
+					}
+					if (e?.Data == null)
+						return;
+					if (IsError (e.Data)) {
+						errorText.AppendLine (e.Data);
+					} else {
 						if (arguments.TrackProgress && ProgressParser.ParseProgress (e.Data, callbackHandler))
 							return;
 						callbackHandler.OnOutput (e.Data);
-					};
-					process.ErrorDataReceived += (sender, e) => {
-						if (cancellationToken.IsCancellationRequested) {
-							SafeKillProcess ();
-							cancellationToken.ThrowIfCancellationRequested ();
-						}
-						if (e?.Data == null)
-							return;
-						if (IsError (e.Data)) {
-							errorText.AppendLine (e.Data);
-						} else {
-							if (arguments.TrackProgress && ProgressParser.ParseProgress (e.Data, callbackHandler))
-								return;
-							callbackHandler.OnOutput (e.Data);
-						}
-					};
-					if (!process.Start ())
-						throw new InvalidOperationException ("Can't start git process.");
-					process.BeginOutputReadLine ();
-					process.BeginErrorReadLine ();
-					cancellationToken.Register (SafeKillProcess);
-					if (askPass)
-						server.BeginWaitForConnection (HandleAsyncCallback, server);
-					process.WaitForExit ();
-				} finally {
-					SafeKillProcess ();
-				}
-				return new GitResult { Success = process.ExitCode == 0, ExitCode = process.ExitCode, ErrorMessage = errorText.ToString () };
-			}, cancellationToken);
+					}
+				};
+				process.BeginOutputReadLine ();
+				process.BeginErrorReadLine ();
+				cancellationToken.Register (SafeKillProcess);
+				if (askPass)
+				server.BeginWaitForConnection (HandleAsyncCallback, server);
+
+				process.WaitForExit ();
+			} finally {
+				SafeKillProcess ();
+			}
+			return new GitResult { Success = process.ExitCode == 0, ExitCode = process.ExitCode, ErrorMessage = errorText.ToString () };
 		}
 
 		void SafeKillProcess ()

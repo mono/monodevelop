@@ -55,12 +55,20 @@
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitStatusCode.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitSubmoduleState.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\GitRenameOrCopyScore.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\GitBranch.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\GitLocalBranch.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\GitReference.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\BranchUtil.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\GitTag.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Init\GitInit.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\" />
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Clone\" />
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Version\" />
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Init\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
