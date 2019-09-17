@@ -31,10 +31,9 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 {
 	static class TestUtil
 	{
-
 		public static string CreateTempDirectory ()
 		{
-			Random rnd = new Random ();
+			var rnd = new Random ();
 			string result;
 			while (true) {
 				result = Path.Combine (Path.GetTempPath (), "gitLibTest_" + rnd.Next ());

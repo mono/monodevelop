@@ -29,6 +29,8 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using NUnit.Framework.Internal;
 using System.IO;
+using System.Diagnostics;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 {
@@ -52,12 +54,100 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 	public class GitBranchTests : GitTestBase
 	{
 		[Test]
-		public Task GetCurrentBranch()
+		public Task GetCurrentBranchTest ()
 		{
 			return RunTest (async root => {
 				var currentBranch = await BranchUtil.GetCurrentBranchAsync (root);
 				Assert.AreEqual ("master", currentBranch.Name);
 			});
+		}
+
+		[Test]
+		public Task CreateTagTest ()
+		{
+			return RunTest (async root => {
+				Setup (root);
+				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+			});
+		}
+
+		[Test]
+		public Task CreateExistingTagTest ()
+		{
+			return RunTest (async root => {
+				Setup (root);
+				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+
+				result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				Assert.IsFalse (result.Success, "has to fail.");
+			});
+		}
+
+		[Test]
+		public Task DeleteTagTest ()
+		{
+			return RunTest (async root => {
+				Setup (root);
+				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+
+				result = await BranchUtil.DeleteTagAsync (root, "newTag");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+			});
+		}
+
+		[Test]
+		public Task DeleteNonExistingTagTest ()
+		{
+			return RunTest (async root => {
+				Setup (root);
+				var result = await BranchUtil.DeleteTagAsync (root, "notExist");
+				Assert.IsFalse (result.Success, result.ErrorMessage);
+			});
+		}
+
+		[Test]
+		public Task ListAllTagsTest ()
+		{
+			return RunTest (async root => {
+				Setup (root);
+				var result = await BranchUtil.CreateNewTagAsync (root, "newTag");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+				result = await BranchUtil.CreateNewTagAsync (root, "newTag2");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+				result = await BranchUtil.CreateNewTagAsync (root, "otherTag");
+				Assert.IsTrue (result.Success, result.ErrorMessage);
+
+				var allTags = await BranchUtil.GetAllTagsAsync (root);
+				Assert.IsTrue (allTags.Count == 3);
+
+				Assert.IsTrue (allTags.Single (t => t.Name == "newTag") != null);
+				Assert.IsTrue (allTags.Single (t => t.Name == "newTag2") != null);
+				Assert.IsTrue (allTags.Single (t => t.Name == "otherTag") != null);
+			});
+		}
+
+		void Setup (string root)
+		{
+			var path = Path.Combine (root, "foo.txt");
+			File.WriteAllText (path, "Test content.");
+			var si = new ProcessStartInfo ("git") {
+				WorkingDirectory = root,
+				Arguments = "add foo.txt"
+			};
+			var p = Process.Start (si);
+			p.WaitForExit ();
+			Assert.AreEqual (0, p.ExitCode);
+
+			si = new ProcessStartInfo ("git") {
+				WorkingDirectory = root,
+				Arguments = "commit -a -m 'first commit.'"
+			};
+			p = Process.Start (si);
+			p.WaitForExit ();
+			Assert.AreEqual (0, p.ExitCode);
 		}
 	}
 }

@@ -30,6 +30,7 @@ using System.Text;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Git.ClientLibrary
 {
@@ -42,10 +43,51 @@ namespace MonoDevelop.VersionControl.Git.ClientLibrary
 			arguments.AddArgument ("symbolic-ref");
 			arguments.AddArgument ("--short");
 			arguments.AddArgument ("HEAD");
-			Console.WriteLine (arguments.Arguments);
 			await new GitProcess ().StartAsync (arguments, handler, false, cancellationToken);
-			Console.WriteLine (handler.Output);
 			return new GitLocalBranch (handler.Output.TrimEnd ());
 		}
+
+		#region Tags
+		public static async Task<GitResult> CreateNewTagAsync (string rootPath, string tagName, CancellationToken cancellationToken = default)
+		{
+			var handler = new GitOutputTrackerCallbackHandler ();
+			var arguments = new GitArguments (rootPath);
+			arguments.AddArgument ("tag");
+			arguments.AddArgument (tagName);
+			return await new GitProcess ().StartAsync (arguments, handler, false, cancellationToken);
+		}
+
+		public static async Task<GitResult> DeleteTagAsync (string rootPath, string tagName, CancellationToken cancellationToken = default)
+		{
+			var handler = new GitOutputTrackerCallbackHandler ();
+			var arguments = new GitArguments (rootPath);
+			arguments.AddArgument ("tag");
+			arguments.AddArgument ("-d");
+			arguments.AddArgument (tagName);
+			return await new GitProcess ().StartAsync (arguments, handler, false, cancellationToken);
+		}
+
+		class GitTagOutputHandler : GitOutputTrackerCallbackHandler
+		{
+			public List<GitTag> tags = new List<GitTag> ();
+
+			public override void OnOutput (string line)
+			{
+				tags.Add (new GitTag (line));
+			}
+		}
+
+		public static async Task<List<GitTag>> GetAllTagsAsync (string rootPath, CancellationToken cancellationToken = default)
+		{
+			var handler = new GitTagOutputHandler ();
+			var arguments = new GitArguments (rootPath);
+			arguments.AddArgument ("tag");
+			arguments.AddArgument ("-l");
+			var result = await new GitProcess ().StartAsync (arguments, handler, false, cancellationToken);
+			if (!result.Success)
+				throw new InvalidOperationException (result.ErrorMessage);
+			return handler.tags;
+		}
+		#endregion
 	}
 }
