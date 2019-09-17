@@ -245,7 +245,7 @@ namespace MonoDevelop.VersionControl
 		// Returns the versioning status of a file or directory
 		public async Task<VersionInfo> GetVersionInfoAsync (FilePath localPath, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None, CancellationToken cancellationToken = default)
 		{
-			var infos = await GetVersionInfoAsync (new FilePath [] { localPath }, queryFlags, cancellationToken);
+			var infos = await GetVersionInfoAsync (new FilePath [] { localPath }, queryFlags, cancellationToken).ConfigureAwait (false);
 			if (infos.Count != 1) {
 				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Count, localPath);
 				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
@@ -293,15 +293,16 @@ namespace MonoDevelop.VersionControl
 		public async Task<IReadOnlyList<VersionInfo>> GetVersionInfoAsync (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None, CancellationToken cancellationToken = default)
 		{
 			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
-				var res = await ExclusiveOperationFactory.StartNew (async delegate {
+				var task = await ExclusiveOperationFactory.StartNew (delegate {
 					// We shouldn't use IEnumerable because elements don't save property modifications.
-					var res = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
-					foreach (var vi in res)
-						if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken);
-					await infoCache.SetStatusAsync (res, cancellationToken: cancellationToken);
-					return res;
-				});
-				return await res;
+					return OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
+				}).ConfigureAwait (false);
+
+				var res = await task.ConfigureAwait (false);
+				foreach (var vi in res)
+					if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
+				await infoCache.SetStatusAsync (res, cancellationToken: cancellationToken).ConfigureAwait (false);
+				return res;
 			}
 			var pathsToQuery = new List<FilePath> ();
 			var result = new List<VersionInfo> ();
@@ -316,7 +317,7 @@ namespace MonoDevelop.VersionControl
 				else {
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (path, "", Directory.Exists (path), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
-					await infoCache.SetStatusAsync (vi, false);
+					await infoCache.SetStatusAsync (vi, false).ConfigureAwait (false);
 					result.Add (vi);
 					pathsToQuery.Add (path);
 				}
@@ -324,13 +325,13 @@ namespace MonoDevelop.VersionControl
 			}
 			if (pathsToQuery.Count > 0) {
 				ExclusiveOperationFactory.StartNew (async delegate {
-					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
+					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken).ConfigureAwait (false);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
-							await vi.InitAsync (this, cancellationToken);
+							await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
 						}
 					}
-					await infoCache.SetStatusAsync (status, cancellationToken);
+					await infoCache.SetStatusAsync (status, cancellationToken).ConfigureAwait (false);
 				}).Ignore ();
 			}
 			return result;
@@ -360,13 +361,14 @@ namespace MonoDevelop.VersionControl
 			}
 			if (pathsToQuery.Count > 0) {
 				ExclusiveOperationFactory.StartNew (async delegate {
-					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+					// we don't care about initialization and setstatus async to happen on the exclusive thread, as we're not running a query here.
+					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ConfigureAwait (false);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
-							await vi.InitAsync (this);
+							await vi.InitAsync (this).ConfigureAwait (false);
 						}
 					}
-					await infoCache.SetStatusAsync (status);
+					await infoCache.SetStatusAsync (status).ConfigureAwait (false);
 				}).Ignore ();
 			}
 			if (getVersionInfoFailed) {
@@ -381,7 +383,7 @@ namespace MonoDevelop.VersionControl
 		{
 			try {
 				if (recursive) {
-					return await OnGetDirectoryVersionInfoAsync (localDirectory, getRemoteStatus, true, cancellationToken);
+					return await OnGetDirectoryVersionInfoAsync (localDirectory, getRemoteStatus, true, cancellationToken).ConfigureAwait (false);
 				}
 
 				var status = infoCache.GetDirectoryStatus (localDirectory);
@@ -390,8 +392,8 @@ namespace MonoDevelop.VersionControl
 
 				var directoryVersionInfo = await OnGetDirectoryVersionInfoAsync (localDirectory, getRemoteStatus, false, cancellationToken).ConfigureAwait (false);
 				foreach (var vi in directoryVersionInfo)
-					if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken);
-				await infoCache.SetDirectoryStatusAsync (localDirectory, directoryVersionInfo, getRemoteStatus, cancellationToken);
+					if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
+				await infoCache.SetDirectoryStatusAsync (localDirectory, directoryVersionInfo, getRemoteStatus, cancellationToken).ConfigureAwait (false);
 
 				// If we have a status value but the value was invalidated (RequiresRefresh == true)
 				// then we return the invalidated value while we start an async query to get the new one
@@ -440,7 +442,7 @@ namespace MonoDevelop.VersionControl
 		{
 			using (var tracker = Instrumentation.GetRevisionChangesCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
 				try {
-					return await OnGetRevisionChangesAsync (revision, cancellationToken);
+					return await OnGetRevisionChangesAsync (revision, cancellationToken).ConfigureAwait (false);
 				} catch {
 					tracker.Metadata.SetFailure ();
 					throw;
@@ -453,11 +455,11 @@ namespace MonoDevelop.VersionControl
 		public abstract Task<string> GetBaseTextAsync (FilePath localFile, CancellationToken cancellationToken = default);
 
 		// Returns the revision history of a file
-		public Task<Revision[]> GetHistoryAsync (FilePath localFile, Revision since, CancellationToken cancellationToken = default)
+		public async Task<Revision[]> GetHistoryAsync (FilePath localFile, Revision since, CancellationToken cancellationToken = default)
 		{
 			using (var tracker = Instrumentation.GetHistoryCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
 				try {
-					return OnGetHistoryAsync (localFile, since, cancellationToken);
+					return await OnGetHistoryAsync (localFile, since, cancellationToken).ConfigureAwait (false);
 				} catch {
 					tracker.Metadata.SetFailure ();
 					throw;
@@ -492,7 +494,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new PublishMetadata (VersionControlSystem) { PathsCount = files.Length, SubFolder = !RootPath.IsNullOrEmpty && localPath.IsChildPathOf(RootPath) };
 			using (var tracker = Instrumentation.PublishCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					var res = await OnPublishAsync (serverPath, localPath, files, message, monitor);
+					var res = await OnPublishAsync (serverPath, localPath, files, message, monitor).ConfigureAwait (false);
 					ClearCachedVersionInfo (localPath);
 					return res;
 				} catch {
@@ -516,7 +518,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new MultipathOperationMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse };
 			using (var tracker = Instrumentation.UpdateCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnUpdateAsync (localPaths, recurse, monitor);
+					await OnUpdateAsync (localPaths, recurse, monitor).ConfigureAwait (false);
 					ClearCachedVersionInfo (localPaths);
 				} catch {
 					metadata.SetFailure ();
@@ -557,7 +559,7 @@ namespace MonoDevelop.VersionControl
 			using (var tracker = Instrumentation.CommitCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					ClearCachedVersionInfo (changeSet.BaseLocalPath);
-					await OnCommitAsync (changeSet, monitor);
+					await OnCommitAsync (changeSet, monitor).ConfigureAwait (false);
 				} catch {
 					metadata.SetFailure ();
 					throw;
@@ -579,7 +581,7 @@ namespace MonoDevelop.VersionControl
 			using (var tracker = Instrumentation.CheckoutCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					ClearCachedVersionInfo (targetLocalPath);
-					await OnCheckoutAsync (targetLocalPath, rev, recurse, monitor);
+					await OnCheckoutAsync (targetLocalPath, rev, recurse, monitor).ConfigureAwait (false);
 
 					if (!Directory.Exists (targetLocalPath))
 						metadata.SetFailure ();
@@ -599,7 +601,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new RevertMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse, OperationType = RevertMetadata.RevertType.LocalChanges };
 			using (var tracker = Instrumentation.RevertCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnRevertAsync (localPaths, recurse, monitor);
+					await OnRevertAsync (localPaths, recurse, monitor).ConfigureAwait (false);
 					ClearCachedVersionInfo (localPaths);
 				} catch {
 					metadata.SetFailure ();
@@ -621,7 +623,7 @@ namespace MonoDevelop.VersionControl
 			using (var tracker = Instrumentation.RevertCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					ClearCachedVersionInfo (localPath);
-					await OnRevertRevisionAsync (localPath, revision, monitor);
+					await OnRevertRevisionAsync (localPath, revision, monitor).ConfigureAwait (false);
 				} catch {
 					metadata.SetFailure ();
 					throw;
@@ -637,7 +639,7 @@ namespace MonoDevelop.VersionControl
 			using (var tracker = Instrumentation.RevertCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					ClearCachedVersionInfo (localPath);
-					await OnRevertToRevisionAsync (localPath, revision, monitor);
+					await OnRevertToRevisionAsync (localPath, revision, monitor).ConfigureAwait (false);
 				} catch {
 					metadata.SetFailure ();
 					throw;
@@ -650,7 +652,7 @@ namespace MonoDevelop.VersionControl
 		// Adds a file or directory to the repository
 		public void Add (FilePath localPath, bool recurse, ProgressMonitor monitor)
 		{
-			AddAsync (new FilePath [] { localPath }, recurse, monitor).Ignore ();
+			AddAsync (new FilePath [] { localPath }, recurse, monitor).Wait ();
 		}
 
 		public Task AddAsync (FilePath localPath, bool recurse, ProgressMonitor monitor)
@@ -663,7 +665,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new MultipathOperationMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse };
 			using (var tracker = Instrumentation.AddCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnAddAsync (localPaths, recurse, monitor);
+					await OnAddAsync (localPaths, recurse, monitor).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to add file", e);
 					metadata.SetFailure ();
@@ -693,7 +695,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new MoveMetadata (VersionControlSystem) { Force = force, OperationType = MoveMetadata.MoveType.File };
 			using (var tracker = Instrumentation.MoveCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnMoveFileAsync (localSrcPath, localDestPath, force, monitor);
+					await OnMoveFileAsync (localSrcPath, localDestPath, force, monitor).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to move file", e);
 					metadata.SetFailure ();
@@ -716,7 +718,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new MoveMetadata (VersionControlSystem) { Force = force, OperationType = MoveMetadata.MoveType.Directory };
 			using (var tracker = Instrumentation.MoveCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnMoveDirectoryAsync (localSrcPath, localDestPath, force, monitor);
+					await OnMoveDirectoryAsync (localSrcPath, localDestPath, force, monitor).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to move directory", e);
 					metadata.SetFailure ();
@@ -744,7 +746,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new DeleteMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Force = force, KeepLocal = keepLocal };
 			using (var tracker = Instrumentation.DeleteCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnDeleteFilesAsync (localPaths, force, monitor, keepLocal);
+					await OnDeleteFilesAsync (localPaths, force, monitor, keepLocal).ConfigureAwait (false);
 					foreach (var path in localPaths)
 						args.Add (new FileUpdateEventInfo (this, path, false));
 				} catch (Exception e) {
@@ -764,7 +766,7 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteDirectory (FilePath localPath, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			DeleteDirectoriesAsync (new FilePath[] { localPath }, force, monitor, keepLocal).Ignore ();
+			DeleteDirectoriesAsync (new FilePath[] { localPath }, force, monitor, keepLocal).Wait ();
 		}
 
 		public async Task DeleteDirectoriesAsync (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
@@ -773,7 +775,7 @@ namespace MonoDevelop.VersionControl
 			var metadata = new DeleteMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Force = force, KeepLocal = keepLocal };
 			using (var tracker = Instrumentation.DeleteCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					await OnDeleteDirectoriesAsync (localPaths, force, monitor, keepLocal);
+					await OnDeleteDirectoriesAsync (localPaths, force, monitor, keepLocal).ConfigureAwait (false);
 					foreach (var path in localPaths)
 						args.Add (new FileUpdateEventInfo (this, path, true));
 				} catch (Exception e) {
@@ -991,7 +993,7 @@ namespace MonoDevelop.VersionControl
 			using (var tracker = Instrumentation.IgnoreCounter.BeginTiming (metadata)) {
 				try {
 					ClearCachedVersionInfo (localPath);
-					await OnIgnoreAsync (localPath, cancellationToken);
+					await OnIgnoreAsync (localPath, cancellationToken).ConfigureAwait (false);
 				} catch {
 					metadata.SetFailure ();
 					throw;
@@ -1008,7 +1010,7 @@ namespace MonoDevelop.VersionControl
 			using (var tracker = Instrumentation.UnignoreCounter.BeginTiming (metadata)) {
 				try {
 					ClearCachedVersionInfo (localPath);
-					await OnUnignoreAsync (localPath, cancellationToken);
+					await OnUnignoreAsync (localPath, cancellationToken).ConfigureAwait (false);
 				} catch {
 					metadata.SetFailure ();
 					throw;

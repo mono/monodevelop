@@ -235,12 +235,12 @@
 		{ "name": "Preview Diff Removed Line", "fore": "#5c2c2c", "back": "#dcb4b4" },
 		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
 
-		{ "name": "Css Comment", "fore": "aluminium4", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "aluminium2", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "butter2", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "aluminium2", "weight": "bold" },
-		{ "name": "Css String Value", "fore": "butter2", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "plum1", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "aluminium4" },
+		{ "name": "Css Property Name", "fore": "aluminium2" },
+		{ "name": "Css Property Value", "fore": "butter2" },
+		{ "name": "Css Selector", "fore": "aluminium2" },
+		{ "name": "Css String Value", "fore": "butter2" },
+		{ "name": "Css Keyword", "fore": "plum1" },
 
 		{ "name": "Script Comment", "fore": "aluminium4" },
 		{ "name": "Script Keyword", "fore": "plum1" },

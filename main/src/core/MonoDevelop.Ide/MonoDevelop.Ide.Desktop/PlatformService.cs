@@ -348,6 +348,11 @@ namespace MonoDevelop.Ide.Desktop
 			return new DesktopApplication[0];
 		}
 
+		public virtual IEnumerable<DesktopApplication> GetApplications (string filename, DesktopApplicationRole role)
+		{
+			return GetApplications (filename);
+		}
+
 		public virtual Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
 			var screen = Gdk.Display.Default.GetScreen (screenNumber);

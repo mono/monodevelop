@@ -81,6 +81,9 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("WarningsNotAsErrors", DefaultValue = "")]
 		string warningsNotAsErrors = "";
 
+		[ItemProperty ("Nullable", DefaultValue = "")]
+		string nullableContextOptions = "";
+
 		protected override void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
@@ -160,7 +163,8 @@ namespace MonoDevelop.CSharp.Project
 				concurrentBuild: true,
 				metadataReferenceResolver: metadataReferenceResolver,
 				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
-				strongNameProvider: new DesktopStrongNameProvider ()
+				strongNameProvider: new DesktopStrongNameProvider (),
+				nullableContextOptions: NullableContextOptions
 			);
 
 			return options;
@@ -216,6 +220,35 @@ namespace MonoDevelop.CSharp.Project
 				SourceCodeKind.Regular,
 				ImmutableArray<string>.Empty.AddRange (symbols)
 			);
+		}
+
+		public NullableContextOptions NullableContextOptions {
+			get {
+				switch (nullableContextOptions.ToLower ()) {
+				case "enable":
+					return NullableContextOptions.Enable;
+				case "warnings":
+					return NullableContextOptions.Warnings;
+				case "annotations":
+					return NullableContextOptions.Annotations;
+				case "": // NOTE: Will need to update this if default ever changes
+				case "disable":
+					return NullableContextOptions.Disable;
+				default:
+					LoggingService.LogError ("Unknown Nullable string '" + nullableContextOptions + "'");
+					return NullableContextOptions.Disable;
+				}
+			}
+			set {
+				try {
+					if (NullableContextOptions == value) {
+						return;
+					}
+				} catch (Exception) { }
+
+				nullableContextOptions = value.ToString ();
+				NotifyChange ();
+			}
 		}
 
 

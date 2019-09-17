@@ -27,15 +27,13 @@
 using System;
 using System.IO;
 using System.Diagnostics;
-using System.Xml;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using System.Linq;
 using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
@@ -696,6 +694,26 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Compile items preferred over None items.
+		/// </summary>
+		[Test]
+		public async Task GetSourceFilesAsync_SdkProjectWithCSharpFileDefindAsNoneThenCompileItem_FileHasCompileBuildAction ()
+		{
+			FilePath solFile = Util.GetSampleProject ("duplicate-none-compile-items", "duplicate-none-compile-items.sln");
+
+			RunMSBuildRestore (solFile);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+
+				var files = await p.GetSourceFilesAsync (ConfigurationSelector.Default);
+				var class1File = files.Single (f => f.FilePath.FileName == "Class1.cs");
+
+				Assert.AreEqual (BuildAction.Compile, class1File.BuildAction);
+			}
+		}
+
 		[Test]
 		public async Task AddNewFileToProjectAndSave_ProjectHas1500CSharpFiles_SavingIsFast ()
 		{
@@ -731,6 +749,36 @@ namespace MonoDevelop.Projects
 				// Takes about 300ms with ProjectFile.Include caching. Here we use 2 seconds
 				// in case the build server is slow.
 				Assert.That (timer.ElapsedMilliseconds, Is.LessThan (2000));
+			}
+		}
+
+		[Test]
+		public async Task MultiTargetProject_ExecutionTargets ()
+		{
+			FilePath solutionFile = Util.GetSampleProject ("multi-target-execution-targets", "multi-target.sln");
+
+			RunMSBuildRestore (solutionFile);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFile)) {
+				var p = (DotNetProject)sol.Items [0];
+
+				var executionTargets = p.GetExecutionTargets (ConfigurationSelector.Default)
+					.Cast<TargetFrameworkExecutionTarget> ()
+					.ToList ();
+
+				var names = executionTargets.Select (t => t.Name).ToList ();
+				var frameworks = executionTargets.Select (t => t.Framework.ToString ()).ToList ();
+				var frameworkShortNames = executionTargets.Select (t => t.FrameworkShortName).ToList ();
+
+				Assert.That (names, Contains.Item ("net472"));
+				Assert.That (names, Contains.Item ("netcoreapp1.1"));
+				Assert.That (frameworks, Contains.Item (".NETFramework,Version=v4.7.2"));
+				Assert.That (frameworks, Contains.Item (".NETCoreApp,Version=v1.1"));
+				Assert.That (frameworkShortNames, Contains.Item ("net472"));
+				Assert.That (frameworkShortNames, Contains.Item ("netcoreapp1.1"));
+				Assert.AreEqual (2, executionTargets.Count);
+				Assert.AreEqual ("md-framework-dependency", executionTargets [0].Image);
+				Assert.AreEqual ("md-framework-dependency", executionTargets [1].Image);
 			}
 		}
 

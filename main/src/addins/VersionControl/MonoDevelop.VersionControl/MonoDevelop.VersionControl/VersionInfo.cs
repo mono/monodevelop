@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl
 		{
 			ownerRepository = repo;
 			RequiresRefresh = false;
-			operations = await ownerRepository.GetSupportedOperationsAsync (this, cancellationToken);
+			operations = await ownerRepository.GetSupportedOperationsAsync (this, cancellationToken).ConfigureAwait (false);
 		}
 		
 		public static VersionInfo CreateUnversioned (FilePath path, bool isDirectory)

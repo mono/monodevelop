@@ -52,7 +52,8 @@
   </ItemGroup>
 
   <Import Project="$(VSEditorApiDirectory)build\Environment.props" />
-  <Import Project="$(VSEditorApiDirectory)ProjectReferences.projitems" />
+  <Import Project="$(VSEditorApiDirectory)src\OpenSource.Def.projitems" />
+  <Import Project="$(VSEditorApiDirectory)src\OpenSource.Impl.projitems" />
 
   <!-- MSBuild doesn't copy the FPF references as they match BCL assembly names -->
   <Target Name="CopyFPFAssemblies" AfterTargets="_CopyFilesMarkedCopyLocal" Condition="'$(ReferencesVSEditorCopyToOutput)'=='true'">

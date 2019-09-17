@@ -37,10 +37,11 @@ namespace MonoDevelop.VersionControl.Views
 	public class VersionControlDocumentInfo
 	{
 		bool alreadyStarted = false;
+		Document document;
 
 		public Document Document {
-			get;
-			set;
+			get => document ?? Controller?.Document;
+			set => document = value;
 		}
 
 		public VersionControlDocumentController VersionControlExtension {

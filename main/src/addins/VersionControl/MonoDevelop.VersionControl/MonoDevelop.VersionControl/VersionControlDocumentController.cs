@@ -43,13 +43,14 @@ namespace MonoDevelop.VersionControl
 	{
 		WorkspaceObject project;
 		Repository repo;
-		VersionControlDocumentInfo vcInfo;
 
 		DocumentView diffView;
 		DocumentView blameView;
 		DocumentView logView;
 		DocumentView mergeView;
-		private DocumentView mainView;
+
+		DocumentView mainView;
+		VersionControlDocumentInfo vcInfo;
 
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
@@ -81,7 +82,6 @@ namespace MonoDevelop.VersionControl
 			var controller = (FileDocumentController)Controller;
 			var item = new VersionControlItem (repo, project, controller.FilePath, false, null);
 			vcInfo = new VersionControlDocumentInfo (this, Controller, item, item.Repository);
-			vcInfo.Document = Controller.Document;
 			await UpdateSubviewsAsync ();
 			VersionControlService.FileStatusChanged += VersionControlService_FileStatusChanged;
 			return mainView;
@@ -91,16 +91,18 @@ namespace MonoDevelop.VersionControl
 		{
 			VersionControlService.FileStatusChanged -= VersionControlService_FileStatusChanged;
 			base.Dispose ();
+			mainView = null;
+			vcInfo = null;
 		}
 
 		void VersionControlService_FileStatusChanged (object sender, FileUpdateEventArgs args)
 		{
-
+			var controller = (FileDocumentController)Controller;
 			foreach (var file in args) {
-				if (!vcInfo.Document.FilePath.IsNullOrEmpty && vcInfo.Document.FilePath.Equals (file.FilePath)) {
+				if (!controller.FilePath.IsNullOrEmpty && controller.FilePath.Equals (file.FilePath)) {
 					Runtime.RunInMainThread (async () => {
 						await UpdateSubviewsAsync ();
-					});
+					}).Ignore();
 				}
 			}
 		}
@@ -108,7 +110,8 @@ namespace MonoDevelop.VersionControl
 		bool showSubviews;
 		async Task UpdateSubviewsAsync ()
 		{
-			var hasVersionInfo = repo.TryGetVersionInfo (this.vcInfo.Document.FilePath, out var info);
+			var controller = (FileDocumentController)Controller;
+			var hasVersionInfo = repo.TryGetVersionInfo (controller.FilePath, out var info);
 			if (hasVersionInfo)
 				vcInfo.Item.VersionInfo = info;
 
@@ -139,7 +142,6 @@ namespace MonoDevelop.VersionControl
 					mergeView.Dispose ();
 					mergeView = null;
 				}
-
 			} else {
 				if (showSubviews)
 					return;
@@ -171,35 +173,41 @@ namespace MonoDevelop.VersionControl
 
 		internal void ShowDiffView (Revision originalRevision = null, Revision diffRevision = null, int line = -1)
 		{
-			if (originalRevision != null && diffRevision != null && diffView?.SourceController is DiffView content) {
-				content.ComparisonWidget.info.RunAfterUpdate (delegate {
-					content.ComparisonWidget.SetRevision (content.ComparisonWidget.DiffEditor, diffRevision);
-					content.ComparisonWidget.SetRevision (content.ComparisonWidget.OriginalEditor, originalRevision);
-					if (line != -1) {
-						content.ComparisonWidget.DiffEditor.Caret.Location = new Ide.Editor.DocumentLocation (line, 1);
-						content.ComparisonWidget.DiffEditor.CenterToCaret ();
-					}
-				});
+			if (diffView != null) {
+				if (originalRevision != null && diffRevision != null && diffView.SourceController is DiffView content) {
+					content.ComparisonWidget.info.RunAfterUpdate (delegate {
+						content.ComparisonWidget.SetRevision (content.ComparisonWidget.DiffEditor, diffRevision);
+						content.ComparisonWidget.SetRevision (content.ComparisonWidget.OriginalEditor, originalRevision);
+						if (line != -1) {
+							content.ComparisonWidget.DiffEditor.Caret.Location = new Ide.Editor.DocumentLocation (line, 1);
+							content.ComparisonWidget.DiffEditor.CenterToCaret ();
+						}
+					});
+				}
+				diffView.SetActive ();
 			}
-			diffView?.SetActive ();
 		}
 
 		internal void ShowBlameView ()
 		{
-			blameView?.SetActive ();
+			if (blameView != null)
+				blameView.SetActive ();
 		}
 
 		internal void ShowLogView (Revision revision = null)
 		{
-			if (revision != null && diffView?.SourceController is LogView content)
-				content.LogWidget.SelectedRevision = revision;
+			if (logView != null) {
+				if (revision != null && logView.SourceController is LogView content)
+					content.LogWidget.SelectedRevision = revision;
 
-			logView?.SetActive ();
+				logView.SetActive ();
+			}
 		}
 
 		internal void ShowMergeView ()
 		{
-			mergeView?.SetActive ();
+			if (mergeView != null)
+				mergeView.SetActive ();
 		}
 	}
 }

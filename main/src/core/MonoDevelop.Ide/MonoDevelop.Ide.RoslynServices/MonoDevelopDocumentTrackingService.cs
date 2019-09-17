@@ -74,8 +74,8 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		void OnActiveDocumentChanged (object sender, Gui.DocumentEventArgs e)
 		{
-			ActiveDocumentChanged?.Invoke (this, TryGetActiveDocument ());
 			activeDocument = e.Document;
+			ActiveDocumentChanged?.Invoke (this, TryGetActiveDocument ());
 		}
 
 		public event EventHandler<DocumentId> ActiveDocumentChanged;

@@ -5,6 +5,7 @@ open System.IO
 open System.Diagnostics
 open FSharp.Compiler
 open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Text
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
@@ -325,7 +326,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 let fileName = fixFileName(fileName)
                 LoggingService.LogDebug ("LanguageService: GetScriptCheckerOptions: Creating for stand-alone file or script: {0}", fileName)
                 let opts, _errors =
-                  Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename),
+                  Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, SourceText.ofString source, fakeDateTimeRepresentingTimeLoaded projFilename),
                                           timeout = ServiceSettings.maximumTimeout)
 
               // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
@@ -437,7 +438,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let res =
             match stale with
             | AllowStaleResults.MatchingFileName -> checker.TryGetRecentCheckResultsForFile(fixFileName fileName, options)
-            | AllowStaleResults.MatchingSource -> checker.TryGetRecentCheckResultsForFile(fixFileName fileName, options, source=src)
+            | AllowStaleResults.MatchingSource -> checker.TryGetRecentCheckResultsForFile(fixFileName fileName, options, sourceText = SourceText.ofString src)
 
         match res with
         | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo -> Some (ParseAndCheckResults(Some typed, Some untyped))
@@ -471,7 +472,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
     member x.ParseAndCheckFileInProject(projectFilename, fileName, version:int, src:string, obsoleteCheck) =
         let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
         let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-        x.ParseAndCheckFile(fileName, src, version, opts, obsoleteCheck)
+        x.ParseAndCheckFile(fileName, SourceText.ofString src, version, opts, obsoleteCheck)
 
     /// Parses and checks the given file in the given project under the given configuration.
     ///Asynchronously returns the results of checking the file.
@@ -492,7 +493,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                     match timeout with
                     | Some timeout ->
                         LoggingService.logDebug "LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout"
-                        let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, version, options, obs), timeout)
+                        let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, SourceText.ofString src, version, options, obs), timeout)
                         try
                             let! result = computation
                             return Some(result)
@@ -502,7 +503,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                             return None
                     | None ->
                           LoggingService.logDebug "LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking without timeout"
-                          let! result = x.ParseAndCheckFile(fileName, src, version, options, obs)
+                          let! result = x.ParseAndCheckFile(fileName, SourceText.ofString src, version, options, obs)
                           return Some(result)
             | None -> return None }
 
@@ -550,7 +551,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         match options with
         | Some opts ->
             let parseOptions, _errors = x.GetParsingOptionsFromProjectOptions opts
-            checker.MatchBraces(filename, source, parseOptions)
+            checker.MatchBraces(filename, SourceText.ofString source, parseOptions)
         | None -> async { return [||] }
 
     /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects

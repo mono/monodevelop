@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			using (var workspace = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var data = new MonoDevelopWorkspace.ProjectData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, workspace);
+				data.Connect ();
 				data.Disconnect ();
 				// Do nothing, we just want to see it construct and dispose properly.
 			}

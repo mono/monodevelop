@@ -99,7 +99,7 @@ namespace MonoDevelop.VersionControl.Views
 				textView.Caret.MoveTo (point);
 
 				int line = GetLineInCenter (widget.Editor);
-				line = Math.Min (line, snapshot.LineCount);
+				line = Math.Min (line, snapshot.LineCount - 1);
 				var middleLine = snapshot.GetLineFromLineNumber (line);
 				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.TextSnapshot, middleLine.Start, 0), EnsureSpanVisibleOptions.AlwaysCenter);
 			}
@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl.Views
 		int GetLineInCenter (MonoTextEditor editor)
 		{
 			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
-			return editor.YToLine (midY);
+			return editor.YToLine (midY) - 1;
 		}
 
 		#endregion

@@ -31,6 +31,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -110,7 +112,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			else
 				currentSel = null;
-			UpdateStatus ();
+			UpdateStatus ().Ignore ();
 		}
 
 		async void Fill ()
@@ -119,27 +121,38 @@ namespace MonoDevelop.VersionControl.Git
 				store.Clear ();
 				var token = destroyTokenSource.Token;
 
-				foreach (Branch b in repo.GetBranches ())
-					store.AppendValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), b.FriendlyName, "branch");
+				var branches = await repo.GetLocalBranchNamesAsync (token);
+				var remoteBranches = await repo.GetRemoteBranchFullNamesAsync (token);
+				var remotes = await repo.GetRemoteNamesAsync (token);
+				var tags = await repo.GetTagsAsync (token);
 
-				foreach (string t in repo.GetTags ())
+				if (token.IsCancellationRequested)
+					return;
+
+				foreach (var b in branches)
+					store.AppendValues (b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "branch");
+
+				foreach (string t in tags)
 					store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
 
-				foreach (Remote r in await repo.GetRemotesAsync (token)) {
-					TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
-					foreach (string b in repo.GetRemoteBranches (r.Name))
-						store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
+				foreach (var r in remotes) {
+					TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r, null);
+					foreach (string b in remoteBranches.Where (name => name.StartsWith(r + "/", StringComparison.Ordinal)))
+						store.AppendValues (it, b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
 				}
-				UpdateStatus ();
+				UpdateStatus ().Ignore ();
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}
 		}
 
-		void UpdateStatus ()
+		async Task UpdateStatus ()
 		{
 			if (currentSel != null) {
-				string cb = repo.GetCurrentBranch ();
+				var token = destroyTokenSource.Token;
+				string cb = await repo.GetCurrentBranchAsync (token);
+				if (token.IsCancellationRequested)
+					return;
 				string txt = null;
 				if (rebasing) {
 					switch (currentType) {
