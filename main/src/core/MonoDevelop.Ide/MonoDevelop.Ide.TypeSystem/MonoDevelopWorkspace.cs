@@ -1511,7 +1511,7 @@ namespace MonoDevelop.Ide.TypeSystem
 										ProjectInfo newProjectContents = t.Result;
 										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
-										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id)) {
+										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id).ToArray ()) {
 											if (CurrentSolution.GetDocument (docId) == null) {
 												ClearOpenDocument (docId);
 											}
