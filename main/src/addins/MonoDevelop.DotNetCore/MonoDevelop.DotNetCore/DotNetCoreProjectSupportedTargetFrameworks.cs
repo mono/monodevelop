@@ -100,8 +100,15 @@ namespace MonoDevelop.DotNetCore
 		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworksWithSdkSupport ()
 		{
 			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
-				if (DotNetCoreSdk.Versions.Any(sdkVersion => runtimeVersion.Major == sdkVersion.Major && runtimeVersion.Minor == sdkVersion.Minor))
+				// In DotNetCore version 2.1 and above the Runtime always ships in an Sdk with the same Major.Minor version. For older versions, this 
+				// rule does not apply, but as these versions have been deprecated we will not worry about explicit filtering support here as this
+				// may cause regressions.
+				if ((runtimeVersion.Major == 2 && runtimeVersion.Minor >= 1) || runtimeVersion.Major >= 3) {
+					if (DotNetCoreSdk.Versions.Any (sdkVersion => runtimeVersion.Major == sdkVersion.Major && runtimeVersion.Minor == sdkVersion.Minor))
+						yield return CreateTargetFramework (".NETCoreApp", runtimeVersion.ToString (2));
+				} else {
 					yield return CreateTargetFramework (".NETCoreApp", runtimeVersion.ToString (2));
+				}
 			}
 		}
 
