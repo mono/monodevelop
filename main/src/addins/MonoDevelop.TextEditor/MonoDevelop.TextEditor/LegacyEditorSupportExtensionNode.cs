@@ -31,6 +31,6 @@ namespace MonoDevelop.TextEditor
 
 	public interface ILegacyEditorSupportProvider
 	{
-		public bool PreferLegacyEditor (Ide.Gui.Documents.FileDescriptor modelDescriptor);
+		bool PreferLegacyEditor (Ide.Gui.Documents.FileDescriptor modelDescriptor);
 	}
 }
