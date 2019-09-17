@@ -37,6 +37,7 @@ namespace MonoDevelop.Debugger
 		public static Color ObjectValueTreeValuesButtonBorder { get; internal set; }
 		public static Color ObjectValueTreeValueErrorText { get; internal set; }
 		public static Color ObjectValueTreeValueDisabledText { get; internal set; }
+		public static Color ObjectValueTreeActiveBackgroundColor { get; internal set; }
 		public static Color ObjectValueTreeValueModifiedText { get; internal set; }
 		public static Color PreviewVisualizerBackgroundColor { get; internal set; }
 		public static Color PreviewVisualizerTextColor { get; internal set; }
@@ -79,6 +80,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#175fde");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
+				ObjectValueTreeActiveBackgroundColor = Color.FromName ("#a2a2a2");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#707070");
 				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#707070");
@@ -89,6 +91,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#ace2ff");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
+				ObjectValueTreeActiveBackgroundColor = Color.FromName ("#383838");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#b4b4b4");
 				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#b4b4b4");
