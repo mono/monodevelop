@@ -64,10 +64,10 @@ namespace MonoDevelop.AspNetCore
 		public static async Task LaunchBrowserAsync (string appUrl, string launchUrl, ExecutionTarget target, Task processTask)
 		{
 			launchUrl = launchUrl ?? "";
-			//Check if lanuchUrl is valid absolute url and use it if it is...
-			if (!Uri.TryCreate (launchUrl, UriKind.Absolute, out var launchUri)) {
-				//Otherwise check if appUrl is valid absolute and lanuchUrl is relative then concat them...
-				if (!Uri.TryCreate (appUrl, UriKind.Absolute, out var appUri)) {
+			//Check if launchUrl is valid absolute url and use it if it is...
+			if (!Uri.TryCreate (launchUrl, UriKind.Absolute, out var launchUri) || launchUri.IsFile) {
+				//Otherwise check if appUrl is valid absolute and launchUrl is relative then concat them...
+				if (!Uri.TryCreate (appUrl, UriKind.Absolute, out var appUri) || appUri.IsFile) {
 					LoggingService.LogWarning ("Failed to launch browser because invalid launch and app urls.");
 					return;
 				}
