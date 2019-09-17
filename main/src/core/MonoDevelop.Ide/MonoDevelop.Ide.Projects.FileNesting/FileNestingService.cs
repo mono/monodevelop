@@ -117,6 +117,14 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 			return GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 		}
+
+		public static IEnumerable<ProjectFile> GetDependentOrNestedChildren (ProjectFile inputFile)
+		{
+			if (inputFile.HasChildren)
+				return inputFile.DependentChildren;
+
+			return GetChildren (inputFile);
+		}
 	}
 
 	sealed class ProjectNestingInfo : IDisposable
@@ -238,7 +246,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		void NotifyNestingRulesChanged (ProjectFileNestingInfo nestingInfo)
 		{
-			if (fileNestingEnabled) {
+			if (nestingInfo != null && fileNestingEnabled) {
 				FileNestingService.NotifyNestingRulesChanged (nestingInfo.File, nestingInfo.Parent);
 			}
 		}
