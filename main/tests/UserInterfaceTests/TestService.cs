@@ -47,8 +47,10 @@ namespace UserInterfaceTests
 				{ "MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo" },
 			};
 
-			if (!useNewEditor)
+			if (!useNewEditor) {
+				Console.WriteLine ("Using legacy editor");
 				env.Add ("MD_FEATURES_ENABLED", "AlwaysUseLegacyEditor");
+			}
 
 			Session.StartApplication (file: file, args: args, environment: env);
 
