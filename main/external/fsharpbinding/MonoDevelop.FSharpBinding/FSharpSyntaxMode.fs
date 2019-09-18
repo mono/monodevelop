@@ -357,10 +357,9 @@ module Patterns =
 type FSharpSyntaxMode(editor, context: DocumentContext) =
     inherit SemanticHighlighting(editor, context)
     let tokenssymbolscolours = ref None
-    let roslynContext = context :?> RoslynDocumentContext
 
     override x.DocumentParsed() =
-        if MonoDevelop.isDocumentVisible roslynContext.FileName then
+        if MonoDevelop.isDocumentVisible editor.FileName then
             SyntaxMode.tryGetTokensSymbolsAndColours context
             |> Option.iter (fun tsc -> tokenssymbolscolours := Some tsc
                                        Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
