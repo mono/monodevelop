@@ -27,7 +27,6 @@
 using System;
 using MonoDevelop.Components.AutoTest;
 using System.Collections.Generic;
-using MonoDevelop.StressTest;
 
 namespace UserInterfaceTests
 {
@@ -35,7 +34,7 @@ namespace UserInterfaceTests
 	{
 		public static AutoTestClientSession Session { get; private set; }
 
-		public static void StartSession (string file = null, string profilePath = null, string logFile = null, string args = null)
+		public static void StartSession (string file = null, string profilePath = null, string logFile = null, string args = null, bool useNewEditor = true)
 		{
 			Session = new AutoTestClientSession ();
 
@@ -48,7 +47,7 @@ namespace UserInterfaceTests
 				{ "MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo" },
 			};
 
-			if (!Properties.UseNewEditor)
+			if (!useNewEditor)
 				env.Add ("MD_FEATURES_ENABLED", "AlwaysUseLegacyEditor");
 
 			Session.StartApplication (file: file, args: args, environment: env);
