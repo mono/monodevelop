@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		protected void JumpToCurrentLocation (ITextView textView)
 		{
-			textView.NavigateToLineAndColumn (Math.Max (0, Line - 1), Math.Max (0, Column - 1));
+			textView.NavigateToLineAndColumn (Math.Max (0, Line), Math.Max (0, Column));
 		}
 
 		public override bool Equals (object o)
