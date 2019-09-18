@@ -1234,7 +1234,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
 
-			var innerTask = await RunOperationAsync (() => {
+			var innerTask = await RunBlockingOperationAsync (() => {
 				var refSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification);
 				return RetryUntilSuccessAsync (monitor, credType => {
 					LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
