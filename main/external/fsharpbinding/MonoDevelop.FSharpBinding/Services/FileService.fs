@@ -16,8 +16,11 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
     let getOpenDocContent (filename: string) =
         match getOpenDoc filename with
         | Some d ->
-           let bytes = System.Text.Encoding.UTF8.GetBytes (d.Editor.Text)
-           Some bytes
+           match d.Editor with
+           | null -> None
+           | editor ->
+               let bytes = System.Text.Encoding.UTF8.GetBytes (editor.Text)
+               Some bytes
         | _ -> None
 
     static member IsAScript fileName =
