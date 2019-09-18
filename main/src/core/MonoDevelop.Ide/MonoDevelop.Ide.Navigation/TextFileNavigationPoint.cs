@@ -53,6 +53,16 @@ namespace MonoDevelop.Ide.Navigation
 			: base (doc)
 		{
 			offset = textView.Caret.Position.BufferPosition;
+			RefreshWithCurrentOffset (textView);
+		}
+
+		void RefreshWithCurrentOffset (ITextView textView)
+		{
+			if (textView != null && offset.HasValue) {
+				var currentLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (offset.Value);
+				line = currentLine.LineNumber;
+				column = offset.Value.Position - currentLine.Start.Position;
+			}
 		}
 
 		protected override void OnDocumentClosing ()
