@@ -32,7 +32,6 @@ using System.Text;
 using Mono.Unix;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
 {
@@ -41,13 +40,20 @@ namespace MonoDevelop.Ide
 		const int ipcBasePort = 40000;
 
 		string socket_filename;
-		Socket listen_socket = null;
+		Socket listen_socket;
 		EndPoint ep;
 
 		public event EventHandler<FileEventArgs> FileOpenRequested;
 
-		public void Initialize (bool ipcTcp)
+		public IdeInstanceConnection (bool ipcTcp)
 		{
+			// macOS has native support for opening files in an open instance
+			// via AppleEvents for applications distributed as bundles, so disable
+			// this support.
+			if (Platform.IsMac && Components.GtkWorkarounds.IsRunFromBundle ()) {
+				return;
+			}
+
 			if (ipcTcp) {
 				listen_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
 				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSdbmBounded (Environment.UserName));
@@ -60,6 +66,9 @@ namespace MonoDevelop.Ide
 
 		public bool TryConnect (StartupInfo startupInfo)
 		{
+			if (listen_socket == null)
+				return false;
+
 			try {
 				StringBuilder builder = new StringBuilder ();
 				foreach (var file in startupInfo.RequestedFileList) {
@@ -78,6 +87,9 @@ namespace MonoDevelop.Ide
 
 		public void StartListening ()
 		{
+			if (listen_socket == null)
+				return;
+
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
 			try {
