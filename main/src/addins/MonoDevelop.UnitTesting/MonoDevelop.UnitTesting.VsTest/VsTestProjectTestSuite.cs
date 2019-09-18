@@ -142,13 +142,11 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		void AfterBuild (object sender, BuildEventArgs args)
 		{
-			testDiscoveryTask = null;
 			DateTime? buildTime = GetAssemblyLastWriteTime ();
 			if (RefreshRequired (buildTime)) {
 				lastBuildTime = buildTime;
-
+				testDiscoveryTask = null;
 				SaveOldTests ();
-
 				UpdateTests ();
 			}
 		}
