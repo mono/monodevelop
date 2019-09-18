@@ -1,15 +1,16 @@
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MonoDevelop.Debugger
 {
-	[Export (typeof (ITaggerProvider))]
+	[Export (typeof (IViewTaggerProvider))]
 	[TagType (typeof (IClassificationTag))]
 	[ContentType ("text")]
-	class ReturnStatementForegroundTaggerProvider : ITaggerProvider
+	class ReturnStatementForegroundTaggerProvider : IViewTaggerProvider
 	{
 		private readonly IClassificationTypeRegistryService classificationTypeRegistryService;
 		private readonly IClassificationType classificationType;
@@ -23,9 +24,9 @@ namespace MonoDevelop.Debugger
 			this.tag = new ClassificationTag (classificationType);
 		}
 
-		public ITagger<T> CreateTagger<T> (ITextBuffer buffer) where T : ITag
+		public ITagger<T> CreateTagger<T> (ITextView textView, ITextBuffer buffer) where T : ITag
 		{
-			return new CurrentStatementForegroundTagger (tag, buffer, isGreen: true) as ITagger<T>;
+			return new CurrentStatementForegroundTagger (tag, textView, isGreen: true) as ITagger<T>;
 		}
 	}
 }

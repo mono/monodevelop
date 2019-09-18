@@ -6,6 +6,7 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Ide;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Debugger
 {
@@ -18,11 +19,11 @@ namespace MonoDevelop.Debugger
 		private readonly bool isGreen;
 		private ITextSnapshot snapshotAtStartOfDebugging;
 
-		public AbstractCurrentStatementTagger (T tag, ITextBuffer textBuffer, bool isGreen)
+		public AbstractCurrentStatementTagger (T tag, ITextView textView, bool isGreen)
 		{
-			this.textBuffer = textBuffer;
+			this.textBuffer = textView.TextBuffer;
 			this.snapshotAtStartOfDebugging = textBuffer.CurrentSnapshot;
-			textBuffer.Properties.TryGetProperty (typeof (ITextDocument), out textDocument);
+			textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty (typeof (ITextDocument), out textDocument);
 			this.tag = tag;
 			this.isGreen = isGreen;
 			DebuggingService.CurrentFrameChanged += OnDebuggerCurrentStatementChanged;
