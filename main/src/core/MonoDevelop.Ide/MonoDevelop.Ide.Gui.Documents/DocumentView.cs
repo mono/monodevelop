@@ -379,11 +379,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 			attachmentsContainer = window.CreateViewContainer ();
 			attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
 			attachmentsContainer.CurrentMode = DocumentViewContainerMode.Tabs;
+
+			bool mainViewVisible = shellView == mainShellView;
+			shellView = attachmentsContainer;
+
+			if (mainViewVisible) {
+				// If the shell view is already set it is likely it has already been added to a container
+				// In that case we need the attachemnts container to replace it, so that the view can
+				// be added to the attachments container
+				ReplaceViewInParent ();
+			}
+
 			attachmentsContainer.InsertView (0, mainShellView);
+
 			int pos = 1;
 			foreach (var attachedView in AttachedViews)
 				attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
-			shellView = attachmentsContainer;
 		}
 
 		private void InitializeAttachmentsContainer ()
