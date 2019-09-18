@@ -1016,10 +1016,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 		MemberInfo[] ResolveMember (Type type, string memberName, bool isStatic, MemberTypes memberTypes)
 		{
-			if (type == typeof (string) && memberName == "new")
-				memberName = "Copy";
-			if (type.IsArray)
-				type = typeof (Array);
+			if (type == typeof (string)) {
+				if (memberName == "new" || memberName == "Copy") {
+					type = typeof (IntrinsicFunctions);
+					memberName = "Copy";
+				}
+			} else {
+				if (type.IsArray)
+					type = typeof (Array);
+			}
+
 			var flags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
 			if (type != typeof (Microsoft.Build.Evaluation.IntrinsicFunctions)) {
 				if (!supportedTypeMembers.TryGetValue (type, out var list))

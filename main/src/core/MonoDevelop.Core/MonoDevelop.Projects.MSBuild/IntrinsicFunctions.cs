@@ -27,7 +27,7 @@ namespace Microsoft.Build.Evaluation
 	/// The Intrinsic class provides static methods that can be accessed from MSBuild's
 	/// property functions using $([MSBuild]::Function(x,y))
 	/// </summary>
-	internal static class IntrinsicFunctions
+	internal static partial class IntrinsicFunctions
 	{
 		private static Lazy<string> _validOsPlatforms = new Lazy<string> (
 			() => typeof (OSPlatform).GetTypeInfo ()
