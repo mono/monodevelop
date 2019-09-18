@@ -44,6 +44,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 		public Project Project { get; private set; }
 		DateTime? lastBuildTime;
 		UnitTest [] oldTests;
+		Task testDiscoveryTask;
 
 		public VsTestProjectTestSuite (Project project)
 			: base (project.Name, project)
@@ -88,6 +89,14 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		protected override async void OnCreateTests ()
 		{
+			if (testDiscoveryTask == null) {
+				testDiscoveryTask = DiscoverTestsAsync ();
+			}
+			
+		}
+
+		protected async Task DiscoverTestsAsync ()
+		{
 			try {
 				AddOldTests ();
 				Status = TestStatus.Loading;
@@ -118,7 +127,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		void AddOldTests ()
 		{
-			if (oldTests != null) {
+			if (oldTests != null && Tests.Count == 0) {
 				foreach (var test in oldTests) {
 					Tests.Add (test);
 				}
@@ -133,6 +142,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		void AfterBuild (object sender, BuildEventArgs args)
 		{
+			testDiscoveryTask = null;
 			DateTime? buildTime = GetAssemblyLastWriteTime ();
 			if (RefreshRequired (buildTime)) {
 				lastBuildTime = buildTime;
@@ -153,6 +163,13 @@ namespace MonoDevelop.UnitTesting.VsTest
 			}
 
 			return false;
+		}
+	
+		public async override Task Refresh (CancellationToken ct)
+		{
+			if (testDiscoveryTask == null)
+				testDiscoveryTask = DiscoverTestsAsync ();
+			await testDiscoveryTask;
 		}
 
 		void SaveOldTests ()
