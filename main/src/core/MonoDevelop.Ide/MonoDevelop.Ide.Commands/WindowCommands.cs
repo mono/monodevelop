@@ -253,9 +253,11 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			foreach (Components.Window window in IdeApp.CommandService.TopLevelWindowStack) {
+#if !WINDOWS
 				//we don't want include hidden windows
 				if (!window.IsRealized || !window.IsVisible || Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window))
 					continue;
+#endif
 
 				//Create CommandInfo object
 				var commandInfo = new CommandInfo ();

@@ -1,11 +1,12 @@
 ﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Debugger
 {
 	internal class CurrentStatementGlyphTagger : AbstractCurrentStatementTagger<CurrentStatementGlyphTag>
 	{
-		public CurrentStatementGlyphTagger (ITextBuffer textBuffer)
-			: base (CurrentStatementGlyphTag.Instance, textBuffer, isGreen: false)
+		public CurrentStatementGlyphTagger (ITextView textView)
+			: base (CurrentStatementGlyphTag.Instance, textView, isGreen: false)
 		{
 		}
 	}

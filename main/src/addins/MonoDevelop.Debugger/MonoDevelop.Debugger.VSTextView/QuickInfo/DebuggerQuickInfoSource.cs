@@ -126,7 +126,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 			if (!view.Properties.TryGetProperty (typeof (Gtk.Widget), out Gtk.Widget gtkParent))
 				return;
-			provider.textDocumentFactoryService.TryGetTextDocument (textBuffer, out var textDocument);
+			provider.textDocumentFactoryService.TryGetTextDocument (view.TextDataModel.DocumentBuffer, out var textDocument);
 
 			// This is a bit hacky, since AsyncQuickInfo is designed to display multiple elements if multiple sources
 			// return value, we don't want that for debugger value hovering, hence we dismiss AsyncQuickInfo
