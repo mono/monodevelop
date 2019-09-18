@@ -46,7 +46,7 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 
 		public ExceptionCaughtAdornmentManager (ICocoaViewFactory cocoaViewFactory, ICocoaTextView textView)
 		{
-			filePath = textView.TextBuffer.GetFilePathOrNull ();
+			filePath = textView.TextDataModel.DocumentBuffer.GetFilePathOrNull ();
 			if (filePath == null)
 				return;
 

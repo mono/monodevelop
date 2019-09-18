@@ -13,7 +13,7 @@ namespace MonoDevelop.Debugger
 	{
 		public ITagger<T> CreateTagger<T> (ITextView textView, ITextBuffer buffer) where T : ITag
 		{
-			return new CurrentStatementGlyphTagger (buffer) as ITagger<T>;
+			return new CurrentStatementGlyphTagger (textView) as ITagger<T>;
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 		public static BreakpointManager GetBreakpointManager (ITextView textView)
 		{
 			return textView.Properties.GetOrCreateSingletonProperty (delegate {
-				var manager = new BreakpointManager (textView.TextBuffer);
+				var manager = new BreakpointManager (textView);
 				textView.Closed += delegate { manager.Dispose (); };
 				return manager;
 			});
