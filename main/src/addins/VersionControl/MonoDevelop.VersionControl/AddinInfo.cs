@@ -6,6 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("VersionControl", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
+	CompatVersion = "8.3",
 	Category = "Version Control")]
 
 [assembly:AddinName ("Version Control Support")]
