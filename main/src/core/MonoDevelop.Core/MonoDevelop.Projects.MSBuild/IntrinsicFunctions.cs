@@ -29,14 +29,6 @@ namespace Microsoft.Build.Evaluation
 	/// </summary>
 	internal static partial class IntrinsicFunctions
 	{
-		private static Lazy<string> _validOsPlatforms = new Lazy<string> (
-			() => typeof (OSPlatform).GetTypeInfo ()
-				.GetProperties (BindingFlags.Static | BindingFlags.Public)
-				.Where (pi => pi.PropertyType == typeof (OSPlatform))
-				.Select (pi => pi.Name)
-				.Aggregate ("", (a, b) => string.IsNullOrEmpty (a) ? b : $"{a}, {b}"),
-			true);
-
 		/// <summary>
 		/// Add two doubles
 		/// </summary>
