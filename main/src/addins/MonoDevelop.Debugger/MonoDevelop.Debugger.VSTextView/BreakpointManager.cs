@@ -67,7 +67,7 @@ namespace MonoDevelop.Debugger
 		{
 			var newBreakpoints = new Dictionary<Breakpoint, ManagerBreakpoint> ();
 			var breakpointStore = DebuggingService.Breakpoints;
-			var snapshot = textView.TextDataModel.DataBuffer.CurrentSnapshot;
+			var snapshot = textView.TextSnapshot;
 			var bps = new List<Breakpoint> ();
 			var needsUpdate = false;
 
@@ -129,7 +129,8 @@ namespace MonoDevelop.Debugger
 		public IEnumerable<BreakpointSpan> GetBreakpoints (ITextSnapshot snapshot)
 		{
 			foreach (var item in breakpoints.Values) {
-				yield return new BreakpointSpan (item.Breakpoint, item.TrackingSpan.GetSpan (snapshot));
+				if (item.TrackingSpan.TextBuffer == snapshot.TextBuffer)
+					yield return new BreakpointSpan (item.Breakpoint, item.TrackingSpan.GetSpan (snapshot));
 			}
 		}
 	}
