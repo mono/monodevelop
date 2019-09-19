@@ -24,6 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
+#if MAC
+using AppKit;
+#endif
 
 namespace MonoDevelop.Components
 {
@@ -207,5 +211,26 @@ namespace MonoDevelop.Components
 			throw new NotSupportedException ();
 		}
 	}
-}
 
+	public static class WindowExt
+	{
+		public static void SetParentToWindow (this Gtk.Window window, MonoDevelop.Components.Window parent)
+		{
+			try {
+#if MAC
+				var nsWindow = parent.GetNativeWidget<NSWindow> ();
+				if (nsWindow != null) {
+					var myNSWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
+					myNSWindow.ParentWindow = nsWindow;
+				} else {
+					window.TransientFor = parent;
+				}
+#else
+				window.TransientFor = parent;
+#endif
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error while setting parent.", e);
+			}
+		}
+	}
+}
