@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 {
 	[Export (typeof (IViewTaggerProvider))]
 	[TagType (typeof (IClassificationTag))]
-	[ContentType ("text")]
+	[ContentType ("any")]
 	class BreakpointForegroundTaggerProvider : IViewTaggerProvider
 	{
 		private readonly ClassificationTag tag;
