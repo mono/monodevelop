@@ -54,14 +54,14 @@ namespace MonoDevelop.Debugger
 			if (isGreen) {
 				if (DebuggingService.CurrentFrameIndex > 0) {
 					var newTag = CreateTag ();
-					if (newTag.Span.Snapshot.TextBuffer == spans [0].Snapshot.TextBuffer)
+					if (newTag != null && newTag.Span.Snapshot.TextBuffer == spans [0].Snapshot.TextBuffer)
 						if (newTag != null && spans.IntersectsWith (newTag.Span))
 							yield return newTag;
 				}
 			} else {
 				if (DebuggingService.CurrentFrameIndex == 0) {
 					var newTag = CreateTag ();
-					if (newTag.Span.Snapshot.TextBuffer == spans [0].Snapshot.TextBuffer)
+					if (newTag != null && newTag.Span.Snapshot.TextBuffer == spans [0].Snapshot.TextBuffer)
 						if (newTag != null && spans.IntersectsWith (newTag.Span))
 							yield return newTag;
 				}
