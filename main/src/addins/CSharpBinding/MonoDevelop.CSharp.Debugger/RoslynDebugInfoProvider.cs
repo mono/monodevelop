@@ -1,4 +1,5 @@
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 using MonoDevelop.Debugger;
 using MonoDevelop.Debugger.VSTextView.QuickInfo;
 using MonoDevelop.Ide.TypeSystem;
@@ -22,6 +24,16 @@ namespace MonoDevelop.CSharp.Debugger
 		public async Task<DataTipInfo> GetDebugInfoAsync (SnapshotPoint snapshotPoint, CancellationToken cancellationToken)
 		{
 			var analysisDocument = snapshotPoint.Snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+
+            IProjectionSnapshot projectionSnapshot = null;
+            if (analysisDocument == null) {
+				projectionSnapshot = snapshotPoint.Snapshot as IProjectionSnapshot;
+				if (projectionSnapshot != null) {
+					snapshotPoint = projectionSnapshot.MapToSourceSnapshot (snapshotPoint.Position);
+					analysisDocument = snapshotPoint.Snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+				}
+			}
+
 			if (analysisDocument == null)
 				return default (DataTipInfo);
 			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
@@ -41,7 +53,16 @@ namespace MonoDevelop.CSharp.Debugger
 				debugDataTipInfo = new DebugDataTipInfo (tipInfo.Span, text);
 			else
 				debugDataTipInfo = GetInfo (root, semanticModel, syntaxNode, text, cancellationToken);
-			return new DataTipInfo (snapshotPoint.Snapshot.CreateTrackingSpan (debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length, SpanTrackingMode.EdgeInclusive), debugDataTipInfo.Text);
+
+			if (projectionSnapshot != null) {
+				var originalSpan = projectionSnapshot.MapFromSourceSnapshot (new SnapshotSpan (snapshotPoint.Snapshot, debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length)).FirstOrDefault ();
+				if (originalSpan == default)
+					return default;
+				return new DataTipInfo (projectionSnapshot.CreateTrackingSpan (originalSpan, SpanTrackingMode.EdgeInclusive), debugDataTipInfo.Text);
+			} else {
+				var originalSpan = new Span (debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length);
+				return new DataTipInfo (snapshotPoint.Snapshot.CreateTrackingSpan (originalSpan, SpanTrackingMode.EdgeInclusive), debugDataTipInfo.Text);
+			}
 		}
 
 		static DebugDataTipInfo GetInfo (SyntaxNode root, SemanticModel semanticModel, SyntaxNode node, string textOpt, CancellationToken cancellationToken)

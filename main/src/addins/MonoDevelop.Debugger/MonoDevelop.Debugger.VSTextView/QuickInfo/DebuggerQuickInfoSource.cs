@@ -85,6 +85,8 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			var textViewLines = view.TextViewLines;
 			var snapshot = textViewLines.FormattedSpan.Snapshot;
 			var triggerPoint = session.GetTriggerPoint (textBuffer);
+			if (snapshot.TextBuffer != triggerPoint.TextBuffer)
+				return null;
 			var point = triggerPoint.GetPoint (snapshot);
 
 			if (!view.Selection.IsEmpty) {
