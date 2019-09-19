@@ -61,6 +61,7 @@
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\BranchUtil.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\GitTag.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Init\GitInit.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary\Fetch\GitFetch.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\" />
@@ -69,6 +70,7 @@
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Status\" />
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Branches\" />
     <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Init\" />
+    <Folder Include="MonoDevelop.VersionControl.Git.ClientLibrary\Fetch\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,5 @@
-﻿//
-// GitProcess.cs
+//
+// GitFetchTests.cs
 //
 // Author:
 //       Mike Krüger <mikkrg@microsoft.com>
@@ -23,53 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using NUnit.Framework.Internal;
+using System.IO;
+using System.Diagnostics;
+using System.Linq;
 
-namespace MonoDevelop.VersionControl.Git.ClientLibrary
+namespace MonoDevelop.VersionControl.Git.ClientLibrary.Tests
 {
-	public abstract class AbstractGitCallbackHandler
+
+	[TestFixture]
+	public class GitFetchTests
 	{
-		public static readonly AbstractGitCallbackHandler NullHandler = new DoNothingGitCallbackHandler ();
-
-		public abstract void OnOutput (string line);
-		public abstract void OnReportProgress (string operation, int percentage);
-
-		public abstract GitCredentials OnGetCredentials (string url);
-
-		public abstract string OnGetSSHPassword (string userName);
-		public abstract string OnGetSSHPassphrase (string key);
-		public abstract bool OnGetContinueConnecting ();
-
-		class DoNothingGitCallbackHandler : AbstractGitCallbackHandler
+		[Ignore("TODO: Implement me")]
+		[Test]
+		public Task TestFetch ()
 		{
-			public override bool OnGetContinueConnecting ()
-			{
-				return false;
-			}
-
-			public override GitCredentials OnGetCredentials (string url)
-			{
-				return null;
-			}
-
-			public override string OnGetSSHPassphrase (string key)
-			{
-				return null;
-			}
-
-			public override string OnGetSSHPassword (string userName)
-			{
-				return null;
-			}
-
-			public override void OnOutput (string line)
-			{
-			}
-
-			public override void OnReportProgress (string operation, int percentage)
-			{
-			}
+			return Task.CompletedTask;
 		}
 	}
 }

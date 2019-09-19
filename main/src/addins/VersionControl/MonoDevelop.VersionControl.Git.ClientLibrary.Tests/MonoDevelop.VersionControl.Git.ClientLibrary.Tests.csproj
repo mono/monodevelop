@@ -46,6 +46,7 @@
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\GitBranchTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\GitInitTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\TestUtil.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git.ClientLibrary.Tests\GitFetchTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1248,17 +1248,14 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
 
-			var innerTask = await RunBlockingOperationAsync (() => {
-				var refSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification);
-				return RetryUntilSuccessAsync (monitor, credType => {
-					LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
-						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
-						OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
-					}, string.Empty);
-					return Task.CompletedTask;
-				});
-			}).ConfigureAwait (false);
-			await innerTask.ConfigureAwait (false);
+			var options = new GitFetchOptions {
+				Repository = remote,
+				RefSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification)
+			};
+
+			var result = await GitFetch.FetchAsync (RootPath, options, CreateCallbacks (monitor), monitor.CancellationToken).ConfigureAwait (false);
+			if (!result.Success)
+				monitor.ReportError (result.ErrorMessage);
 
 			monitor.Step (1);
 			monitor.EndTask ();
