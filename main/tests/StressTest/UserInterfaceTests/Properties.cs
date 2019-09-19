@@ -5,6 +5,6 @@ namespace MonoDevelop.StressTest
 {
 	public static class Properties
 	{
-		public static bool UseNewEditor { get; set; } = true;
+		public static bool UseNewEditor { get; set; } = false;
 	}
 }
