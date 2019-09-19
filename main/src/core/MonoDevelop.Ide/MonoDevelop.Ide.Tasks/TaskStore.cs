@@ -419,8 +419,11 @@ namespace MonoDevelop.Ide.Tasks
 		class TaskNavigationPoint : TextFileNavigationPoint
 		{
 			TaskListEntry task;
-			
-			public TaskNavigationPoint (TaskListEntry task) : base (task.FileName, task.Line, task.Column)
+
+			// Due to changes in the editor, the offsets of how we count lines seem to be different
+			// so it makes sense that we try to do translation at this point, where it doesn't change
+			// the logic in either <see cref="TextFileNavigationPoint"/> or in the TaskStore.
+			public TaskNavigationPoint (TaskListEntry task) : base (task.FileName, task.Line - 1, task.Column - 1)
 			{
 				this.task = task;
 			}
