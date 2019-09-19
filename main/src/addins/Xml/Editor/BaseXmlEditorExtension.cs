@@ -540,7 +540,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}
 
-		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
+		protected virtual ICompletionDataList ClosingTagCompletion (MonoDevelop.Ide.Editor.TextEditor buf, DocumentLocation currentLocation)
 		{
 			// This is handled sooner in UI thread before it's offloaded to background thread by code completion
 			if (XmlEditorOptions.AutoCompleteElements)

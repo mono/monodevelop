@@ -18,6 +18,10 @@
 		<ExtensionNode name="SupportedFileType" type="MonoDevelop.TextEditor.SupportedFileTypeExtensionNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/TextEditor/LegacyEditorSupport" name="Opts in file types to be opened in the legacy editor">
+		<ExtensionNode name="LegacyEditorSupport" type="MonoDevelop.TextEditor.LegacyEditorSupportExtensionNode" />
+	</ExtensionPoint>
+
 <!--
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/NavigationBar" name = "Navigation bar context menu">
 		<Description>Context menu for the navigation bar.</Description>
@@ -57,15 +61,6 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		-->
 		<Assembly file="MonoDevelop.TextEditor.dll"/>
-	</Extension>
-
-	<Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
-		<SupportedFileType id="csharp" extensions=".cs,.csx" featureFlag="CSharpEnableNewEditor" />
-		<SupportedFileType id="textmate" extensions=".py,.md,.txt,.c,.cpp,.cxx,.h,.php"  featureFlag="CSharpEnableNewEditor" />
-	</Extension>
-
-	<Extension path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks">
-		<Type id="CSharpEnableNewEditor" class="MonoDevelop.TextEditor.CSharpEnableNewEditorSwitchController" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Commands">

@@ -58,6 +58,10 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
+      <Project>{3F5B5BDA-69D5-441A-8142-AA25C998A997}</Project>
+      <Name>MonoDevelop.TextEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\prefs-xml-16.png" />
@@ -143,6 +147,7 @@
     <Compile Include="Editor\XmlCommands.cs" />
     <Compile Include="Editor\EncodedStringWriter.cs" />
     <Compile Include="Editor\XmlExpandSelectionHandler.cs" />
+    <Compile Include="Editor\LegacyEditorSupportProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="schemas\appconfig.xsd">

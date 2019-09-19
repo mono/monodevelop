@@ -10,6 +10,6 @@ namespace MonoDevelop.Ide.Composition
 	internal class EditorExperimentationServiceInternal : IExperimentationServiceInternal
 	{
 		public bool IsCachedFlightEnabled (string flightName)
-			=> flightName == "CompletionAPI" && DefaultSourceEditorOptions.Instance.EnableNewEditor;
+			=> flightName == "CompletionAPI";
 	}
 }
