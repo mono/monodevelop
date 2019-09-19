@@ -30,6 +30,9 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Threading;
+#if MAC
+using AppKit;
+#endif
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -43,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		List<TextTag> tags = new List<TextTag> ();
 		Stack<string> indents = new Stack<string> ();
 		CancellationTokenSource cancellationTokenSource;
+		private MonoDevelop.Components.Window componentsWindowParent;
 
 		public ProgressDialog (bool allowCancel, bool showDetails): this (null, allowCancel, showDetails)
 		{
@@ -53,6 +57,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			MonoDevelop.Components.IdeTheme.ApplyTheme (this);
 			this.Build ();
 			this.Title = BrandingService.ApplicationName;
+			this.componentsWindowParent = parent; 
 			HasSeparator = false;
 			ActionArea.Hide ();
 			DefaultHeight = 5;
@@ -189,6 +194,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Destroy ();
 		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			this.SetParentToWindow (componentsWindowParent);
+		}
 	}
 }
-
