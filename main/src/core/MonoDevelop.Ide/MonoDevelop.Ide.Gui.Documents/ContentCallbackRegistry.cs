@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	class ContentCallbackRegistry
+	class ContentCallbackRegistry : IDisposable
 	{
 		List<ContentCallback> contentCallbacks;
 		Func<Type,object> contentGetter;
@@ -156,6 +156,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 					LoggingService.LogInternalError ("Content callback invocation failed", ex);
 				}
 			}
+		}
+
+		public void Dispose ()
+		{
+			// contentCallbacks do not need to be disposed atm, because the dispose only removes them from contentCallbacks
+			contentCallbacks = null;
+			contentGetter = null;
 		}
 	}
 }
