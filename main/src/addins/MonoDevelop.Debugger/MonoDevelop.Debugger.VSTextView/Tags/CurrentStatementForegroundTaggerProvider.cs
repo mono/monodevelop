@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 {
 	[Export (typeof (IViewTaggerProvider))]
 	[TagType (typeof (IClassificationTag))]
-	[ContentType ("text")]
+	[ContentType ("any")]
 	class CurrentStatementForegroundTaggerProvider : IViewTaggerProvider
 	{
 		private readonly IClassificationTypeRegistryService classificationTypeRegistryService;

@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace MonoDevelop.Debugger
 {
 	[Export (typeof (IViewTaggerProvider))]
-	[ContentType ("code")]
+	[ContentType ("any")]
 	[TagType (typeof (BreakpointGlyphTag))]
 	[TagType (typeof (BreakpointDisabledGlyphTag))]
 	[TagType (typeof (BreakpointInvalidGlyphTag))]
