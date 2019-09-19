@@ -98,7 +98,6 @@ namespace MonoDevelop.UnitTesting.VsTest
 		protected async Task DiscoverTestsAsync ()
 		{
 			try {
-				AddOldTests ();
 				Status = TestStatus.Loading;
 
 				var discoveredTests = await VsTestDiscoveryAdapter.Instance.DiscoverTestsAsync (Project);
@@ -127,7 +126,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		void AddOldTests ()
 		{
-			if (oldTests != null && Tests.Count == 0) {
+			if (oldTests != null) {
 				foreach (var test in oldTests) {
 					Tests.Add (test);
 				}
@@ -165,8 +164,10 @@ namespace MonoDevelop.UnitTesting.VsTest
 	
 		public async override Task Refresh (CancellationToken ct)
 		{
-			if (testDiscoveryTask == null)
+			AddOldTests ();
+			if (testDiscoveryTask == null) {
 				testDiscoveryTask = DiscoverTestsAsync ();
+			}
 			await testDiscoveryTask;
 		}
 
