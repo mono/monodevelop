@@ -4,18 +4,21 @@ using Microsoft.VisualStudio.Text;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using System.Linq;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Debugger
 {
 	class BreakpointManager
 	{
 		private ITextBuffer textBuffer;
+		private ITextView textView;
 		private readonly ITextDocument textDocument;
 
-		public BreakpointManager (ITextBuffer textBuffer)
+		public BreakpointManager (ITextView textView)
 		{
-			this.textBuffer = textBuffer;
-			if (textBuffer.Properties.TryGetProperty (typeof (ITextDocument), out textDocument) && textDocument.FilePath != null) {
+			this.textBuffer = textView.TextBuffer;
+			this.textView = textView;
+			if (textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty (typeof (ITextDocument), out textDocument) && textDocument.FilePath != null) {
 				textDocument.FileActionOccurred += TextDocument_FileActionOccurred;
 			} else {
 				LoggingService.LogWarning ("Failed to get filename of textbuffer, breakpoints integration will not work.");
@@ -64,7 +67,7 @@ namespace MonoDevelop.Debugger
 		{
 			var newBreakpoints = new Dictionary<Breakpoint, ManagerBreakpoint> ();
 			var breakpointStore = DebuggingService.Breakpoints;
-			var snapshot = textBuffer.CurrentSnapshot;
+			var snapshot = textView.TextSnapshot;
 			var bps = new List<Breakpoint> ();
 			var needsUpdate = false;
 
@@ -126,7 +129,8 @@ namespace MonoDevelop.Debugger
 		public IEnumerable<BreakpointSpan> GetBreakpoints (ITextSnapshot snapshot)
 		{
 			foreach (var item in breakpoints.Values) {
-				yield return new BreakpointSpan (item.Breakpoint, item.TrackingSpan.GetSpan (snapshot));
+				if (item.TrackingSpan.TextBuffer == snapshot.TextBuffer)
+					yield return new BreakpointSpan (item.Breakpoint, item.TrackingSpan.GetSpan (snapshot));
 			}
 		}
 	}

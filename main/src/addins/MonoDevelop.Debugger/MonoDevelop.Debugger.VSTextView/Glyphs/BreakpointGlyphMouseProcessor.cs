@@ -168,7 +168,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		#region Private Drag/Drop Helpers
+#region Private Drag/Drop Helpers
 
 		// Internal for unit testing.
 		internal void HandleDragStart (CGPoint viewPoint)
@@ -348,7 +348,7 @@ namespace MonoDevelop.Debugger
 
 		bool ToggleBreakpoint (int line, int column)
 		{
-			var buffer = textViewHost.TextView.TextBuffer;
+			var buffer = textViewHost.TextView.TextDataModel.DocumentBuffer;
 			var path = buffer.GetFilePathOrNull ();
 			if (path == null)
 				return false;
@@ -356,9 +356,9 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		#endregion
+#endregion
 
-		#region Private Helpers
+#region Private Helpers
 
 		CGPoint GetMouseLocationInTextView (MouseEvent e)
 		{
@@ -585,7 +585,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		#endregion
+#endregion
 	}
 }
 #endif

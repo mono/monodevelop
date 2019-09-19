@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace MonoDevelop.Debugger
@@ -7,9 +8,9 @@ namespace MonoDevelop.Debugger
 	{
 		public CurrentStatementForegroundTagger (
 			ClassificationTag tag,
-			ITextBuffer textBuffer,
+			ITextView textView,
 			bool isGreen)
-			: base (tag, textBuffer, isGreen)
+			: base (tag, textView, isGreen)
 		{
 		}
 	}
