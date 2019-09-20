@@ -8,6 +8,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 	public interface IDebugInfoProvider
 	{
 		Task<DataTipInfo> GetDebugInfoAsync (SnapshotPoint snapshotPoint, CancellationToken cancellationToken);
+		Task<DataTipInfo> GetDebugInfoAsync (SnapshotSpan snapshotSpan, CancellationToken cancellationToken);
 	}
 
 	public struct DataTipInfo

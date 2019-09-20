@@ -90,23 +90,25 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				return null;
 			var point = triggerPoint.GetPoint (snapshot);
 
-			if (!view.Selection.IsEmpty) {
-				foreach (var span in view.Selection.SelectedSpans) {
-					if(span.Contains(point)) {
-						await EvaluateAndShowTooltipAsync (session, view, point, new DataTipInfo (snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeInclusive), snapshot.GetText (span)), cancellationToken);
-						return null;
-					}
-				}
-			}
-
 			foreach (var debugInfoProvider in provider.debugInfoProviders) {
-				var debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (point, cancellationToken);
-				if (debugInfo.Text == null) {
-					continue;
+				DataTipInfo debugInfo = default;
+
+				if (!view.Selection.IsEmpty) {
+					foreach (var span in view.Selection.SelectedSpans) {
+						if (span.Contains (point)) {
+							//debugInfo = new DataTipInfo (snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeInclusive), snapshot.GetText (span));
+							debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (span, cancellationToken);
+							break;
+						}
+					}
+				} else {
+					debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (point, cancellationToken);
 				}
 
-				await EvaluateAndShowTooltipAsync (session, view, point, debugInfo, cancellationToken);
-				return null;
+				if (!debugInfo.IsDefault) {
+					await EvaluateAndShowTooltipAsync (session, view, point, debugInfo, cancellationToken);
+					return null;
+				}
 			}
 			return null;
 		}
@@ -121,13 +123,16 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 			if (val.IsEvaluating)
 				await WaitOneAsync (val.WaitHandle, cancellationToken);
+
 			if (cancellationToken.IsCancellationRequested)
 				return;
+
 			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return;
 
 			if (!view.Properties.TryGetProperty (typeof (Gtk.Widget), out Gtk.Widget gtkParent))
 				return;
+
 			provider.textDocumentFactoryService.TryGetTextDocument (view.TextDataModel.DocumentBuffer, out var textDocument);
 
 			// This is a bit hacky, since AsyncQuickInfo is designed to display multiple elements if multiple sources
