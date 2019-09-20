@@ -89,6 +89,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		protected override async void OnCreateTests ()
 		{
+			AddOldTests ();
 			if (testDiscoveryTask == null) {
 				testDiscoveryTask = DiscoverTestsAsync ();
 			}
@@ -164,7 +165,6 @@ namespace MonoDevelop.UnitTesting.VsTest
 	
 		public async override Task Refresh (CancellationToken ct)
 		{
-			AddOldTests ();
 			if (testDiscoveryTask == null) {
 				testDiscoveryTask = DiscoverTestsAsync ();
 			}
