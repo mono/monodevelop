@@ -23,22 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Mono.Debugging.Client;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide;
 using System.Collections.Generic;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.CodeCompletion;
-using Xwt;
-using Xwt.Drawing;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+
 using MetadataReferenceProperties = Microsoft.CodeAnalysis.MetadataReferenceProperties;
 using Microsoft.VisualStudio.Text.Editor;
+
+using Mono.Debugging.Client;
+
+using Xwt.Drawing;
+using Xwt;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Debugger
 {
