@@ -1,10 +1,5 @@
 //
-// CSharpEnableNewEditorSwitchController.cs
-//
-// Author:
-//       Jérémie Laval <jelaval@microsoft.com>
-//
-// Copyright (c) 2019 Microsoft, Inc.
+// Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +19,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Core.FeatureConfiguration;
-using MonoDevelop.Ide.Editor;
+using Mono.Addins;
 
 namespace MonoDevelop.TextEditor
 {
-	sealed class CSharpEnableNewEditorSwitchController : IFeatureSwitchController
+	sealed class LegacyEditorSupportExtensionNode : MatchingFileTypeExtensionNode
 	{
-		const string FeatureName = "CSharpEnableNewEditor";
+		[NodeAttribute("providerType", "Set this to the type name for a MonoDevelop.TextEditor.ILegacyEditorSupportProvider implementation, if more dynamic checking is required")]
+		public string ProviderType { get; private set; }
+	}
 
-		public bool? IsFeatureEnabled (string featureName)
-		{
-			if (!string.Equals (featureName, FeatureName, StringComparison.Ordinal))
-				return null;
-			return DefaultSourceEditorOptions.Instance.EnableNewEditor;
-		}
+	public interface ILegacyEditorSupportProvider
+	{
+		bool PreferLegacyEditor (Ide.Gui.Documents.FileDescriptor modelDescriptor);
 	}
 }

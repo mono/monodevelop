@@ -31,7 +31,7 @@ namespace MonoDevelop.Xml.Editor
 {
 	class XmlExpandSelectionHandler
 	{
-		public static bool CanExpandSelection (TextEditor editor)
+		public static bool CanExpandSelection (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			if (!editor.IsSomethingSelected) {
 				return true;
@@ -42,7 +42,7 @@ namespace MonoDevelop.Xml.Editor
 			return false;
 		}
 
-		internal static void ExpandSelection (TextEditor editor, Func<XmlParser> getTreeParser)
+		internal static void ExpandSelection (MonoDevelop.Ide.Editor.TextEditor editor, Func<XmlParser> getTreeParser)
 		{
 			var selectionAnnotation = GetAnnotation (editor, getTreeParser);
 			if (selectionAnnotation.NodePath.Count == 0)
@@ -54,12 +54,12 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}
 
-		public static bool CanShrinkSelection (TextEditor editor)
+		public static bool CanShrinkSelection (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return editor.IsSomethingSelected && editor.Selections.Count () == 1;
 		}
 
-		internal static void ShrinkSelection (TextEditor editor, Func<XmlParser> getTreeParser)
+		internal static void ShrinkSelection (MonoDevelop.Ide.Editor.TextEditor editor, Func<XmlParser> getTreeParser)
 		{
 			var selectionAnnotation = GetAnnotation (editor, getTreeParser);
 			if (selectionAnnotation.NodePath.Count == 0)
@@ -73,7 +73,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}
 
-		static XmlExpandSelectionAnnotation GetAnnotation (TextEditor editor, Func<XmlParser> getTreeParser)
+		static XmlExpandSelectionAnnotation GetAnnotation (MonoDevelop.Ide.Editor.TextEditor editor, Func<XmlParser> getTreeParser)
 		{
 			var result = editor.Annotation<XmlExpandSelectionAnnotation> ();
 			if (result == null) {
@@ -98,13 +98,13 @@ namespace MonoDevelop.Xml.Editor
 			ImmutableStack<(int, SelectionLevel)> expansions = ImmutableStack<(int, SelectionLevel)>.Empty;
 
 			readonly IReadonlyTextDocument document;
-			readonly TextEditor editor;
+			readonly MonoDevelop.Ide.Editor.TextEditor editor;
 			readonly XmlParser parser;
 			public List<XObject> NodePath { get; }
 			public int Index { get; set; } = -1;
 			public SelectionLevel Level { get; set; }
 
-			public XmlExpandSelectionAnnotation (TextEditor editor, XmlParser parser)
+			public XmlExpandSelectionAnnotation (MonoDevelop.Ide.Editor.TextEditor editor, XmlParser parser)
 			{
 				this.parser = parser;
 				this.editor = editor;

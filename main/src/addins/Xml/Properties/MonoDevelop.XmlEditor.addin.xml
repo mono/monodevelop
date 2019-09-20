@@ -27,6 +27,10 @@
 		<Association extension = ".xslt"   namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" />
 		<Association extension = ".stetic" />
 	</Extension>
+	
+	<Extension path="/MonoDevelop/TextEditor/LegacyEditorSupport">
+		<LegacyEditorSupport id="xml" providerType="MonoDevelop.Xml.Editor.LegacyEditorSupportProvider" />
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Xml/Editor/XmlSchemas">
 		<Schema file="schemas/xml.xsd" />

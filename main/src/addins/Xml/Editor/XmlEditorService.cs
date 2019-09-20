@@ -51,7 +51,7 @@ namespace MonoDevelop.Xml.Editor
 		/// Creates a XmlTextWriter using the current text editor
 		/// properties for indentation.
 		/// </summary>
-		public static XmlTextWriter CreateXmlTextWriter (TextEditor doc, TextWriter textWriter)
+		public static XmlTextWriter CreateXmlTextWriter (MonoDevelop.Ide.Editor.TextEditor doc, TextWriter textWriter)
 		{
 			var xmlWriter = new XmlTextWriter (textWriter) {
 				Formatting = System.Xml.Formatting.Indented
@@ -66,7 +66,7 @@ namespace MonoDevelop.Xml.Editor
 			return xmlWriter;
 		}
 		
-		public static string CreateSchema (TextEditor doc, string xml)
+		public static string CreateSchema (MonoDevelop.Ide.Editor.TextEditor doc, string xml)
 		{
 			using (var dataSet = new System.Data.DataSet()) {
 				dataSet.ReadXml(new StringReader (xml), System.Data.XmlReadMode.InferSchema);

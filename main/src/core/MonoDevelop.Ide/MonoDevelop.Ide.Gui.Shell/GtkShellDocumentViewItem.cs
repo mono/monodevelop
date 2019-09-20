@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		object delegatedCommandTarget;
 		Task loadTask;
 		bool subscribedWindowsEvents;
+		bool destroyed;
 
 		public GtkShellDocumentViewItem ()
 		{
@@ -78,13 +79,16 @@ namespace MonoDevelop.Ide.Gui.Shell
 			Application.Invoke ((s,a) => {
 				// Don't execute Load inside the OnRealized handler, since Load can trigger events or async continuations that
 				// can end having an effect on the current widget, and that may cause weird behaviors of GTK.
-				Load ().Ignore ();
-				SubscribeWindowEvents ();
+				if (!destroyed) {
+					Load ().Ignore ();
+					SubscribeWindowEvents ();
+				}
 			});
 		}
 
 		protected override void OnDestroyed ()
 		{
+			destroyed = true;
 			cancellationTokenSource.Cancel ();
 
 			focusLostTimeout?.Dispose ();
@@ -179,7 +183,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 				if (focusLostTimeout == null) {
 					focusLostTimeout = Xwt.Application.TimeoutInvoke (100, () => {
-						NotifyLostFocus ();
+						if (!destroyed)
+							NotifyLostFocus ();
 						return false;
 					});
 				}
