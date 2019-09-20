@@ -428,7 +428,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
-			HideTooltip ();
+
 			src = new CancellationTokenSource ();
 			isInSearch = true;
 			if (results.Count == 0) {
@@ -460,15 +460,13 @@ namespace MonoDevelop.Components.MainToolbar
 				col.Task = cat.GetResults (col, pattern, token);
 
 				//we append on finished  to process and show the results
-				col.Task.ContinueWith (async (colTask) => {
+				col.Task.ContinueWith ((colTask) => {
 
 					//cancel last provider continueWith task
 					lastProvSrc?.Cancel ();
-					
+
 					if (token.IsCancellationRequested || colTask.IsCanceled)
 						return;
-
-					await nextUpdate;
 
 					lock (lockObject) {
 
@@ -514,7 +512,7 @@ namespace MonoDevelop.Components.MainToolbar
 							return;
 
 						//refresh panel and show results 
-						InvokeAsync (() => {
+						Runtime.RunInMainThread (() => {
 							lock (lockObject) // We have to lock here because newResults can mutate
 								ShowResults (newResults, calculatedResult.topResult);
 
@@ -527,16 +525,12 @@ namespace MonoDevelop.Components.MainToolbar
 								return;
 
 							OnPreferredSizeChanged ();
-
-							nextUpdate = Task.Delay (250);
 						}).Ignore ();
 					}
 				}, token, TaskContinuationOptions.NotOnCanceled, TaskScheduler.Default)
 					.Ignore ();
 			}
 		}
-
-		Task nextUpdate = Task.CompletedTask;
 
 		readonly object lockObject = new object ();
 
