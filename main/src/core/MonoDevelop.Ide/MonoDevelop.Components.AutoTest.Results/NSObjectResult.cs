@@ -378,9 +378,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 				if (string.IsNullOrEmpty (runtimeName))
 					return false;
 
-				if (mutableModel.FullDisplayString.Contains (runtimeName) || mutableModel.DisplayString.Contains (runtimeName))
+				if (!string.IsNullOrWhiteSpace(mutableModel.FullDisplayString) && mutableModel.FullDisplayString.Contains (runtimeName))
 					return true;
-			
+				if (!string.IsNullOrWhiteSpace(mutableModel.DisplayString) && mutableModel.DisplayString.Contains (runtimeName))
+					return true;
+
 				var execTargetPInfo = r.GetType().GetProperty ("ExecutionTarget");
 				if(execTargetPInfo != null) {
 					if (execTargetPInfo.GetValue (r) is Core.Execution.ExecutionTarget execTarget) {
