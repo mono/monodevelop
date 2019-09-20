@@ -38,6 +38,7 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using MetadataReferenceProperties = Microsoft.CodeAnalysis.MetadataReferenceProperties;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Debugger
 {
@@ -341,11 +342,12 @@ namespace MonoDevelop.Debugger
 				checkIncludeSubclass.Active = true;
 
 				if (IdeApp.Workbench.ActiveDocument != null &&
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
+					IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () is ITextView textView &&
 					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
+					var (line, col) = textView.MDCaretLineAndColumn ();
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
-						IdeApp.Workbench.ActiveDocument.Editor.CaretLine,
-						IdeApp.Workbench.ActiveDocument.Editor.CaretColumn);
+						line,
+						col);
 					entryLocationFile.Text = breakpointLocation.ToString ();
 					stopOnLocation.Active = true;
 				}
