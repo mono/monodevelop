@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 
 			public override string GetMarkupText (bool selected)
 			{
-				return GettextCatalog.GetString ("Search Packages...");
+				return GettextCatalog.GetString ("Search Packages…");
 			}
 		}
 

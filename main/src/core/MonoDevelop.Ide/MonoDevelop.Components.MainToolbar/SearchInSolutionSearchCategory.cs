@@ -99,7 +99,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public override string GetMarkupText (bool selected)
 			{
-				return GettextCatalog.GetString ("Search in Solution...");
+				return GettextCatalog.GetString ("Search in Solution…");
 			}
 		}
 	}
