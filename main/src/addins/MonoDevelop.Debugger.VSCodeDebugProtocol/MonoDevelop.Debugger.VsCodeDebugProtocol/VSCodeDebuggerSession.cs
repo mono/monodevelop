@@ -286,6 +286,16 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return new Backtrace (new VSCodeDebuggerBacktrace (this, (int)threadId));
 		}
 
+		public override string ResolveExpression (string expression, SourceLocation location)
+		{
+			return OnResolveExpression (expression, location);
+		}
+
+		protected override string OnResolveExpression (string expression, SourceLocation location)
+		{
+			return expression;
+		}
+
 		string EvaluateTrace(int frameId, string exp)
 		{
 			var sb = new StringBuilder();
