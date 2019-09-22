@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 	[Export (typeof (IGlyphFactoryProvider))]
 	[Name ("ReturnStatementGlyph")]
 	[Order (After = "CurrentStatementGlyph")]
-	[ContentType ("code")]
+	[ContentType ("any")]
 	[TagType (typeof (ReturnStatementGlyphTag))]
 	internal class ReturnStatementGlyphFactoryProvider : IGlyphFactoryProvider
 	{
