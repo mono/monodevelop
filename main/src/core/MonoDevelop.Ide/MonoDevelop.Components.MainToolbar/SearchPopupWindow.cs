@@ -441,7 +441,8 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueDraw ();
 			}
 
-			var newResults = ImmutableList.Create (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+			var newResults = ImmutableArray.Create (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+			var resultsLock = new object ();
 
 			var lastProvSrc = new CancellationTokenSource ();
 
@@ -515,22 +516,26 @@ namespace MonoDevelop.Components.MainToolbar
 							}
 						}
 
-						newResults = builder.ToImmutable ();
+						lock (resultsLock) {
+							newResults = builder.ToImmutable ();
+						}
 
 						if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
 							return;
 
 						//refresh panel and show results 
 						Runtime.RunInMainThread (() => {
-							ShowResults (newResults, calculatedResult.topResult);
+							if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
+								return;
+
+							lock (resultsLock) {
+								ShowResults (newResults, calculatedResult.topResult);
+							}
 
 							//once we processed all the items our search is finished
 							if (current == total) {
 								isInSearch = false;
 							}
-
-							if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
-								return;
 
 							OnPreferredSizeChanged ();
 						}).Ignore ();
