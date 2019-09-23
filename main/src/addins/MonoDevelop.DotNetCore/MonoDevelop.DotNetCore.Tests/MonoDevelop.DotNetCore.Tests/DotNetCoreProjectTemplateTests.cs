@@ -35,7 +35,6 @@ using NUnit.Framework;
 using IdeUnitTests;
 using MonoDevelop.Ide.Projects.FileNesting;
 using MonoDevelop.Core.Execution;
-using ICSharpCode.Decompiler.IL;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
