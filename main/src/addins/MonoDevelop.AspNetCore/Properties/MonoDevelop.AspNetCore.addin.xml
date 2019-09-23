@@ -142,6 +142,7 @@
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="AspNetCoreWorker"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -194,6 +195,7 @@
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="AspNetCoreBlazor"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
