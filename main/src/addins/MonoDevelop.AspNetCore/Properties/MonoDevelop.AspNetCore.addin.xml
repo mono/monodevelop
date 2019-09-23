@@ -43,6 +43,8 @@
 		              file = "Templates/StartupClass.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreWebApiController"
 		              file = "Templates/WebApiController.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorComponent"
+					  file = "Templates/RazorComponent.xft.xml"/>
 
 		<FileTemplate id   = "AspNetCoreMVCViewImportsPage"
 		              file = "Templates/MVCViewImportsPage.xft.xml"/>
