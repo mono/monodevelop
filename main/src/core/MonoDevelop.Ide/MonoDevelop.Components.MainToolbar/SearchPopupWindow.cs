@@ -353,8 +353,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		sealed class LoadingSearchProvidersCategory : SearchCategory
 		{
-			Dictionary<SearchCategory, ProviderSearchResult> data = new Dictionary<SearchCategory, ProviderSearchResult> ();
-			List<ProviderSearchResult> values = new List<ProviderSearchResult> ();
+			readonly Dictionary<SearchCategory, ProviderSearchResult> data = new Dictionary<SearchCategory, ProviderSearchResult> ();
+			readonly List<ProviderSearchResult> values = new List<ProviderSearchResult> ();
 			public IReadOnlyList<ProviderSearchResult> Values => values;
 
 			public int ProvidersLeft => values.Count;
@@ -375,12 +375,24 @@ namespace MonoDevelop.Components.MainToolbar
 				data.Add (provider, result);
 			}
 
+			public void AddRange (IEnumerable<SearchCategory> providers)
+			{
+				foreach (var provider in providers)
+					Add (provider);
+			}
+
 			public void Remove (SearchCategory provider)
 			{
 				if (data.TryGetValue (provider, out ProviderSearchResult result)) {
 					values.Remove (result);
 					data.Remove (provider);
 				}
+			}
+
+			public void Clear ()
+			{
+				values.Clear ();
+				data.Clear ();
 			}
 
 			public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
@@ -391,19 +403,12 @@ namespace MonoDevelop.Components.MainToolbar
 				return Task.CompletedTask;
 			}
 
-			static readonly string [] tags = { "loading" };
-
-			public override string [] Tags {
-				get {
-					return tags;
-				}
-			}
+			public override string [] Tags => Array.Empty<string> ();
 
 			public override bool IsValidTag (string tag)
 			{
-				return tag == "loading";
+				return false;
 			}
-
 		}
 
 		int GetIndexFromCategory (IList<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results, SearchCategory category)
@@ -430,6 +435,7 @@ namespace MonoDevelop.Components.MainToolbar
 				src.Cancel ();
 
 			src = new CancellationTokenSource ();
+			var token = src.Token;
 			isInSearch = true;
 			if (results.Count == 0) {
 				QueueDraw ();
@@ -441,10 +447,14 @@ namespace MonoDevelop.Components.MainToolbar
 
 			//generating the collectors
 			var collectors = new List<SearchResultCollector> ();
-			var token = src.Token;
 
 			int total = categories.Count;
 			int current = 0;
+
+			if (!token.IsCancellationRequested) {
+				searchProvidersCategory.Clear ();
+				searchProvidersCategory.AddRange (categories);
+			}
 
 			foreach (var _cat in categories) {
 				var cat = _cat;
