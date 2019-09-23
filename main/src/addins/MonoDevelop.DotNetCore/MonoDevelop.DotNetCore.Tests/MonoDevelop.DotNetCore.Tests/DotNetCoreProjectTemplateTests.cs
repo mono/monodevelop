@@ -35,6 +35,7 @@ using NUnit.Framework;
 using IdeUnitTests;
 using MonoDevelop.Ide.Projects.FileNesting;
 using MonoDevelop.Core.Execution;
+using ICSharpCode.Decompiler.IL;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -343,6 +344,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore30=true", true)]
+		[TestCase ("Microsoft.Web.Blazor.Server.CSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore30=true", true)]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true", true)]
