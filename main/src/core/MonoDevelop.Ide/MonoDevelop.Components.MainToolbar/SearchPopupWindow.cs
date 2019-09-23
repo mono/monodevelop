@@ -73,7 +73,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void Update (SearchPopupSearchPattern pattern)
 		{
-			Task.Run (() => Content.Update (pattern)).Ignore ();
+			Content.Update (pattern);
 		}
 
 		internal void OpenFile ()
