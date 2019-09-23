@@ -441,9 +441,6 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueDraw ();
 			}
 
-			var newResults = ImmutableArray.Create (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
-			var resultsLock = new object ();
-
 			var lastProvSrc = new CancellationTokenSource ();
 
 			//generating the collectors
@@ -453,11 +450,18 @@ namespace MonoDevelop.Components.MainToolbar
 			int current = 0;
 
 			var activeCategories = string.IsNullOrEmpty (pattern.Tag) ? categories : categories.Where (cat => cat.IsValidTag (pattern.Tag));
+			var loadingCatResults = Array.Empty<ProviderSearchResult> ();
 
-			if (!token.IsCancellationRequested) {
-				searchProvidersCategory.Clear ();
-				searchProvidersCategory.AddRange (activeCategories);
+			lock (lockObject) {
+				if (!token.IsCancellationRequested) {
+					searchProvidersCategory.Clear ();
+					searchProvidersCategory.AddRange (activeCategories);
+				}
+				loadingCatResults = searchProvidersCategory.Values.ToArray ();
 			}
+
+			var newResults = ImmutableArray.Create (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, loadingCatResults));
+			var resultsLock = new object ();
 
 			foreach (var _cat in activeCategories) {
 				var cat = _cat;
@@ -512,7 +516,7 @@ namespace MonoDevelop.Components.MainToolbar
 							if (current < total) {
 								//we want order the new category processed 
 								indexToInsert = GetIndexFromCategory (builder, searchProvidersCategory);
-								builder.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+								builder.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values.ToArray ()));
 							}
 						}
 
