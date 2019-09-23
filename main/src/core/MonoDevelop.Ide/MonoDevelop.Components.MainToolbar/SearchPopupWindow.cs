@@ -461,7 +461,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			var newResults = ImmutableArray.Create (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, loadingCatResults));
-			var resultsLock = new object ();
 
 			foreach (var _cat in activeCategories) {
 				var cat = _cat;
@@ -520,9 +519,7 @@ namespace MonoDevelop.Components.MainToolbar
 							}
 						}
 
-						lock (resultsLock) {
-							newResults = builder.ToImmutable ();
-						}
+						ImmutableInterlocked.InterlockedExchange (ref newResults, builder.ToImmutable ());
 
 						if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
 							return;
@@ -532,9 +529,7 @@ namespace MonoDevelop.Components.MainToolbar
 							if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
 								return;
 
-							lock (resultsLock) {
-								ShowResults (newResults, calculatedResult.topResult);
-							}
+							ShowResults (newResults, calculatedResult.topResult);
 
 							//once we processed all the items our search is finished
 							if (current == total) {
@@ -551,7 +546,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		readonly object lockObject = new object ();
 
-		(List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults, ItemIdentifier topResult) GetTopResult (IList<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults)
+		(List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults, ItemIdentifier topResult) GetTopResult (ImmutableArray<Tuple<SearchCategory, IReadOnlyList<SearchResult>>>.Builder newResults)
 		{
 			List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
 			ItemIdentifier topResult = null;
@@ -574,7 +569,7 @@ namespace MonoDevelop.Components.MainToolbar
 			return (failedResults, topResult);
 		}
 
-		void ShowResults (IList<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
+		void ShowResults (ImmutableArray<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
 		{
 			results.Clear ();
 			results.AddRange (newResults);
