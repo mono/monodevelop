@@ -452,15 +452,15 @@ namespace MonoDevelop.Components.MainToolbar
 			int total = categories.Count;
 			int current = 0;
 
+			var activeCategories = string.IsNullOrEmpty (pattern.Tag) ? categories : categories.Where (cat => cat.IsValidTag (pattern.Tag));
+
 			if (!token.IsCancellationRequested) {
 				searchProvidersCategory.Clear ();
-				searchProvidersCategory.AddRange (categories);
+				searchProvidersCategory.AddRange (activeCategories);
 			}
 
-			foreach (var _cat in categories) {
+			foreach (var _cat in activeCategories) {
 				var cat = _cat;
-				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
-					continue;
 				var col = new SearchResultCollector (_cat);
 				collectors.Add (col);
 				col.Task = cat.GetResults (col, pattern, token);
