@@ -343,11 +343,11 @@ namespace MonoDevelop.Components.MainToolbar
 				this.searchCategory = searchCategory;
 			}
 
-			public override string AccessibilityMessage => GettextCatalog.GetString ("Loading {0} search provider...", searchCategory.Name);
+			public override string AccessibilityMessage => GettextCatalog.GetString ("Loading {0} Search Results…", searchCategory.Name);
 
 			public override string GetMarkupText (bool selected)
 			{
-				return GettextCatalog.GetString ("{0} search provider...", searchCategory.Name);
+				return GettextCatalog.GetString ("{0} Search Results…", searchCategory.Name);
 			}
 		}
 
@@ -1241,7 +1241,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			if (y == alloc.Y + yMargin) {
 				context.SetColor (Styles.GlobalSearch.ResultTextColor);
-				layout.Markup = isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches");
+				layout.Markup = isInSearch ? GettextCatalog.GetString ("Searching…") : GettextCatalog.GetString ("No matches");
 				context.DrawTextLayout (layout, alloc.X + xMargin, y);
 			}
 		}
