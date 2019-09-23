@@ -65,11 +65,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var increment = nextPositionInArray >= 0 ? +1 : -1;
 
 			//with the initial position and increment we return the first view which can be first responder and it's not hidden
-			for (int j = initialPosition; j > 0 && j <= viewsKeyLoopOrder.Count - 1;) {
+			for (int j = initialPosition; j >= 0 && j <= viewsKeyLoopOrder.Count - 1; j += increment) {
 				if (!viewsKeyLoopOrder [j].Hidden && viewsKeyLoopOrder [j].AcceptsFirstResponder ()) {
 					return viewsKeyLoopOrder [j];
 				}
-				j += increment;
 			}
 			return null;
 		}

@@ -219,9 +219,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		NSIndexPath GetIndexPathFromItem (ToolboxWidgetItem item)
 		{
 			for (int i = 0; i < CategoryVisibilities.Count; i++) {
-				for (int j = 0; j < CategoryVisibilities[i].Items.Count; j++) {
-					if (item == CategoryVisibilities [i].Items[j])
-						return NSIndexPath.FromItemSection (j, i);
+				int index = CategoryVisibilities [i].Items.IndexOf (item);
+				if (index >= 0) {
+					return NSIndexPath.FromItemSection (index, i);
 				}
 			}
 			return null;
