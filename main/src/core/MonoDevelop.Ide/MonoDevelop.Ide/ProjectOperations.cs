@@ -2255,7 +2255,7 @@ namespace MonoDevelop.Ide
 			if (filesToMove.Count == 1 && sourceProject != null) {
 				var pf = filesToMove[0];
 				if (pf != null) {
-					var children = FileNestingService.GetDependentOrNestedChildren (pf);
+					var children = FileNestingService.GetDependentOrNestedTree (pf);
 					if (children != null) {
 
 						foreach (ProjectFile child in children) {

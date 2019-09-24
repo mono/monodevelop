@@ -125,6 +125,28 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 			return GetChildren (inputFile);
 		}
+
+		public static IEnumerable<ProjectFile> GetDependentOrNestedTree (ProjectFile inputFile)
+		{
+			if (inputFile.HasChildren) {
+				foreach (var dep in inputFile.DependentChildren) {
+					yield return dep;
+				}
+			} else {
+				var stack = new Stack<ProjectFile> (GetChildren (inputFile));
+				while (stack.Count > 0) {
+					var current = stack.Pop ();
+					yield return current;
+
+					var children = GetChildren (current);
+					if (children != null) {
+						foreach (var child in children) {
+							stack.Push (child);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	sealed class ProjectNestingInfo : IDisposable
