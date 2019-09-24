@@ -1,4 +1,4 @@
-﻿﻿//
+﻿//
 // DotNetCoreVersion.cs
 //
 // Author:
@@ -115,7 +115,7 @@ namespace MonoDevelop.DotNetCore
 						revisionString = input.Substring (revisionLabelStart, revisionLabelEnd - revisionLabelStart);
 					}
 					if (!int.TryParse (revisionString , out revision)) {
-						throw new FormatException (string.Format ("Invalid .NET Core version: '{0}'", input));
+						return false;
 					}
 				}
 			}
