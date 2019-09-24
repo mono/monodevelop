@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Completion
 					syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
 					syntaxTree.IsTypeContext (position, cancellationToken) ||
 					syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
-					syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+					// syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
 					syntaxTree.IsLabelContext (position, cancellationToken)) {
 					var usedNamespaces = new HashSet<string> ();
 					var node = root.FindNode (TextSpan.FromBounds (position, position));
