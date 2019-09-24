@@ -103,6 +103,15 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (result);
 		}
 
+		[Test]
+		public void TryParse_InvalidVersion()
+		{
+			DotNetCoreVersion version = null;
+			bool result = DotNetCoreVersion.TryParse ("INVALID", out version);
+
+			Assert.IsFalse (result);
+		}
+
 		[TestCase ("1.0.2", "1.0.2", true)]
 		[TestCase ("1.2.3", "1.0.2", false)]
 		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", false)]
