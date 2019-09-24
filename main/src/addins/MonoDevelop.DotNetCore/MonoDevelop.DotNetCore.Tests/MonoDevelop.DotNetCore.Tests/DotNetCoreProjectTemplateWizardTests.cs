@@ -439,6 +439,30 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
 		}
 
+		[TestCase ("AspNetCoreBlazor", "2.1.802")]
+		[TestCase ("AspNetCoreBlazor", "2.2.403")]
+		[TestCase ("AspNetCoreWorker", "2.1.802")]
+		[TestCase ("AspNetCoreWorker", "2.2.403")]
+		public void NetCoreApp_NetCore30AndNetCore2xInstalled_TemplateDoesNotSupportNetCore2x (string supportedParameters, string sdk2x)
+		{
+			CreateWizard ();
+			AddSupportedParameters (supportedParameters);
+			DotNetCoreRuntimesInstalled ("3.0.100", sdk2x);
+			DotNetCoreSdksInstalled ("3.0.100", sdk2x);
+
+			int pages = wizard.TotalPages;
+
+			Assert.AreEqual (0, pages);
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard20"));
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard1x"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore30"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore20"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore1x"));
+			Assert.IsFalse (WizardHasParameter ("framework"));
+			Assert.AreEqual (".NETCoreApp,Version=v3.0", wizard.TargetFrameworks [0].Id.ToString ());
+			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+		}
+
 		[Test]
 		public void NetCoreApp_NetCore30Installed ()
 		{
