@@ -23,28 +23,52 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Mono.Debugging.Client;
-using System.Diagnostics;
-using Mono.Debugging.Backend;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
-using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol;
-using System.Threading;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
+using Mono.Debugging.Evaluation;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+
+using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol;
+
 using MonoFunctionBreakpoint = Mono.Debugging.Client.FunctionBreakpoint;
 using VsCodeFunctionBreakpoint = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.FunctionBreakpoint;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
-	public abstract class VSCodeDebuggerSession : DebuggerSession
+	public abstract class VsCodeDebuggerSession : DebuggerSession
 	{
 		int currentThreadId;
+
+		protected VsCodeDebuggerSession ()
+		{
+			Adapter = new VsCodeDebuggerAdaptor (this);
+		}
+
+		public VsCodeDebuggerAdaptor Adapter {
+			get; private set;
+		}
+
+		protected override string OnResolveExpression (EvaluationContext ctx, string expression, SourceLocation location)
+		{
+			return expression;
+		}
+
+		public override string ResolveExpression (EvaluationContext ctx, string expression, SourceLocation location)
+		{
+			return OnResolveExpression (ctx, expression, location);
+		}
 
 		protected override void OnContinue ()
 		{
@@ -76,7 +100,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			protocolClient.SendRequestSync (new StepOutRequest (currentThreadId));
 		}
 
-		List<ProcessInfo> processInfo = new List<ProcessInfo>();
+		readonly List<ProcessInfo> processInfo = new List<ProcessInfo>();
 		protected override ProcessInfo [] OnGetProcesses ()
 		{
 			return processInfo.ToArray();
@@ -155,7 +179,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return breakEventInfo;
 		}
 
-		bool currentExceptionState = false;
+		bool currentExceptionState;
 		void UpdateExceptions ()
 		{
 			//Disposed
@@ -227,16 +251,20 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.UseShellExecute = false;
-			if (!MonoDevelop.Core.Platform.IsWindows)
+
+			if (!Platform.IsWindows)
 				startInfo.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + ":/usr/local/share/dotnet/";
+
 			debugAgentProcess = Process.Start (startInfo);
 			debugAgentProcess.EnableRaisingEvents = true;
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
+
 			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
 			protocolClient.Run ();
 			protocolClient.EventReceived += HandleEvent;
-			InitializeRequest initRequest = CreateInitRequest ();
+
+			var initRequest = CreateInitRequest ();
 			Capabilities = protocolClient.SendRequestSync (initRequest);
 		}
 
@@ -265,7 +293,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			pauseWhenFinished = !startInfo.CloseExternalConsoleOnExit;
 			StartDebugAgent ();
-			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
+
+			var launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
 			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
 		}
@@ -314,14 +343,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return sb.ToString();
 		}
 
-		bool? EvaluateCondition (int frameId, string exp)
+		bool? EvaluateCondition (int frameId, string expression)
 		{
-			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
+			var response = protocolClient.SendRequestSync (new EvaluateRequest (expression) { FrameId = frameId }).Result;
 
 			if (bool.TryParse (response, out var result))
 				return result;
 
-			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{exp}'. The error returned was '{response}'.\n");
+			OnDebuggerOutput (false, $"The condition for an exception catchpoint failed to execute. The condition was '{expression}'. The error returned was '{response}'.\n");
 
 			return null;
 		}
@@ -359,7 +388,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					var body = (StoppedEvent)obj.Body;
 					switch (body.Reason) {
 					case StoppedEvent.ReasonValue.Breakpoint:
-						var stackFrame = (VsCodeStackFrame)this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
+						var stackFrame = (VsCodeDebuggerStackFrame)this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
 						args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 						var bp = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().FirstOrDefault (b => b.FileName == stackFrame.SourceLocation.FileName && b.Line == stackFrame.SourceLocation.Line);
 						if (bp == null)
@@ -389,7 +418,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						if (Options.ProjectAssembliesOnly) {
 							// We can't evaluate expressions in external code frames, the debugger will hang
 							for (int i = 0; i < backtrace.FrameCount; i++) {
-								var frame = stackFrame = (VsCodeStackFrame)backtrace.GetFrame (i);
+								var frame = stackFrame = (VsCodeDebuggerStackFrame)backtrace.GetFrame (i);
 								if (!frame.IsExternalCode) {
 									stackFrame = frame;
 									break;
@@ -401,7 +430,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							}
 						} else {
 							// It's OK to evaluate expressions in external code
-							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
+							stackFrame = (VsCodeDebuggerStackFrame)backtrace.GetFrame (0);
 						}
 
 						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
