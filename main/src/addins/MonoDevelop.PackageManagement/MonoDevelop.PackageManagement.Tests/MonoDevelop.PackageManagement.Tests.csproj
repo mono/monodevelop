@@ -156,6 +156,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableManagePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementCanReferenceProjectExtensionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageLoadContextTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateStrictPackageDependenciesTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateMultipleNuGetPackagesActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdateMultipleNuGetPackagesAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

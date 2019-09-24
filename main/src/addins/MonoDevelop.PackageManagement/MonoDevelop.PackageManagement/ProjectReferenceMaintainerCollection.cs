@@ -1,10 +1,10 @@
-﻿//
-// FakeNuGetProjectAction.cs
+//
+// ProjectReferenceMaintainerCollection.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft Corporation
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,45 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NuGet.PackageManagement;
-using NuGet.Packaging.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using NuGet.ProjectManagement;
-using NuGet.Versioning;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	class FakeNuGetProjectAction : NuGetProjectAction
+	sealed class ProjectReferenceMaintainerCollection : IDisposable
 	{
-		public FakeNuGetProjectAction (
-			string packageId,
-			string packageVersion,
-			NuGetProjectActionType actionType)
-			: base (
-				CreatePackageIdentity (packageId, packageVersion),
-				actionType,
-				null)
+		List<ProjectReferenceMaintainer> referenceMaintainers;
+
+		public ProjectReferenceMaintainerCollection (IEnumerable<NuGetProject> projects)
 		{
+			referenceMaintainers = projects
+				.Select (project => new ProjectReferenceMaintainer (project))
+				.ToList ();
 		}
 
-		public FakeNuGetProjectAction (
-			NuGetProject project,
-			string packageId,
-			string packageVersion,
-			NuGetProjectActionType actionType)
-			: base (
-				CreatePackageIdentity (packageId, packageVersion),
-				actionType,
-				project)
+		public void Dispose ()
 		{
-		}
-
-		static PackageIdentity CreatePackageIdentity (string packageId, string packageVersion)
-		{
-			NuGetVersion nuGetVersion = null;
-			if (packageVersion != null) {
-				nuGetVersion = new NuGetVersion (packageVersion);
+			foreach (ProjectReferenceMaintainer referenceMaintainer in referenceMaintainers) {
+				referenceMaintainer.Dispose ();
 			}
-			return new PackageIdentity (packageId, nuGetVersion);
+		}
+
+		public async Task ApplyChangesAsync ()
+		{
+			foreach (ProjectReferenceMaintainer referenceMaintainer in referenceMaintainers) {
+				await referenceMaintainer.ApplyChanges ();
+			}
 		}
 	}
 }
