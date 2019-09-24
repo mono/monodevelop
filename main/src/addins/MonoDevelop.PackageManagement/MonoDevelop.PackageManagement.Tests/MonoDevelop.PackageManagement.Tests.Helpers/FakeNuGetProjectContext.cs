@@ -72,6 +72,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void Log (ILogMessage message)
 		{
+			if (LogToConsole)
+				Console.WriteLine (message.Message);
 		}
 
 		public void ReportError (ILogMessage message)

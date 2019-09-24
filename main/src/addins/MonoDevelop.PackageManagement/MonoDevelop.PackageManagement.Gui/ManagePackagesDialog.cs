@@ -757,8 +757,16 @@ namespace MonoDevelop.PackageManagement
 		{
 			int count = packageActions.Count;
 			if (count == 1) {
-				string packageId = packageActions.Cast<INuGetPackageAction> ().First ().PackageId;
-				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageId);
+				if (packageActions [0] is UpdateMultipleNuGetPackagesAction updateMultiplePackagesAction) {
+					count = updateMultiplePackagesAction.PackagesToUpdate.Count ();
+					if (count == 1) {
+						return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (
+							updateMultiplePackagesAction.PackagesToUpdate.First ().Id);
+					}
+				} else {
+					string packageId = packageActions.Cast<INuGetPackageAction> ().First ().PackageId;
+					return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageId);
+				}
 			}
 
 			return new ProgressMonitorStatusMessage (

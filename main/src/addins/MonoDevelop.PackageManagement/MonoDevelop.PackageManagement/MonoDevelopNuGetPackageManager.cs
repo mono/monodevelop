@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Configuration;
@@ -36,16 +37,20 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class MonoDevelopNuGetPackageManager : INuGetPackageManager
 	{
-		NuGetPackageManager packageManager;
-		ISettings settings;
+		readonly IMonoDevelopSolutionManager solutionManager;
+		readonly NuGetPackageManager packageManager;
+		readonly ISettings settings;
 
 		public MonoDevelopNuGetPackageManager (IMonoDevelopSolutionManager solutionManager)
 		{
+			this.solutionManager = solutionManager;
+
 			var restartManager = new DeleteOnRestartManager ();
 
 			settings = solutionManager.Settings;
@@ -82,6 +87,21 @@ namespace MonoDevelop.PackageManagement
 		{
 			return packageManager.ExecuteNuGetProjectActionsAsync (
 				nuGetProject,
+				nuGetProjectActions,
+				nuGetProjectContext,
+				sourceCacheContext,
+				token);
+		}
+
+		public Task ExecuteNuGetProjectActionsAsync (
+			IEnumerable<NuGetProject> nuGetProjects,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			SourceCacheContext sourceCacheContext,
+			CancellationToken token)
+		{
+			return packageManager.ExecuteNuGetProjectActionsAsync (
+				nuGetProjects,
 				nuGetProjectActions,
 				nuGetProjectContext,
 				sourceCacheContext,
@@ -169,6 +189,25 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			List<PackageIdentity> packageIdentities,
+			IEnumerable<NuGetProject> nuGetProjects,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			return packageManager.PreviewUpdatePackagesAsync (
+				packageIdentities,
+				nuGetProjects,
+				resolutionContext,
+				nuGetProjectContext,
+				primarySources,
+				secondarySources,
+				token);
+		}
+
 		public Task<IEnumerable<NuGetProjectAction>> PreviewUninstallPackageAsync (
 			NuGetProject nuGetProject,
 			string packageId,
@@ -208,16 +247,18 @@ namespace MonoDevelop.PackageManagement
 			var executionContext = nuGetProjectContext.ExecutionContext;
 			if (executionContext != null) {
 				foreach (var package in packages) {
-					await OpenReadmeFiles (nuGetProject, package, executionContext, token);
+					await OpenReadmeFiles (nuGetProject, package, executionContext);
+					if (token.IsCancellationRequested) {
+						return;
+					}
 				}
 			}
 		}
 
-		Task OpenReadmeFiles (
+		async Task<bool> OpenReadmeFiles (
 			NuGetProject nuGetProject,
 			PackageIdentity package,
-			NuGet.ProjectManagement.ExecutionContext executionContext,
-			CancellationToken token)
+			NuGet.ProjectManagement.ExecutionContext executionContext)
 		{
 			//packagesPath is different for project.json vs Packages.config scenarios. So check if the project is a build-integrated project
 			var buildIntegratedProject = nuGetProject as BuildIntegratedNuGetProject;
@@ -238,10 +279,84 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 
-			if (File.Exists (readmeFilePath) && !token.IsCancellationRequested) {
-				return executionContext.OpenFile (readmeFilePath);
+			if (File.Exists (readmeFilePath)) {
+				await executionContext.OpenFile (readmeFilePath);
+				return true;
 			}
-			return Task.FromResult (0);
+			return false;
+		}
+
+		public async Task OpenReadmeFiles (
+			IEnumerable<NuGetProject> nuGetProjects,
+			IEnumerable<PackageIdentity> packages,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			var executionContext = nuGetProjectContext.ExecutionContext;
+			if (executionContext == null)
+				return;
+
+			var buildIntegratedProject = nuGetProjects
+				.OfType<BuildIntegratedNuGetProject> ()
+				.FirstOrDefault ();
+
+			var nonBuildIntegratedProject = nuGetProjects
+				.Where (project => !(project is BuildIntegratedNuGetProject))
+				.FirstOrDefault ();
+
+			foreach (PackageIdentity package in packages) {
+				if (nonBuildIntegratedProject != null) {
+					if (await OpenReadmeFiles (nonBuildIntegratedProject, package, executionContext))
+						continue;
+				}
+
+				if (buildIntegratedProject != null)
+					await OpenReadmeFiles (buildIntegratedProject, package, executionContext);
+
+				if (token.IsCancellationRequested)
+					return;
+			}
+		}
+
+		public Task RunPostProcessAsync (
+			List<NuGetProject> nuGetProjects,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			if (nuGetProjects.Count == 1) {
+				return nuGetProjects [0].RunPostProcessAsync (nuGetProjectContext, token);
+			}
+
+			var buildIntegratedProjects = nuGetProjects.OfType<BuildIntegratedNuGetProject> ().ToList ();
+			if (!buildIntegratedProjects.Any ())
+				return Task.CompletedTask;
+
+			return RestorePackagesAsync (buildIntegratedProjects, token);
+		}
+
+		async Task RestorePackagesAsync (
+			List<BuildIntegratedNuGetProject> projects,
+			CancellationToken token)
+		{
+			var packageRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
+
+			var restoreTask = packageRestorer.RestorePackages (projects, token);
+			using (var task = new PackageRestoreTask (restoreTask)) {
+				await restoreTask;
+			}
+
+			// Ensure MSBuild tasks are up to date when the next build is run.
+			foreach (BuildIntegratedNuGetProject project in projects) {
+				var dotNetProject = project.GetDotNetProject ();
+				dotNetProject.DotNetProject.ShutdownProjectBuilder ();
+
+				if (!packageRestorer.LockFileChanged) {
+					// Need to refresh the references since the restore did not.
+					await Runtime.RunInMainThread (() => {
+						dotNetProject.DotNetProject.DotNetCoreNotifyReferencesChanged ();
+					});
+				}
+			}
 		}
 	}
 }
