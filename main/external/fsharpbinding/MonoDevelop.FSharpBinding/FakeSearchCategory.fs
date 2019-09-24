@@ -48,7 +48,7 @@ type FakeSearchCategory() =
 
     override x.get_Tags() = [|"fake"|]
 
-    override x.IsValidTag _tag = true
+    override x.IsValidTag _tag = _tag = "fake"
 
     override x.GetResults(searchCallback, pattern, token) =
 
