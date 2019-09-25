@@ -165,6 +165,13 @@ namespace MonoDevelop.AspNetCore.Tests
 				Assert.That (FileNestingService.GetDependentOrNestedChildren (minFile)?.Count () ?? 0, Is.EqualTo (1));
 				Assert.That (FileNestingService.GetDependentOrNestedTree (minFile), Contains.Item (minMapFile));
 				Assert.That (FileNestingService.GetDependentOrNestedTree (minFile)?.Count () ?? 0, Is.EqualTo (1));
+
+				// Check if all files are taken into account when renaming the top one
+				var files = MonoDevelop.Ide.ProjectOperations.GetDependentFilesToRename (rootFile, "reboot.css");
+				Assert.That (files.Count, Is.EqualTo (3));
+				Assert.True (files.Any (x => x.File == mapFile && x.NewName == "reboot.css.map"));
+				Assert.True (files.Any (x => x.File == minFile && x.NewName == "reboot.min.css"));
+				Assert.True (files.Any (x => x.File == minMapFile && x.NewName == "reboot.min.css.map"));
 			}
 		}
 

@@ -342,7 +342,39 @@ namespace MonoDevelop.Ide
 				await workspace.SavePreferencesAsync ();
 			}
 		}
-		
+
+		/// <summary>
+		/// Returns all dependent files that have names that start with the old name of the file.
+		/// </summary>
+		internal static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (
+			MonoDevelop.Projects.ProjectFile file,
+			string newName)
+		{
+			var children = FileNestingService.GetDependentOrNestedTree (file);
+			if (children == null)
+				return null;
+
+			List<(MonoDevelop.Projects.ProjectFile File, string NewName)> files = null;
+
+			string oldName = file.FilePath.FileName;
+			foreach (ProjectFile child in children) {
+				string oldChildName = child.FilePath.FileName;
+				string childNewName = null;
+				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
+					childNewName = newName + oldChildName.Substring (oldName.Length);
+				} else if (oldChildName.StartsWith (Path.GetFileNameWithoutExtension (oldName), StringComparison.CurrentCultureIgnoreCase)) {
+					childNewName = Path.GetFileNameWithoutExtension (newName) + oldChildName.Substring (Path.GetFileNameWithoutExtension (oldName).Length);
+				}
+
+				if (childNewName != null) {
+					if (files == null)
+						files = new List<(MonoDevelop.Projects.ProjectFile projectFile, string name)> ();
+					files.Add ((child, childNewName));
+				}
+			}
+			return files;
+		}
+
 		public void Export (Solution item)
 		{
 			Export (item, null);
