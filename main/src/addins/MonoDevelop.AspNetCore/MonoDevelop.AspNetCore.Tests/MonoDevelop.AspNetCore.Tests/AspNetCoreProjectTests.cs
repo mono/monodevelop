@@ -63,6 +63,12 @@ namespace MonoDevelop.AspNetCore.Tests
 			}
 		}
 
+		static ProjectFile AddFile (Project project, string file)
+		{
+			File.WriteAllText (file, "");
+			return project.AddFile (file);
+		}
+
 		[Test]
 		public async Task AspNetCore_FileNesting ()
 		{
@@ -89,10 +95,8 @@ namespace MonoDevelop.AspNetCore.Tests
 					string inputFileDestination = Path.Combine (dir, "FileNesting", f.Item1);
 					string parentFileDestination = Path.Combine (dir, "FileNesting", f.Item2);
 
-					File.WriteAllText (parentFileDestination, "");
-					var parentFile = project.AddFile (parentFileDestination);
-					File.WriteAllText (inputFileDestination, "");
-					var inputFile = project.AddFile (inputFileDestination);
+					var parentFile = AddFile (project, parentFileDestination);
+					var inputFile = AddFile (project, inputFileDestination);
 
 					var actualParentFile = FileNestingService.GetParentFile (inputFile);
 					Assert.That (parentFile, Is.EqualTo (actualParentFile), $"Was expecting parent file {parentFileDestination} for {inputFileDestination} but got {actualParentFile}");
@@ -111,6 +115,56 @@ namespace MonoDevelop.AspNetCore.Tests
 					Assert.That (FileNestingService.GetChildren (parentFile).Count, Is.EqualTo (0));
 					project.Files.Remove (parentFile);
 				}
+			}
+		}
+
+		[Test]
+		public async Task AspNetCore_MultiFileNesting ()
+		{
+			string projectFileName = Util.GetSampleProject ("aspnetcore-empty-30", "aspnetcore-empty-30.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), projectFileName)) {
+				var project = sol.GetAllProjectsWithFlavor<AspNetCoreProjectExtension> ().FirstOrDefault ();
+
+				var dir = project.BaseDirectory;
+				project.AddDirectory ("FileNesting");
+
+				var rootFile = AddFile (project, Path.Combine (dir, "FileNesting", "bootstrap.css"));
+				Assert.That (FileNestingService.GetChildren (rootFile), Is.Null);
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile)?.Count () ?? 0, Is.EqualTo (0));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile)?.Count () ?? 0, Is.EqualTo (0));
+
+				// This should be nested under bootstrap.css
+				var mapFile = AddFile (project, Path.Combine (dir, "FileNesting", "bootstrap.css.map"));
+				Assert.That (FileNestingService.GetChildren (rootFile), Contains.Item (mapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile), Contains.Item (mapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile)?.Count () ?? 0, Is.EqualTo (1));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile), Contains.Item (mapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile)?.Count () ?? 0, Is.EqualTo (1));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (mapFile)?.Count () ?? 0, Is.EqualTo (0));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (mapFile)?.Count () ?? 0, Is.EqualTo (0));
+
+				// This should be nested under bootstrap.css
+				var minFile = AddFile (project, Path.Combine (dir, "FileNesting", "bootstrap.min.css"));
+				Assert.That (FileNestingService.GetChildren (rootFile), Contains.Item (minFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile), Contains.Item (minFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile)?.Count () ?? 0, Is.EqualTo (2));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile), Contains.Item (minFile));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile)?.Count () ?? 0, Is.EqualTo (2));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (minFile)?.Count () ?? 0, Is.EqualTo (0));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (minFile)?.Count () ?? 0, Is.EqualTo (0));
+
+				// This should be nested under bootstrap.min.css
+				var minMapFile = AddFile (project, Path.Combine (dir, "FileNesting", "bootstrap.min.css.map"));
+				Assert.That (FileNestingService.GetChildren (rootFile), !Contains.Item (minMapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile), !Contains.Item (minMapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (rootFile)?.Count () ?? 0, Is.EqualTo (2));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile), Contains.Item (minMapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (rootFile)?.Count () ?? 0, Is.EqualTo (3));
+				Assert.That (FileNestingService.GetChildren (minFile), Contains.Item (minMapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (minFile), Contains.Item (minMapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedChildren (minFile)?.Count () ?? 0, Is.EqualTo (1));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (minFile), Contains.Item (minMapFile));
+				Assert.That (FileNestingService.GetDependentOrNestedTree (minFile)?.Count () ?? 0, Is.EqualTo (1));
 			}
 		}
 
