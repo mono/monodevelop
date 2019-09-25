@@ -327,7 +327,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		[Export ("controlTextDidChange:")]
 		void ControlTextDidChange (NSNotification note)
 		{
-			SendKeyPressed (null);
+			throw new InvalidOperationException ("SearchBar ControlTextDidChange error");
+			//SendKeyPressed (null);
 		}
 
 		bool ignoreEndEditing = false;
