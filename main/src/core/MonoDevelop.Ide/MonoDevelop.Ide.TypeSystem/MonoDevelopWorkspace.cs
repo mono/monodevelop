@@ -1362,7 +1362,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			MonoDevelop.Projects.ProjectFile file,
 			string newName)
 		{
-			var children = FileNestingService.GetDependentOrNestedChildren (file);
+			var children = FileNestingService.GetDependentOrNestedTree (file);
 			if (children == null)
 				return null;
 
@@ -1371,9 +1371,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			string oldName = file.FilePath.FileName;
 			foreach (MonoDevelop.Projects.ProjectFile child in children) {
 				string oldChildName = child.FilePath.FileName;
+				string childNewName = null;
 				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
-					string childNewName = newName + oldChildName.Substring (oldName.Length);
+					childNewName = newName + oldChildName.Substring (oldName.Length);
+				} else if (oldChildName.StartsWith (Path.GetFileNameWithoutExtension (oldName), StringComparison.CurrentCultureIgnoreCase)) {
+					childNewName = Path.GetFileNameWithoutExtension (newName) + oldChildName.Substring (Path.GetFileNameWithoutExtension (oldName).Length);
+				}
 
+				if (childNewName != null) {
 					if (files == null)
 						files = new List<(MonoDevelop.Projects.ProjectFile projectFile, string name)> ();
 					files.Add ((child, childNewName));

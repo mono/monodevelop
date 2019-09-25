@@ -218,7 +218,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		/// </summary>
 		static List<(ProjectFile File, string NewName)> GetDependentFilesToRename (ProjectFile file, string newName)
 		{
-			var children = FileNestingService.GetDependentOrNestedChildren (file);
+			var children = FileNestingService.GetDependentOrNestedTree (file);
 			if (children == null)
 				return null;
 
@@ -227,9 +227,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string oldName = file.FilePath.FileName;
 			foreach (ProjectFile child in children) {
 				string oldChildName = child.FilePath.FileName;
+				string childNewName = null;
 				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
-					string childNewName = newName + oldChildName.Substring (oldName.Length);
+					childNewName = newName + oldChildName.Substring (oldName.Length);
+				} else if (oldChildName.StartsWith (Path.GetFileNameWithoutExtension (oldName), StringComparison.CurrentCultureIgnoreCase)) {
+					childNewName = Path.GetFileNameWithoutExtension (newName) + oldChildName.Substring (Path.GetFileNameWithoutExtension (oldName).Length);
+				}
 
+				if (childNewName != null) {
 					if (files == null)
 						files = new List<(ProjectFile projectFile, string name)> ();
 					files.Add ((child, childNewName));
@@ -351,7 +356,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					project.Files.Add (folderFile);
 				}
 
-				var children = FileNestingService.GetDependentOrNestedChildren (file);
+				var children = FileNestingService.GetDependentOrNestedTree (file);
 				if (children != null) {
 					foreach (var child in children.ToArray ()) {
 						project.Files.Remove (child);
