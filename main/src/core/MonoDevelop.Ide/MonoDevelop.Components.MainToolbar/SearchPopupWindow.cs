@@ -449,6 +449,8 @@ namespace MonoDevelop.Components.MainToolbar
 			int total = categories.Count;
 			int current = 0;
 
+			throw new InvalidOperationException ("SearchPopupWidget Update error");
+
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
