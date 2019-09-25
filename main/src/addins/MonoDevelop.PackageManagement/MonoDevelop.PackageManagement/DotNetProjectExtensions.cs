@@ -156,7 +156,8 @@ namespace MonoDevelop.PackageManagement
 
 		public static IEnumerable<string> GetDotNetCoreTargetFrameworks (this Project project)
 		{
-			foreach (MSBuildPropertyGroup propertyGroup in project.MSBuildProject.PropertyGroups) {
+			var groups = project.MSBuildProject?.PropertyGroups ?? Enumerable.Empty<MSBuildPropertyGroup> ();
+			foreach (MSBuildPropertyGroup propertyGroup in groups) {
 				string framework = propertyGroup.GetValue ("TargetFramework", null);
 				if (framework != null)
 					return new [] { framework };

@@ -27,6 +27,7 @@
 using System;
 using System.Xml;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 
@@ -97,6 +98,27 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (packageReference.PackageIdentity.HasVersion);
 			Assert.IsFalse (packageReference.HasAllowedVersions);
 			Assert.IsFalse (projectPackageReference.IsAtLeastVersion (new Version (3, 1)));
+		}
+
+		/// <summary>
+		/// Ensure that a null MSBuildProject does not break getting a PackageReference.
+		/// Previously this would throw a null reference exception when an attempt was made
+		/// to determine the frameworks defined by the project.
+		/// </summary>
+		[Test]
+		public void DisposedProject ()
+		{
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			var projectPackageReference = ProjectPackageReference.Create ("Test", "1.2.3");
+			project.Items.Add (projectPackageReference);
+
+			project.Dispose ();
+
+			var packageReference = projectPackageReference.CreatePackageReference ();
+
+			Assert.IsNull (project.MSBuildProject);
+			Assert.AreEqual ("Test", packageReference.PackageIdentity.Id);
+			Assert.AreEqual ("1.2.3", packageReference.PackageIdentity.Version.ToString ());
 		}
 	}
 }
