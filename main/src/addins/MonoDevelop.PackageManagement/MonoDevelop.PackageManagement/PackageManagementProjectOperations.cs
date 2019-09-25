@@ -208,6 +208,8 @@ namespace MonoDevelop.PackageManagement
 
 					var packagesBeingInstalled = GetPackagesBeingInstalled (dotNetProject).ToList ();
 
+					nugetProject = null;
+
 					var packages = await Task.Run (() => nugetProject.GetInstalledPackagesAsync (CancellationToken.None)).ConfigureAwait (false);
 
 					var packageReferences = packages
