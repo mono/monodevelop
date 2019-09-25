@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 				}
 			} else {
 				var children = GetChildren (inputFile);
-				if (children != null) {
+				if (children != null && children.Count > 0) {
 					var stack = new Stack<ProjectFile> (children);
 					while (stack.Count > 0) {
 						var current = stack.Pop ();
