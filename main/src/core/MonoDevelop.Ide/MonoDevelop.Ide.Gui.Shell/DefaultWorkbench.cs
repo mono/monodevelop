@@ -925,6 +925,10 @@ namespace MonoDevelop.Ide.Gui
 			foreach (ExtensionNode node in padCodons)
 				ShowPadNode (node);
 
+			if (!this.padContentCollection.Exists (codon => codon.Id == "MonoDevelop.Ide.Gui.Pads.ErrorListPad")) {
+				LoggingService.LogWarning ("ErrorListPad not loaded.");
+			}
+
 			try {
 				if (System.IO.File.Exists (configFile)) {
 					dock.LoadLayouts (configFile);

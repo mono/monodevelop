@@ -74,11 +74,16 @@ namespace MonoDevelop.Ide.Gui
 		ProgressMonitor GetBuildProgressMonitor (string statusText)
 		{
 			return Runtime.RunInMainThread (() => {
-				Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
-				ErrorListPad errorPad = (ErrorListPad)pad.Content;
-				AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
-				mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad, true));
-				return mon;
+				try {
+					var pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
+					var errorPad = (ErrorListPad)pad.Content;
+					var mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
+					mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad, true));
+					return mon;
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while getting build progress monitor", e);
+					return new ProgressMonitor ();
+				}
 			}).Result;
 		}
 
