@@ -157,20 +157,16 @@ module Lexer =
           parseLine tokenizer (tok::tokens) state
       | None, state -> tokens |> List.rev, state
 
-    let rec parseLines (sourceTok:FSharpSourceTokenizer) tokens state lines filename defines =
-        [ match lines with
-          | line::lines ->
-              // Create tokenizer & tokenize single line
-              let tokenizer = sourceTok.CreateLineTokenizer(line)
-              let tokens, state = parseLine tokenizer [] state
-              yield tokens, line
-              // Tokenize the rest of the lines using the new state
-              yield! parseLines sourceTok tokens state lines filename defines
-          | [] -> () ]
-
-    let getTokensWithInitialState state lines filename defines =
+    let getTokensWithInitialState initialState lines filename defines =
         let sourceTok = FSharpSourceTokenizer(defines, filename)
-        parseLines sourceTok [] state lines filename defines
+        let res, _newState =
+            lines
+            |> List.mapFold(fun state line ->
+                                let tokenizer = sourceTok.CreateLineTokenizer(line)
+                                let tokens, newState = parseLine tokenizer [] state
+                                (tokens, line), newState
+                                ) initialState
+        res
 
     let findTokenAt col (tokens:FSharpTokenInfo list) =
         let isTokenAtOffset col (t:FSharpTokenInfo) = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
