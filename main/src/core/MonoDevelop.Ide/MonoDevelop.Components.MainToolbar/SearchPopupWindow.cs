@@ -438,7 +438,9 @@ namespace MonoDevelop.Components.MainToolbar
 			var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
 
 			//we want add the search results with a special behaviour
-			newResults.Add (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+
+			lock (lockObject) // We have to lock here because searchProvidersCategory can mutate
+				newResults.Add (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
 
 			var lastProvSrc = new CancellationTokenSource ();
 
@@ -513,7 +515,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 						//refresh panel and show results 
 						InvokeAsync (() => {
-							ShowResults (newResults, calculatedResult.topResult);
+							lock (lockObject) // We have to lock here because newResults can mutate
+								ShowResults (newResults, calculatedResult.topResult);
 
 							//once we processed all the items our search is finished
 							if (current == total) {
