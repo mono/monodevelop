@@ -553,7 +553,7 @@ namespace MonoDevelop.Components.MainToolbar
 			for (int i = 0; i < newResults.Count; i++) {
 				var tuple = newResults [i];
 				try {
-					if (tuple.Item2.Count == 0)
+					if (tuple.Item2.Count == 0 || tuple.Item1 is LoadingSearchProvidersCategory)
 						continue;
 					if (topResult == null || topResult.DataSource [topResult.Item].Weight < tuple.Item2 [0].Weight)
 						topResult = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
