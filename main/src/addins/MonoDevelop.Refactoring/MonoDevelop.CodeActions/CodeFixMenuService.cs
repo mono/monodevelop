@@ -115,8 +115,8 @@ namespace MonoDevelop.CodeActions
 					first = false;
 				}
 
-				foreach (var action in refactoring.Actions) {
-					AddFixMenuItem (editor, menu, null, ref mnemonic, action, null, cancellationToken);
+				foreach (var codeAction in refactoring.CodeActions) {
+					AddFixMenuItem (editor, menu, null, ref mnemonic, codeAction.action, null, cancellationToken);
 				}
 			}
 

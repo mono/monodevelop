@@ -63,11 +63,11 @@ namespace MonoDevelop.Refactoring.Tests
 				Assert.AreEqual (expected.CodeFixData [j].Message, fixActions [j].Action.Message);
 			}
 
-			var fixRefactorings = fixes.CodeRefactoringActions.SelectMany (x => x.Actions).OrderBy(f => f.Message).ToArray ();
+			var fixRefactorings = fixes.CodeRefactoringActions.SelectMany (x => x.CodeActions).OrderBy(f => f.action.Message).ToArray ();
 
 			Assert.AreEqual (expected.CodeRefactoringData.Length, fixRefactorings.Length);
 			for (int j = 0; j < expected.CodeRefactoringData.Length; ++j) {
-				Assert.AreEqual (expected.CodeRefactoringData [j].Message, fixRefactorings [j].Message);
+				Assert.AreEqual (expected.CodeRefactoringData [j].Message, fixRefactorings [j].action.Message);
 			}
 		}
 	}
