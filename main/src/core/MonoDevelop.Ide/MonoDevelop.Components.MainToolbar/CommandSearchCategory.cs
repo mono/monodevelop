@@ -83,18 +83,19 @@ namespace MonoDevelop.Components.MainToolbar
 				return Task.CompletedTask;
 			var route = new CommandTargetRoute (IdeApp.CommandService.LastCommandTarget);
 			var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
-			foreach (var cmd in GetAllCommands ()) {
-				if (token.IsCancellationRequested)
-					break;
-				var matchString = cmd.DisplayName;
+			return Runtime.RunInMainThread (() => {
+				foreach (var cmd in GetAllCommands ()) {
+					if (token.IsCancellationRequested)
+						break;
+					var matchString = cmd.DisplayName;
 
-				if (matcher.CalcMatchRank (matchString, out var rank)) {
-					if ((cmd as ActionCommand)?.RuntimeAddin == currentRuntimeAddin)
-						rank += 1; // we prefer commands comming from the addin
-					searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
+					if (matcher.CalcMatchRank (matchString, out var rank)) {
+						if ((cmd as ActionCommand)?.RuntimeAddin == currentRuntimeAddin)
+							rank += 1; // we prefer commands comming from the addin
+						searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
+					}
 				}
-			}
-			return Task.CompletedTask;
+			});
 		}
 	}
 }

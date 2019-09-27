@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Gtk;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -716,7 +717,8 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.Show ();
 			}
-			popup.Update (pattern);
+			// popup.Update () is thread safe, so run it on a bg thread for faster results
+			Task.Run (() => popup.Update (pattern)).Ignore ();
 		}
 
 		void HandleSearchEntryActivated (object sender, EventArgs e)
