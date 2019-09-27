@@ -132,5 +132,5 @@ monodevelop-patches-list@lists.ximian.com *(track commits to MonoDevelop)*
 
 monodevelop-bugs@lists.ximian.com *(track MonoDevelop bugzilla component)*
 
-http://bugzilla.xamarin.com *(submit bugs and patches here)*
+https://github.com/mono/monodevelop/issues/new *(submit bugs and patches here)*
 
