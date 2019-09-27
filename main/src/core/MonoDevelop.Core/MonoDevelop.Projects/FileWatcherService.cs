@@ -550,11 +550,11 @@ namespace MonoDevelop.Projects
 
 			bool isDirectory = IsDirectoryWatcher (sender);
 
-			bool removed = isDirectory
-				? !Directory.Exists (e.FullPath)
-				: !File.Exists (e.FullPath);
+			bool exists = isDirectory
+				? Directory.Exists (e.FullPath)
+				: File.Exists (e.FullPath);
 
-			if (removed) {
+			if (!exists) {
 				using (readerWriterLock.Read ()) {
 					var sw = FileWatcherService.Timings.Get ();
 					sw.Restart ();
