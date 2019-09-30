@@ -72,9 +72,6 @@ namespace Gtk
 				return null;
 
 			var nsEventHandle = gdk_quartz_event_get_nsevent (evnt.Handle);
-			if (nsEventHandle == IntPtr.Zero)
-				return null;
-
 			return Runtime.GetNSObject<NSEvent> (nsEventHandle);
 		}
 
@@ -91,8 +88,10 @@ namespace Gtk
 			Accessible.SetRole (AtkCocoa.Roles.AXGroup);
 
 			var accessibility = AtkCocoaMacExtensions.GetNSAccessibilityElement (Accessible);
-			accessibility.AccessibilityElement = true;
-			accessibility.AccessibilityChildren = new NSObject [] { view };
+			if (accessibility != null) {
+				accessibility.AccessibilityElement = true;
+				accessibility.AccessibilityChildren = new NSObject [] { view };
+			}
 		}
 
 		void UpdateViewFrame ()
