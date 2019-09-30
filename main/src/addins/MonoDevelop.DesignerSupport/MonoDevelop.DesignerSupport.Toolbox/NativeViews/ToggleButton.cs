@@ -34,7 +34,7 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	class NSEventArgs : EventArgs
+	sealed class NSEventArgs : EventArgs
 	{
 		public NSEventArgs (NSEvent nsEvent)
 		{

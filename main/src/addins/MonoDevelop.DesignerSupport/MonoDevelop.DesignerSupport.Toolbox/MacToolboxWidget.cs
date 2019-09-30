@@ -69,7 +69,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		internal void PerformActivateSelectedItem () => ActivateSelectedItem?.Invoke (this, EventArgs.Empty);
 
 		public NSIndexPath SelectedIndexPath {
-			get => SelectionIndexPaths.FirstOrDefault () as NSIndexPath;
+			get => SelectionIndexPaths.AnyObject as NSIndexPath;
 			set {
 				if (value == null) {
 					SelectionIndexPaths = new NSSet ();
@@ -84,7 +84,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (MacToolboxWidgetDataSource.IsIndexOutOfSync (SelectedIndexPath, CategoryVisibilities)) {
 					return null;
 				}
-				return CategoryVisibilities [(int)SelectedIndexPath.Section].Items [(int)SelectedIndexPath.Item];
+				var indexPath = SelectedIndexPath;
+				return CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 			}
 		}
 
@@ -140,7 +141,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void RedrawSelectedItem ()
 		{
 			if (SelectionIndexPaths.Count > 0) {
-				var collectionViewItem = GetItem ((NSIndexPath)SelectionIndexPaths.ElementAt (0));
+				var collectionViewItem = GetItem (SelectedIndexPath);
 				if (collectionViewItem != null && collectionViewItem.View is ContentCollectionViewItem contentCollectionView) {
 					contentCollectionView.RefreshLayer ();
 				}

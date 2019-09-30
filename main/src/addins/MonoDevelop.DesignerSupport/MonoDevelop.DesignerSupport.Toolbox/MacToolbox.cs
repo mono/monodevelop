@@ -65,9 +65,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var increment = nextPositionInArray >= 0 ? +1 : -1;
 
 			//with the initial position and increment we return the first view which can be first responder and it's not hidden
-			for (int j = initialPosition; j >= 0 && j <= viewsKeyLoopOrder.Count - 1; j += increment) {
-				if (!viewsKeyLoopOrder [j].Hidden && viewsKeyLoopOrder [j].AcceptsFirstResponder ()) {
-					return viewsKeyLoopOrder [j];
+			for (int j = initialPosition; j >= 0 && j < viewsKeyLoopOrder.Count; j += increment) {
+				var nextView = viewsKeyLoopOrder [j];
+				if (!nextView.Hidden && nextView.AcceptsFirstResponder ()) {
+					return nextView;
 				}
 			}
 			return null;
@@ -550,6 +551,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
+				filterEntry.Activated -= FilterTextChanged;
+
 				filterEntry.CommandRaised -= FilterEntry_CommandRaised;
 
 				catToggleButton.Activated -= ToggleCategorisation;
