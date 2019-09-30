@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 //
 //
+#nullable enable
 
 using System;
 using Gtk;
@@ -33,11 +34,11 @@ namespace MonoDevelop.Ide.Gui
 {
 	public abstract class PadContent : IDisposable
 	{
-		IPadWindow window;
-		string icon;
-		string title;
+		IPadWindow? window;
+		string? icon;
+		string? title;
 
-		protected PadContent (string title, string icon = null): this()
+		protected PadContent (string? title, string? icon = null): this()
 		{
 			this.icon = icon;
 			this.title = title;
@@ -50,7 +51,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual string Id { get; set; }
 
-		public IPadWindow Window {
+		public IPadWindow? Window {
 			get { return window; }
 		}
 
