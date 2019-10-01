@@ -221,7 +221,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 				return true;
 			}
-			return false;
+
+			return ResultObject is NSView obj && obj.Window != null && obj.Window.MakeFirstResponder (obj);
 		}
 
 		public override AppResult Selected ()
@@ -274,17 +275,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool EnterText (string text)
 		{
-			NSControl control = ResultObject as NSControl;
-			if (control == null) {
-				return false;
+			if (ResultObject is NSView view && view.Window != null && view.Window.MakeFirstResponder(view)) {
+				foreach (var c in text) {
+					RealTypeKey (c);
+				}
+				return true;
 			}
 
-			control.Window.MakeFirstResponder (control);
-			foreach (var c in text) {
-				RealTypeKey (c);
-			}
-
-			return true;
+			return false;
 		}
 
 		public override bool TypeKey (char key, string state = "")
