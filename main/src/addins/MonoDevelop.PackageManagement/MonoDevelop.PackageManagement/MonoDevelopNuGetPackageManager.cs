@@ -351,8 +351,12 @@ namespace MonoDevelop.PackageManagement
 				dotNetProject.DotNetProject.ShutdownProjectBuilder ();
 
 				if (!packageRestorer.LockFileChanged) {
+					// Need to re-evaluate. When updating multiple projects the restore done at the end
+					// may be a no-op. This results in no re-evaluation being done so we re-evaluate here.
+					//
 					// Need to refresh the references since the restore did not.
-					await Runtime.RunInMainThread (() => {
+					await Runtime.RunInMainThread (async () => {
+						await dotNetProject.DotNetProject.ReevaluateProject (new ProgressMonitor ());
 						dotNetProject.DotNetProject.DotNetCoreNotifyReferencesChanged ();
 					});
 				}
