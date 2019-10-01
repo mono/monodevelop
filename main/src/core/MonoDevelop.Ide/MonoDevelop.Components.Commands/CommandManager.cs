@@ -317,11 +317,6 @@ namespace MonoDevelop.Components.Commands
 				return null;
 			}
 
-			if (string.IsNullOrEmpty (ev.Characters)) {
-				LoggingService.LogInternalError (new Exception ($"Keyevent has no characters"));
-				return null;
-			}
-
 			// If we have a native window that can handle this command, let it process
 			// the keys itself and do not go through the command manager.
 			// Events in Gtk windows do not pass through here except when they're done
