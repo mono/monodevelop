@@ -353,8 +353,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		sealed class LoadingSearchProvidersCategory : SearchCategory
 		{
-			Dictionary<SearchCategory, ProviderSearchResult> data = new Dictionary<SearchCategory, ProviderSearchResult> ();
-			List<ProviderSearchResult> values = new List<ProviderSearchResult> ();
+			readonly Dictionary<SearchCategory, ProviderSearchResult> data = new Dictionary<SearchCategory, ProviderSearchResult> ();
+			readonly List<ProviderSearchResult> values = new List<ProviderSearchResult> ();
 			public IReadOnlyList<ProviderSearchResult> Values => values;
 
 			public int ProvidersLeft => values.Count;
@@ -375,12 +375,24 @@ namespace MonoDevelop.Components.MainToolbar
 				data.Add (provider, result);
 			}
 
+			public void AddRange (IEnumerable<SearchCategory> providers)
+			{
+				foreach (var provider in providers)
+					Add (provider);
+			}
+
 			public void Remove (SearchCategory provider)
 			{
 				if (data.TryGetValue (provider, out ProviderSearchResult result)) {
 					values.Remove (result);
 					data.Remove (provider);
 				}
+			}
+
+			public void Clear ()
+			{
+				values.Clear ();
+				data.Clear ();
 			}
 
 			public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
@@ -391,22 +403,15 @@ namespace MonoDevelop.Components.MainToolbar
 				return Task.CompletedTask;
 			}
 
-			static readonly string [] tags = { "loading" };
-
-			public override string [] Tags {
-				get {
-					return tags;
-				}
-			}
+			public override string [] Tags => Array.Empty<string> ();
 
 			public override bool IsValidTag (string tag)
 			{
-				return tag == "loading";
+				return false;
 			}
-
 		}
 
-		int GetIndexFromCategory (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results, SearchCategory category)
+		int GetIndexFromCategory (IList<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results, SearchCategory category)
 		{
 			for (int i = 0; i < results.Count; i++) {
 				if (results[i].Item1.SortOrder >= category.SortOrder) {
@@ -428,53 +433,57 @@ namespace MonoDevelop.Components.MainToolbar
 			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
-			HideTooltip ();
+
 			src = new CancellationTokenSource ();
+			var token = src.Token;
 			isInSearch = true;
 			if (results.Count == 0) {
 				QueueDraw ();
 			}
 
-			var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
-
-			//we want add the search results with a special behaviour
-
-			lock (lockObject) // We have to lock here because searchProvidersCategory can mutate
-				newResults.Add (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
-
 			var lastProvSrc = new CancellationTokenSource ();
 
 			//generating the collectors
 			var collectors = new List<SearchResultCollector> ();
-			var token = src.Token;
 
 			int total = categories.Count;
 			int current = 0;
 
-			foreach (var _cat in categories) {
+			var activeCategories = string.IsNullOrEmpty (pattern.Tag) ? categories : categories.Where (cat => cat.IsValidTag (pattern.Tag));
+			var loadingCatResults = Array.Empty<ProviderSearchResult> ();
+
+			lock (lockObject) {
+				if (!token.IsCancellationRequested) {
+					searchProvidersCategory.Clear ();
+					searchProvidersCategory.AddRange (activeCategories);
+				}
+				loadingCatResults = searchProvidersCategory.Values.ToArray ();
+			}
+
+			var newResults = ImmutableArray.Create (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, loadingCatResults));
+
+			foreach (var _cat in activeCategories) {
 				var cat = _cat;
-				if (!string.IsNullOrEmpty (pattern.Tag) && !cat.IsValidTag (pattern.Tag))
-					continue;
 				var col = new SearchResultCollector (_cat);
 				collectors.Add (col);
 				col.Task = cat.GetResults (col, pattern, token);
 
 				//we append on finished  to process and show the results
-				col.Task.ContinueWith (async (colTask) => {
+				col.Task.ContinueWith ((colTask) => {
 
 					//cancel last provider continueWith task
 					lastProvSrc?.Cancel ();
-					
+
 					if (token.IsCancellationRequested || colTask.IsCanceled)
 						return;
-
-					await nextUpdate;
 
 					lock (lockObject) {
 
 						current++;
 
 						lastProvSrc = new CancellationTokenSource ();
+
+						var builder = newResults.ToBuilder ();
 
 						//We add the results to the collection or we log the issue
 						if (colTask.IsFaulted) {
@@ -483,14 +492,14 @@ namespace MonoDevelop.Components.MainToolbar
 						}
 
 						//we want order the new category processed 
-						var indexToInsert = GetIndexFromCategory (newResults, col.Category);
-						newResults.Insert(indexToInsert, Tuple.Create (col.Category, col.Results));
+						var indexToInsert = GetIndexFromCategory (builder, col.Category);
+						builder.Insert(indexToInsert, Tuple.Create (col.Category, col.Results));
 
 						//que want remove it all the failed results from the search
-						var calculatedResult = GetTopResult (newResults);
+						var calculatedResult = GetTopResult (builder);
 						if (calculatedResult.failedResults != null) {
 							for (int i = 0; i < calculatedResult.failedResults.Count; i++) {
-								newResults.Remove (calculatedResult.failedResults [i]);
+								builder.Remove (calculatedResult.failedResults [i]);
 							}
 						}
 
@@ -501,34 +510,33 @@ namespace MonoDevelop.Components.MainToolbar
 							searchProvidersCategory.Remove (col.Category);
 
 							//we want remove the tuple and recreate
-							newResults.Remove (newResults.FirstOrDefault (s => s.Item1 == searchProvidersCategory));
+							builder.Remove (builder.FirstOrDefault (s => s.Item1 == searchProvidersCategory));
 
 							if (current < total) {
 								//we want order the new category processed 
-								indexToInsert = GetIndexFromCategory (newResults, searchProvidersCategory);
-								newResults.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+								indexToInsert = GetIndexFromCategory (builder, searchProvidersCategory);
+								builder.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values.ToArray ()));
 							}
 						}
+
+						ImmutableInterlocked.InterlockedExchange (ref newResults, builder.ToImmutable ());
 
 						if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
 							return;
 
 						//refresh panel and show results 
-						InvokeAsync (() => {
-							lock (lockObject) // We have to lock here because newResults can mutate
-								ShowResults (newResults, calculatedResult.topResult);
+						Runtime.RunInMainThread (() => {
+							if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
+								return;
+
+							ShowResults (newResults, calculatedResult.topResult);
 
 							//once we processed all the items our search is finished
 							if (current == total) {
 								isInSearch = false;
 							}
 
-							if (lastProvSrc.IsCancellationRequested || token.IsCancellationRequested || colTask.IsCanceled)
-								return;
-
 							OnPreferredSizeChanged ();
-
-							nextUpdate = Task.Delay (250);
 						}).Ignore ();
 					}
 				}, token, TaskContinuationOptions.NotOnCanceled, TaskScheduler.Default)
@@ -536,18 +544,16 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		Task nextUpdate = Task.CompletedTask;
-
 		readonly object lockObject = new object ();
 
-		(List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults, ItemIdentifier topResult) GetTopResult (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults)
+		(List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults, ItemIdentifier topResult) GetTopResult (ImmutableArray<Tuple<SearchCategory, IReadOnlyList<SearchResult>>>.Builder newResults)
 		{
 			List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
 			ItemIdentifier topResult = null;
 			for (int i = 0; i < newResults.Count; i++) {
 				var tuple = newResults [i];
 				try {
-					if (tuple.Item2.Count == 0)
+					if (tuple.Item2.Count == 0 || tuple.Item1 is LoadingSearchProvidersCategory)
 						continue;
 					if (topResult == null || topResult.DataSource [topResult.Item].Weight < tuple.Item2 [0].Weight)
 						topResult = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
@@ -563,7 +569,7 @@ namespace MonoDevelop.Components.MainToolbar
 			return (failedResults, topResult);
 		}
 
-		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
+		void ShowResults (ImmutableArray<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
 		{
 			results.Clear ();
 			results.AddRange (newResults);
