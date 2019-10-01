@@ -89,13 +89,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			warningMessage = new HBox ();
 			warningMessage.Spacing = 6;
-			var img = new ImageView (Stock.Warning, IconSize.LargeToolbar);
+
+			var warningMsg = GettextCatalog.GetString ("Changes made in this section will only be applied to new projects. " +
+				"Settings for existing projects can be modified in the project (or solution) options dialog.");
+			var img = new InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning, Message = warningMsg, CanGetFocus = true };
+
 			img.SetCommonAccessibilityAttributes ("PolicyOptionsPanel.Warning",
-			                                      GettextCatalog.GetString ("Warning"),
+												  warningMsg,
 			                                      null);
-			warningMessage.PackStart (img, false, false, 0);
-			Label wl = new Label (GettextCatalog.GetString ("Changes made in this section will only be applied to new projects. " +
-				"Settings for existing projects can be modified in the project (or solution) options dialog."));
+			warningMessage.PackStart (img.ToGtkWidget(), false, false, 0);
+			Label wl = new Label (warningMsg);
 			wl.Xalign = 0;
 			wl.Wrap = true;
 			wl.WidthRequest = 450;
@@ -103,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			warningMessage.ShowAll ();
 			warningMessage.Visible = false;
 			vbox.PackEnd (warningMessage, false, false, 0);
-			
+
 			policyPanel = CreatePanelWidget ();
 			//HACK: work around bug 469427 - broken themes match on widget names
 			if (policyPanel.Name.IndexOf ("Panel") > 0)
@@ -255,7 +258,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				policyCombo.Active = active;
 			else
 				policyCombo.Active = store.IterNChildren () - 1;
+
 			warningMessage.Visible = isGlobalPolicy && !((IEquatable<T>)pol).Equals (GetCurrentValue ());
+
+			// test
+			if (warningMessage.Visible) {
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement ("this is an announcement that doesn't seem to work");
+			}
 		}
 		
 		protected abstract string PolicyTitleWithMnemonic { get; }
