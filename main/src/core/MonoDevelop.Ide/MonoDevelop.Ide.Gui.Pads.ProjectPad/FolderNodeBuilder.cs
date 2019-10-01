@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var groupedFiles = new HashSet<ProjectFile> ();
 
 			foreach (var pf in dataObjects.OfType<ProjectFile> ()) {
-				var children = FileNestingService.GetDependentOrNestedChildren (pf); ;
+				var children = FileNestingService.GetDependentOrNestedChildren (pf);
 				if (children != null) {
 					foreach (var child in children)
 						groupedFiles.Add (child);
@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					source = file.FilePath;
 				}
-				groupedChildren = FileNestingService.GetDependentOrNestedChildren (file); ;
+				groupedChildren = FileNestingService.GetDependentOrNestedTree (file);
 				what = null;
 			}
 			else if (dataObject is Gtk.SelectionData) {

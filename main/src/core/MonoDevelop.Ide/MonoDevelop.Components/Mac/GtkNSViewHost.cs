@@ -29,6 +29,8 @@ using CoreGraphics;
 using ObjCRuntime;
 using Foundation;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace Gtk
 {
 	/// <summary>
@@ -70,9 +72,6 @@ namespace Gtk
 				return null;
 
 			var nsEventHandle = gdk_quartz_event_get_nsevent (evnt.Handle);
-			if (nsEventHandle == IntPtr.Zero)
-				return null;
-
 			return Runtime.GetNSObject<NSEvent> (nsEventHandle);
 		}
 
@@ -85,6 +84,14 @@ namespace Gtk
 			this.view = view ?? throw new ArgumentNullException (nameof (view));
 
 			WidgetFlags |= WidgetFlags.NoWindow;
+
+			Accessible.SetRole (AtkCocoa.Roles.AXGroup);
+
+			var accessibility = AtkCocoaMacExtensions.GetNSAccessibilityElement (Accessible);
+			if (accessibility != null) {
+				accessibility.AccessibilityElement = true;
+				accessibility.AccessibilityChildren = new NSObject [] { view };
+			}
 		}
 
 		void UpdateViewFrame ()
@@ -177,11 +184,15 @@ namespace Gtk
 					var superviewHandle = gdk_quartz_window_get_nsview (GdkWindow.Handle);
 					if (superviewHandle != IntPtr.Zero)
 						superview = Runtime.GetNSObject<NSView> (superviewHandle);
-					}
+						//we don't want accessibility exploring this view
+						superview.AccessibilityElement = false;
+				}
 
 				if (superview != null && view != null) {
 					superview.AddSubview (view);
 					superview.SortSubviews (CompareViews);
+					//we don't want include gdk_quartz children in accessibility navigation hierarchy
+					superview.AccessibilityChildren = Array.Empty<NSObject>();
 				}
 				base.OnRealized ();
 

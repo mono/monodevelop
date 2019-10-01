@@ -189,7 +189,9 @@ namespace MonoDevelop.TextEditor
 			// Handling all this is very complicated and error prone, since this whole file should be removed at some point
 			// and replaced with new theming system better adjusted to ITextView
 			// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/980541 for more details
+#if !WINDOWS
 			(editorFormat as IEditorFormatMap2)?.ClearProperties ();
+#endif
 
 			var theme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme.Value);
 			var settingsMap = new Dictionary<string, ThemeSetting> ();
