@@ -30,6 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -467,5 +470,27 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		Block,
 		Line
+	}
+
+	public class CounterContractResolver : DefaultContractResolver
+	{
+		protected override List<MemberInfo> GetSerializableMembers (Type objectType)
+		{
+			var serializableMembers = base.GetSerializableMembers (objectType);
+			if (objectType.IsAssignableFrom(typeof(Counter))) {
+				var protectedNameMember = objectType.GetProperty ("values", BindingFlags.NonPublic | BindingFlags.Default | BindingFlags.Instance);
+				if (protectedNameMember != null)
+					serializableMembers.Add (protectedNameMember);
+			}
+			return serializableMembers;
+		}
+
+		protected override IList<JsonProperty> CreateProperties (Type type, MemberSerialization memberSerialization)
+		{
+			var members = this.GetSerializableMembers (type);
+			var props = members.Select (f => base.CreateProperty (f, memberSerialization)).ToList ();
+			props.ForEach (p => p.Readable = true);
+			return props;
+		}
 	}
 }
