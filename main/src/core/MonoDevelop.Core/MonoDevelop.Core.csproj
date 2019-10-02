@@ -86,7 +86,10 @@
     <PackageReference Include="ClrHeapAllocationAnalyzer" Version="1.0.0.9" />
     -->
     <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Common" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
     <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
