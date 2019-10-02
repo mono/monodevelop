@@ -24,6 +24,11 @@ namespace MonoDevelop.Refactoring
 		{
 			return new MonoDevelopFindUsagesContext ();
 		}
+
+		public FindUsagesContext StartSearchWithCustomColumns(string title, bool supportsReferences, bool includeContainingTypeAndMemberColumns, bool includeKindColumn)
+		{
+			return StartSearch(title, supportsReferences);
+		}
 	}
 
 	sealed class MonoDevelopFindUsagesContext : FindUsagesContext
