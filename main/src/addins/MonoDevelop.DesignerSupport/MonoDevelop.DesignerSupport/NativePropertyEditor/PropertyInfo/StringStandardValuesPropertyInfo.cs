@@ -29,6 +29,10 @@
 using Xamarin.PropertyEditing;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -43,14 +47,43 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		public bool IsConstrainedToPredefined => false;
+		public bool IsConstrainedToPredefined => true;
 
-		public bool IsValueCombinable {
-			get;
-		}
+		public bool IsValueCombinable { get; }
 
 		protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
+
+		internal override void SetValue<T> (object target, T value)
+		{
+			var tc = PropertyDescriptor.Converter;
+			if (tc.CanConvertFrom (typeof (T))) {
+				try {
+					PropertyDescriptor.SetValue (PropertyProvider, tc.ConvertTo (value, PropertyDescriptor.ComponentType));
+				} catch (Exception ex) {
+					LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
+				}
+			} else {
+				base.SetValue<T> (target, value);
+			}
+		}
+
+		internal async override Task<TValue> GetValueAsync<TValue> (object target)
+		{
+			TValue result = default;
+			result = await base.GetValueAsync<TValue> (target);
+
+			if (typeof (TValue) == typeof (IReadOnlyList<TValue>) && !result.Equals (default (TValue))) {
+				string value;
+				try {
+					value = predefinedValues.FirstOrDefault ().Key ?? string.Empty;
+					result = (TValue)(object)value;
+				} catch (Exception ex) {
+					LoggingService.LogError (string.Format ("[{0}] Error trying to convert the default value of a StandardValue to default type ({1}) ", Name, typeof(TValue).FullName), ex);
+				}
+			}
+			return result;
+		}
 	}
 }
 

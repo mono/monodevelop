@@ -1,5 +1,5 @@
-﻿//
-// DescriptorPropertyInfo.cs
+//
+// PropertyPadItem.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>
@@ -26,21 +26,21 @@
 
 #if MAC
 
-using Xamarin.PropertyEditing;
-using System.ComponentModel;
-
 namespace MonoDevelop.DesignerSupport
 {
-	class PropertyProviderTypeInfo : TypeInfo
+	/// <summary>
+	/// This component model target allows include additional providers to handle properties 
+	/// </summary>
+	class ComponentModelTarget
 	{
-		public object PropertyProvider { get; }
-		public PropertyDescriptor PropertyDescriptor { get; }
-
-		public PropertyProviderTypeInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, IAssemblyInfo assembly, string nameSpace, string name) : base (assembly, nameSpace, name)
+		public ComponentModelTarget (object target, object [] providers)
 		{
-			PropertyDescriptor = propertyDescriptor;
-			PropertyProvider = propertyProvider;
+			Target = target;
+			Providers = providers;
 		}
+
+		public object Target { get; }
+		public object[] Providers { get; }
 	}
 }
 

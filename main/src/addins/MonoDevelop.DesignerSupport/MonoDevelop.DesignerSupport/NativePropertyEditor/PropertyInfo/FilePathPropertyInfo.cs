@@ -44,20 +44,27 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			if (value is Xamarin.PropertyEditing.Common.FilePath filePath) {
-				PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (filePath.Source));
-			} else {
-				throw new Exception (string.Format ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ()));
+			try {
+				if (value is Xamarin.PropertyEditing.Common.FilePath filePath) {
+					PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (filePath.Source));
+				} else {
+					throw new Exception (string.Format ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ()));
+				}
+			} catch (Exception ex) {
+				LogInternalError ($"Error trying to get and convert value:'{value}' T:{typeof (T).FullName} ", ex);
 			}
 		}
 
 		internal override Task<T> GetValueAsync<T> (object target)
 		{
-			if (target is MonoDevelop.Core.FilePath directoryPath) {
-				T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (directoryPath.FullPath);
-				return Task.FromResult (result);
+			try {
+				if (target is Core.FilePath directoryPath) {
+					T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (directoryPath.FullPath);
+					return Task.FromResult (result);
+				}
+			} catch (Exception ex) {
+				LogInternalError ($"Error trying to get and convert value:'{target}' T:{typeof (T).FullName} ", ex);
 			}
-			Core.LoggingService.LogWarning ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
 			return base.GetValueAsync<T> (target);
 		}
 	}

@@ -33,11 +33,12 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
 	class EnumDescriptorPropertyInfo
-		: DescriptorPropertyInfo, IHavePredefinedValues<string> //, IValidator<IReadOnlyList<string>>, ICoerce<IReadOnlyList<string>>
+		: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
 		Hashtable names = new Hashtable ();
 		Array values;
@@ -45,6 +46,7 @@ namespace MonoDevelop.DesignerSupport
 		: base (propertyDescriptor, propertyProvider, valueSources)
 		{
 			values = Enum.GetValues (PropertyDescriptor.PropertyType);
+
 			var fields = PropertyDescriptor.PropertyType.GetFields ();
 
 			names = new Hashtable ();
@@ -70,34 +72,47 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var tc = PropertyDescriptor.Converter;
 			if (tc.CanConvertFrom (typeof (T))) {
-				if (int.TryParse ((string)(object)value, out var index)) {
-					PropertyDescriptor.SetValue (PropertyProvider, values.GetValue (index));
-				} else {
-					throw new Exception (string.Format ("Error in SetValue<T> parsing {0} as integer in {1} (enum descriptor)", value, PropertyDescriptor.DisplayName));
+				try {
+					var item = tc.ConvertFrom (value);
+					PropertyDescriptor.SetValue (PropertyProvider, item);
+				} catch (Exception ex) {
+					LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
 				}
+			} else {
+				base.SetValue<T> (target, value);
 			}
 		}
 
-		internal override Task<T> GetValueAsync<T> (object target)
+		static int GetIndexOfValue (Array values, string value)
+		{
+			for (int i = 0; i < values.Length; i++) {
+				if (values.GetValue (i).ToString ().Equals (value)) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		internal async override Task<T> GetValueAsync<T> (object target)
 		{
 			//we need set the index of the selected item
 			T result = default;
 			try {
-				TypeConverter tc = PropertyDescriptor.Converter;
-				object cob = PropertyDescriptor.GetValue (PropertyProvider);
-				var index = Array.IndexOf (values, cob);
+				result = await base.GetValueAsync<T> (target);
+				string cob = result as string;
+				var index = GetIndexOfValue (values, cob);
 				if (index > -1) {
-					result = (T)(object) index.ToString ();
+					result = (T)(object)index.ToString ();
 				} else {
-					LoggingService.LogError ("Error in GetValueAsync<T> parsing {0} as integer in {1} (enum descriptor)", index, PropertyDescriptor.DisplayName);
+					throw new InvalidCastException ($"Error in GetValueAsync<T> parsing {index} as integer");
 				}
 			} catch (Exception ex) {
-				LogGetValueAsyncError (ex);
+				LogInternalError ($"Error trying to get and convert a value T:{typeof (T).FullName}", ex);
 			}
-			return Task.FromResult (result);
+			return result;
 		}
 
-		public bool IsConstrainedToPredefined => false;
+		public bool IsConstrainedToPredefined => true;
 
 		public bool IsValueCombinable {
 			get;

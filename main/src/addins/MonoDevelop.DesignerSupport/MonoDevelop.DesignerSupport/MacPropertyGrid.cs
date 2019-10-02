@@ -42,8 +42,8 @@ namespace MonoDevelop.DesignerSupport
 	class MacPropertyGrid : NSView, IPropertyGrid
 	{
 		readonly MacPropertyEditorPanel propertyEditorPanel;
-		PropertyPadEditorProvider editorProvider;
-		PropertyPadItem currentSelectedObject;
+		ComponentModelEditorProvider editorProvider;
+		ComponentModelTarget currentSelectedObject;
 
 		public event EventHandler Focused;
 
@@ -58,7 +58,7 @@ namespace MonoDevelop.DesignerSupport
 			};
 			AddSubview (propertyEditorPanel);
 
-			editorProvider = new PropertyPadEditorProvider ();
+			editorProvider = new ComponentModelEditorProvider ();
 			propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
 				AutoExpandAll = true
 			};
@@ -80,7 +80,7 @@ namespace MonoDevelop.DesignerSupport
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				var selection = new PropertyPadItem (lastComponent, propertyProviders);
+				var selection = new ComponentModelTarget (lastComponent, propertyProviders);
 				if (currentSelectedObject != selection) {
 					propertyEditorPanel.SelectedItems.Clear ();
 					propertyEditorPanel.SelectedItems.Add (selection);

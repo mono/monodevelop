@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -49,12 +50,16 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			var selectedValues = (System.String []) (object)value;
-			ulong result = default;
-			foreach (var selectedValue in selectedValues) {
-				result += Convert.ToUInt64 (selectedValue);
+			try {
+				var selectedValues = (System.String []) (object)value;
+				ulong result = default;
+				foreach (var selectedValue in selectedValues) {
+					result += Convert.ToUInt64 (selectedValue);
+				}
+				PropertyDescriptor.SetValue (PropertyProvider, Enum.ToObject (PropertyDescriptor.PropertyType, result));
+			} catch (Exception ex) {
+				LogInternalError ($"Error trying to set value: {value}", ex);
 			}
-			PropertyDescriptor.SetValue (PropertyProvider, Enum.ToObject (PropertyDescriptor.PropertyType, result));
 		}
 
 		internal override Task<T> GetValueAsync<T> (object target)
@@ -70,9 +75,9 @@ namespace MonoDevelop.DesignerSupport
 						result.Add (uintVal.ToString ());
 					}
 				}
-				return Task.FromResult<T> ((T)(object)result);
+				return Task.FromResult ((T)(object)result);
 			} catch (Exception ex) {
-				LogGetValueAsyncError (ex);
+				LogInternalError ($"Error trying to get values from a Enum", ex);
 			}
 			return Task.FromResult <T> (default);
 		}
