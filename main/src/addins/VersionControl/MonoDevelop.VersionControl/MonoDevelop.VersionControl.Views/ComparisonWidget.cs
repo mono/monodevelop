@@ -90,16 +90,18 @@ namespace MonoDevelop.VersionControl.Views
 			if (!viewOnly) {
 				originalComboBox = new DropDownBox ();
 				originalComboBox.WindowRequestFunc = CreateComboBoxSelector;
+				originalComboBox.AccessibilityTextFormat = GettextCatalog.GetString ("Select original revision, current: {0}");
 				originalComboBox.Text = GettextCatalog.GetString ("Loading…");
 				originalComboBox.Sensitive = false;
 				originalComboBox.Tag = editors[1];
 
+
 				diffComboBox = new DropDownBox ();
 				diffComboBox.WindowRequestFunc = CreateComboBoxSelector;
+				diffComboBox.AccessibilityTextFormat = GettextCatalog.GetString ("Select  diff revision, current: {0}");
 				diffComboBox.Text = GettextCatalog.GetString ("Loading…");
 				diffComboBox.Sensitive = false;
 				diffComboBox.Tag = editors[0];
-
 				this.headerWidgets = new [] { diffComboBox, originalComboBox };
 			}
 		}
