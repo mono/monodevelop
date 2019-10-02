@@ -871,6 +871,41 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task AddRemoveFileEvents ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				int modifiedRefs = 0;
+				int modifiedFiles = 0;
+
+				SolutionItemModifiedEventHandler modifiedHandler = delegate (object sender, SolutionItemModifiedEventArgs e) {
+					foreach (var ev in e) {
+						if (ev.Hint == "References")
+							modifiedRefs++;
+						if (ev.Hint == "Files")
+							modifiedFiles++;
+					}
+				};
+				p.Modified += modifiedHandler;
+
+				var file = new ProjectFile (p.BaseDirectory.Combine ("Test.txt"));
+				p.Items.Add (file);
+
+				Assert.AreEqual (0, modifiedRefs);
+				Assert.AreEqual (1, modifiedFiles);
+
+				modifiedRefs = 0;
+				modifiedFiles = 0;
+
+				p.Items.Remove (file);
+
+				Assert.AreEqual (0, modifiedRefs);
+				Assert.AreEqual (1, modifiedFiles);
+			}
+		}
+
+		[Test]
 		public void GetDefaultNamespaceWhenProjectRootNamespaceContainsHyphen ()
 		{
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
