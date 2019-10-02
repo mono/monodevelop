@@ -47,11 +47,20 @@ namespace MonoDevelop.VersionControl.Views
 				return layout.Text;
 			}
 			set {
+				var oldText = layout.Text;
 				layout.SetText (value);
+				OnTextChanged (oldText, value);
 //				QueueResize ();
 			}
 		}
-		
+
+		protected virtual void OnTextChanged (string oldText, string newText)
+		{
+			Accessible.Description = string.Format (AccessibilityTextFormat, newText);
+		}
+
+		public string AccessibilityTextFormat { get; set; } = "{0}";
+
 		public Gdk.Pixbuf Pixbuf {
 			get;
 			set;
