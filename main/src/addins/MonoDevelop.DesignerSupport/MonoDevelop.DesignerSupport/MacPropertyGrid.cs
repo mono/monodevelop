@@ -36,13 +36,8 @@ using System;
 using MonoDevelop.Components;
 using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Mac;
-using MonoDevelop.Components.Mac;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Components.Theming;
 using AppKit;
 using CoreGraphics;
-using Foundation;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -51,7 +46,6 @@ namespace MonoDevelop.DesignerSupport
 		MacPropertyEditorPanel propertyEditorPanel;
 		PropertyPadEditorProvider editorProvider;
 
-		NSScrollView scrollView;
 
 		public event EventHandler Focused;
 
@@ -69,22 +63,13 @@ namespace MonoDevelop.DesignerSupport
 			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ()) {
 				ShowHeader = false
 			};
-			scrollView = new NSScrollView () {
-				HasVerticalScroller = true,
-				HasHorizontalScroller = false,
-			};
-			scrollView.WantsLayer = true;
-			scrollView.BackgroundColor = Styles.HeaderBackgroundColor;
-			scrollView.DocumentView = propertyEditorPanel;
-
-			AddArrangedSubview (scrollView);
-		
+			AddArrangedSubview (propertyEditorPanel);
 			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
 		}
 
 		public override void SetFrameSize (CGSize newSize)
 		{
-			scrollView.SetFrameSize (newSize);
+			propertyEditorPanel.SetFrameSize (newSize);
 			base.SetFrameSize (newSize);
 		}
 
