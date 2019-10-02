@@ -30,8 +30,6 @@
 
 #if MAC
 
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Commands;
 using System;
 using MonoDevelop.Components;
 using Xamarin.PropertyEditing;
@@ -41,11 +39,11 @@ using CoreGraphics;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyGrid : NSStackView, IPropertyGrid
+	class MacPropertyGrid : NSView, IPropertyGrid
 	{
-		MacPropertyEditorPanel propertyEditorPanel;
+		readonly MacPropertyEditorPanel propertyEditorPanel;
 		PropertyPadEditorProvider editorProvider;
-
+		PropertyPadItem currentSelectedObject;
 
 		public event EventHandler Focused;
 
@@ -55,44 +53,29 @@ namespace MonoDevelop.DesignerSupport
 
 		public MacPropertyGrid () 
 		{
-			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
-			Alignment = NSLayoutAttribute.Leading;
-			Spacing = 10;
-			Distribution = NSStackViewDistribution.Fill;
-
 			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ()) {
 				ShowHeader = false
 			};
-			AddArrangedSubview (propertyEditorPanel);
-			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
+			AddSubview (propertyEditorPanel);
+
+			editorProvider = new PropertyPadEditorProvider ();
+			propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
+				AutoExpandAll = true
+			};
+			propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
 		}
 
 		public override void SetFrameSize (CGSize newSize)
 		{
-			propertyEditorPanel.SetFrameSize (newSize);
 			base.SetFrameSize (newSize);
+			propertyEditorPanel.SetFrameSize (newSize);
 		}
-
-		void PropertyEditorPanel_PropertiesChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
 
 		public void BlankPad ()
 		{
 			propertyEditorPanel.SelectedItems.Clear ();
 			currentSelectedObject = null;
 		}
-
-		public void OnPadContentShown ()
-		{
-			if (editorProvider == null) {
-				editorProvider = new PropertyPadEditorProvider ();
-				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
-					AutoExpandAll = true
-				};
-				propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
-			}
-		}
-
-		PropertyPadItem currentSelectedObject;
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
@@ -106,17 +89,17 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		protected override void Dispose (bool disposing)
-		{
-			base.Dispose (disposing);
-		}
-
 		public void Populate (bool saveEditSession)
 		{
 			//not implemented
 		}
 
 		public void SetToolbarProvider (Components.PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider)
+		{
+			//not implemented
+		}
+
+		public void OnPadContentShown ()
 		{
 			//not implemented
 		}
