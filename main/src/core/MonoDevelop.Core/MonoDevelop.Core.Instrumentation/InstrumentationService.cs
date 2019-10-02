@@ -180,9 +180,11 @@ namespace MonoDevelop.Core.Instrumentation
 			Save (filePath, (fs, data) => {
 				using var writer = new StreamWriter (fs);
 				var serializer = JsonSerializer.Create (new JsonSerializerSettings {
+					Formatting = Formatting.Indented,
 					ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 					DefaultValueHandling = DefaultValueHandling.Ignore,
 					NullValueHandling = NullValueHandling.Ignore,
+					ContractResolver = new CounterContractResolver()
 				});
 				serializer.Serialize (writer, data);
 			});
