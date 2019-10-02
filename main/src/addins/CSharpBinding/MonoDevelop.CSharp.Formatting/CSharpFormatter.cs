@@ -40,7 +40,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
 using MonoDevelop.CSharp.OptionProvider;
 using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Ide.Completion.Presentation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Policies;
@@ -91,7 +90,6 @@ namespace MonoDevelop.CSharp.Formatting
 					return;
 
 				var formattingRules = new List<AbstractFormattingRule> ();
-				formattingRules.Add (ContainedDocumentPreserveFormattingRule.Instance);
 				formattingRules.AddRange (Formatter.GetDefaultFormattingRules (document));
 
 				var workspace = document.Project.Solution.Workspace;
