@@ -472,15 +472,16 @@ namespace MonoDevelop.Core.Instrumentation
 		Line
 	}
 
-	public class CounterContractResolver : DefaultContractResolver
+	internal class CounterContractResolver : DefaultContractResolver
 	{
 		protected override List<MemberInfo> GetSerializableMembers (Type objectType)
 		{
 			var serializableMembers = base.GetSerializableMembers (objectType);
-			if (objectType.IsAssignableFrom(typeof(Counter))) {
-				var protectedNameMember = objectType.GetProperty ("values", BindingFlags.NonPublic | BindingFlags.Default | BindingFlags.Instance);
-				if (protectedNameMember != null)
+			if (typeof (Counter).IsAssignableFrom (objectType)) {
+				var protectedNameMember = objectType.GetMember ("values", BindingFlags.NonPublic | BindingFlags.Default | BindingFlags.Instance).FirstOrDefault();
+				if (protectedNameMember != null) {
 					serializableMembers.Add (protectedNameMember);
+				}
 			}
 			return serializableMembers;
 		}
