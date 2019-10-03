@@ -183,6 +183,7 @@ namespace MonoDevelop.Core.Instrumentation
 					ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 					DefaultValueHandling = DefaultValueHandling.Ignore,
 					NullValueHandling = NullValueHandling.Ignore,
+					Formatting = Formatting.Indented
 				});
 				serializer.Serialize (writer, data);
 			});
