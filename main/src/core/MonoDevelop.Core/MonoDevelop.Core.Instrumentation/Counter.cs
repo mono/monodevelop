@@ -354,7 +354,7 @@ namespace MonoDevelop.Core.Instrumentation
 			return null;
 		}
 
-		public void GetObjectData (SerializationInfo info, StreamingContext context)
+		public virtual void GetObjectData (SerializationInfo info, StreamingContext context)
 			=> PopulateSerializableMembers (info, context);
 
 		protected void PopulateSerializableMembers (SerializationInfo info, StreamingContext context)

@@ -143,7 +143,7 @@ namespace MonoDevelop.Core.Instrumentation
 			return c;
 		}
 
-		public new void GetObjectData (SerializationInfo info, StreamingContext context)
+		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
 			base.PopulateSerializableMembers (info, context);
 			info.AddValue (nameof (this.MinSeconds), this.MinSeconds);
