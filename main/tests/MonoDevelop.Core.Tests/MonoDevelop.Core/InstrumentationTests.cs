@@ -28,6 +28,9 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using NUnit.Framework;
 using System.Threading;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.Core
 {
@@ -218,6 +221,42 @@ namespace MonoDevelop.Core
 			var metadata = new CustomCounterMetadata ();
 
 			Assert.AreEqual (default (int), metadata.SomeMeasure);
+		}
+
+		[Test]
+		public void SerializeCounters ()
+		{
+			InstrumentationService.SaveJson ("serialize_counters.json");
+			using (var textReader = new StreamReader("serialize_counters.json")) {
+				using (var jsonTextReader = new JsonTextReader (textReader)) {
+					var jsonRootObj = JObject.Load (jsonTextReader);
+					Assert.IsNotNull (jsonRootObj ["StartTime"]);
+					Assert.IsNotNull (jsonRootObj ["EndTime"]);
+					var counters = jsonRootObj ["Counters"];
+					Assert.IsNotNull (counters);
+					var runtimeCounter = counters ["Runtime initialization"];
+					Assert.IsNotNull (runtimeCounter);
+					Assert.IsNotNull (runtimeCounter ["StoreValues"]);
+					Assert.IsNotNull (runtimeCounter ["Resolution"]);
+					Assert.IsNotNull (runtimeCounter ["values"]);
+					Assert.IsNotNull (runtimeCounter ["TotalCount"]);
+					Assert.IsNotNull (runtimeCounter ["Name"]);
+					Assert.IsNotNull (runtimeCounter ["LogMessages"]);
+					Assert.IsNotNull (runtimeCounter ["LastValue"]);
+					Assert.IsNotNull (runtimeCounter ["Id"]);
+					Assert.IsNotNull (runtimeCounter ["Handlers"]);
+					Assert.IsNotNull (runtimeCounter ["Category"]);
+					Assert.IsNotNull (runtimeCounter ["Count"]);
+					Assert.IsNotNull (runtimeCounter ["DisplayMode"]);
+					Assert.IsNotNull (runtimeCounter ["Enabled"]);
+					Assert.IsNotNull (runtimeCounter ["MinSeconds"]);
+					Assert.IsNotNull (runtimeCounter ["TotalTime"]);
+					Assert.IsNotNull (runtimeCounter ["AverageTime"]);
+					Assert.IsNotNull (runtimeCounter ["MinTime"]);
+					Assert.IsNotNull (runtimeCounter ["MaxTime"]);
+					Assert.IsNotNull (runtimeCounter ["CountWithDuration"]);
+				}
+			}
 		}
 	}
 }
