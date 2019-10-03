@@ -250,7 +250,7 @@ namespace MonoDevelop.Projects
 				"System.Data.dll",
 				"gtk-sharp.dll",
 				"gtk-sharp.dll.config",
-				"gtk-sharp.dll.mdb",
+				"gtk-sharp.pdb",
 			});
 
 			string projectXml1 = Util.GetXmlFileInfoset (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj.saved"));
