@@ -39,10 +39,10 @@ namespace MonoDevelop.DesignerSupport
 	class FlagDescriptorPropertyInfo
 		: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-		public FlagDescriptorPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources) : base (propertyDescriptor, propertyProvider, valueSources)
+		public FlagDescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
 			IsValueCombinable = true;
-			foreach (object value in System.Enum.GetValues (propertyDescriptor.PropertyType)) {
+			foreach (object value in System.Enum.GetValues (typeDescriptorContext.PropertyDescriptor.PropertyType)) {
 				ulong uintVal = Convert.ToUInt64 (value);
 				predefinedValues.Add (value.ToString (), uintVal.ToString ());
 			}

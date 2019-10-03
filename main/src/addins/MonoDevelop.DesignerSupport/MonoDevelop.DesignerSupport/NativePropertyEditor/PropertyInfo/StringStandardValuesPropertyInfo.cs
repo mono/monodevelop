@@ -39,10 +39,15 @@ namespace MonoDevelop.DesignerSupport
 	class StringStandardValuesPropertyInfo
 	: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-		public StringStandardValuesPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources) : base (propertyDescriptor, propertyProvider, valueSources)
+		readonly List<string> standardValues = new List<string> ();
+
+		//const string splitCharacter = "--";
+
+		public StringStandardValuesPropertyInfo (TypeConverter.StandardValuesCollection standardValuesCollection, TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
-			foreach (object stdValue in PropertyDescriptor.Converter.GetStandardValues ()) {
+			foreach (object stdValue in standardValuesCollection) {
 				var value = PropertyDescriptor.Converter.ConvertToString (stdValue);
+				standardValues.Add (value);
 				predefinedValues.Add (value, value);
 			}
 		}
@@ -64,7 +69,7 @@ namespace MonoDevelop.DesignerSupport
 					LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
 				}
 			} else {
-				base.SetValue<T> (target, value);
+				base.SetValue (target, value);
 			}
 		}
 

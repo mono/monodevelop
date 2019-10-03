@@ -36,7 +36,7 @@ namespace MonoDevelop.DesignerSupport
 	class FilePathPropertyInfo
 		: DescriptorPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
-		public FilePathPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider, ValueSources valueSources) : base (propertyInfo, propertyProvider, valueSources)
+		public FilePathPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
 		}
 

@@ -42,16 +42,17 @@ namespace MonoDevelop.DesignerSupport
 			get;
 		} = new Dictionary<Type, ITypeInfo> ();
 
-		object [] providers;
+		ComponentModelTarget target;
 
-		public Task<IObjectEditor> GetObjectEditorAsync (object item)
+		Task<IObjectEditor> IEditorProvider.GetObjectEditorAsync(object item)
 		{
-			if (item is ComponentModelTarget propertyPadItem) {
-				//on each editor we store current used providers
-				providers = propertyPadItem.Providers ?? Array.Empty<object> ();
-				return Task.FromResult<IObjectEditor> (new ComponentModelObjectEditor (propertyPadItem));
+			target = item as ComponentModelTarget;
+			if (target == null) {
+				throw new ArgumentException (string.Format ("Cannot get editor for type {0} only ComponentModelObjectEditor types are allowed", item.GetType ().Name));
 			}
-			throw new ArgumentException (string.Format ("Cannot get editor for type {0} only ComponentModelObjectEditor types are allowed", item.GetType ().Name));
+
+			//on each editor we store current used providers
+			return Task.FromResult<IObjectEditor>(new ComponentModelObjectEditor(target));
 		}
 
 		public Task<object> CreateObjectAsync (ITypeInfo type)
@@ -63,7 +64,12 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		public Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)
-			=> Task.Run (() => (IReadOnlyCollection<IPropertyInfo>)GetPropertiesForProviders (providers));
+		{
+			return Task.Run (() => {
+				var prov = target?.Providers ?? Array.Empty<object> ();
+				return (IReadOnlyCollection<IPropertyInfo>)GetPropertiesForProviders (prov);
+			});
+		}
 
 		public static IReadOnlyList<DescriptorPropertyInfo> GetPropertiesForProviders (object[] providers)
 		{
@@ -78,20 +84,23 @@ namespace MonoDevelop.DesignerSupport
 
 				foreach (System.ComponentModel.PropertyDescriptor propertyDescriptor in propertyDescriptors) {
 					if (propertyDescriptor.IsBrowsable) {
-						collection.Add (CreatePropertyInfo (propertyDescriptor, propertyProvider));
+						var propertyInfo = CreatePropertyInfo (propertyDescriptor, propertyProvider);
+						collection.Add (propertyInfo);
 					}
 				}
 			}
 			return collection.AsReadOnly ();
 		}
 
-		protected static DescriptorPropertyInfo CreatePropertyInfo (System.ComponentModel.PropertyDescriptor propertyDescriptor, object PropertyProvider)
+		protected static DescriptorPropertyInfo CreatePropertyInfo (System.ComponentModel.PropertyDescriptor propertyDescriptor, object propertyProvider)
 		{
+			var typeDescriptorContext = new TypeDescriptorContext (propertyProvider, propertyDescriptor);
+
 			var valueSources = ValueSources.Local | ValueSources.Default;
 			if (propertyDescriptor.PropertyType.IsEnum) {
 				if (propertyDescriptor.PropertyType.IsDefined (typeof (FlagsAttribute), true))
-					return new FlagDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-				return new EnumDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+					return new FlagDescriptorPropertyInfo (typeDescriptorContext, valueSources);
+				return new EnumDescriptorPropertyInfo (typeDescriptorContext, valueSources);
 			}
 
 			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
@@ -99,14 +108,17 @@ namespace MonoDevelop.DesignerSupport
 				//if (isDirectoryPropertyDescriptor != null && (bool)isDirectoryPropertyDescriptor.GetValue (propertyItem)) {
 				//	return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 				//}
-				return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				return new FilePathPropertyInfo (typeDescriptorContext, valueSources);
 			}
 
 			if (HasStandardValues (propertyDescriptor)) {
-				return new StringStandardValuesPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				var standardValues = propertyDescriptor.Converter.GetStandardValues (typeDescriptorContext);
+				if (standardValues.Count > 0) {
+					return new StringStandardValuesPropertyInfo (standardValues, typeDescriptorContext, valueSources);
+				}
 			}
 
-			return new DescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			return new DescriptorPropertyInfo (typeDescriptorContext, valueSources);
 		}
 
 		static bool HasStandardValues (System.ComponentModel.PropertyDescriptor propertyDescriptor)

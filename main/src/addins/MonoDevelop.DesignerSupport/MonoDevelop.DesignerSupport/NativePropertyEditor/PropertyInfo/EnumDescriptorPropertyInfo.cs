@@ -42,8 +42,8 @@ namespace MonoDevelop.DesignerSupport
 	{
 		Hashtable names = new Hashtable ();
 		Array values;
-		public EnumDescriptorPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources)
-		: base (propertyDescriptor, propertyProvider, valueSources)
+		public EnumDescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources)
+		: base (typeDescriptorContext, valueSources)
 		{
 			values = Enum.GetValues (PropertyDescriptor.PropertyType);
 

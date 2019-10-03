@@ -39,19 +39,51 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
+	class TypeDescriptorContext : ITypeDescriptorContext
+	{
+		public TypeDescriptorContext (object propertyProvider, PropertyDescriptor propertyDescriptor)
+		{
+			Instance = propertyProvider;
+			PropertyDescriptor = propertyDescriptor;
+		}
+
+		public IContainer Container => null;
+
+		public object Instance { get; }
+
+		public PropertyDescriptor PropertyDescriptor { get; private set; }
+
+		public object GetService (Type serviceType)
+		{
+			return null;
+		}
+
+		public void OnComponentChanged ()
+		{
+			//TODO ITypeDescriptorContext.OnComponentChanging
+		}
+
+		public bool OnComponentChanging ()
+		{
+			//TODO ITypeDescriptorContext.OnComponentChanging
+			return true;
+		}
+	}
+
 	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
-		public PropertyDescriptor PropertyDescriptor { get; private set; }
-		public object PropertyProvider { get; private set; }
+		public object PropertyProvider => typeDescriptorContext.Instance;
+		readonly TypeDescriptorContext typeDescriptorContext;
+
+		public PropertyDescriptor PropertyDescriptor => typeDescriptorContext.PropertyDescriptor;
 
 		static readonly IAvailabilityConstraint [] EmptyConstraints = Array.Empty<IAvailabilityConstraint> ();
 		static readonly PropertyVariationOption [] EmptyVariationOptions = Array.Empty<PropertyVariationOption> ();
 
-		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider, ValueSources valueSources) 
+		public DescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) 
 		{
-			this.PropertyDescriptor = propertyInfo;
-			this.PropertyProvider = propertyProvider;
+			this.typeDescriptorContext = typeDescriptorContext;
 			this.ValueSources = valueSources;
 		}
 
