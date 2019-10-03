@@ -15,7 +15,7 @@ NUGET
     Mono.Cecil (0.10.0-beta6)
     Newtonsoft.Json (12.0.2)
     StrongNamer (0.0.8)
-    System.Collections.Immutable (1.5)
+    System.Collections.Immutable (1.6)
     System.Reactive (4.1.5)
       System.Threading.Tasks.Extensions (>= 4.5.2)
       System.ValueTuple (>= 4.5)
