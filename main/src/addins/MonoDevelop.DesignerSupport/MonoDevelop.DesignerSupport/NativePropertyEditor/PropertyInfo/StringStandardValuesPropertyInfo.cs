@@ -73,15 +73,6 @@ namespace MonoDevelop.DesignerSupport
 			TValue result = default;
 			result = await base.GetValueAsync<TValue> (target);
 
-			if (typeof (TValue) == typeof (IReadOnlyList<TValue>) && !result.Equals (default (TValue))) {
-				string value;
-				try {
-					value = predefinedValues.FirstOrDefault ().Key ?? string.Empty;
-					result = (TValue)(object)value;
-				} catch (Exception ex) {
-					LoggingService.LogError (string.Format ("[{0}] Error trying to convert the default value of a StandardValue to default type ({1}) ", Name, typeof(TValue).FullName), ex);
-				}
-			}
 			return result;
 		}
 	}
