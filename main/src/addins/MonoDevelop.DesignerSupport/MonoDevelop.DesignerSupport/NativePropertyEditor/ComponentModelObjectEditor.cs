@@ -37,6 +37,8 @@ namespace MonoDevelop.DesignerSupport
 	class ComponentModelObjectEditor
 		: IObjectEditor, INameableObject
 	{
+		internal const string ComboSeparatorString = "--";
+
 		private readonly ComponentModelTarget propertyItem;
 		public string Name { get; private set; }
 

@@ -90,6 +90,8 @@ namespace MonoDevelop.DesignerSupport
 
 		readonly protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
+
+		public string SeparatorString => ComponentModelObjectEditor.ComboSeparatorString;
 	}
 }
 

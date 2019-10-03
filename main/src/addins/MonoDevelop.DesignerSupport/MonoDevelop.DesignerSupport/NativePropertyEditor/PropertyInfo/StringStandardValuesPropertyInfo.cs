@@ -41,7 +41,7 @@ namespace MonoDevelop.DesignerSupport
 	{
 		readonly List<string> standardValues = new List<string> ();
 
-		//const string splitCharacter = "--";
+		public string SeparatorString => ComponentModelObjectEditor.ComboSeparatorString;
 
 		public StringStandardValuesPropertyInfo (TypeConverter.StandardValuesCollection standardValuesCollection, TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
