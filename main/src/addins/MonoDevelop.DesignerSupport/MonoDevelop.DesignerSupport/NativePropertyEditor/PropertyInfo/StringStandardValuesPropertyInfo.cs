@@ -39,7 +39,7 @@ namespace MonoDevelop.DesignerSupport
 	class StringStandardValuesPropertyInfo
 	: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-		readonly List<string> standardValues = new List<string> ();
+		readonly Dictionary<string, object> standardValues = new Dictionary<string, object> ();
 
 		public string SeparatorString => ComponentModelObjectEditor.ComboSeparatorString;
 
@@ -47,38 +47,38 @@ namespace MonoDevelop.DesignerSupport
 		{
 			foreach (object stdValue in standardValuesCollection) {
 				var value = PropertyDescriptor.Converter.ConvertToString (stdValue);
-				standardValues.Add (value);
+				standardValues.Add (value, stdValue);
 				predefinedValues.Add (value, value);
 			}
 		}
 
 		public bool IsConstrainedToPredefined => true;
-
 		public bool IsValueCombinable { get; }
 
 		protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
 
+		internal override Task<TValue> GetValueAsync<TValue> (object target)
+		{
+			return base.GetValueAsync<TValue> (target);
+		}
+
 		internal override void SetValue<T> (object target, T value)
 		{
-			var tc = PropertyDescriptor.Converter;
-			if (tc.CanConvertFrom (typeof (T))) {
+			if (value is string textValue) {
 				try {
-					PropertyDescriptor.SetValue (PropertyProvider, tc.ConvertTo (value, PropertyDescriptor.ComponentType));
+					object objValue;
+					if (standardValues.TryGetValue (textValue,out objValue)) {
+						PropertyDescriptor.SetValue (PropertyProvider, objValue);
+					} else {
+						throw new Exception ("Value selected doesn't exists in the current standardValuesCollection");
+					}
 				} catch (Exception ex) {
 					LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
 				}
 			} else {
 				base.SetValue (target, value);
 			}
-		}
-
-		internal async override Task<TValue> GetValueAsync<TValue> (object target)
-		{
-			TValue result = default;
-			result = await base.GetValueAsync<TValue> (target);
-
-			return result;
 		}
 	}
 }

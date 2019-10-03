@@ -70,21 +70,6 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		internal override void SetValue<T> (object target, T value)
-		{
-			var tc = PropertyDescriptor.Converter;
-			if (tc.CanConvertFrom (typeof (T))) {
-				try {
-					var item = tc.ConvertFrom (value);
-					PropertyDescriptor.SetValue (PropertyProvider, item);
-				} catch (Exception ex) {
-					LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
-				}
-			} else {
-				base.SetValue<T> (target, value);
-			}
-		}
-
 		static int GetIndexOfValue (Array values, string value)
 		{
 			for (int i = 0; i < values.Length; i++) {
@@ -112,6 +97,24 @@ namespace MonoDevelop.DesignerSupport
 				LogInternalError ($"Error trying to get and convert a value T:{typeof (T).FullName}", ex);
 			}
 			return result;
+		}
+
+		internal override void SetValue<T> (object target, T value)
+		{
+			try {
+				var intValue = (int)Convert.ChangeType (value, typeof (int));
+				var objValue = values.GetValue (intValue);
+				var tc = PropertyDescriptor.Converter;
+				if (tc.CanConvertFrom (objValue.GetType ())) {
+					var result = tc.ConvertFrom (objValue);
+					PropertyDescriptor.SetValue (PropertyProvider, result);
+				} else {
+					PropertyDescriptor.SetValue (PropertyProvider, objValue);
+				}
+			} catch (Exception ex) {
+				LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}... trying to use base converter...", ex);
+				base.SetValue<T> (target, value);
+			}
 		}
 
 		public bool IsConstrainedToPredefined => true;

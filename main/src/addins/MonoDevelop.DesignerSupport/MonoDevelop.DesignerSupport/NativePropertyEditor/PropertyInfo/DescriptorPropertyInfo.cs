@@ -74,7 +74,7 @@ namespace MonoDevelop.DesignerSupport
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
 		public object PropertyProvider => typeDescriptorContext.Instance;
-		readonly TypeDescriptorContext typeDescriptorContext;
+		protected readonly TypeDescriptorContext typeDescriptorContext;
 
 		public PropertyDescriptor PropertyDescriptor => typeDescriptorContext.PropertyDescriptor;
 
@@ -163,12 +163,28 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult (converted);
 		}
 
+		bool IsNullable (Type type) => Nullable.GetUnderlyingType (type) != null;
+
 		internal virtual void SetValue<T> (object target, T value)
 		{
 			try {
-				PropertyDescriptor.SetValue (PropertyProvider, value);
+				
+				var currentType = typeof (T) ;
+
+				//TODO: we don't support nulleable types in editors yet
+				currentType = Nullable.GetUnderlyingType (currentType) ?? currentType;
+				object notNulleableValue = Convert.ChangeType (value, currentType);
+
+				var tc = PropertyDescriptor.Converter;
+				if (tc.CanConvertFrom (currentType)) {
+					var result = tc.ConvertFrom (notNulleableValue);
+					PropertyDescriptor.SetValue (PropertyProvider, result);
+				} else {
+					notNulleableValue = Convert.ChangeType (value, this.Type);
+					PropertyDescriptor.SetValue (PropertyProvider, notNulleableValue);
+				}
 			} catch (Exception ex) {
-				LogInternalError ($"Error trying to set and convert value:'{value}' T:{typeof (T).FullName} ", ex);
+				LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
 			}
 		}
 

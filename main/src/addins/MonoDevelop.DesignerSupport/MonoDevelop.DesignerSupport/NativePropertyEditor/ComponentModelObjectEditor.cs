@@ -114,24 +114,23 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult (true);
 		}
 
-		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
+		public async Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
 		{
 			try {
 				if (propertyInfo == null)
 					throw new ArgumentNullException (nameof (propertyInfo));
 
 				if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
-
-					info.SetValue (this, value.Value);
-					OnPropertyChanged (info);
-					
+					await Runtime.RunInMainThread (() => {
+						info.SetValue (this, value.Value);
+						OnPropertyChanged (info);
+					});
 				} else {
 					throw new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo));
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error setting the value", ex);
 			}
-			return Task.CompletedTask;
 		}
 
 		protected virtual void OnPropertyChanged (IPropertyInfo property)
