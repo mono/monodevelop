@@ -787,7 +787,7 @@ namespace MonoDevelop.Debugger
 
 			public void LogWriter (bool iserr, string text)
 			{
-				console?.Log.Write (text);
+				console?.Log?.Write (text);
 			}
 
 			public void DebugWriter (int level, string category, string message)
@@ -798,9 +798,9 @@ namespace MonoDevelop.Debugger
 			public void OutputWriter (bool iserr, string text)
 			{
 				if (iserr)
-					console?.Error.Write (text);
+					console?.Error?.Write (text);
 				else
-					console?.Out.Write (text);
+					console?.Out?.Write (text);
 			}
 
 			public void BreakpointTraceHandler (BreakEvent be, string trace)

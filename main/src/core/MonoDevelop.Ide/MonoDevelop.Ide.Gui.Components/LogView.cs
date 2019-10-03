@@ -1002,22 +1002,22 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override TextReader In {
 				get {
-					return monitor.inputReader;
+					return monitor?.inputReader;
 				}
 			}
 			public override TextWriter Out {
 				get {
-					return monitor.Log;
+					return monitor?.Log;
 				}
 			}
 			public override TextWriter Error {
 				get {
-					return monitor.ErrorLog;
+					return monitor?.ErrorLog;
 				}
 			}
 			public override TextWriter Log {
 				get {
-					return monitor.internalLogger;
+					return monitor?.internalLogger;
 				}
 			}
 
