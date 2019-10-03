@@ -30,11 +30,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace MonoDevelop.Core.Instrumentation
 {
 	[Serializable]
-	public class Counter: MarshalByRefObject
+	public class Counter: MarshalByRefObject, ISerializable
 	{
 		internal int count;
 		internal int totalCount;
@@ -353,6 +354,25 @@ namespace MonoDevelop.Core.Instrumentation
 			return null;
 		}
 
+		public void GetObjectData (SerializationInfo info, StreamingContext context)
+			=> PopulateSerializableMembers (info, context);
+
+		protected void PopulateSerializableMembers (SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue (nameof (this.StoreValues), this.StoreValues);
+			info.AddValue (nameof (this.Resolution), this.Resolution);
+			info.AddValue (nameof (this.values), this.values);
+			info.AddValue (nameof (this.TotalCount), this.TotalCount);
+			info.AddValue (nameof (this.Name), this.Name);
+			info.AddValue (nameof (this.LogMessages), this.LogMessages);
+			info.AddValue (nameof (this.LastValue), this.LastValue);
+			info.AddValue (nameof (this.Id), this.Id);
+			info.AddValue (nameof (this.Handlers), this.Handlers);
+			info.AddValue (nameof (this.Category), this.Category);
+			info.AddValue (nameof (this.Count), this.Count);
+			info.AddValue (nameof (this.DisplayMode), this.DisplayMode);
+			info.AddValue (nameof (this.Enabled), this.Enabled);
+		}
 	}
 
 	public class Counter<T>: Counter where T : CounterMetadata, new()
