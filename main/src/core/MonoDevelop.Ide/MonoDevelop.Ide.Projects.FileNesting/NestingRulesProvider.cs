@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -94,7 +95,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 						try {
 							rpobj = parentNode [jsonProp.Name] [TokenNameAdd].Value<JObject> ();
 						} catch {
-							LoggingService.LogWarning ($"No patterns specified for {jsonProp.Name} nesting rule");
+							Debug.WriteLine ($"No patterns specified for {jsonProp.Name} nesting rule");
 						}
 
 						if (jsonProp.Name == RuleNameAddedExtension) {
