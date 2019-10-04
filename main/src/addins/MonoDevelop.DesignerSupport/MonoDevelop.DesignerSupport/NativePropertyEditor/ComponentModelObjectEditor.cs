@@ -92,7 +92,7 @@ namespace MonoDevelop.DesignerSupport
 		public Task<ValueInfo<T>> GetValueAsync<T> (IPropertyInfo property, PropertyVariation variations = null)
 		{
 			if (property == null)
-				throw new ArgumentNullException (nameof (property));
+				return Task.FromException<ValueInfo<T>> (new ArgumentNullException (nameof (property)));
 
 			if (!(property is DescriptorPropertyInfo propertyInfo)) {
 				return Task.FromException<ValueInfo<T>> (new ArgumentException ($"Property should be a {nameof (DescriptorPropertyInfo)}", nameof (property)));
