@@ -112,7 +112,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void Render (Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
-			if (isDisposed)
+			if (isDisposed || layout == null)
 				return;
 			if (diffMode) {
 				
@@ -129,7 +129,6 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				var treeview = widget as FileTreeView;
 				var p = treeview != null? treeview.CursorLocation : null;
-				
 				cell_area.Width -= RightPadding;
 				
 				window.DrawRectangle (widget.Style.BaseGC (Gtk.StateType.Normal), true, cell_area.X, cell_area.Y, cell_area.Width - 1, cell_area.Height);

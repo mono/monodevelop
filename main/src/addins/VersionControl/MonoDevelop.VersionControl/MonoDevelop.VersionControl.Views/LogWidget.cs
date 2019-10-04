@@ -58,8 +58,10 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
-		FileTreeView treeviewFiles;
+		TreeView treeviewFiles;
+		FileTreeView treeviewFileContents;
 		TreeStore changedpathstore;
+		TreeStore contentspathstore;
 		DocumentToolButton revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
@@ -204,9 +206,14 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewLog.Selection.Changed += TreeSelectionChanged;
 
 			treeviewFiles = new FileTreeView ();
-			treeviewFiles.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
+
 			scrolledwindowFiles.Child = treeviewFiles;
 			scrolledwindowFiles.ShowAll ();
+
+			treeviewFileContents = new FileTreeView ();
+			treeviewFileContents.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
+			scrolledwindowFileContents.Child = treeviewFileContents;
+			scrolledwindowFileContents.ShowAll ();
 
 			changedpathstore = new TreeStore (typeof(Xwt.Drawing.Image), typeof (string), // icon/file name
 			                                  typeof(Xwt.Drawing.Image), typeof (string), // icon/operation
@@ -214,6 +221,10 @@ namespace MonoDevelop.VersionControl.Views
 				typeof (string), // revision path (invisible)
 				typeof (string []) // diff
 				);
+
+			contentspathstore = new TreeStore (typeof(bool), // diff mode
+				typeof (string []) // diff
+			);
 
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
 			var crp = new CellRendererImage ();
@@ -239,10 +250,14 @@ namespace MonoDevelop.VersionControl.Views
 			diffRenderer.DrawLeft = true;
 			colChangedPath.PackStart (diffRenderer, true);
 			colChangedPath.SetCellDataFunc (diffRenderer, SetDiffCellData);
-			treeviewFiles.AppendColumn (colChangedPath);
+			treeviewFileContents.HeadersVisible = false;
+			treeviewFileContents.AppendColumn (colChangedPath);
+			treeviewFileContents.Model = contentspathstore;
+			treeviewFileContents.Events |= Gdk.EventMask.PointerMotionMask;
+
+
 			treeviewFiles.Model = changedpathstore;
-			treeviewFiles.TestExpandRow += HandleTreeviewFilesTestExpandRow;
-			treeviewFiles.Events |= Gdk.EventMask.PointerMotionMask;
+			treeviewFiles.Selection.Changed += SetDiff;
 
 			textviewDetails.WrapMode = Gtk.WrapMode.Word;
 			textviewDetails.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
@@ -472,118 +487,120 @@ namespace MonoDevelop.VersionControl.Views
 		const int colPath = 5;
 		const int colDiff = 6;
 
-		void HandleTreeviewFilesTestExpandRow (object o, TestExpandRowArgs args)
+
+		void SetDiff (object o, EventArgs args)
 		{
-			TreeIter iter;
-			if (changedpathstore.IterChildren (out iter, args.Iter)) {
-				string[] diff = changedpathstore.GetValue (iter, colDiff) as string[];
-				if (diff != null)
+			this.contentspathstore.Clear ();
+			if (!this.treeviewFiles.Selection.GetSelected (out var model, out var iter))
+				return;
+
+			var newIter = this.contentspathstore.AppendValues (false, new string [] { GettextCatalog.GetString ("Loading data…") });
+			this.treeviewFileContents.ExpandAll ();
+			string path = (string)changedpathstore.GetValue (iter, colPath);
+			var rev = SelectedRevision;
+			Task.Run (async delegate {
+				string text = "";
+				try {
+					text = await info.Repository.GetTextAtRevisionAsync (path, rev);
+				} catch (Exception e) {
+					await Runtime.RunInMainThread (delegate {
+						LoggingService.LogError ("Error while getting revision text", e);
+						MessageService.ShowError (
+							GettextCatalog.GetString ("Error while getting revision text."),
+							GettextCatalog.GetString ("The file may not be part of the working copy.")
+						);
+					});
 					return;
-
-				string path = (string)changedpathstore.GetValue (args.Iter, colPath);
-
-				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
-				var rev = SelectedRevision;
-				Task.Run (async delegate {
-					string text = "";
-					try {
-						text = await info.Repository.GetTextAtRevisionAsync (path, rev);
-					} catch (Exception e) {
-						Application.Invoke ((o2, a2) => {
-							LoggingService.LogError ("Error while getting revision text", e);
-							MessageService.ShowError (
-								GettextCatalog.GetString ("Error while getting revision text."),
-								GettextCatalog.GetString ("The file may not be part of the working copy.")
-							);
-						});
-						return;
-					}
-					Revision prevRev = null;
-					try {
-						prevRev = await rev.GetPreviousAsync ();
-					} catch (Exception e) {
-						Application.Invoke ((o2, a2) => {
-							MessageService.ShowError (GettextCatalog.GetString ("Error while getting previous revision."), e);
-						});
-						return;
-					}
-					string[] lines;
-					// Indicator that the file was binary
-					if (text == null) {
-						lines = new [] { GettextCatalog.GetString (" Binary files differ") };
+				}
+				Revision prevRev = null;
+				try {
+					prevRev = await rev.GetPreviousAsync ();
+				} catch (Exception e) {
+					await Runtime.RunInMainThread (delegate {
+						MessageService.ShowError (GettextCatalog.GetString ("Error while getting previous revision."), e);
+					});
+					return;
+				}
+				string[] lines;
+				// Indicator that the file was binary
+				if (text == null) {
+					lines = new [] { GettextCatalog.GetString (" Binary files differ") };
+				} else {
+					var changedDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (text);
+					if (prevRev == null) {
+						lines = new string [changedDocument.LineCount];
+						for (int i = 0; i < changedDocument.LineCount; i++) {
+							lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
+						}
 					} else {
-						var changedDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (text);
-						if (prevRev == null) {
+						string prevRevisionText = "";
+						try {
+							prevRevisionText = await info.Repository.GetTextAtRevisionAsync (path, prevRev);
+						} catch (Exception e) {
+							Application.Invoke ((o2, a2) => {
+								LoggingService.LogError ("Error while getting revision text", e);
+								MessageService.ShowError (
+									GettextCatalog.GetString ("Error while getting revision text."),
+									GettextCatalog.GetString ("The file may not be part of the working copy.")
+								);
+							});
+							return;
+						}
+
+						if (string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (prevRevisionText)) {
 							lines = new string [changedDocument.LineCount];
 							for (int i = 0; i < changedDocument.LineCount; i++) {
-								lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
+								lines [i] = "- " + changedDocument.GetLineText (i + 1).TrimEnd ('\r', '\n');
 							}
-						} else {
-							string prevRevisionText = "";
-							try {
-								prevRevisionText = await info.Repository.GetTextAtRevisionAsync (path, prevRev);
-							} catch (Exception e) {
-								Application.Invoke ((o2, a2) => {
-									LoggingService.LogError ("Error while getting revision text", e);
-									MessageService.ShowError (
-										GettextCatalog.GetString ("Error while getting revision text."),
-										GettextCatalog.GetString ("The file may not be part of the working copy.")
-									);
-								});
-								return;
-							}
-
-							if (String.IsNullOrEmpty (text)) {
-								if (!String.IsNullOrEmpty (prevRevisionText)) {
-									lines = new string [changedDocument.LineCount];
-									for (int i = 0; i < changedDocument.LineCount; i++) {
-										lines [i] = "- " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
-									}
-								}
-							}
-
-							var originalDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (prevRevisionText);
-							originalDocument.FileName = GettextCatalog.GetString ("Revision {0}", prevRev);
-							changedDocument.FileName = GettextCatalog.GetString ("Revision {0}", rev);
-							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
+
+						var originalDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (prevRevisionText);
+						originalDocument.FileName = GettextCatalog.GetString ("Revision {0}", prevRev);
+						changedDocument.FileName = GettextCatalog.GetString ("Revision {0}", rev);
+						lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 					}
-					Application.Invoke ((o2, a2) => {
-						changedpathstore.SetValue (iter, colDiff, lines);
-					});
-				});
-			}
-		}
-
-/*		void FileSelectionChanged (object sender, EventArgs e)
-		{
-			Revision rev = SelectedRevision;
-			if (rev == null) {
-				diffWidget.ComparisonWidget.OriginalEditor.Text = "";
-				diffWidget.ComparisonWidget.DiffEditor.Text = "";
-				return;
-			}
-			TreeIter iter;
-			if (!treeviewFiles.Selection.GetSelected (out iter))
-				return;
-			string path = (string)changedpathstore.GetValue (iter, colPath);
-			ThreadPool.QueueUserWorkItem (delegate {
-				string text = info.Repository.GetTextAtRevision (path, rev);
-				string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
-
-				Application.Invoke (delegate {
-					diffWidget.ComparisonWidget.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (path);
-					diffWidget.ComparisonWidget.OriginalEditor.Text = prevRevision;
-					diffWidget.ComparisonWidget.DiffEditor.Text = text;
-					diffWidget.ComparisonWidget.CreateDiff ();
+				}
+				await Runtime.RunInMainThread (delegate {
+					this.contentspathstore.Clear ();
+					this.contentspathstore.AppendValues (true, lines);
+					changedpathstore.SetValue (iter, colDiff, lines);
 				});
 			});
-		}*/
+		}
+
+		/*		void FileSelectionChanged (object sender, EventArgs e)
+				{
+					Revision rev = SelectedRevision;
+					if (rev == null) {
+						diffWidget.ComparisonWidget.OriginalEditor.Text = "";
+						diffWidget.ComparisonWidget.DiffEditor.Text = "";
+						return;
+					}
+					TreeIter iter;
+					if (!treeviewFiles.Selection.GetSelected (out iter))
+						return;
+					string path = (string)changedpathstore.GetValue (iter, colPath);
+					ThreadPool.QueueUserWorkItem (delegate {
+						string text = info.Repository.GetTextAtRevision (path, rev);
+						string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
+
+						Application.Invoke (delegate {
+							diffWidget.ComparisonWidget.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (path);
+							diffWidget.ComparisonWidget.OriginalEditor.Text = prevRevision;
+							diffWidget.ComparisonWidget.DiffEditor.Text = text;
+							diffWidget.ComparisonWidget.CreateDiff ();
+						});
+					});
+				}*/
 
 		protected override void OnDestroyed ()
 		{
 			IsDestroyed = true;
 			selectionCancellationTokenSource.Cancel ();
+
+			treeviewFiles.Selection.Changed -= SetDiff;
+
+			treeviewFileContents.DiffLineActivated -= HandleTreeviewFilesDiffLineActivated;
 
 			textviewDetails.ButtonPressEvent -= TextviewDetails_ButtonPressEvent;
 			labelDate.ButtonPressEvent -= LabelDate_ButtonPressEvent;
@@ -712,12 +729,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		static void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			CellRendererDiff rc = (CellRendererDiff)cell;
-			string[] lines = (string[])model.GetValue (iter, colDiff);
-			if (lines == null)
-				lines = new string[] { (string)model.GetValue (iter, colOperation) };
+			var rc = (CellRendererDiff)cell;
+			var diffMode = (bool)model.GetValue (iter, 0);
+			var lines = (string[])model.GetValue (iter, 1) ?? new string [] { "" };
 
-			rc.InitCell (tree_column.TreeView, ((TreeStore)model).IterDepth (iter) != 0, lines, model.GetPath (iter));
+			rc.InitCell (tree_column.TreeView, diffMode, lines, model.GetPath (iter));
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -760,6 +776,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			Revision d = SelectedRevision;
 			changedpathstore.Clear ();
+			contentspathstore.Clear ();
 			textviewDetails.Buffer.Clear ();
 			if (d == null)
 				return;
@@ -797,7 +814,6 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					Xwt.Drawing.Image fileIcon = IdeServices.DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
 					var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
-					changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 					if (rp.Path == preselectFile) {
 						selectIter = iter;
 						select = true;
