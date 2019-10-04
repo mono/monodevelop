@@ -39,10 +39,16 @@ namespace MonoDevelop.DesignerSupport
 	class FlagDescriptorPropertyInfo
 		: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
+
+		Array elements;
+
 		public FlagDescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
 			IsValueCombinable = true;
-			foreach (object value in System.Enum.GetValues (typeDescriptorContext.PropertyDescriptor.PropertyType)) {
+
+			elements = System.Enum.GetValues (typeDescriptorContext.PropertyDescriptor.PropertyType);
+
+			foreach (object value in elements) {
 				ulong uintVal = Convert.ToUInt64 (value);
 				predefinedValues.Add (value.ToString (), uintVal.ToString ());
 			}
@@ -64,22 +70,27 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override T GetValue<T> (object target)
 		{
-			//we need set the index of the selected item
-			try {
-				var myValue = (Enum)target;
-				var result = new List<string> ();
-				foreach (Enum item in Enum.GetValues (target.GetType ())) 
-				{
-					if (myValue.HasFlag (item)) {
-						ulong uintVal = Convert.ToUInt64 (item);
-						result.Add (uintVal.ToString ());
+			if (typeof (T) == typeof (IReadOnlyList<System.String>)) {
+				//we need set the index of the selected item
+				try {
+					var currentObject = PropertyDescriptor.GetValue (PropertyProvider);
+					var currentEnum = (Enum)currentObject;
+					var result = new List<string> ();
+					foreach (Enum item in elements) {
+						if (currentEnum.HasFlag (item)) {
+							ulong uintVal = Convert.ToUInt64 (item);
+							result.Add (uintVal.ToString ());
+						}
 					}
+
+					return (T)(object)result.AsReadOnly ();
+				} catch (Exception ex) {
+					LogInternalError ($"Error trying to get values from a Enum", ex);
 				}
-				return (T)(object)result;
-			} catch (Exception ex) {
-				LogInternalError ($"Error trying to get values from a Enum", ex);
 			}
-			return default;
+
+			var baseValue = base.GetValue<T> (target);
+			return baseValue;
 		}
 
 		public bool IsConstrainedToPredefined => true;
