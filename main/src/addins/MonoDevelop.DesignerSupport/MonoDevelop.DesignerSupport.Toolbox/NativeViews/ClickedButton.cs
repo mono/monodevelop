@@ -36,6 +36,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	class ClickedButton : NSButton
 	{
 		public event EventHandler Focused;
+		public event EventHandler<NSEventArgs> KeyDownPressed;
 
 		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
 
@@ -53,6 +54,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			if ((int)theEvent.ModifierFlags == (int)KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter || theEvent.KeyCode == (int)KeyCodes.Space)) {
+				PerformClick (this);
+			}
+
+			var args = new NSEventArgs (theEvent);
+			KeyDownPressed?.Invoke (this, args);
+
+			if (!args.Handled)
+				base.KeyDown (theEvent);
 		}
 	}
 }

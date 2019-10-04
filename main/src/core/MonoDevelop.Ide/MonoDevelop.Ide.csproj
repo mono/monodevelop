@@ -4297,6 +4297,7 @@
     <Compile Include="MonoDevelop.Ide.Projects.FileNesting\NestingRule.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.FileNesting\NestingRulesProvider.cs" />
     <Compile Include="MonoDevelop.Ide\TranslationCatalog.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\VerticalAlignmentTextCell.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

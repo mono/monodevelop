@@ -250,8 +250,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		public event EventHandler PerformPress;
 
-		public override bool WantsUpdateLayer => true;
-
 		bool isSelected;
 		public bool IsSelected {
 			get => isSelected;
@@ -260,16 +258,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return;
 				}
 				isSelected = value;
-				if (value) {
-					if (collectionView == null || collectionView.IsFocused) {
-						Layer.BackgroundColor = Styles.CellBackgroundSelectedColor.CGColor;
-					} else {
-						Layer.BackgroundColor = Styles.CellBackgroundUnfocusedSelectedColor.CGColor;
-					}
-				} else {
-					Layer.BackgroundColor = NSColor.Clear.CGColor;
-				}
 
+				RefreshLayer ();
+			}
+		}
+
+		internal void RefreshLayer ()
+		{
+			if (isSelected) {
+				if (collectionView == null || collectionView.IsFocused) {
+					Layer.BackgroundColor = Styles.CellBackgroundSelectedColor.CGColor;
+				} else {
+					Layer.BackgroundColor = Styles.CellBackgroundUnfocusedSelectedColor.CGColor;
+				}
+			} else {
+				Layer.BackgroundColor = NSColor.Clear.CGColor;
 			}
 		}
 

@@ -36,7 +36,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool IsListMode { get; set; }
 		bool CanIconizeToolboxCategories { get; }
 		bool ShowCategories { get; set; }
-		string CustomMessage { get; set; }
 		IEnumerable<ToolboxWidgetCategory> Categories { get; }
 		IEnumerable<ToolboxWidgetItem> AllItems { get; }
 
