@@ -58,8 +58,9 @@ namespace MonoDevelop.DesignerSupport
 		internal override T GetValue<T> (object target)
 		{
 			try {
-				if (target is Core.FilePath directoryPath) {
-					T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (directoryPath.FullPath);
+				var currentObject = PropertyDescriptor.GetValue (PropertyProvider);
+				if (currentObject is Core.FilePath filePath) {
+					T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (filePath.FullPath);
 					return result;
 				}
 			} catch (Exception ex) {
