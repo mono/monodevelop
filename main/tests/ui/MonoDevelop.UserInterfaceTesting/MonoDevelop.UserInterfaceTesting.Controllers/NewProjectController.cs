@@ -38,9 +38,11 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 			get { return TestService.Session; }
 		}
 
-		Func<AppQuery, AppQuery> previewTree = c => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
-		Func<AppQuery, AppQuery> templateCategoriesQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name");
-		Func<AppQuery, AppQuery> templatesQuery = c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name");
+		readonly Func<AppQuery, AppQuery> previewTree = c => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
+		readonly Func<AppQuery, AppQuery> templateCategoriesWidgetQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView");
+		readonly Func<AppQuery, AppQuery> templatesWidgetQuery = c => c.TreeView ().Marked ("templatesTreeView");
+		readonly Func<AppQuery, AppQuery> templateCategoriesQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name");
+		readonly Func<AppQuery, AppQuery> templatesQuery = c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name");
 
 		public void Open ()
 		{
@@ -75,24 +77,26 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 
 		public bool SelectTemplateType (string categoryRoot, string category)
 		{
-			return Session.SelectElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category))
-				&& IsTemplateTypeSelected (categoryRoot, category);
+			AppQuery categoryUIQuery (AppQuery c) => templateCategoriesQuery (c)
+				.Contains (categoryRoot)
+				.Children ()
+				.Text (category);
+
+			Session.SelectElement (templateCategoriesWidgetQuery);
+			Session.SelectElement (categoryUIQuery);
+			return Session.WaitForElement (c => categoryUIQuery (c).Selected ()).Any ();
 		}
 
 		public bool SelectTemplate (string kindRoot, string kind)
 		{
-			return Session.SelectElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind))
-				&& IsTemplateSelected (kindRoot, kind);
-		}
+			AppQuery templateUIQuery (AppQuery c) => templatesQuery (c)
+				.Contains (kindRoot)
+				.Children ()
+				.Text (kind);
 
-		public bool IsTemplateTypeSelected (string categoryRoot, string category)
-		{
-			return Session.WaitForElement (c => templateCategoriesQuery (c).Contains (categoryRoot).NextSiblings ().Text (category).Selected ()).Any ();
-		}
-
-		public bool IsTemplateSelected (string kindRoot, string kind)
-		{
-			return Session.WaitForElement (c => templatesQuery (c).Contains (kindRoot).NextSiblings ().Text (kind).Selected ()).Any ();
+			Session.SelectElement (templatesWidgetQuery);
+			Session.SelectElement (templateUIQuery);
+			return Session.WaitForElement (c => templateUIQuery (c).Selected ()).Any ();
 		}
 
 		public bool Next ()
