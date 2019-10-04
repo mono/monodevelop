@@ -143,7 +143,7 @@ namespace MonoDevelop.DesignerSupport
 			return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
-		internal virtual Task<T> GetValueAsync<T> (object target)
+		internal virtual T GetValue<T> (object target)
 		{
 			T converted = default;
 			object value = null;
@@ -160,7 +160,7 @@ namespace MonoDevelop.DesignerSupport
 			} catch (Exception ex) {
 				LogInternalError ($"Error trying to get and convert value:'{value}' canconvert: {canConvert} T:{typeof (T).FullName} ", ex);
 			}
-			return Task.FromResult (converted);
+			return converted;
 		}
 
 		bool IsNullable (Type type) => Nullable.GetUnderlyingType (type) != null;

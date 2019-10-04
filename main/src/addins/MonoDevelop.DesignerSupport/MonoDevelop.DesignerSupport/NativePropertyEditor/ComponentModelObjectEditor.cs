@@ -91,7 +91,7 @@ namespace MonoDevelop.DesignerSupport
 		public Task<IReadOnlyCollection<PropertyVariation>> GetPropertyVariantsAsync (IPropertyInfo property)
 		 => Task.FromResult<IReadOnlyCollection<PropertyVariation>> (Array.Empty<PropertyVariation> ());
 
-		public async Task<ValueInfo<T>> GetValueAsync<T> (IPropertyInfo property, PropertyVariation variations = null)
+		public Task<ValueInfo<T>> GetValueAsync<T> (IPropertyInfo property, PropertyVariation variations = null)
 		{
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
@@ -99,11 +99,12 @@ namespace MonoDevelop.DesignerSupport
 			if (!(property is DescriptorPropertyInfo propertyInfo))
 				throw new ArgumentException ("Property should be a DescriptorPropertyInfo", nameof (property));
 
-			T value = await propertyInfo.GetValueAsync<T> (this);
-			return new ValueInfo<T> {
+			T value = propertyInfo.GetValue<T> (this);
+			var valueInfo = new ValueInfo<T> {
 				Value = value,
 				Source = ValueSource.Local,
 			};
+			return Task.FromResult (valueInfo);
 		}
 
 		public Task RemovePropertyVariantAsync (IPropertyInfo property, PropertyVariation variant) => Task.CompletedTask;

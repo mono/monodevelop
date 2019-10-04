@@ -55,17 +55,17 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		internal override Task<T> GetValueAsync<T> (object target)
+		internal override T GetValue<T> (object target)
 		{
 			try {
 				if (target is Core.FilePath directoryPath) {
 					T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (directoryPath.FullPath);
-					return Task.FromResult (result);
+					return result;
 				}
 			} catch (Exception ex) {
 				LogInternalError ($"Error trying to get and convert value:'{target}' T:{typeof (T).FullName} ", ex);
 			}
-			return base.GetValueAsync<T> (target);
+			return base.GetValue<T> (target);
 		}
 	}
 }

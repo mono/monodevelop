@@ -58,9 +58,9 @@ namespace MonoDevelop.DesignerSupport
 		protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
 
-		internal override Task<TValue> GetValueAsync<TValue> (object target)
+		internal override TValue GetValue<TValue> (object target)
 		{
-			return base.GetValueAsync<TValue> (target);
+			return base.GetValue<TValue> (target);
 		}
 
 		internal override void SetValue<T> (object target, T value)

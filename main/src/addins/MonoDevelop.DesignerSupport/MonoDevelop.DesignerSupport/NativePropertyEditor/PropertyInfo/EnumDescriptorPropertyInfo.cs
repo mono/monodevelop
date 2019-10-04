@@ -80,12 +80,12 @@ namespace MonoDevelop.DesignerSupport
 			return -1;
 		}
 
-		internal async override Task<T> GetValueAsync<T> (object target)
+		internal override T GetValue<T> (object target)
 		{
 			//we need set the index of the selected item
 			T result = default;
 			try {
-				result = await base.GetValueAsync<T> (target);
+				result = base.GetValue<T> (target);
 				string cob = result as string;
 				var index = GetIndexOfValue (values, cob);
 				if (index > -1) {

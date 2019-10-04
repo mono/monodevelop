@@ -62,7 +62,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		internal override Task<T> GetValueAsync<T> (object target)
+		internal override T GetValue<T> (object target)
 		{
 			//we need set the index of the selected item
 			try {
@@ -75,11 +75,11 @@ namespace MonoDevelop.DesignerSupport
 						result.Add (uintVal.ToString ());
 					}
 				}
-				return Task.FromResult ((T)(object)result);
+				return (T)(object)result;
 			} catch (Exception ex) {
 				LogInternalError ($"Error trying to get values from a Enum", ex);
 			}
-			return Task.FromResult <T> (default);
+			return default;
 		}
 
 		public bool IsConstrainedToPredefined => true;
