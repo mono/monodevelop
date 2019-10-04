@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
@@ -65,7 +66,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			if (inputFile.FilePath != parentFile && !parentFile.IsDirectory && inDirectory == parentFile.ParentDirectory) {
 				var parent = inputFile.Project.Files.GetFile (parentFile);
 				if (parent != null) {
-					LoggingService.LogInfo ($"Applied rule for nesting {inputFile} under {parentFile}");
+					Debug.WriteLine ($"Applied rule for nesting {inputFile} under {parentFile}");
 					return parent;
 				}
 			}
