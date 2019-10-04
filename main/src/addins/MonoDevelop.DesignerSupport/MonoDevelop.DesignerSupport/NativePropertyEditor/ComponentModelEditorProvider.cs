@@ -68,7 +68,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<object> CreateObjectAsync (ITypeInfo type)
 		{
-			var realType = Type.GetType ($"{type.NameSpace}.{type.Name}, {type.Assembly.Name}");
+			var realType = GetRealType (type);
 			if (realType == null)
 				return Task.FromResult<object> (null);
 			return Task.FromResult (Activator.CreateInstance (realType));
@@ -109,7 +109,7 @@ namespace MonoDevelop.DesignerSupport
 
 			var valueSources = ValueSources.Local | ValueSources.Default;
 			if (propertyDescriptor.PropertyType.IsEnum) {
-				if (propertyDescriptor.PropertyType.IsDefined (typeof (FlagsAttribute), true))
+				if (propertyDescriptor.PropertyType.IsDefined (typeof (FlagsAttribute), inherit: false))
 					return new FlagDescriptorPropertyInfo (typeDescriptorContext, valueSources);
 				return new EnumDescriptorPropertyInfo (typeDescriptorContext, valueSources);
 			}

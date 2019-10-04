@@ -40,8 +40,6 @@ namespace MonoDevelop.DesignerSupport
 	class EnumDescriptorPropertyInfo
 		: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-		public string SeparatorString => ComponentModelObjectEditor.ComboSeparatorString;
-
 		Hashtable names = new Hashtable ();
 		Array values;
 		public EnumDescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources)

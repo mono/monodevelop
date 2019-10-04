@@ -28,25 +28,20 @@
 
 using Xamarin.PropertyEditing;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
 	class FlagDescriptorPropertyInfo
 		: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-
 		Array elements;
-
 		public FlagDescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
 			IsValueCombinable = true;
 
-			elements = System.Enum.GetValues (typeDescriptorContext.PropertyDescriptor.PropertyType);
+			elements = Enum.GetValues (typeDescriptorContext.PropertyDescriptor.PropertyType);
 
 			foreach (object value in elements) {
 				ulong uintVal = Convert.ToUInt64 (value);
@@ -107,8 +102,6 @@ namespace MonoDevelop.DesignerSupport
 
 		readonly protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
-
-		public string SeparatorString => ComponentModelObjectEditor.ComboSeparatorString;
 	}
 }
 

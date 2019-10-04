@@ -79,25 +79,24 @@ namespace MonoDevelop.DesignerSupport
 			this.properties.AddRange (ComponentModelEditorProvider.GetPropertiesForProviders (propertyItem.Providers));
 		}
 
-		public async Task<AssignableTypesResult> GetAssignableTypesAsync (IPropertyInfo property, bool childTypes)
-		{
-			return new AssignableTypesResult (Array.Empty<ITypeInfo> ());
-		}
+		public Task<AssignableTypesResult> GetAssignableTypesAsync (IPropertyInfo property, bool childTypes)
+			=> Task.FromResult(new AssignableTypesResult (Array.Empty<ITypeInfo> ()));
 
 		public Task<IReadOnlyList<string>> GetHandlersAsync (IEventInfo ev) => Task.FromResult(defaultHandlerList);
 
 		public Task<string> GetNameAsync () => Task.FromResult (Name);
 
 		public Task<IReadOnlyCollection<PropertyVariation>> GetPropertyVariantsAsync (IPropertyInfo property)
-		 => Task.FromResult<IReadOnlyCollection<PropertyVariation>> (Array.Empty<PropertyVariation> ());
+			=> Task.FromResult<IReadOnlyCollection<PropertyVariation>> (Array.Empty<PropertyVariation> ());
 
 		public Task<ValueInfo<T>> GetValueAsync<T> (IPropertyInfo property, PropertyVariation variations = null)
 		{
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
 
-			if (!(property is DescriptorPropertyInfo propertyInfo))
-				throw new ArgumentException ("Property should be a DescriptorPropertyInfo", nameof (property));
+			if (!(property is DescriptorPropertyInfo propertyInfo)) {
+				return Task.FromException<ValueInfo<T>> (new ArgumentException ($"Property should be a {nameof (DescriptorPropertyInfo)}", nameof (property)));
+			}
 
 			T value = propertyInfo.GetValue<T> (this);
 			var valueInfo = new ValueInfo<T> {
@@ -112,26 +111,25 @@ namespace MonoDevelop.DesignerSupport
 		public Task SetNameAsync (string name)
 		{
 			Name = name;
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
-		public async Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
+		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
 		{
 			try {
 				if (propertyInfo == null)
-					throw new ArgumentNullException (nameof (propertyInfo));
+					return Task.FromException (new ArgumentNullException (nameof (propertyInfo)));
 
 				if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
-					await Runtime.RunInMainThread (() => {
-						info.SetValue (this, value.Value);
-						RaisePropertyChanged (info);
-					});
+					info.SetValue (this, value.Value);
+					RaisePropertyChanged (info);
 				} else {
-					throw new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo));
+					return Task.FromException<T> (new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo)));
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error setting the value", ex);
 			}
+			return Task.CompletedTask;
 		}
 
 		protected void RaisePropertyChanged (IPropertyInfo property) => PropertyChanged?.Invoke (this, new EditorPropertyChangedEventArgs (property));

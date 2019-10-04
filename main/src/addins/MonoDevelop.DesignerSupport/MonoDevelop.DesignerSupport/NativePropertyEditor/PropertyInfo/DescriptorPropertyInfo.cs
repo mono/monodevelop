@@ -152,7 +152,7 @@ namespace MonoDevelop.DesignerSupport
 				value = PropertyDescriptor.GetValue (PropertyProvider);
 				var tc = PropertyDescriptor.Converter;
 				canConvert = tc.CanConvertTo (typeof (T));
-				if (tc.CanConvertTo (typeof (T))) {
+				if (canConvert) {
 					converted = (T)tc.ConvertTo (value, typeof (T));
 				} else {
 					converted = (T)value;
@@ -163,15 +163,14 @@ namespace MonoDevelop.DesignerSupport
 			return converted;
 		}
 
-		bool IsNullable (Type type) => Nullable.GetUnderlyingType (type) != null;
-
 		internal virtual void SetValue<T> (object target, T value)
 		{
 			try {
 				
 				var currentType = typeof (T) ;
 
-				//TODO: we don't support nulleable types in editors yet
+				//TODO: Proppy in Boolean types uses bool? to handle it, but this will fail using converters
+				//thats because we need ensure take the underlying type
 				currentType = Nullable.GetUnderlyingType (currentType) ?? currentType;
 				object notNulleableValue = Convert.ChangeType (value, currentType);
 

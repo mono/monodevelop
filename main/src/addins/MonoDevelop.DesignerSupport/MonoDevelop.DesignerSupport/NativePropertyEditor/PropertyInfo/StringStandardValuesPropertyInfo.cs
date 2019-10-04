@@ -41,12 +41,14 @@ namespace MonoDevelop.DesignerSupport
 	{
 		readonly Dictionary<string, object> standardValues = new Dictionary<string, object> ();
 
-		public string SeparatorString => ComponentModelObjectEditor.ComboSeparatorString;
-
 		public StringStandardValuesPropertyInfo (TypeConverter.StandardValuesCollection standardValuesCollection, TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
 			foreach (object stdValue in standardValuesCollection) {
 				var value = PropertyDescriptor.Converter.ConvertToString (stdValue);
+				if (value == ComponentModelObjectEditor.ComboSeparatorString) {
+					//TODO: we need implement in proppy a way to allow separators
+					continue;
+				}
 				standardValues.Add (value, stdValue);
 				predefinedValues.Add (value, value);
 			}
