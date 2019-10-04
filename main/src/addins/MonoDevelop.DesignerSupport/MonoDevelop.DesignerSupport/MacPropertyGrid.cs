@@ -59,11 +59,16 @@ namespace MonoDevelop.DesignerSupport
 			AddSubview (propertyEditorPanel);
 
 			editorProvider = new ComponentModelEditorProvider ();
+			editorProvider.PropertyChanged += EditorProvider_PropertyChanged;
+
 			propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
 				AutoExpandAll = true
 			};
 			propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
 		}
+
+		private void EditorProvider_PropertyChanged (object sender, EventArgs e) =>
+			PropertyGridChanged?.Invoke (this, EventArgs.Empty);
 
 		public override void SetFrameSize (CGSize newSize)
 		{
@@ -102,6 +107,18 @@ namespace MonoDevelop.DesignerSupport
 		public void OnPadContentShown ()
 		{
 			//not implemented
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing) {
+				if (editorProvider != null) {
+					editorProvider.PropertyChanged -= EditorProvider_PropertyChanged;
+					editorProvider.Dispose ();
+					editorProvider = null;
+				}
+			}
+			base.Dispose (disposing);
 		}
 	}
 

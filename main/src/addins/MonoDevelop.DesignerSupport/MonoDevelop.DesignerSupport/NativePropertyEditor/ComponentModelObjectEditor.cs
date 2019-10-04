@@ -124,7 +124,7 @@ namespace MonoDevelop.DesignerSupport
 				if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
 					await Runtime.RunInMainThread (() => {
 						info.SetValue (this, value.Value);
-						OnPropertyChanged (info);
+						RaisePropertyChanged (info);
 					});
 				} else {
 					throw new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo));
@@ -134,10 +134,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		protected virtual void OnPropertyChanged (IPropertyInfo property)
-		{
-			PropertyChanged?.Invoke (this, new EditorPropertyChangedEventArgs (property));
-		}
+		protected void RaisePropertyChanged (IPropertyInfo property) => PropertyChanged?.Invoke (this, new EditorPropertyChangedEventArgs (property));
 	}
 }
 

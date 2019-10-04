@@ -26,23 +26,24 @@
 
 #if MAC
 
-using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xamarin.PropertyEditing;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
 	class ComponentModelEditorProvider
-	: IEditorProvider
+	: IEditorProvider, IDisposable
 	{
+		public event EventHandler<EventArgs> PropertyChanged;
+
 		public IReadOnlyDictionary<Type, ITypeInfo> KnownTypes {
 			get;
 		} = new Dictionary<Type, ITypeInfo> ();
 
 		ComponentModelTarget target;
+		ComponentModelObjectEditor currentEditor;
 
 		Task<IObjectEditor> IEditorProvider.GetObjectEditorAsync(object item)
 		{
@@ -51,9 +52,19 @@ namespace MonoDevelop.DesignerSupport
 				throw new ArgumentException (string.Format ("Cannot get editor for type {0} only ComponentModelObjectEditor types are allowed", item.GetType ().Name));
 			}
 
+			if (currentEditor != null) {
+				currentEditor.PropertyChanged -= CurrentEditor_PropertyChanged;
+			}
+
+			currentEditor = new ComponentModelObjectEditor (target);
+			currentEditor.PropertyChanged += CurrentEditor_PropertyChanged;	
+
 			//on each editor we store current used providers
-			return Task.FromResult<IObjectEditor>(new ComponentModelObjectEditor(target));
+			return Task.FromResult<IObjectEditor>(currentEditor);
 		}
+
+		void CurrentEditor_PropertyChanged (object sender, EventArgs e)
+			=> PropertyChanged?.Invoke (this, e);
 
 		public Task<object> CreateObjectAsync (ITypeInfo type)
 		{
@@ -142,6 +153,13 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IReadOnlyList<object>> GetChildrenAsync (object item) 
 			=>  Task.FromResult<IReadOnlyList<object>> (Array.Empty<object> ());
+
+		public void Dispose ()
+		{
+			if (currentEditor != null) {
+				currentEditor.PropertyChanged -= CurrentEditor_PropertyChanged;
+			}
+		}
 	}
 }
 

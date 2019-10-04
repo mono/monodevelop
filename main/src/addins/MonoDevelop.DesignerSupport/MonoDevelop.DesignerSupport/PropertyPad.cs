@@ -76,7 +76,7 @@ namespace MonoDevelop.DesignerSupport
 
 				nativeGrid = new MacPropertyGrid ();
 				propertyGrid = nativeGrid;
-
+				nativeGrid.PropertyGridChanged += Grid_Changed;
 				gtkWidget = new GtkNSViewHost (nativeGrid);
 
 				frame.Add (gtkWidget);
@@ -127,6 +127,7 @@ namespace MonoDevelop.DesignerSupport
 #if MAC
 			if (isNative) {
 				container.PadContentShown -= Window_PadContentShown;
+				nativeGrid.PropertyGridChanged -= Grid_Changed;
 			} else {
 #endif
 				grid.Changed -= Grid_Changed;
