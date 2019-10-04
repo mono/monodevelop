@@ -145,7 +145,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditor\PropertyInfo\DirectoryPathPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\IPropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditor\PropertyInfo\FlagDescriptorPropertyInfo.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditor\PropertyPadItem.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditor\ComponentModelTarget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MonoDevelopHostResourceProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IDragDataToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptor.BuildActionStringsConverter.cs" />
