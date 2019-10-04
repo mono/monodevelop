@@ -101,6 +101,12 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
+			if (EqualityComparer<T>.Default.Equals (value, default)) {
+				var defaultValue = PropertyDescriptor.GetValue (PropertyProvider);
+				PropertyDescriptor.SetValue (PropertyProvider, defaultValue);
+				return;
+			}
+
 			try {
 				var intValue = (int)Convert.ChangeType (value, typeof (int));
 				var objValue = values.GetValue (intValue);

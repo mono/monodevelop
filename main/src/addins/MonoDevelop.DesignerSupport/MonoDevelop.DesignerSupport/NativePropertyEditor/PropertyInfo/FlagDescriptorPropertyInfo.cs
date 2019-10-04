@@ -56,6 +56,12 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
+			if (EqualityComparer<T>.Default.Equals (value, default)) {
+				var defaultValue = PropertyDescriptor.GetValue (PropertyProvider);
+				PropertyDescriptor.SetValue (PropertyProvider, defaultValue);
+				return;
+			}
+
 			try {
 				var selectedValues = (System.String []) (object)value;
 				ulong result = default;
