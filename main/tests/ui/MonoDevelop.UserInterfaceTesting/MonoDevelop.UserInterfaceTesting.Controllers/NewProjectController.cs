@@ -38,16 +38,17 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 			get { return TestService.Session; }
 		}
 
+		readonly Func<AppQuery, AppQuery> windowQuery = c => c.Marked ("wizard_dialog");
 		readonly Func<AppQuery, AppQuery> previewTree = c => c.TreeView ().Marked ("folderTreeView").Model ("folderTreeStore__NodeName");
 		readonly Func<AppQuery, AppQuery> templateCategoriesWidgetQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView");
 		readonly Func<AppQuery, AppQuery> templatesWidgetQuery = c => c.TreeView ().Marked ("templatesTreeView");
 		readonly Func<AppQuery, AppQuery> templateCategoriesQuery = c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name");
 		readonly Func<AppQuery, AppQuery> templatesQuery = c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name");
 
-		public void Open ()
+		public void Open (int timeout = 10000)
 		{
 			Session.ExecuteCommand (FileCommands.NewProject);
-			WaitForOpen ();
+			WaitForOpen (timeout);
 		}
 
 		public void Open (string addToSolutionName)
@@ -57,9 +58,14 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 			WaitForOpen ();
 		}
 
-		public void WaitForOpen ()
+		public void WaitForOpen (int timeout = 10000)
 		{
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));
+			Session.WaitForElement (windowQuery, timeout);
+		}
+
+		public bool GrabFocus ()
+		{
+			return Session.SelectElement (windowQuery);
 		}
 
 		public void Select (TemplateSelectionOptions templateOptions)
@@ -82,9 +88,14 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 				.Children ()
 				.Text (category);
 
-			Session.SelectElement (templateCategoriesWidgetQuery);
-			Session.SelectElement (categoryUIQuery);
-			return Session.WaitForElement (c => categoryUIQuery (c).Selected ()).Any ();
+			return Retry (() => {
+				Session.SelectElement (templateCategoriesWidgetQuery);
+				Session.SelectElement (categoryUIQuery);
+				// SelectElement does not give focus to the New Project dialog so click the category to focus
+				// the dialog. When the New Project dialog is not focused the WaitForElement call times out.
+				Session.ClickElement (categoryUIQuery, false);
+				return Session.WaitForElement (c => categoryUIQuery (c).Selected ()).Any ();
+			});
 		}
 
 		public bool SelectTemplate (string kindRoot, string kind)
@@ -94,9 +105,11 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 				.Children ()
 				.Text (kind);
 
-			Session.SelectElement (templatesWidgetQuery);
-			Session.SelectElement (templateUIQuery);
-			return Session.WaitForElement (c => templateUIQuery (c).Selected ()).Any ();
+			return Retry (() => {
+				Session.SelectElement (templatesWidgetQuery);
+				Session.SelectElement (templateUIQuery);
+				return Session.WaitForElement (c => templateUIQuery (c).Selected ()).Any ();
+			});
 		}
 
 		public bool Next ()
@@ -200,6 +213,26 @@ namespace MonoDevelop.UserInterfaceTesting.Controllers
 			} else {
 				Assert.IsNotEmpty (Session.Query (c => rootFolderChildren (c).Contains (projectDetails.ProjectName + ".csproj")));
 			}
+		}
+
+		T Retry<T>(Func<T> action, int retries = 3)
+		{
+			int currentTry = 0;
+			while (currentTry < retries) {
+				try {
+					return action ();
+				} catch (TimeoutException) {
+					currentTry++;
+					if (currentTry >= retries)
+						throw;
+					try {
+						GrabFocus ();
+					} catch {
+						// Ignore.
+					}
+				}
+			}
+			throw new InvalidOperationException ("Should not reach here");
 		}
 	}
 }

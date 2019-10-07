@@ -105,11 +105,8 @@ namespace MonoDevelop.Ide.PerfTests
 			var newProject = new NewProjectController ();
 			newProject.Open ();
 
-			bool result = newProject.SelectTemplateType (template.CategoryRoot, template.Category);
-			Assert.IsTrue (result, "Project template category not selected {0}/{1}", template.CategoryRoot, template.Category);
-
-			result = newProject.SelectTemplate (template.TemplateKindRoot, template.TemplateKind);
-			Assert.IsTrue (result, "Project template not selected {0}/{1}", template.TemplateKindRoot, template.TemplateKind);
+			newProject.SelectTemplateType (template.CategoryRoot, template.Category);
+			newProject.SelectTemplate (template.TemplateKindRoot, template.TemplateKind);
 
 			newProject.Next ();
 
