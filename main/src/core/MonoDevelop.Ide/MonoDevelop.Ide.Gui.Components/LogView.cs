@@ -384,7 +384,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		static StringComparison GetComparer ()
 		{
-			if (PropertyService.Get ("AutoSetPatternCasing", true)) {
+			if (PropertyService.Get ("AutoSetPatternCasing", false)) {
 				if (currentSearchPattern != null && currentSearchPattern.Any (Char.IsUpper))
 					return StringComparison.Ordinal;
 			}
