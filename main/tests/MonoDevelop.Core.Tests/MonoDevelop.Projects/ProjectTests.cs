@@ -1010,6 +1010,36 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ResolveAssemblyReferences_CustomTargetDefinesExtraReferencePathItems_ReferencePathItemsIncludedInResolvedAssemblyReferences ()
+		{
+			FilePath location = typeof (System.ComponentModel.Composition.CreationPolicy).Assembly.Location;
+			var directory = location.ParentDirectory;
+
+			FilePath solFile = Util.GetSampleProject ("ReferencePathTest", "ReferencePathTest.sln");
+
+			string contents =
+				"<Project>\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"  <MonoPath>" + MSBuildProjectService.ToMSBuildPath (null, directory) + "</MonoPath>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var directoryBuildPropsFile = solFile.ParentDirectory.Combine ("Directory.Build.props");
+			File.WriteAllText (directoryBuildPropsFile, contents);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = sol.GetAllProjects ().Single () as DotNetProject;
+
+				var refs = await p.GetReferencedAssemblies (ConfigurationSelector.Default);
+				var componentModelRef = refs.FirstOrDefault (r => r.FilePath.FileName == "System.ComponentModel.Composition.dll");
+				var refList = refs.Select (r => r.FilePath.FileName.ToString ()).ToList ();
+
+				Assert.That (refList, Contains.Item ("System.ComponentModel.Composition.dll"));
+				Assert.AreEqual ("test-value", componentModelRef.Metadata.GetValue ("Test"));
+			}
+		}
+
+		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
 			if (!Platform.IsMac) {
