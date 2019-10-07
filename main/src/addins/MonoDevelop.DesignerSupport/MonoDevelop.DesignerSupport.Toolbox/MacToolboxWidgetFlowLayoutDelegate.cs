@@ -49,8 +49,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override CGSize SizeForItem (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, NSIndexPath indexPath)
 		{
-			var macToolboxWidget = (MacToolboxWidget)collectionView;
-			var dataSource = (MacToolboxWidgetDataSource)collectionView.DataSource;
 			var flowLayout = (NSCollectionViewFlowLayout)collectionViewLayout;
 			return flowLayout.ItemSize;
 		}

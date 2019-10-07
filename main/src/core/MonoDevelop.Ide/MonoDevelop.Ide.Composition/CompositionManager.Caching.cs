@@ -269,7 +269,7 @@ namespace MonoDevelop.Ide.Composition
 
 		internal sealed class InvalidRuntimeCompositionException : Exception
 		{
-			public InvalidRuntimeCompositionException (string assemblyName) : base($"Input assemblies contained {assemblyName} but composition extension point didn't")
+			public InvalidRuntimeCompositionException (string assemblyName) : base($"Input assemblies contained {assemblyName}, not found in the '/MonoDevelop/Ide/Composition' extension point")
 			{
 			}
 		}
