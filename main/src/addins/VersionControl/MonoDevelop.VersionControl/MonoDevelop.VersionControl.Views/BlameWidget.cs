@@ -159,7 +159,9 @@ namespace MonoDevelop.VersionControl.Views
 			editor.EditorOptionsChanged += delegate {
 				overview.OptionsChanged ();
 			};
-			editor.Caret.PositionChanged += ComparisonWidget.CaretPositionChanged;
+			editor.Caret.PositionChanged += HandleCaretPositionChanged;
+			overview.Accessible.Name = GettextCatalog.GetString ("Blame margin");
+
 			editor.FocusInEvent += ComparisonWidget.EditorFocusIn;
 			editor.Document.Folded += delegate {
 				QueueDraw ();
@@ -169,6 +171,21 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			editor.DoPopupMenu = ShowPopup;
 			Show ();
+		}
+
+		void HandleCaretPositionChanged(object sender, DocumentLocationEventArgs e)
+		{
+			ComparisonWidget.CaretPositionChanged (sender, e);
+			var annotation = overview.GetAnnotationFromLine (e.Location.Line);
+
+			string description;
+			if (annotation != null) {
+				var msg = overview.GetCommitMessage (e.Location.Line - 1, true);
+				description = GettextCatalog.GetString ("Author {0}, Date {1}, {2}", annotation.Author, annotation.Date, msg);
+			} else {
+				description = GettextCatalog.GetString ("No annotation available.");
+			}
+			overview.Accessible.Description = description;
 		}
 
 		internal void Reset ()
@@ -245,12 +262,14 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+
 			hScrollBar.Destroy ();
 			hAdjustment.Destroy ();
 
 			vScrollBar.Destroy ();
 			vAdjustment.Destroy ();
 
+			editor.Caret.PositionChanged -= HandleCaretPositionChanged;
 			editor.Destroy ();
 			overview.Destroy ();
 		}
