@@ -155,6 +155,7 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 	}
 
+	[Serializable]
 	public class TimerCounter<T> : TimerCounter where T : CounterMetadata, new()
 	{
 		public TimerCounter (string name, CounterCategory category) : base (name, category)
