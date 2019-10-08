@@ -76,10 +76,9 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)
 		{
-			return Task.Run (() => {
-				var prov = target?.Providers ?? Array.Empty<object> ();
-				return (IReadOnlyCollection<IPropertyInfo>)GetPropertiesForProviders (prov);
-			});
+			var prov = target?.Providers ?? Array.Empty<object> ();
+			var providers = (IReadOnlyCollection<IPropertyInfo>)GetPropertiesForProviders (prov);
+			return Task.FromResult (providers);
 		}
 
 		public static IReadOnlyList<DescriptorPropertyInfo> GetPropertiesForProviders (object[] providers)
