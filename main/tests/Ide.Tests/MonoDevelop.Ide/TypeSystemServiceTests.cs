@@ -685,7 +685,7 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public async Task TestWorkspaceRegistrationCancellation ()
+		public async Task WorkspaceRegistrationCancellation ()
 		{
 			using var registration = new TypeSystemService.WorkspaceRequestRegistration ();
 
@@ -701,15 +701,53 @@ namespace MonoDevelop.Ide
 			Assert.IsFalse (task2.IsCanceled);
 			Assert.IsFalse (task3.IsCanceled);
 
+			var wait1 = task1.ContinueWith (t => {
+				Assert.IsTrue (t.IsCanceled);
+			}, TaskScheduler.Current);
+
+			var wait2 = task2.ContinueWith (t => {
+				Assert.IsTrue (t.IsCanceled);
+			}, TaskScheduler.Current);
+
 			// Cancelling one token only cancels its corresponding task
 			cts1.Cancel ();
+			await wait1;
 
 			Assert.IsTrue (task1.IsCanceled);
 			Assert.IsFalse (task2.IsCanceled);
 			Assert.IsFalse (task3.IsCanceled);
 
-			// When disposing the registration,
+			cts2.Cancel ();
+			await wait2;
+
+			Assert.IsTrue (task1.IsCanceled);
+			Assert.IsTrue (task2.IsCanceled);
+			Assert.IsFalse (task3.IsCanceled);
+		}
+
+		[Test]
+		public async Task WorkspaceRegistrationDisposeCancelsAllRequests ()
+		{
+			using var registration = new TypeSystemService.WorkspaceRequestRegistration ();
+
+			using var cts1 = new CancellationTokenSource ();
+			using var cts2 = new CancellationTokenSource ();
+
+			var task1 = registration.GetWorkspaceAsync (cts1.Token);
+			var task2 = registration.GetWorkspaceAsync (cts2.Token);
+			var task3 = registration.GetWorkspaceAsync (CancellationToken.None);
+
+			// Initially, none of them is cancelled.
+			Assert.IsFalse (task1.IsCanceled);
+			Assert.IsFalse (task2.IsCanceled);
+			Assert.IsFalse (task3.IsCanceled);
+
+			// When disposing the registration, all tasks are cancelled
 			registration.Dispose ();
+
+			await Task.WhenAll (task1, task2, task3).ContinueWith (t => {
+				Assert.IsTrue (t.IsCanceled);
+			}, TaskScheduler.Current);
 
 			Assert.IsTrue (task1.IsCanceled);
 			Assert.IsTrue (task2.IsCanceled);
