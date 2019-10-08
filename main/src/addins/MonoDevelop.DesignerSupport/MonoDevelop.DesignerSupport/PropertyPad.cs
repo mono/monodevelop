@@ -41,7 +41,6 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using System;
 using Gtk;
-using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -55,6 +54,13 @@ namespace MonoDevelop.DesignerSupport
 		public event EventHandler PropertyGridChanged;
 
 		public Widget Widget => host;
+
+		public object CurrentObject {
+			get => view.CurrentObject;
+			set {
+				view.SetCurrentObject (value, new object [] { value });
+			}
+		}
 
 		public PropertyMacHostWidget ()
 		{
@@ -92,6 +98,8 @@ namespace MonoDevelop.DesignerSupport
 
 	public interface IPropertyGrid : IPropertyPad
 	{
+		object CurrentObject { get; set; }
+
 		void Hide ();
 		void Show ();
 
@@ -100,7 +108,7 @@ namespace MonoDevelop.DesignerSupport
 		Gtk.Widget Widget { get; }
 	}
 
-	class PropertyGridWrapper : IPropertyGrid
+	public class PropertyGridWrapper : IPropertyGrid
 	{
 		public bool IsGridEditing => nativeWidget.IsGridEditing;
 
@@ -108,11 +116,26 @@ namespace MonoDevelop.DesignerSupport
 
 		public Gtk.Widget Widget => nativeWidget.Widget;
 
+		public bool ShowToolbar { get; set; }
+		public ShadowType ShadowType { get; set; }
+		public bool ShowHelp { get; set; }
+
+		public object CurrentObject {
+			get => nativeWidget.CurrentObject;
+			set => nativeWidget.CurrentObject = value;
+		}
+
+		public bool Sensitive { get; set; }
+
 		IPropertyGrid nativeWidget;
 
-		public PropertyGridWrapper (IPropertyGrid splitterWidget)
+		public PropertyGridWrapper ()
 		{
-			nativeWidget = splitterWidget;
+#if MAC
+			nativeWidget = new PropertyMacHostWidget ();
+#else
+			nativeWidget = new pg.PropertyGrid ();
+#endif
 		}
 
 		public void BlankPad ()
@@ -138,6 +161,11 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//nativeWidget.SetToolbarProvider (toolbarProvider);
 		}
+
+		public void CommitPendingChanges ()
+		{
+			//to implement
+		}
 	}
 
 	public class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
@@ -159,22 +187,15 @@ namespace MonoDevelop.DesignerSupport
 		{
 			frame = new InvisibleFrame ();
 
-#if MAC
-			var widget = new PropertyMacHostWidget ();
-#else
-			var widget = new pg.PropertyGrid ();
-#endif
-			propertyGridWrapper = new PropertyGridWrapper (widget);
+			propertyGridWrapper = new PropertyGridWrapper ();
 			frame.Add (propertyGridWrapper.Widget);
 			propertyGridWrapper.PropertyGridChanged += Grid_Changed;
 
 			frame.ShowAll ();
 		}
 
-		void Grid_Changed (object sender, EventArgs e)
-		{
+		void Grid_Changed (object sender, EventArgs e) =>
 			PropertyGridChanged?.Invoke (this, e);
-		}
 
 		protected override void Initialize (IPadWindow container)
 		{
@@ -211,13 +232,10 @@ namespace MonoDevelop.DesignerSupport
 			if (isNative) {
 				container.PadContentShown -= Window_PadContentShown;
 				container.PadContentHidden -= Window_PadContentHidden;
-				propertyGridWrapper.PropertyGridChanged -= Grid_Changed;
-			} else {
-#endif
-				propertyGridWrapper.PropertyGridChanged -= Grid_Changed;
-#if MAC
 			}
 #endif
+			
+			propertyGridWrapper.PropertyGridChanged -= Grid_Changed;
 			propertyGridWrapper.Dispose ();
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
