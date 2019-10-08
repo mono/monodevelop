@@ -59,7 +59,7 @@ namespace MonoDevelop.Xml.Formatting
 		Button buttonRemove;
 		Label labelScopes;
 		Table tableScopes;
-		MonoDevelop.Components.PropertyGrid.PropertyGrid propertyGrid;
+		DesignerSupport.PropertyGridWrapper propertyGrid;
 		Button buttonAdvanced;
 
 		void Build ()
@@ -85,7 +85,7 @@ namespace MonoDevelop.Xml.Formatting
 				ColumnSpacing = 6
 			};
 
-			propertyGrid = new MonoDevelop.Components.PropertyGrid.PropertyGrid {
+			propertyGrid = new DesignerSupport.PropertyGridWrapper {
 				ShowToolbar = false,
 				ShowHelp = false
 			};
@@ -107,7 +107,7 @@ namespace MonoDevelop.Xml.Formatting
 			var rightVBox = new VBox (false, 6);
 			rightVBox.PackStart (labelScopes, false, false, 0);
 			rightVBox.PackStart (tableScopes, false, false, 0);
-			rightVBox.PackStart (propertyGrid, true, true, 0);
+			rightVBox.PackStart (propertyGrid.Widget, true, true, 0);
 
 			var mainBox = new HBox (false, 6);
 			mainBox.PackStart (boxScopes, false, false, 0);
