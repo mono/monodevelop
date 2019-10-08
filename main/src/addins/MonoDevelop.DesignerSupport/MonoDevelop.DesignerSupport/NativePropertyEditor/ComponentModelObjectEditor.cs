@@ -98,7 +98,7 @@ namespace MonoDevelop.DesignerSupport
 				return Task.FromException<ValueInfo<T>> (new ArgumentException ($"Property should be a {nameof (DescriptorPropertyInfo)}", nameof (property)));
 			}
 
-			T value = propertyInfo.GetValue<T> (this);
+			T value = propertyInfo.GetValue<T> (this.Target);
 			var valueInfo = new ValueInfo<T> {
 				Value = value,
 				Source = ValueSource.Local,
@@ -121,7 +121,7 @@ namespace MonoDevelop.DesignerSupport
 					return Task.FromException (new ArgumentNullException (nameof (propertyInfo)));
 
 				if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
-					info.SetValue (this, value.Value);
+					info.SetValue (this.Target, value.Value);
 					RaisePropertyChanged (info);
 				} else {
 					return Task.FromException<T> (new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo)));
