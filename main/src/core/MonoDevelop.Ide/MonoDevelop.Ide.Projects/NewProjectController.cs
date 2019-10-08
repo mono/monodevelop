@@ -40,10 +40,10 @@ using System.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects;
 using Xwt.Drawing;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -52,6 +52,11 @@ namespace MonoDevelop.Ide.Projects
 	/// </summary>
 	class NewProjectDialogController : INewProjectDialogController
 	{
+		static TimerCounter NewProjectCreatedTimer = InstrumentationService.CreateTimerCounter (
+			"New Project Created",
+			"IDE",
+			id: "Ide.NewProjectDialog.ProjectCreated");
+
 		public event EventHandler ProjectCreationFailed;
 		public event EventHandler ProjectCreated;
 
@@ -612,6 +617,13 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public async Task Create ()
+		{
+			using (var timer = NewProjectCreatedTimer.BeginTiming ()) {
+				await CreateInternal ();
+			}
+		}
+
+		async Task CreateInternal ()
 		{
 			projectCreated = new TaskCompletionSource<bool> ();
 
