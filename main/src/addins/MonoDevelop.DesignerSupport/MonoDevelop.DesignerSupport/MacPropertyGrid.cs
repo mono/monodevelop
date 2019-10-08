@@ -39,7 +39,7 @@ using CoreGraphics;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyGrid : NSView, IPropertyGrid
+	class MacPropertyGrid : NSView
 	{
 		readonly MacPropertyEditorPanel propertyEditorPanel;
 		ComponentModelEditorProvider editorProvider;
@@ -95,21 +95,6 @@ namespace MonoDevelop.DesignerSupport
 			} else {
 				BlankPad ();
 			}
-		}
-
-		public void Populate (bool saveEditSession)
-		{
-			//not implemented
-		}
-
-		public void SetToolbarProvider (Components.PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider)
-		{
-			//not implemented
-		}
-
-		public void OnPadContentShown ()
-		{
-			//not implemented
 		}
 
 		protected override void Dispose (bool disposing)
