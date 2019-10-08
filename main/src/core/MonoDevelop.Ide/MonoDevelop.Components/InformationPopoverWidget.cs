@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using Xwt;
@@ -43,8 +44,10 @@ namespace MonoDevelop.Components
 		{
 			severity = TaskSeverity.Information;
 			imageView = new Xwt.ImageView ();
+			Accessible.Role = Xwt.Accessibility.Role.Image;
 			imageView.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			UpdateIcon ();
+			UpdateAccessibility ();
 			Content = imageView;
 			CanGetFocus = true;
 		}
@@ -56,6 +59,7 @@ namespace MonoDevelop.Components
 			set {
 				severity = value;
 				UpdateIcon ();
+				UpdateAccessibility ();
 				UpdatePopover ();
 			}
 		}
@@ -64,12 +68,10 @@ namespace MonoDevelop.Components
 			get {
 				return message;
 			}
-
 			set {
 				message = value;
+				UpdateAccessibility ();
 				UpdatePopover ();
-
-				this.Accessible.Label = value;
 			}
 		}
 
@@ -77,6 +79,7 @@ namespace MonoDevelop.Components
 			get { return markup; }
 			set {
 				markup = value;
+				UpdateAccessibility ();
 				UpdatePopover ();
 			}
 		}
@@ -94,6 +97,18 @@ namespace MonoDevelop.Components
 			imageView.Image = GetSeverityIcon ();
 		}
 
+		void UpdateAccessibility ()
+		{
+			Accessible.RoleDescription = GetAccessibilityDescription ();
+			var text = message ?? string.Empty;
+			if (UseMarkup) {
+				var cleanText = FormattedText.FromMarkup (text);
+				Accessible.Title = cleanText.Text;
+			} else {
+				Accessible.Title = message ?? string.Empty;
+			}
+		}
+
 		Xwt.Drawing.Image GetSeverityIcon ()
 		{
 			switch (severity) {
@@ -103,6 +118,17 @@ namespace MonoDevelop.Components
 				return ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu);
 			}
 			return ImageService.GetIcon ("md-information", Gtk.IconSize.Menu);
+		}
+
+		string GetAccessibilityDescription ()
+		{
+			switch (severity) {
+			case TaskSeverity.Error:
+				return GettextCatalog.GetString ("Error Icon");
+			case TaskSeverity.Warning:
+				return GettextCatalog.GetString ("Warning Icon");
+			}
+			return GettextCatalog.GetString ("Information Icon");
 		}
 
 		protected override void OnGotFocus (EventArgs args)
