@@ -86,6 +86,9 @@ namespace MonoDevelop.Debugger
 				var position = line.Start.Position + breakpoint.Column - 1;
 				var span = await DebuggingService.GetBreakpointSpanAsync (textDocument, position);
 
+				if (span.IsEmpty)
+					continue;
+
 				if (breakpoints.TryGetValue (breakpoint, out var existingBreakpoint)) {
 					newBreakpoints.Add (breakpoint, existingBreakpoint);
 					if (existingBreakpoint.Span != span) {
@@ -93,11 +96,13 @@ namespace MonoDevelop.Debugger
 						existingBreakpoint.Span = span;
 						needsUpdate = true;
 					}
-				} else {
+				} else if (span.End < snapshot.Length) {
+					var trackingSpan = snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeExclusive);
+
 					// Update if anything was added
 					newBreakpoints.Add (breakpoint, new ManagerBreakpoint {
 						Breakpoint = breakpoint,
-						TrackingSpan = snapshot.CreateTrackingSpan (span, SpanTrackingMode.EdgeExclusive),
+						TrackingSpan = trackingSpan,
 						Span = span
 					});
 					needsUpdate = true;

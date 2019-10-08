@@ -41,6 +41,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using Microsoft.VisualStudio.Text;
 using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -231,8 +232,15 @@ namespace MonoDevelop.VersionControl.Views
 				Add (middleAreas[1]);
 			}
 			this.MainEditor.EditorOptionsChanged += HandleMainEditorhandleEditorOptionsChanged;
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			leftDiffScrollBar.Accessible.SetShouldIgnore (true);
+			rightDiffScrollBar.Accessible.SetShouldIgnore (true);
+		}
+
 		void ShowPopup (MonoTextEditor editor, EventButton evt)
 		{
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/VersionControl/DiffView/ContextMenu");
