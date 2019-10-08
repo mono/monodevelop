@@ -45,17 +45,106 @@ using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.DesignerSupport
 {
+	class PropertyMacHostWidget : IPropertyGrid
+	{
+		readonly GtkNSViewHost host;
+		readonly MacPropertyGrid view;
+
+		public bool IsGridEditing => view.IsEditing;
+
+		public event EventHandler PropertyGridChanged;
+
+		public Widget Widget => host;
+
+		public PropertyMacHostWidget ()
+		{
+			view = new MacPropertyGrid ();
+			host = new GtkNSViewHost (view);
+		}
+
+		public void SetCurrentObject (object obj, object [] propertyProviders)
+			=> view.SetCurrentObject (obj, propertyProviders);
+
+		public void BlankPad ()
+			=> view.BlankPad ();
+
+		public void Dispose ()
+			=> view.Dispose ();
+
+		public void Hide () => view.Hidden = true;
+		public void Show () => view.Hidden = false;
+
+		public void OnPadContentShown ()
+		{
+			//not implemented;
+		}
+
+		public void PopulateGrid (bool saveEditSession)
+		{
+			//view.SetCurrentObject (obj, propertyProviders);
+		}
+
+		public void SetToolbarProvider (object toolbarProvider)
+		{
+			//not implemented;
+		}
+	}
+
+	public interface IPropertyGrid : IPropertyPad
+	{
+		void Hide ();
+		void Show ();
+
+		void SetToolbarProvider (object toolbarProvider);
+
+		Gtk.Widget Widget { get; }
+	}
+
+	class PropertyGridWrapper : IPropertyGrid
+	{
+		public bool IsGridEditing => nativeWidget.IsGridEditing;
+
+		public event EventHandler PropertyGridChanged;
+
+		public Gtk.Widget Widget => nativeWidget.Widget;
+
+		IPropertyGrid nativeWidget;
+
+		public PropertyGridWrapper (IPropertyGrid splitterWidget)
+		{
+			nativeWidget = splitterWidget;
+		}
+
+		public void BlankPad ()
+			=> nativeWidget.BlankPad ();
+
+		public void PopulateGrid (bool saveEditSession) =>
+			nativeWidget.PopulateGrid (saveEditSession);
+
+		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
+			=> nativeWidget.SetCurrentObject (lastComponent, propertyProviders);
+
+		public void Show () => nativeWidget.Show ();
+		public void Hide () => nativeWidget.Hide ();
+
+		public void Dispose () => nativeWidget.Dispose ();
+
+		public void SetToolbarProvider (object toolbarProvider)
+		{
+			nativeWidget.SetToolbarProvider (toolbarProvider);
+		}
+
+		public void OnPadContentShown ()
+		{
+			//nativeWidget.SetToolbarProvider (toolbarProvider);
+		}
+	}
+
 	public class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
 	{
 		public event EventHandler PropertyGridChanged;
 
 		readonly bool isNative;
-		readonly IPropertyGrid propertyGrid;
-#if MAC
-		MacPropertyGrid nativeGrid;
-		Gtk.Widget gtkWidget;
-#endif
-		pg.PropertyGrid grid;
 
 		InvisibleFrame frame;
 		bool customWidget;
@@ -64,31 +153,21 @@ namespace MonoDevelop.DesignerSupport
 
 		internal object CommandRouteOrigin { get; set; }
 
+		readonly PropertyGridWrapper propertyGridWrapper;
 
 		public PropertyPad ()
 		{
 			frame = new InvisibleFrame ();
 
 #if MAC
-			isNative = true;
-
-			if (isNative) {
-
-				nativeGrid = new MacPropertyGrid ();
-				propertyGrid = nativeGrid;
-				nativeGrid.PropertyGridChanged += Grid_Changed;
-				gtkWidget = new GtkNSViewHost (nativeGrid);
-
-				frame.Add (gtkWidget);
-			} else {
+			var widget = new PropertyMacHostWidget ();
+#else
+			var widget = new pg.PropertyGrid ();
 #endif
-				grid = new pg.PropertyGrid ();
-				propertyGrid = grid;
-				grid.Changed += Grid_Changed;
-				frame.Add (grid);
-#if MAC
-			}
-#endif
+			propertyGridWrapper = new PropertyGridWrapper (widget);
+			frame.Add (propertyGridWrapper.Widget);
+			propertyGridWrapper.PropertyGridChanged += Grid_Changed;
+
 			frame.ShowAll ();
 		}
 
@@ -102,7 +181,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Initialize (container);
 			toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
 
-			propertyGrid.SetToolbarProvider (toolbarProvider);
+			propertyGridWrapper.SetToolbarProvider (toolbarProvider);
 
 #if MAC
 			//native cocoa needs content shown to initialize stuff
@@ -132,14 +211,14 @@ namespace MonoDevelop.DesignerSupport
 			if (isNative) {
 				container.PadContentShown -= Window_PadContentShown;
 				container.PadContentHidden -= Window_PadContentHidden;
-				nativeGrid.PropertyGridChanged -= Grid_Changed;
+				propertyGridWrapper.PropertyGridChanged -= Grid_Changed;
 			} else {
 #endif
-				grid.Changed -= Grid_Changed;
+				propertyGridWrapper.PropertyGridChanged -= Grid_Changed;
 #if MAC
 			}
 #endif
-			propertyGrid.Dispose ();
+			propertyGridWrapper.Dispose ();
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
 		}
@@ -164,7 +243,7 @@ namespace MonoDevelop.DesignerSupport
 		public bool IsGridEditing {
 			get {
 				AttachToolbarIfCustomWidget ();
-				return propertyGrid.IsEditing;
+				return propertyGridWrapper.IsGridEditing;
  			}
 		}
 
@@ -173,7 +252,7 @@ namespace MonoDevelop.DesignerSupport
 		internal pg.PropertyGrid PropertyGrid {
 			get {
 				AttachToolbarIfCustomWidget ();
-				return isNative ? pGrid : grid;
+				return isNative ? pGrid : (pg.PropertyGrid) propertyGridWrapper.Widget;
 			}
 		}
 
@@ -182,14 +261,14 @@ namespace MonoDevelop.DesignerSupport
 			if (isNative) {
 				AttachToolbarIfCustomWidget ();
 			}
-			propertyGrid.BlankPad ();
+			propertyGridWrapper.BlankPad ();
 			CommandRouteOrigin = null;
 		}
 
 #if MAC
 		void Window_PadContentShown (object sender, EventArgs e)
 		{
-			propertyGrid.OnPadContentShown ();
+			propertyGridWrapper.OnPadContentShown ();
 
 			if (customWidget && frame.Child is GtkNSViewHost viewHost) {
 				viewHost.Visible = true;
@@ -212,10 +291,10 @@ namespace MonoDevelop.DesignerSupport
 
 #if MAC
 				if (isNative) {
-					frame.Add (gtkWidget);
+					frame.Add (propertyGridWrapper.Widget);
 				} else {
 #endif
-					frame.Add (grid);
+					frame.Add (propertyGridWrapper.Widget);
 #if MAC
 				}
 #endif
@@ -248,12 +327,12 @@ namespace MonoDevelop.DesignerSupport
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			AttachToolbarIfCustomWidget ();
-			propertyGrid.SetCurrentObject (lastComponent, propertyProviders);
+			propertyGridWrapper.SetCurrentObject (lastComponent, propertyProviders);
 		}
 
 		public void PopulateGrid (bool saveEditSession)
 		{
-			propertyGrid.Populate (saveEditSession);
+			propertyGridWrapper.PopulateGrid (saveEditSession);
 		}
 	}
 
