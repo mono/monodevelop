@@ -670,7 +670,7 @@ namespace MonoDevelop.Ide
 
 					// A newly requested task is already completed on request, as the mapping is done
 					Assert.That (workspaceTasks.Select (x => x.IsCompleted), Is.All.EqualTo (true));
-					Assert.That (await Task.WhenAll (workspaceTasks), Is.All.EqualTo (ws));
+					Assert.That (await Task.WhenAll (workspaceTasks), Is.All.SameAs (ws));
 				}
 
 				cancelledOnDispose = typeSystemService.GetWorkspaceAsync (sol);
