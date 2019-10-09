@@ -68,6 +68,8 @@
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DragDrop\DragDropImpl.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ChangeTagger\ChangeTagger.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\TextMate\Core\Core.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DifferenceViewer\DifferenceViewerImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DifferenceBuffer\DifferenceBufferImpl.csproj" Private="True" />
     <Reference Include="MonoDevelop.DesignerSupport">
       <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
@@ -102,6 +104,8 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.UrlTagger.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.DifferenceBuffer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.DifferenceViewer.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextMate.Core.dll" />
   </ItemGroup>
   <ItemGroup>

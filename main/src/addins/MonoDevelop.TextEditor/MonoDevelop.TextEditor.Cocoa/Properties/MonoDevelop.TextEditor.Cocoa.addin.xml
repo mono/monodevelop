@@ -50,6 +50,8 @@
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.TaskTagger.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.DifferenceBuffer.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.DifferenceViewer.Implementation.dll" />
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 		<!-- These are coming from vs-editor-api (no Cocoa dependency) -->
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
