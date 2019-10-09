@@ -13,14 +13,17 @@ namespace MonoDevelop.DotNetCore.Commands
 	{
 		protected override async void Run (object dataItem)
 		{
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-			if (project == null)
-				return;
+			try {
+				var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+				if (project == null)
+					return;
 
-			var buildTarget = new PackProjectBuildTarget (project);
-			IdeApp.ProjectOperations.Build (buildTarget);
+				var buildTarget = new PackProjectBuildTarget (project);
+				IdeApp.ProjectOperations.Build (buildTarget);
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error running Pack", e);
+			}
 		}
-
 
 		protected override void Update (CommandInfo info)
 		{
