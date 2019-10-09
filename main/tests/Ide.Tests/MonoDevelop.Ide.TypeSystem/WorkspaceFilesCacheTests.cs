@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -119,6 +120,159 @@ namespace MonoDevelop.Ide.TypeSystem
 				var matchedReference = cacheInfo.References.FirstOrDefault (r => r.FilePath.FileNameWithoutExtension == reference.Include);
 				Assert.IsNotNull (matchedReference, "Reference not found: " + reference.Include);
 			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceFilesCacheCreation_AdditionalFiles_EditorConfigFiles ()
+		{
+			FilePath solFile = Util.GetSampleProject ("additional-files", "additional-files.sln");
+
+			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
+			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
+			using (var sol = IdeServices.Workspace.GetAllItems<Solution> ().First ()) {
+				IdeServices.Workspace.ActiveConfigurationId = sol.DefaultConfigurationId;
+
+				var p = sol.FindProjectByName ("library") as DotNetProject;
+
+				// Check cache created for active configuration.
+				var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
+				var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
+				Assert.IsTrue (File.Exists (projectCacheFile));
+
+				var cacheInfo = GetProjectCacheInfo (sol, p);
+				Assert.IsNotNull (cacheInfo);
+
+				// Check cached additional file.
+				FilePath expectedAdditionalFileName = p.BaseDirectory.Combine ("additional-file.txt");
+				var matchedFile = cacheInfo.AdditionalFiles.FirstOrDefault (f => f == expectedAdditionalFileName);
+				Assert.IsNotNull (matchedFile);
+
+				// Check cached editor config files.
+				FilePath expectedEditorConfigFileName = solFile.ParentDirectory.Combine (".editorconfig");
+				matchedFile = cacheInfo.EditorConfigFiles.FirstOrDefault (f => f == expectedEditorConfigFileName);
+				Assert.IsNotNull (matchedFile);
+
+				await IdeServices.Workspace.CloseWorkspaceItem (sol);
+			}
+		}
+
+		[Test]
+		public async Task CanReadOldProjectCache_MissingAdditionalFiles_MissingEditorConfigFiles ()
+		{
+			FilePath solFile = Util.GetSampleProject ("additional-files", "additional-files.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = sol.FindProjectByName ("library") as DotNetProject;
+
+				var cacheDirectory = sol.GetPreferencesDirectory ().Combine ("project-cache");
+				var projectCacheFile = GetProjectCacheFile (cacheDirectory, p, "Debug");
+
+				var cache = new WorkspaceFilesCache.ProjectCache {
+					Format = WorkspaceFilesCache.format,
+					Analyzers = Array.Empty<string> (),
+					BuildActions = Array.Empty<string> (),
+					Files = Array.Empty<string> (),
+					Framework = null,
+					MetadataReferences = Array.Empty<WorkspaceFilesCache.ReferenceItem> (),
+					ProjectReferences = Array.Empty<WorkspaceFilesCache.ReferenceItem> (),
+					AdditionalFiles = null,
+					EditorConfigFiles = null
+				};
+
+				Directory.CreateDirectory (projectCacheFile.ParentDirectory);
+				var workspaceFilesCache = new WorkspaceFilesCache ();
+				workspaceFilesCache.WriteCacheFile (cache, projectCacheFile);
+
+				var cacheInfo = GetProjectCacheInfo (sol, p);
+				Assert.IsNotNull (cacheInfo);
+
+				Assert.AreEqual (0, cacheInfo.AdditionalFiles.Length);
+				Assert.AreEqual (0, cacheInfo.EditorConfigFiles.Length);
+			}
+		}
+
+		/// <summary>
+		/// Check that Additional Files are considered when comparing two cache infos.
+		/// </summary>
+		[Test]
+		public void Equals_AdditionalFiles ()
+		{
+			var cacheInfo1 = new ProjectCacheInfo {
+				AdditionalFiles = ImmutableArray<FilePath>.Empty,
+				AnalyzerFiles = ImmutableArray<FilePath>.Empty,
+				EditorConfigFiles = ImmutableArray<FilePath>.Empty,
+				ProjectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty,
+				References = ImmutableArray<MonoDevelopMetadataReference>.Empty,
+				SourceFiles = ImmutableArray<ProjectFile>.Empty,
+			};
+
+			var cacheInfo2 = new ProjectCacheInfo {
+				AdditionalFiles = ImmutableArray<FilePath>.Empty,
+				AnalyzerFiles = ImmutableArray<FilePath>.Empty,
+				EditorConfigFiles = ImmutableArray<FilePath>.Empty,
+				ProjectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty,
+				References = ImmutableArray<MonoDevelopMetadataReference>.Empty,
+				SourceFiles = ImmutableArray<ProjectFile>.Empty,
+			};
+
+			Assert.IsTrue (cacheInfo1.Equals (cacheInfo2));
+
+			var files1 = new FilePath [] {
+				"a.txt",
+				"b.txt"
+			};
+			cacheInfo1.AdditionalFiles = files1.ToImmutableArray ();
+			cacheInfo2.AdditionalFiles = files1.ToImmutableArray ();
+			Assert.IsTrue (cacheInfo1.Equals (cacheInfo2));
+
+			var files2 = new FilePath [] {
+				"a.txt",
+				"c.txt"
+			};
+			cacheInfo2.AdditionalFiles = files2.ToImmutableArray ();
+			Assert.IsFalse (cacheInfo1.Equals (cacheInfo2));
+		}
+
+		/// <summary>
+		/// Check that Editor Config Files are considered when comparing two cache infos.
+		/// </summary>
+		[Test]
+		public void Equals_EditorConfigFiles ()
+		{
+			var cacheInfo1 = new ProjectCacheInfo {
+				AdditionalFiles = ImmutableArray<FilePath>.Empty,
+				AnalyzerFiles = ImmutableArray<FilePath>.Empty,
+				EditorConfigFiles = ImmutableArray<FilePath>.Empty,
+				ProjectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty,
+				References = ImmutableArray<MonoDevelopMetadataReference>.Empty,
+				SourceFiles = ImmutableArray<ProjectFile>.Empty,
+			};
+
+			var cacheInfo2 = new ProjectCacheInfo {
+				AdditionalFiles = ImmutableArray<FilePath>.Empty,
+				AnalyzerFiles = ImmutableArray<FilePath>.Empty,
+				EditorConfigFiles = ImmutableArray<FilePath>.Empty,
+				ProjectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty,
+				References = ImmutableArray<MonoDevelopMetadataReference>.Empty,
+				SourceFiles = ImmutableArray<ProjectFile>.Empty,
+			};
+
+			Assert.IsTrue (cacheInfo1.Equals (cacheInfo2));
+
+			var files1 = new FilePath [] {
+				"a/.editorconfig",
+				"b/.editorconfig"
+			};
+			cacheInfo1.AdditionalFiles = files1.ToImmutableArray ();
+			cacheInfo2.AdditionalFiles = files1.ToImmutableArray ();
+			Assert.IsTrue (cacheInfo1.Equals (cacheInfo2));
+
+			var files2 = new FilePath [] {
+				"a/.editorconfig",
+				"c/.editorconfig"
+			};
+			cacheInfo2.AdditionalFiles = files2.ToImmutableArray ();
+			Assert.IsFalse (cacheInfo1.Equals (cacheInfo2));
 		}
 
 		[Test]
