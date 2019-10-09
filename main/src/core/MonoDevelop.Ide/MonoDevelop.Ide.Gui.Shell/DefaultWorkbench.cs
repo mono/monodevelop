@@ -50,6 +50,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Gui.Shell;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -77,6 +78,7 @@ namespace MonoDevelop.Ide.Gui
 		List<SdiWorkspaceWindow> viewContentCollection = new List<SdiWorkspaceWindow> ();
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
+		static readonly ConditionalWeakTable<DockItem, PadWindow> itemToWindow = new ConditionalWeakTable<DockItem, PadWindow> ();
 		
 		IWorkbenchWindow lastActive;
 
@@ -471,8 +473,10 @@ namespace MonoDevelop.Ide.Gui
 				Counters.PadsLoaded--;
 				padCodons.Remove (win);
 			}
-			if (item != null)
+			if (item != null) {
 				dock.RemoveItem (item);
+				itemToWindow.Remove (item);
+			}
 			padWindows.Remove (codon);
 		}
 		
@@ -1425,37 +1429,56 @@ namespace MonoDevelop.Ide.Gui
 			item.DefaultVisible = false;
 			item.DefaultStatus = defaultStatus;
 			window.Item = item;
+
+			itemToWindow.Add (item, window);
 			
 			if (padCodon.Initialized) {
 				CreatePadContent (true, padCodon, window, item);
 			} else {
-				item.ContentRequired += delegate {
-					CreatePadContent (false, padCodon, window, item);
-				};
+				item.ContentRequired += OnItemContentRequired;
 			}
-			
-			item.VisibleChanged += (s,a) => {
-				if (item.Visible)
-					window.NotifyShown (a);
-				else
-					window.NotifyHidden (a);
-			};
-			
-			item.ContentVisibleChanged += delegate {
-				if (item.ContentVisible)
-					window.NotifyContentShown ();
-				else
-					window.NotifyContentHidden ();
-			};
+
+			item.VisibleChanged += OnItemVisibleChanged;
+			item.ContentVisibleChanged += OnItemContentVisibleChanged;
+
+			static void OnItemContentRequired (object sender, EventArgs args)
+			{
+				var item = (DockItem)sender;
+				if (itemToWindow.TryGetValue (item, out var window)) {
+					var padCodon = window.Workbench.padCodons [window];
+					window.Workbench.CreatePadContent (true, padCodon, window, (DockItem)sender);
+				}
+			}
+
+			static void OnItemVisibleChanged (object sender, VisibilityChangeEventArgs args)
+			{
+				var item = (DockItem)sender;
+				if (itemToWindow.TryGetValue (item, out var window)) {
+					if (item.Visible)
+						window.NotifyShown (args);
+					else
+						window.NotifyHidden (args);
+				}
+			}
+
+			static void OnItemContentVisibleChanged (object sender, EventArgs args)
+			{
+				var item = (DockItem)sender;
+				if (itemToWindow.TryGetValue (item, out var window)) {
+					if (item.ContentVisible)
+						window.NotifyContentShown ();
+					else
+						window.NotifyContentHidden ();
+				}
+			}
 		}
 		
-		void UpdatePad (object source, EventArgs args)
+		static void UpdatePad (object source, EventArgs args)
 		{
-			IPadWindow window = (IPadWindow) source;
-			if (!padCodons.ContainsKey (window)) 
+			var window = (PadWindow) source;
+			if (!window.Workbench.padCodons.TryGetValue (window, out PadCodon codon))
 				return;
-			PadCodon codon = padCodons [window];
-			DockItem item = GetDockItem (codon);
+			DockItem item = window.Workbench.GetDockItem (codon);
 			if (item != null) {
 				string windowTitle = window.Title;
 				var windowIcon = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);

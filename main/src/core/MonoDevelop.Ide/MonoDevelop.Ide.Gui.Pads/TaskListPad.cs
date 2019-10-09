@@ -165,5 +165,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				PropertyService.Set ("Monodevelop.TaskList.ActiveView", className);
 			}
 		}
+
+		public override void Dispose ()
+		{
+			switcherCombo.Changed -= OnContentSwitched;
+			base.Dispose ();
+		}
 	}
 }

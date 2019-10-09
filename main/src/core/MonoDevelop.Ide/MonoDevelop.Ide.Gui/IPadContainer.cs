@@ -142,13 +142,13 @@ namespace MonoDevelop.Ide.Gui
 		bool hasNewData;
 		PadContent content;
 		PadCodon codon;
-		DefaultWorkbench workbench;
-		
+
+		internal DefaultWorkbench Workbench { get; }
 		internal DockItem Item { get; set; }
 		
 		internal PadWindow (DefaultWorkbench workbench, PadCodon codon)
 		{
-			this.workbench = workbench;
+			this.Workbench = workbench;
 			this.codon = codon;
 			this.title = codon.Label;
 			this.icon = codon.Icon;
@@ -248,15 +248,15 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public bool ContentVisible {
-			get { return workbench.IsContentVisible (codon); }
+			get { return Workbench.IsContentVisible (codon); }
 		}
 		
 		public bool Sticky {
 			get {
-				return workbench.IsSticky (codon);
+				return Workbench.IsSticky (codon);
 			}
 			set {
-				workbench.SetSticky (codon, value);
+				Workbench.SetSticky (codon, value);
 			}
 		}
 		
@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Activate (bool giveFocus)
 		{
 			CreateContent ();
-			workbench.ActivatePad (codon, giveFocus);
+			Workbench.ActivatePad (codon, giveFocus);
 		}
 		
 		void CreateContent ()
