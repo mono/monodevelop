@@ -1599,4 +1599,19 @@
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class="MonoDevelop.DotNetCore.NodeBuilders.PackageDependencyNodePropertyProvider" />
 	</Extension>
+	
+	<!-- Pack command -->
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.DotNetCore.Commands.Pack" 
+				defaultHandler = "MonoDevelop.DotNetCore.Commands.PackCommandHandler"
+				_label = "Pack" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">
+		<CommandItem id="MonoDevelop.DotNetCore.Commands.Pack" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<CommandItem id="MonoDevelop.DotNetCore.Commands.Pack" insertbefore="Publish" />
+	</Extension>
 </ExtensionModel>
