@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	class WorkspaceFilesCache
 	{
-		const int format = 1;
+		internal const int format = 1;
 
 		FilePath cacheDir;
 
@@ -155,29 +155,20 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public void Update (ProjectConfiguration projConfig, string framework, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap, ProjectCacheInfo info)
 		{
-			Update (projConfig, framework, proj, projectMap, info.SourceFiles, info.AnalyzerFiles, info.References, info.ProjectReferences);
-		}
-
-		public void Update (ProjectConfiguration projConfig, string framework, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap,
-			ImmutableArray<ProjectFile> files,
-			ImmutableArray<FilePath> analyzers,
-			ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
-			ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> projectReferences)
-		{
 			if (!loaded)
 				return;
 
-			var paths = new string [files.Length];
-			var actions = new string [files.Length];
+			var paths = new string [info.SourceFiles.Length];
+			var actions = new string [info.SourceFiles.Length];
 
-			for (int i = 0; i < files.Length; ++i) {
-				paths [i] = files [i].FilePath;
-				actions [i] = files [i].BuildAction;
+			for (int i = 0; i < info.SourceFiles.Length; ++i) {
+				paths [i] = info.SourceFiles [i].FilePath;
+				actions [i] = info.SourceFiles [i].BuildAction;
 			}
 
-			var projectRefs = new ReferenceItem [projectReferences.Length];
-			for (int i = 0; i < projectReferences.Length; ++i) {
-				var pr = projectReferences [i];
+			var projectRefs = new ReferenceItem [info.ProjectReferences.Length];
+			for (int i = 0; i < info.ProjectReferences.Length; ++i) {
+				var pr = info.ProjectReferences [i];
 				(Project mdProject, string projectReferenceFramework) = projectMap.GetMonoProjectAndFramework (pr.ProjectId);
 				projectRefs [i] = new ReferenceItem {
 					FilePath = mdProject.FileName,
@@ -188,10 +179,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var item = new ProjectCache {
 				Format = format,
-				Analyzers = analyzers.Select(x => (string)x).ToArray (),
+				AdditionalFiles = info.AdditionalFiles.Select (x => (string)x).ToArray (),
+				Analyzers = info.AnalyzerFiles.Select (x => (string)x).ToArray (),
+				EditorConfigFiles = info.EditorConfigFiles.Select (x => (string)x).ToArray (),
 				Files = paths,
 				BuildActions = actions,
-				MetadataReferences = metadataReferences.Select(x => {
+				MetadataReferences = info.References.Select (x => {
 					var ri = new ReferenceItem {
 						FilePath = x.FilePath,
 						Aliases = x.Properties.Aliases.ToArray (),
@@ -203,7 +196,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			string configId = GetConfigId (projConfig);
 			var cacheFile = GetProjectCacheFile (proj, configId, framework);
+			WriteCacheFile (item, cacheFile);
+		}
 
+		internal void WriteCacheFile (ProjectCache item, string cacheFile)
+		{
 			FileLock fileLock = AcquireWriteLock (cacheFile);
 			try {
 				lock (fileLock) {
@@ -230,19 +227,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			out ProjectCacheInfo info)
 		{
 			info = new ProjectCacheInfo ();
-			return TryGetCachedItems (p, provider, projectMap, framework, out info.SourceFiles, out info.AnalyzerFiles, out info.References, out info.ProjectReferences);
-		}
-
-		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap, string framework,
-			out ImmutableArray<ProjectFile> files,
-			out ImmutableArray<FilePath> analyzers,
-			out ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
-			out ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> projectReferences)
-		{
-			files = ImmutableArray<ProjectFile>.Empty;
-			analyzers = ImmutableArray<FilePath>.Empty;
-			metadataReferences = ImmutableArray<MonoDevelopMetadataReference>.Empty;
-			projectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty;
 
 			List<ProjectCache> cachedDataList;
 
@@ -263,12 +247,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				});
 			}
 
-			files = filesBuilder.MoveToImmutable ();
+			info.SourceFiles = filesBuilder.MoveToImmutable ();
 
-			var analyzersBuilder = ImmutableArray.CreateBuilder<FilePath> (cachedData.Analyzers.Length);
-			foreach (var analyzer in cachedData.Analyzers)
-				analyzersBuilder.Add (analyzer);
-			analyzers = analyzersBuilder.MoveToImmutable ();
+			info.AdditionalFiles = ToImmutableFilePathArray (cachedData.AdditionalFiles);
+			info.AnalyzerFiles = ToImmutableFilePathArray (cachedData.Analyzers);
+			info.EditorConfigFiles = ToImmutableFilePathArray (cachedData.EditorConfigFiles);
 
 			var mrBuilder = ImmutableArray.CreateBuilder<MonoDevelopMetadataReference> (cachedData.MetadataReferences.Length);
 			foreach (var item in cachedData.MetadataReferences) {
@@ -276,7 +259,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var reference = provider.GetOrCreateMetadataReference (item.FilePath, new Microsoft.CodeAnalysis.MetadataReferenceProperties(aliases: aliases));
 				mrBuilder.Add (reference);
 			}
-			metadataReferences = mrBuilder.MoveToImmutable ();
+			info.References = mrBuilder.MoveToImmutable ();
 
 			var sol = p.ParentSolution;
 			var solConfig = sol.GetConfiguration (IdeServices.Workspace.ActiveConfiguration);
@@ -291,8 +274,19 @@ namespace MonoDevelop.Ide.TypeSystem
 				var pr = new Microsoft.CodeAnalysis.ProjectReference (projectMap.GetOrCreateId (mdProject, null, item.Framework), aliases.ToImmutableArray ());
 				prBuilder.Add (pr);
 			}
-			projectReferences = prBuilder.MoveToImmutable ();
+			info.ProjectReferences = prBuilder.MoveToImmutable ();
 			return true;
+		}
+
+		static ImmutableArray<FilePath> ToImmutableFilePathArray (string[] files)
+		{
+			if (files == null)
+				return ImmutableArray<FilePath>.Empty;
+
+			var builder = ImmutableArray.CreateBuilder<FilePath> (files.Length);
+			foreach (var file in files)
+				builder.Add (file);
+			return builder.MoveToImmutable ();
 		}
 
 		/// <summary>
@@ -333,7 +327,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		[Serializable]
-		class ProjectCache
+		internal class ProjectCache
 		{
 			public int Format;
 
@@ -342,6 +336,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			public string [] Files;
 			public string [] BuildActions;
 			public string [] Analyzers;
+			public string [] AdditionalFiles;
+			public string [] EditorConfigFiles;
 
 			internal string Framework;
 		}
@@ -364,6 +360,8 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		public ImmutableArray<ProjectFile> SourceFiles;
 		public ImmutableArray<FilePath> AnalyzerFiles;
+		public ImmutableArray<FilePath> AdditionalFiles;
+		public ImmutableArray<FilePath> EditorConfigFiles;
 		public ImmutableArray<MonoDevelopMetadataReference> References;
 		public ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> ProjectReferences;
 
@@ -379,7 +377,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (other == null)
 				return false;
 
-			if (AnalyzerFiles.Length != other.AnalyzerFiles.Length ||
+			if (AdditionalFiles.Length != other.AdditionalFiles.Length ||
+				AnalyzerFiles.Length != other.AnalyzerFiles.Length ||
+				EditorConfigFiles.Length != other.EditorConfigFiles.Length ||
 				SourceFiles.Length != other.SourceFiles.Length ||
 				References.Length != other.References.Length ||
 				ProjectReferences.Length != other.ProjectReferences.Length) {
@@ -395,10 +395,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			for (int i = 0; i < AnalyzerFiles.Length; ++i) {
-				if (AnalyzerFiles [i] != other.AnalyzerFiles [i]) {
-					return false;
-				}
+			if (!AreFilePathsEqual (AnalyzerFiles, other.AnalyzerFiles) ||
+				!AreFilePathsEqual (AdditionalFiles, other.AdditionalFiles) ||
+				!AreFilePathsEqual (EditorConfigFiles, other.EditorConfigFiles)) {
+				return false;
 			}
 
 			for (int i = 0; i < References.Length; ++i) {
@@ -431,6 +431,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			return true;
+		}
+
+		static bool AreFilePathsEqual (ImmutableArray<FilePath> a, ImmutableArray<FilePath> b)
+		{
+			for (int i = 0; i < a.Length; ++i) {
+				if (a [i] != b [i]) {
+					return false;
+				}
+			}
 			return true;
 		}
 	}

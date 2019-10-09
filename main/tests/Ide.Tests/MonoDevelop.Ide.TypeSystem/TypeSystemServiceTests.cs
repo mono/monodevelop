@@ -349,6 +349,31 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Test]
+		public async Task AdditionalFiles_EditorConfigFiles ()
+		{
+			FilePath solFile = Util.GetSampleProject ("additional-files", "additional-files.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var project = sol.GetAllProjects ().Single ();
+
+					var projectInfo = ws.CurrentSolution.Projects.Single ();
+					var additionalDocs = projectInfo.AdditionalDocuments.ToArray ();
+					var editorConfigDocs = projectInfo.AnalyzerConfigDocuments.ToArray ();
+
+					FilePath expectedAdditionalFileName = project.BaseDirectory.Combine ("additional-file.txt");
+					FilePath expectedEditorConfigFileName = solFile.ParentDirectory.Combine (".editorconfig");
+
+					Assert.IsTrue (additionalDocs.Any (d => d.FilePath == expectedAdditionalFileName));
+					Assert.IsTrue (editorConfigDocs.Any (d => d.FilePath == expectedEditorConfigFileName));
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Clear all other package sources and just use the main NuGet package source when
 		/// restoring the packages for the project tests.
