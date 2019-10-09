@@ -91,6 +91,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			table.Add (label, 0, 0);
 			table.Add (comboName, 1, 0);
 
+			popover = new InformationPopoverWidget ();
+			popover.Accessible.LabelWidget = label;
+			popover.Visible = false;
+			popover.CanGetFocus = true;
+			table.Add (popover, 2, 0);
+
 			label = new Label { Text = GettextCatalog.GetString ("Platform:") };
 			comboPlatform = new ComboBoxEntry ();
 			comboPlatform.TextEntry.Changed += ComboTextChanged;
@@ -98,11 +104,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			comboPlatform.WidthRequest = 250;
 			table.Add (label, 0, 1);
 			table.Add (comboPlatform, 1, 1);
-
-			popover = new InformationPopoverWidget ();
-			popover.Visible = false;
-			popover.CanGetFocus = true;
-			table.Add (popover, 2, 0);
 
 			createChildrenCheck = new CheckBox { Label = GettextCatalog.GetString ("Create configurations for all solution items") };
 
