@@ -92,6 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			table.Add (comboName, 1, 0);
 
 			popover = new InformationPopoverWidget ();
+			popover.Severity = Tasks.TaskSeverity.Warning;
 			popover.Accessible.LabelWidget = label;
 			popover.Visible = false;
 			popover.CanGetFocus = true;
@@ -136,12 +137,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (name.Length == 0 || name.IndexOf ('|') != -1) {
 				isOk = false;
 				popover.Message = GettextCatalog.GetString ("Please enter a valid configuration name.");
-				popover.Severity = Tasks.TaskSeverity.Warning;
 				popover.Show ();
 			} else if (configurations[ConfigName] != null) {
 				isOk = false;
 				popover.Message = GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", ConfigName);
-				popover.Severity = Tasks.TaskSeverity.Warning;
 				popover.Show ();
 			} else {
 				isOk = true;
