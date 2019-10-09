@@ -11,18 +11,14 @@ namespace MonoDevelop.DotNetCore.Commands
 {
 	class PackCommandHandler : CommandHandler
 	{
-		protected override async void Run (object dataItem)
+		protected override void Run (object dataItem)
 		{
-			try {
-				var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-				if (project == null)
-					return;
+            var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+            if (project == null)
+                return;
 
-				var buildTarget = new PackProjectBuildTarget (project);
-				IdeApp.ProjectOperations.Build (buildTarget);
-			} catch (Exception e) {
-				LoggingService.LogInternalError ("Error running Pack", e);
-			}
+            var buildTarget = new PackProjectBuildTarget (project);
+            IdeApp.ProjectOperations.Build (buildTarget);
 		}
 
 		protected override void Update (CommandInfo info)
