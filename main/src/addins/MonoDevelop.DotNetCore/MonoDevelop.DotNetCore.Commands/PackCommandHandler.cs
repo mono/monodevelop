@@ -13,18 +13,18 @@ namespace MonoDevelop.DotNetCore.Commands
 	{
 		protected override void Run (object dataItem)
 		{
-            var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-            if (project == null)
-                return;
+			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			if (project == null)
+				return;
 
-            var buildTarget = new PackProjectBuildTarget (project);
-            IdeApp.ProjectOperations.Build (buildTarget);
+			var buildTarget = new PackProjectBuildTarget (project);
+			IdeApp.ProjectOperations.Build (buildTarget);
 		}
 
 		protected override void Update (CommandInfo info)
 		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-			info.Enabled = project != null && IsDotNetCoreProject(project); 
+			info.Enabled = info.Visible = project != null && IsDotNetCoreProject (project);
 		}
 
 		bool IsDotNetCoreProject (Project project)
