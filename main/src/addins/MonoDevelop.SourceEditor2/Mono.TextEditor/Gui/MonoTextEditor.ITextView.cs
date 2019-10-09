@@ -614,6 +614,8 @@ namespace Mono.TextEditor
 		public bool IsKeyboardFocused => HasFocus;
 
 		public event EventHandler IsKeyboardFocusedChanged;
+		
+		public IViewSynchronizationManager SynchronizationManager { get; set; }
 #endif
 	}
 }
