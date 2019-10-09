@@ -67,9 +67,7 @@ namespace MonoDevelop.Projects
 
 		static void NuGetRestore (FilePath file)
 		{
-			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{file}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{file}\"");
 		}
 
 		/// <summary>
