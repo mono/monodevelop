@@ -1,5 +1,5 @@
 //
-// VsCodeStackFrameTests.cs
+// VsCodeDebuggerEvaluationContext.cs
 //
 // Author:
 //       Jeffrey Stedfast <jestedfa@microsoft.com>
@@ -24,26 +24,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
+using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
-using MonoDevelop.Debugger.VsCodeDebugProtocol;
+using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 
-namespace MonoDevelop.Debugger.Tests
+using VsStackFrameFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
+using VsStackFrame = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame;
+
+namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
-	[TestFixture]
-	public class VsCodeStackFrameTests
+	public class VsCodeDebuggerEvaluationContext : EvaluationContext
 	{
-		[Test]
-		public void TestHexDecode ()
+		public VsCodeDebuggerEvaluationContext (VsCodeDebuggerSession session, VsStackFrame frame, int threadId, EvaluationOptions options) : base (options)
 		{
-			var result = VsCodeDebuggerStackFrame.HexToByteArray ("fFaAbB0012a1");
+			Adapter = session.Adapter;
+			Session = session;
+			ThreadId = threadId;
+			Frame = frame;
+		}
 
-			Assert.AreEqual ((byte) 0xff, result[0], "result[0]");
-			Assert.AreEqual ((byte) 0xaa, result[1], "result[1]");
-			Assert.AreEqual ((byte) 0xbb, result[2], "result[2]");
-			Assert.AreEqual ((byte) 0x00, result[3], "result[3]");
-			Assert.AreEqual ((byte) 0x12, result[4], "result[4]");
-			Assert.AreEqual ((byte) 0xa1, result[5], "result[5]");
+		public VsCodeDebuggerSession Session {
+			get; private set;
+		}
+
+		public VsStackFrame Frame {
+			get; private set;
+		}
+
+		public int ThreadId {
+			get; private set;
+		}
+
+		public override void CopyFrom (EvaluationContext ctx)
+		{
+			base.CopyFrom (ctx);
+
+			var other = (VsCodeDebuggerEvaluationContext) ctx;
+			Session = other.Session;
+			ThreadId = other.ThreadId;
+			Frame = other.Frame;
 		}
 	}
 }

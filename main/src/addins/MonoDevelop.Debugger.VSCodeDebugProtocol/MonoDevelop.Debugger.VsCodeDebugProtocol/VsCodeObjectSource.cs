@@ -14,13 +14,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 	class VSCodeObjectSource : IObjectValueSource
 	{
 		const VariablePresentationHint.AttributesValue ConstantReadOnlyStatic = VariablePresentationHint.AttributesValue.Constant | VariablePresentationHint.AttributesValue.ReadOnly | VariablePresentationHint.AttributesValue.Static;
-		static readonly char[] CommaDotOrSquareEndBracket = { ',', '.', ']' };
-		static readonly char[] CommaOrSquareEndBracket = { ',', ']' };
-		static readonly char[] LessThanOrSquareBracket = { '<', '[' };
+		static readonly char [] CommaDotOrSquareEndBracket = { ',', '.', ']' };
+		static readonly char [] CommaOrSquareEndBracket = { ',', ']' };
+		static readonly char [] LessThanOrSquareBracket = { '<', '[' };
 
-		ObjectValue[] objValChildren;
+		ObjectValue [] objValChildren;
 
-		readonly VSCodeDebuggerSession vsCodeDebuggerSession;
+		readonly VsCodeDebuggerSession vsCodeDebuggerSession;
 		readonly int parentVariablesReference;
 		readonly ObjectValueFlags flags;
 		readonly int variablesReference;
@@ -71,24 +71,24 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			if (index == -1)
 				return false;
 
-			if (type[index] == '<') {
+			if (type [index] == '<') {
 				int depth = 1;
 
 				index++;
 				while (index < type.Length && depth > 0) {
-					switch (type[index++]) {
+					switch (type [index++]) {
 					case '<': depth++; break;
 					case '>': depth--; break;
 					}
 				}
 
-				if (index >= type.Length || type[index] != '[')
+				if (index >= type.Length || type [index] != '[')
 					return false;
 			}
 
 			arrayIndexer = index++;
 
-			return index < type.Length && type[index] == ',';
+			return index < type.Length && type [index] == ',';
 		}
 
 		// Note: displayType will often have spaces after commas
@@ -111,7 +111,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						if (endIndex == -1)
 							return value;
 
-						if (endIndex + 1 < value.Length && value[endIndex] == '.' && value[endIndex + 1] == '.') {
+						if (endIndex + 1 < value.Length && value [endIndex] == '.' && value [endIndex + 1] == '.') {
 							int min, max;
 
 							number = value.Substring (index, endIndex - index);
@@ -134,13 +134,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							compacted.Append (value, index, endIndex - index);
 						}
 
-						compacted.Append (value[endIndex]);
+						compacted.Append (value [endIndex]);
 						index = endIndex + 1;
 
-						if (value[endIndex] == ']')
+						if (value [endIndex] == ']')
 							break;
 
-						if (index < value.Length && value[index] == ' ')
+						if (index < value.Length && value [index] == ' ')
 							index++;
 					}
 
@@ -207,13 +207,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			int startIndex = prefix.Length;
 			int index = startIndex;
 
-			while (index < value.Length && value[index] != '\'')
+			while (index < value.Length && value [index] != '\'')
 				index++;
 
 			newValue = value.Substring (startIndex, index - startIndex);
 			index++;
 
-			if (index >= value.Length || value[index] != ' ')
+			if (index >= value.Length || value [index] != ' ')
 				return false;
 
 			index++;
@@ -224,7 +224,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return string.CompareOrdinal (value, index, message, 0, message.Length) == 0;
 		}
 
-		public VSCodeObjectSource (VSCodeDebuggerSession vsCodeDebuggerSession, int variablesReference, int parentVariablesReference, string name, string type, string evalName, int frameId, string val)
+		public VSCodeObjectSource (VsCodeDebuggerSession vsCodeDebuggerSession, int variablesReference, int parentVariablesReference, string name, string type, string evalName, int frameId, string val)
 		{
 			this.vsCodeDebuggerSession = vsCodeDebuggerSession;
 			this.parentVariablesReference = parentVariablesReference;
@@ -263,18 +263,18 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				this.val = "No return value.";
 			this.display = val;
 
-			if (this.name[0] == '[')
+			if (this.name [0] == '[')
 				flags |= ObjectValueFlags.ArrayElement;
 
 			if (type == null || val == $"'{this.name}' threw an exception of type '{this.type}'")
 				flags |= ObjectValueFlags.Error;
 		}
 
-		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
+		public ObjectValue [] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			if (objValChildren == null) {
 				if (variablesReference <= 0) {
-					objValChildren = new ObjectValue[0];
+					objValChildren = new ObjectValue [0];
 				} else {
 					using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
 						var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (

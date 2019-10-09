@@ -44,10 +44,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="VSCodeDebuggerSession.cs" />
-    <Compile Include="VsCodeStackFrame.cs" />
+    <Compile Include="VsCodeDebuggerSession.cs" />
+    <Compile Include="VsCodeDebuggerStackFrame.cs" />
     <Compile Include="VsCodeObjectSource.cs" />
-    <Compile Include="VsCodeBacktrace.cs" />
+    <Compile Include="VsCodeDebuggerBacktrace.cs" />
+    <Compile Include="VsCodeDebuggerEvaluationContext.cs" />
+    <Compile Include="VsCodeDebuggerAdaptor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
