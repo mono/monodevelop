@@ -739,6 +739,8 @@ namespace MonoDevelop.VersionControl.Views
 			MonoTextEditor fromEditor, toEditor;
 			bool useLeft;
 
+			public Adjustment VAdjustment { get { return fromEditor.VAdjustment; } }
+
 			IEnumerable<Hunk> Diff {
 				get {
 					return useLeft ? widget.LeftDiff : widget.RightDiff;
@@ -753,11 +755,13 @@ namespace MonoDevelop.VersionControl.Views
 				this.toEditor = toEditor;
 				this.useLeft = useLeft;
 				this.toEditor.EditorOptionsChanged += HandleToEditorhandleEditorOptionsChanged;
+				Accessible.SetRole (AtkCocoa.Roles.AXGroup, GettextCatalog.GetString ("Revert changes margin"));
 			}
 			
 			protected override void OnDestroyed ()
 			{
 				this.toEditor.EditorOptionsChanged -= HandleToEditorhandleEditorOptionsChanged;
+				this.ClearAccessibleButtons ();
 				base.OnDestroyed ();
 			}
 			
@@ -813,14 +817,19 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				if (!evnt.TriggersContextMenu () && evnt.Button == 1 && !selectedHunk.IsEmpty) {
-					try {
-						widget.UndoChange (fromEditor, toEditor, selectedHunk);
-					} catch (Exception e) {
-						LoggingService.LogInternalError ("Error while undoing widget change.", e);
-					}
+					PerformRevert (selectedHunk);
 					return true;
 				}
 				return base.OnButtonPressEvent (evnt);
+			}
+
+			void PerformRevert (Hunk hunk)
+			{
+				try {
+					widget.UndoChange (fromEditor, toEditor, hunk);
+				} catch (Exception e) {
+					LoggingService.LogInternalError ("Error while undoing widget change.", e);
+				}
 			}
 
 			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
@@ -867,6 +876,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.LineTo (x + 2, y + 3);
 				}
 			}
+
 			static void DrawCross (Cairo.Context cr, double x, double y)
 			{
 				cr.MoveTo (x - 2, y - 3);
@@ -987,16 +997,150 @@ namespace MonoDevelop.VersionControl.Views
 						}
 					}
 				}
-//				var result = base.OnExposeEvent (evnt);
-//
-//				Gdk.GC gc = Style.DarkGC (State);
-//				evnt.Window.DrawLine (gc, Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
-//				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
-//
-//				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
-//				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
+				UpdateAccessiblity ();
 
 				return true;
+			}
+
+			internal void Refresh ()
+			{
+				QueueDraw ();
+			}
+
+			int oldVAdjusment1 = -1;
+			int oldVAdjusment2 = -1;
+
+			void UpdateAccessiblity ()
+			{
+				if (oldVAdjusment1 == (int)fromEditor.VAdjustment.Value &&
+					oldVAdjusment2 == (int)toEditor.VAdjustment.Value)
+					return;
+				oldVAdjusment1 = (int)fromEditor.VAdjustment.Value;
+				oldVAdjusment2 = (int)toEditor.VAdjustment.Value;
+
+				ClearAccessibleButtons ();
+
+				bool hideButton = widget.MainEditor.Document.IsReadOnly;
+				int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
+
+				if (Diff != null) {
+					foreach (Hunk hunk in Diff) {
+						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
+						double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
+						if (z1 == z2)
+							z2 = z1 + 1;
+
+						double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
+						double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
+
+						if (y1 == y2)
+							y2 = y1 + 1;
+
+						if (!useLeft) {
+							var tmp = z1;
+							z1 = y1;
+							y1 = tmp;
+
+							tmp = z2;
+							z2 = y2;
+							y2 = tmp;
+						}
+
+						int x1 = 0;
+						int x2 = Allocation.Width;
+
+						if (!hideButton) {
+							if (useLeft && hunk.Removed > 0 || !useLeft && hunk.Removed == 0) {
+								x1 += 16;
+							} else {
+								x2 -= 16;
+							}
+						}
+
+						if (z1 == z2)
+							z2 = z1 + 1;
+
+						if (!hideButton) {
+							bool isButtonSelected = hunk == selectedHunk;
+
+							double x, y, w, h;
+							bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h) :
+								GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out w, out h);
+
+							AddAccessibleProxyButton (hunk, x, y, w, h);
+						}
+					}
+				}
+				Accessible.SetAccessibleChildren (accessibleButtons.Select (a => a.Accessible).ToArray ());
+			}
+
+			void AddAccessibleProxyButton (Hunk hunk, double x, double y, double w, double h)
+			{
+				var button = new ButtonAccessible (this, hunk);
+				button.SetBounds ((int)x, (int)y, (int)w, (int)h);
+				accessibleButtons.Add (button);
+			}
+
+			void ClearAccessibleButtons ()
+			{
+				foreach (var button in accessibleButtons) {
+					button.Dispose ();
+				}
+				accessibleButtons.Clear ();
+				Accessible.SetAccessibleChildren (Array.Empty<AccessibilityElementProxy> ());
+			}
+
+			List<ButtonAccessible> accessibleButtons = new List<ButtonAccessible> ();
+
+			class ButtonAccessible : IDisposable
+			{
+				MiddleArea widget;
+				Hunk hunk;
+
+				public AccessibilityElementProxy Accessible { get; private set; }
+
+				public ButtonAccessible (MiddleArea widget, Hunk hunk)
+				{
+					this.widget = widget;
+					this.hunk = hunk;
+
+					Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+					Accessible.GtkParent = widget;
+					Accessible.PerformPress += PerformPress;
+
+					Accessible.SetRole (AtkCocoa.Roles.AXButton, widget.useLeft ? GettextCatalog.GetString ("Revert left changes button") : GettextCatalog.GetString ("Revert right changes button"));
+
+					if (hunk.Inserted > 0) {
+						Accessible.Label = GettextCatalog.GetString ("Revert {0} inserted lines starting at {1}", hunk.Inserted, hunk.InsertStart);
+					} else if (hunk.Removed > 0) {
+						Accessible.Label = GettextCatalog.GetString ("Revert {0} removed lines starting at {1}", hunk.Removed, hunk.RemoveStart);
+					} else {
+						Accessible.Label = GettextCatalog.GetString ("Revert {0} replaced lines starting at {1}", hunk.Removed, hunk.InsertStart);
+					}
+				}
+
+				public void SetBounds (int x, int y, int w, int h)
+				{
+					Accessible.FrameInGtkParent = new Rectangle (x, y, w, h);
+
+					var cocoaY = widget.Allocation.Height - y - h;
+
+					Accessible.FrameInParent = new Rectangle (x, cocoaY, w, h);
+				}
+
+				void PerformPress (object sender, EventArgs e)
+				{
+					widget.PerformRevert (hunk);
+				}
+
+				public void Dispose ()
+				{
+					if (Accessible == null)
+						return;
+					Accessible.PerformPress -= PerformPress;
+					Accessible = null;
+					widget = null;
+				}
 			}
 		}
 
