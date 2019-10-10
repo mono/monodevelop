@@ -1690,7 +1690,7 @@ namespace MonoDevelop.Components.Commands
 				CommandActivating (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
 		}
 		
-		void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source, TimeSpan time)
+		internal void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source, TimeSpan time)
 		{
 			if (CommandActivated != null)
 				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source, time));
@@ -3152,7 +3152,8 @@ namespace MonoDevelop.Components.Commands
 		Keybinding,
 		Unknown,
 		MacroPlayback,
-		WelcomePage
+		WelcomePage,
+		Startup,
 	}
 	
 	public class CommandTargetRoute
