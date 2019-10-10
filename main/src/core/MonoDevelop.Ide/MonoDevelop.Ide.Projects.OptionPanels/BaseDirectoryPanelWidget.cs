@@ -43,9 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.Build();
 
 			label2.Accessible.SetShouldIgnore (true);
-			var a = folderentry.EntryAccessible;
-			a.SetTitleUIElement (label3.Accessible);
-			label3.Accessible.SetTitleFor (a);
+			label3.Accessible.SetTitleFor (folderentry.EntryAccessible);
 			SetupAccessibility ();
 		}
 
