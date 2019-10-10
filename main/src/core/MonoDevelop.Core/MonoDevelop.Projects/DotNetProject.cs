@@ -1131,8 +1131,7 @@ namespace MonoDevelop.Projects
 				var monitor = new ProgressMonitor ();
 
 				var context = new TargetEvaluationContext ();
-				context.ItemsToEvaluate.Add ("_ReferencesFromRAR");
-				context.ItemsToEvaluate.Add ("_ProjectReferencesFromRAR");
+				context.ItemsToEvaluate.Add ("ReferencePath");
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;

@@ -177,7 +177,7 @@ namespace MonoDevelop.AssemblyBrowser
 			} else {
 				var token = cts.Token;
 
-				var workspace = IdeApp.TypeSystemService.GetWorkspaceAsync (IdeApp.ProjectOperations.CurrentSelectedSolution)
+				var workspace = IdeApp.TypeSystemService.GetWorkspaceAsync (IdeApp.ProjectOperations.CurrentSelectedSolution, token)
 					.ContinueWith (t => {
 						if (token.IsCancellationRequested)
 							return;

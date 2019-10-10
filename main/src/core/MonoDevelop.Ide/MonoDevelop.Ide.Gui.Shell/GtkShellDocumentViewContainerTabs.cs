@@ -91,10 +91,25 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		internal static Tab CreateTab (Tabstrip tabstrip, GtkShellDocumentViewItem view)
 		{
-			var tab = new Tab (tabstrip, view.Title) { Tag = view };
+			var tab = new GtkShellDocumentTab (tabstrip, view.Title) { Tag = view };
 			if (tab.Accessible != null)
 				tab.Accessible.Help = view.AccessibilityDescription;
 			return tab;
+		}
+
+		sealed class GtkShellDocumentTab : Tab
+		{
+			public GtkShellDocumentTab (Tabstrip parent, string label) : base (parent, label)
+			{
+			}
+
+			protected override void OnDispose ()
+			{
+				if (Tag is IShellDocumentViewItem disposable)
+					disposable.Dispose ();
+
+				base.OnDispose ();
+			}
 		}
 
 		internal static void UpdateTab (Tab tab, string label, Xwt.Drawing.Image icon, string accessibilityDescription)

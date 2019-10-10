@@ -144,7 +144,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			DetachPathedDocument ();
 
 			if (pathBar != null) {
-				box.Remove (pathBar);
 				pathBar.Destroy ();
 				pathBar = null;
 			}
@@ -156,6 +155,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 				pathDoc.PathChanged -= HandlePathChange;
 				pathDoc = null;
 			}
+
+			pathDocPending = null;
 		}
 
 		void HandlePathChange (object sender, DocumentPathChangedEventArgs args)
@@ -165,12 +166,21 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public override void DetachFromView ()
 		{
-			HidePathBar ();
 			if (viewControl != null) {
 				box.Remove (viewControl);
 				viewControl = null;
 			}
 			base.DetachFromView ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			DetachPathedDocument ();
+			pathBar = null;
+			box = null;
+			contentLoader = null;
+
+			base.OnDestroyed ();
 		}
 
 		public void ReloadContent ()

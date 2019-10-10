@@ -73,10 +73,10 @@ namespace MonoDevelop.TextEditor.Cocoa
 				?? throw new ArgumentNullException (nameof (textView));
 		}
 
-		public override void PreprocessMouseRightButtonDown (MouseEvent e)
+		public override void PreprocessMouseRightButtonDown (MouseEventArgs e)
 			=> textView.MoveCaretToPosition (e.Event);
 
-		public override void PreprocessMouseRightButtonUp (MouseEvent e)
+		public override void PreprocessMouseRightButtonUp (MouseEventArgs e)
 		{
 			var controller = (DocumentController)textView.Properties [typeof (DocumentController)];
 			var extensionContext = controller.ExtensionContext;

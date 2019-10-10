@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (0, project.Files.Count);
 
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
 
 			await FileWatcherService.Add (solution);
 
@@ -94,13 +94,6 @@ namespace MonoDevelop.Projects
 				"</configuration>";
 
 			File.WriteAllText (fileName, xml);
-		}
-
-		void RunMSBuild (string arguments)
-		{
-			var process = Process.Start ("msbuild", arguments);
-			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
-			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
 		}
 
 		Task<ProjectFile> WaitForSingleFileAdded (Project project)

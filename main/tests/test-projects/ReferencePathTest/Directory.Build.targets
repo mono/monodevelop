@@ -1,0 +1,18 @@
+<Project>
+
+  <Target Name="TestGeneratingReferencePathItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;ResolveAssemblyReferences">
+    <ItemGroup>
+      <_ExtraReferenceItem Include="$(MonoPath)\System.ComponentModel.Composition.dll">
+        <CopyLocal>false</CopyLocal>
+        <Test>test-value</Test>
+      </_ExtraReferenceItem>
+    </ItemGroup>
+
+   <RemoveDuplicates
+      Inputs="@(_ExtraReferenceItem)">
+      <Output
+        TaskParameter="Filtered"
+        ItemName="ReferencePath" />
+    </RemoveDuplicates>
+  </Target>
+</Project>

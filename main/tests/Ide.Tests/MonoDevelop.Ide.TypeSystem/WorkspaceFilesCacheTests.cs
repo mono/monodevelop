@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath solFile = Util.GetSampleProject ("multi-target-netframework", "multi-target.sln");
 
 			CreateNuGetConfigFile (solFile.ParentDirectory);
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			await IdeServices.Workspace.OpenWorkspaceItem (solFile);
 			await IdeServices.TypeSystemService.ProcessPendingLoadOperations ();
@@ -439,13 +439,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				"</configuration>";
 
 			File.WriteAllText (fileName, xml);
-		}
-
-		void RunMSBuild (string arguments)
-		{
-			var process = Process.Start ("msbuild", arguments);
-			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
-			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
 		}
 
 		class CustomItemNode<T> : SolutionItemExtensionNode where T : new()

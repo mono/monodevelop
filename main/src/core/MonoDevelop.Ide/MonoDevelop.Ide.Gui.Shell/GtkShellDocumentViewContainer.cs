@@ -268,7 +268,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			foreach (var child in GetAllViews ()) {
 				child.DetachFromView ();
 			}
-			RemoveAllViews ();
 			base.DetachFromView ();
 		}
 
