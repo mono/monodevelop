@@ -240,6 +240,27 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "urlformat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes before save", EditorThemeColors.QuickDiffDirty);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes after save", EditorThemeColors.QuickDiffChanged);
+
+
+			// Old(MonoDevelop) diff when rendering new code/removed code uses 1 color for background and 1 color for text
+			// New(VS) diff uses normal syntax colored text which results in good results when mapping on light themes
+			// but on dark themes things looks just opposite of what they should, hence invert background color...
+			if (theme.FitsIdeTheme (Theme.Light)) {
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.line", EditorThemeColors.PreviewDiffRemovedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemovedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemoved, EditorFormatDefinition.ForegroundColorId);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.line", EditorThemeColors.PreviewDiffAddedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAddedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAdded, EditorFormatDefinition.ForegroundColorId);
+			} else {
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.line", EditorThemeColors.PreviewDiffRemoved);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemoved);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemovedBackground, EditorFormatDefinition.ForegroundColorId);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.line", EditorThemeColors.PreviewDiffAdded);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAdded);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAddedBackground, EditorFormatDefinition.ForegroundColorId);
+			}
+
 			CreateInlineEditField (editorFormat, defaultSettings, "RoslynRenameFieldBackgroundAndBorderTag");
 			CreateInlineEditField (editorFormat, defaultSettings, "ExpansionFieldBackgroundAndBorderTag");
 			foreach (var mapping in mappings) {

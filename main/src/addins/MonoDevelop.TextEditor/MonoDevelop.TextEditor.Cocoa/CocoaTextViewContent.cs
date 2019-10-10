@@ -93,7 +93,10 @@ namespace MonoDevelop.TextEditor
 				if (textViewHost == null)
 					throw new ArgumentNullException (nameof (textViewHost));
 
-				GtkView = new Gtk.GtkNSViewHost (textViewHost.HostControl);
+				GtkView = new Gtk.GtkNSViewHost (
+					textViewHost.HostControl,
+					disposeViewOnGtkDestroy: true);
+
 				GtkView.Show ();
 			}
 

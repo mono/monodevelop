@@ -77,11 +77,18 @@ namespace Gtk
 
 		NSView view;
 		NSView superview;
+		bool disposeViewOnGtkDestroy;
 		bool sizeAllocated;
 
 		public GtkNSViewHost (NSView view)
+			: this (view, disposeViewOnGtkDestroy: false)
+		{
+		}
+
+		public GtkNSViewHost (NSView view, bool disposeViewOnGtkDestroy)
 		{
 			this.view = view ?? throw new ArgumentNullException (nameof (view));
+			this.disposeViewOnGtkDestroy = disposeViewOnGtkDestroy;
 
 			WidgetFlags |= WidgetFlags.NoWindow;
 
@@ -151,6 +158,10 @@ namespace Gtk
 			LogEnter ();
 			try {
 				view?.RemoveFromSuperview ();
+
+				if (disposeViewOnGtkDestroy)
+					view?.Dispose ();
+
 				view = null;
 				superview = null;
 
