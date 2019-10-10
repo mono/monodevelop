@@ -1014,21 +1014,33 @@ namespace MonoDevelop.Projects.MSBuild
 			return null;
 		}
 
+		static readonly Dictionary<string, MethodInfo[]> cachedIntrinsicFunctions = typeof (IntrinsicFunctions)
+			.GetMethods (BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.Static)
+			.ToLookup (x => x.Name)
+			.ToDictionary(x => x.Key, x => x.ToArray ());
+
 		MemberInfo[] ResolveMember (Type type, string memberName, bool isStatic, MemberTypes memberTypes)
 		{
-			if (type == typeof (string) && memberName == "new")
-				memberName = "Copy";
-			if (type.IsArray)
-				type = typeof (Array);
-			var flags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
-			if (type != typeof (Microsoft.Build.Evaluation.IntrinsicFunctions)) {
-				if (!supportedTypeMembers.TryGetValue (type, out var list))
-					return null;
+			if (type == typeof (string)) {
+				if (memberName == "new" || memberName == "Copy") {
+					type = typeof (IntrinsicFunctions);
+					memberName = "Copy";
+				}
+			} else {
+				if (type.IsArray)
+					type = typeof (Array);
+			}
 
-				if (list != null && !list.Contains (memberName))
-					return null;
-			} else
-				flags |= BindingFlags.NonPublic;
+			if (type == typeof(IntrinsicFunctions)) {
+				return cachedIntrinsicFunctions.TryGetValue (memberName, out var result) ? result : null;
+			}
+
+			var flags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
+			if (!supportedTypeMembers.TryGetValue (type, out var list))
+				return null;
+
+			if (list != null && !list.Contains (memberName))
+				return null;
 
 			return type.GetMember (memberName, memberTypes, flags | BindingFlags.Public | BindingFlags.IgnoreCase);
 		}
