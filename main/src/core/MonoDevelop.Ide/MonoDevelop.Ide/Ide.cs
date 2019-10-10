@@ -407,24 +407,29 @@ namespace MonoDevelop.Ide
 			MessageService.ShowError (message, ex);
 			return true;
 		}
-		
+
+		static readonly Stopwatch startupCommandsStopwatch = new Stopwatch ();
+		static readonly CommandInfo reusableCommandInfo = new CommandInfo ();
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
 				// Run handlers in different UI loops to avoid freezing the UI for too much time
 				Xwt.Application.Invoke (() => {
 					try {
-#if DEBUG
-						// Only show this in debug builds for now, we want to enable this later for addins that might delay
-						// IDE startup.
-						if (args.ExtensionNode is TypeExtensionNode node) {
-							LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
-						}
-#endif
-						if (args.ExtensionObject is CommandHandler handler) {
-							handler.InternalRun ();
-						} else {
+						if (!(args.ExtensionObject is CommandHandler handler)) {
 							LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+							return;
+						}
+
+						startupCommandsStopwatch.Restart ();
+						handler.InternalRun ();
+						startupCommandsStopwatch.Stop ();
+
+						if (args.ExtensionNode is TypeExtensionNode node) {
+							commandService.OnCommandActivated (node.TypeName, reusableCommandInfo, null, null, CommandSource.Startup, startupCommandsStopwatch.Elapsed);
+#if DEBUG
+							LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
+#endif
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError ($"Error while running startup handler {args.ExtensionObject.GetType ()}", ex);
