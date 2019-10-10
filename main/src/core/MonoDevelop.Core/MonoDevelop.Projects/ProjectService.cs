@@ -58,7 +58,8 @@ namespace MonoDevelop.Projects
 		
 		public const string BuildTarget = "Build";
 		public const string CleanTarget = "Clean";
-		
+		public const string PackTarget = "Pack";
+
 		const string SerializableClassesExtensionPath = "/MonoDevelop/ProjectModel/SerializableClasses";
 		const string ProjectBindingsExtensionPath = "/MonoDevelop/ProjectModel/ProjectBindings";
 		const string WorkspaceObjectReadersPath = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders";
