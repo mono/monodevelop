@@ -157,6 +157,9 @@ namespace MonoDevelop.Debugger
 		{
 			var font = TreeView.CustomFont ?? TreeView.Font;
 
+			if (font == null)
+				return;
+
 			if (sizeDelta != 0) {
 				control.Font = NSFont.FromDescription (font.FontDescriptor, font.PointSize + sizeDelta);
 			} else {
