@@ -75,11 +75,6 @@ namespace MonoDevelop.Debugger
 			return view;
 		}
 
-		public override void ColumnDidResize (NSNotification notification)
-		{
-			treeView.OnColumnResized ();
-		}
-
 #if false
 		public override nfloat GetSizeToFitColumnWidth (NSOutlineView outlineView, nint column)
 		{
