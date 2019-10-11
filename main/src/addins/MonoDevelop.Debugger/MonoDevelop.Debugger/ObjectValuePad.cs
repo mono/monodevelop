@@ -50,11 +50,14 @@ namespace MonoDevelop.Debugger
 		StackFrame lastFrame;
 		bool needsUpdateValues;
 		bool needsUpdateFrame;
-		bool initialResume;
 		bool disposed;
 
 		public override Control Control {
 			get { return control; }
+		}
+
+		protected bool IsInitialResume {
+			get; private set;
 		}
 
 		public ObjectValuePad (bool allowWatchExpressions = false)
@@ -140,7 +143,7 @@ namespace MonoDevelop.Debugger
 			needsUpdateFrame = true;
 
 			//If pad is created/opened while debugging...
-			initialResume = !DebuggingService.IsDebugging;
+			IsInitialResume = !DebuggingService.IsDebugging;
 		}
 
 		public override void Dispose ()
@@ -222,20 +225,20 @@ namespace MonoDevelop.Debugger
 		protected virtual void OnDebuggerResumed (object s, EventArgs a)
 		{
 			if (UseNewTreeView) {
-				if (!initialResume) {
+				if (!IsInitialResume) {
 					controller.ChangeCheckpoint ();
 				}
 
 				controller.ClearValues ();
 			} else {
-				if (!initialResume) {
+				if (!IsInitialResume) {
 					tree.ChangeCheckpoint ();
 				}
 
 				tree.ClearValues ();
 			}
 
-			initialResume = false;
+			IsInitialResume = false;
 		}
 
 		protected virtual void OnDebuggerStopped (object s, EventArgs a)
@@ -252,7 +255,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			lastFrame = null;
-			initialResume = true;
+			IsInitialResume = true;
 		}
 
 		protected virtual void OnEvaluationOptionsChanged (object s, EventArgs a)
