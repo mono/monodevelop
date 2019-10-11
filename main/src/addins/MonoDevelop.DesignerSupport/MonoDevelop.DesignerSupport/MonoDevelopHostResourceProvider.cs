@@ -60,8 +60,10 @@ namespace MonoDevelop.DesignerSupport
 				return Styles.PropertyPad.TabBorderColor;
 			case ValueBlockBackgroundColor:
 				return Styles.PropertyPad.ValueBlockBackgroundColor;
+			case FrameBoxButtonBackgroundColor:
+				return Styles.PropertyPad.FrameBoxButtonBackgroundColor;
 			}
-			return base.GetNamedColor (name);
+			return NSColor.FromName (name);
 		}
 	}
 }

@@ -1,10 +1,10 @@
-﻿//
-// DescriptorPropertyInfo.cs
+//
+// MacObjectValueNode.cs
 //
 // Author:
-//       jmedrano <josmed@microsoft.com>
+//       Jeffrey Stedfast <jestedfa@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2019 Microsoft Corp.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if MAC
+using System;
+using System.Collections.Generic;
 
-using Xamarin.PropertyEditing;
-using System.ComponentModel;
+using Foundation;
 
-namespace MonoDevelop.DesignerSupport
+namespace MonoDevelop.Debugger
 {
-	class PropertyProviderTypeInfo : TypeInfo
+	/// <summary>
+	/// NSObject wrapper for data items in the Cocoa implementation of the ObjectValueTreeView.
+	/// </summary>
+	class MacObjectValueNode : NSObject
 	{
-		public object PropertyProvider { get; }
-		public PropertyDescriptor PropertyDescriptor { get; }
+		public readonly List<MacObjectValueNode> Children = new List<MacObjectValueNode> ();
+		public readonly MacObjectValueNode Parent;
+		public readonly ObjectValueNode Target;
+		public bool HideValueButton;
 
-		public PropertyProviderTypeInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, IAssemblyInfo assembly, string nameSpace, string name) : base (assembly, nameSpace, name)
+		public MacObjectValueNode (MacObjectValueNode parent, ObjectValueNode target)
 		{
-			PropertyDescriptor = propertyDescriptor;
-			PropertyProvider = propertyProvider;
+			Parent = parent;
+			Target = target;
 		}
 	}
 }
-
-#endif

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger
 {
@@ -44,11 +45,6 @@ namespace MonoDevelop.Debugger
 		bool AllowExpanding { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the user should be able to add watch expressions to the tree
-		/// </summary>
-		bool AllowWatchExpressions { get; set; }
-
-		/// <summary>
 		/// Gets or sets the pinned watch for the view. When a watch is pinned, the view should display only this value
 		/// </summary>
 		PinnedWatch PinnedWatch { get; set; }
@@ -59,9 +55,21 @@ namespace MonoDevelop.Debugger
 		int PinnedWatchOffset { get; }
 
 		/// <summary>
-		/// Reloads the tree from the root node
+		/// Notifies the treeview that the tree has been cleared
 		/// </summary>
-		void Reload (ObjectValueNode root);
+		void Cleared ();
+
+		/// <summary>
+		/// Notifies the treeview that the specified node has been appended
+		/// </summary>
+		/// <param name="node">The appended node.</param>
+		void Appended (ObjectValueNode node);
+
+		/// <summary>
+		/// Notifies the treeview that the specified nodes have been appended
+		/// </summary>
+		/// <param name="nodes">The appended nodes.</param>
+		void Appended (IList<ObjectValueNode> nodes);
 
 		/// <summary>
 		/// Informs the view to load the children of the given node. startIndex and count may specify a range of
@@ -74,7 +82,7 @@ namespace MonoDevelop.Debugger
 		/// the set of replacement nodes. Handles the case where, for example, the "locals" is replaced
 		/// with the set of local values
 		/// </summary>
-		void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes);
+		void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode[] replacementNodes);
 
 		/// <summary>
 		/// Triggered when the view tries to expand a node. This may trigger a load of

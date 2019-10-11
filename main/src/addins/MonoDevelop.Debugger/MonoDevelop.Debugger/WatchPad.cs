@@ -42,15 +42,12 @@ namespace MonoDevelop.Debugger
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
 		readonly List<string> expressions = new List<string> ();
-		
-		public WatchPad ()
+
+		public WatchPad () : base (true)
 		{
-			if (UseNewTreeView) {
-				controller.AllowWatchExpressions = true;
-			} else {
+			if (!UseNewTreeView) {
 				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
 				tree.DragDataReceived += HandleDragDataReceived;
-				tree.AllowAdding = true;
 			}
 		}
 
@@ -74,6 +71,8 @@ namespace MonoDevelop.Debugger
 
 		public void AddWatch (string expression)
 		{
+			LoggingService.LogInfo ("Adding expression '{0}'", expression);
+
 			if (UseNewTreeView) {
 				controller.AddExpression (expression);
 			} else {
@@ -84,8 +83,8 @@ namespace MonoDevelop.Debugger
 		void ReloadValues ()
 		{
 			// clone the list of expressions
-//			expressions.Clear ();
-//			expressions.AddRange (controller.GetExpressions());
+			expressions.Clear ();
+			expressions.AddRange (controller.GetExpressions ());
 
 			// remove the expressions because we're going to rebuild them
 			controller.ClearAll ();

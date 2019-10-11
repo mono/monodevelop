@@ -587,6 +587,20 @@ namespace MonoDevelop.Components
 
 			return retval;
 		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			#if MAC
+			if (Core.Platform.IsMac && (Type == Gtk.WindowType.Popup || TypeHint == WindowTypeHint.PopupMenu || TypeHint == WindowTypeHint.Tooltip)) {
+				var wndnative = Mac.GtkMacInterop.GetNSWindow (this);
+				// the native window level is initially NSWindowLevel.PopUpMenu, but
+				// for some reason it gets resetted to NSWindowLevel.Normal after the window
+				// has been shown, so reset it back:
+				wndnative.Level = AppKit.NSWindowLevel.PopUpMenu;
+			}
+			#endif
+		}
 	}
 }
 

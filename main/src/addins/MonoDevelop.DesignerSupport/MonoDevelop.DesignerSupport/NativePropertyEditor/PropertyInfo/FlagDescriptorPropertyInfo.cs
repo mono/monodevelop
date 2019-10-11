@@ -28,9 +28,7 @@
 
 using Xamarin.PropertyEditing;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace MonoDevelop.DesignerSupport
@@ -38,10 +36,14 @@ namespace MonoDevelop.DesignerSupport
 	class FlagDescriptorPropertyInfo
 		: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-		public FlagDescriptorPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources) : base (propertyDescriptor, propertyProvider, valueSources)
+		Array elements;
+		public FlagDescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
 			IsValueCombinable = true;
-			foreach (object value in System.Enum.GetValues (propertyDescriptor.PropertyType)) {
+
+			elements = Enum.GetValues (typeDescriptorContext.PropertyDescriptor.PropertyType);
+
+			foreach (object value in elements) {
 				ulong uintVal = Convert.ToUInt64 (value);
 				predefinedValues.Add (value.ToString (), uintVal.ToString ());
 			}
@@ -49,32 +51,47 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			var selectedValues = (System.String []) (object)value;
-			ulong result = default;
-			foreach (var selectedValue in selectedValues) {
-				result += Convert.ToUInt64 (selectedValue);
+			if (EqualityComparer<T>.Default.Equals (value, default)) {
+				var defaultValue = PropertyDescriptor.GetValue (PropertyProvider);
+				PropertyDescriptor.SetValue (PropertyProvider, defaultValue);
+				return;
 			}
-			PropertyDescriptor.SetValue (PropertyProvider, Enum.ToObject (PropertyDescriptor.PropertyType, result));
+
+			try {
+				var selectedValues = (System.String []) (object)value;
+				ulong result = default;
+				foreach (var selectedValue in selectedValues) {
+					result += Convert.ToUInt64 (selectedValue);
+				}
+				PropertyDescriptor.SetValue (PropertyProvider, Enum.ToObject (PropertyDescriptor.PropertyType, result));
+			} catch (Exception ex) {
+				LogInternalError ($"Error trying to set value: {value}", ex);
+			}
 		}
 
-		internal override Task<T> GetValueAsync<T> (object target)
+		internal override T GetValue<T> (object target)
 		{
-			//we need set the index of the selected item
-			try {
-				var myValue = (Enum)target;
-				var result = new List<string> ();
-				foreach (Enum item in Enum.GetValues (target.GetType ())) 
-				{
-					if (myValue.HasFlag (item)) {
-						ulong uintVal = Convert.ToUInt64 (item);
-						result.Add (uintVal.ToString ());
+			if (typeof (T) == typeof (IReadOnlyList<System.String>)) {
+				//we need set the index of the selected item
+				try {
+					var currentObject = PropertyDescriptor.GetValue (PropertyProvider);
+					var currentEnum = (Enum)currentObject;
+					var result = new List<string> ();
+					foreach (Enum item in elements) {
+						if (currentEnum.HasFlag (item)) {
+							ulong uintVal = Convert.ToUInt64 (item);
+							result.Add (uintVal.ToString ());
+						}
 					}
+
+					return (T)(object)result.AsReadOnly ();
+				} catch (Exception ex) {
+					LogInternalError ($"Error trying to get values from a Enum", ex);
 				}
-				return Task.FromResult<T> ((T)(object)result);
-			} catch (Exception ex) {
-				LogGetValueAsyncError (ex);
 			}
-			return Task.FromResult <T> (default);
+
+			var baseValue = base.GetValue<T> (target);
+			return baseValue;
 		}
 
 		public bool IsConstrainedToPredefined => true;

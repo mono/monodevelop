@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
 
 		readonly Dictionary<ExceptionInfo, ExceptionInfo> reverseInnerExceptions = new Dictionary<ExceptionInfo, ExceptionInfo> ();
-		readonly bool useNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
+		readonly bool useNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", true);
 		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
 
@@ -186,7 +186,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				controller.SetStackFrame (DebuggingService.CurrentFrame);
 				controller.AllowExpanding = true;
 
-				exceptionValueTreeView = (TreeView) controller.GetControl (allowPopupMenu: false);
+				exceptionValueTreeView = controller.GetGtkControl (allowPopupMenu: false);
 			} else {
 				var objValueTreeView = new ObjectValueTreeView ();
 				objValueTreeView.Frame = DebuggingService.CurrentFrame;

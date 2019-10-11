@@ -26,16 +26,14 @@
 
 #if MAC
 
-using System;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
-using Xamarin.PropertyEditing;
-
 namespace MonoDevelop.DesignerSupport
 {
-	class PropertyPadItem
+	/// <summary>
+	/// This component model target allows include additional providers to handle properties 
+	/// </summary>
+	class ComponentModelTarget
 	{
-		public PropertyPadItem (object target, object [] providers)
+		public ComponentModelTarget (object target, object [] providers)
 		{
 			Target = target;
 			Providers = providers;
@@ -43,26 +41,6 @@ namespace MonoDevelop.DesignerSupport
 
 		public object Target { get; }
 		public object[] Providers { get; }
-
-		public async Task<ValueInfo<T>> GetPropertyValueInfoAsProppyType<T> (DescriptorPropertyInfo propertyInfo)
-		{
-			T value = await propertyInfo.GetValueAsync<T> (this);
-			return new ValueInfo<T> {
-				Value = value,
-				Source = ValueSource.Local,
-				//ValueDescriptor = valueInfoString.ValueDescriptor,
-				//CustomExpression = valueString
-			};
-		}
-
-		public void SetPropertyValueInfoAsProppyType<T> (DescriptorPropertyInfo info, ValueInfo<T> value, PropertyVariation variations)
-		{
-			try {
-				info.SetValue (this, value.Value);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error setting the value", ex);
-			}
-		}
 	}
 }
 

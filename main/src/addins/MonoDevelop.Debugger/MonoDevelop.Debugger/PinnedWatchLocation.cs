@@ -1,10 +1,10 @@
-﻿//
-// StringStandardValuesPropertyInfo.cs
+//
+// PinnedWatchLocation.cs
 //
 // Author:
-//       jmedrano <josmed@microsoft.com>
+//       Jeffrey Stedfast <jestedfa@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2019 Microsoft Corp.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if MAC
-
-using Xamarin.PropertyEditing;
-using System.ComponentModel;
-using System.Collections.Generic;
-
-namespace MonoDevelop.DesignerSupport
+namespace MonoDevelop.Debugger
 {
-	class StringStandardValuesPropertyInfo
-	: DescriptorPropertyInfo, IHavePredefinedValues<string>
+	public class PinnedWatchLocation
 	{
-		public StringStandardValuesPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources) : base (propertyDescriptor, propertyProvider, valueSources)
+		public PinnedWatchLocation (string fileName)
 		{
-			foreach (object stdValue in PropertyDescriptor.Converter.GetStandardValues ()) {
-				var value = PropertyDescriptor.Converter.ConvertToString (stdValue);
-				predefinedValues.Add (value, value);
-			}
+			FileName = fileName;
 		}
 
-		public bool IsConstrainedToPredefined => false;
-
-		public bool IsValueCombinable {
-			get;
+		public PinnedWatchLocation (string fileName, int line, int column, int endLine, int endColumn)
+		{
+			FileName = fileName;
+			Line = line;
+			Column = column;
+			EndLine = endLine;
+			EndColumn = endColumn;
 		}
 
-		protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
-		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
+		public string FileName {
+			get; private set;
+		}
+
+		public int Line {
+			get; set;
+		}
+
+		public int Column {
+			get; set;
+		}
+
+		public int EndLine {
+			get; set;
+		}
+
+		public int EndColumn {
+			get; set;
+		}
 	}
 }
-
-#endif

@@ -37,6 +37,16 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
+	public enum PreviewButtonIcon
+	{
+		None,
+		Hidden,
+		RowHover,
+		Hover,
+		Active,
+		Selected,
+	}
+
 	public interface IObjectValueDebuggerService
 	{
 		bool CanQueryDebugger { get; }
@@ -71,8 +81,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
 
-		public ObjectValueTreeViewController ()
+		public ObjectValueTreeViewController (bool allowWatchExpressions = false)
 		{
+			AllowWatchExpressions = allowWatchExpressions;
+			Root = new RootObjectValueNode ();
 		}
 
 		public IDebuggerService Debugger {
@@ -119,13 +131,7 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
 		public bool AllowWatchExpressions {
-			get => allowWatchExpressions;
-			set {
-				allowWatchExpressions = value;
-				if (view != null) {
-					view.AllowWatchExpressions = value;
-				}
-			}
+			get; private set;
 		}
 
 		public PinnedWatch PinnedWatch {
@@ -137,11 +143,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public string PinnedWatchFile {
-			get; set;
-		}
-
-		public int PinnedWatchLine {
+		public PinnedWatchLocation PinnedWatchLocation {
 			get; set;
 		}
 
@@ -151,16 +153,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		protected void ConfigureView (IObjectValueTreeView control)
 		{
-			if (view != null)
-				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+			view = control;
 
-			view = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
-				AllowExpanding = this.AllowExpanding,
-				PinnedWatch = this.PinnedWatch,
-			};
-
+			view.AllowExpanding = AllowExpanding;
+			view.PinnedWatch = PinnedWatch;
 
 			view.NodeExpand += OnViewNodeExpand;
 			view.NodeCollapse += OnViewNodeCollapse;
@@ -174,8 +172,38 @@ namespace MonoDevelop.Debugger
 			view.NodePinned += OnViewNodePinned;
 			view.NodeUnpinned += OnViewNodeUnpinned;
 			view.NodeShowVisualiser += OnViewNodeShowVisualiser;
+		}
 
-			return view;
+		public GtkObjectValueTreeView GetGtkControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		{
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			var control = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+
+			ConfigureView (control);
+
+			return control;
+		}
+
+		public MacObjectValueTreeView GetMacControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		{
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			var control = new MacObjectValueTreeView (this, this, AllowEditing, headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+
+			ConfigureView (control);
+
+			return control;
+		}
+
+		public Control GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		{
+			if (Platform.IsMac)
+				return GetMacControl (headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+
+			return GetGtkControl (headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
 		}
 
 		public void CancelAsyncTasks ()
@@ -188,10 +216,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearValues ()
 		{
-			Root = OnCreateRoot ();
+			((RootObjectValueNode) Root).Clear ();
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Cleared ();
 			}).Ignore ();
 		}
 
@@ -209,15 +237,12 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValue (ObjectValueNode value)
 		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
 			((RootObjectValueNode) Root).AddValue (value);
 			RegisterNode (value);
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				LoggingService.LogInfo ("Appending value '{0}' to tree view", value.Name);
+				view.Appended (value);
 			}).Ignore ();
 		}
 
@@ -226,23 +251,19 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValues (IEnumerable<ObjectValueNode> values)
 		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
 			var nodes = values.ToList ();
+
 			((RootObjectValueNode) Root).AddValues (nodes);
 
-			foreach (var node in nodes) {
+			foreach (var node in nodes)
 				RegisterNode (node);
-			}
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Appended (nodes);
 			}).Ignore ();
 		}
 
-		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
+		public async Task<CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
 		{
 			if (CanQueryDebugger && Frame != null) {
 				// TODO: improve how we get at the underlying real stack frame
@@ -257,13 +278,11 @@ namespace MonoDevelop.Debugger
 			var watch = new PinnedWatch ();
 
 			if (PinnedWatch != null) {
-				watch.File = PinnedWatch.File;
-				watch.Line = PinnedWatch.Line;
+				watch.Location = PinnedWatch.Location;
 				watch.OffsetX = PinnedWatch.OffsetX;
 				watch.OffsetY = PinnedWatch.OffsetY + height + 5;
 			} else {
-				watch.File = PinnedWatchFile;
-				watch.Line = PinnedWatchLine;
+				watch.Location = PinnedWatchLocation;
 				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
 				watch.OffsetY = -1;
 			}
@@ -354,9 +373,12 @@ namespace MonoDevelop.Debugger
 
 		public void AddExpression (string expression)
 		{
-			if (!AllowWatchExpressions)
+			if (!AllowWatchExpressions) {
+				LoggingService.LogInfo ("Watch expressions not allowed.");
 				return;
+			}
 
+			LoggingService.LogInfo ("Evaluating expression '{0}'", expression);
 			var node = Frame.EvaluateExpression (expression);
 			AddValue (node);
 		}
@@ -533,6 +555,7 @@ namespace MonoDevelop.Debugger
 
 		void OnViewExpressionAdded (object sender, ObjectValueExpressionEventArgs e)
 		{
+			LoggingService.LogInfo ("ObjectValueTreeViewController.OnViewExpressionAdded");
 			AddExpression (e.Expression);
 		}
 
@@ -602,9 +625,8 @@ namespace MonoDevelop.Debugger
 			}
 
 			await Runtime.RunInMainThread (() => {
-				if (loadedCount > 0) {
-					view.LoadNodeChildren (node, 0, node.Children.Count);
-				}
+				// tell the view about the children, even if there are, in fact, none
+				view.LoadNodeChildren (node, 0, node.Children.Count);
 
 				view.OnNodeExpanded (node);
 			});
@@ -620,25 +642,25 @@ namespace MonoDevelop.Debugger
 				if (childFetchTasks.TryGetValue (node, out Task<int> task)) {
 					// there is already a task to fetch the children
 					return await task;
-				} else {
-					try {
-						var oldCount = node.Children.Count;
-						var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
+				}
 
-						// if any of them are still evaluating register for
-						// a completion event so that we can tell the UI
-						for (int i = oldCount; i < oldCount + result; i++) {
-							var c = node.Children[i];
-							RegisterNode (c);
-						}
+				try {
+					var oldCount = node.Children.Count;
+					var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 
-						// always send the event so that the UI can determine if the node has finished loading.
-						OnChildrenLoaded (node, oldCount, result);
-
-						return result;
-					} finally {
-						childFetchTasks.Remove (node);
+					// if any of them are still evaluating register for
+					// a completion event so that we can tell the UI
+					for (int i = oldCount; i < oldCount + result; i++) {
+						var c = node.Children[i];
+						RegisterNode (c);
 					}
+
+					// always send the event so that the UI can determine if the node has finished loading.
+					OnChildrenLoaded (node, oldCount, result);
+
+					return result;
+				} finally {
+					childFetchTasks.Remove (node);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -661,33 +683,33 @@ namespace MonoDevelop.Debugger
 				if (childFetchTasks.TryGetValue (node, out Task<int> task)) {
 					// there is already a task to fetch the children
 					return await task;
-				} else {
-					try {
-						int result = 0;
-						if (count > 0) {
-							var oldCount = node.Children.Count;
-							result = await node.LoadChildrenAsync (count, cancellationToken);
+				}
 
-							// if any of them are still evaluating register for
-							// a completion event so that we can tell the UI
-							for (int i = oldCount; i < oldCount + result; i++) {
-								var c = node.Children[i];
-								RegisterNode (c);
-							}
-						} else {
-							result = await node.LoadChildrenAsync (cancellationToken);
+				try {
+					int result = 0;
+					if (count > 0) {
+						var oldCount = node.Children.Count;
+						result = await node.LoadChildrenAsync (count, cancellationToken);
 
-							// if any of them are still evaluating register for
-							// a completion event so that we can tell the UI
-							foreach (var c in node.Children) {
-								RegisterNode (c);
-							}
+						// if any of them are still evaluating register for
+						// a completion event so that we can tell the UI
+						for (int i = oldCount; i < oldCount + result; i++) {
+							var c = node.Children[i];
+							RegisterNode (c);
 						}
+					} else {
+						result = await node.LoadChildrenAsync (cancellationToken);
 
-						return result;
-					} finally {
-						childFetchTasks.Remove (node);
+						// if any of them are still evaluating register for
+						// a completion event so that we can tell the UI
+						foreach (var c in node.Children) {
+							RegisterNode (c);
+						}
 					}
+
+					return result;
+				} finally {
+					childFetchTasks.Remove (node);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -736,15 +758,6 @@ namespace MonoDevelop.Debugger
 		}
 
 		#endregion
-
-
-		/// <summary>
-		/// Called when clearing, by default sets the root to a new ObjectValueNode
-		/// </summary>
-		protected virtual ObjectValueNode OnCreateRoot ()
-		{
-			return new RootObjectValueNode ();
-		}
 
 		protected virtual IDebuggerService OnGetDebuggerService ()
 		{
@@ -880,6 +893,18 @@ namespace MonoDevelop.Debugger
 			}
 
 			return "md-" + access + global + source;
+		}
+
+		public static string GetPreviewButtonIcon (PreviewButtonIcon icon)
+		{
+			switch (icon) {
+			case PreviewButtonIcon.Hidden: return "md-empty";
+			case PreviewButtonIcon.RowHover: return "md-preview-normal";
+			case PreviewButtonIcon.Hover: return "md-preview-hover";
+			case PreviewButtonIcon.Active: return "md-preview-active";
+			case PreviewButtonIcon.Selected: return "md-preview-selected";
+			default: return null;
+			}
 		}
 	}
 

@@ -40,7 +40,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Linq;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
@@ -759,9 +758,8 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public string PinnedWatchFile { get; set; }
-		public int PinnedWatchLine { get; set; }
-		
+		public PinnedWatchLocation PinnedWatchLocation { get; set; }
+
 		public bool CompactView {
 			get {
 				return compact; 
@@ -2285,13 +2283,11 @@ namespace MonoDevelop.Debugger
 
 			if (PinnedWatch != null) {
 				CollapseAll ();
-				watch.File = PinnedWatch.File;
-				watch.Line = PinnedWatch.Line;
+				watch.Location = PinnedWatch.Location;
 				watch.OffsetX = PinnedWatch.OffsetX;
 				watch.OffsetY = PinnedWatch.OffsetY + SizeRequest ().Height + 5;
 			} else {
-				watch.File = PinnedWatchFile;
-				watch.Line = PinnedWatchLine;
+				watch.Location = PinnedWatchLocation;
 				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
 				watch.OffsetY = -1;
 			}
