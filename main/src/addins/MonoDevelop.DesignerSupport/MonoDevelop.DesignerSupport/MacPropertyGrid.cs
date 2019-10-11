@@ -30,29 +30,20 @@
 
 #if MAC
 
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Commands;
 using System;
 using MonoDevelop.Components;
 using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Mac;
-using MonoDevelop.Components.Mac;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Components.Theming;
 using AppKit;
 using CoreGraphics;
-using Foundation;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyGrid : NSStackView, IPropertyGrid
+	class MacPropertyGrid : NSView, IPropertyGrid
 	{
-		MacPropertyEditorPanel propertyEditorPanel;
-
-		PropertyPadEditorProvider editorProvider;
-
-		NSScrollView scrollView;
+		readonly MacPropertyEditorPanel propertyEditorPanel;
+		ComponentModelEditorProvider editorProvider;
+		ComponentModelTarget currentSelectedObject;
 
 		public event EventHandler Focused;
 
@@ -62,42 +53,28 @@ namespace MonoDevelop.DesignerSupport
 
 		public MacPropertyGrid () 
 		{
-			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
-			Alignment = NSLayoutAttribute.Leading;
-			Spacing = 10;
-			Distribution = NSStackViewDistribution.Fill;
-
-			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ());
-
-			scrollView = new NSScrollView () {
-				HasVerticalScroller = true,
-				HasHorizontalScroller = false,
+			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ()) {
+				ShowHeader = false
 			};
-			scrollView.WantsLayer = true;
-			scrollView.BackgroundColor = Styles.HeaderBackgroundColor;
-			scrollView.DocumentView = propertyEditorPanel;
+			AddSubview (propertyEditorPanel);
 
-			AddArrangedSubview (scrollView);
-		
-			propertyEditorPanel.Focused += PropertyEditorPanel_Focused;
+			editorProvider = new ComponentModelEditorProvider ();
+			editorProvider.PropertyChanged += EditorProvider_PropertyChanged;
 
-			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
+			propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
+				AutoExpandAll = true
+			};
+			propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
 		}
 
-		void Widget_Focused (object o, Gtk.FocusedArgs args)
-		{
-			propertyEditorPanel.Window.MakeFirstResponder (propertyEditorPanel);
-		}
-
-		void PropertyEditorPanel_Focused (object sender, EventArgs e) => Focused?.Invoke (this, EventArgs.Empty);
+		private void EditorProvider_PropertyChanged (object sender, EventArgs e) =>
+			PropertyGridChanged?.Invoke (this, EventArgs.Empty);
 
 		public override void SetFrameSize (CGSize newSize)
 		{
-			scrollView.SetFrameSize (newSize);
 			base.SetFrameSize (newSize);
+			propertyEditorPanel.SetFrameSize (newSize);
 		}
-
-		void PropertyEditorPanel_PropertiesChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
 
 		public void BlankPad ()
 		{
@@ -105,37 +82,16 @@ namespace MonoDevelop.DesignerSupport
 			currentSelectedObject = null;
 		}
 
-		public void OnPadContentShown ()
-		{
-			if (editorProvider == null) {
-				editorProvider = new PropertyPadEditorProvider ();
-				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
-					AutoExpandGroups = new string [] { "Build", "Misc", "NuGet", "Reference" }
-				};
-				propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
-			}
-		}
-
-		PropertyPadItem currentSelectedObject;
-
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				var selection = new PropertyPadItem (lastComponent, propertyProviders);
+				var selection = new ComponentModelTarget (lastComponent, propertyProviders);
 				if (currentSelectedObject != selection) {
 					propertyEditorPanel.SelectedItems.Clear ();
 					propertyEditorPanel.SelectedItems.Add (selection);
 					currentSelectedObject = selection;
 				}
 			}
-		}
-
-		protected override void Dispose (bool disposing)
-		{
-			if (propertyEditorPanel != null) {
-				propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
-			}
-			base.Dispose (disposing);
 		}
 
 		public void Populate (bool saveEditSession)
@@ -146,6 +102,23 @@ namespace MonoDevelop.DesignerSupport
 		public void SetToolbarProvider (Components.PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider)
 		{
 			//not implemented
+		}
+
+		public void OnPadContentShown ()
+		{
+			//not implemented
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing) {
+				if (editorProvider != null) {
+					editorProvider.PropertyChanged -= EditorProvider_PropertyChanged;
+					editorProvider.Dispose ();
+					editorProvider = null;
+				}
+			}
+			base.Dispose (disposing);
 		}
 	}
 

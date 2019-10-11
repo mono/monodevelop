@@ -39,20 +39,52 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
+	class TypeDescriptorContext : ITypeDescriptorContext
+	{
+		public TypeDescriptorContext (object propertyProvider, PropertyDescriptor propertyDescriptor)
+		{
+			Instance = propertyProvider;
+			PropertyDescriptor = propertyDescriptor;
+		}
+
+		public IContainer Container => null;
+
+		public object Instance { get; }
+
+		public PropertyDescriptor PropertyDescriptor { get; private set; }
+
+		public object GetService (Type serviceType)
+		{
+			return null;
+		}
+
+		public void OnComponentChanged ()
+		{
+			//TODO ITypeDescriptorContext.OnComponentChanging
+		}
+
+		public bool OnComponentChanging ()
+		{
+			//TODO ITypeDescriptorContext.OnComponentChanging
+			return true;
+		}
+	}
+
 	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
-		public PropertyDescriptor PropertyDescriptor { get; private set; }
-		public object PropertyProvider { get; private set; }
-		readonly ValueSources valueSources;
-		static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
-		static readonly PropertyVariationOption [] EmptyVariationOptions = new PropertyVariationOption [0];
+		public object PropertyProvider => typeDescriptorContext.Instance;
+		protected readonly TypeDescriptorContext typeDescriptorContext;
 
-		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider, ValueSources valueSources) 
+		public PropertyDescriptor PropertyDescriptor => typeDescriptorContext.PropertyDescriptor;
+
+		static readonly IAvailabilityConstraint [] EmptyConstraints = Array.Empty<IAvailabilityConstraint> ();
+		static readonly PropertyVariationOption [] EmptyVariationOptions = Array.Empty<PropertyVariationOption> ();
+
+		public DescriptorPropertyInfo (TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) 
 		{
-			this.PropertyDescriptor = propertyInfo;
-			this.PropertyProvider = propertyProvider;
-			this.valueSources = valueSources;
+			this.typeDescriptorContext = typeDescriptorContext;
+			this.ValueSources = valueSources;
 		}
 
 		public string Name => PropertyDescriptor.DisplayName;
@@ -61,13 +93,13 @@ namespace MonoDevelop.DesignerSupport
 
 		public virtual Type Type => PropertyDescriptor.PropertyType;
 
-		public ITypeInfo RealType => ToTypeInfo (PropertyDescriptor, PropertyProvider, Type);
+		public ITypeInfo RealType => ToTypeInfo (Type);
 
 		public string Category => PropertyDescriptor.Category;
 
 		public bool CanWrite => !PropertyDescriptor.IsReadOnly;
 
-		public ValueSources ValueSources => valueSources;
+		public ValueSources ValueSources { get; }
 
 		public IReadOnlyList<PropertyVariationOption> Variations => EmptyVariationOptions;
 
@@ -105,50 +137,59 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 
-		public static ITypeInfo ToTypeInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, Type type, bool isRelevant = true)
+		public static ITypeInfo ToTypeInfo (Type type, bool isRelevant = true)
 		{
 			var asm = type.Assembly.GetName ().Name;
-			return new PropertyProviderTypeInfo (propertyDescriptor, propertyProvider, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+			return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
-		const string ErrorOnGetValueMessage = "Error in GetValueAsync<T> using property descriptor converter";
-		protected void LogGetValueAsyncError (Exception ex) => LoggingService.LogError (ErrorOnGetValueMessage, ex);
-
-		internal virtual Task<T> GetValueAsync<T> (object target)
+		internal virtual T GetValue<T> (object target)
 		{
+			T converted = default;
 			object value = null;
-
+			bool canConvert = false;
 			try {
 				value = PropertyDescriptor.GetValue (PropertyProvider);
-				TypeConverter tc = PropertyDescriptor.Converter;
-				if (tc.CanConvertTo (typeof (T))) {
-					value = tc.ConvertTo (value, typeof (T));
+				var tc = PropertyDescriptor.Converter;
+				canConvert = tc.CanConvertTo (typeof (T));
+				if (canConvert) {
+					converted = (T)tc.ConvertTo (value, typeof (T));
+				} else {
+					converted = (T)value;
 				}
-				return Task.FromResult ((T)value);
 			} catch (Exception ex) {
-				LogGetValueAsyncError (ex);
+				LogInternalError ($"Error trying to get and convert value:'{value}' canconvert: {canConvert} T:{typeof (T).FullName} ", ex);
 			}
-
-			T converted = default;
-			try {
-				if (value != null && !(value is T)) {
-					if (typeof (T) == typeof (string)) {
-						value = value.ToString ();
-					} else {
-						value = Convert.ChangeType (value, typeof (T));
-					}
-				}
-				return Task.FromResult ((T)value);
-			} catch (Exception ex) {
-				LogGetValueAsyncError (ex);
-			}
-			return Task.FromResult (converted);
+			return converted;
 		}
 
 		internal virtual void SetValue<T> (object target, T value)
 		{
-			PropertyDescriptor.SetValue (PropertyProvider, value);
+			try {
+				
+				var currentType = typeof (T) ;
+
+				//TODO: Proppy in Boolean types uses bool? to handle it, but this will fail using converters
+				//thats because we need ensure take the underlying type
+				currentType = Nullable.GetUnderlyingType (currentType) ?? currentType;
+				object notNulleableValue = Convert.ChangeType (value, currentType);
+
+				var tc = PropertyDescriptor.Converter;
+				if (tc.CanConvertFrom (currentType)) {
+					var result = tc.ConvertFrom (notNulleableValue);
+					PropertyDescriptor.SetValue (PropertyProvider, result);
+				} else {
+					notNulleableValue = Convert.ChangeType (value, this.Type);
+					PropertyDescriptor.SetValue (PropertyProvider, notNulleableValue);
+				}
+			} catch (Exception ex) {
+				LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
+			}
 		}
+
+		protected void LogInternalError (string message, Exception ex = null) =>
+			LoggingService.LogInternalError (string.Format ("[{0}][{1}] {2}", Name, GetType ().Name, message), ex);
+
 	}
 }
 

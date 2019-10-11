@@ -29,28 +29,65 @@
 using Xamarin.PropertyEditing;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
 	class StringStandardValuesPropertyInfo
 	: DescriptorPropertyInfo, IHavePredefinedValues<string>
 	{
-		public StringStandardValuesPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources) : base (propertyDescriptor, propertyProvider, valueSources)
+		readonly Dictionary<string, object> standardValues = new Dictionary<string, object> ();
+
+		public StringStandardValuesPropertyInfo (TypeConverter.StandardValuesCollection standardValuesCollection, TypeDescriptorContext typeDescriptorContext, ValueSources valueSources) : base (typeDescriptorContext, valueSources)
 		{
-			foreach (object stdValue in PropertyDescriptor.Converter.GetStandardValues ()) {
+			foreach (object stdValue in standardValuesCollection) {
 				var value = PropertyDescriptor.Converter.ConvertToString (stdValue);
+				if (value == ComponentModelObjectEditor.ComboSeparatorString) {
+					//TODO: we need implement in proppy a way to allow separators
+					continue;
+				}
+				standardValues.Add (value, stdValue);
 				predefinedValues.Add (value, value);
 			}
 		}
 
-		public bool IsConstrainedToPredefined => false;
-
-		public bool IsValueCombinable {
-			get;
-		}
+		public bool IsConstrainedToPredefined => true;
+		public bool IsValueCombinable { get; }
 
 		protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
+
+		internal override TValue GetValue<TValue> (object target)
+		{
+			return base.GetValue<TValue> (target);
+		}
+
+		internal override void SetValue<T> (object target, T value)
+		{
+			if (EqualityComparer<T>.Default.Equals (value, default)) {
+				var defaultValue = PropertyDescriptor.GetValue (PropertyProvider);
+				PropertyDescriptor.SetValue (PropertyProvider, defaultValue);
+				return;
+			}
+
+			if (value is string textValue) {
+				try {
+					object objValue;
+					if (standardValues.TryGetValue (textValue,out objValue)) {
+						PropertyDescriptor.SetValue (PropertyProvider, objValue);
+					} else {
+						throw new Exception ("Value selected doesn't exists in the current standardValuesCollection");
+					}
+				} catch (Exception ex) {
+					LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
+				}
+			} else {
+				base.SetValue (target, value);
+			}
+		}
 	}
 }
 
