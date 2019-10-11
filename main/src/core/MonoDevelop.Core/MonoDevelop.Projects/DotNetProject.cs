@@ -1197,6 +1197,9 @@ namespace MonoDevelop.Projects
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
+				// Even though some targets may fail it may still be possible for the main resolve target to return
+				// information so we set ContinueOnError. This matches VS on Windows behaviour.
+				context.GlobalProperties.SetValue ("ContinueOnError", "ErrorAndContinue");
 
 				var result = await RunTargetInternal (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
 

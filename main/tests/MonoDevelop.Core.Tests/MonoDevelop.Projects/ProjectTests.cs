@@ -1097,10 +1097,13 @@ namespace MonoDevelop.Projects
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var project = sol.GetAllProjects ().Single () as DotNetProject;
-				var refs = (await project.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+				var references = (await project.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+				var packageDependencies = (await project.GetPackageDependencies (ConfigurationSelector.Default, CancellationToken.None)).ToArray ();
 
-				Assert.IsTrue (refs.Any ());
-				Assert.IsTrue (refs.Any (r => r.FilePath.FileName == "Newtonsoft.Json.dll"));
+				Assert.IsTrue (references.Any ());
+				Assert.IsTrue (references.Any (r => r.FilePath.FileName == "Newtonsoft.Json.dll"));
+				Assert.IsTrue (packageDependencies.Any ());
+				Assert.IsTrue (packageDependencies.Any (p => p.Name == "Newtonsoft.Json"));
 			}
 		}
 
