@@ -450,9 +450,23 @@ namespace MonoDevelop.UnitTesting
 		[CommandHandler (TestCommands.DebugTest)]
 		protected void OnDebugTest (object data)
 		{
+			openSourceFile ();
 			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 			var mode = debugModeSet.ExecutionModes.First (m => m.Id == (string)data);
 			RunSelectedTest (mode.ExecutionHandler);
+		}
+
+		void openSourceFile ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+			SourceCodeLocation loc = test.SourceCodeLocation;
+			if (loc != null) {
+				IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
+			} else {
+				return;
+			}
 		}
 
 		[CommandUpdateHandler (TestCommands.DebugTest)]
