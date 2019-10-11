@@ -53,6 +53,24 @@ namespace MonoDevelop.Debugger
 				this.nameView = nameView;
 			}
 
+			public override bool AcceptsFirstResponder ()
+			{
+				if (!base.AcceptsFirstResponder ())
+					return false;
+
+				// Note: The MacDebuggerObjectNameView sets the PlaceholderAttributedString property
+				// so that it can control the font color and the baseline offset. Unfortunately, this
+				// breaks once the NSTextField is in "edit" mode because the placeholder text ends up
+				// being rendered as black instead of gray. By reverting to using the basic
+				// PlaceholderString property once we enter "edit" mode, it fixes the text color.
+				var placeholder = PlaceholderAttributedString;
+
+				if (placeholder != null)
+					PlaceholderString = placeholder.Value;
+
+				return true;
+			}
+
 			public override void DidBeginEditing (NSNotification notification)
 			{
 				base.DidBeginEditing (notification);
@@ -111,7 +129,7 @@ namespace MonoDevelop.Debugger
 			TextField = new EditableTextField (this) {
 				AutoresizingMask = NSViewResizingMask.WidthSizable,
 				TranslatesAutoresizingMaskIntoConstraints = false,
-				BackgroundColor = NSColor.Clear,
+				DrawsBackground = false,
 				Bordered = false,
 				Editable = false
 			};
