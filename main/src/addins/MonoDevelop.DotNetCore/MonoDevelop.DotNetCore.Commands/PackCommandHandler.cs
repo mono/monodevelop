@@ -48,14 +48,9 @@ namespace MonoDevelop.DotNetCore.Commands
 
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
-			var result = new BuildResult ();
-
-			// Build the project and any dependencies first.
-			if (buildReferencedTargets && project.GetReferencedItems (configuration).Any ()) {
-				result = await project.Build (monitor, configuration, buildReferencedTargets, operationContext);
-				if (result.Failed)
-					return result;
-			}
+			var result = await project.Build (monitor, configuration, buildReferencedTargets, operationContext);
+			if (result.Failed)
+				return result;
 
 			// Run the "Pack" target on the project
 			var packResult = (await project.RunTarget (monitor, "Pack", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
