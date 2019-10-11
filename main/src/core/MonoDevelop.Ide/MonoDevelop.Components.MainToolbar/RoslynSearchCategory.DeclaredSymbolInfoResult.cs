@@ -48,18 +48,18 @@ namespace MonoDevelop.Components.MainToolbar
 			public override string AccessibilityMessage {
 				get {
 					string resultKind = result.Kind switch  {
-						NavigateToItemKind.Class	 => "Class",
+						NavigateToItemKind.Class     => "Class",
 						NavigateToItemKind.Delegate  => "Delegate",
-						NavigateToItemKind.Event	 => "Event",
-						NavigateToItemKind.Enum		 => "Enumeration",
+						NavigateToItemKind.Event     => "Event",
+						NavigateToItemKind.Enum      => "Enumeration",
 						NavigateToItemKind.Constant  => "Constant",
-						NavigateToItemKind.Field	 => "Field",
+						NavigateToItemKind.Field     => "Field",
 						NavigateToItemKind.EnumItem  => "Enumeration",
 						NavigateToItemKind.Interface => "Interface",
-						NavigateToItemKind.Method	 => "Method",
+						NavigateToItemKind.Method    => "Method",
 						NavigateToItemKind.Property  => "Property",
 						NavigateToItemKind.Structure => "Structure",
-						_							 => null
+						_                            => null
 					};
 
 					if (string.IsNullOrEmpty (resultKind)) {
