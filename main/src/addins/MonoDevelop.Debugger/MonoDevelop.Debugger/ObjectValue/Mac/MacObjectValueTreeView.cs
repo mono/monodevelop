@@ -40,9 +40,9 @@ namespace MonoDevelop.Debugger
 {
 	public class MacObjectValueTreeView : NSOutlineView, IObjectValueTreeView
 	{
-		const int MinimumNameColumnWidth = 48;
-		const int MinimumValueColumnWidth = 64;
-		const int MinimumTypeColumnWidth = 48;
+		const int MinimumNameColumnWidth = 45;
+		const int MinimumValueColumnWidth = 75;
+		const int MinimumTypeColumnWidth = 30;
 
 		MacObjectValueTreeViewDelegate treeViewDelegate;
 		MacObjectValueTreeViewDataSource dataSource;
@@ -59,13 +59,7 @@ namespace MonoDevelop.Debugger
 
 		PreviewButtonIcon currentHoverIcon;
 		nint currentHoverRow = -1;
-
-		double nameColumnWidth = 0.3;
-		double valueColumnWidth = 0.5;
-		double typeColumnWidth = 0.2;
-
 		bool allowEditing;
-		bool autoresizing;
 		bool disposed;
 
 		public MacObjectValueTreeView (
@@ -88,23 +82,25 @@ namespace MonoDevelop.Debugger
 
 			DataSource = dataSource = new MacObjectValueTreeViewDataSource (this, controller.Root, controller.AllowWatchExpressions);
 			Delegate = treeViewDelegate = new MacObjectValueTreeViewDelegate (this);
-			ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+			ColumnAutoresizingStyle = compactView ? NSTableViewColumnAutoresizingStyle.None : NSTableViewColumnAutoresizingStyle.Uniform;
 			treeViewDelegate.SelectionChanged += OnSelectionChanged;
 			UsesAlternatingRowBackgroundColors = true;
 			FocusRingType = NSFocusRingType.None;
 			AutoresizesOutlineColumn = false;
 			AllowsColumnResizing = !compactView;
 
-			var resizingMask = compactView ? NSTableColumnResizing.None : NSTableColumnResizing.UserResizingMask;
+			var resizingMask = compactView ? NSTableColumnResizing.None : NSTableColumnResizing.UserResizingMask | NSTableColumnResizing.Autoresizing;
 
 			nameColumn = new NSTableColumn ("name") { Editable = controller.AllowWatchExpressions, MinWidth = MinimumNameColumnWidth, ResizingMask = resizingMask };
 			nameColumn.Title = GettextCatalog.GetString ("Name");
+			nameColumn.Width = MinimumNameColumnWidth * 2;
 			AddColumn (nameColumn);
 
 			OutlineTableColumn = nameColumn;
 
 			valueColumn = new NSTableColumn ("value") { Editable = controller.AllowEditing, MinWidth = MinimumValueColumnWidth, ResizingMask = resizingMask };
 			valueColumn.Title = GettextCatalog.GetString ("Value");
+			valueColumn.Width = MinimumValueColumnWidth * 2;
 			if (compactView)
 				valueColumn.MaxWidth = 800;
 			AddColumn (valueColumn);
@@ -112,6 +108,7 @@ namespace MonoDevelop.Debugger
 			if (!compactView) {
 				typeColumn = new NSTableColumn ("type") { Editable = false, MinWidth = MinimumTypeColumnWidth, ResizingMask = resizingMask };
 				typeColumn.Title = GettextCatalog.GetString ("Type");
+				typeColumn.Width = MinimumTypeColumnWidth * 2;
 				AddColumn (typeColumn);
 			}
 
@@ -213,53 +210,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		double GetVisibleTableWidth ()
-		{
-			var scrollView = EnclosingScrollView;
-
-			if (scrollView != null)
-				return scrollView.DocumentVisibleRect.Width;
-
-			return VisibleRect ().Width;
-		}
-
-		internal void OnColumnResized ()
-		{
-			if (autoresizing || compactView)
-				return;
-
-			var width = GetVisibleTableWidth ();
-
-			nameColumnWidth = nameColumn.Width / width;
-			valueColumnWidth = valueColumn.Width / width;
-			typeColumnWidth = typeColumn.Width / width;
-		}
-
-		// Note: this resizing method is the one used by the Locals pad and the Watches pad
-		void ScaleColumnSizesToFit ()
-		{
-			if (compactView || Superview == null || RowCount == 0)
-				return;
-
-			var totalWidth = GetVisibleTableWidth ();
-			int columnWidth;
-
-			try {
-				autoresizing = true;
-
-				columnWidth = Math.Max ((int) (totalWidth * valueColumnWidth), MinimumNameColumnWidth);
-				valueColumn.Width = columnWidth;
-
-				columnWidth = Math.Max ((int) (totalWidth * nameColumnWidth), MinimumValueColumnWidth);
-				nameColumn.Width = columnWidth;
-
-				columnWidth = Math.Max ((int) (totalWidth * typeColumnWidth), MinimumTypeColumnWidth);
-				typeColumn.Width = columnWidth;
-			} finally {
-				autoresizing = false;
-			}
-		}
-
 		// Note: this resizing method is the one used by debugger tooltips and pinned watches in the editor
 		void OptimizeColumnSizes (bool emitResized = true)
 		{
@@ -296,39 +246,27 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			try {
-				autoresizing = true;
+			bool changed = false;
 
-				bool changed = false;
-				if (nameColumn.Width != nameWidth) {
-					nameColumn.MinWidth = nameColumn.Width = nameWidth;
-					changed = true;
-				}
-				if (valueColumn.Width != valueWidth) {
-					valueColumn.MinWidth = valueColumn.Width = valueWidth;
-					changed = true;
-				}
-
-				if (changed) {
-					SizeToFit ();
-
-					if (emitResized)
-						OnResized ();
-				}
-
-				ReloadData ();
-				SetNeedsDisplayInRect (Frame);
-			} finally {
-				autoresizing = false;
+			if (nameColumn.Width != nameWidth) {
+				nameColumn.MinWidth = nameColumn.Width = nameWidth;
+				changed = true;
 			}
-		}
 
-		void UpdateColumnSizes ()
-		{
-			if (compactView)
-				OptimizeColumnSizes ();
-			else
-				ScaleColumnSizesToFit ();
+			if (valueColumn.Width != valueWidth) {
+				valueColumn.MinWidth = valueColumn.Width = valueWidth;
+				changed = true;
+			}
+
+			if (changed) {
+				SizeToFit ();
+
+				if (emitResized)
+					OnResized ();
+			}
+
+			ReloadData ();
+			SetNeedsDisplayInRect (Frame);
 		}
 
 		static NSFont GetNSFontFromPangoFontDescription (Pango.FontDescription fontDescription)
@@ -375,35 +313,25 @@ namespace MonoDevelop.Debugger
 		public override void ViewDidMoveToSuperview ()
 		{
 			base.ViewDidMoveToSuperview ();
-			UpdateColumnSizes ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
-
-			if (compactView)
-				OptimizeColumnSizes ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidEndLiveResize ()
 		{
 			base.ViewDidEndLiveResize ();
-			UpdateColumnSizes ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidUnhide ()
 		{
 			base.ViewDidHide ();
-			UpdateColumnSizes ();
-		}
-
-		public override void SetFrameSize (CGSize newSize)
-		{
-			base.SetFrameSize (newSize);
-
-			//if (!autoresizing && !compactView)
-			//	ScaleColumnSizesToFit ();
+			OptimizeColumnSizes ();
 		}
 
 		/// <summary>
