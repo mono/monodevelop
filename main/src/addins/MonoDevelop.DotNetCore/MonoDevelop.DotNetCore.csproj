@@ -96,6 +96,7 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferencesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferencesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeSystemInformation.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Commands\PackCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

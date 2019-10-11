@@ -1592,7 +1592,7 @@ namespace MonoDevelop.Projects
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
-			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
+			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget && target != ProjectService.PackTarget)
 				properties ["TargetFramework"] = framework;
 
 			return properties;
