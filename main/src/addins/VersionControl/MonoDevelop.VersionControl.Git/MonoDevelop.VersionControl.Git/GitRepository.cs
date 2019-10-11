@@ -51,6 +51,15 @@ namespace MonoDevelop.VersionControl.Git
 		NormalUpdate = SaveLocalChanges | UpdateSubmodules,
 	}
 
+	public enum GitRepositoryState
+	{
+		Normal,
+		Merging,
+		Rebasing,
+		Grafting,
+		Reverting
+	}
+
 	public sealed class GitRepository : UrlBasedRepository
 	{
 		LibGit2Sharp.Repository rootRepository;
@@ -115,9 +124,21 @@ namespace MonoDevelop.VersionControl.Git
 				InitFileWatcher ();
 		}
 
+		public GitRepositoryState GetRepositoryState ()
+		{
+			if (File.Exists (mergeHeadPath))
+				return GitRepositoryState.Merging;
+			if (File.Exists (rebaseApplyPath) || File.Exists (rebaseMergePath))
+				return GitRepositoryState.Rebasing;
+			if (File.Exists (cherryPickHeadPath))
+				return GitRepositoryState.Grafting;
+			if (File.Exists (revertHeadPath))
+				return GitRepositoryState.Reverting;
+			return GitRepositoryState.Normal;
+		}
+
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : this (vcs, path, url, true)
 		{
-
 		}
 
 		Task<LibGit2Sharp.Repository> CreateSafeRepositoryAsync (string path)
@@ -162,6 +183,22 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		FilePath mergeHeadPath;
+		FilePath rebaseApplyPath, rebaseMergePath;
+		FilePath cherryPickHeadPath;
+		FilePath revertHeadPath;
+
+		protected override void OnRootPathChanged ()
+		{
+			var gitPath = RootPath.Combine (".git");
+			mergeHeadPath = gitPath.Combine (mergeHead);
+			rebaseApplyPath = gitPath.Combine (rebaseApply);
+			rebaseMergePath = gitPath.Combine (rebaseMerge);
+			cherryPickHeadPath = gitPath.Combine (cherryPickHead);
+			revertHeadPath = gitPath.Combine (revertHead);
+		}
+
+		const string mergeHead = "MERGE_HEAD";
 		const string rebaseApply = "rebase-apply";
 		const string rebaseMerge = "rebase-merge";
 		const string cherryPickHead = "CHERRY_PICK_HEAD";
@@ -1762,12 +1799,23 @@ namespace MonoDevelop.VersionControl.Git
 			throw new NotSupportedException ();
 		}
 
+		void AssertNormalRepositoryState()
+		{
+			var state = GetRepositoryState ();
+			if (state != GitRepositoryState.Normal)
+				throw new VersionControlOperationNotPermittedException ();
+		}
+
 		protected override async Task OnAddAsync (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
+			AssertNormalRepositoryState ();
 			foreach (var group in GroupByRepository (localPaths)) {
 				var files = group.Where (f => !f.IsDirectory);
 				if (files.Any ())
-					await RunBlockingOperationAsync (() => LibGit2Sharp.Commands.Stage (group.Key, group.Key.ToGitPath (files)), monitor.CancellationToken).ConfigureAwait (false);
+					await RunBlockingOperationAsync (() => {
+						AssertNormalRepositoryState ();
+						LibGit2Sharp.Commands.Stage (group.Key, group.Key.ToGitPath (files));
+					}, monitor.CancellationToken).ConfigureAwait (false);
 			}
 		}
 
@@ -1820,6 +1868,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		async Task DeleteCore (FilePath[] localPaths, bool keepLocal, ProgressMonitor monitor)
 		{
+			AssertNormalRepositoryState ();
+
 			foreach (var group in GroupByRepository (localPaths)) {
 				if (!keepLocal)
 					foreach (var f in localPaths) {
@@ -1832,6 +1882,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 
 				await RunBlockingOperationAsync (() => {
+					AssertNormalRepositoryState ();
 					var files = group.Key.ToGitPath (group);
 					LibGit2Sharp.Commands.Remove (group.Key, files, !keepLocal, null);
 				}, monitor.CancellationToken).ConfigureAwait (false);
@@ -2265,6 +2316,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override async Task OnMoveFileAsync (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
+			AssertNormalRepositoryState ();
 			VersionInfo vi = await GetVersionInfoAsync (localSrcPath, VersionInfoQueryFlags.IgnoreCache, monitor.CancellationToken).ConfigureAwait (false);
 			if (vi == null || !vi.IsVersioned) {
 				await base.OnMoveFileAsync (localSrcPath, localDestPath, force, monitor).ConfigureAwait (false);
@@ -2276,6 +2328,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			vi = await GetVersionInfoAsync (localDestPath, VersionInfoQueryFlags.IgnoreCache, monitor.CancellationToken).ConfigureAwait (false);
 			await RunBlockingOperationAsync (() => {
+				AssertNormalRepositoryState ();
 				if (vi != null && ((vi.Status & (VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace)) != VersionStatus.Unversioned))
 					LibGit2Sharp.Commands.Unstage (dstRepo, localDestPath);
 
@@ -2358,6 +2411,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override async Task OnIgnoreAsync (FilePath[] localPath, CancellationToken cancellationToken)
 		{
+			AssertNormalRepositoryState ();
+
 			var ignored = new List<FilePath> ();
 			string gitignore = RootPath + Path.DirectorySeparatorChar + ".gitignore";
 			string txt;
@@ -2371,6 +2426,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			var sb = StringBuilderCache.Allocate ();
 			await RunBlockingOperationAsync (() => {
+				AssertNormalRepositoryState ();
+
 				foreach (var path in localPath.Except (ignored))
 					sb.AppendLine (RootRepository.ToGitPath (path));
 
@@ -2381,6 +2438,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override async Task OnUnignoreAsync (FilePath[] localPath, CancellationToken cancellationToken)
 		{
+			AssertNormalRepositoryState ();
+
 			var ignored = new List<string> ();
 			string gitignore = RootPath + Path.DirectorySeparatorChar + ".gitignore";
 			string txt;
@@ -2394,6 +2453,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			var sb = new StringBuilder ();
 			await RunBlockingOperationAsync (() => {
+				AssertNormalRepositoryState ();
+
 				foreach (var path in ignored.Except (RootRepository.ToGitPath (localPath)))
 					sb.AppendLine (path);
 
