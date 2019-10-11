@@ -80,12 +80,14 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ReloadValues ()
+		void SaveExpressions ()
 		{
-			// clone the list of expressions
 			expressions.Clear ();
 			expressions.AddRange (controller.GetExpressions ());
+		}
 
+		void RestoreExpressions ()
+		{
 			// remove the expressions because we're going to rebuild them
 			controller.ClearAll ();
 
@@ -98,7 +100,7 @@ namespace MonoDevelop.Debugger
 			base.OnUpdateFrame ();
 
 			if (UseNewTreeView)
-				ReloadValues ();
+				RestoreExpressions ();
 		}
 
 		public override void OnUpdateValues ()
@@ -106,7 +108,7 @@ namespace MonoDevelop.Debugger
 			base.OnUpdateValues ();
 
 			if (UseNewTreeView) {
-				ReloadValues ();
+				RestoreExpressions ();
 			} else {
 				tree.Update ();
 			}
@@ -116,12 +118,20 @@ namespace MonoDevelop.Debugger
 		{
 			// base will clear the controller, which removes all values and expressions
 
-			if (UseNewTreeView) {
-				expressions.Clear ();
-				expressions.AddRange (controller.GetExpressions ());
-			}
+			if (UseNewTreeView && !IsInitialResume)
+				SaveExpressions ();
 
 			base.OnDebuggerResumed (s, a);
+		}
+
+		protected override void OnDebuggerStopped (object s, EventArgs a)
+		{
+			// base will clear the controller, which removes all values and expressions
+
+			if (UseNewTreeView)
+				SaveExpressions ();
+
+			base.OnDebuggerStopped (s, a);
 		}
 
 		#region IMementoCapable implementation 
@@ -132,10 +142,8 @@ namespace MonoDevelop.Debugger
 			}
 			set {
 				if (UseNewTreeView) {
-					if (controller != null) {
-						controller.ClearAll ();
-						controller.AddExpressions (expressions);
-					}
+					if (controller != null)
+						RestoreExpressions ();
 				} else {
 					if (tree != null) {
 						tree.ClearExpressions ();
@@ -150,7 +158,7 @@ namespace MonoDevelop.Debugger
 			if (UseNewTreeView) {
 				if (controller != null) {
 					writer.WriteStartElement ("Values");
-					foreach (var expression in controller.GetExpressions())
+					foreach (var expression in expressions)
 						writer.WriteElementString ("Value", expression);
 					writer.WriteEndElement ();
 				}
