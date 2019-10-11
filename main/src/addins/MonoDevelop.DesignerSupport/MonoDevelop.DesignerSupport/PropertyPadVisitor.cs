@@ -73,7 +73,6 @@ namespace MonoDevelop.DesignerSupport
 						return;
 					}
 				}
-				DesignerSupport.Service.ReSetPad ();
 			}
 		}
 
@@ -85,7 +84,7 @@ namespace MonoDevelop.DesignerSupport
 			if (ob == ((DefaultWorkbench)IdeApp.Workbench.RootWindow).ActiveWorkbenchWindow)
 				visitedCurrentDoc = true;
 
-			if (ob is MonoDevelop.Components.Docking.AutoHideBox) {
+			if (ob is Components.Docking.AutoHideBox) {
 				found = true;
 				return true;
 			}
