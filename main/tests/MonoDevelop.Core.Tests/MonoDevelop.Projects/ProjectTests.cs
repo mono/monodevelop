@@ -1079,6 +1079,31 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task UnknownNuGetPackageReferenceId_DesignTimeBuilds ()
+		{
+			FilePath solFile = Util.GetSampleProject ("UnknownPackageReference", "UnknownPackageReference.sln");
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+
+			// Run restore but do not check result since this will fail.
+			using var process = Process.Start (new ProcessStartInfo {
+				FileName = "nuget",
+				Arguments = $"restore -DisableParallelProcessing \"{solFile}\"",
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				UseShellExecute = false
+			});
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var project = sol.GetAllProjects ().Single () as DotNetProject;
+				var refs = (await project.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+
+				Assert.IsTrue (refs.Any ());
+				Assert.IsTrue (refs.Any (r => r.FilePath.FileName == "Newtonsoft.Json.dll"));
+			}
+		}
+
 		/// <summary>
 		/// Clear all other package sources and just use the main NuGet package source when
 		/// restoring the packages for the project tests.
