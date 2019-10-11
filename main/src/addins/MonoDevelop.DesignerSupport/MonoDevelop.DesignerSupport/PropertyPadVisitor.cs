@@ -73,7 +73,6 @@ namespace MonoDevelop.DesignerSupport
 						return;
 					}
 				}
-				DesignerSupport.Service.ReSetPad ();
 			}
 		}
 
@@ -85,11 +84,12 @@ namespace MonoDevelop.DesignerSupport
 			if (ob == ((DefaultWorkbench)IdeApp.Workbench.RootWindow).ActiveWorkbenchWindow)
 				visitedCurrentDoc = true;
 
-			if (ob is MonoDevelop.Components.Docking.AutoHideBox) {
+			if (ob is Components.Docking.AutoHideBox) {
 				found = true;
 				return true;
 			}
-			if (ob is IPropertyPad) {
+
+			if (ob is PropertyPad) {
 				// Don't change the property grid selection when the focus is inside the property grid itself
 				found = true;
 				return true;
