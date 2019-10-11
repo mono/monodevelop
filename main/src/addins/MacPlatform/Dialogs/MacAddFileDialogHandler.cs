@@ -41,10 +41,10 @@ namespace MonoDevelop.MacIntegration
 	{
 		protected override NSSavePanel OnCreatePanel (AddFileDialogData data)
 		{
-			return new NSOpenPanel {
-				CanChooseDirectories = false,
-				CanChooseFiles = true,
-			};
+			var panel = NSOpenPanel.OpenPanel;
+			panel.CanChooseDirectories = false;
+			panel.CanChooseFiles = true;
+			return panel;
 		}
 
 		public bool Run (AddFileDialogData data)
