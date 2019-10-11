@@ -1137,6 +1137,9 @@ namespace MonoDevelop.Projects
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 				context.GlobalProperties.SetValue ("Silent", true);
 				context.GlobalProperties.SetValue ("DesignTimeBuild", true);
+				// Even though some targets may fail it may still be possible for the main resolve targets to return
+				// information so we set ContinueOnError. This matches VS on Windows behaviour.
+				context.GlobalProperties.SetValue ("ContinueOnError", "ErrorAndContinue");
 
 				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferencesDesignTime;ResolveProjectReferencesDesignTime", configuration, context);
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
