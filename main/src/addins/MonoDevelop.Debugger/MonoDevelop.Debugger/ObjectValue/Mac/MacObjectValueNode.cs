@@ -1,5 +1,5 @@
 //
-// RootObjectValueNode.cs
+// MacObjectValueNode.cs
 //
 // Author:
 //       Jeffrey Stedfast <jestedfa@microsoft.com>
@@ -25,63 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+
+using Foundation;
 
 namespace MonoDevelop.Debugger
 {
 	/// <summary>
-	/// Special node used as the root of the treeview. 
+	/// NSObject wrapper for data items in the Cocoa implementation of the ObjectValueTreeView.
 	/// </summary>
-	sealed class RootObjectValueNode : ObjectValueNode, ISupportChildObjectValueNodeReplacement
+	class MacObjectValueNode : NSObject
 	{
-		public RootObjectValueNode () : base (string.Empty)
+		public readonly List<MacObjectValueNode> Children = new List<MacObjectValueNode> ();
+		public readonly MacObjectValueNode Parent;
+		public readonly ObjectValueNode Target;
+		public bool HideValueButton;
+
+		public MacObjectValueNode (MacObjectValueNode parent, ObjectValueNode target)
 		{
-			IsExpanded = true;
-		}
-
-		public override bool HasChildren => true;
-
-		public void AddValue (ObjectValueNode value)
-		{
-			AddChild (value);
-		}
-
-		public void AddValues (IEnumerable<ObjectValueNode> values)
-		{
-			AddChildren (values);
-		}
-
-		public void RemoveValueAt (int index)
-		{
-			RemoveChildAt (index);
-		}
-
-		public void ReplaceValueAt (int index, ObjectValueNode value)
-		{
-			ReplaceChildAt (index, value);
-		}
-
-		public void Clear ()
-		{
-			ClearChildren ();
-		}
-
-		void ISupportChildObjectValueNodeReplacement.ReplaceChildNode (ObjectValueNode node, ObjectValueNode[] newNodes)
-		{
-			var index = Children.IndexOf (node);
-
-			Debug.Assert (index >= 0, "The node being replaced should be a child of this node");
-
-			if (newNodes.Length == 0) {
-				RemoveChildAt (index);
-				return;
-			}
-
-			ReplaceChildAt (index, newNodes [0]);
-
-			for (int i = 1; i < newNodes.Length; i++)
-				InsertChildAt (++index, newNodes[i]);
+			Parent = parent;
+			Target = target;
 		}
 	}
 }

@@ -102,15 +102,14 @@ namespace MonoDevelop.Debugger
 		bool editing;
 
 		bool allowEditing;
-		bool allowWatchExpressions;
 		bool wasHandled;
 		CodeCompletionContext ctx;
 		Gdk.Key key;
 		char keyChar;
 		Gdk.ModifierType modifierState;
 		uint keyValue;
-		PreviewButtonIcons iconBeforeSelected;
-		PreviewButtonIcons currentIcon;
+		PreviewButtonIcon iconBeforeSelected;
+		PreviewButtonIcon currentIcon;
 		TreeIter currentHoverIter = TreeIter.Zero;
 		Adjustment oldHadjustment;
 		Adjustment oldVadjustment;
@@ -173,7 +172,6 @@ namespace MonoDevelop.Debugger
 			ObjectValueTreeViewController controller,
 			bool allowEditing,
 			bool headersVisible,
-			bool allowWatchExpressions,
 			bool compactView,
 			bool allowPinning,
 			bool allowPopupMenu,
@@ -186,10 +184,10 @@ namespace MonoDevelop.Debugger
 
 			// ensure this is set when we set up the view, don't try and refresh just yet
 			this.allowEditing = allowEditing;
-			this.allowWatchExpressions = allowWatchExpressions;
 
 			this.debuggerService = debuggerService;
 			this.controller = controller;
+			this.root = controller.Root;
 
 			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (bool), typeof (bool), typeof (string), typeof (string), typeof (string), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (Xwt.Drawing.Image), typeof (bool), typeof (string), typeof (ObjectValueNode));
 			Model = store;
@@ -318,6 +316,7 @@ namespace MonoDevelop.Debugger
 			focus_line_width = (int)StyleGetProperty ("focus-line-width") * 2; //we just use *2 version in GetMaxWidth
 
 			AdjustColumnSizes ();
+			Refresh (false);
 		}
 
 		/// <summary>
@@ -342,13 +341,7 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
 		public bool AllowWatchExpressions {
-			get => allowWatchExpressions;
-			set {
-				if (allowWatchExpressions != value) {
-					allowWatchExpressions = value;
-					Refresh (false);
-				}
-			}
+			get { return controller.AllowWatchExpressions; }
 		}
 
 		/// <summary>
@@ -491,8 +484,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnShown ();
 			AdjustColumnSizes ();
-			if (compactView)
-				RecalculateWidth ();
+			CompactColumns ();
 		}
 
 		protected override void OnRealized ()
@@ -522,12 +514,28 @@ namespace MonoDevelop.Debugger
 		}
 
 		/// <summary>
-		/// Reloads the tree from the root node
+		/// Notifies the treeview that the tree has been cleared
 		/// </summary>
-		public void Reload (ObjectValueNode root)
+		void IObjectValueTreeView.Cleared ()
 		{
-			// TODO: how to tell whether to reset scroll position or not?
-			this.root = root;
+			Refresh (false);
+		}
+
+		/// <summary>
+		/// Notifies the treeview that the specified node has been added to the root node's children
+		/// </summary>
+		/// <param name="node">The node that was appended.</param>
+		void IObjectValueTreeView.Appended (ObjectValueNode node)
+		{
+			Refresh (false);
+		}
+
+		/// <summary>
+		/// Notifies the treeview that the specified nodes have been added to the root node's children
+		/// </summary>
+		/// <param name="nodes">The nodes that were appended.</param>
+		void IObjectValueTreeView.Appended (IList<ObjectValueNode> nodes)
+		{
 			Refresh (false);
 		}
 
@@ -544,7 +552,7 @@ namespace MonoDevelop.Debugger
 		/// the set of replacement nodes. Handles the case where, for example, the "locals" is replaced
 		/// with the set of local values
 		/// </summary>
-		public void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode [] replacementNodes)
+		public void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode[] replacementNodes)
 		{
 			OnEvaluationCompleted (node, replacementNodes);
 		}
@@ -561,15 +569,13 @@ namespace MonoDevelop.Debugger
 				// them in so that the tree does not collapse the row when the last child is removed
 				MergeChildrenIntoTree (node, iter, index, count);
 
-				// if we did not load all the children, add a More node
+				// if we did not load all the children, add a Show More node
 				if (!node.ChildrenLoaded) {
 					AppendNodeToTreeModel (iter, null, new ShowMoreValuesObjectValueNode (node));
 				}
 			}
 
-			if (compactView) {
-				RecalculateWidth ();
-			}
+			CompactColumns ();
 		}
 
 		// TODO: if we don't want the scrolling, we can probably get rid of this
@@ -589,8 +595,7 @@ namespace MonoDevelop.Debugger
 					ExpandRow (path, false);
 				}
 
-				if (compactView)
-					RecalculateWidth ();
+				CompactColumns ();
 
 				// TODO: all this scrolling kind of seems awkward
 				//if (path != null)
@@ -649,8 +654,8 @@ namespace MonoDevelop.Debugger
 				if (replacementNodes.Length == 0) {
 					// we can remove the node altogether, eg there are no local variables to show
 					Remove (ref iter);
-				} else if (replacementNodes.Length > 0) {
-					node = replacementNodes [0];
+				} else {
+					node = replacementNodes[0];
 					SetValues (parent, iter, node.Name, node);
 
 					for (int n = 1; n < replacementNodes.Length; n++) {
@@ -660,9 +665,7 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			if (compactView) {
-				RecalculateWidth ();
-			}
+			CompactColumns ();
 		}
 
 		bool Remove (ref TreeIter iter)
@@ -696,12 +699,6 @@ namespace MonoDevelop.Debugger
 			state.Load ();
 			restoringState = false;
 		}
-
-		//public void Update ()
-		//{
-		//	//cachedValues.Clear ();
-		//	Refresh (true);
-		//}
 
 		void Refresh (bool resetScrollPosition)
 		{
@@ -849,7 +846,7 @@ namespace MonoDevelop.Debugger
 				if (val.CanRefresh)
 					valueButton = GettextCatalog.GetString ("Show Value");
 			} else if (val.IsEvaluating) {
-				strval = GettextCatalog.GetString ("Evaluating...");
+				strval = GettextCatalog.GetString ("Evaluating\u2026");
 
 				evaluateStatusIcon = "md-spinner-16";
 
@@ -956,8 +953,7 @@ namespace MonoDevelop.Debugger
 
 			base.OnRowExpanded (iter, path);
 
-			if (compactView)
-				RecalculateWidth ();
+			CompactColumns ();
 
 			HideValueButton (iter);
 
@@ -970,8 +966,7 @@ namespace MonoDevelop.Debugger
 
 			base.OnRowCollapsed (iter, path);
 
-			if (compactView)
-				RecalculateWidth ();
+			CompactColumns ();
 
 			NodeCollapse?.Invoke (this, new ObjectValueNodeEventArgs (node));
 
@@ -1140,16 +1135,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		enum PreviewButtonIcons
-		{
-			None,
-			Hidden,
-			RowHover,
-			Hover,
-			Active,
-			Selected,
-		}
-
 		bool ValidObjectForPreviewIcon (TreeIter it)
 		{
 			var obj = GetDebuggerObjectValueAtIter (it);
@@ -1193,13 +1178,13 @@ namespace MonoDevelop.Debugger
 							var iconXOffset = cellArea.X + w + cr.Xpad * 3;
 							if (iconXOffset < evnt.X &&
 							   iconXOffset + 16 > evnt.X) {
-								SetPreviewButtonIcon (PreviewButtonIcons.Hover, it);
+								SetPreviewButtonIcon (PreviewButtonIcon.Hover, it);
 							} else {
-								SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
+								SetPreviewButtonIcon (PreviewButtonIcon.RowHover, it);
 							}
 						}
 					} else {
-						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
+						SetPreviewButtonIcon (PreviewButtonIcon.RowHover, it);
 					}
 
 					if (allowPinning) {
@@ -1214,7 +1199,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			} else {
-				SetPreviewButtonIcon (PreviewButtonIcons.Hidden);
+				SetPreviewButtonIcon (PreviewButtonIcon.Hidden);
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -1231,7 +1216,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!editing)
 				CleanPinIcon ();
-			SetPreviewButtonIcon (PreviewButtonIcons.Hidden);
+			SetPreviewButtonIcon (PreviewButtonIcon.Hidden);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 
@@ -1283,8 +1268,8 @@ namespace MonoDevelop.Debugger
 			case Gdk.Key.Delete:
 			case Gdk.Key.KP_Delete:
 			case Gdk.Key.BackSpace:
-				string expression;
-				ObjectValue val;
+				//string expression;
+				//ObjectValue val;
 				TreeIter iter;
 
 				if (!AllowEditing || !AllowWatchExpressions)
@@ -1332,14 +1317,14 @@ namespace MonoDevelop.Debugger
 		{
 			allowStoreColumnSizes = true;
 
+			bool closePreviewWindow = true;
+			bool clickProcessed = false;
 			TreeViewColumn col;
 			CellRenderer cr;
 			TreePath path;
-			bool closePreviewWindow = true;
-			bool clickProcessed = false;
 
 			TreeIter it;
-			if (this.debuggerService.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
+			if (debuggerService.CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					clickProcessed = true;
 					var node = GetNodeAtIter (it);
@@ -1370,9 +1355,9 @@ namespace MonoDevelop.Debugger
 						startPreviewCaret.X + 16 > evnt.X) {
 						clickProcessed = true;
 						if (compactView) {
-							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+							SetPreviewButtonIcon (PreviewButtonIcon.Active, it);
 						} else {
-							SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
+							SetPreviewButtonIcon (PreviewButtonIcon.Selected, it);
 						}
 						DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
 						closePreviewWindow = false;
@@ -1567,14 +1552,14 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-			TreePath [] sel = Selection.GetSelectedRows ();
-			if (sel.Length == 0) {
+			var selectedRows = Selection.GetSelectedRows ();
+			if (selectedRows.Length == 0) {
 				cinfo.Enabled = false;
 				return;
 			}
 
-			foreach (TreePath tp in sel) {
-				if (tp.Depth > 1) {
+			foreach (var row in selectedRows) {
+				if (row.Depth > 1) {
 					cinfo.Enabled = false;
 					return;
 				}
@@ -1886,29 +1871,33 @@ namespace MonoDevelop.Debugger
 			return columnWidth;
 		}
 
-		void RecalculateWidth ()
+		void CompactColumns ()
 		{
+			if (!compactView)
+				return;
+
 			if (!Model.GetIterFirst (out TreeIter iter))
 				return;
 
-			foreach (var column in new [] { expCol, valueCol }) {//No need to calculate for Type and PinIcon columns
-																 // +1 is here because apperently when we calculate MaxWidth and set to FixedWidth
-																 // later GTK when cacluate needed width for Label it doesn't have enough space
-																 // and puts "..." to end of text thinking there is not enough space
-																 // I assume this is because rounding(floating point) calculation errors
-																 // hence do +1 and avoid such problems.
+			foreach (var column in new [] { expCol, valueCol }) {
+				// No need to calculate for Type and PinIcon columns
+				// +1 is here because apperently when we calculate MaxWidth and set to FixedWidth
+				// later GTK when cacluate needed width for Label it doesn't have enough space
+				// and puts "..." to end of text thinking there is not enough space
+				// I assume this is because rounding(floating point) calculation errors
+				// hence do +1 and avoid such problems.
 				column.FixedWidth = GetMaxWidth (column, iter) + 1;
 			}
 		}
 
-		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default (TreeIter))
+		void SetPreviewButtonIcon (PreviewButtonIcon icon, TreeIter it = default (TreeIter))
 		{
 			if (PreviewWindowManager.IsVisible || editing) {
 				return;
 			}
 			if (!it.Equals (TreeIter.Zero)) {
 				if (!ValidObjectForPreviewIcon (it)) {
-					icon = PreviewButtonIcons.None;
+					icon = PreviewButtonIcon.None;
 				}
 			}
 			if (!currentHoverIter.Equals (it)) {
@@ -1920,52 +1909,30 @@ namespace MonoDevelop.Debugger
 				}
 			}
 			if (!it.Equals (TreeIter.Zero) && store.IterIsValid (it)) {
-				if (icon == PreviewButtonIcons.Selected) {
-					if ((currentIcon == PreviewButtonIcons.Active ||
-						currentIcon == PreviewButtonIcons.Hover ||
-						currentIcon == PreviewButtonIcons.RowHover) && it.Equals (TreeIter.Zero)) {
+				if (icon == PreviewButtonIcon.Selected) {
+					if ((currentIcon == PreviewButtonIcon.Active ||
+						currentIcon == PreviewButtonIcon.Hover ||
+						currentIcon == PreviewButtonIcon.RowHover) && it.Equals (TreeIter.Zero)) {
 						iconBeforeSelected = currentIcon;
 					}
-				} else if (icon == PreviewButtonIcons.Active ||
-						   icon == PreviewButtonIcons.Hover ||
-						   icon == PreviewButtonIcons.RowHover) {
+				} else if (icon == PreviewButtonIcon.Active ||
+						   icon == PreviewButtonIcon.Hover ||
+						   icon == PreviewButtonIcon.RowHover) {
 					iconBeforeSelected = icon;
 					if (Selection.IterIsSelected (it)) {
-						icon = PreviewButtonIcons.Selected;
+						icon = PreviewButtonIcon.Selected;
 					}
 				}
 
-				switch (icon) {
-				case PreviewButtonIcons.None:
-					if (store.GetValue (it, PreviewIconColumn) != null)
-						store.SetValue (it, PreviewIconColumn, null);
-					break;
-				case PreviewButtonIcons.Hidden:
-					if ((string) store.GetValue (it, PreviewIconColumn) != "md-empty")
-						store.SetValue (it, PreviewIconColumn, "md-empty");
-					break;
-				case PreviewButtonIcons.RowHover:
-					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-normal")
-						store.SetValue (it, PreviewIconColumn, "md-preview-normal");
-					break;
-				case PreviewButtonIcons.Hover:
-					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-hover")
-						store.SetValue (it, PreviewIconColumn, "md-preview-hover");
-					break;
-				case PreviewButtonIcons.Active:
-					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-active")
-						store.SetValue (it, PreviewIconColumn, "md-preview-active");
-					break;
-				case PreviewButtonIcons.Selected:
-					if ((string) store.GetValue (it, PreviewIconColumn) != "md-preview-selected") {
-						store.SetValue (it, PreviewIconColumn, "md-preview-selected");
-					}
-					break;
-				}
+				var name = ObjectValueTreeViewController.GetPreviewButtonIcon (icon);
+				var currentName = (string) store.GetValue (it, PreviewIconColumn);
+				if (currentName != name)
+					store.SetValue (it, PreviewIconColumn, name);
+
 				currentIcon = icon;
 				currentHoverIter = it;
 			} else {
-				currentIcon = PreviewButtonIcons.None;
+				currentIcon = PreviewButtonIcon.None;
 				currentHoverIter = TreeIter.Zero;
 			}
 		}
@@ -1974,7 +1941,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
 				if (Selection.IterIsSelected (currentHoverIter)) {
-					SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
+					SetPreviewButtonIcon (PreviewButtonIcon.Selected, currentHoverIter);
 				} else {
 					SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
 				}
@@ -2024,7 +1991,7 @@ namespace MonoDevelop.Debugger
 
 		void HandlePreviewWindowClosed (object sender, EventArgs e)
 		{
-			SetPreviewButtonIcon (PreviewButtonIcons.Hidden);
+			SetPreviewButtonIcon (PreviewButtonIcon.Hidden);
 		}
 
 		void HandleCompletionWindowClosed (object sender, EventArgs e)
@@ -2330,6 +2297,5 @@ namespace MonoDevelop.Debugger
 			return false;
 		}
 		#endregion
-
 	}
 }

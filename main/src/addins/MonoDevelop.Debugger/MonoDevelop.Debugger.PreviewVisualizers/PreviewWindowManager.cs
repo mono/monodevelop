@@ -47,8 +47,14 @@ namespace MonoDevelop.Debugger
 			wnd = new PreviewVisualizerWindow (val, widget);
 			IdeApp.CommandService.RegisterTopWindow (wnd);
 			wnd.ShowPopup (widget, previewButtonArea, PopupPosition.Left);
+			wnd.FocusOutEvent += HandleFocusOutEvent;
 			wnd.Destroyed += HandleDestroyed;
 			OnWindowShown (EventArgs.Empty);
+		}
+
+		private static void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
+		{
+			DestroyWindow ();
 		}
 
 		static void HandleDestroyed (object sender, EventArgs e)
@@ -85,6 +91,8 @@ namespace MonoDevelop.Debugger
 		public static void DestroyWindow ()
 		{
 			if (wnd != null) {
+				wnd.FocusOutEvent -= HandleFocusOutEvent;
+				wnd.Destroyed -= HandleDestroyed;
 				wnd.Destroy ();
 				wnd = null;
 			}

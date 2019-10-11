@@ -23,6 +23,7 @@
     <Compile Include="TextFile.cs" />
     <Compile Include="VsCodeStackFrameTests.cs" />
     <Compile Include="BreakpointsAndSteppingTests.cs" />
+    <Compile Include="ObjectValueTreeViewControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">

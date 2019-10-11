@@ -62,7 +62,7 @@ namespace MonoDevelop.Debugger
 				var name = node.Name;
 				while (node != null && node.Parent is DebuggerObjectValueNode) {
 					expression = node.DebuggerObject.ChildSelector + expression;
-					node = (DebuggerObjectValueNode)node.Parent;
+					node = (DebuggerObjectValueNode) node.Parent;
 					name = node.Name;
 				}
 
@@ -107,7 +107,7 @@ namespace MonoDevelop.Debugger
 		#region IEvaluatingGroupObjectValueNode
 		bool IEvaluatingGroupObjectValueNode.IsEvaluatingGroup => DebuggerObject.IsEvaluatingGroup;
 
-		ObjectValueNode [] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
+		ObjectValueNode[] IEvaluatingGroupObjectValueNode.GetEvaluationGroupReplacementNodes ()
 		{
 			var replacementNodes = new ObjectValueNode[DebuggerObject.ArrayCount];
 
@@ -157,7 +157,7 @@ namespace MonoDevelop.Debugger
 			}, cancellationToken);
 		}
 
-		static Task<ObjectValue []> GetChildrenAsync (ObjectValue value, int index, int count, CancellationToken cancellationToken)
+		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value, int index, int count, CancellationToken cancellationToken)
 		{
 			return Task.Run(() => {
 				try {

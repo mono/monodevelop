@@ -34,7 +34,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	abstract class DebugObjectValueNode : ObjectValueNode
+	public abstract class DebugObjectValueNode : ObjectValueNode
 	{
 		protected DebugObjectValueNode (string name) : base (name)
 		{
@@ -50,7 +50,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	sealed class FakeIndexedObjectValueNode : DebugObjectValueNode
+	public sealed class FakeIndexedObjectValueNode : DebugObjectValueNode
 	{
 		public FakeIndexedObjectValueNode (int index) : base ($"indexed[{index}]")
 		{
@@ -67,7 +67,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	sealed class FakeIsImplicitNotSupportedObjectValueNode : DebugObjectValueNode
+	public sealed class FakeIsImplicitNotSupportedObjectValueNode : DebugObjectValueNode
 	{
 		string value;
 		bool isImplicitNotSupported;
@@ -95,7 +95,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	sealed class FakeObjectValueNode : DebugObjectValueNode
+	public sealed class FakeObjectValueNode : DebugObjectValueNode
 	{
 		bool hasChildren;
 
@@ -120,7 +120,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	sealed class FakeEnumerableObjectValueNode : DebugObjectValueNode
+	public sealed class FakeEnumerableObjectValueNode : DebugObjectValueNode
 	{
 		readonly int maxItems;
 
@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	sealed class FakeEvaluatingObjectValueNode : DebugObjectValueNode
+	public sealed class FakeEvaluatingObjectValueNode : DebugObjectValueNode
 	{
 		bool isEvaluating;
 		bool hasChildren;
@@ -201,7 +201,7 @@ namespace MonoDevelop.Debugger
 	/// <summary>
 	/// An AbstractObjectValueNode used for debugging
 	/// </summary>
-	sealed class FakeEvaluatingGroupObjectValueNode : DebugObjectValueNode, IEvaluatingGroupObjectValueNode
+	public sealed class FakeEvaluatingGroupObjectValueNode : DebugObjectValueNode, IEvaluatingGroupObjectValueNode
 	{
 		bool isEvaluating;
 		int evalNodes;

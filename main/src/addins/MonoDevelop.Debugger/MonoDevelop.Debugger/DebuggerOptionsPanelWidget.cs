@@ -183,7 +183,7 @@ namespace MonoDevelop.Debugger
 			checkAllowToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
 			enableLogging.Active = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false);
-			useNewTreeView.Active = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
+			useNewTreeView.Active = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", true);
 		}
 
 		public void Store ()

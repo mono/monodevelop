@@ -34,54 +34,100 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using Foundation;
 
 namespace MonoDevelop.Debugger
 {
 	public class ObjectValuePad : PadContent
 	{
-		protected readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", false);
+		protected readonly bool UseNewTreeView = PropertyService.Get ("MonoDevelop.Debugger.UseNewTreeView", true);
 
 		protected ObjectValueTreeViewController controller;
 		protected ObjectValueTreeView tree;
 
-		readonly ScrolledWindow scrolled;
+		readonly Control control;
+		PadFontChanger fontChanger;
+		StackFrame lastFrame;
 		bool needsUpdateValues;
 		bool needsUpdateFrame;
 		bool initialResume;
-		StackFrame lastFrame;
-		PadFontChanger fontChanger;
+		bool disposed;
 
 		public override Control Control {
-			get {
-				return scrolled;
-			}
+			get { return control; }
 		}
 
-		public ObjectValuePad ()
+		public ObjectValuePad (bool allowWatchExpressions = false)
 		{
-			scrolled = new ScrolledWindow ();
-			scrolled.HscrollbarPolicy = PolicyType.Automatic;
-			scrolled.VscrollbarPolicy = PolicyType.Automatic;
-
 			if (UseNewTreeView) {
-				controller = new ObjectValueTreeViewController ();
+				controller = new ObjectValueTreeViewController (allowWatchExpressions);
 				controller.AllowEditing = true;
 
-				var treeView = controller.GetControl () as GtkObjectValueTreeView;
-				fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
+				if (Platform.IsMac) {
+					LoggingService.LogInfo ("Using MacObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
+					var treeView = controller.GetMacControl ();
 
-				scrolled.Add (treeView);
+					fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
+
+					var scrolled = new AppKit.NSScrollView {
+						DocumentView = treeView,
+						AutohidesScrollers = false,
+						HasVerticalScroller = true,
+						HasHorizontalScroller = true,
+					};
+
+					// disable implicit animations
+					scrolled.WantsLayer = true;
+					scrolled.Layer.Actions = new NSDictionary (
+						"actions", NSNull.Null,
+						"contents", NSNull.Null,
+						"hidden", NSNull.Null,
+						"onLayout", NSNull.Null,
+						"onOrderIn", NSNull.Null,
+						"onOrderOut", NSNull.Null,
+						"position", NSNull.Null,
+						"sublayers", NSNull.Null,
+						"transform", NSNull.Null,
+						"bounds", NSNull.Null);
+
+					var host = new GtkNSViewHost (scrolled);
+					host.ShowAll ();
+
+					control = host;
+				} else {
+					LoggingService.LogInfo ("Using GtkObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
+					var treeView = controller.GetGtkControl ();
+					treeView.Show ();
+
+					fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
+
+					var scrolled = new ScrolledWindow {
+						HscrollbarPolicy = PolicyType.Automatic,
+						VscrollbarPolicy = PolicyType.Automatic
+					};
+					scrolled.Add (treeView);
+					scrolled.Show ();
+
+					control = scrolled;
+				}
 			} else {
+				LoggingService.LogInfo ("Using old ObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
 				tree = new ObjectValueTreeView ();
+				tree.AllowAdding = allowWatchExpressions;
 				tree.AllowEditing = true;
-				tree.AllowAdding = false;
+				tree.Show ();
 
 				fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
 
+				var scrolled = new ScrolledWindow {
+					HscrollbarPolicy = PolicyType.Automatic,
+					VscrollbarPolicy = PolicyType.Automatic
+				};
 				scrolled.Add (tree);
-			}
+				scrolled.Show ();
 
-			scrolled.ShowAll ();
+				control = scrolled;
+			}
 
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			DebuggingService.PausedEvent += OnDebuggerPaused;
@@ -99,17 +145,23 @@ namespace MonoDevelop.Debugger
 
 		public override void Dispose ()
 		{
-			if (fontChanger == null)
+			if (disposed)
 				return;
 
-			fontChanger.Dispose ();
-			fontChanger = null;
+			if (fontChanger != null) {
+				fontChanger.Dispose ();
+				fontChanger = null;
+			}
+
+			disposed = true;
+
 			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
 			DebuggingService.PausedEvent -= OnDebuggerPaused;
 			DebuggingService.ResumedEvent -= OnDebuggerResumed;
 			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged -= OnEvaluationOptionsChanged;
 			DebuggingService.VariableChanged -= OnVariableChanged;
+
 			base.Dispose ();
 		}
 
