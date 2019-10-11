@@ -94,6 +94,8 @@ namespace MonoDevelop.Debugger
 		}
 
 		readonly List<NSLayoutConstraint> constraints = new List<NSLayoutConstraint> ();
+		NSProgressIndicator spinner;
+		bool spinnerVisible;
 		NSImageView statusIcon;
 		bool statusIconVisible;
 		NSView colorPreview;
@@ -106,11 +108,17 @@ namespace MonoDevelop.Debugger
 
 		public MacDebuggerObjectValueView (MacObjectValueTreeView treeView) : base (treeView, "value")
 		{
+			spinner = new NSProgressIndicator (new CGRect (0, 0, ImageSize, ImageSize)) {
+				TranslatesAutoresizingMaskIntoConstraints = false,
+				Style = NSProgressIndicatorStyle.Spinning,
+				Indeterminate = true
+			};
+
 			statusIcon = new NSImageView {
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 
-			colorPreview = new NSView (new CGRect (0, 0, 16, 16)) {
+			colorPreview = new NSView (new CGRect (0, 0, ImageSize, ImageSize)) {
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 
@@ -166,6 +174,7 @@ namespace MonoDevelop.Debugger
 			string valueButtonText = null;
 			var showViewerButton = false;
 			Color? previewColor = null;
+			bool showSpinner = false;
 			string strval;
 
 			if (Node.IsUnknown) {
@@ -189,8 +198,7 @@ namespace MonoDevelop.Debugger
 					valueButtonText = GettextCatalog.GetString ("Show Value");
 			} else if (Node.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating\u2026");
-
-				evaluateStatusIcon = "md-spinner-16";
+				showSpinner = true;
 
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
 			} else if (Node.IsEnumerable) {
@@ -225,7 +233,7 @@ namespace MonoDevelop.Debugger
 
 			OptimalWidth = MarginSize;
 
-			// First item: Status Icon
+			// First item: Status Icon -or- Spinner
 			if (evaluateStatusIcon != null) {
 				statusIcon.Image = GetImage (evaluateStatusIcon, Gtk.IconSize.Menu);
 
@@ -244,6 +252,26 @@ namespace MonoDevelop.Debugger
 			} else if (statusIconVisible) {
 				statusIcon.RemoveFromSuperview ();
 				statusIconVisible = false;
+			}
+
+			if (showSpinner) {
+				if (!spinnerVisible) {
+					AddSubview (spinner);
+					spinner.StartAnimation (this);
+					spinnerVisible = true;
+				}
+
+				constraints.Add (spinner.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
+				constraints.Add (spinner.WidthAnchor.ConstraintEqualToConstant (ImageSize));
+				constraints.Add (spinner.HeightAnchor.ConstraintEqualToConstant (ImageSize));
+				views.Add (spinner);
+
+				OptimalWidth += ImageSize;
+				OptimalWidth += RowCellSpacing;
+			} else if (spinnerVisible) {
+				spinner.RemoveFromSuperview ();
+				spinner.StopAnimation (this);
+				spinnerVisible = false;
 			}
 
 			// Second Item: Color Preview
