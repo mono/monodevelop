@@ -47,14 +47,14 @@ namespace MonoDevelop.MacIntegration
 		protected override NSSavePanel OnCreatePanel (SelectFileDialogData data)
 		{
 			if (data.Action == FileChooserAction.Save)
-				return new NSSavePanel ();
+				return NSSavePanel.SavePanel;
 
-			return new NSOpenPanel {
-				CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
-				CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
-				CanCreateDirectories = (data.Action & FileChooserAction.CreateFolder) != 0,
-				ResolvesAliases = false,
-			};
+			var openPanel = NSOpenPanel.OpenPanel;
+			openPanel.CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0;
+			openPanel.CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0;
+			openPanel.CanCreateDirectories = (data.Action & FileChooserAction.CreateFolder) != 0;
+			openPanel.ResolvesAliases = false;
+			return openPanel;
 		}
 
 		public bool Run (SelectFileDialogData data)
