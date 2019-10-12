@@ -111,9 +111,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				bool done = false;
 
 				do {
-					using (var dlg2 = new MonoDevelop.Ide.Gui.Dialogs.NewConfigurationDialog (configData.Entry, configData.Configurations)) {
-						if (dlg2.Run (Xwt.MessageDialog.RootWindow) == Xwt.Command.Ok) {
-							var cc = configData.AddConfiguration (dlg2.ConfigName, copyFrom, dlg2.CreateChildren);
+					using (var dlg = new NewConfigurationDialog (configData.Entry, configData.Configurations)) {
+						if (dlg.Run (Xwt.MessageDialog.RootWindow) == Xwt.Command.Ok) {
+							var cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
 							store.AppendValues (cc, cc.Id);
 							done = true;
 						} else {
