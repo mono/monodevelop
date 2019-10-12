@@ -35,6 +35,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	class NewConfigurationDialog : Xwt.Dialog
 	{
+		ItemConfigurationCollection<ItemConfiguration> configurations;
+		ComboBoxEntry comboName;
+		ComboBoxEntry comboPlatform;
+		CheckBox createChildrenCheck;
+		DialogButton okButton;
+		InformationPopoverWidget popover;
+
 		public string ConfigName {
 			get {
 				string plat = MultiConfigItemOptionsPanel.GetPlatformId (comboPlatform.TextEntry.Text.Trim ());
@@ -179,12 +186,5 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				createChildrenCheck.Visible = false;
 			}
 		}
-
-		ItemConfigurationCollection<ItemConfiguration> configurations;
-		ComboBoxEntry comboName;
-		ComboBoxEntry comboPlatform;
-		CheckBox createChildrenCheck;
-		DialogButton okButton;
-		InformationPopoverWidget popover;
 	}
 }
