@@ -1,11 +1,11 @@
 XAMMAC_PATH=/Library/Frameworks/Xamarin.Mac.framework/Versions/Current
 XAMMAC_LIB_PATH=$(XAMMAC_PATH)/lib
-XAMMAC_PDB=$(XAMMAC_LIB_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.pdb
+XAMMAC_PDB=$(XAMMAC_LIB_PATH)/x86_64/full/Xamarin.Mac.pdb
 
 if ENABLE_MACPLATFORM
 all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac.dylib Xamarin.Mac.buildinfo
 
-Xamarin.Mac.dll: $(XAMMAC_LIB_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
+Xamarin.Mac.dll: $(XAMMAC_LIB_PATH)/x86_64/full/Xamarin.Mac.dll
 	cp $< $@
 	if [[ -f $<.mdb ]]; then cp $<.mdb $@.mdb; fi;
 	if [[ -f $(XAMMAC_PDB) ]]; then cp $(XAMMAC_PDB) Xamarin.Mac.pdb; fi;
