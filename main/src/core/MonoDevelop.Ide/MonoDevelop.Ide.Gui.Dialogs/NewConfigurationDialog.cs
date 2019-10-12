@@ -164,6 +164,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (disposing) {
 				comboName.TextEntry.Changed -= ComboTextChanged;
 				comboPlatform.TextEntry.Changed -= ComboTextChanged;
+
+				configurations = null;
+				comboName = null;
+				comboPlatform = null;
+				createChildrenCheck = null;
+				okButton = null;
+				popover = null;
 			}
 		}
 
