@@ -42,7 +42,7 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	class MacDebuggerObjectValueView : MacDebuggerObjectCellViewBase
 	{
-		class EditableTextField : NSTextField
+		sealed class EditableTextField : NSTextField
 		{
 			readonly MacDebuggerObjectValueView valueView;
 			string oldValue, newValue;
