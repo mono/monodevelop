@@ -249,6 +249,20 @@ namespace MonoDevelop.DesignerSupport
 		{
 			IdeApp.CommandService.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 			AddinManager.ExtensionChanged += OnExtensionChanged;
+
+			IdeApp.Initialized += (s, args) => {
+				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+					if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
+						ReSetPad ();
+					}
+				};
+				
+				IdeApp.Workbench.DocumentClosed += delegate {
+					if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen) {
+						ReSetPad ();
+					}
+				};
+			};
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
