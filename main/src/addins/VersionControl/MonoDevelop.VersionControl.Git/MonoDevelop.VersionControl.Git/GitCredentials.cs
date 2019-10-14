@@ -112,30 +112,13 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			bool result = false;
 			Uri uri = null;
-
 			GitCredentialsState state;
 			if (!credState.TryGetValue (type, out state))
 				credState [type] = state = new GitCredentialsState ();
 			state.UrlUsed = url;
+			Credentials cred = null;
 
-			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
-			// if the password store contains an invalid password/no password
-			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
-				if (Uri.TryCreate (url, UriKind.RelativeOrAbsolute, out uri)) {
-					if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out var username, out var password)) {
-						state.NativePasswordUsed = true;
-						return new UsernamePasswordCredentials {
-							Username = username,
-							Password = password
-						};
-					}
-				}
-			}
-
-			Credentials cred;
-			if ((types & SupportedCredentialTypes.UsernamePassword) != 0)
-				cred = new UsernamePasswordCredentials ();
-			else {
+			if ((types & SupportedCredentialTypes.Ssh) != 0) {
 				// Try ssh-agent on Linux.
 				if (!Platform.IsWindows && !state.AgentUsed) {
 					bool agentUsable;
@@ -201,6 +184,22 @@ namespace MonoDevelop.VersionControl.Git
 
 				return cred;
 			}
+
+			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
+			// if the password store contains an invalid password/no password
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+				if (Uri.TryCreate (url, UriKind.RelativeOrAbsolute, out uri)) {
+					if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out var username, out var password)) {
+						state.NativePasswordUsed = true;
+						return new UsernamePasswordCredentials {
+							Username = username,
+							Password = password
+						};
+					}
+				}
+			}
+			if (cred == null)
+				cred = new UsernamePasswordCredentials ();
 
 			var gitCredentialsProviders = AddinManager.GetExtensionObjects<IGitCredentialsProvider> ();
 
