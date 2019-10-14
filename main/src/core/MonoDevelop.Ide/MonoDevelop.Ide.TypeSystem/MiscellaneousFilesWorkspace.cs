@@ -20,16 +20,16 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Text;
 
 using Microsoft.VisualStudio.Composition;
@@ -42,8 +42,9 @@ using MonoDevelop.Ide.Composition;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	/// <summary>
-	/// Tracks open .cs documents not claimed by any primary workspace. Standalone files
-	/// and open documents that haven't been added to the workspace yet during solution load.
+	/// Tracks open .cs documents not claimed by any primary workspace and .csx script files.
+	/// Handles standalone files and open documents that haven't been added to the main workspace,
+	/// yet during solution load, and all .csx script files.
 	/// </summary>
 	/// <remarks>
 	/// Scenarios:
@@ -64,7 +65,10 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		ConcurrentDictionary<WorkspaceRegistration, OpenDocumentInfo> openDocuments = new ConcurrentDictionary<WorkspaceRegistration, OpenDocumentInfo> ();
 
-		ProjectId defaultProjectId;
+		readonly ImmutableArray<MetadataReference> defaultReferences = ImmutableArray.Create<MetadataReference> (
+			MetadataReference.CreateFromFile (typeof (object).Assembly.Location));
+
+		readonly ProjectId defaultProjectId;
 		const string DefaultProjectName = "MiscellaneousProject";
 
 		[ImportingConstructor]
@@ -86,13 +90,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				LanguageNames.CSharp,
 				compilationOptions: compilationOptions,
 				parseOptions: CSharpParseOptions.Default.WithLanguageVersion (LanguageVersion.Latest),
-				metadataReferences: DefaultReferences).WithHasAllInformation (false);
+				metadataReferences: defaultReferences).WithHasAllInformation (false);
 			OnProjectAdded (projectInfo);
 		}
 
 		class OpenDocumentInfo
 		{
 			public DocumentId DocumentId;
+			public ProjectId ProjectId;
 			public SourceTextContainer SourceTextContainer;
 			public string FilePath;
 		}
@@ -196,23 +201,54 @@ namespace MonoDevelop.Ide.TypeSystem
 			var filePath = openDocumentInfo.FilePath;
 			var sourceTextContainer = openDocumentInfo.SourceTextContainer;
 
-			var documentId = DocumentId.CreateNewId (defaultProjectId, filePath);
+			var sourceCodeKind = GetSourceCodeKind (filePath);
+			openDocumentInfo.ProjectId = sourceCodeKind == SourceCodeKind.Script
+				? CreateScriptProject ()
+				: defaultProjectId;
+
+			var documentId = DocumentId.CreateNewId (openDocumentInfo.ProjectId, filePath);
 			openDocumentInfo.DocumentId = documentId;
 
 			var documentInfo = DocumentInfo.Create (
 				documentId,
 				Path.GetFileName (filePath),
-				sourceCodeKind: GetSourceCodeKind (filePath),
+				sourceCodeKind: sourceCodeKind,
 				filePath: filePath,
 				loader: TextLoader.From (sourceTextContainer, VersionStamp.Create ()));
 
 			OnDocumentAdded (documentInfo);
 			OnDocumentOpened (documentId, sourceTextContainer);
+
+			ProjectId CreateScriptProject ()
+			{
+				var projectId = ProjectId.CreateNewId (filePath);
+
+				var compilationOptions = new CSharpCompilationOptions (
+					outputKind: OutputKind.ConsoleApplication,
+					sourceReferenceResolver: ScriptSourceResolver.Default,
+					metadataReferenceResolver: ScriptMetadataResolver.Default);
+
+				var projectInfo = ProjectInfo.Create (
+					id: projectId,
+					version: VersionStamp.Create (),
+					name: filePath,
+					assemblyName: Path.GetFileNameWithoutExtension (filePath),
+					language: LanguageNames.CSharp,
+					metadataReferences: defaultReferences,
+					compilationOptions: compilationOptions,
+					parseOptions: CSharpParseOptions
+						.Default
+						.WithLanguageVersion (LanguageVersion.Latest));
+
+				OnProjectAdded (projectInfo);
+
+				return projectInfo.Id;
+			}
 		}
 
 		/// <summary>
 		/// If the DocumentId is currently part of our workspace, remove this document
-		/// from our workspace.
+		/// from our workspace. If the document is a script, remove its project as well.
 		/// </summary>
 		void RemoveDocument (OpenDocumentInfo openDocumentInfo)
 		{
@@ -221,6 +257,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				OnDocumentClosed (documentId, EmptyTextLoader.Instance);
 				OnDocumentRemoved (documentId);
 				openDocumentInfo.DocumentId = null;
+
+				if (openDocumentInfo.ProjectId != null &&
+					openDocumentInfo.ProjectId != defaultProjectId) {
+					OnProjectRemoved (openDocumentInfo.ProjectId);
+					openDocumentInfo.ProjectId = null;
+				}
 			}
 		}
 
@@ -239,27 +281,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return filePath != null && (
 				filePath.EndsWith (".cs", StringComparison.OrdinalIgnoreCase) ||
 				filePath.EndsWith (".csx", StringComparison.OrdinalIgnoreCase));
-		}
-
-		IEnumerable<MetadataReference> defaultReferences;
-		IEnumerable<MetadataReference> DefaultReferences {
-			get {
-				if (defaultReferences == null) {
-					defaultReferences = new[]
-					{
-						typeof(object).Assembly
-					}.Select (CreateReferenceFromAssembly).ToArray ();
-				}
-
-				return defaultReferences;
-			}
-		}
-
-		MetadataReference CreateReferenceFromAssembly (Assembly assembly)
-		{
-			var filePath = assembly.Location;
-			var reference = MetadataReference.CreateFromFile (filePath);
-			return reference;
 		}
 
 		public override bool CanApplyChange (ApplyChangesKind feature)
