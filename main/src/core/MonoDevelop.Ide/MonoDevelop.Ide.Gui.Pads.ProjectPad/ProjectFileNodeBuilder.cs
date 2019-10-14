@@ -296,18 +296,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (hasChildren) {
 				if (files.Count == 1)
-					question = GettextCatalog.GetString ("Are you sure you want to remove the file {0} and " + 
+					question = GettextCatalog.GetString ("Remove the file {0} and " + 
 					                                     "its code-behind children from project {1}?",
 					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
 				else
-					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files and " + 
+					question = GettextCatalog.GetString ("Remove the selected files and " + 
 					                                     "their code-behind children from the project?");
 			} else {
 				if (files.Count == 1)
-					question = GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?",
+					question = GettextCatalog.GetString ("Remove file {0} from project {1}?",
 					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
 				else
-					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files from the project?");
+					question = GettextCatalog.GetString ("Remove the selected files from the project?");
 			}
 
 			var result = MessageService.AskQuestion (question, secondaryText, GetDeleteConfirmationButtons (filesExist, removeFromProject));
