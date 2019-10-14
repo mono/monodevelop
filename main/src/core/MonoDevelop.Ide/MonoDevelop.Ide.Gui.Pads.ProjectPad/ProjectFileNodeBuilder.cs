@@ -284,14 +284,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				files.Add (pf);
 			}
 
-			var removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
+			var removeFromProject = new AlertButton (GettextCatalog.GetString ("_Just Remove from Project"), Gtk.Stock.Remove);
 			string question;
 			string secondaryText = null;
 
 			bool filesExist = CheckAnyFileExists (files);
 			if (filesExist) {
 				secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
-					"Click Remove from Project if you only want to remove it from your current solution.");
+					"Click Just Remove from Project if you only want to remove it from your current solution.");
 			}
 			
 			if (hasChildren) {
@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		static AlertButton[] GetDeleteConfirmationButtons (bool includeDelete, AlertButton removeFromProject)
 		{
 			if (includeDelete)
-				return new [] { AlertButton.Delete, AlertButton.Cancel, removeFromProject };
+				return new [] { removeFromProject, AlertButton.Cancel, AlertButton.Delete };
 			return new [] { AlertButton.Cancel, removeFromProject };
 		}
 		
