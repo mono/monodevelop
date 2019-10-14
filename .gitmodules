@@ -8,15 +8,15 @@
 [submodule "main/external/libgit-binary"]
 	path = main/external/libgit-binary
 	url = git://github.com/mono/libgit-binary.git
-	branch = vs-8.0-v0.26.8
+	branch = vs-8.0-v0.28.3
 [submodule "main/external/libgit2"]
 	path = main/external/libgit2
 	url = git://github.com/mono/libgit2.git
-	branch = vs-8.0-v0.26.8
+	branch = vs-8.0-v0.28.3
 [submodule "main/external/libgit2sharp"]
 	path = main/external/libgit2sharp
 	url = git://github.com/mono/libgit2sharp.git
-	branch = vs-8.0-v0.26
+	branch = vs-8.0-v0.26.1-libgit2_v0.28.3
 [submodule "main/external/macdoc"]
 	path = main/external/macdoc
 	url = git://github.com/xamarin/macdoc
