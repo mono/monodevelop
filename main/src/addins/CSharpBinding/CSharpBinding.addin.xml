@@ -168,6 +168,7 @@
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true" roslynName="C#" contentType="CSharp">
 			<File pattern="*.cs" />
+			<File pattern="*.csx" />
 		</MimeType>
 		<MimeType id="application/x-csproject" _description="C# project file" baseType="application/x-msbuild">
 			<File pattern="*.csproj" />
