@@ -25,13 +25,17 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using AppKit;
 using Foundation;
 
-using MonoDevelop.Core;
+using Mono.Debugging.Client;
+
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 
@@ -42,14 +46,111 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	class MacDebuggerObjectNameView : MacDebuggerObjectCellViewBase
 	{
-		class EditableTextField : NSTextField
+		sealed class CodeCompletionTextFieldDataSource : NSComboBoxDataSource
 		{
+			List<CompletionItem> completionItems;
+
+			public CodeCompletionTextFieldDataSource ()
+			{
+				completionItems = new List<CompletionItem> ();
+			}
+
+			public void SetCompletionData (string expression, CompletionData completionData)
+			{
+				completionItems.Clear ();
+
+				if (completionData != null) {
+					foreach (var item in completionData.Items) {
+						if (item.Name.StartsWith (expression, StringComparison.OrdinalIgnoreCase))
+							completionItems.Add (item);
+					}
+				}
+			}
+
+			public override nint ItemCount (NSComboBox comboBox)
+			{
+				return completionItems.Count;
+			}
+
+			public override nint IndexOfItem (NSComboBox comboBox, string value)
+			{
+				int best = -1;
+
+				for (int i = 0; i < completionItems.Count; i++) {
+					if (completionItems[i].Name.Equals (value, StringComparison.Ordinal))
+						return i;
+
+					if (best == -1 && completionItems[i].Name.Equals (value, StringComparison.OrdinalIgnoreCase))
+						best = i;
+				}
+
+				return best;
+			}
+
+			public override NSObject ObjectValueForItem (NSComboBox comboBox, nint index)
+			{
+				if (index >= completionItems.Count)
+					return null;
+
+				return new NSString (completionItems[(int) index].Name);
+			}
+
+			public override string CompletedString (NSComboBox comboBox, string uncompletedString)
+			{
+				string caseInsensitiveMatch = null;
+				string caseInsensitiveStartsWith = null;
+				string startsWith = null;
+
+				for (int i = 0; i < completionItems.Count; i++) {
+					var completionText = completionItems[i].Name;
+
+					if (completionText.Equals (uncompletedString, StringComparison.Ordinal))
+						return completionText;
+
+					if (caseInsensitiveMatch == null && completionText.Equals (uncompletedString, StringComparison.OrdinalIgnoreCase)) {
+						caseInsensitiveMatch = completionText;
+						continue;
+					}
+
+					if (startsWith == null && completionText.StartsWith (uncompletedString, StringComparison.Ordinal)) {
+						startsWith = completionText;
+						continue;
+					}
+
+					if (caseInsensitiveStartsWith == null && completionText.StartsWith (uncompletedString, StringComparison.OrdinalIgnoreCase)) {
+						caseInsensitiveStartsWith = completionText;
+						continue;
+					}
+				}
+
+				if (caseInsensitiveMatch != null)
+					return caseInsensitiveMatch;
+
+				if (startsWith != null)
+					return startsWith;
+
+				if (caseInsensitiveStartsWith != null)
+					return caseInsensitiveStartsWith;
+
+				return uncompletedString;
+			}
+		}
+
+		sealed class CodeCompletionTextField : NSComboBox
+		{
+			readonly CodeCompletionTextFieldDataSource dataSource;
 			readonly MacDebuggerObjectNameView nameView;
+			CancellationTokenSource cts;
 			string oldValue, newValue;
 			bool editing;
 
-			public EditableTextField (MacDebuggerObjectNameView nameView)
+			public CodeCompletionTextField (MacDebuggerObjectNameView nameView)
 			{
+				dataSource = new CodeCompletionTextFieldDataSource ();
+				UsesDataSource = true;
+				DataSource = dataSource;
+				Completes = true;
+
 				this.nameView = nameView;
 			}
 
@@ -81,10 +182,24 @@ namespace MonoDevelop.Debugger
 				editing = true;
 			}
 
+			async Task UpdateCodeCompletionItemsAsync (string expression)
+			{
+				try {
+					cts?.Cancel ();
+					cts?.Dispose ();
+					cts = new CancellationTokenSource ();
+					var completionData = await nameView.TreeView.DebuggerService.GetCompletionDataAsync (expression, cts.Token);
+					dataSource.SetCompletionData (expression, completionData);
+					NoteNumberOfItemsChanged ();
+				} catch (OperationCanceledException) {
+				}
+			}
+
 			public override void DidChange (NSNotification notification)
 			{
 				newValue = StringValue.Trim ();
 				base.DidChange (notification);
+				UpdateCodeCompletionItemsAsync (newValue).Ignore ();
 			}
 
 			public override void DidEndEditing (NSNotification notification)
@@ -93,6 +208,10 @@ namespace MonoDevelop.Debugger
 
 				if (!editing)
 					return;
+
+				cts?.Cancel ();
+				cts?.Dispose ();
+				cts = null;
 
 				editing = false;
 
@@ -110,16 +229,22 @@ namespace MonoDevelop.Debugger
 
 			protected override void Dispose (bool disposing)
 			{
-				if (disposing)
+				if (disposing) {
+					cts?.Cancel ();
+					cts?.Dispose ();
 					nameView.Dispose ();
+				}
 
 				base.Dispose (disposing);
 			}
 		}
 
 		readonly List<NSLayoutConstraint> constraints = new List<NSLayoutConstraint> ();
+		readonly CodeCompletionTextField codeCompletionTextField;
+		bool codeCompletionTextFieldVisible;
 		PreviewButtonIcon currentIcon;
 		bool previewIconVisible;
+		bool textFieldVisible;
 		bool disposed;
 
 		public MacDebuggerObjectNameView (MacObjectValueTreeView treeView) : base (treeView, "name")
@@ -128,7 +253,9 @@ namespace MonoDevelop.Debugger
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 
-			TextField = new EditableTextField (this) {
+			AddSubview (ImageView);
+
+			TextField = new NSTextField {
 				AutoresizingMask = NSViewResizingMask.WidthSizable,
 				TranslatesAutoresizingMaskIntoConstraints = false,
 				DrawsBackground = false,
@@ -137,9 +264,18 @@ namespace MonoDevelop.Debugger
 			};
 			TextField.Cell.UsesSingleLineMode = true;
 			TextField.Cell.Wraps = false;
-
-			AddSubview (ImageView);
+			textFieldVisible = true;
 			AddSubview (TextField);
+
+			codeCompletionTextField = new CodeCompletionTextField (this) {
+				AutoresizingMask = NSViewResizingMask.WidthSizable,
+				TranslatesAutoresizingMaskIntoConstraints = false,
+				DrawsBackground = false,
+				Bordered = false,
+				Editable = true
+			};
+			codeCompletionTextField.Cell.UsesSingleLineMode = true;
+			codeCompletionTextField.Cell.Wraps = false;
 
 			PreviewButton = new NSButton {
 				TranslatesAutoresizingMaskIntoConstraints = false,
@@ -204,17 +340,38 @@ namespace MonoDevelop.Debugger
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
 			}
 
-			TextField.PlaceholderAttributedString = GetAttributedPlaceholderString (placeholder);
-			TextField.AttributedStringValue = GetAttributedString (name);
-			TextField.TextColor = textColor;
-			TextField.Editable = editable;
-			UpdateFont (TextField);
-			TextField.SizeToFit ();
+			NSTextField textField;
 
-			OptimalWidth += TextField.Frame.Width;
+			if (editable) {
+				codeCompletionTextField.PlaceholderAttributedString = GetAttributedPlaceholderString (placeholder);
+				textField = codeCompletionTextField;
 
-			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
-			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (ImageView.TrailingAnchor, RowCellSpacing));
+				if (!codeCompletionTextFieldVisible) {
+					TextField.RemoveFromSuperview ();
+					textFieldVisible = false;
+					codeCompletionTextFieldVisible = true;
+					AddSubview (codeCompletionTextField);
+				}
+			} else {
+				textField = TextField;
+
+				if (!textFieldVisible) {
+					codeCompletionTextField.RemoveFromSuperview ();
+					codeCompletionTextFieldVisible = false;
+					textFieldVisible = true;
+					AddSubview (TextField);
+				}
+			}
+
+			textField.AttributedStringValue = GetAttributedString (name);
+			textField.TextColor = textColor;
+			UpdateFont (textField);
+			textField.SizeToFit ();
+
+			OptimalWidth += textField.Frame.Width;
+
+			constraints.Add (textField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
+			constraints.Add (textField.LeadingAnchor.ConstraintEqualToAnchor (ImageView.TrailingAnchor, RowCellSpacing));
 
 			if (MacObjectValueTreeView.ValidObjectForPreviewIcon (Node)) {
 				SetPreviewButtonIcon (PreviewButtonIcon.Hidden);
@@ -224,9 +381,9 @@ namespace MonoDevelop.Debugger
 					previewIconVisible = true;
 				}
 
-				constraints.Add (TextField.WidthAnchor.ConstraintGreaterThanOrEqualToConstant (TextField.Frame.Width));
+				constraints.Add (textField.WidthAnchor.ConstraintGreaterThanOrEqualToConstant (textField.Frame.Width));
 				constraints.Add (PreviewButton.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
-				constraints.Add (PreviewButton.LeadingAnchor.ConstraintEqualToAnchor (TextField.TrailingAnchor, RowCellSpacing));
+				constraints.Add (PreviewButton.LeadingAnchor.ConstraintEqualToAnchor (textField.TrailingAnchor, RowCellSpacing));
 				constraints.Add (PreviewButton.WidthAnchor.ConstraintEqualToConstant (ImageSize));
 				constraints.Add (PreviewButton.HeightAnchor.ConstraintEqualToConstant (ImageSize));
 
@@ -238,7 +395,7 @@ namespace MonoDevelop.Debugger
 					previewIconVisible = false;
 				}
 
-				constraints.Add (TextField.TrailingAnchor.ConstraintEqualToAnchor (TrailingAnchor, -MarginSize));
+				constraints.Add (textField.TrailingAnchor.ConstraintEqualToAnchor (TrailingAnchor, -MarginSize));
 			}
 
 			foreach (var constraint in constraints)
@@ -300,6 +457,11 @@ namespace MonoDevelop.Debugger
 				foreach (var constraint in constraints)
 					constraint.Dispose ();
 				constraints.Clear ();
+
+				codeCompletionTextField.Dispose ();
+				PreviewButton.Dispose ();
+				TextField.Dispose ();
+				ImageView.Dispose ();
 				disposed = true;
 			}
 
