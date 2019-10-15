@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
@@ -368,9 +369,122 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					Assert.IsTrue (additionalDocs.Any (d => d.FilePath == expectedAdditionalFileName));
 					Assert.IsTrue (editorConfigDocs.Any (d => d.FilePath == expectedEditorConfigFileName));
+
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
+			}
+		}
+
+		[Test]
+		public async Task EditorConfigFile_ModifiedExternally ()
+		{
+			FilePath solFile = Util.GetSampleProject ("additional-files", "additional-files.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var project = sol.GetAllProjects ().Single ();
+
+					FilePath editorConfigFileName = solFile.ParentDirectory.Combine (".editorconfig");
+					var projectInfo = ws.CurrentSolution.Projects.Single ();
+					var editorConfigDoc = projectInfo.AnalyzerConfigDocuments.Single (d => d.FilePath == editorConfigFileName);
+
+					bool analyzerConfigDocumentChanged = false;
+					ws.WorkspaceChanged += (sender, e) => {
+						if (e.DocumentId == editorConfigDoc.Id &&
+							e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.AnalyzerConfigDocumentChanged) {
+							analyzerConfigDocumentChanged = true;
+						}
+					};
+
+					// Add error style to .editorconfig
+					string contents =
+						"root = true\r\n" +
+						"\r\n" +
+						"[*.cs]\r\n" +
+						"csharp_style_var_for_built_in_types = true:error\r\n";
+					File.WriteAllText (editorConfigFileName, contents);
+					FileService.NotifyFileChanged (editorConfigFileName);
+
+					Func<bool> action = () => analyzerConfigDocumentChanged;
+					await AssertIsTrueWithTimeout (action, "Timed out waiting for analyzer config file changed event", 10000);
+
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
+		[Test]
+		public async Task EditorConfigFile_ModifiedInTextEditor ()
+		{
+			FilePath solFile = Util.GetSampleProject ("additional-files", "additional-files.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var project = sol.GetAllProjects ().Single ();
+
+					FilePath editorConfigFileName = solFile.ParentDirectory.Combine (".editorconfig");
+					var textFileModel = new TextBufferFileModel ();
+					var mimeType = MimeTypeCatalog.Instance.FindMimeTypeForFile (editorConfigFileName);
+					textFileModel.CreateNew (editorConfigFileName, mimeType?.Id);
+
+					var projectInfo = ws.CurrentSolution.Projects.Single ();
+					Microsoft.CodeAnalysis.AnalyzerConfigDocument editorConfigDoc =
+						projectInfo.AnalyzerConfigDocuments.Single (d => d.FilePath == editorConfigFileName);
+
+					int analyzerConfigDocumentChangedCount = 0;
+					ws.WorkspaceChanged += (sender, e) => {
+						if (e.DocumentId == editorConfigDoc.Id &&
+							e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.AnalyzerConfigDocumentChanged) {
+							analyzerConfigDocumentChangedCount++;
+						}
+					};
+
+					using (var fileRegistration = IdeApp.TypeSystemService.RegisterOpenDocument (
+						null, // No owner.
+						editorConfigFileName,
+						textFileModel.TextBuffer)) {
+
+						Assert.IsTrue (ws.IsDocumentOpen (editorConfigDoc.Id));
+
+						Func<bool> action = () => analyzerConfigDocumentChangedCount == 1;
+						await AssertIsTrueWithTimeout (action, "Timed out waiting for analyzer config file changed event on opening file", 100000);
+
+						// Add error style to .editorconfig
+						string contents =
+							"root = true\r\n" +
+							"\r\n" +
+							"[*.cs]\r\n" +
+							"csharp_style_var_for_built_in_types = true:error\r\n";
+						textFileModel.SetText (contents);
+						await textFileModel.Save ();
+
+						action = () => analyzerConfigDocumentChangedCount == 2;
+						await AssertIsTrueWithTimeout (action, "Timed out waiting for analyzer config file changed event", 100000);
+					}
+					// After the file registration is disposed the document should be closed.
+					Assert.IsFalse (ws.IsDocumentOpen (editorConfigDoc.Id));
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
+		async Task AssertIsTrueWithTimeout (Func<bool> action, string message, int timeout)
+		{
+			int howLong = 0;
+			const int interval = 200; // ms
+
+			while (!action ()) {
+				if (howLong >= timeout) {
+					Assert.Fail (message);
+				}
+
+				await Task.Delay (interval);
+				howLong += interval;
 			}
 		}
 
