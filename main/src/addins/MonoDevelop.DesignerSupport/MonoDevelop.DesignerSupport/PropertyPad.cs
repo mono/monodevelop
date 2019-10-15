@@ -47,7 +47,7 @@ namespace MonoDevelop.DesignerSupport
 	class PropertyMacHostWidget : IPropertyGrid
 	{
 		readonly GtkNSViewHost host;
-		readonly MacPropertyGrid view;
+		MacPropertyGrid view;
 
 		public bool IsGridEditing => view.IsEditing;
 
@@ -66,7 +66,11 @@ namespace MonoDevelop.DesignerSupport
 		{
 			view = new MacPropertyGrid ();
 			host = new GtkNSViewHost (view);
+
+			view.PropertyGridChanged += View_PropertyGridChanged;
 		}
+
+		private void View_PropertyGridChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
 
 		public void SetCurrentObject (object obj, object [] propertyProviders)
 			=> view.SetCurrentObject (obj, propertyProviders);
@@ -75,7 +79,13 @@ namespace MonoDevelop.DesignerSupport
 			=> view.BlankPad ();
 
 		public void Dispose ()
-			=> view.Dispose ();
+		{
+			if (view != null) {
+				view.PropertyGridChanged -= View_PropertyGridChanged;
+				view.Dispose ();
+				view = null;
+			}
+		}
 
 		public void Hide () => view.Hidden = true;
 		public void Show () => view.Hidden = false;
@@ -94,6 +104,11 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//not implemented;
 		}
+
+		public void CommitPendingChanges ()
+		{
+			//not implemented;
+		}
 	}
 
 	public interface IPropertyGrid : IPropertyPad
@@ -104,6 +119,8 @@ namespace MonoDevelop.DesignerSupport
 		void Show ();
 
 		void SetToolbarProvider (object toolbarProvider);
+
+		void CommitPendingChanges ();
 
 		Gtk.Widget Widget { get; }
 	}
@@ -136,7 +153,11 @@ namespace MonoDevelop.DesignerSupport
 #else
 			nativeWidget = new pg.PropertyGrid ();
 #endif
+			nativeWidget.PropertyGridChanged += NativeWidget_PropertyGridChanged;
 		}
+
+		private void NativeWidget_PropertyGridChanged (object sender, EventArgs e)
+			=> PropertyGridChanged?.Invoke (this, e);
 
 		public void BlankPad ()
 			=> nativeWidget.BlankPad ();
@@ -150,7 +171,14 @@ namespace MonoDevelop.DesignerSupport
 		public void Show () => nativeWidget.Show ();
 		public void Hide () => nativeWidget.Hide ();
 
-		public void Dispose () => nativeWidget.Dispose ();
+		public void Dispose ()
+		{
+			if (nativeWidget != null) {
+				nativeWidget.PropertyGridChanged += NativeWidget_PropertyGridChanged;
+				nativeWidget.Dispose ();
+				nativeWidget = null;
+			}
+		}
 
 		public void SetToolbarProvider (object toolbarProvider)
 		{
@@ -164,6 +192,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public void CommitPendingChanges ()
 		{
+			nativeWidget.CommitPendingChanges ();
 			//to implement
 		}
 	}
