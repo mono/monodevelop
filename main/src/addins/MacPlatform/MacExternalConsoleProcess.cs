@@ -150,10 +150,14 @@ bash pause on exit trick
 						File.Delete (tempFileName);
 					}
 				};
-				
-				if (pauseWhenFinished)
+
+				if (pauseWhenFinished) {
+
 					sb.Append ("; echo; read -p \"Press any key to continue...\" -n1");
-				sb.Append ("; exit");
+				
+				}
+				//sb.Append ("; exit");
+				sb.AppendFormat ("; osascript -e \"tell app \\\"{0}\\\" to quit\"", TERMINAL_APP);
 			}
 
 			//run the command in Terminal.app and extract tab and window IDs
@@ -178,7 +182,6 @@ bash pause on exit trick
 			sb.AppendFormat ("\tset frontmost of {0} to true\n", windowId);
 			sb.AppendFormat ("\tset selected of {0} of {1} to true\n", tabId, windowId);
 			sb.Append ("\tactivate\n");
-			sb.Append ("\texit\n");
 			sb.Append ("end tell");
 
 			try {
