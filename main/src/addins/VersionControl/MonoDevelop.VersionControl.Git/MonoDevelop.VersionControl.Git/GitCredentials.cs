@@ -146,7 +146,7 @@ namespace MonoDevelop.VersionControl.Git
 						};
 						cred = sshCred;
 
-						if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+						if (XwtCredentialsDialog.Run (url, SupportedCredentialTypes.Ssh, cred).Result) {
 							keyIndex = Keys.IndexOf (sshCred.PrivateKey);
 							if (keyIndex < 0) {
 								Keys.Add (sshCred.PrivateKey);
@@ -169,7 +169,7 @@ namespace MonoDevelop.VersionControl.Git
 				};
 
 				if (KeyHasPassphrase (key)) {
-					if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+					if (XwtCredentialsDialog.Run (url, SupportedCredentialTypes.Ssh, cred).Result) {
 						var sshCred = (SshUserKeyCredentials)cred;
 						keyIndex = Keys.IndexOf (sshCred.PrivateKey);
 						if (keyIndex < 0) {
