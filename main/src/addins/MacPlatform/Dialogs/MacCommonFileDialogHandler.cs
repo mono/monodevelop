@@ -92,10 +92,14 @@ namespace MonoDevelop.MacIntegration
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 
-			var parent = IdeServices.DesktopService.GetFocusedTopLevelWindow ();
-			if (parent != null)
-				panel.ParentWindow = parent;
-
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Catalina) {
+				//set ParentWindow in NSSavePanel is broken in Catalina, we need a fix in cocoa
+				var parentWindow = (NSWindow)IdeServices.DesktopService.GetFocusedTopLevelWindow ();
+				if (parentWindow != null) {
+					panel.ParentWindow = parentWindow;
+				}
+			}
+			
 			if (panel is NSOpenPanel openPanel) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;
 				openPanel.ShowsHiddenFiles = data.ShowHidden;
