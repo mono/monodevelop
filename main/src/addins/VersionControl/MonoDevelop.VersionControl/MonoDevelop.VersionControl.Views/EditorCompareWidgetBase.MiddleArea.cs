@@ -134,6 +134,7 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				try {
 					widget.UndoChange (fromEditor, toEditor, hunk);
+					UpdateAccessiblity ();
 				} catch (Exception e) {
 					LoggingService.LogInternalError ("Error while undoing widget change.", e);
 				}
