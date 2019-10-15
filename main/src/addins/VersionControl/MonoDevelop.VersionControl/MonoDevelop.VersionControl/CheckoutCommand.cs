@@ -5,6 +5,7 @@ using MonoDevelop.Ide;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
@@ -47,17 +48,25 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Checking out {0}...", path);
 			}
 
+			Ide.ProgressMonitoring.MessageDialogProgressMonitor messageDialogProgressMonitor;
+
 			protected override ProgressMonitor CreateProgressMonitor ()
 			{
 				return new MonoDevelop.Core.ProgressMonitoring.AggregatedProgressMonitor (
 					base.CreateProgressMonitor (),
-					new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true)
+					messageDialogProgressMonitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true)
 				);
+			}
+
+			protected override void ReportError (string primaryText, string message, Exception exception)
+			{
+				MessageService.ShowError (messageDialogProgressMonitor.ProgressDialog, primaryText, message, exception);
 			}
 
 			AlertButton AskForCheckoutPath ()
 			{
 				return MessageService.AskQuestion (
+					messageDialogProgressMonitor.ProgressDialog,
 					GettextCatalog.GetString ("Checkout path is not empty. Do you want to delete its contents?"),
 					path,
 					AlertButton.Cancel,
