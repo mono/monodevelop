@@ -68,6 +68,8 @@ namespace MonoDevelop.Debugger
 				if (placeholder != null)
 					PlaceholderString = placeholder.Value;
 
+				TextColor = NSColor.ControlText;
+
 				return true;
 			}
 
