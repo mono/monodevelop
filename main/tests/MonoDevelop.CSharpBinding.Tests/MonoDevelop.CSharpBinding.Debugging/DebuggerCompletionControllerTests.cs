@@ -113,5 +113,82 @@ namespace console61
 			Assert.That (items, Contains.Item ("Method2"));
 			Assert.AreEqual (1, completionResult.ExpressionLength);
 		}
+
+		[Test]
+		public async Task HandlesWhenTextBufferChangesAndContainsLessLines ()
+		{
+			var contentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType ("text/x-csharp");
+
+			var text = @"
+namespace console61
+	{
+		class MainClass
+		{
+			static void MethodA (int a)
+			{
+			}
+
+			static void MethodB (int a)
+			{
+			}
+
+			static void MethodC (int a)
+			{
+			}
+
+			public static void Main (string [] args)
+			{
+				$Console.WriteLine(2);$
+			}
+
+			static void Method2 (int a)
+			{
+			}
+		}
+	}
+";
+
+			var textAfter = @"
+namespace console61
+	{
+		class MainClass
+		{
+		}
+
+		static void MethodZ (int a)
+		{
+		}
+	}
+";
+
+			int startOfStatement = text.IndexOf ('$');
+			if (startOfStatement >= 0)
+				text = text.Substring (0, startOfStatement) + text.Substring (startOfStatement + 1);
+			int endOfStatement = text.IndexOf ('$');
+			if (endOfStatement >= 0)
+				text = text.Substring (0, endOfStatement) + text.Substring (endOfStatement + 1);
+
+			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, contentType);
+			var doc = GetAnalysisDocument (text);
+
+			var snapshot = buffer.CurrentSnapshot;
+			var startLine = snapshot.GetLineFromPosition (startOfStatement);
+			var startColumn = startOfStatement - startLine.Start.Position;
+			var endLine = snapshot.GetLineFromPosition (endOfStatement);
+			var endColumn = endOfStatement - endLine.Start.Position;
+
+			// get the stack frame
+			var stackFrame = new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#");
+
+			// now, alter the source so that the stack frame's location appear after the last line in the buffer
+			var bufferAfter = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (textAfter, contentType);
+			var docAfter = GetAnalysisDocument (textAfter);
+			var controller = new DebuggerCompletionProvider (docAfter, bufferAfter);
+
+			var completionResult =
+				await controller.GetExpressionCompletionDataAsync ("a", stackFrame, default);
+
+			Assert.IsNull (completionResult);
+		}
 	}
 }
