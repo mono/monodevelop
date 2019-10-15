@@ -230,7 +230,10 @@ namespace MonoDevelop.DesignerSupport
 			customWidget = true;
 			frame.Remove (frame.Child);
 			frame.Add (widget);
-			widget.Show ();			
+			widget.Show ();
+			if (container != null) {
+				widget.Visible = container.ContentVisible;
+			}
 		}
 		
 		void ClearToolbar ()
