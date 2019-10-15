@@ -163,7 +163,7 @@ bash pause on exit trick
 			} else {
 				// run the command inside Bash because we do echo $? and that is a bash extension and breaks when people
 				// use other shells such as zsh or fish. https://bugzilla.xamarin.com/show_bug.cgi?id=56053
-				appleScript = string.Format ("tell app \"{0}\" to do script \"bash -c '{1}'; exit\"", TERMINAL_APP, Escape (sb.ToString ()));
+				appleScript = string.Format ("tell app \"{0}\" to do script \"bash -c '{1}'; \"", TERMINAL_APP, Escape (sb.ToString ()));
 			}
 			var ret = AppleScript.Run (appleScript);
 			int i = ret.IndexOf ("of", StringComparison.Ordinal);
@@ -178,6 +178,7 @@ bash pause on exit trick
 			sb.AppendFormat ("\tset frontmost of {0} to true\n", windowId);
 			sb.AppendFormat ("\tset selected of {0} of {1} to true\n", tabId, windowId);
 			sb.Append ("\tactivate\n");
+			sb.Append ("\texit\n");
 			sb.Append ("end tell");
 
 			try {
