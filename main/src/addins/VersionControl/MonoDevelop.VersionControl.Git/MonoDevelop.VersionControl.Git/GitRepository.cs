@@ -1199,6 +1199,11 @@ namespace MonoDevelop.VersionControl.Git
 						retry = false;
 						throw new VersionControlException (e.Message, e);
 					} catch (LibGit2SharpException e) {
+						if (e.Message.Contains ("remote: Public key authentication failed.")) {
+							// if key auth fails, retry until the user selects the proper key or cancels
+							retry = true;
+							continue;
+						}
 						GitCredentials.InvalidateCredentials (credType);
 
 						if (e.Message == GettextCatalog.GetString (GitCredentials.UserCancelledExceptionMessage))
