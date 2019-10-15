@@ -8,7 +8,7 @@
 		<Icon>md-workspace</Icon>
 		<Image id="md-workspace" />
 		<LanguageName/>
-		<_Description>A blank workspace</_Description>
+		<_Description>Creates a blank workspace.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
