@@ -250,17 +250,10 @@ namespace MonoDevelop.DesignerSupport
 			IdeApp.CommandService.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 
-			IdeApp.Initialized += (s, args) => {
-				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-					if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
+			IdeApp.Initialized += (s, args) => {				
+				IdeApp.Workbench.DocumentClosed += (o, args) => {
+					if (lastPadProvider != null && lastPadProvider == args.Document.DocumentContext.GetContent<IPropertyPadProvider>())
 						ReSetPad ();
-					}
-				};
-				
-				IdeApp.Workbench.DocumentClosed += delegate {
-					if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen) {
-						ReSetPad ();
-					}
 				};
 			};
 		}
