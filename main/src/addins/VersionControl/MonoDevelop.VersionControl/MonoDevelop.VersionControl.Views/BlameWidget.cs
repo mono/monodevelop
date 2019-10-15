@@ -41,6 +41,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.VersionControl.Views
 		ShowPreviousBlame
 	}
 
-	class BlameWidget : Bin
+	partial class BlameWidget : Bin
 	{
 		Revision revision;
 
@@ -333,7 +334,7 @@ namespace MonoDevelop.VersionControl.Views
 				do {
 					JumpOverFoldings (ref line);
 					line++;
-				} while (curY < editor.Allocation.Bottom && line <= overview.annotations.Count && ann != null && overview.annotations[line - 1] != null && overview.annotations[line - 1].Revision == ann.Revision);
+				} while (curY < editor.Allocation.Bottom && line <= overview.annotations.Count && ann != null && overview.annotations [line - 1] != null && overview.annotations [line - 1].Revision == ann.Revision);
 				curY = Editor.LineToY (line) - Editor.VAdjustment.Value;
 
 				if (overview.highlightAnnotation != null) {
@@ -408,6 +409,7 @@ namespace MonoDevelop.VersionControl.Views
 			void OnWidgetChanged (object sender, EventArgs e)
 			{
 				QueueDraw ();
+				UpdateAccessiblity ();
 			}
 
 			public void OptionsChanged ()
@@ -569,6 +571,12 @@ namespace MonoDevelop.VersionControl.Views
 				cinfo.Enabled = history.Count > 0;
 			}
 
+			protected override void OnSizeAllocated (Rectangle allocation)
+			{
+				base.OnSizeAllocated (allocation);
+				UpdateAccessiblity ();
+			}
+
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
 				if (dragPosition >= 0) {
@@ -647,7 +655,7 @@ namespace MonoDevelop.VersionControl.Views
 				return null;
 			}
 
-			string TruncRevision (string revision)
+			internal string TruncRevision (string revision)
 			{
 				return TruncRevision (revision, 8);
 			}
@@ -832,6 +840,50 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 				return true;
+			}
+
+			void UpdateAccessiblity ()
+			{
+				ClearAccessibleSections ();
+				int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
+				double startY = widget.Editor.LineToY (startLine);
+				while (startLine > 1 && startLine < annotations.Count && annotations [startLine - 1] != null && annotations [startLine] != null && annotations [startLine - 1].Revision == annotations [startLine].Revision) {
+					startLine--;
+					startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
+				}
+				double curY = startY - widget.Editor.VAdjustment.Value;
+				int line = startLine;
+				while (curY < Allocation.Bottom && line <= widget.Editor.LineCount) {
+					Annotation ann = line <= annotations.Count ? annotations [line - 1] : null;
+					if (ann != null) {
+						int lineStart = line;
+						do {
+							widget.JumpOverFoldings (ref line);
+							line++;
+						} while (line <= annotations.Count && annotations [line - 1] != null && annotations [line - 1].Revision == ann.Revision);
+
+						double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
+						accessibleSections.Add (new AuthorSectionAccessible (this, lineStart, ann, curY, nextY));
+						curY = nextY;
+					} else {
+						curY += widget.Editor.GetLineHeight (line);
+						line++;
+						widget.JumpOverFoldings (ref line);
+					}
+				}
+
+				Accessible.SetAccessibleChildren (accessibleSections.Select (a => a.Accessible).ToArray ());
+			}
+
+			List<AuthorSectionAccessible> accessibleSections = new List<AuthorSectionAccessible> ();
+
+			void ClearAccessibleSections ()
+			{
+				foreach (var button in accessibleSections) {
+					button.Dispose ();
+				}
+				accessibleSections.Clear ();
+				Accessible.SetAccessibleChildren (Array.Empty<AccessibilityElementProxy> ());
 			}
 
 			int YToStartLine (double y) => widget.Editor.YToLine (widget.Editor.VAdjustment.Value + y);
