@@ -123,6 +123,10 @@ namespace MonoDevelop.CSharp.Debugger
 				return null;
 			var solution = document.Project.Solution;
 			var textSnapshot = textBuffer.CurrentSnapshot;
+
+			if (location.EndLine > textSnapshot.LineCount)
+				return null;
+
 			var text = textSnapshot.GetText (new Span (0, textSnapshot.Length));
 			var insertOffset = await GetAdjustedContextPointAsync (textSnapshot.GetLineFromLineNumber (location.EndLine - 1).Start.Position + location.EndColumn - 1, document, token).ConfigureAwait(false);
 			text = text.Insert (insertOffset, ";" + exp + ";");
