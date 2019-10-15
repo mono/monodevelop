@@ -133,6 +133,7 @@
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommitUniqueCompletionListItemCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeSignatureHelpCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowQuickInfo" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickInfoCommandArgs" />
 
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickFixCommandArgs" />
 
