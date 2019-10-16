@@ -102,6 +102,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.MarginLeft = 12;
 			mainBox.PackStart (table);
 
+			appEntry.Accessible.LabelWidget = radioStartApp;
+
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
