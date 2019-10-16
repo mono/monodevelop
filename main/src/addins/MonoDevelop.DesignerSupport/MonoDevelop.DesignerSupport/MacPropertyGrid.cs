@@ -36,6 +36,7 @@ using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Mac;
 using AppKit;
 using CoreGraphics;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -66,6 +67,17 @@ namespace MonoDevelop.DesignerSupport
 			};
 			AddSubview (propertyEditorPanel);
 
+			#region Header Proppy Hack
+
+			header = propertyEditorPanel.Subviews [0];
+			propertyList = propertyEditorPanel.Subviews [1];
+
+			//we need the second item constrained with the property list
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			border = topConstraint.SecondItem as NSView;
+
+			#endregion
+
 			editorProvider = new ComponentModelEditorProvider ();
 			editorProvider.PropertyChanged += EditorProvider_PropertyChanged;
 
@@ -95,21 +107,44 @@ namespace MonoDevelop.DesignerSupport
 			get => currentSelectedObject.Target;
 		}
 
+		#region Header Proppy Hack
+
+		NSView header;
+		NSView propertyList;
+		NSView border;
+
+		void ShowHeader ()
+		{
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			propertyEditorPanel.RemoveConstraint (topConstraint);
+			propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
+
+			header.Hidden = false;
+		}
+
+		void HideHeader ()
+		{
+			header.Hidden = true;
+
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			propertyEditorPanel.RemoveConstraint (topConstraint);
+			propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, propertyEditorPanel, NSLayoutAttribute.Top, 1, 0));
+		}
+
 		//HACK: this 
-		bool showToolbar = true;
-		public bool ShowToolbar {
-			get => showToolbar;
+		public bool ToolbarVisible {
+			get => !header.Hidden;
 			set {
 				//we ensure remove current constraints from proppy
-
-
-				if (showToolbar) {
-
+				if (value) {
+					ShowHeader ();
 				} else {
-					//we only want include 
+					HideHeader ();
 				}
 			}
 		}
+
+		#endregion
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
