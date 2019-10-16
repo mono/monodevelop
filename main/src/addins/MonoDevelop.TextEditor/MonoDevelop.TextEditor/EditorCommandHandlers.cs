@@ -75,8 +75,10 @@ namespace MonoDevelop.TextEditor.Cocoa
         ICommandHandler<UpKeyCommandArgs>,
         ICommandHandler<WordDeleteToEndCommandArgs>,
         ICommandHandler<WordDeleteToStartCommandArgs>,
-        ICommandHandler<FindReferencesCommandArgs>
-	{
+        ICommandHandler<FindReferencesCommandArgs>,
+        ICommandHandler<OpenLineAboveCommandArgs>,
+        ICommandHandler<OpenLineBelowCommandArgs>
+    {
         [Import]
         private IEditorOperationsFactoryService OperationsService { get; set; }
 
@@ -469,5 +471,27 @@ namespace MonoDevelop.TextEditor.Cocoa
             GetOperations(args.TextView).DeleteToBeginningOfLine();
             return true;
         }
-	}
+
+        CommandState ICommandHandler<OpenLineAboveCommandArgs>.GetCommandState (OpenLineAboveCommandArgs args)
+        {
+            return AvailableInEditableView (args.TextView);
+        }
+
+        bool ICommandHandler<OpenLineAboveCommandArgs>.ExecuteCommand (OpenLineAboveCommandArgs args, CommandExecutionContext executionContext)
+        {
+            GetOperations (args.TextView).OpenLineAbove ();
+            return true;
+        }
+
+        CommandState ICommandHandler<OpenLineBelowCommandArgs>.GetCommandState (OpenLineBelowCommandArgs args)
+        {
+            return AvailableInEditableView (args.TextView);
+        }
+
+        bool ICommandHandler<OpenLineBelowCommandArgs>.ExecuteCommand (OpenLineBelowCommandArgs args, CommandExecutionContext executionContext)
+        {
+            GetOperations (args.TextView).OpenLineBelow ();
+            return true;
+        }
+    }
 }
