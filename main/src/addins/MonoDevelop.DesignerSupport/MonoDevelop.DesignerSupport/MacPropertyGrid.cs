@@ -49,6 +49,14 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool IsEditing => false;
 
+		//Small hack to cover the missing Proppy feature
+		public bool Sensitive { get; set; }
+		public override NSView HitTest (CGPoint aPoint)
+		{
+			if (!Sensitive) return null;
+			return base.HitTest (aPoint);
+		}
+
 		public event EventHandler PropertyGridChanged;
 
 		public MacPropertyGrid () 
