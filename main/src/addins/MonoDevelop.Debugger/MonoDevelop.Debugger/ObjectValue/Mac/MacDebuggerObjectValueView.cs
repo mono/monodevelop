@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 
 using AppKit;
-using Foundation;
 using CoreGraphics;
 
 using Xwt.Drawing;
@@ -42,77 +41,6 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	class MacDebuggerObjectValueView : MacDebuggerObjectCellViewBase
 	{
-		class EditableTextField : NSTextField
-		{
-			readonly MacDebuggerObjectValueView valueView;
-			string oldValue, newValue;
-			bool editing;
-
-			public EditableTextField (MacDebuggerObjectValueView valueView)
-			{
-				this.valueView = valueView;
-			}
-
-			public override bool AcceptsFirstResponder ()
-			{
-				if (!base.AcceptsFirstResponder ())
-					return false;
-
-				// Note: The MacDebuggerObjectValueView sets the PlaceholderAttributedString property
-				// so that it can control the font color and the baseline offset. Unfortunately, this
-				// breaks once the NSTextField is in "edit" mode because the placeholder text ends up
-				// being rendered as black instead of gray. By reverting to using the basic
-				// PlaceholderString property once we enter "edit" mode, it fixes the text color.
-				var placeholder = PlaceholderAttributedString;
-
-				if (placeholder != null)
-					PlaceholderString = placeholder.Value;
-
-				TextColor = NSColor.ControlText;
-
-				return true;
-			}
-
-			public override void DidBeginEditing (NSNotification notification)
-			{
-				base.DidBeginEditing (notification);
-				valueView.TreeView.OnStartEditing ();
-				oldValue = newValue = StringValue.Trim ();
-				editing = true;
-			}
-
-			public override void DidChange (NSNotification notification)
-			{
-				newValue = StringValue.Trim ();
-				base.DidChange (notification);
-			}
-
-			public override void DidEndEditing (NSNotification notification)
-			{
-				base.DidEndEditing (notification);
-
-				if (!editing)
-					return;
-
-				editing = false;
-
-				valueView.TreeView.OnEndEditing ();
-
-				if (newValue != oldValue && valueView.TreeView.GetEditValue (valueView.Node, newValue))
-					valueView.Refresh ();
-
-				oldValue = newValue = null;
-			}
-
-			protected override void Dispose (bool disposing)
-			{
-				if (disposing)
-					valueView.Dispose ();
-
-				base.Dispose (disposing);
-			}
-		}
-
 		readonly List<NSLayoutConstraint> constraints = new List<NSLayoutConstraint> ();
 		NSProgressIndicator spinner;
 		bool spinnerVisible;
@@ -160,15 +88,13 @@ namespace MonoDevelop.Debugger
 			viewerButton.Bordered = false;
 			viewerButton.Activated += OnViewerButtonActivated;
 
-			TextField = new EditableTextField (this) {
-				AutoresizingMask = NSViewResizingMask.WidthSizable,
+			TextField = new MacDebuggerTextField (this) {
 				TranslatesAutoresizingMaskIntoConstraints = false,
+				MaximumNumberOfLines = 1,
 				DrawsBackground = false,
 				Bordered = false,
 				Editable = false
 			};
-			TextField.Cell.UsesSingleLineMode = true;
-			TextField.Cell.Wraps = false;
 
 			AddSubview (TextField);
 		}
@@ -317,7 +243,7 @@ namespace MonoDevelop.Debugger
 
 			// Third Item: Value Button
 			if (valueButtonText != null && !((MacObjectValueNode) ObjectValue).HideValueButton) {
-				valueButton.AttributedTitle = GetAttributedString (valueButtonText, true);
+				valueButton.Title = valueButtonText;
 				UpdateFont (valueButton, -3);
 				valueButton.SizeToFit ();
 
@@ -356,10 +282,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			// Fifth Item: Text Value
-			TextField.AttributedStringValue = GetAttributedString (strval);
+			TextField.StringValue = strval;
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);
+			TextField.SizeToFit ();
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			views.Add (TextField);
@@ -378,8 +305,6 @@ namespace MonoDevelop.Debugger
 
 			foreach (var constraint in constraints)
 				constraint.Active = true;
-
-			TextField.SizeToFit ();
 
 			OptimalWidth += TextField.Frame.Width;
 			OptimalWidth += MarginSize;

@@ -206,6 +206,7 @@
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectValueView.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectTypeView.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectPinView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerTextField.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
