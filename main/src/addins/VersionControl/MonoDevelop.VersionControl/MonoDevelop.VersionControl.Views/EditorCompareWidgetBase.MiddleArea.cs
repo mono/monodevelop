@@ -62,11 +62,27 @@ namespace MonoDevelop.VersionControl.Views
 				this.toEditor = toEditor;
 				this.useLeft = useLeft;
 				this.toEditor.EditorOptionsChanged += HandleToEditorhandleEditorOptionsChanged;
+				this.widget.DiffChanged += Widget_DiffChanged;
+				this.fromEditor.VAdjustment.ValueChanged += VAdjustment_Changed;
+				this.toEditor.VAdjustment.ValueChanged += VAdjustment_Changed;
 				Accessible.SetRole (AtkCocoa.Roles.AXGroup, GettextCatalog.GetString ("Revert changes margin"));
+			}
+
+			void VAdjustment_Changed (object sender, EventArgs e)
+			{
+				UpdateAccessiblity ();
+			}
+
+			void Widget_DiffChanged (object sender, EventArgs e)
+			{
+				UpdateAccessiblity ();
 			}
 
 			protected override void OnDestroyed ()
 			{
+				this.widget.DiffChanged -= Widget_DiffChanged;
+				this.fromEditor.VAdjustment.ValueChanged -= VAdjustment_Changed;
+				this.toEditor.VAdjustment.ValueChanged -= VAdjustment_Changed;
 				this.toEditor.EditorOptionsChanged -= HandleToEditorhandleEditorOptionsChanged;
 				this.ClearAccessibleButtons ();
 				base.OnDestroyed ();
@@ -135,6 +151,7 @@ namespace MonoDevelop.VersionControl.Views
 				try {
 					widget.UndoChange (fromEditor, toEditor, hunk);
 					UpdateAccessiblity ();
+					Accessible.SetCurrentFocus ();
 				} catch (Exception e) {
 					LoggingService.LogInternalError ("Error while undoing widget change.", e);
 				}
@@ -305,34 +322,24 @@ namespace MonoDevelop.VersionControl.Views
 						}
 					}
 				}
-				UpdateAccessiblity ();
-
 				return true;
 			}
 
 			internal void Refresh ()
 			{
 				QueueDraw ();
+				UpdateAccessiblity ();
 			}
 
-			int oldVAdjusment1 = -1;
-			int oldVAdjusment2 = -1;
+			Dictionary<Hunk, ButtonAccessible> accessibleButtons = new Dictionary<Hunk, ButtonAccessible> ();
 
 			void UpdateAccessiblity ()
 			{
-				if (oldVAdjusment1 == (int)fromEditor.VAdjustment.Value &&
-					oldVAdjusment2 == (int)toEditor.VAdjustment.Value)
-					return;
-				oldVAdjusment1 = (int)fromEditor.VAdjustment.Value;
-				oldVAdjusment2 = (int)toEditor.VAdjustment.Value;
-
-				ClearAccessibleButtons ();
-
 				bool hideButton = widget.MainEditor.Document.IsReadOnly;
 				int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 
 				if (Diff != null) {
-					foreach (Hunk hunk in Diff) {
+					foreach (var hunk in Diff) {
 						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
 						double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
 						if (z1 == z2)
@@ -375,30 +382,41 @@ namespace MonoDevelop.VersionControl.Views
 							bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h) :
 								GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out w, out h);
 
-							AddAccessibleProxyButton (hunk, x, y, w, h);
+							var button = SetAccessibleProxyButton (hunk, x, y, w, h);
+							button.Visible = y + h > 0 && y < Allocation.Height;
 						}
 					}
 				}
-				Accessible.SetAccessibleChildren (accessibleButtons.Select (a => a.Accessible).ToArray ());
+				foreach (var kv in accessibleButtons.ToArray ()) {
+					if (!Diff.Contains (kv.Key)) {
+						accessibleButtons.Remove (kv.Key);
+						kv.Value.Dispose ();
+					}
+				}
+				Accessible.SetAccessibleChildren (accessibleButtons.Where(a => a.Value.Visible).Select (a => a.Value.Accessible).ToArray ());
 			}
 
-			void AddAccessibleProxyButton (Hunk hunk, double x, double y, double w, double h)
+			ButtonAccessible SetAccessibleProxyButton (Hunk hunk, double x, double y, double w, double h)
 			{
-				var button = new ButtonAccessible (this, hunk);
+				if (!accessibleButtons.TryGetValue (hunk, out var button)) {
+					button = new ButtonAccessible (this, hunk);
+					accessibleButtons [hunk] = button;
+				}
+
 				button.SetBounds ((int)x, (int)y, (int)w, (int)h);
-				accessibleButtons.Add (button);
+				return button;
 			}
 
 			void ClearAccessibleButtons ()
 			{
+
 				foreach (var button in accessibleButtons) {
-					button.Dispose ();
+					button.Value.Dispose ();
 				}
 				accessibleButtons.Clear ();
 				Accessible.SetAccessibleChildren (Array.Empty<AccessibilityElementProxy> ());
-			}
 
-			List<ButtonAccessible> accessibleButtons = new List<ButtonAccessible> ();
+			}
 
 			class ButtonAccessible : IDisposable
 			{
@@ -406,6 +424,7 @@ namespace MonoDevelop.VersionControl.Views
 				Hunk hunk;
 
 				public AccessibilityElementProxy Accessible { get; private set; }
+				public bool Visible { get; internal set; }
 
 				public ButtonAccessible (MiddleArea widget, Hunk hunk)
 				{
