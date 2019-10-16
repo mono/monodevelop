@@ -45,7 +45,11 @@ namespace MonoDevelop.Debugger
 
 		public WatchPad () : base (true)
 		{
-			if (!UseNewTreeView) {
+			if (UseNewTreeView) {
+				controller.ExpressionAdded += OnExpressionAdded;
+				controller.ExpressionChanged += OnExpressionChanged;
+				controller.ExpressionRemoved += OnExpressionRemoved;
+			} else {
 				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
 				tree.DragDataReceived += HandleDragDataReceived;
 			}
@@ -80,19 +84,19 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void SaveExpressions ()
-		{
-			expressions.Clear ();
-			expressions.AddRange (controller.GetExpressions ());
-		}
-
 		void RestoreExpressions ()
 		{
-			// remove the expressions because we're going to rebuild them
-			controller.ClearAll ();
+			controller.ExpressionAdded -= OnExpressionAdded;
 
-			// re-add the expressions which will reevaluate the expressions and repopulate the treeview
-			controller.AddExpressions (expressions);
+			try {
+				// remove the expressions because we're going to rebuild them
+				controller.ClearAll ();
+
+				// re-add the expressions which will reevaluate the expressions and repopulate the treeview
+				controller.AddExpressions (expressions);
+			} finally {
+				controller.ExpressionAdded += OnExpressionAdded;
+			}
 		}
 
 		public override void OnUpdateFrame ()
@@ -114,24 +118,43 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		protected override void OnDebuggerResumed (object s, EventArgs a)
+		void OnExpressionAdded (object sender, ExpressionEventArgs e)
 		{
-			// base will clear the controller, which removes all values and expressions
-
-			if (UseNewTreeView && !IsInitialResume)
-				SaveExpressions ();
-
-			base.OnDebuggerResumed (s, a);
+			LoggingService.LogInfo ("Expression added: {0}", e.Expression);
+			expressions.Add (e.Expression);
 		}
 
-		protected override void OnDebuggerStopped (object s, EventArgs a)
+		void OnExpressionChanged (object sender, ExpressionChangedEventArgs e)
 		{
-			// base will clear the controller, which removes all values and expressions
+			LoggingService.LogInfo ("Expression changed: '{0}' -> '{1}'", e.OldExpression, e.NewExpression);
+			int index = expressions.IndexOf (e.OldExpression);
 
-			if (UseNewTreeView)
-				SaveExpressions ();
+			if (index != -1) {
+				expressions[index] = e.NewExpression;
+			} else {
+				LoggingService.LogWarning ("Failed to find old expression: {0}", e.OldExpression);
+				expressions.Add (e.NewExpression);
+			}
+		}
 
-			base.OnDebuggerStopped (s, a);
+		void OnExpressionRemoved (object sender, ExpressionEventArgs e)
+		{
+			LoggingService.LogInfo ("Expression removed: {0}", e.Expression);
+			if (!expressions.Remove (e.Expression))
+				LoggingService.LogWarning ("Failed to remove expression: {0}", e.Expression);
+		}
+
+		public override void Dispose ()
+		{
+			if (UseNewTreeView) {
+				controller.ExpressionAdded -= OnExpressionAdded;
+				controller.ExpressionChanged -= OnExpressionChanged;
+				controller.ExpressionRemoved -= OnExpressionRemoved;
+			} else {
+				tree.DragDataReceived -= HandleDragDataReceived;
+			}
+
+			base.Dispose ();
 		}
 
 		#region IMementoCapable implementation 
