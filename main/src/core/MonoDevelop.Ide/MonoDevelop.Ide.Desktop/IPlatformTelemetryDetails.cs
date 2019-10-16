@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Desktop
 		GraphicsDetails[] GPU { get; }
 
 		string CpuArchitecture { get; }
+		string Model { get; }
 		int PhysicalCpuCount { get; }
 		int CpuCount { get; }
 		int CpuFamily { get; }
