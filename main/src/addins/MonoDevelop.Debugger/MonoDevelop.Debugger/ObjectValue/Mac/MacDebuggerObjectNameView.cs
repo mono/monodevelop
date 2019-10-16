@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 
 using AppKit;
-using Foundation;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -42,81 +41,6 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	class MacDebuggerObjectNameView : MacDebuggerObjectCellViewBase
 	{
-		class EditableTextField : NSTextField
-		{
-			readonly MacDebuggerObjectNameView nameView;
-			string oldValue, newValue;
-			bool editing;
-
-			public EditableTextField (MacDebuggerObjectNameView nameView)
-			{
-				this.nameView = nameView;
-			}
-
-			public override bool AcceptsFirstResponder ()
-			{
-				if (!base.AcceptsFirstResponder ())
-					return false;
-
-				// Note: The MacDebuggerObjectNameView sets the PlaceholderAttributedString property
-				// so that it can control the font color and the baseline offset. Unfortunately, this
-				// breaks once the NSTextField is in "edit" mode because the placeholder text ends up
-				// being rendered as black instead of gray. By reverting to using the basic
-				// PlaceholderString property once we enter "edit" mode, it fixes the text color.
-				var placeholder = PlaceholderAttributedString;
-
-				if (placeholder != null)
-					PlaceholderString = placeholder.Value;
-
-				TextColor = NSColor.ControlText;
-
-				return true;
-			}
-
-			public override void DidBeginEditing (NSNotification notification)
-			{
-				base.DidBeginEditing (notification);
-				nameView.TreeView.OnStartEditing ();
-				oldValue = newValue = StringValue.Trim ();
-				editing = true;
-			}
-
-			public override void DidChange (NSNotification notification)
-			{
-				newValue = StringValue.Trim ();
-				base.DidChange (notification);
-			}
-
-			public override void DidEndEditing (NSNotification notification)
-			{
-				base.DidEndEditing (notification);
-
-				if (!editing)
-					return;
-
-				editing = false;
-
-				nameView.TreeView.OnEndEditing ();
-
-				if (nameView.Node is AddNewExpressionObjectValueNode) {
-					if (newValue.Length > 0)
-						nameView.TreeView.OnExpressionAdded (newValue);
-				} else if (newValue != oldValue) {
-					nameView.TreeView.OnExpressionEdited (nameView.Node, newValue);
-				}
-
-				oldValue = newValue = null;
-			}
-
-			protected override void Dispose (bool disposing)
-			{
-				if (disposing)
-					nameView.Dispose ();
-
-				base.Dispose (disposing);
-			}
-		}
-
 		readonly List<NSLayoutConstraint> constraints = new List<NSLayoutConstraint> ();
 		PreviewButtonIcon currentIcon;
 		bool previewIconVisible;
@@ -128,15 +52,13 @@ namespace MonoDevelop.Debugger
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 
-			TextField = new EditableTextField (this) {
-				AutoresizingMask = NSViewResizingMask.WidthSizable,
+			TextField = new MacDebuggerTextField (this) {
 				TranslatesAutoresizingMaskIntoConstraints = false,
+				MaximumNumberOfLines = 1,
 				DrawsBackground = false,
 				Bordered = false,
 				Editable = false
 			};
-			TextField.Cell.UsesSingleLineMode = true;
-			TextField.Cell.Wraps = false;
 
 			AddSubview (ImageView);
 			AddSubview (TextField);
@@ -204,8 +126,8 @@ namespace MonoDevelop.Debugger
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
 			}
 
-			TextField.PlaceholderAttributedString = GetAttributedPlaceholderString (placeholder);
-			TextField.AttributedStringValue = GetAttributedString (name);
+			TextField.PlaceholderString = placeholder;
+			TextField.StringValue = name;
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);

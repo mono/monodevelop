@@ -25,10 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Globalization;
+using System.Collections.Generic;
 
 using AppKit;
 using Foundation;
 using CoreGraphics;
+using CoreText;
 
 using Xwt.Drawing;
 
@@ -39,6 +42,7 @@ namespace MonoDevelop.Debugger
 {
 	abstract class MacDebuggerObjectCellViewBase : NSTableCellView
 	{
+		static readonly Dictionary<(string, nfloat), float> baselineOffsets = new Dictionary<(string, nfloat), float> ();
 		protected const int CompactImageSize = 12;
 		protected const int RowCellSpacing = 2;
 		protected const int ImageSize = 16;
@@ -54,7 +58,7 @@ namespace MonoDevelop.Debugger
 		{
 		}
 
-		protected MacObjectValueTreeView TreeView {
+		public MacObjectValueTreeView TreeView {
 			get; private set;
 		}
 
@@ -150,24 +154,9 @@ namespace MonoDevelop.Debugger
 			return new CGColor ((nfloat) color.Red, (nfloat) color.Green, (nfloat) color.Blue);
 		}
 
-		protected static NSAttributedString GetAttributedString (string text, bool center = false)
-		{
-			var paragraphStyle = center ? new NSMutableParagraphStyle { Alignment = NSTextAlignment.Center } : null;
-
-			return new NSAttributedString (text ?? string.Empty, baselineOffset: 1, paragraphStyle: paragraphStyle);
-		}
-
-		protected static NSAttributedString GetAttributedPlaceholderString (string text)
-		{
-			return new NSAttributedString (text ?? string.Empty, baselineOffset: 1, strokeColor: NSColor.PlaceholderTextColor);
-		}
-
 		protected void UpdateFont (NSControl control, int sizeDelta = 0)
 		{
-			var font = TreeView.CustomFont ?? TreeView.Font;
-
-			if (font == null)
-				return;
+			var font = TreeView.CustomFont;
 
 			if (sizeDelta != 0) {
 				control.Font = NSFont.FromDescription (font.FontDescriptor, font.PointSize + sizeDelta);
@@ -192,7 +181,7 @@ namespace MonoDevelop.Debugger
 
 		protected abstract void UpdateContents ();
 
-		protected void Refresh ()
+		public void Refresh ()
 		{
 			UpdateContents ();
 			SetNeedsDisplayInRect (Frame);
