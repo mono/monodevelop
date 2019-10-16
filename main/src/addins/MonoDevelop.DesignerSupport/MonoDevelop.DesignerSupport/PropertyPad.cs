@@ -61,8 +61,8 @@ namespace MonoDevelop.DesignerSupport
 		public bool IsGridEditing => view.IsEditing;
 
 		public bool ShowToolbar {
-			get => view.ShowToolbar;
-			set => view.ShowToolbar = value;
+			get => view.ToolbarVisible;
+			set => view.ToolbarVisible = value;
 		}
 
 		public bool Sensitive {
