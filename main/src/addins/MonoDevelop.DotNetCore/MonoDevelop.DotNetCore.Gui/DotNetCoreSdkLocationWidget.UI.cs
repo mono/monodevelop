@@ -30,6 +30,7 @@ using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using Xwt;
 
 namespace MonoDevelop.DotNetCore.Gui
@@ -253,6 +254,9 @@ namespace MonoDevelop.DotNetCore.Gui
 						dialog.Title = title;
 					if (dialog.Run (ParentWindow))
 						FileName = dialog.FileName;
+
+					// Ensure the parent window has focus after the OpenFileDialog is closed.
+					IdeServices.DesktopService.FocusWindow (ParentWindow);
 				} finally {
 					dialog.Dispose ();
 					dialog = null;
