@@ -46,16 +46,29 @@ namespace MonoDevelop.DesignerSupport
 {
 	class PropertyMacHostWidget : IPropertyGrid
 	{
+		public event EventHandler PropertyGridChanged;
+
 		readonly GtkNSViewHost host;
+
 		MacPropertyGrid view;
 
 		public string Name { get; set; }
+		public bool ShowHelp { get; set; } //not implemented
+		
+		public ShadowType ShadowType { get; set; } //not implemented
+		public Widget Widget => host;
 
 		public bool IsGridEditing => view.IsEditing;
 
-		public event EventHandler PropertyGridChanged;
+		public bool ShowToolbar {
+			get => view.ShowToolbar;
+			set => view.ShowToolbar = value;
+		}
 
-		public Widget Widget => host;
+		public bool Sensitive {
+			get => view.Sensitive;
+			set => view.Sensitive = value;
+		}
 
 		public object CurrentObject {
 			get => view.CurrentObject;
@@ -72,23 +85,13 @@ namespace MonoDevelop.DesignerSupport
 			view.PropertyGridChanged += View_PropertyGridChanged;
 		}
 
-		private void View_PropertyGridChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
+		void View_PropertyGridChanged (object sender, EventArgs e)
+			=> PropertyGridChanged?.Invoke (this, e);
 
 		public void SetCurrentObject (object obj, object [] propertyProviders)
 			=> view.SetCurrentObject (obj, propertyProviders);
 
-		public void BlankPad ()
-			=> view.BlankPad ();
-
-		public void Dispose ()
-		{
-			if (view != null) {
-				view.PropertyGridChanged -= View_PropertyGridChanged;
-				view.Dispose ();
-				view = null;
-			}
-		}
-
+		public void BlankPad () => view.BlankPad ();
 		public void Hide () => view.Hidden = true;
 		public void Show () => view.Hidden = false;
 
@@ -111,22 +114,33 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//not implemented;
 		}
+
+		public void Dispose ()
+		{
+			if (view != null) {
+				view.PropertyGridChanged -= View_PropertyGridChanged;
+				view.Dispose ();
+				view = null;
+			}
+		}
 	}
 
 	public interface IPropertyGrid : IPropertyPad
 	{
-		public string Name { get; set; }
-
+		bool ShowToolbar { get; set; }
+		bool ShowHelp { get; set; }
+		bool Sensitive { get; set; }
+		string Name { get; set; }
 		object CurrentObject { get; set; }
+
+		Gtk.Widget Widget { get; }
+		ShadowType ShadowType { get; set; }
 
 		void Hide ();
 		void Show ();
 
 		void SetToolbarProvider (object toolbarProvider);
-
 		void CommitPendingChanges ();
-
-		Gtk.Widget Widget { get; }
 	}
 
 	public class PropertyGridWrapper : IPropertyGrid
@@ -136,22 +150,36 @@ namespace MonoDevelop.DesignerSupport
 			set => nativeWidget.Name = value;
 		}
 
-		public bool IsGridEditing => nativeWidget.IsGridEditing;
-
 		public event EventHandler PropertyGridChanged;
 
 		public Gtk.Widget Widget => nativeWidget.Widget;
 
-		public bool ShowToolbar { get; set; }
-		public ShadowType ShadowType { get; set; }
-		public bool ShowHelp { get; set; }
+		public bool ShowToolbar {
+			get => nativeWidget.ShowToolbar;
+			set => nativeWidget.ShowToolbar = value;
+		}
+
+		public ShadowType ShadowType {
+			get => nativeWidget.ShadowType;
+			set => nativeWidget.ShadowType = value;
+		}
+
+		public bool ShowHelp {
+			get => nativeWidget.ShowHelp;
+			set => nativeWidget.ShowHelp = value;
+		}
+
+		public bool Sensitive {
+			get => nativeWidget.Sensitive;
+			set => nativeWidget.Sensitive = value;
+		}
+
+		public bool IsGridEditing => nativeWidget.IsGridEditing;
 
 		public object CurrentObject {
 			get => nativeWidget.CurrentObject;
 			set => nativeWidget.CurrentObject = value;
 		}
-
-		public bool Sensitive { get; set; }
 
 		IPropertyGrid nativeWidget;
 
@@ -171,8 +199,8 @@ namespace MonoDevelop.DesignerSupport
 		public void BlankPad ()
 			=> nativeWidget.BlankPad ();
 
-		public void PopulateGrid (bool saveEditSession) =>
-			nativeWidget.PopulateGrid (saveEditSession);
+		public void PopulateGrid (bool saveEditSession)
+			=> nativeWidget.PopulateGrid (saveEditSession);
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 			=> nativeWidget.SetCurrentObject (lastComponent, propertyProviders);
@@ -196,14 +224,11 @@ namespace MonoDevelop.DesignerSupport
 
 		public void OnPadContentShown ()
 		{
-			//nativeWidget.SetToolbarProvider (toolbarProvider);
+			//not implemented
 		}
 
-		public void CommitPendingChanges ()
-		{
+		public void CommitPendingChanges () =>
 			nativeWidget.CommitPendingChanges ();
-			//to implement
-		}
 	}
 
 	public class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
