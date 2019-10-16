@@ -317,7 +317,20 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SetProperty (ResultObject, propertyName, value);
 		}
 
-#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		public override List<string> GetConfigurations ()
+		{
+			var type = ResultObject.GetType ();
+			var pinfo = type.GetProperty ("ConfigurationModel");
+			if (pinfo == null) {
+				return null;
+			}
+
+			var model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
+
+			return model.Select (m => $"{m.DisplayString}").ToList();
+		}
+
 		public override bool SetActiveConfiguration (string configurationName)
 		{
 			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
