@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Fonts
 				setDefaultFontButton.Label = GettextCatalog.GetString ("Set To Default");
 				setDefaultFontButton.Clicked += delegate {
 					SetFont (desc.Name, IdeServices.FontService.GetFontDescriptionCodon (desc.Name).FontDescription);
-					setDefaultFontButton.Label = GetDisplayDescription (IdeServices.FontService.GetFont (desc.Name));
+					setFontButton.Label = GetDisplayDescription (IdeServices.FontService.GetFont (desc.Name));
 				};
 				hBox.PackStart (setDefaultFontButton, false, false, 0);
 				mainBox.PackStart (hBox, false, false, 0);
