@@ -251,8 +251,8 @@ namespace MonoDevelop.DesignerSupport
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 
 			IdeApp.Initialized += (s, args) => {				
-				IdeApp.Workbench.DocumentClosed += (o, args) => {
-					if (lastPadProvider != null && lastPadProvider == args.Document.DocumentContext.GetContent<IPropertyPadProvider>())
+				IdeApp.Workbench.ActiveDocumentChanged += (o, args) => {
+					if (lastPadProvider != null && args.Document == null)
 						ReSetPad ();
 				};
 			};
