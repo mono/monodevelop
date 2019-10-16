@@ -2,7 +2,7 @@
 
 open Gtk
 open MonoDevelop.Core
-open MonoDevelop.Components.PropertyGrid
+open MonoDevelop.DesignerSupport
 
 // Handwritten GUI, feel free to edit
 
@@ -21,7 +21,7 @@ type FSharpFormattingPolicyPanelWidget() =
     let mutable hbox2 : Gtk.HBox = null
     let mutable vbox4 : Gtk.VBox = null
     let mutable tableScopes : Gtk.Table = null
-    let mutable propertyGrid : PropertyGrid = null
+    let mutable propertyGrid : PropertyGridWrapper = null
 
     let getName format =
         if format = policy.DefaultFormat then
@@ -125,12 +125,12 @@ type FSharpFormattingPolicyPanelWidget() =
         w8.Expand <- false
         w8.Fill <- false
         // Container child vbox4.Gtk.Box+BoxChild
-        propertyGrid <- new PropertyGrid()
+        propertyGrid <- new PropertyGridWrapper ()
         propertyGrid.Name <- "propertyGrid"
         propertyGrid.ShowToolbar <- false
         propertyGrid.ShowHelp <- false
-        vbox4.Add (propertyGrid)
-        let w9 = vbox4.[propertyGrid] :?> Gtk.Box.BoxChild
+        vbox4.Add (propertyGrid.Widget)
+        let w9 = vbox4.[propertyGrid.Widget] :?> Gtk.Box.BoxChild
         w9.Position <- 2
         hbox1.Add(vbox4)
         let w10 = hbox1.[vbox4] :?> Gtk.Box.BoxChild
