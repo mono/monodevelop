@@ -49,6 +49,8 @@ namespace MonoDevelop.DesignerSupport
 		readonly GtkNSViewHost host;
 		MacPropertyGrid view;
 
+		public string Name { get; set; }
+
 		public bool IsGridEditing => view.IsEditing;
 
 		public event EventHandler PropertyGridChanged;
@@ -113,6 +115,8 @@ namespace MonoDevelop.DesignerSupport
 
 	public interface IPropertyGrid : IPropertyPad
 	{
+		public string Name { get; set; }
+
 		object CurrentObject { get; set; }
 
 		void Hide ();
@@ -127,6 +131,11 @@ namespace MonoDevelop.DesignerSupport
 
 	public class PropertyGridWrapper : IPropertyGrid
 	{
+		public string Name {
+			get => nativeWidget.Name;
+			set => nativeWidget.Name = value;
+		}
+
 		public bool IsGridEditing => nativeWidget.IsGridEditing;
 
 		public event EventHandler PropertyGridChanged;
