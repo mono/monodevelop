@@ -85,13 +85,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			informationHeaderLabel.Accessible.SetTitleFor (table11.Accessible);
 			table11.Accessible.SetTitleUIElement (informationHeaderLabel.Accessible);
 
-			projectNameEntry.Accessible.SetTitleUIElement (nameLabel.Accessible);
 			projectNameEntry.SetCommonAccessibilityAttributes ("GeneralProjectOptions.ProjectNameEntry",
 			                                                   GettextCatalog.GetString ("Project Name"),
 			                                                   GettextCatalog.GetString ("Enter the project name"));
 			nameLabel.Accessible.SetTitleFor (projectNameEntry.Accessible);
 
-			entryVersion.Accessible.SetTitleUIElement (label1.Accessible);
 			entryVersion.SetCommonAccessibilityAttributes ("GeneralProjectOptions.VersionEntry",
 			                                               GettextCatalog.GetString ("Project Version"),
 			                                               GettextCatalog.GetString ("Enter the project version"));
@@ -100,14 +98,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			checkSolutionVersion.SetCommonAccessibilityAttributes ("GeneralProjectOptions.SolutionVersion", "",
 			                                                       GettextCatalog.GetString ("Check to use the same version as the solution"));
 
-			projectDescriptionTextView.Accessible.SetTitleUIElement (descriptionLabel.Accessible);
 			descriptionLabel.Accessible.SetTitleFor (projectDescriptionTextView.Accessible);
 
 			projectDescriptionTextView.SetCommonAccessibilityAttributes ("GeneralProjectOptions.Description",
 			                                                             GettextCatalog.GetString ("Project Description"),
 			                                                             GettextCatalog.GetString ("Enter a description of the project"));
 
-			projectDefaultNamespaceEntry.Accessible.SetTitleUIElement (defaultNamespaceLabel.Accessible);
 			projectDefaultNamespaceEntry.SetCommonAccessibilityAttributes ("GeneralProjectOptions.Namespace",
 			                                                               GettextCatalog.GetString ("Default Namespace"),
 			                                                               GettextCatalog.GetString ("Enter the default namespace for the project"));
