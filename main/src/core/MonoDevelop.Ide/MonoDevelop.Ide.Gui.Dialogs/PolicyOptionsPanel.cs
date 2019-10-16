@@ -72,7 +72,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			CellRenderer renderer = new CellRendererText ();
 			policyCombo.PackStart (renderer, true);
 			policyCombo.AddAttribute (renderer, "text", 0);
-			
+			policyCombo.Accessible.SetTitleUIElement (label.Accessible);
+
 			label.MnemonicWidget = policyCombo;
 			policyCombo.RowSeparatorFunc = (TreeModel model, TreeIter iter) =>
 				((string) model.GetValue (iter, 0)) == "--";
