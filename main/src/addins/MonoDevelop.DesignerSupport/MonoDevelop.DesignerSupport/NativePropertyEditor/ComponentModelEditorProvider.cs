@@ -116,7 +116,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var typeDescriptorContext = new TypeDescriptorContext (propertyProvider, propertyDescriptor);
 
-			var valueSources = ValueSources.Local | ValueSources.Default;
+			var valueSources = ValueSources.Default;
 			if (propertyDescriptor.PropertyType.IsEnum) {
 				if (propertyDescriptor.PropertyType.IsDefined (typeof (FlagsAttribute), inherit: false))
 					return new FlagDescriptorPropertyInfo (typeDescriptorContext, valueSources);

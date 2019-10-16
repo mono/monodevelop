@@ -101,7 +101,7 @@ namespace MonoDevelop.DesignerSupport
 			T value = propertyInfo.GetValue<T> (this.Target);
 			var valueInfo = new ValueInfo<T> {
 				Value = value,
-				Source = ValueSource.Local,
+				Source = ValueSource.Default,
 			};
 			return Task.FromResult (valueInfo);
 		}
