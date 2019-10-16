@@ -35,7 +35,7 @@ using Xamarin.PropertyEditing;
 namespace MonoDevelop.DesignerSupport
 {
 	class ComponentModelObjectEditor
-		: IObjectEditor, INameableObject
+		: IObjectEditor, INameableObject, IDisposable
 	{
 		internal const string ComboSeparatorString = "--";
 
@@ -133,6 +133,12 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		protected void RaisePropertyChanged (IPropertyInfo property) => PropertyChanged?.Invoke (this, new EditorPropertyChangedEventArgs (property));
+
+		public void Dispose ()
+		{
+			events.Clear ();
+			properties.Clear ();
+		}
 	}
 }
 
