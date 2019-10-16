@@ -80,6 +80,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			propertyEditorPanel.SelectedItems.Clear ();
 			currentSelectedObject = null;
+			editorProvider.Clear ();
 		}
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
@@ -91,6 +92,8 @@ namespace MonoDevelop.DesignerSupport
 					propertyEditorPanel.SelectedItems.Add (selection);
 					currentSelectedObject = selection;
 				}
+			} else {
+				BlankPad ();
 			}
 		}
 
