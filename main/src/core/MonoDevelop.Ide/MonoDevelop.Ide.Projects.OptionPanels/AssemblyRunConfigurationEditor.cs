@@ -105,18 +105,26 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
-			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
+			var argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:"));
+			table.Add (argumentsLabel, 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
+			argumentsEntry.Accessible.LabelWidget = argumentsLabel;
 
-			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
+			var runInDirectoryLabel = new Label (GettextCatalog.GetString ("Run in directory:"));
+			table.Add (runInDirectoryLabel, 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-		
+			workingDir.Accessible.LabelWidget = runInDirectoryLabel;
+
+
+
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			mainBox.PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
+			var environmentVariablesLabel = new Label (GettextCatalog.GetString ("Environment Variables"));
+			mainBox.PackStart (environmentVariablesLabel);
 			envVars = new EnvironmentVariableCollectionEditor ();
+			envVars.Accessible.LabelWidget = environmentVariablesLabel;
 
 			mainBox.PackStart (envVars, true);
 
@@ -133,18 +141,23 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			adBox.Margin = 12;
 
 			table = new Table ();
-			table.Add (new Label (GettextCatalog.GetString ("Execute in .NET Runtime:")), 0, 0);
+			var executeNetRuntimeLabel = new Label (GettextCatalog.GetString ("Execute in .NET Runtime:"));
+			table.Add (executeNetRuntimeLabel, 0, 0);
 			table.Add (runtimesCombo = new ComboBox (), 1, 0, hexpand:true);
+			runtimesCombo.Accessible.LabelWidget = executeNetRuntimeLabel;
 
-			table.Add (new Label (GettextCatalog.GetString ("Mono runtime settings:")), 0, 1);
+			var runtimeSettingsLabel = new Label (GettextCatalog.GetString ("Mono runtime settings:"));
+			table.Add (runtimeSettingsLabel, 0, 1);
 
 			var box = new HBox ();
-			Button monoSettingsButton = new Button (GettextCatalog.GetString ("..."));
+			Button monoSettingsButton = new Button (GettextCatalog.GetString ("\u2026"));
 			box.PackStart (monoSettingsEntry = new TextEntry { PlaceholderText = GettextCatalog.GetString ("Default settings")}, true);
 			box.PackStart (monoSettingsButton);
 			monoSettingsEntry.ReadOnly = true;
 			table.Add (box, 1, 1, hexpand: true);
 			adBox.PackStart (table);
+			monoSettingsEntry.Accessible.LabelWidget = runtimeSettingsLabel;
+			monoSettingsButton.Accessible.LabelWidget = runtimeSettingsLabel;
 
 			if (includeAdvancedTab)
 				Add (adBox, GettextCatalog.GetString ("Advanced"));
