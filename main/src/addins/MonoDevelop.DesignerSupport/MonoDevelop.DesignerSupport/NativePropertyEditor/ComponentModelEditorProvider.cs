@@ -63,6 +63,16 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult<IObjectEditor>(currentEditor);
 		}
 
+		public void Clear ()
+		{
+			if (currentEditor != null) {
+				currentEditor.Dispose ();
+				currentEditor = null;
+			}
+
+			target = null;
+		}
+
 		void CurrentEditor_PropertyChanged (object sender, EventArgs e)
 			=> PropertyChanged?.Invoke (this, e);
 
