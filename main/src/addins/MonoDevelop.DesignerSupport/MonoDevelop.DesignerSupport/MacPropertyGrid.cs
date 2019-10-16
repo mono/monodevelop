@@ -95,6 +95,22 @@ namespace MonoDevelop.DesignerSupport
 			get => currentSelectedObject.Target;
 		}
 
+		//HACK: this 
+		bool showToolbar = true;
+		public bool ShowToolbar {
+			get => showToolbar;
+			set {
+				//we ensure remove current constraints from proppy
+
+
+				if (showToolbar) {
+
+				} else {
+					//we only want include 
+				}
+			}
+		}
+
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
