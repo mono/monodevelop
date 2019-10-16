@@ -289,11 +289,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string secondaryText = null;
 
 			bool filesExist = CheckAnyFileExists (files);
-			if (filesExist) {
-				secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
-					"Click Remove from Project if you only want to remove it from your current solution.");
-			}
-			
+			//if (filesExist) {
+			//	secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
+			//		"Click Remove from Project if you only want to remove it from your current solution.");
+			//}
+
 			if (hasChildren) {
 				if (files.Count == 1)
 					question = GettextCatalog.GetString ("Remove the file {0} and " + 
@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		static AlertButton[] GetDeleteConfirmationButtons (bool includeDelete, AlertButton removeFromProject)
 		{
 			if (includeDelete)
-				return new [] { removeFromProject, AlertButton.Cancel, AlertButton.Delete };
+				return new [] { AlertButton.Cancel, AlertButton.Delete, removeFromProject};
 			return new [] { AlertButton.Cancel, removeFromProject };
 		}
 		
