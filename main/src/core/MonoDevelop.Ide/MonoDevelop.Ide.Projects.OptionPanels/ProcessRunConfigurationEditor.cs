@@ -74,18 +74,24 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			mainBox.Margin = 12;
 			var table = new Table ();
 
-			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
+			var argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:"));
+			table.Add (argumentsLabel, 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
+			argumentsEntry.Accessible.LabelWidget = argumentsEntry;
 
-			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
+			var runInDirectoryLabel = new Label (GettextCatalog.GetString ("Run in directory:"));
+			table.Add (runInDirectoryLabel, 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-		
+			workingDir.Accessible.LabelWidget = runInDirectoryLabel;
+
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			mainBox.PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
+			var environmentVarsLabel = new Label (GettextCatalog.GetString ("Environment Variables"));
+			mainBox.PackStart (environmentVarsLabel);
 			envVars = new EnvironmentVariableCollectionEditor ();
+			envVars.Accessible.LabelWidget = environmentVarsLabel;
 
 			mainBox.PackStart (envVars, true);
 
