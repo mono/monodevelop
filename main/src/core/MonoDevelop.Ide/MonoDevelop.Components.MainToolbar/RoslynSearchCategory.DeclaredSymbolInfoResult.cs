@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 						return result.Name;
 					}
 
-					return GettextCatalog.GetString ("{0} {1}. {2}", resultKind, result.Name, Description);
+					return GettextCatalog.GetString ($"{resultKind} {{0}}. {{1}}", result.Name, Description);
 				}
 			}
 
