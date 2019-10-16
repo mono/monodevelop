@@ -157,7 +157,7 @@ namespace Gtk
 		{
 			LogEnter ();
 			try {
-				view?.RemoveFromSuperview ();
+				view?.RemoveFromSuperviewWithoutNeedingDisplay ();
 
 				if (disposeViewOnGtkDestroy)
 					view?.Dispose ();
