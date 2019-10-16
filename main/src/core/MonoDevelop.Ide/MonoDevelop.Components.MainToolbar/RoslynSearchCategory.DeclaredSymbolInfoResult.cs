@@ -47,30 +47,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public override string AccessibilityMessage {
 				get {
-					string resultKind = result.Kind switch
+					return result.Kind switch
 					{
-						NavigateToItemKind.Class     => "Class",
-						NavigateToItemKind.Delegate  => "Delegate",
-						NavigateToItemKind.Event     => "Event",
-						NavigateToItemKind.Enum      => "Enumeration",
-						NavigateToItemKind.Constant  => "Constant",
-						NavigateToItemKind.Field     => "Field",
-						NavigateToItemKind.EnumItem  => "Enumeration",
-						NavigateToItemKind.Interface => "Interface",
-						NavigateToItemKind.Method    => "Method",
-						NavigateToItemKind.Property  => "Property",
-						NavigateToItemKind.Structure => "Structure",
-						_                            => null
+						NavigateToItemKind.Class     => GettextCatalog.GetString ("Class {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Delegate  => GettextCatalog.GetString ("Delegate {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Event     => GettextCatalog.GetString ("Event {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Enum      => GettextCatalog.GetString ("Enumeration {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Constant  => GettextCatalog.GetString ("Constant {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Field     => GettextCatalog.GetString ("Field {0}. {1}", result.Name, Description),
+						NavigateToItemKind.EnumItem  => GettextCatalog.GetString ("Enumeration member {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Interface => GettextCatalog.GetString ("Interface {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Method    => GettextCatalog.GetString ("Method {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Property  => GettextCatalog.GetString ("Property {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Structure => GettextCatalog.GetString ("Structure {0}. {1}", result.Name, Description),
+						_                            => result.Name,
 					};
-
-					if (string.IsNullOrEmpty (resultKind)) {
-						return result.Name;
-					}
-
-					return GettextCatalog.GetString ($"{resultKind} {{0}}. {{1}}", result.Name, Description);
 				}
 			}
-
 
 			public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 			{
