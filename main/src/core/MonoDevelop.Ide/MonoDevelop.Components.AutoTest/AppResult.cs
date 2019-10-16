@@ -73,7 +73,7 @@ namespace MonoDevelop.Components.AutoTest
 		// More specific actions for complicated widgets
 
 		#region For MacPlatform.MacIntegration.MainToolbar.SelectorView
-		public override List<string> GetConfigurations ()
+		public virtual List<string> GetConfigurations ()
 		{
 			return null;
 		}
