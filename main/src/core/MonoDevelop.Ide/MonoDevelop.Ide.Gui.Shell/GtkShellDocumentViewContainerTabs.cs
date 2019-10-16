@@ -102,14 +102,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			public GtkShellDocumentTab (Tabstrip parent, string label) : base (parent, label)
 			{
 			}
-
-			protected override void OnDispose ()
-			{
-				if (Tag is IShellDocumentViewItem disposable)
-					disposable.Dispose ();
-
-				base.OnDispose ();
-			}
 		}
 
 		internal static void UpdateTab (Tab tab, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
