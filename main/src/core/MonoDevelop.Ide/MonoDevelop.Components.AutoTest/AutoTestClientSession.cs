@@ -391,6 +391,16 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public List<string> GetConfigurations(Func<AppQuery, AppQuery> query)
+		{
+			AppResult [] results = Query (query);
+			if (results.Length == 0) {
+				return null;
+			}
+
+			return session.GetConfigurations (results [0]);
+		}
+
 		public bool SetActiveConfiguration (Func<AppQuery, AppQuery> query, string configuration)
 		{
 			AppResult[] results = Query (query);

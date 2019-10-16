@@ -715,6 +715,11 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public List<string> GetConfigurations (AppResult result)
+		{
+			return result.GetConfigurations ();
+		}
+
 		public bool SetActiveConfiguration (AppResult result, string configuration)
 		{
 			bool success = false;
