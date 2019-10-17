@@ -120,25 +120,20 @@ namespace MonoDevelop.DesignerSupport
 		NSTableView internalTableView;
 		NSView border;
 
-		void ShowHeader ()
+		void ShowToolbar (bool enabled)
 		{
-			internalTableView.BackgroundColor = hostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
-
 			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
 			propertyEditorPanel.RemoveConstraint (topConstraint);
-			propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
 
-			header.Hidden = false;
-		}
-
-		void HideHeader ()
-		{
-			internalTableView.BackgroundColor = NSColor.Clear;
-			header.Hidden = true;
-
-			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
-			propertyEditorPanel.RemoveConstraint (topConstraint);
-			propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, propertyEditorPanel, NSLayoutAttribute.Top, 1, 0));
+			if (enabled) {
+				internalTableView.BackgroundColor = hostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
+				header.Hidden = false;
+				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
+			} else {
+				internalTableView.BackgroundColor = NSColor.Clear;
+				header.Hidden = true;
+				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, propertyEditorPanel, NSLayoutAttribute.Top, 1, 0));
+			}
 		}
 
 		//HACK: this 
@@ -146,11 +141,7 @@ namespace MonoDevelop.DesignerSupport
 			get => !header.Hidden;
 			set {
 				//we ensure remove current constraints from proppy
-				if (value) {
-					ShowHeader ();
-				} else {
-					HideHeader ();
-				}
+				ShowToolbar (value);
 			}
 		}
 
