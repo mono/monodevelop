@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -146,6 +147,9 @@ namespace MonoDevelop.PackageManagement
 			if (viewModel.BrowsePackageFolder ()) {
 				UpdateAfterFolderSelected ();
 			}
+
+			// Ensure dialog has focus after browsing for a folder.
+			IdeServices.DesktopService.FocusWindow (this);
 		}
 
 		void UpdateAfterFolderSelected ()

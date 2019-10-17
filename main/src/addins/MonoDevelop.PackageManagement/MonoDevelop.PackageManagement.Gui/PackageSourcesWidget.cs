@@ -8,6 +8,7 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Ide;
 using System.ComponentModel;
 
 namespace MonoDevelop.PackageManagement
@@ -238,7 +239,12 @@ namespace MonoDevelop.PackageManagement
 		Xwt.Command ShowDialogWithParent (AddPackageSourceDialog dialog)
 		{
 			Xwt.WindowFrame parent = Xwt.Toolkit.CurrentEngine.WrapWindow (Toplevel);
-			return dialog.Run (parent);
+			Xwt.Command result = dialog.Run (parent);
+
+			// Ensure dialog has focus after browsing for a folder.
+			IdeServices.DesktopService.FocusWindow (parent);
+
+			return result;
 		}
 
 		void UpdateSelectedPackageSource ()
