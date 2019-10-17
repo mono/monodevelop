@@ -59,16 +59,13 @@ namespace MonoDevelop.VersionControl.Views
 
 		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
 		TreeView treeviewFiles;
-		FileTreeView treeviewFileContents;
 		TreeStore changedpathstore;
-		TreeStore contentspathstore;
 		DocumentToolButton revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 
 		VersionControlDocumentInfo info;
 		string preselectFile;
-		CellRendererDiff diffRenderer = new CellRendererDiff ();
 		CellRendererText messageRenderer = new CellRendererText ();
 		CellRendererText textRenderer = new CellRendererText ();
 		CellRendererImage pixRenderer = new CellRendererImage ();
@@ -76,6 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 		bool currentRevisionShortened;
 
 		Xwt.Menu popupMenu;
+		DiffRendererWidget diffRenderer;
 
 		class RevisionGraphCellRenderer : Gtk.CellRenderer
 		{
@@ -210,9 +208,9 @@ namespace MonoDevelop.VersionControl.Views
 			scrolledwindowFiles.Child = treeviewFiles;
 			scrolledwindowFiles.ShowAll ();
 
-			treeviewFileContents = new FileTreeView ();
-			treeviewFileContents.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
-			scrolledwindowFileContents.Child = treeviewFileContents;
+			diffRenderer = new DiffRendererWidget ();
+			diffRenderer.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
+			scrolledwindowFileContents.AddWithViewport (diffRenderer);
 			scrolledwindowFileContents.ShowAll ();
 
 			changedpathstore = new TreeStore (typeof(Xwt.Drawing.Image), typeof (string), // icon/file name
@@ -221,10 +219,6 @@ namespace MonoDevelop.VersionControl.Views
 				typeof (string), // revision path (invisible)
 				typeof (string []) // diff
 				);
-
-			contentspathstore = new TreeStore (typeof(bool), // diff mode
-				typeof (string []) // diff
-			);
 
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
 			var crp = new CellRendererImage ();
@@ -247,13 +241,6 @@ namespace MonoDevelop.VersionControl.Views
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
 			colChangedPath.Title = GettextCatalog.GetString ("Path");
 
-			diffRenderer.DrawLeft = true;
-			colChangedPath.PackStart (diffRenderer, true);
-			colChangedPath.SetCellDataFunc (diffRenderer, SetDiffCellData);
-			treeviewFileContents.HeadersVisible = false;
-			treeviewFileContents.AppendColumn (colChangedPath);
-			treeviewFileContents.Model = contentspathstore;
-			treeviewFileContents.Events |= Gdk.EventMask.PointerMotionMask;
 
 
 			treeviewFiles.Model = changedpathstore;
@@ -472,7 +459,7 @@ namespace MonoDevelop.VersionControl.Views
 			changedpathstore.GetIter (out iter, paths[0]);
 
 			string fileName = (string)changedpathstore.GetValue (iter, colPath);
-			int line = diffRenderer.GetSelectedLine (paths[0]);
+			int line = diffRenderer.SelectedLine;
 			if (line == -1)
 				line = 1;
 
@@ -480,7 +467,7 @@ namespace MonoDevelop.VersionControl.Views
 			var doc = await IdeApp.Workbench.OpenDocument (fileName, proj, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			doc?.GetContent<VersionControlDocumentController> ()?.ShowDiffView (await SelectedRevision.GetPreviousAsync (), SelectedRevision, line);
 		}
-
+		
 		const int colFile = 3;
 		const int colOperation = 4;
 		const int colOperationText = 1;
@@ -490,12 +477,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		void SetDiff (object o, EventArgs args)
 		{
-			this.contentspathstore.Clear ();
+			this.diffRenderer.Lines = null;
 			if (!this.treeviewFiles.Selection.GetSelected (out var model, out var iter))
 				return;
 
-			var newIter = this.contentspathstore.AppendValues (false, new string [] { GettextCatalog.GetString ("Loading data…") });
-			this.treeviewFileContents.ExpandAll ();
+			this.diffRenderer.Lines = new string [] { GettextCatalog.GetString ("Loading data…") };
 			string path = (string)changedpathstore.GetValue (iter, colPath);
 			var rev = SelectedRevision;
 			Task.Run (async delegate {
@@ -561,8 +547,7 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 				await Runtime.RunInMainThread (delegate {
-					this.contentspathstore.Clear ();
-					this.contentspathstore.AppendValues (true, lines);
+					this.diffRenderer.Lines = lines;
 					changedpathstore.SetValue (iter, colDiff, lines);
 				});
 			});
@@ -600,7 +585,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			treeviewFiles.Selection.Changed -= SetDiff;
 
-			treeviewFileContents.DiffLineActivated -= HandleTreeviewFilesDiffLineActivated;
+			diffRenderer.DiffLineActivated -= HandleTreeviewFilesDiffLineActivated;
 
 			textviewDetails.ButtonPressEvent -= TextviewDetails_ButtonPressEvent;
 			labelDate.ButtonPressEvent -= LabelDate_ButtonPressEvent;
@@ -776,7 +761,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			Revision d = SelectedRevision;
 			changedpathstore.Clear ();
-			contentspathstore.Clear ();
+			diffRenderer.Lines = null;
 			textviewDetails.Buffer.Clear ();
 			if (d == null)
 				return;
