@@ -35,12 +35,11 @@ using Xamarin.PropertyEditing;
 namespace MonoDevelop.DesignerSupport
 {
 	class ComponentModelObjectEditor
-		: IObjectEditor, INameableObject, IDisposable
+		: IObjectEditor, IDisposable
 	{
 		internal const string ComboSeparatorString = "--";
 
 		private readonly ComponentModelTarget propertyItem;
-		public string Name { get; private set; }
 
 		static IReadOnlyList<string> defaultHandlerList = new List<string> ().AsReadOnly ();
 		static AssignableTypesResult defaultAssignableTypeResult = new AssignableTypesResult (new List<ITypeInfo> ().AsReadOnly ());
@@ -84,7 +83,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IReadOnlyList<string>> GetHandlersAsync (IEventInfo ev) => Task.FromResult(defaultHandlerList);
 
-		public Task<string> GetNameAsync () => Task.FromResult (Name);
+		public Task<string> GetNameAsync () => Task.FromResult ((string) null);
 
 		public Task<IReadOnlyCollection<PropertyVariation>> GetPropertyVariantsAsync (IPropertyInfo property)
 			=> Task.FromResult<IReadOnlyCollection<PropertyVariation>> (Array.Empty<PropertyVariation> ());
@@ -107,12 +106,6 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		public Task RemovePropertyVariantAsync (IPropertyInfo property, PropertyVariation variant) => Task.CompletedTask;
-
-		public Task SetNameAsync (string name)
-		{
-			Name = name;
-			return Task.CompletedTask;
-		}
 
 		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
 		{
