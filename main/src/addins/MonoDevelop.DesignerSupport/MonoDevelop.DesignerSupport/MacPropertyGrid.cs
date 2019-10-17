@@ -51,7 +51,7 @@ namespace MonoDevelop.DesignerSupport
 		public bool IsEditing => false;
 
 		//Small hack to cover the missing Proppy feature
-		public bool Sensitive { get; set; }
+		public bool Sensitive { get; set; } = true;
 		public override NSView HitTest (CGPoint aPoint)
 		{
 			if (!Sensitive) return null;
