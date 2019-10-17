@@ -43,6 +43,8 @@ namespace MonoDevelop.DesignerSupport
 	class MacPropertyGrid : NSView
 	{
 		readonly MacPropertyEditorPanel propertyEditorPanel;
+		readonly MonoDevelopHostResourceProvider hostResourceProvider;
+
 		ComponentModelEditorProvider editorProvider;
 		ComponentModelTarget currentSelectedObject;
 
@@ -50,7 +52,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool IsEditing => false;
 
-		//Small hack to cover the missing Proppy feature
+		//Small hack to cover the missing Proppy feature to enable/disable the control
 		public bool Sensitive { get; set; } = true;
 		public override NSView HitTest (CGPoint aPoint)
 		{
@@ -62,7 +64,9 @@ namespace MonoDevelop.DesignerSupport
 
 		public MacPropertyGrid () 
 		{
-			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ()) {
+			hostResourceProvider = new MonoDevelopHostResourceProvider ();
+
+			propertyEditorPanel = new MacPropertyEditorPanel (hostResourceProvider) {
 				ShowHeader = false
 			};
 			AddSubview (propertyEditorPanel);
@@ -71,6 +75,8 @@ namespace MonoDevelop.DesignerSupport
 
 			header = propertyEditorPanel.Subviews [0];
 			propertyList = propertyEditorPanel.Subviews [1];
+			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
+				.FirstOrDefault ().DocumentView as NSTableView;
 
 			//we need the second item constrained with the property list
 			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
@@ -111,10 +117,13 @@ namespace MonoDevelop.DesignerSupport
 
 		NSView header;
 		NSView propertyList;
+		NSTableView internalTableView;
 		NSView border;
 
 		void ShowHeader ()
 		{
+			internalTableView.BackgroundColor = hostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
+
 			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
 			propertyEditorPanel.RemoveConstraint (topConstraint);
 			propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
@@ -124,6 +133,7 @@ namespace MonoDevelop.DesignerSupport
 
 		void HideHeader ()
 		{
+			internalTableView.BackgroundColor = NSColor.Clear;
 			header.Hidden = true;
 
 			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
