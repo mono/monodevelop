@@ -32,6 +32,10 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Text;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -58,7 +62,12 @@ namespace MonoDevelop.VersionControl.Views
 
 		public int SelectedLine => selectedLine;
 
-		public event EventHandler DiffLineActivated;
+		public event EventHandler<int> DiffLineActivated;
+
+		protected virtual void OnDiffLineActivated (int line)
+		{
+			DiffLineActivated?.Invoke (this, line);
+		}
 
 		public DiffRendererWidget ()
 		{
@@ -79,6 +88,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			isDisposed = true;
 			DisposeLayout ();
+			ClearAccessibleLines ();
 			base.OnDestroyed ();
 		}
 
@@ -135,7 +145,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (selectedLine >= 0) {
 				if (evnt.Type == Gdk.EventType.TwoButtonPress)
-					DiffLineActivated?.Invoke (this, EventArgs.Empty);
+					OnDiffLineActivated (selectedLine);
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
@@ -153,6 +163,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var window = e.Window;
 			var widget = this;
+			ClearAccessibleLines ();
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				int w, maxy;
 				window.GetSize (out w, out maxy);
@@ -211,7 +222,9 @@ namespace MonoDevelop.VersionControl.Views
 					DrawBlockBg (ctx, cell_area.X + 1, cell_area.Width - 2, block);
 
 					// Get all text for the current block
-					StringBuilder sb = new StringBuilder ();
+					var sb = new StringBuilder ();
+					bool replaceFirst = false;
+					int subLine = 0;
 					for (int n = block.FirstLine; n <= block.LastLine; n++) {
 						string s = ProcessLine (lines [n]);
 						if (n > block.FirstLine)
@@ -219,8 +232,21 @@ namespace MonoDevelop.VersionControl.Views
 						if ((block.Type == BlockType.Added || block.Type == BlockType.Removed) && s.Length > 0) {
 							sb.Append (' ');
 							sb.Append (s, 1, s.Length - 1);
+							replaceFirst = true;
 						} else
 							sb.Append (s);
+						int idx = 0, curIdx = 0;
+						while ((idx = s.IndexOf ('\n')) >= 0) {
+							var y1 = block.YStart + subLine * lineHeight;
+							if (y1 < cell_area.Bottom && y1 + lineHeight >= e.Area.Y && y1 < e.Area.Bottom)
+								AddAccessibleLine (cell_area.X + 2 + LeftPaddingBlock, y1, block.Type, block.FirstLine + n + subLine, ref replaceFirst, s.Substring (curIdx, idx));
+							subLine++;
+							curIdx = idx;
+						}
+						var y2 = block.YStart + subLine * lineHeight;
+						if (y2 < cell_area.Bottom && y2 + lineHeight >= e.Area.Y && y2 < e.Area.Bottom)
+							AddAccessibleLine (cell_area.X + 2 + LeftPaddingBlock, y2, block.Type, block.FirstLine + n + subLine, ref replaceFirst, curIdx > 0 ? s.Substring (curIdx) : s);
+						subLine++;
 					}
 
 					// Draw a special background for the selected line
@@ -281,7 +307,17 @@ namespace MonoDevelop.VersionControl.Views
 				addedGC.Dispose ();
 				infoGC.Dispose ();
 			}
+			Accessible.SetAccessibleChildren (accessibleLines.Select (l => l.Accessible).ToArray ());
 			return true;
+		}
+
+		void AddAccessibleLine (int x, int y, BlockType blockType, int lineNumber, ref bool replaceFirst, string text)
+		{
+			if (replaceFirst) {
+				text = ' ' + text.Substring (1);
+				replaceFirst = false;
+			}
+			this.accessibleLines.Add (new DiffLineAccessible (this, x, y, blockType, lineNumber, text));
 		}
 
 		static string ProcessLine (string line)
@@ -537,5 +573,72 @@ namespace MonoDevelop.VersionControl.Views
 			return cline;
 		}
 
+		List<DiffLineAccessible> accessibleLines = new List<DiffLineAccessible> ();
+
+		void ClearAccessibleLines ()
+		{
+			foreach (var button in accessibleLines) {
+				button.Dispose ();
+			}
+			accessibleLines.Clear ();
+			Accessible.SetAccessibleChildren (Array.Empty<AccessibilityElementProxy> ());
+		}
+
+		class DiffLineAccessible : IDisposable
+		{
+			DiffRendererWidget widget;
+			int line;
+
+			public AccessibilityElementProxy Accessible { get; private set; }
+			public bool Visible { get; internal set; }
+
+			public DiffLineAccessible (DiffRendererWidget widget, int x, int y, BlockType blockType, int line, string text)
+			{
+				this.widget = widget;
+				this.line = line;
+
+				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+				Accessible.GtkParent = widget;
+				Accessible.PerformPress += PerformPress;
+				string msg;
+				switch (blockType) {
+				case BlockType.Added:
+					msg = GettextCatalog.GetString ("Added line");
+					break;
+				case BlockType.Removed:
+					msg = GettextCatalog.GetString ("Removed line");
+					break;
+				default:
+					msg = GettextCatalog.GetString ("Unchanged line");
+					break;
+				}
+				Accessible.SetRole (AtkCocoa.Roles.AXButton, msg);
+
+				Accessible.Label = GettextCatalog.GetString ("Line {0}, Text {1}", line, text);
+
+				SetBounds (x, y, widget.Allocation.Width, widget.lineHeight);
+			}
+
+			public void SetBounds (int x, int y, int w, int h)
+			{
+				Accessible.FrameInGtkParent = new Rectangle (x, y, w, h);
+				var cocoaY = widget.Allocation.Height - y - h;
+				Accessible.FrameInParent = new Rectangle (x, cocoaY, w, h);
+			}
+
+			void PerformPress (object sender, EventArgs e)
+			{
+				widget.OnDiffLineActivated (this.line);
+			}
+
+			public void Dispose ()
+			{
+				if (Accessible == null)
+					return;
+				Accessible.PerformPress -= PerformPress;
+				Accessible = null;
+				widget = null;
+			}
+		}
 	}
 }
