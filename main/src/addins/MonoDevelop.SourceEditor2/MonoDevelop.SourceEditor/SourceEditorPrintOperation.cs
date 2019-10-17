@@ -32,6 +32,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -289,11 +291,13 @@ namespace MonoDevelop.SourceEditor
 		
 		private SourceEditorPrintSettings ()
 		{
-			try {
-				Font = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
-			} catch {
+			var font = Xwt.Drawing.Font.FromName (DefaultSourceEditorOptions.Instance.FontName);
+			if (font == null) {
 				LoggingService.LogWarning ("Could not load font: {0}", DefaultSourceEditorOptions.Instance.FontName);
+			} else {
+				Font = font.ToPangoFont ();
 			}
+
 			if (Font == null || String.IsNullOrEmpty (Font.Family))
 				Font = Pango.FontDescription.FromString (TextEditorOptions.DEFAULT_FONT);
 			if (Font != null) {

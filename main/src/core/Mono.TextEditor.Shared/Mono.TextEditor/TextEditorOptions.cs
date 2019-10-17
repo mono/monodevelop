@@ -32,6 +32,8 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Fonts;
 
 namespace Mono.TextEditor
 {
@@ -402,7 +404,12 @@ namespace Mono.TextEditor
 			get {
 				if (font == null) {
 					try {
-						font = Pango.FontDescription.FromString (FontName);
+						var xwtFont = Xwt.Drawing.Font.FromName (FontName);
+						if (xwtFont == null) {
+							font = Pango.FontDescription.FromString (DEFAULT_FONT);
+						} else {
+							font = xwtFont.ToPangoFont ();
+						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not load font: " + FontName, e);
 					}
@@ -432,8 +439,9 @@ namespace Mono.TextEditor
 			get {
 				if (gutterFont == null) {
 					try {
-						if (!string.IsNullOrEmpty (GutterFontName))
-							gutterFont = Pango.FontDescription.FromString (GutterFontName);
+						var xwtFont = Xwt.Drawing.Font.FromName (GutterFontName);
+						if (xwtFont != null) 
+							gutterFont = xwtFont.ToPangoFont ();
 					} catch (Exception e) {
 						LoggingService.LogError ("Could not load gutter font: " + GutterFontName, e);
 					}

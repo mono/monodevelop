@@ -40,6 +40,7 @@ using Pango;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Gdk;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Refactoring
 {
@@ -63,9 +64,13 @@ namespace MonoDevelop.Refactoring
 			this.documentContext = documentContext = editor.DocumentContext;
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
-
-			fontDescription = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
-			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+			var font = Xwt.Drawing.Font.FromName (DefaultSourceEditorOptions.Instance.FontName);
+			if (font != null) {
+				fontDescription = font.ToPangoFont ();
+				fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+			} else {
+				LoggingService.LogError ("Error loading font : " + DefaultSourceEditorOptions.Instance.FontName);
+			}
 
 			using (var metrics = PangoContext.GetMetrics (fontDescription, PangoContext.Language)) {
 				lineHeight = (int)Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
