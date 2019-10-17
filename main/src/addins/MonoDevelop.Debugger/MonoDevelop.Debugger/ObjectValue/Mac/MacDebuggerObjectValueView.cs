@@ -188,6 +188,7 @@ namespace MonoDevelop.Debugger
 			}
 			constraints.Clear ();
 
+			bool selected = Superview is NSTableRowView rowView && rowView.Selected;
 			var editable = TreeView.GetCanEditNode (Node);
 			var textColor = NSColor.ControlText;
 			string evaluateStatusIcon = null;
@@ -255,7 +256,7 @@ namespace MonoDevelop.Debugger
 
 			// First item: Status Icon -or- Spinner
 			if (evaluateStatusIcon != null) {
-				statusIcon.Image = GetImage (evaluateStatusIcon, Gtk.IconSize.Menu);
+				statusIcon.Image = GetImage (evaluateStatusIcon, Gtk.IconSize.Menu, selected);
 
 				if (!statusIconVisible) {
 					AddSubview (statusIcon);
