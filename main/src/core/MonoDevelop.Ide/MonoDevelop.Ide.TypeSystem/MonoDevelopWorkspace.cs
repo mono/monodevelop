@@ -618,15 +618,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
 				return null;
-			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
+			TextDocument document = project.GetDocument (documentId) ??
+				project.GetAdditionalDocument (documentId) ??
+				project.GetAnalyzerConfigDocument (documentId);
 			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
 			OpenDocuments.Add (documentId, sourceTextContainer);
 			if (document is Document) {
 				OnDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
-			} else {
+			} else if (document is AdditionalDocument) {
 				OnAdditionalDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
+			} else if (document is AnalyzerConfigDocument) {
+				OnAnalyzerConfigDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			}
 			return document;
 		}
@@ -655,8 +659,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					//it's job of whatever opened to also call CloseAndemoveDocumentInternal
 					return;
 				}
-				if (!CurrentSolution.ContainsDocument (analysisDocument))
-					return;
 
 				// Using a source text container
 				var loader = new SourceTextLoader (container, null);
@@ -666,8 +668,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					var ad = this.GetAdditionalDocument (analysisDocument);
 					if (ad != null)
 						OnAdditionalDocumentClosed (analysisDocument, loader);
+					var analyzerDoc = this.GetAnalyzerConfigDocument (analysisDocument);
+					if (analyzerDoc != null)
+						OnAnalyzerConfigDocumentClosed (analysisDocument, loader);
 					return;
 				}
+
+				if (!CurrentSolution.ContainsDocument (analysisDocument))
+					return;
+
 				OnDocumentClosed (analysisDocument, loader);
 				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
 					OnDocumentClosed (linkedDoc, loader);
@@ -1406,6 +1415,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
+		internal TextDocument GetAnalyzerConfigDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var project = CurrentSolution.GetProject (documentId.ProjectId);
+			if (project == null)
+				return null;
+			return project.GetAnalyzerConfigDocument (documentId);
+		}
+
 		internal async Task UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
@@ -1420,6 +1437,8 @@ namespace MonoDevelop.Ide.TypeSystem
 								base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							} else if (this.GetAdditionalDocument (docId) != null) {
 								base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+							} else if (this.GetAnalyzerConfigDocument (docId) != null) {
+								base.OnAnalyzerConfigDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							}
 						} catch (Exception e) {
 							LoggingService.LogWarning ("Roslyn error on text change", e);
