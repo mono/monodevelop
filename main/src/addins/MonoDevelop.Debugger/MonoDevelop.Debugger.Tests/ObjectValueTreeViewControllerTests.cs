@@ -332,16 +332,16 @@ namespace MonoDevelop.Debugger.Tests
 
 			Assert.AreEqual (xx.Count, appended, "Number of appended object value nodes do not match.");
 
-			// the fake evaluating nodes are using a 5000 timer, so 5100 should be enough...
-			await Task.Delay (5100);
+			// the fake evaluating nodes are using a 5sec timer, so 6sec should be enough...
+			await Task.Delay (6000);
 
 			Assert.AreEqual (4, replaced, "Number of replaced nodes does not match.");
 
 			// expand the "f1" node
 			view.EmitNodeExpand (xx[0]);
 
-			// expanding a fake node uses a 1000 timer, so 1100 should be enough
-			await Task.Delay (1100);
+			// expanding a fake node uses a 1sec timer, so 2sec should be enough
+			await Task.Delay (2000);
 
 			Assert.AreEqual (1, expanded, "Expected the f1 node to be expanded.");
 
