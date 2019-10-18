@@ -41,6 +41,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using Microsoft.VisualStudio.Text;
 using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.VersionControl.Views
 {
