@@ -47,7 +47,6 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Refactoring;
-using RefactoringEssentials;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using Gdk;
