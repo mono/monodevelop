@@ -93,10 +93,6 @@
           <projectName>IKVM.Reflection</projectName>
           <isIncluded>False</isIncluded>
         </TranslationProjectInformation>
-        <TranslationProjectInformation>
-          <projectName>RefactoringEssentials</projectName>
-          <isIncluded>True</isIncluded>
-        </TranslationProjectInformation>
       </projectInformations>
     </projectInformations>
   </PropertyGroup>

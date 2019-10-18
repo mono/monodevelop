@@ -51,7 +51,6 @@ namespace MonoDevelop.AnalysisCore
 		string [] RuntimeEnabledAssemblies;
 		public MonoDevelopWorkspaceDiagnosticAnalyzerProviderService ()
 		{
-			RefactoringEssentials.NRefactory6Host.GetLocalizedString = GettextCatalog.GetString;
 			hostDiagnosticAnalyzerInfoTask = Task.Run (() => CreateHostDiagnosticAnalyzerPackages ());
 		}
 

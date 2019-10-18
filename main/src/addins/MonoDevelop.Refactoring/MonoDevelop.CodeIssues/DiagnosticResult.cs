@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.AnalysisCore;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
-using RefactoringEssentials;
 using System.Linq;
 using System.Globalization;
 
@@ -61,8 +60,6 @@ namespace MonoDevelop.CodeIssues
 		IssueMarker GetIssueMarker ()
 		{
 			if (DescriptorHasTag (diagnostic.Descriptor, WellKnownDiagnosticTags.Unnecessary))
-				return IssueMarker.GrayOut;
-			if (diagnostic.Descriptor.Category == DiagnosticAnalyzerCategories.RedundanciesInCode || diagnostic.Descriptor.Category == DiagnosticAnalyzerCategories.RedundanciesInDeclarations)
 				return IssueMarker.GrayOut;
 			if (diagnostic.Severity == DiagnosticSeverity.Info)
 				return IssueMarker.DottedLine;
