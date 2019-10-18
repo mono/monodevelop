@@ -51,10 +51,10 @@ namespace MonoDevelop.Debugger
 			// breaks once the NSTextField is in "edit" mode because the placeholder text ends up
 			// being rendered as black instead of gray. By reverting to using the basic
 			// PlaceholderString property once we enter "edit" mode, it fixes the text color.
-			//var placeholder = PlaceholderAttributedString;
+			var placeholder = PlaceholderAttributedString;
 
-			//if (placeholder != null)
-			//	PlaceholderString = placeholder.Value;
+			if (placeholder != null)
+				PlaceholderString = placeholder.Value;
 
 			TextColor = NSColor.ControlText;
 

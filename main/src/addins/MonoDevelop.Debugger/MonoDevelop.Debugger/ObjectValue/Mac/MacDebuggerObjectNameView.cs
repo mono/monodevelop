@@ -125,7 +125,7 @@ namespace MonoDevelop.Debugger
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
 			}
 
-			TextField.PlaceholderString = placeholder;
+			TextField.PlaceholderAttributedString = GetAttributedPlaceholderString (placeholder);
 			TextField.StringValue = name;
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
