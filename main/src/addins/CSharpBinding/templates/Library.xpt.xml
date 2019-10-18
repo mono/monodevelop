@@ -10,7 +10,7 @@
 		<Icon>md-library-project</Icon>
 		<Image id="md-library-project" />
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates an empty C# class library</_Description>
+		<_Description>Creates an empty C# class library.</_Description>
 		<DefaultFilename>EmptyLibrary</DefaultFilename>
 		<GroupId>md-project-library</GroupId>
 	</TemplateConfiguration>
