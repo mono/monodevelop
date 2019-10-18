@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using System.Linq;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -237,7 +238,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (type != SupportedCredentialTypes.UsernamePassword)
 				return GitCredentialsProviderResult.NotFound;
 
-			var (result, credentials) = gitCredentialsProvider.TryGetCredentialsAsync (uri).Result;
+			var (result, credentials) = Task.Run (() => gitCredentialsProvider.TryGetCredentialsAsync (uri)).Result;
 		
 			if (result == GitCredentialsProviderResult.Found) {
 				((UsernamePasswordCredentials)cred).Username = credentials.Username;
