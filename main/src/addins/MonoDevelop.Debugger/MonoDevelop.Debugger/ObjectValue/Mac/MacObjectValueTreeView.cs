@@ -316,7 +316,8 @@ namespace MonoDevelop.Debugger
 				CustomFont = DefaultSystemFont;
 			}
 
-			RowHeight = CalculateRowHeight (CustomFont);
+			// Note: We need a minimum of 16px for the icons and an added 2px for vertical spacing
+			RowHeight = NMath.Max (CalculateRowHeight (CustomFont), 18.0f);
 			ReloadData ();
 		}
 
