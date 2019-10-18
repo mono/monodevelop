@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Gui
 			bool preferExternalBinding = false;
 
 			foreach (var b in await IdeServices.DocumentControllerService.GetSupportedControllers (fileDescriptor)) {
-				if (b.PreferExtenalBinding)
+				if (b.PreferExternalBinding)
 					preferExternalBinding = true;
 				documentControllersViewers.Add (new FileViewer (b));
 			}
