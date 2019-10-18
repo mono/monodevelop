@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var project = owner as MonoDevelop.Projects.Project;
 			if (project == null || !project.IsCompileable (filePath) || project.ParentSolution == null) {
-				return false;
+				return TryOpenDocumentInAllWorkspaces (filePath, textBuffer);
 			}
 
 			var workspace = GetWorkspace (project.ParentSolution);
@@ -374,6 +374,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
+		bool TryOpenDocumentInAllWorkspaces (FilePath filePath, ITextBuffer textBuffer)
+		{
+			bool opened = false;
+			foreach (var workspace in workspaces) {
+				var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+				foreach (var documentId in documentIds) {
+					if (workspace.IsDocumentOpen (documentId))
+						continue;
+
+					if (workspace.CurrentSolution.ContainsAdditionalDocument (documentId)) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+						opened = true;
+					} else if (workspace.CurrentSolution.ContainsAnalyzerConfigDocument (documentId)) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+						opened = true;
+					}
+				}
+			}
+			return opened;
+		}
+
 		void UnregisterOpenDocument (OpenDocumentReference reference)
 		{
 			Runtime.AssertMainThread ();
@@ -394,6 +415,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var solution = (reference.Owner as SolutionItem)?.ParentSolution;
 			if (solution != null)
 				TryCloseDocumentInWorkspace (reference.FilePath, reference.TextBuffer.AsTextContainer (), solution);
+			else
+				TryCloseDocumentInAllWorkspaces (reference.FilePath, reference.TextBuffer.AsTextContainer ());
 		}
 
 		private void TryCloseDocumentInWorkspace (FilePath filePath, SourceTextContainer container, MonoDevelop.Projects.Solution solution)
@@ -406,6 +429,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
 			foreach (var documentId in documentIds) {
 				workspace.InformDocumentClose (documentId, container);
+			}
+		}
+
+		void TryCloseDocumentInAllWorkspaces (FilePath filePath, SourceTextContainer container)
+		{
+			foreach (var workspace in workspaces) {
+				var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+				foreach (var documentId in documentIds) {
+					workspace.InformDocumentClose (documentId, container);
+				}
 			}
 		}
 
