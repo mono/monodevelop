@@ -149,12 +149,52 @@ namespace MonoDevelop.VersionControl.Views
 			void PerformRevert (Hunk hunk)
 			{
 				try {
+					var selectedBounds = GetFocusedButton ()?.Bounds;
+
 					widget.UndoChange (fromEditor, toEditor, hunk);
 					UpdateAccessiblity ();
-					Accessible.SetCurrentFocus ();
+
+					if (selectedBounds != null) {
+						var nearestButton = GetNearestButton (selectedBounds.Value);
+						if (nearestButton != null) {
+							nearestButton.Accessible.Focused = true;
+						} else {
+							Accessible.SetCurrentFocus ();
+						}
+					}
 				} catch (Exception e) {
 					LoggingService.LogInternalError ("Error while undoing widget change.", e);
 				}
+			}
+
+			ButtonAccessible GetNearestButton (Rectangle selectedBounds)
+			{
+				static int GetDelta (Rectangle rect1, Rectangle rect2)
+				{
+					int d1 = Math.Abs (rect1.Top - rect2.Bottom);
+					int d2 = Math.Abs (rect1.Bottom - rect2.Top);
+					return Math.Min (d1, d2);
+				}
+
+				int curDelta = int.MaxValue;
+				ButtonAccessible nearestButton = null;
+
+				foreach (var button in accessibleButtons) {
+					int delta = GetDelta (button.Value.Bounds, selectedBounds);
+					if (delta < curDelta) {
+						nearestButton = button.Value;
+					}
+				}
+				return nearestButton;
+			}
+
+			ButtonAccessible GetFocusedButton ()
+			{
+				foreach (var buttons in accessibleButtons) {
+					if (buttons.Value.Accessible.Focused)
+						return buttons.Value;
+				}
+				return null;
 			}
 
 			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
@@ -425,6 +465,7 @@ namespace MonoDevelop.VersionControl.Views
 
 				public AccessibilityElementProxy Accessible { get; private set; }
 				public bool Visible { get; internal set; }
+				public Rectangle Bounds { get; private set; }
 
 				public ButtonAccessible (MiddleArea widget, Hunk hunk)
 				{
@@ -448,7 +489,7 @@ namespace MonoDevelop.VersionControl.Views
 
 				public void SetBounds (int x, int y, int w, int h)
 				{
-					Accessible.FrameInGtkParent = new Rectangle (x, y, w, h);
+					Accessible.FrameInGtkParent = Bounds = new Rectangle (x, y, w, h);
 
 					var cocoaY = widget.Allocation.Height - y - h;
 
