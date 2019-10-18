@@ -109,10 +109,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			var workspace = originalDocument.Project.Solution.Workspace;
 
 			var unnecessaryImportsService = originalDocument.GetLanguageService<IRemoveUnnecessaryImportsService> ();
+			var organizeImportsService = originalDocument.GetLanguageService<IOrganizeImportsService> ();
 
 			// Remove unnecessary imports and sort them
 			var removedImportsDocument = await unnecessaryImportsService.RemoveUnnecessaryImportsAsync (originalDocument, cancellationToken);
-			var resultDocument = await OrganizeImportsService.OrganizeImportsAsync (removedImportsDocument, cancellationToken);
+			var resultDocument = await organizeImportsService.OrganizeImportsAsync (removedImportsDocument, cancellationToken);
 
 			// Apply the document change if needed
 			if (resultDocument != originalDocument) {
