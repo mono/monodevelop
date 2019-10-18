@@ -435,16 +435,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 					externalBinding = externalViewers.FirstOrDefault (d => d.CanUseAsDefault) ?? externalViewers.FirstOrDefault ();
 				} else {
 					internalBinding = internalViewers.FirstOrDefault (d => d.CanUseAsDefault);
-					if (internalBinding == null) {
+					if (internalBinding == null || internalBinding.PreferExtenalBinding) {
 						externalBinding = externalViewers.FirstOrDefault (d => d.CanUseAsDefault);
 						if (externalBinding == null) {
 							internalBinding = internalViewers.FirstOrDefault ();
-							if (internalBinding == null)
+							if (internalBinding == null || internalBinding.PreferExtenalBinding)
 								externalBinding = externalViewers.FirstOrDefault ();
 						}
 					}
 				}
 			}
+
+			if (externalBinding != null && internalBinding != null && internalBinding.PreferExtenalBinding)
+				internalBinding = null;
 
 			Document newContent = null;
 			try {
