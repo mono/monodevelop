@@ -3477,7 +3477,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\ConfirmProjectDeleteDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DefaultPolicyOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DeleteConfigDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\NewConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectFileSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectOperations.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\IncludeNewFilesDialog.cs" />
@@ -4125,7 +4124,6 @@
     <Compile Include="Gui\MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs" />
-    <Compile Include="Gui\MonoDevelop.Ide.Projects.NewConfigurationDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Projects.NewFileDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget.cs" />
@@ -4298,6 +4296,7 @@
     <Compile Include="MonoDevelop.Ide\TranslationCatalog.cs" />
     <Compile Include="MonoDevelop.Components\Mac\VerticalAlignmentTextCell.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService_WorkspaceRequestRegistration.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewConfigurationDialog.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
