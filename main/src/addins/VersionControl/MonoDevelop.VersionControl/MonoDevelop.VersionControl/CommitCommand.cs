@@ -20,14 +20,9 @@ namespace MonoDevelop.VersionControl
 				VersionControlService.NotifyPrepareCommit (vc, changeSet);
 				if (!await VerifyUnsavedChangesAsync (changeSet))
 					return;
-				CommitDialog dlg = new CommitDialog (changeSet);
+				CommitDialog dlg = new CommitDialog (vc, changeSet);
 				try {
-					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-						VersionControlService.NotifyBeforeCommit (vc, changeSet);
-							new CommitWorker (vc, changeSet, dlg).StartAsync();
-							return;
-						}
-					dlg.EndCommit (false);
+					MessageService.RunCustomDialog (dlg);
 				} finally {
 					dlg.Destroy ();
 					dlg.Dispose ();
@@ -91,59 +86,6 @@ namespace MonoDevelop.VersionControl
 			return allowCommit;
 		}
 
-		private class CommitWorker : VersionControlTask
-		{
-			Repository vc;
-			ChangeSet changeSet;
-			CommitDialog dlg;
-			bool success;
-
-			public CommitWorker (Repository vc, ChangeSet changeSet, CommitDialog dlg)
-			{
-				this.vc = vc;
-				this.changeSet = changeSet;
-				this.dlg = dlg;
-				OperationType = VersionControlOperationType.Push;
-			}
-
-			protected override string GetDescription()
-			{
-				return GettextCatalog.GetString ("Committing {0}...", changeSet.BaseLocalPath);
-			}
-
-			protected override async Task RunAsync ()
-			{
-				success = true;
-				try {
-					// store global comment before commit.
-					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, changeSet.GlobalComment, true);
-
-					await vc.CommitAsync (changeSet, Monitor);
-					Monitor.ReportSuccess (GettextCatalog.GetString ("Commit operation completed."));
-
-					// Reset the global comment on successful commit.
-					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, "", true);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Commit operation failed", ex);
-					Monitor.ReportError (ex.Message, null);
-					success = false;
-					throw;
-				}
-			}
-
-			protected override void Finished ()
-			{
-				dlg.EndCommit (success);
-				dlg.Destroy ();
-				FileUpdateEventArgs args = new FileUpdateEventArgs ();
-				foreach (ChangeSetItem it in changeSet.Items)
-					args.Add (new FileUpdateEventInfo (vc, it.LocalPath, it.IsDirectory));
-
-				if (args.Count > 0)
-					VersionControlService.NotifyFileStatusChanged (args);
-
-				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
-			}
-		}
+		
 	}
 }
