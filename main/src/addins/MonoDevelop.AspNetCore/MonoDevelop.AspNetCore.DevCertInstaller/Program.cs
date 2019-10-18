@@ -130,6 +130,15 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 				return -3;
 			}
 
+			// Clean up certificates first, to work around an issue in .NET Core 3.1 P1
+			// with a bad certificate installation. See https://github.com/aspnet/AspNetCore/issues/15118
+			using (var process = Process.Start (dotNetCorePath, "dev-certs https --clean")) {
+				process.WaitForExit ();
+				if (process.ExitCode != 0) {
+					Console.WriteLine ($"Could not clean up current certificate, trusting might fail");
+				}
+			}
+
 			using (var process = Process.Start (dotNetCorePath, "dev-certs https --trust")) {
 				process.WaitForExit ();
 				return process.ExitCode;

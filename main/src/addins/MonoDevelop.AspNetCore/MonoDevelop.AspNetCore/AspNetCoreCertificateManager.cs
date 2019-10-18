@@ -92,12 +92,12 @@ namespace MonoDevelop.AspNetCore
 				if (result == CertificateCheckResult.OK) {
 					IsDevelopmentCertificateTrusted = true;
 					return;
-				} else if (result == CertificateCheckResult.Error) {
-					// Check failed - Do not try to trust certificate since this
-					// will likely also fail.
-					return;
 				}
 
+				// If we got a failure, try trusting, as there are cases (3.1 Preview 1,
+				// see https://github.com/aspnet/AspNetCore/issues/15118) where this is just
+				// due to a bad certificate being installed in the system. Since our DevCert
+				// Installer tool will clean before trusting, just have a try.
 				if (ConfirmTrustCertificate (result)) {
 					await DotNetCoreDevCertsTool.TrustCertificate (monitor.CancellationToken);
 				}
