@@ -10,7 +10,7 @@
 		<Icon>md-console-project</Icon>
 		<Image id="md-console-project" />
 		<LanguageName>IL</LanguageName>
-		<_Description>IL Console Project</_Description>
+		<_Description>Creates an IL Console Project.</_Description>
 		<DefaultFilename>ILConsoleProject</DefaultFilename>
 		<GroupId>md-project-console</GroupId>
 	</TemplateConfiguration>
