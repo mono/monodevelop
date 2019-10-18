@@ -1255,11 +1255,11 @@ class C
 			AddExpressionBodyOptions (optionSet, expressionPreferencesGroupTitle);
 
 			// Variable preferences
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferInlinedVariableDeclaration, GettextCatalog.GetString("Prefer inlined variable declaration"), s_preferInlinedVariableDeclaration, s_preferInlinedVariableDeclaration, this, optionSet, variablePreferencesGroupTitle));
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferDeconstructedVariableDeclaration, GettextCatalog.GetString("Prefer deconstructed variable declaration"), s_preferDeconstructedVariableDeclaration, s_preferDeconstructedVariableDeclaration, this, optionSet, variablePreferencesGroupTitle));
+			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.PreferInlinedVariableDeclaration, GettextCatalog.GetString("Prefer inlined variable declaration"), s_preferInlinedVariableDeclaration, s_preferInlinedVariableDeclaration, this, optionSet, variablePreferencesGroupTitle));
+			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.PreferDeconstructedVariableDeclaration, GettextCatalog.GetString("Prefer deconstructed variable declaration"), s_preferDeconstructedVariableDeclaration, s_preferDeconstructedVariableDeclaration, this, optionSet, variablePreferencesGroupTitle));
 
 			// Null preferences.
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferThrowExpression, GettextCatalog.GetString("Prefer throw-expression"), s_preferThrowExpression, s_preferThrowExpression, this, optionSet, nullCheckingGroupTitle));
+			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.PreferThrowExpression, GettextCatalog.GetString("Prefer throw-expression"), s_preferThrowExpression, s_preferThrowExpression, this, optionSet, nullCheckingGroupTitle));
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.PreferConditionalDelegateCall, GettextCatalog.GetString("Prefer conditional delegate call"), s_preferConditionalDelegateCall, s_preferConditionalDelegateCall, this, optionSet, nullCheckingGroupTitle));
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferCoalesceExpression, GettextCatalog.GetString("Prefer coalesce expression"), s_preferCoalesceExpression, s_preferCoalesceExpression, this, optionSet, nullCheckingGroupTitle));
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferNullPropagation, GettextCatalog.GetString("Prefer null propagation"), s_preferNullPropagation, s_preferNullPropagation, this, optionSet, nullCheckingGroupTitle));
