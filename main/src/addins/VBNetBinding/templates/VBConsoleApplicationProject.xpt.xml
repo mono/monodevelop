@@ -10,7 +10,7 @@
 		<Icon>md-console-project</Icon>
 		<Image id="md-console-project" />
 		<LanguageName>VBNet</LanguageName>
-		<_Description>Create a console VB.Net project</_Description>
+		<_Description>Creates a console VB.Net project.</_Description>
 		<DefaultFilename>ConsoleVBProject</DefaultFilename>
 		<GroupId>md-project-console</GroupId>
 	</TemplateConfiguration>
