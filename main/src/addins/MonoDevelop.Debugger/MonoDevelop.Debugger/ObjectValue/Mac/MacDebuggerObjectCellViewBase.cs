@@ -42,7 +42,6 @@ namespace MonoDevelop.Debugger
 {
 	abstract class MacDebuggerObjectCellViewBase : NSTableCellView
 	{
-		static readonly Dictionary<(string, nfloat), float> baselineOffsets = new Dictionary<(string, nfloat), float> ();
 		protected const int CompactImageSize = 12;
 		protected const int RowCellSpacing = 2;
 		protected const int ImageSize = 16;
@@ -152,6 +151,11 @@ namespace MonoDevelop.Debugger
 		protected static CGColor GetCGColor (Color color)
 		{
 			return new CGColor ((nfloat) color.Red, (nfloat) color.Green, (nfloat) color.Blue);
+		}
+
+		protected static NSAttributedString GetAttributedPlaceholderString (string text)
+		{
+			return new NSAttributedString (text ?? string.Empty, strokeColor: NSColor.PlaceholderTextColor);
 		}
 
 		protected void UpdateFont (NSControl control, int sizeDelta = 0)
