@@ -145,9 +145,6 @@ void test_update_environment(void)
 	const char *gac_components[] = {
 		[resourcePath UTF8String],
 	};
-	const char *safe_components[] = {
-		"yes",
-	};
 	const char *numeric_components[] = {
 		"C",
 	};
@@ -161,7 +158,6 @@ void test_update_environment(void)
 	check_path_has_components(getenv("PATH"), path_components, sizeof(path_components) / sizeof(char *));
 	check_path_has_components(getenv("PKG_CONFIG_PATH"), pkg_components, sizeof(pkg_components) / sizeof(char *));
 	check_path_has_components(getenv("MONO_GAC_PREFIX"), gac_components, sizeof(gac_components) / sizeof(char *));
-	check_path_has_components(getenv("MONODEVELOP_64BIT_SAFE"), safe_components, sizeof(safe_components) / sizeof (char *));
 	check_path_has_components(getenv("LC_NUMERIC"), numeric_components, sizeof(numeric_components) / sizeof(char *));
 }
 

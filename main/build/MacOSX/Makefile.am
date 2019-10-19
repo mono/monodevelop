@@ -49,23 +49,23 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(HYBRID_SUSPEND_ABORT) -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) -c -Wall -m64 -o $@ monostub.mm
 
 monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m64 -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
+	clang++ -g -Wall -m64 -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
+	clang++ -g -Wall -m64 -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCEFILES)
-	gcc -g -Wall -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
+	gcc -g -Wall -m64 -o $@ monostub-test.m -framework AppKit
 	./monostub-test
 
 clean-local:
