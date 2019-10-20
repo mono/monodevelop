@@ -29,6 +29,10 @@
       <Name>Mono.Addins.Setup</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Reference Include="Xamarin.Mac" Condition="$(IsMac)">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\AssemblyInfo.cs" />
@@ -38,6 +42,9 @@
     </None>
     <Compile Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Components\Shared\GtkWorkarounds.cs">
       <Link>src\GtkWorkarounds.cs</Link>
+    </Compile>
+    <Compile Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Components\Mac\Messaging.cs">
+      <Link>src\Messaging.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
