@@ -9,7 +9,7 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <StartupObject>MonoDevelop.Projects.MSBuild.MainClass</StartupObject>
-    <PlatformTarget Condition="$(IsWindows)">x86</PlatformTarget>
+    <PlatformTarget Condition="$([MSBuild]::IsOsPlatform('Windows'))">x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "/>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>

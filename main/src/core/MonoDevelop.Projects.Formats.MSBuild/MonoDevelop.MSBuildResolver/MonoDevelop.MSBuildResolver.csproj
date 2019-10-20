@@ -16,7 +16,7 @@
     <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.dll')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir>
     <OutputPath>..\..\..\..\build\bin\MSBuild</OutputPath>
     <DefineConstants>PUBLIC_API</DefineConstants>
-    <PlatformTarget Condition="$(IsWindows)">x86</PlatformTarget>
+    <PlatformTarget Condition="$([MSBuild]::IsOsPlatform('Windows'))">x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "/>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>
