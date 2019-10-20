@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Projects
 			var templateTextRenderer = (GtkTemplateCellRenderer)renderer;
 			templateTextRenderer.Template = template;
 			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Xwt.Drawing.Image;
-			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
+			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateCategoryNameColumn) as string;
 		}
 
 		static void SetLanguageCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Projects
 					if (template.HasProjects || controller.IsNewSolution) {
 						templatesTreeStore.AppendValues (
 							iter,
-							template.Name,
+							subCategory.Name,
 							GetIcon (template.IconId, IconSize.Dnd),
 							template,
 							template.AvailableLanguages?.OrderBy (item => item).FirstOrDefault () ?? template.Language);

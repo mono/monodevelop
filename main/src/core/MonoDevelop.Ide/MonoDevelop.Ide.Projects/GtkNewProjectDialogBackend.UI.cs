@@ -59,7 +59,6 @@ namespace MonoDevelop.Ide.Projects
 		TreeStore templateCategoriesTreeStore =
 			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
-		const int TemplateNameColumn = 0;
 		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
 		TreeStore templatesTreeStore =

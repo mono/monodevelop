@@ -41,14 +41,45 @@ namespace MonoDevelop.Ide.Projects
 		const int iconTextPadding = 9;
 		int groupTemplateHeadingTotalYPadding = 24;
 		int recentTemplateHeadingTotalYPadding = 30;
+		private SolutionTemplate template;
+		private string templateCategory;
+		private string selectedLanguage;
 		const int groupTemplateHeadingYOffset = 4;
 		const int categoryTextPaddingX = 4;
 
-		public SolutionTemplate Template { get; set; }
-		public string SelectedLanguage { get; set; }
+		public SolutionTemplate Template {
+			get { return template; }
+			set {
+				template = value;
+				SetAccessibilityText ();
+			}
+		}
+		public string SelectedLanguage {
+			get { return selectedLanguage; }
+			set {
+				selectedLanguage = value;
+				SetAccessibilityText ();
+			}
+		}
 		public Xwt.Drawing.Image TemplateIcon { get; set; }
-		public string TemplateCategory { get; set; }
+		public string TemplateCategory {
+			get { return templateCategory; }
+			set {
+				templateCategory = value;
+				SetAccessibilityText ();
+			}
+		}
 		public bool RenderRecentTemplate { get; set; }
+
+		void SetAccessibilityText ()
+		{
+			if (template != null) {
+				var text = template.Name;
+				if (!string.IsNullOrEmpty (templateCategory))
+					text += ", " + templateCategory.Replace ("→", "–"); // we don't want narrators to read "right arrow"
+				Text = text;
+			}
+		}
 
 		public GtkTemplateCellRenderer ()
 		{
