@@ -144,8 +144,10 @@ namespace MonoDevelop.Ide.Projects
 		static void SetLanguageCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
+			var language = (string)model.GetValue (it, TemplateA11yLanguageName);
 			var languageRenderer = (LanguageCellRenderer)renderer;
 			languageRenderer.Template = template;
+			languageRenderer.SelectedLanguage = language ?? template.Language;
 		}
 
 		void HandlePopup (SolutionTemplate template, uint eventTime)
@@ -228,6 +230,8 @@ namespace MonoDevelop.Ide.Projects
 					languageCellRenderer.SelectedLanguage = language;
 					controller.SelectedLanguage = language;
 					templatesTreeView.QueueDraw ();
+					if (templatesTreeView.Selection.GetSelected (out var selIter))
+						templatesTreeStore.SetValue (selIter, TemplateA11yLanguageName, languageCellRenderer.SelectedLanguage);
 					ShowSelectedTemplate ();
 				};
 				menu.Items.Add (menuItem);
@@ -392,6 +396,7 @@ namespace MonoDevelop.Ide.Projects
 				var iter = templatesTreeStore.AppendValues (
 					MarkupTopLevelCategoryName (subCategory.Name),
 					null,
+					null,
 					null);
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
@@ -400,7 +405,8 @@ namespace MonoDevelop.Ide.Projects
 							iter,
 							template.Name,
 							GetIcon (template.IconId, IconSize.Dnd),
-							template);
+							template,
+							template.AvailableLanguages?.OrderBy (item => item).FirstOrDefault () ?? template.Language);
 					}
 				}
 			}
@@ -414,6 +420,7 @@ namespace MonoDevelop.Ide.Projects
 			var iter = templatesTreeStore.AppendValues (
 				MarkupTopLevelCategoryName (Core.GettextCatalog.GetString ("Recently used templates")),
 				null,
+				null,
 				null);
 			foreach (SolutionTemplate template in controller.RecentTemplates) {
 				if (template.HasProjects || controller.IsNewSolution) {
@@ -421,7 +428,8 @@ namespace MonoDevelop.Ide.Projects
 						iter,
 						controller.GetCategoryPathText (template),
 						GetIcon (template.IconId, IconSize.Dnd),
-						template);
+						template,
+						template.Language);
 				}
 			}
 			templatesTreeView.ExpandAll ();
