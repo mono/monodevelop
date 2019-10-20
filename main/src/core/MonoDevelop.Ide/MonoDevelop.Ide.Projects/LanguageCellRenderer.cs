@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				selectedLanguage = value;
-				Text = GetAccessibleLanguageName ();
+				Text = GetAccessibleLanguageName (selectedLanguage);
 			}
 		}
 
