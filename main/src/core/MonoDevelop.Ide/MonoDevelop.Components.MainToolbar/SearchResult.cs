@@ -69,7 +69,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public virtual SearchResultType SearchResultType { get { return SearchResultType.Unknown; } }
 		public virtual string PlainText { get { return null; } }
-		public virtual string AccessibilityMessage { get => PlainText; }
+		public virtual string AccessibilityMessage => $"{PlainText}. {Description}";
 
 		public int Rank { get; private set; }
 
@@ -159,7 +159,17 @@ namespace MonoDevelop.Components.MainToolbar
 				return file.FilePath;
 			}
 		}
-		public override string AccessibilityMessage { get => GettextCatalog.GetString ("File {0}", PlainText ?? ""); }
+
+		public override string AccessibilityMessage {
+			get {
+				var text = PlainText;
+				if (string.IsNullOrEmpty (text)) {
+					return GettextCatalog.GetString ("File");
+				}
+
+				return GettextCatalog.GetString ("File {0}. {1}", text, Description);
+			}
+		}
 
 		public override Xwt.Drawing.Image Icon {
 			get {

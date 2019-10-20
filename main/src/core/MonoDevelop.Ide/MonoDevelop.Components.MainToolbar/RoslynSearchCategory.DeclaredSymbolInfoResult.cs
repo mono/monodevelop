@@ -47,47 +47,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public override string AccessibilityMessage {
 				get {
-					switch (result.Kind) {
-					case NavigateToItemKind.Class:
-						return GettextCatalog.GetString ("Class {0}", result.Name);
-
-					case NavigateToItemKind.Delegate:
-						return GettextCatalog.GetString ("Delegate {0}", result.Name);
-
-					case NavigateToItemKind.Event:
-						return GettextCatalog.GetString ("Event {0}", result.Name);
-
-					case NavigateToItemKind.Enum:
-						return GettextCatalog.GetString ("Enumeration {0}", result.Name);
-
-					case NavigateToItemKind.Constant:
-						return GettextCatalog.GetString ("Constant {0}", result.Name);
-
-					case NavigateToItemKind.Field:
-						return GettextCatalog.GetString ("Field {0}", result.Name);
-
-					case NavigateToItemKind.EnumItem:
-						return GettextCatalog.GetString ("Enumeration member {0}", result.Name);
-
-					case NavigateToItemKind.Interface:
-						return GettextCatalog.GetString ("Interface {0}", result.Name);
-
-					case NavigateToItemKind.Method:
-						return GettextCatalog.GetString ("Method {0}", result.Name);
-
-					case NavigateToItemKind.Property:
-						return GettextCatalog.GetString ("Property {0}", result.Name);
-
-					case NavigateToItemKind.Structure:
-						return GettextCatalog.GetString ("Structure {0}", result.Name);
-					default:
-						return result.Name;
-					}
-
-
+					return result.Kind switch
+					{
+						NavigateToItemKind.Class     => GettextCatalog.GetString ("Class {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Delegate  => GettextCatalog.GetString ("Delegate {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Event     => GettextCatalog.GetString ("Event {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Enum      => GettextCatalog.GetString ("Enumeration {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Constant  => GettextCatalog.GetString ("Constant {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Field     => GettextCatalog.GetString ("Field {0}. {1}", result.Name, Description),
+						NavigateToItemKind.EnumItem  => GettextCatalog.GetString ("Enumeration member {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Interface => GettextCatalog.GetString ("Interface {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Method    => GettextCatalog.GetString ("Method {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Property  => GettextCatalog.GetString ("Property {0}. {1}", result.Name, Description),
+						NavigateToItemKind.Structure => GettextCatalog.GetString ("Structure {0}. {1}", result.Name, Description),
+						_                            => result.Name,
+					};
 				}
 			}
-
 
 			public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 			{
