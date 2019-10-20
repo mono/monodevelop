@@ -61,23 +61,11 @@
   <ItemGroup>
     <IncludeCopyLocal Include="LibGit2Sharp.dll" />
   </ItemGroup>
-  <Choose>
-    <When Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
-      <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" />
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
-      <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" />
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' ">
-      <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" />
-      </ItemGroup>
-    </When>
-  </Choose>
+  <ItemGroup>
+    <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" Condition="$(IsMac)" />
+    <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" Condition="$(IsWindows)" />
+    <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" Condition="$(IsLinux)" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />

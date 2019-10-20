@@ -60,7 +60,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
+  <ItemGroup Condition="$(IsMac)">
     <NativeBinaries Include="..\..\..\..\external\sharpsvn-binary\mac\*.dylib" />
   </ItemGroup>
   <ItemGroup>
