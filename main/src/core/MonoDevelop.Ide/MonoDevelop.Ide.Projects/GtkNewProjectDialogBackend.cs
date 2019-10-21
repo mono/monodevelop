@@ -401,16 +401,27 @@ namespace MonoDevelop.Ide.Projects
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
 					if (template.HasProjects || controller.IsNewSolution) {
+						string language = GetLanguageForTemplate (template);
 						templatesTreeStore.AppendValues (
 							iter,
 							subCategory.Name,
 							GetIcon (template.IconId, IconSize.Dnd),
 							template,
-							template.AvailableLanguages?.OrderBy (item => item).FirstOrDefault () ?? template.Language);
+							language);
 					}
 				}
 			}
 			templatesTreeView.ExpandAll ();
+		}
+
+		string GetLanguageForTemplate (SolutionTemplate template)
+		{
+			string language = controller.SelectedLanguage;
+			if (template.AvailableLanguages.Contains (language)) {
+				return language;
+			}
+
+			return template.AvailableLanguages.OrderBy (item => item).FirstOrDefault ();
 		}
 
 		void ShowRecentTemplates ()
@@ -468,6 +479,13 @@ namespace MonoDevelop.Ide.Projects
 
 		void ShowTemplate (SolutionTemplate template)
 		{
+			string language = GetLanguageForTemplate (controller.SelectedTemplate);
+
+			TreeIter item;
+			if (templatesTreeView.Selection.GetSelected (out item)) {
+				templatesTreeStore.SetValue (item, TemplateA11yLanguageName, language);
+			}
+
 			templateNameLabel.Markup = MarkupTemplateName (template.Name);
 			templateDescriptionLabel.Text = template.Description;
 			templateImage.Image = controller.GetImage (template);
