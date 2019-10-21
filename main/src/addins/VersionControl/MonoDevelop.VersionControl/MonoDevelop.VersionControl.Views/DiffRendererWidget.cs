@@ -72,6 +72,7 @@ namespace MonoDevelop.VersionControl.Views
 		public DiffRendererWidget ()
 		{
 			Events |= EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ButtonPressMask;
+			Accessible?.SetRole (AtkCocoa.Roles.AXGroup, GettextCatalog.GetString ("Diff View"));
 		}
 
 		void DisposeLayout ()
@@ -307,12 +308,14 @@ namespace MonoDevelop.VersionControl.Views
 				addedGC.Dispose ();
 				infoGC.Dispose ();
 			}
-			Accessible.SetAccessibleChildren (accessibleLines.Select (l => l.Accessible).ToArray ());
+			Accessible?.SetAccessibleChildren (accessibleLines.Select (l => l.Accessible).ToArray ());
 			return true;
 		}
 
 		void AddAccessibleLine (int x, int y, BlockType blockType, int lineNumber, ref bool replaceFirst, string text)
 		{
+			if (Accessible == null)
+				return;
 			if (replaceFirst) {
 				text = ' ' + text.Substring (1);
 				replaceFirst = false;
@@ -577,6 +580,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		void ClearAccessibleLines ()
 		{
+			if (Accessible == null)
+				return;
 			foreach (var button in accessibleLines) {
 				button.Dispose ();
 			}

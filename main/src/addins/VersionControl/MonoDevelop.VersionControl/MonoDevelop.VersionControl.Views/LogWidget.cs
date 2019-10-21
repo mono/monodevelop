@@ -474,6 +474,8 @@ namespace MonoDevelop.VersionControl.Views
 		void SetDiff (object o, EventArgs args)
 		{
 			this.diffRenderer.Lines = null;
+			this.scrolledwindowFileContents.Accessible.Description = GettextCatalog.GetString ("empty");
+
 			if (!this.treeviewFiles.Selection.GetSelected (out var model, out var iter))
 				return;
 
@@ -544,6 +546,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				await Runtime.RunInMainThread (delegate {
 					this.diffRenderer.Lines = lines;
+					this.scrolledwindowFileContents.Accessible.Description = GettextCatalog.GetString ("file {0}", path);
 					changedpathstore.SetValue (iter, colDiff, lines);
 				});
 			});
