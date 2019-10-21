@@ -103,10 +103,13 @@ namespace MonoDevelop.Debugger
 			get { return Node is LoadingObjectValueNode; }
 		}
 
-		protected static NSImage GetImage (string name, Gtk.IconSize size)
+		protected static NSImage GetImage (string name, Gtk.IconSize size, bool selected = false)
 		{
 			var icon = ImageService.GetIcon (name, size);
 
+			if (selected)
+				icon = icon.WithStyles ("sel");
+
 			try {
 				return icon.ToNSImage ();
 			} catch (Exception ex) {
@@ -115,10 +118,13 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		protected static NSImage GetImage (string name, Gtk.IconSize size, double alpha)
+		protected static NSImage GetImage (string name, Gtk.IconSize size, double alpha, bool selected = false)
 		{
 			var icon = ImageService.GetIcon (name, size).WithAlpha (alpha);
 
+			if (selected)
+				icon = icon.WithStyles ("sel");
+
 			try {
 				return icon.ToNSImage ();
 			} catch (Exception ex) {
@@ -127,9 +133,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		protected static NSImage GetImage (string name, int width, int height)
+		protected static NSImage GetImage (string name, int width, int height, bool selected = false)
 		{
 			var icon = ImageService.GetIcon (name).WithSize (width, height);
+
+			if (selected)
+				icon = icon.WithStyles ("sel");
 
 			try {
 				return icon.ToNSImage ();

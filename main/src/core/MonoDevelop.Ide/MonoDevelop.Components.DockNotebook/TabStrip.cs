@@ -87,13 +87,9 @@ namespace MonoDevelop.Components.DockNotebook
 		static readonly int VerticalTextSize = 11;
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
-		const int ButtonSize = 14;
-		const double CloseButtonMarginRight = 0;
+		const double CloseButtonMarginRight = 1;
 		const double CloseButtonMarginBottom = -1.0;
-		const double PinButtonMarginRight = 0;
-		const double PinButtonMarginBottom = -1.0;
-
-		const int TextOffset = 1;
+		const double PinButtonMarginRight = 10.5;
 
 		int TabWidth { get; set; }
 
@@ -1185,7 +1181,8 @@ namespace MonoDevelop.Components.DockNotebook
 			
 			tab.CloseButtonActiveArea = closeButtonAlloation.Inflate (2, 2);
 
-			var spinButtonAllocation = new Cairo.Rectangle (closeButtonAlloation.X - rightPadding - PinButtonMarginRight,
+			var spinButtonX = closeButtonAlloation.X - Math.Max (tabPinnedImage.Width + CloseButtonMarginRight, rightPadding);
+			var spinButtonAllocation = new Cairo.Rectangle (spinButtonX,
 									closeButtonAlloation.Y,
 									tabPinnedImage.Width, tabPinnedImage.Height);
 
@@ -1230,8 +1227,9 @@ namespace MonoDevelop.Components.DockNotebook
 				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
 				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 			} else {
+
 				// ellipses are for space wasting ..., we cant afford that
-				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
+				using (var lg = new LinearGradient (tx + tw - (drawPinButton ? DefaultGradientWidth : DefaultGradientPinWidth), 0, tx + tw, 0)) {
 					var color = (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ();
 					color = color.MultiplyAlpha (tab.Opacity);
 					lg.AddColorStop (0, color);
@@ -1243,6 +1241,9 @@ namespace MonoDevelop.Components.DockNotebook
 			}
             la.Dispose ();
 		}
+
+		const double DefaultGradientWidth = 10;
+		const double DefaultGradientPinWidth = 13;
 
 		static void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true, bool isPinned = false)
 		{

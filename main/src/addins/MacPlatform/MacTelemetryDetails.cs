@@ -46,6 +46,7 @@ namespace MacPlatform
 		int coreCount;
 		long freq;
 		string arch;
+		string model;
 		ulong size;
 		ulong freeSize;
 
@@ -67,6 +68,7 @@ namespace MacPlatform
 			Interop.SysCtl ("hw.cpufamily", out result.family);
 			Interop.SysCtl ("hw.cpufrequency", out result.freq);
 			Interop.SysCtl ("hw.physicalcpu", out result.coreCount);
+			Interop.SysCtl ("hw.model", out result.model);
 
 			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
 			result.size = attrs.Size;
@@ -119,6 +121,8 @@ namespace MacPlatform
 		public TimeSpan UserTime => TimeSpan.Zero;
 
 		public string CpuArchitecture => arch;
+
+		public string Model => model;
 
 		public int CpuCount => (int)NSProcessInfo.ProcessInfo.ActiveProcessorCount;
 

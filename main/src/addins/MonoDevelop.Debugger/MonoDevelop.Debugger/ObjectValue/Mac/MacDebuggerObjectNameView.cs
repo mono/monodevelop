@@ -93,8 +93,9 @@ namespace MonoDevelop.Debugger
 
 			OptimalWidth = MarginSize;
 
+			bool selected = Superview is NSTableRowView rowView && rowView.Selected;
 			var iconName = ObjectValueTreeViewController.GetIcon (Node.Flags);
-			ImageView.Image = GetImage (iconName, Gtk.IconSize.Menu);
+			ImageView.Image = GetImage (iconName, Gtk.IconSize.Menu, selected);
 			constraints.Add (ImageView.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			constraints.Add (ImageView.LeadingAnchor.ConstraintEqualToAnchor (LeadingAnchor, MarginSize));
 			constraints.Add (ImageView.WidthAnchor.ConstraintEqualToConstant (ImageSize));

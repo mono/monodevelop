@@ -300,6 +300,9 @@ namespace MonoDevelop.Debugger
 		{
 			UnregisterNode (node);
 			OnEvaluationCompleted (node, new ObjectValueNode[0]);
+
+			if (AllowWatchExpressions && node.Parent is RootObjectValueNode)
+				ExpressionRemoved?.Invoke (this, new ExpressionEventArgs (node.Name));
 		}
 
 		// TODO: can we improve this
@@ -371,6 +374,10 @@ namespace MonoDevelop.Debugger
 
 		#region Expressions
 
+		public event EventHandler<ExpressionEventArgs> ExpressionAdded;
+		public event EventHandler<ExpressionChangedEventArgs> ExpressionChanged;
+		public event EventHandler<ExpressionEventArgs> ExpressionRemoved;
+
 		public void AddExpression (string expression)
 		{
 			if (!AllowWatchExpressions) {
@@ -381,6 +388,8 @@ namespace MonoDevelop.Debugger
 			LoggingService.LogInfo ("Evaluating expression '{0}'", expression);
 			var node = Frame.EvaluateExpression (expression);
 			AddValue (node);
+
+			ExpressionAdded?.Invoke (this, new ExpressionEventArgs (expression));
 		}
 
 		public void AddExpressions (IList<string> expressions)
@@ -391,24 +400,34 @@ namespace MonoDevelop.Debugger
 			if (Frame != null) {
 				var nodes = Frame.EvaluateExpressions (expressions);
 				AddValues (nodes);
+
+				var expressionAdded = ExpressionAdded;
+				if (expressionAdded != null) {
+					foreach (var expression in expressions)
+						expressionAdded (this, new ExpressionEventArgs (expression));
+				}
 			}
 		}
 
 		bool EditExpression (ObjectValueNode node, string newExpression)
 		{
-			if (node.Name == newExpression)
+			var oldExpression = node.Name;
+
+			if (oldExpression == newExpression)
 				return false;
 
 			UnregisterNode (node);
 			if (string.IsNullOrEmpty (newExpression)) {
 				// we want the expression removed from the tree
 				OnEvaluationCompleted (node, new ObjectValueNode[0]);
+				ExpressionRemoved?.Invoke (this, new ExpressionEventArgs (oldExpression));
 				return true;
 			}
 
 			var expressionNode = Frame.EvaluateExpression (newExpression);
 			RegisterNode (expressionNode);
 			OnEvaluationCompleted (node, new ObjectValueNode[] { expressionNode });
+			ExpressionChanged?.Invoke (this, new ExpressionChangedEventArgs (oldExpression, newExpression));
 
 			return true;
 		}

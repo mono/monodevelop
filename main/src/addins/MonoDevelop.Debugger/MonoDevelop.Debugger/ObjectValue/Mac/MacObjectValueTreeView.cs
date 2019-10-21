@@ -833,7 +833,7 @@ namespace MonoDevelop.Debugger
 
 			var selectedRows = SelectedRows;
 			foreach (var row in selectedRows) {
-				var item = (MacObjectValueNode)ItemAtRow ((nint)row);
+				var item = (MacObjectValueNode) ItemAtRow ((nint) row);
 
 				if (!(item.Target.Parent is RootObjectValueNode)) {
 					enabled = false;
