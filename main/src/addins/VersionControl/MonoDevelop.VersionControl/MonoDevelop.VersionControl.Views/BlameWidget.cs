@@ -171,6 +171,7 @@ namespace MonoDevelop.VersionControl.Views
 				QueueDraw ();
 			};
 			editor.DoPopupMenu = ShowPopup;
+			Accessible?.SetRole (AtkCocoa.Roles.AXGroup, GettextCatalog.GetString ("Blame margin"));
 			Show ();
 		}
 
@@ -473,17 +474,8 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				if (evnt.TriggersContextMenu ()) {
-
-					GetAnnotationFromY (evnt.Y, out menuAnnotation, out var startLine);
-
-					CommandEntrySet opset = new CommandEntrySet ();
-					opset.AddItem (BlameCommands.ShowDiff);
-					opset.AddItem (BlameCommands.ShowLog);
-					opset.AddItem (BlameCommands.ShowPreviousBlame);
-					opset.AddItem (BlameCommands.ShowBlameBefore);
-					opset.AddItem (Command.Separator);
-					opset.AddItem (BlameCommands.CopyRevision);
-					IdeApp.CommandService.ShowContextMenu (this, evnt, opset, this);
+					GetAnnotationFromY (evnt.Y, out var annotation, out var startLine);
+					ShowContextMenu ((int)evnt.X, (int)evnt.Y, annotation);
 					return true;
 				} else {
 					if (evnt.X < leftSpacer) {
@@ -495,6 +487,20 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 				return base.OnButtonPressEvent (evnt);
+			}
+
+			internal void ShowContextMenu (int x, int y, Annotation annotation)
+			{
+				this.menuAnnotation = annotation;
+				var opset = new CommandEntrySet ();
+				opset.AddItem (BlameCommands.ShowDiff);
+				opset.AddItem (BlameCommands.ShowLog);
+				opset.AddItem (BlameCommands.ShowPreviousBlame);
+				opset.AddItem (BlameCommands.ShowBlameBefore);
+				opset.AddItem (Command.Separator);
+				opset.AddItem (BlameCommands.CopyRevision);
+			
+				IdeApp.CommandService.ShowContextMenu (this, x, y, opset, this);
 			}
 
 			[CommandHandler (BlameCommands.CopyRevision)]
@@ -844,6 +850,8 @@ namespace MonoDevelop.VersionControl.Views
 
 			void UpdateAccessiblity ()
 			{
+				if (Accessible == null)
+					return;
 				ClearAccessibleSections ();
 				int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
 				double startY = widget.Editor.LineToY (startLine);
