@@ -31,6 +31,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using System.Diagnostics;
 using MonoDevelop.Core;
+using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Ide.Editor
 {
