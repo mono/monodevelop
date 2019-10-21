@@ -96,14 +96,28 @@ namespace MonoDevelop.Debugger
 				Add (value, new LoadingObjectValueNode (node));
 		}
 
-		void Remove (MacObjectValueNode node)
+		void Remove (MacObjectValueNode node, List<MacObjectValueNode> removed)
 		{
 			foreach (var child in node.Children)
-				Remove (child);
+				Remove (child, removed);
 
 			mapping.Remove (node.Target);
 			node.Children.Clear ();
-			node.Dispose ();
+			removed.Add (node);
+		}
+
+		void RestoreExpandedState (ObjectValueNode node)
+		{
+			if (treeView.Controller.GetNodeWasExpandedAtLastCheckpoint (node)) {
+				if (TryGetValue (node, out var item))
+					treeView.ExpandItem (item);
+			}
+		}
+
+		void RestoreExpandedState (IEnumerable<ObjectValueNode> nodes)
+		{
+			foreach (var node in nodes)
+				RestoreExpandedState (node);
 		}
 
 		public void Replace (ObjectValueNode node, ObjectValueNode[] replacementNodes)
@@ -127,41 +141,40 @@ namespace MonoDevelop.Debugger
 			if (index == -1)
 				return;
 
+			var removed = new List<MacObjectValueNode> ();
 			parent.Children.RemoveAt (index);
-			mapping.Remove (item.Target);
-			item.Dispose ();
+			Remove (item, removed);
 
 			treeView.BeginUpdates ();
 
-			var indexes = new NSIndexSet (index);
-
-			if (parent.Target is RootObjectValueNode)
-				treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
-			else
-				treeView.RemoveItems (indexes, parent, NSTableViewAnimation.None);
-
-			if (replacementNodes.Length > 0) {
-				for (int i = 0; i < replacementNodes.Length; i++)
-					Insert (parent, index + i, replacementNodes [i]);
-
-				var range = new NSRange (index, replacementNodes.Length);
-				indexes = NSIndexSet.FromNSRange (range);
+			try {
+				var indexes = new NSIndexSet (index);
 
 				if (parent.Target is RootObjectValueNode)
-					treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
+					treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
 				else
-					treeView.InsertItems (indexes, parent, NSTableViewAnimation.None);
+					treeView.RemoveItems (indexes, parent, NSTableViewAnimation.None);
 
-				foreach (var n in replacementNodes) {
-					if (treeView.Controller.GetNodeWasExpandedAtLastCheckpoint (n)) {
-						if (TryGetValue (n, out MacObjectValueNode x)) {
-							treeView.ExpandItem (x);
-						}
-					}
+				if (replacementNodes.Length > 0) {
+					for (int i = 0; i < replacementNodes.Length; i++)
+						Insert (parent, index + i, replacementNodes[i]);
+
+					var range = new NSRange (index, replacementNodes.Length);
+					indexes = NSIndexSet.FromNSRange (range);
+
+					if (parent.Target is RootObjectValueNode)
+						treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
+					else
+						treeView.InsertItems (indexes, parent, NSTableViewAnimation.None);
+
+					RestoreExpandedState (replacementNodes);
 				}
+			} finally {
+				treeView.EndUpdates ();
 			}
 
-			treeView.EndUpdates ();
+			for (int i = 0; i < removed.Count; i++)
+				removed[i].Dispose ();
 		}
 
 		public void ReloadChildren (ObjectValueNode node)
@@ -171,59 +184,55 @@ namespace MonoDevelop.Debugger
 
 			treeView.BeginUpdates ();
 
-			NSIndexSet indexes;
-			NSRange range;
+			try {
+				NSIndexSet indexes;
+				NSRange range;
 
-			if (parent.Children.Count > 0) {
+				if (parent.Children.Count > 0) {
+					range = new NSRange (0, parent.Children.Count);
+					indexes = NSIndexSet.FromNSRange (range);
+
+					var removed = new List<MacObjectValueNode> ();
+					foreach (var child in parent.Children)
+						Remove (child, removed);
+
+					parent.Children.Clear ();
+
+					if (parent.Target is RootObjectValueNode)
+						treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
+					else
+						treeView.RemoveItems (indexes, parent, NSTableViewAnimation.None);
+
+					for (int i = 0; i < removed.Count; i++)
+						removed[i].Dispose ();
+				}
+
+				for (int i = 0; i < node.Children.Count; i++)
+					Add (parent, node.Children[i]);
+
+				// if we did not load all the children, add a Show More node
+				if (!node.ChildrenLoaded)
+					Add (parent, new ShowMoreValuesObjectValueNode (node));
+
 				range = new NSRange (0, parent.Children.Count);
 				indexes = NSIndexSet.FromNSRange (range);
 
-				foreach (var child in parent.Children) {
-					mapping.Remove (child.Target);
-					child.Dispose ();
-				}
-
-				parent.Children.Clear ();
-
 				if (parent.Target is RootObjectValueNode)
-					treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
+					treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
 				else
-					treeView.RemoveItems (indexes, parent, NSTableViewAnimation.None);
-			}
+					treeView.InsertItems (indexes, parent, NSTableViewAnimation.None);
 
-			for (int i = 0; i < node.Children.Count; i++)
-				Add (parent, node.Children[i]);
-
-			// if we did not load all the children, add a Show More node
-			if (!node.ChildrenLoaded)
-				Add (parent, new ShowMoreValuesObjectValueNode (node));
-
-			range = new NSRange (0, parent.Children.Count);
-			indexes = NSIndexSet.FromNSRange (range);
-
-			if (parent.Target is RootObjectValueNode)
-				treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
-			else
-				treeView.InsertItems (indexes, parent, NSTableViewAnimation.None);
-
-			// if we loaded children and discovered that the node does not actually have any children,
-			// update the node and reload the data.
-			// TOOD: it would be nice to know this before the node is expanded so we don't see the "loading" node flash
-			if (!node.HasChildren) {
-				treeView.ReloadItem (parent);
-			} else {
-				// expand any items that we loaded that were expanded previously
-
-				foreach (var n in node.Children) {
-					if (treeView.Controller.GetNodeWasExpandedAtLastCheckpoint (n)) {
-						if (TryGetValue (n, out MacObjectValueNode x)) {
-							treeView.ExpandItem (x);
-						}
-					}
+				// if we loaded children and discovered that the node does not actually have any children,
+				// update the node and reload the data.
+				// TOOD: it would be nice to know this before the node is expanded so we don't see the "loading" node flash
+				if (!node.HasChildren) {
+					treeView.ReloadItem (parent);
+				} else {
+					RestoreExpandedState (node.Children);
 				}
+			} finally {
+				treeView.EndUpdates ();
 			}
-
-			treeView.EndUpdates ();
 		}
 
 		public void Clear ()
@@ -233,19 +242,23 @@ namespace MonoDevelop.Debugger
 			if (AllowWatchExpressions)
 				count--;
 
+			if (count <= 0)
+				return;
+
+			var removed = new List<MacObjectValueNode> ();
 			for (int i = count - 1; i >= 0; i--) {
 				var child = Root.Children[i];
 				Root.Children.RemoveAt (i);
-				Remove (child);
+				Remove (child, removed);
 			}
-
-			if (count <= 0)
-				return;
 
 			var range = new NSRange (0, count);
 			var indexes = NSIndexSet.FromNSRange (range);
 
 			treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
+
+			for (int i = 0; i < removed.Count; i++)
+				removed[i].Dispose ();
 		}
 
 		public void Append (ObjectValueNode node)
@@ -262,14 +275,15 @@ namespace MonoDevelop.Debugger
 				Add (Root, node);
 			}
 
-			var indexes = NSIndexSet.FromIndex (index);
+			treeView.BeginUpdates ();
 
-			treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
+			try {
+				var indexes = NSIndexSet.FromIndex (index);
 
-			if (treeView.Controller.GetNodeWasExpandedAtLastCheckpoint (node)) {
-				if (TryGetValue(node, out MacObjectValueNode x)) {
-					treeView.ExpandItem (x);
-				}
+				treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
+				RestoreExpandedState (node.Children);
+			} finally {
+				treeView.EndUpdates ();
 			}
 		}
 
@@ -287,17 +301,16 @@ namespace MonoDevelop.Debugger
 					Add (Root, nodes[i]);
 			}
 
-			var range = new NSRange (index, nodes.Count);
-			var indexes = NSIndexSet.FromNSRange (range);
+			treeView.BeginUpdates ();
 
-			treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
+			try {
+				var range = new NSRange (index, nodes.Count);
+				var indexes = NSIndexSet.FromNSRange (range);
 
-			foreach (var node in nodes) {
-				if (treeView.Controller.GetNodeWasExpandedAtLastCheckpoint (node)) {
-					if (TryGetValue (node, out MacObjectValueNode x)) {
-						treeView.ExpandItem (x);
-					}
-				}
+				treeView.InsertItems (indexes, null, NSTableViewAnimation.None);
+				RestoreExpandedState (nodes);
+			} finally {
+				treeView.EndUpdates ();
 			}
 		}
 
