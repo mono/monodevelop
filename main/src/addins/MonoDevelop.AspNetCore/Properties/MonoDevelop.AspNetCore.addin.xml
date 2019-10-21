@@ -884,7 +884,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" insertbefore="MonoDevelop.DotNetCore.Commands.PackSeparator" />
 		<SeparatorItem id = "ProfilesSeparator" />
 		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
 	</Extension>
