@@ -55,12 +55,12 @@ namespace MonoDevelop.Ide.Projects
 		const int TemplateCategoryNameColumn = 0;
 		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
-		const int TemplateA11yLanguageName = 3;
 		TreeStore templateCategoriesTreeStore =
 			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
+		const int TemplateA11yLanguageName = 3;
 		TreeStore templatesTreeStore =
 			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate), typeof (string));
 		VBox templateVBox;
