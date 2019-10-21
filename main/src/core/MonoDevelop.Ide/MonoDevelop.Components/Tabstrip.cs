@@ -489,7 +489,7 @@ namespace MonoDevelop.Components
 
 		void UpdateAccessibility ()
 		{
-			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, active ? "active tab" : "tab");
+			Accessible?.SetRole (AtkCocoa.Roles.AXRadioButton, active ? "active tab" : "tab");
 		}
 
 		public bool IsSeparator {
