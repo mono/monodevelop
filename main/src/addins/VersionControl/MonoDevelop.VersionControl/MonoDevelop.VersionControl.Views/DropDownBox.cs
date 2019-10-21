@@ -56,6 +56,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected virtual void OnTextChanged (string oldText, string newText)
 		{
+			if (Accessible == null)
+				return;
 			Accessible.Description = string.Format (AccessibilityTextFormat, newText);
 		}
 
@@ -105,6 +107,8 @@ namespace MonoDevelop.VersionControl.Views
 			this.Events = Gdk.EventMask.KeyPressMask | Gdk.EventMask.FocusChangeMask | Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 			this.CanFocus = true;
 			BorderWidth = 0;
+			if (this.Accessible != null)
+				this.Accessible.Role = Atk.Role.ComboBox;
 		}
 		
 		void PositionListWindow ()
