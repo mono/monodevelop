@@ -336,4 +336,8 @@
 	</Extension>
 
 -->
+	<ExtensionPoint path = "/MonoDevelop/Ide/Editor/TextMate" name = "TextMate folder">
+		<Description>TextMate folder with syntax highlighting definitions, code snippets and syntax color themes</Description>
+		<ExtensionNode name="Repository" type="MonoDevelop.TextEditor.TextMateRepositoryExtensionNode"/>
+	</ExtensionPoint>
 </ExtensionModel>
