@@ -41,6 +41,10 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		class AuthorSectionAccessible : IDisposable
 		{
+			readonly BlameRenderer widget;
+			readonly Annotation annotation;
+			int y;
+
 			public AccessibilityElementProxy Accessible { get; private set; }
 
 			public AuthorSectionAccessible (BlameRenderer widget, int line, Annotation ann, double y1, double y2)
@@ -53,24 +57,32 @@ namespace MonoDevelop.VersionControl.Views
 				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
 				Accessible.GtkParent = widget;
 
-				Accessible.SetRole (AtkCocoa.Roles.AXButton, GettextCatalog.GetString ("Blame annotation"));
+				Accessible.SetRole (AtkCocoa.Roles.AXMenuButton, GettextCatalog.GetString ("Blame annotation"));
 
 				string msg = widget.GetCommitMessage (line, false);
 
 				Accessible.Label = GettextCatalog.GetString ("Author {0} Date {1} Revision {2} Message {3}", ann.Author, ann.Date, widget.TruncRevision (ann.Text), msg);
-
+				Accessible.PerformPress += Accessible_PerformPress;
 				int y = (int)y1;
 				int h = (int)(y2 - y1);
 				Accessible.FrameInGtkParent = new Rectangle (0, y, widget.Allocation.Width, h);
 				var cocoaY = widget.Allocation.Height - y - h;
 				Accessible.FrameInParent = new Rectangle (0, cocoaY, widget.Allocation.Width, h);
-				Console.WriteLine (y1 +"/"+ h +"/"+ widget.Allocation.Width + ":"+ ann.Text);
+				this.widget = widget;
+				this.annotation = ann;
+				this.y = (int)y2;
+			}
+
+			void Accessible_PerformPress (object sender, EventArgs e)
+			{
+				widget.ShowContextMenu (0, y, annotation);
 			}
 
 			public void Dispose ()
 			{
 				if (Accessible == null)
 					return;
+				Accessible.PerformPress -= Accessible_PerformPress;
 				Accessible = null;
 			}
 		}
