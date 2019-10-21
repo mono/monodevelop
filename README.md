@@ -1,4 +1,4 @@
-**MonoDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
+**MonoDevelop** is a full-feattttured integrated development environment (IDE) for mono using Gtk#.
 
 The MonoDevelop core is also the foundation for Visual Studio for Mac.
 Feel free to file bugs against Visual Studio for Mac here as well.
