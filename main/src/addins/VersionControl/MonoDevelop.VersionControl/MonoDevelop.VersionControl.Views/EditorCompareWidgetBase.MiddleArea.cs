@@ -375,6 +375,8 @@ namespace MonoDevelop.VersionControl.Views
 
 			void UpdateAccessiblity ()
 			{
+				if (Accessible == null)
+					return;
 				bool hideButton = widget.MainEditor.Document.IsReadOnly;
 				int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 
