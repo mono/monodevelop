@@ -146,6 +146,10 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			// and do our own thing, notice VS does same thing
 			await session.DismissAsync ();
 			await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
+
+			if (cancellationToken.IsCancellationRequested)
+				return;
+
 			lastView = view;
 
 			val.Name = debugInfo.Text;
@@ -176,6 +180,11 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			var cocoaView = (ICocoaTextView) view;
 			var bounds = view.TextViewLines.GetCharacterBounds (point);
 			var rect = new CoreGraphics.CGRect (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop, bounds.Width, bounds.Height);
+
+			if (cocoaView.IsClosed) {
+				LoggingService.LogWarning ("Editor window has been closed before debugger tooltip was shown. How did this happen?");
+				return;
+			}
 
 			window.Show (rect, cocoaView.VisualElement, AppKit.NSRectEdge.MaxXEdge);
 #else
