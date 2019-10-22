@@ -1154,6 +1154,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		[Serializable]
 		class ConfigurationModel : IConfigurationModel
 		{
 			public ConfigurationModel (string originalId)
