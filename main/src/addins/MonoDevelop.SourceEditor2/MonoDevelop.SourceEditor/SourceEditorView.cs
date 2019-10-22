@@ -1634,12 +1634,12 @@ namespace MonoDevelop.SourceEditor
 
 		public void RunWhenLoaded (System.Action action)
 		{
-			Document.RunWhenLoaded (action);
+			Document?.RunWhenLoaded (action);
 		}
 
 		public void RunWhenRealized (System.Action action)
 		{
-			Document.RunWhenRealized (action);
+			Document?.RunWhenRealized (action);
 		}
 		#endregion
 
