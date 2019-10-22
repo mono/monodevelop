@@ -59,7 +59,13 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			}
 		}
-				
+
+		public AutoTestToolbar AutoTestToolbar {
+			get {
+				return new AutoTestToolbar (session);
+			}
+		}
+
 		public int StartApplication (string file = null, string args = null, IDictionary<string, string> environment = null)
 		{
 			if (file == null) {
@@ -389,16 +395,6 @@ namespace MonoDevelop.Components.AutoTest
 			foreach (var result in results) {
 				session.SetProperty (result, propertyName, value);
 			}
-		}
-
-		public List<string> GetConfigurations(Func<AppQuery, AppQuery> query)
-		{
-			AppResult [] results = Query (query);
-			if (results.Length == 0) {
-				return null;
-			}
-
-			return session.GetConfigurations (results [0]);
 		}
 
 		public bool SetActiveConfiguration (Func<AppQuery, AppQuery> query, string configuration)

@@ -73,10 +73,6 @@ namespace MonoDevelop.Components.AutoTest
 		// More specific actions for complicated widgets
 
 		#region For MacPlatform.MacIntegration.MainToolbar.SelectorView
-		public virtual List<string> GetConfigurations ()
-		{
-			return null;
-		}
 
 		public virtual bool SetActiveConfiguration (string configurationName)
 		{

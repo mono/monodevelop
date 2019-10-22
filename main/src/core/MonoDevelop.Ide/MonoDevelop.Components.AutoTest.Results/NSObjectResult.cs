@@ -318,17 +318,23 @@ namespace MonoDevelop.Components.AutoTest.Results
 		}
 
 		#region MacPlatform.MacIntegration.MainToolbar.SelectorView
-		public override List<string> GetConfigurations ()
+
+		public List<IConfigurationModel> GetConfigurationModels ()
 		{
-			var type = ResultObject.GetType ();
-			var pinfo = type.GetProperty ("ConfigurationModel");
+			var pinfo = GetPropertyInfo ("ConfigurationModel");
 			if (pinfo == null) {
 				return null;
 			}
+			var models = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
 
-			var model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
+			return models?.ToList();
+		}
 
-			return model.Select (m => $"{m.DisplayString}").ToList();
+
+		public PropertyInfo GetPropertyInfo (string propertyName)
+		{
+			var type = ResultObject.GetType ();
+			return type.GetProperty (propertyName);
 		}
 
 		public override bool SetActiveConfiguration (string configurationName)
