@@ -102,7 +102,7 @@ namespace MonoDevelop.DotNetCore
 			get { return !IsInstalled; }
 		}
 
-		internal static DotNetCoreVersion[] Versions { get; private set; }
+		internal static DotNetCoreVersion [] Versions { get; private set; }
 
 		internal static bool IsNetCore1xInstalled ()
 		{
@@ -139,6 +139,11 @@ namespace MonoDevelop.DotNetCore
 		internal static void SetInstalled (bool installed)
 		{
 			IsInstalled = installed;
+		}
+
+		internal static string GetNotInstalledVersionMessage (string version = "")
+		{
+			return GettextCatalog.GetString (".NET Core {0} runtime is required to run this application, and is not installed. Install the latest update to the .NET Core {0} runtime by visiting {1}", version, DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (version));
 		}
 	}
 }
