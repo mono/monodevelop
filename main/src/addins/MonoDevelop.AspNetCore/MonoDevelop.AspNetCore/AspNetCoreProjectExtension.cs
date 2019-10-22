@@ -64,10 +64,16 @@ namespace MonoDevelop.AspNetCore
 				profile = launchProfileProvider.Profiles [key];
 			}
 
-			var aspnetconf = new AspNetCoreRunConfiguration (name, profile);
-			aspnetconf.LaunchProfileProvider = launchProfileProvider;
+			var aspnetconf = new AspNetCoreRunConfiguration (name, profile) {
+				LaunchProfileProvider = launchProfileProvider
+			};
+			if (aspNetCoreRunConfs.TryGetValue (name, out var existingConf)) {
+				// This can be called a few times with the same config at load time,
+				// so make sure we clean up the previous version
+				existingConf.SaveRequested -= Aspnetconf_Save;
+			}
 			aspnetconf.SaveRequested += Aspnetconf_Save;
-			aspNetCoreRunConfs.Add (name, aspnetconf);
+			aspNetCoreRunConfs [name] = aspnetconf;
 			return aspnetconf;
 		}
 
