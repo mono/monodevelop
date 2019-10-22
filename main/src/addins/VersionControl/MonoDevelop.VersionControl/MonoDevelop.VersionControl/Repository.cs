@@ -135,8 +135,15 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
+		CancellationTokenSource disposeTokenSource = new CancellationTokenSource ();
+
 		public void Dispose ()
 		{
+			if (disposeTokenSource != null) {
+				disposeTokenSource.Cancel ();
+				disposeTokenSource.Dispose ();
+				disposeTokenSource = null;
+			}
 			Dispose (true);
 			GC.SuppressFinalize (this);
 		}
@@ -292,49 +299,50 @@ namespace MonoDevelop.VersionControl
 		/// </param>
 		public async Task<IReadOnlyList<VersionInfo>> GetVersionInfoAsync (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None, CancellationToken cancellationToken = default)
 		{
-			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
-				var task = await ExclusiveOperationFactory.StartNew (delegate {
-					// We shouldn't use IEnumerable because elements don't save property modifications.
-					return OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
-				}).ConfigureAwait (false);
+			using (LinkTokenToDispose (ref cancellationToken)) {
+				if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
+					var task = await ExclusiveOperationFactory.StartNew (delegate {
+						// We shouldn't use IEnumerable because elements don't save property modifications.
+						return OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken);
+					}).ConfigureAwait (false);
 
-				var res = await task.ConfigureAwait (false);
-				foreach (var vi in res)
-					if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
-				await infoCache.SetStatusAsync (res, cancellationToken: cancellationToken).ConfigureAwait (false);
-				return res;
-			}
-			var pathsToQuery = new List<FilePath> ();
-			var result = new List<VersionInfo> ();
-			foreach (var path in paths) {
-				var vi = infoCache.GetStatus (path);
-				if (vi != null) {
-					result.Add (vi);
-					// This status has been invalidated, query it asynchronously
-					if (vi.RequiresRefresh)
+					var res = await task.ConfigureAwait (false);
+					foreach (var vi in res)
+						if (!vi.IsInitialized) await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
+					await infoCache.SetStatusAsync (res, cancellationToken: cancellationToken).ConfigureAwait (false);
+					return res;
+				}
+				var pathsToQuery = new List<FilePath> ();
+				var result = new List<VersionInfo> ();
+				foreach (var path in paths) {
+					var vi = infoCache.GetStatus (path);
+					if (vi != null) {
+						result.Add (vi);
+						// This status has been invalidated, query it asynchronously
+						if (vi.RequiresRefresh)
+							pathsToQuery.Add (path);
+					} else {
+						// If there is no cached status, query it asynchronously
+						vi = new VersionInfo (path, "", Directory.Exists (path), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
+						await infoCache.SetStatusAsync (vi, false).ConfigureAwait (false);
+						result.Add (vi);
 						pathsToQuery.Add (path);
-				}
-				else {
-					// If there is no cached status, query it asynchronously
-					vi = new VersionInfo (path, "", Directory.Exists (path), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
-					await infoCache.SetStatusAsync (vi, false).ConfigureAwait (false);
-					result.Add (vi);
-					pathsToQuery.Add (path);
-				}
-//				Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
-			}
-			if (pathsToQuery.Count > 0) {
-				ExclusiveOperationFactory.StartNew (async delegate {
-					var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken).ConfigureAwait (false);
-					foreach (var vi in status) {
-						if (!vi.IsInitialized) {
-							await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
-						}
 					}
-					await infoCache.SetStatusAsync (status, cancellationToken).ConfigureAwait (false);
-				}).Ignore ();
+					//				Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
+				}
+				if (pathsToQuery.Count > 0) {
+					ExclusiveOperationFactory.StartNew (async delegate {
+						var status = await OnGetVersionInfoAsync (pathsToQuery, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, cancellationToken).ConfigureAwait (false);
+						foreach (var vi in status) {
+							if (!vi.IsInitialized) {
+								await vi.InitAsync (this, cancellationToken).ConfigureAwait (false);
+							}
+						}
+						await infoCache.SetStatusAsync (status, cancellationToken).ConfigureAwait (false);
+					}).Ignore ();
+				}
+				return result;
 			}
-			return result;
 		}
 
 		public bool TryGetVersionInfo (IEnumerable<FilePath> paths, out IReadOnlyList<VersionInfo> infos)
@@ -360,16 +368,17 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			if (pathsToQuery.Count > 0) {
+				var token = disposeTokenSource.Token;
 				ExclusiveOperationFactory.StartNew (async delegate {
 					// we don't care about initialization and setstatus async to happen on the exclusive thread, as we're not running a query here.
-					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ConfigureAwait (false);
+					var status = await OnGetVersionInfoAsync (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0, token).ConfigureAwait (false);
 					foreach (var vi in status) {
 						if (!vi.IsInitialized) {
-							await vi.InitAsync (this).ConfigureAwait (false);
+							await vi.InitAsync (this, token).ConfigureAwait (false);
 						}
 					}
-					await infoCache.SetStatusAsync (status).ConfigureAwait (false);
-				}).Ignore ();
+					await infoCache.SetStatusAsync (status, token).ConfigureAwait (false);
+				}, token).Ignore ();
 			}
 			if (getVersionInfoFailed) {
 				infos = null;
@@ -379,8 +388,16 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
+		protected IDisposable LinkTokenToDispose (ref CancellationToken originalToken)
+		{
+			var combinedTokenSource = CancellationTokenSource.CreateLinkedTokenSource (originalToken, disposeTokenSource.Token);
+			originalToken = combinedTokenSource.Token;
+			return combinedTokenSource;
+		}
+
 		public async Task<VersionInfo[]> GetDirectoryVersionInfoAsync (FilePath localDirectory, bool getRemoteStatus, bool recursive, CancellationToken cancellationToken = default)
 		{
+			var combinedTokenSource = LinkTokenToDispose (ref cancellationToken);
 			try {
 				if (recursive) {
 					return await OnGetDirectoryVersionInfoAsync (localDirectory, getRemoteStatus, true, cancellationToken).ConfigureAwait (false);
@@ -402,6 +419,7 @@ namespace MonoDevelop.VersionControl
 					return status.FileInfo;
 				return Array.Empty<VersionInfo> ();
 			} finally {
+				combinedTokenSource.Dispose ();
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
 			}
 		}
@@ -440,6 +458,7 @@ namespace MonoDevelop.VersionControl
 		/// </param>
 		public async Task<RevisionPath []> GetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken = default)
 		{
+			using (LinkTokenToDispose (ref cancellationToken))
 			using (var tracker = Instrumentation.GetRevisionChangesCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
 				try {
 					return await OnGetRevisionChangesAsync (revision, cancellationToken).ConfigureAwait (false);
@@ -457,6 +476,7 @@ namespace MonoDevelop.VersionControl
 		// Returns the revision history of a file
 		public async Task<Revision[]> GetHistoryAsync (FilePath localFile, Revision since, CancellationToken cancellationToken = default)
 		{
+			using (LinkTokenToDispose (ref cancellationToken))
 			using (var tracker = Instrumentation.GetHistoryCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
 				try {
 					return await OnGetHistoryAsync (localFile, since, cancellationToken).ConfigureAwait (false);
