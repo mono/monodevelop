@@ -152,6 +152,17 @@ namespace MonoDevelop.Core
 			if (disposed)
 				return;
 			disposed = true;
+			if (logWriter != null) {
+				logWriter.TextWritten -= DoWriteLog;
+				logWriter.Dispose ();
+				logWriter = null;
+			}
+
+			if (errorLogWriter != null) {
+				errorLogWriter.TextWritten -= DoWriteErrorLog;
+				errorLogWriter.Dispose ();
+				errorLogWriter = null;
+			}
 
 			if (parentMonitor != null && firstCachedLogChunk != null) {
 				parentMonitor.DumpLog (firstCachedLogChunk);
