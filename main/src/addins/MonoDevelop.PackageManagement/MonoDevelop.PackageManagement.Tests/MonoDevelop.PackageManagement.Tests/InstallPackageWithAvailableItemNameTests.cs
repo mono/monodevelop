@@ -28,6 +28,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using NUnit.Framework;
 using UnitTests;
@@ -54,6 +55,72 @@ namespace MonoDevelop.PackageManagement.Tests
 			}
 		}
 
+		[Test]
+		public async Task UpdatePackage_PackageDefinesCustomAvailableItemNames_BuildActionsIncludeUpdateAvailableItemNames ()
+		{
+			string solutionFileName = Util.GetSampleProject ("NuGetUpdateAvailableItems", "NuGetUpdateAvailableItems.sln");
+			using (solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName)) {
+				CreateNuGetConfigFile (solution.BaseDirectory);
+				await RestoreNuGetPackages (solution);
+				var packageReferenceProject = (DotNetProject)solution.FindProjectByName ("PackageReferenceProject");
+				var sdkStyleProject = (DotNetProject)solution.FindProjectByName ("SdkStyleProject");
+
+				var originalBuildActions = packageReferenceProject.GetBuildActions ();
+
+				Assert.That (originalBuildActions, Contains.Item ("TestXamAvailableItem"));
+				Assert.IsFalse (originalBuildActions.Contains ("TestXamAvailableItemUpdated"));
+
+				originalBuildActions = sdkStyleProject.GetBuildActions ();
+
+				Assert.That (originalBuildActions, Contains.Item ("TestXamAvailableItem"));
+				Assert.IsFalse (originalBuildActions.Contains ("TestXamAvailableItemUpdated"));
+
+				await UpdateNuGetPackage (packageReferenceProject, "Test.Xam.AvailableItemName");
+				await UpdateNuGetPackage (sdkStyleProject, "Test.Xam.AvailableItemName");
+
+				var updatedBuildActions = packageReferenceProject.GetBuildActions ();
+
+				Assert.That (updatedBuildActions, Contains.Item ("TestXamAvailableItemUpdated"));
+
+				updatedBuildActions = sdkStyleProject.GetBuildActions ();
+
+				Assert.That (updatedBuildActions, Contains.Item ("TestXamAvailableItemUpdated"));
+			}
+		}
+
+		[Test]
+		public async Task UpdateMultiplePackages_PackageDefinesCustomAvailableItemNames_BuildActionsIncludeUpdateAvailableItemNames ()
+		{
+			string solutionFileName = Util.GetSampleProject ("NuGetUpdateAvailableItems", "NuGetUpdateAvailableItems.sln");
+			using (solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName)) {
+				CreateNuGetConfigFile (solution.BaseDirectory);
+				await RestoreNuGetPackages (solution);
+				var packageReferenceProject = (DotNetProject)solution.FindProjectByName ("PackageReferenceProject");
+				var sdkStyleProject = (DotNetProject)solution.FindProjectByName ("SdkStyleProject");
+
+				var originalBuildActions = packageReferenceProject.GetBuildActions ();
+
+				Assert.That (originalBuildActions, Contains.Item ("TestXamAvailableItem"));
+				Assert.IsFalse (originalBuildActions.Contains ("TestXamAvailableItemUpdated"));
+
+				originalBuildActions = sdkStyleProject.GetBuildActions ();
+
+				Assert.That (originalBuildActions, Contains.Item ("TestXamAvailableItem"));
+				Assert.IsFalse (originalBuildActions.Contains ("TestXamAvailableItemUpdated"));
+
+				var projects = new [] { packageReferenceProject, sdkStyleProject };
+				await UpdateNuGetPackage (projects, "Test.Xam.AvailableItemName", "0.2.0");
+
+				var updatedBuildActions = packageReferenceProject.GetBuildActions ();
+
+				Assert.That (updatedBuildActions, Contains.Item ("TestXamAvailableItemUpdated"));
+
+				updatedBuildActions = sdkStyleProject.GetBuildActions ();
+
+				Assert.That (updatedBuildActions, Contains.Item ("TestXamAvailableItemUpdated"));
+			}
+		}
+
 		Task InstallNuGetPackage (DotNetProject project, string packageId, string packageVersion)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
@@ -65,6 +132,47 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.OpenReadmeFile = false;
 			action.PackageId = packageId;
 			action.Version = NuGetVersion.Parse (packageVersion);
+
+			return Task.Run (() => {
+				action.Execute ();
+			});
+		}
+
+		Task UpdateNuGetPackage (DotNetProject project, string packageId)
+		{
+			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
+			var context = CreateNuGetProjectContext (solutionManager.Settings);
+			var packageManager = new MonoDevelopNuGetPackageManager (solutionManager);
+
+			var action = new UpdateNuGetPackageAction (
+				solutionManager,
+				new DotNetProjectProxy (project),
+				context,
+				packageManager,
+				PackageManagementServices.PackageManagementEvents) {
+				PackageId = packageId
+			};
+
+			return Task.Run (() => {
+				action.Execute ();
+			});
+		}
+
+		Task UpdateNuGetPackage (DotNetProject[] projects, string packageId, string packageVersion)
+		{
+			var solutionManager = new MonoDevelopSolutionManager (projects [0].ParentSolution);
+			var context = CreateNuGetProjectContext (solutionManager.Settings);
+			var sources = solutionManager.CreateSourceRepositoryProvider ().GetRepositories ();
+
+			var action = new UpdateMultipleNuGetPackagesAction (sources, solutionManager, context);
+			action.LicensesMustBeAccepted = false;
+
+			foreach (DotNetProject project in projects) {
+				action.AddProject (new DotNetProjectProxy (project));
+			}
+
+			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (packageVersion));
+			action.AddPackageToUpdate (packageIdentity);
 
 			return Task.Run (() => {
 				action.Execute ();
