@@ -360,6 +360,26 @@ namespace MonoDevelop.Debugger
 			NodeExpand?.Invoke (this, new ObjectValueNodeEventArgs (node));
 		}
 
+		public override void ExpandItem (NSObject item, bool expandChildren)
+		{
+			NSAnimationContext.BeginGrouping ();
+			NSAnimationContext.CurrentContext.Duration = 0;
+			base.ExpandItem (item, expandChildren);
+			NSAnimationContext.EndGrouping ();
+			OptimizeColumnSizes (false);
+			OnResized ();
+		}
+
+		public override void ExpandItem (NSObject item)
+		{
+			NSAnimationContext.BeginGrouping ();
+			NSAnimationContext.CurrentContext.Duration = 0;
+			base.ExpandItem (item);
+			NSAnimationContext.EndGrouping ();
+			OptimizeColumnSizes (false);
+			OnResized ();
+		}
+
 		/// <summary>
 		/// Triggered when the view tries to collapse a node.
 		/// </summary>
@@ -368,6 +388,24 @@ namespace MonoDevelop.Debugger
 		public void CollapseNode (ObjectValueNode node)
 		{
 			NodeCollapse?.Invoke (this, new ObjectValueNodeEventArgs (node));
+		}
+
+		public override void CollapseItem (NSObject item, bool collapseChildren)
+		{
+			NSAnimationContext.BeginGrouping ();
+			NSAnimationContext.CurrentContext.Duration = 0;
+			base.CollapseItem (item, collapseChildren);
+			NSAnimationContext.EndGrouping ();
+			OptimizeColumnSizes (false);
+			OnResized ();
+		}
+
+		public override void CollapseItem (NSObject item)
+		{
+			NSAnimationContext.BeginGrouping ();
+			NSAnimationContext.CurrentContext.Duration = 0;
+			base.CollapseItem (item);
+			NSAnimationContext.EndGrouping ();
 			OptimizeColumnSizes (false);
 			OnResized ();
 		}
@@ -553,9 +591,6 @@ namespace MonoDevelop.Debugger
 					if (!IsItemExpanded (item))
 						ExpandItem (item);
 				}
-
-				OptimizeColumnSizes (false);
-				OnResized ();
 
 				// TODO: all this scrolling kind of seems awkward
 				//if (path != null)
