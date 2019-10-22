@@ -146,10 +146,6 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			// and do our own thing, notice VS does same thing
 			await session.DismissAsync ();
 			await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
-
-			if (cancellationToken.IsCancellationRequested)
-				return;
-
 			lastView = view;
 
 			val.Name = debugInfo.Text;
