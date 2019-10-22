@@ -238,7 +238,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		internal async void OpenFile ()
 		{
-			if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
+			if (SelectedItem == null || !SelectedItem.IsValid)
 				return;
 
 			var item = SelectedItem.DataSource [SelectedItem.Item];
@@ -636,7 +636,7 @@ namespace MonoDevelop.Components.MainToolbar
 		ItemIdentifier GetItemAt (double px, double py)
 		{
 			double y = ParentBounds.Y + yMargin;
-			if (topItem != null){
+			if (topItem != null && topItem.IsValid) {
 				layout.Markup = GetRowMarkup (topItem.DataSource[topItem.Item]);
 				var ls = layout.GetSize ();
 				y += ls.Height + itemSeparatorHeight + itemPadding * 2;
@@ -1032,7 +1032,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public ISegment SelectedItemRegion {
 			get {
-				if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
+				if (SelectedItem == null || !SelectedItem.IsValid)
 					return TextSegment.Invalid;
 				return SelectedItem.DataSource[SelectedItem.Item].Segment;
 			}
@@ -1040,7 +1040,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public string SelectedItemFileName {
 			get {
-				if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
+				if (SelectedItem == null || !SelectedItem.IsValid)
 					return null;
 				return SelectedItem.DataSource[SelectedItem.Item].File;
 			}
@@ -1050,6 +1050,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public SearchCategory Category { get; private set; }
 			public IReadOnlyList<SearchResult> DataSource { get; private set; }
 			public int Item { get; private set; }
+			public bool IsValid { get => DataSource != null && 0 <= Item && Item < DataSource.Count; }
 
 			public ItemIdentifier (SearchCategory category, IReadOnlyList<SearchResult> dataSource, int item)
 			{
@@ -1158,7 +1159,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			double y = alloc.Y + yMargin;
 			Size ls;
-			if (topItem != null) {
+			if (topItem != null && topItem.IsValid) {
 				headerLayout.Text = GettextCatalog.GetString ("Top Result");
 				ls = headerLayout.GetSize ();
 				context.SetColor (headerColor);
