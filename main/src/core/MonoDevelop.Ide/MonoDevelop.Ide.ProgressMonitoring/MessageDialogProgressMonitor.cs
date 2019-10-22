@@ -39,7 +39,9 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		ProgressDialog dialog;
 		bool hideWhenDone;
 		bool showDetails;
-		
+
+		public ProgressDialog ProgressDialog => dialog;
+
 		public MessageDialogProgressMonitor (): this (false)
 		{
 		}
