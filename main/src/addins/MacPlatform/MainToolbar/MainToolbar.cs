@@ -103,7 +103,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Focus(Gtk.DirectionType direction)
 		{
-			awesomeBar.Window.MakeFirstResponder (direction == Gtk.DirectionType.TabForward ? (NSView)awesomeBar.RunButton : (NSView)awesomeBar.SearchBar);
+			awesomeBar.Window?.MakeFirstResponder (direction == Gtk.DirectionType.TabForward ? (NSView)awesomeBar.RunButton : (NSView)awesomeBar.SearchBar);
 		}
 
 		Action<Gtk.DirectionType> exitAction;
