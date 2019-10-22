@@ -706,7 +706,7 @@ namespace MonoDevelop.Components.MainToolbar
 				};
 				popup.SelectedItemChanged += delegate {
 					var si = popup?.Content?.SelectedItem;
-					if (si == null || si.Item < 0 || si.Item >= si.DataSource.Count)
+					if (si == null || !si.IsValid)
 						return;
 					var text = si.DataSource [si.Item].AccessibilityMessage;
 					if (string.IsNullOrEmpty (text))
