@@ -40,6 +40,8 @@ namespace MonoDevelop.Debugger
 {
 	public class MacObjectValueTreeView : NSOutlineView, IObjectValueTreeView
 	{
+		static readonly NSFont DefaultSystemFont = NSFont.UserFontOfSize (0);
+
 		const int MinimumNameColumnWidth = 45;
 		const int MinimumValueColumnWidth = 75;
 		const int MinimumTypeColumnWidth = 30;
@@ -88,6 +90,7 @@ namespace MonoDevelop.Debugger
 			FocusRingType = NSFocusRingType.None;
 			AutoresizesOutlineColumn = false;
 			AllowsColumnResizing = !compactView;
+			SetCustomFont (null);
 
 			var resizingMask = compactView ? NSTableColumnResizing.None : NSTableColumnResizing.UserResizingMask | NSTableColumnResizing.Autoresizing;
 
@@ -295,14 +298,26 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		nfloat CalculateRowHeight (NSFont font)
+		{
+			using (var layoutManager = new NSLayoutManager ()) {
+				layoutManager.TypesetterBehavior = NSTypesetterBehavior.Specific_10_4;
+				layoutManager.UsesScreenFonts = false;
+
+				return layoutManager.DefaultLineHeightForFont (font);
+			}
+		}
+
 		internal void SetCustomFont (Pango.FontDescription fontDescription)
 		{
 			if (fontDescription != null) {
 				CustomFont = GetNSFontFromPangoFontDescription (fontDescription);
 			} else {
-				CustomFont = null;
+				CustomFont = DefaultSystemFont;
 			}
 
+			// Note: We need a minimum of 16px for the icons and an added 2px for vertical spacing
+			RowHeight = NMath.Max (CalculateRowHeight (CustomFont), 18.0f);
 			ReloadData ();
 		}
 

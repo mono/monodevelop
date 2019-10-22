@@ -37,15 +37,13 @@ namespace MonoDevelop.Debugger
 	{
 		public MacDebuggerObjectTypeView (MacObjectValueTreeView treeView) : base (treeView, "type")
 		{
-			TextField = new NSTextField {
-				AutoresizingMask = NSViewResizingMask.WidthSizable,
+			TextField = new MacDebuggerTextField (this) {
 				TranslatesAutoresizingMaskIntoConstraints = false,
 				BackgroundColor = NSColor.Clear,
+				MaximumNumberOfLines = 1,
 				Bordered = false,
 				Editable = false
 			};
-			TextField.Cell.UsesSingleLineMode = true;
-			TextField.Cell.Wraps = false;
 
 			AddSubview (TextField);
 
@@ -60,7 +58,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void UpdateContents ()
 		{
-			TextField.AttributedStringValue = GetAttributedString (Node?.TypeName);
+			TextField.StringValue = Node?.TypeName ?? string.Empty;
 			UpdateFont (TextField);
 			TextField.SizeToFit ();
 
