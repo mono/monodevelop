@@ -636,7 +636,7 @@ namespace MonoDevelop.Components.MainToolbar
 		ItemIdentifier GetItemAt (double px, double py)
 		{
 			double y = ParentBounds.Y + yMargin;
-			if (topItem != null){
+			if (topItem != null && topItem.Item >= 0 && topItem.Item < topItem.DataSource.Count){
 				layout.Markup = GetRowMarkup (topItem.DataSource[topItem.Item]);
 				var ls = layout.GetSize ();
 				y += ls.Height + itemSeparatorHeight + itemPadding * 2;
