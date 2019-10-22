@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:"));
 			table.Add (argumentsLabel, 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
-			argumentsEntry.Accessible.LabelWidget = argumentsEntry;
+			argumentsEntry.Accessible.LabelWidget = argumentsLabel;
 
 			var runInDirectoryLabel = new Label (GettextCatalog.GetString ("Run in directory:"));
 			table.Add (runInDirectoryLabel, 0, 1);
