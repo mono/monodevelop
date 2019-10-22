@@ -13,6 +13,7 @@ MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a
 
 if !RELEASE_BUILDS
 HYBRID_SUSPEND_ABORT=-DHYBRID_SUSPEND_ABORT
+ENABLE_DEBUG_CRASHER=-DENABLE_DEBUG_CRASHER
 endif
 
 #SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
@@ -49,7 +50,7 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(HYBRID_SUSPEND_ABORT) -c -Wall -m64 -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) $(ENABLE_DEBUG_CRASHER) -c -Wall -m64 -o $@ monostub.mm
 
 monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m64 -o $@ monostub.mm

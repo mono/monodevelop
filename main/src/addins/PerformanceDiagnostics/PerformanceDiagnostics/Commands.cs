@@ -205,7 +205,7 @@ namespace PerformanceDiagnosticsAddIn
 	class InduceNativePInvokeCrashHandler : CommandHandler
 	{
 		[DllImport ("__Internal")]
-		static extern void crash_me ();
+		static extern void debug_trigger_sigsegv ();
 
 		protected override void Run ()
 		{
