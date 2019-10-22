@@ -36,7 +36,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using RefactoringEssentials;
 using System.IO;
 
 namespace MonoDevelop.Refactoring.Rename
@@ -126,7 +125,7 @@ namespace MonoDevelop.Refactoring.Rename
 				if (loc.IsInSource) {
 					if (loc.SourceTree == null ||
 						!System.IO.File.Exists (loc.SourceTree.FilePath) ||
-						GeneratedCodeRecognition.IsFileNameForGeneratedCode (loc.SourceTree.FilePath)) {
+						IsFileNameForGeneratedCode (loc.SourceTree.FilePath)) {
 						continue;
 					} 
 					var oldName = System.IO.Path.GetFileNameWithoutExtension (loc.SourceTree.FilePath);
@@ -138,6 +137,39 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
+		#region From RefactoringEssentials.GeneratedCodeRecognition
+
+		static readonly string [] generatedCodeSuffixes = {
+			"AssemblyInfo",
+			".designer",
+			".generated",
+			".g",
+			".g.i",
+			".AssemblyAttributes"
+		};
+
+		static readonly string generatedCodePrefix = "TemporaryGeneratedFile_";
+
+		public static bool IsFileNameForGeneratedCode (string fileName)
+		{
+			if (fileName.StartsWith (generatedCodePrefix, StringComparison.OrdinalIgnoreCase)) {
+				return true;
+			}
+
+			string extension = System.IO.Path.GetExtension (fileName);
+			if (extension != string.Empty) {
+				fileName = System.IO.Path.GetFileNameWithoutExtension (fileName);
+
+				foreach (var suffix in generatedCodeSuffixes) {
+					if (fileName.EndsWith (suffix, StringComparison.OrdinalIgnoreCase))
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		#endregion
 
 		void Init (string title, string currenName, Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> rename)
 		{

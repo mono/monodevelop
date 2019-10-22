@@ -1,9 +1,6 @@
 ﻿
 <ExtensionModel>
-	<Runtime>
-		<Import assembly="RefactoringEssentials.dll" />
-	</Runtime>
-	
+
 	<!-- Extension Points -->
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
 		<ExtensionNode name="Class"/>
@@ -168,7 +165,6 @@
 
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.Refactoring.dll"/>
-		<Assembly file="RefactoringEssentials.dll"/>
 	</Extension>
 
 	<ExtensionPoint path="/MonoDevelop/Refactoring/AnalyzerAssemblies">
@@ -176,8 +172,6 @@
 	</ExtensionPoint>
 
 	<Extension path="/MonoDevelop/Refactoring/AnalyzerAssemblies">
-		<Assembly file="RefactoringEssentials" />
-		<Assembly file="Refactoring Essentials" />
 		<Assembly file="Microsoft.CodeAnalysis.CSharp" />
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features" />
 		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures" />

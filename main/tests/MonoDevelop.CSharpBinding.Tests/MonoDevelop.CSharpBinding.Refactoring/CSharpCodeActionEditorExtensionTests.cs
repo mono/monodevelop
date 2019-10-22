@@ -55,7 +55,6 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					new CodeActionData { Message = "Add accessibility modifiers" },
 				},
 				CodeRefactoringData = new CodeActionData [] {
-					new CodeActionData { Message = "To public" },
 					// NOTE: This will return when we implement UI for it
 					//new CodeActionData { Message = "Move to namespace..." },
 					new CodeActionData { Message = "Generate overrides..." },

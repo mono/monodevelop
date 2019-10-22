@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeIssues;
 using Mono.Addins;
-using RefactoringEssentials;
 using System.Linq;
 
 namespace MonoDevelop.CodeActions

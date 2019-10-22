@@ -67,7 +67,6 @@ class MyClass
 
 			new ExpectedDiagnostic (68, DiagnosticSeverity.Hidden, "Accessibility modifiers required"),
 			new ExpectedDiagnostic (248, DiagnosticSeverity.Error, "The name 'cls' does not exist in the current context"),
-			new ExpectedDiagnostic (144, DiagnosticSeverity.Info, "Empty constructor is redundant"),
 		};
 
 		// These tests can hang if we don't get enough updates (i.e. code changes)
@@ -75,7 +74,7 @@ class MyClass
 		[Test]
 		public async Task DiagnosticsAreReportedByExtension ()
 		{
-			await RunTest (5, OneFromEach, (remainingUpdates, doc) => {
+			await RunTest (4, OneFromEach, (remainingUpdates, doc) => {
 				if (remainingUpdates == 0) {
 					AssertExpectedDiagnostics (OneFromEachDiagnostics, doc);
 				}
@@ -86,7 +85,7 @@ class MyClass
 		[Test]
 		public async Task DiagnosticEnableSourceAnalysisChanged ()
 		{
-			await RunTest (6, OneFromEach, (remainingUpdates, doc) => {
+			await RunTest (5, OneFromEach, (remainingUpdates, doc) => {
 				if (remainingUpdates == 5) {
 					AssertExpectedDiagnostics (OneFromEachDiagnostics.Take (2), doc);
 				}
