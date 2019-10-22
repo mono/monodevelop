@@ -227,6 +227,12 @@ load_xammac()
 	}
 }
 
+extern "C" void crash_me()
+{
+	void *p = (void*)0x12345;
+	*(int *)p = 0;
+}
+
 int
 main (int argc, char **argv)
 {

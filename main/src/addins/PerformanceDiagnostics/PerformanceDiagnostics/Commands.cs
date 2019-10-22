@@ -201,5 +201,16 @@ namespace PerformanceDiagnosticsAddIn
 			Thread.Sleep (TimeSpan.FromMinutes(2));
 		}
 	}
+
+	class InduceNativePInvokeCrashHandler : CommandHandler
+	{
+		[DllImport ("__Internal")]
+		static extern void crash_me ();
+
+		protected override void Run ()
+		{
+			crash_me ();
+		}
+	}
 #endif
 }
