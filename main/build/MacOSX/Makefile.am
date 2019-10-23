@@ -13,7 +13,6 @@ MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a
 
 if !RELEASE_BUILDS
 HYBRID_SUSPEND_ABORT=-DHYBRID_SUSPEND_ABORT
-ENABLE_DEBUG_CRASHER=-DENABLE_DEBUG_CRASHER
 endif
 
 #SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
@@ -41,13 +40,25 @@ MONOSTUB_RPATH=-Wl,-rpath,/Library/Frameworks/Mono.framework/Libraries/ \
 -Wl,-rpath,/usr/lib/ \
 -Wl,-rpath,/usr/local/lib/
 
-all: monostub monostub-nogui monostub-test
+all: monostub monostub-nogui monostub-test debugcrash
 
 render.exe: render.cs
 	mcs -r:System.Drawing render.cs
 
 dmg: render.exe app
 	./make-dmg-bundle.sh
+
+if !RELEASE_BUILDS
+debugcrash: libdebugcrash.dylib
+	cp $^ ../bin
+else
+debugcrash:
+endif
+
+if !RELEASE_BUILDS
+libdebugcrash.dylib: debugcrash.c
+	clang -g -shared -fpic -o $@ $^
+endif
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(HYBRID_SUSPEND_ABORT) $(ENABLE_DEBUG_CRASHER) -c -Wall -m64 -o $@ monostub.mm
@@ -161,4 +172,4 @@ app: monostub monostub-test
 	@echo ""
 	@rm -f missing-stuff
 
-.PHONY: app dmg
+.PHONY: app dmg debugcrash

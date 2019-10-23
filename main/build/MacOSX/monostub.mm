@@ -227,14 +227,6 @@ load_xammac()
 	}
 }
 
-#if ENABLE_DEBUG_CRASHER
-extern "C" void debug_trigger_sigsegv()
-{
-	void *p = (void*)0x12345;
-	*(int *)p = 0;
-}
-#endif
-
 int
 main (int argc, char **argv)
 {
