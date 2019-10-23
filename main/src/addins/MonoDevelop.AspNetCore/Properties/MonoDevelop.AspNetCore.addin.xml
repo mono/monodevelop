@@ -211,7 +211,7 @@
 				condition="UseNetCore31=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
-				defaultParameters="IncludeLaunchSettings=true" />
+				defaultParameters="IncludeLaunchSettings=true;SupportPagesAndViews=true" />
 			<Template
 				id="Microsoft.Web.Spa.Angular.CSharp"
 				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.Angular.CSharp.3.1"
@@ -380,7 +380,7 @@
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
-				defaultParameters="IncludeLaunchSettings=true" />
+				defaultParameters="IncludeLaunchSettings=true;SupportPagesAndViews=true" />
 			<Template
 				id="Microsoft.Web.Spa.Angular.CSharp"
 				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.Angular.CSharp.3.0"
