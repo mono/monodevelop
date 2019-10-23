@@ -209,7 +209,7 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			crash_me ();
+			debug_trigger_sigsegv ();
 		}
 	}
 #endif
