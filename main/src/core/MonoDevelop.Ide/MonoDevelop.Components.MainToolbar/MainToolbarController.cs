@@ -41,6 +41,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	[Serializable]
 	class MainToolbarController : ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
@@ -983,6 +984,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public event EventHandler TitleChanged;
 		}
 
+		[Serializable]
 		class RuntimeModel : IRuntimeModel
 		{
 			MainToolbarController Controller { get; set; }
@@ -1082,6 +1084,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		[Serializable]
 		class RuntimeMutableModel : IRuntimeMutableModel
 		{
 			public RuntimeMutableModel(string text)
