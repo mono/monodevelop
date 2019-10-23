@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
@@ -53,28 +54,32 @@ namespace MonoDevelop.Ide.Gui
 			FileService.FileChanged += HandleFileServiceChange;
 		}
 
-		static void HandleFileServiceChange (object sender, FileEventArgs e)
+		static async void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
-			bool foundOneChange = false;
-			foreach (var file in e) {
-				if (skipFiles.Contains (file.FileName)) {
-					skipFiles.Remove (file.FileName);
-					continue;
-				}
-				foreach (var view in openFiles) {
-					if (SkipView (view.Document) || !string.Equals (view.Document.FileName, file.FileName, FilePath.PathComparison))
+			try {
+				bool foundOneChange = false;
+				foreach (var file in e) {
+					if (skipFiles.Contains (file.FileName)) {
+						skipFiles.Remove (file.FileName);
 						continue;
-					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (file.FileName))
-						continue;
-					if (!view.Document.IsDirty)
-						view.Document.Reload ();
-					else
-						foundOneChange = true;
+					}
+					foreach (var view in openFiles) {
+						if (SkipView (view.Document) || !string.Equals (view.Document.FileName, file.FileName, FilePath.PathComparison))
+							continue;
+						if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (file.FileName))
+							continue;
+						if (!view.Document.IsDirty)
+							await view.Document.Reload ();
+						else
+							foundOneChange = true;
+					}
 				}
-			}
 
-			if (foundOneChange)
-				CommitViewChange (GetAllChangedFiles ());
+				if (foundOneChange)
+					CommitViewChange (await GetAllChangedFiles ());
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
 		}
 
 		internal static bool SkipView (Document view)
@@ -127,25 +132,25 @@ namespace MonoDevelop.Ide.Gui
 			// UpdateEolMessages ();
 		}
 
-		public static void IgnoreAllChangedFiles ()
+		public static async Task IgnoreAllChangedFiles ()
 		{
-			foreach (var view in GetAllChangedFiles ()) {
+			foreach (var view in await GetAllChangedFiles ()) {
 				view.LastSaveTimeUtc = File.GetLastWriteTimeUtc (view.Document.FileName);
 				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveMessageBar ();
 				view.Document.Window.ShowNotification = false;
 			}
 		}
 
-		public static void ReloadAllChangedFiles ()
+		public static async Task ReloadAllChangedFiles ()
 		{
-			foreach (var view in GetAllChangedFiles ()) {
+			foreach (var view in await GetAllChangedFiles ()) {
 				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveMessageBar ();
-				view.Document.Reload ();
+				await view.Document.Reload ();
 				view.Document.Window.ShowNotification = false;
 			}
 		}
 
-		static List<DocumentInfo> GetAllChangedFiles ()
+		static async Task<List<DocumentInfo>> GetAllChangedFiles ()
 		{
 			var changedViews = new List<DocumentInfo> ();
 			foreach (var view in openFiles) {
@@ -154,7 +159,7 @@ namespace MonoDevelop.Ide.Gui
 				if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (view.Document.FileName))
 					continue;
 				if (!view.Document.IsDirty)
-					view.Document.Reload ();
+					await view.Document.Reload ();
 				else
 					changedViews.Add (view);
 			}
