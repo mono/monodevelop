@@ -82,12 +82,18 @@ namespace MonoDevelop.Components.Mac
 
 		public static NSWindow GetNSWindow (Gtk.Window window)
 		{
+			if (window is null)
+				throw new ArgumentNullException (nameof (window));
+			if (window.GdkWindow == null)
+				return null;
 			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
 			return ObjCRuntime.Runtime.GetNSObject<NSWindow> (ptr);
 		}
 
 		public static NSView GetNSView (Gtk.Widget widget)
 		{
+			if (widget is null)
+				throw new ArgumentNullException (nameof (widget));
 			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
 			return ObjCRuntime.Runtime.GetNSObject<NSView> (ptr);
 		}
