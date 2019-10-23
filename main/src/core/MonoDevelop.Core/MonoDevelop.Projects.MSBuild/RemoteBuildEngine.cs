@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		RemoteProcessConnection connection;
 		bool alive = true;
-		static int count;
+		static long count;
 		int busy;
 		int buildSessionLoggerId;
 		CancellationTokenSource disposalCancelSource;
