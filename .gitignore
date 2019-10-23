@@ -23,7 +23,7 @@ obj/
 /main/build/MacOSX/monostub
 /main/build/MacOSX/monostub-nogui
 /main/build/MacOSx/monostub-test
-/main/build/MacOSX/libsystemnative.dylib
+/main/build/MacOSX/libdebugcrash.dylib
 /local-libs
 /main/build/tests
 /main/monodevelop_version
