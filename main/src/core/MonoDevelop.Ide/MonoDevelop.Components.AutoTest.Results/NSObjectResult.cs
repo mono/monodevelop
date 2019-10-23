@@ -372,6 +372,21 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
+		public List<IRuntimeMutableModel> GetRuntimeModels ()
+		{
+			var pinfo = GetPropertyInfo ("RuntimeModel");
+			if (pinfo == null) {
+				return null;
+			}
+			var topModels = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
+			var models = AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented);
+			var result = new List<IRuntimeMutableModel>();
+			foreach (var item in models) {
+				result.Add (item.GetMutableModel ());
+			}
+			return result;
+		}
+
 		public override bool SetActiveRuntime (string runtimeName)
 		{
 			LoggingService.LogDebug ($"Set Active runtime with name/ID as '{runtimeName}'");

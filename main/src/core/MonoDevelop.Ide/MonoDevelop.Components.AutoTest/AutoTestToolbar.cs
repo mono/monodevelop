@@ -54,5 +54,10 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			return SelectorViewControl.GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToList ();
 		}
+
+		public List<string> GetExecutionTargets ()
+		{
+			return SelectorViewControl.GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
+		}
 	}
 }
