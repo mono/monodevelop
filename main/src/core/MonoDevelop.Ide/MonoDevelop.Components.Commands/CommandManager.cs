@@ -507,14 +507,41 @@ namespace MonoDevelop.Components.Commands
 
 			if (currentEvent != null &&
 				currentEvent.Type == AppKit.NSEventType.KeyDown &&
-				firstResponder != null &&
-				firstResponder != window.ContentView) {
-				firstResponder.KeyDown (currentEvent);
+				firstResponder is AppKit.NSView view &&
+				view != window.ContentView) {
+
+				if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+					view = FindValidKeyView (view);
+					AppKit.NSView next = null;
+					if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+						next = view.PreviousValidKeyView;
+					} else {
+						next = view.NextValidKeyView;
+					}
+					window.MakeFirstResponder (next);
+				} else {
+					view.KeyDown (currentEvent);
+				}
 				return true;
 			}
 #endif
-
 			return false;
+		}
+
+
+		static AppKit.NSView FindValidKeyView (AppKit.NSView view)
+		{
+			if (view == null)
+				return null;
+
+			if (view.AcceptsFirstResponder ()) {
+				if (view.Superview?.Superview is AppKit.NSControl control && control.CurrentEditor == view) {
+					return FindValidKeyView (control);
+				}
+				return view;
+			}
+
+			return FindValidKeyView (view.Superview);
 		}
 
 		bool ProcessKeyEventCore (Gdk.EventKey ev)
