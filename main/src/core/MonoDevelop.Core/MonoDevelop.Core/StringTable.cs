@@ -64,7 +64,7 @@ namespace MonoDevelop.Core
         private int _localRandom = Environment.TickCount;
 
         // same as above but for users that go directly with unbuffered shared cache.
-        private static int s_sharedRandom = Environment.TickCount;
+        private static long s_sharedRandom = Environment.TickCount;
 
         public StringTable()
         {
@@ -657,7 +657,7 @@ namespace MonoDevelop.Core
 
         private static int SharedNextRandom()
         {
-            return Interlocked.Increment(ref StringTable.s_sharedRandom);
+            return (int)Interlocked.Increment(ref StringTable.s_sharedRandom);
         }
 
         internal static bool TextEquals(string array, string text, int start, int length)
