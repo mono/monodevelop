@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,16 +64,16 @@ namespace MonoDevelop.Ide.Composition
 		/// </summary>
 		internal class Caching
 		{
-			readonly ICachingFaultInjector cachingFaultInjector;
+			readonly ICachingFaultInjector? cachingFaultInjector;
 			readonly RuntimeCompositionExceptionHandler exceptionHandler;
 
-			Task saveTask;
+			Task saveTask = Task.CompletedTask;
 			readonly HashSet<Assembly> loadedAssemblies;
 			public HashSet<Assembly> MefAssemblies { get; }
 			internal string MefCacheFile { get; }
 			internal string MefCacheControlFile { get; }
 
-			public Caching (HashSet<Assembly> mefAssemblies, RuntimeCompositionExceptionHandler exceptionHandler, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
+			public Caching (HashSet<Assembly> mefAssemblies, RuntimeCompositionExceptionHandler exceptionHandler, Func<string, string>? getCacheFilePath = null, ICachingFaultInjector? cachingFaultInjector = null)
 			{
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
 
@@ -97,7 +98,7 @@ namespace MonoDevelop.Ide.Composition
 				// As of the time this code was written, serializing the cache takes 200ms.
 				// Maybe show a dialog and progress bar here that we're closing after save.
 				// We cannot cancel the save, vs-mef doesn't use the cancellation tokens in the API.
-				saveTask?.Wait ();
+				saveTask.Wait ();
 			}
 
 			internal Stream OpenCacheStream () => File.Open (MefCacheFile, FileMode.Open);
@@ -165,7 +166,7 @@ namespace MonoDevelop.Ide.Composition
 				return true;
 			}
 
-			static bool ValidateAssemblyCacheListIntegrity (HashSet<Assembly> assemblies, List<MefControlCacheAssemblyInfo> cachedAssemblyInfos, ICachingFaultInjector cachingFaultInjector)
+			static bool ValidateAssemblyCacheListIntegrity (HashSet<Assembly> assemblies, List<MefControlCacheAssemblyInfo> cachedAssemblyInfos, ICachingFaultInjector? cachingFaultInjector)
 			{
 				var currentAssemblies = new Dictionary<string, Guid> (assemblies.Count);
 				foreach (var asm in assemblies)
@@ -203,7 +204,7 @@ namespace MonoDevelop.Ide.Composition
 					await saveTask;
 
 					IdeApp.Exiting -= IdeApp_Exiting;
-					saveTask = null;
+					saveTask = Task.CompletedTask;
 				});
 			}
 

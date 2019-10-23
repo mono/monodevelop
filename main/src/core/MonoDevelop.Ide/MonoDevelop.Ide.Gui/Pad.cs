@@ -25,8 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-
+#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -42,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		IPadWindow window;
 		PadCodon content;
 		DefaultWorkbench workbench;
-		string[] categories;
+		string[]? categories;
 		
 		internal Pad (DefaultWorkbench workbench, PadCodon content)
 		{
@@ -82,7 +81,7 @@ namespace MonoDevelop.Ide.Gui
 		public string[] Categories {
 			get {
 				if (categories == null) {
-					CategoryNode cat = content.Parent as CategoryNode;
+					CategoryNode? cat = content.Parent as CategoryNode;
 					if (cat == null)
 						categories = new string[] { GettextCatalog.GetString ("Pads") };
 					else {
@@ -142,7 +141,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return window; }
 		}
 		
-		internal IMementoCapable GetMementoCapable ()
+		internal IMementoCapable? GetMementoCapable ()
 		{
 			return content?.PadContent as IMementoCapable;
 		}

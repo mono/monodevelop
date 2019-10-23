@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
+
 using System;
 using System.Linq;
 using System.IO;
@@ -30,27 +32,28 @@ using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace MonoDevelop.Core
 {
 	public class ProgressMonitor: IDisposable
 	{
-		ProgressTask currentTask;
-		ProgressTask parentRootTask;
-		ProgressTask rootTask;
+		ProgressTask? currentTask;
+		ProgressTask? parentRootTask;
+		ProgressTask? rootTask;
 		bool disposed;
 
 		LogTextWriter logWriter;
 		LogTextWriter errorLogWriter;
-		TextWriter customLogWriter;
-		TextWriter customErrorLogWriter;
+		TextWriter? customLogWriter;
+		TextWriter? customErrorLogWriter;
 
-		LogChunk firstCachedLogChunk;
-		LogChunk lastCachedLogChunk;
+		LogChunk? firstCachedLogChunk;
+		LogChunk? lastCachedLogChunk;
 
 		class LogChunk
 		{
-			public LogChunk Next;
+			public LogChunk? Next;
 		}
 
 		class StringLogChunk: LogChunk
@@ -61,12 +64,17 @@ namespace MonoDevelop.Core
 
 		class ObjectLogChunk: LogChunk
 		{
-			public Object Object;
+			public ObjectLogChunk(object obj)
+			{
+				Object = obj;
+			}
+
+			public object Object { get; }
 		}
 
 		int openStepWork = -1;
-		ProgressMonitor parentMonitor;
-		SynchronizationContext context;
+		ProgressMonitor? parentMonitor;
+		readonly SynchronizationContext? context;
 
 		internal bool ReportGlobalDataToParent { get; set; }
 
@@ -74,23 +82,23 @@ namespace MonoDevelop.Core
 		List<string> warnings = new List<string> ();
 		List<string> messages = new List<string> ();
 
-		List<ProgressMonitor> followerMonitors;
-		List<Action> disposeCallbacks;
-		object localLock = new object ();
+		List<ProgressMonitor>? followerMonitors;
+		List<Action>? disposeCallbacks;
+		readonly object localLock = new object ();
 
 		public ProgressMonitor (): this (null, null)
 		{
 		}
 
-		public ProgressMonitor (SynchronizationContext context): this (context, null)
+		public ProgressMonitor (SynchronizationContext? context): this (context, null)
 		{
 		}
 
-		public ProgressMonitor (CancellationTokenSource cancellationTokenSource): this (null, cancellationTokenSource)
+		public ProgressMonitor (CancellationTokenSource? cancellationTokenSource): this (null, cancellationTokenSource)
 		{
 		}
 
-		public ProgressMonitor (SynchronizationContext context, CancellationTokenSource cancellationTokenSource)
+		public ProgressMonitor (SynchronizationContext? context, CancellationTokenSource? cancellationTokenSource)
 		{
 			this.cancellationTokenSource = cancellationTokenSource;
 			this.context = context;
@@ -189,7 +197,7 @@ namespace MonoDevelop.Core
 			errorLogWriter.UnchainWriter (monitor.ErrorLog);
 		}
 
-		public ProgressTask CurrentTask {
+		public ProgressTask? CurrentTask {
 			get {
 				var t = currentTask;
 				while (t != null && t.Name == null)
@@ -208,12 +216,14 @@ namespace MonoDevelop.Core
 		public IEnumerable<ProgressTask> GetRootTasks ()
 		{
 			var t = rootTask;
+			if (t == null)
+				return Enumerable.Empty<ProgressTask> ();
 			if (t.Name != null)
 				return new [] {t};
 			return t.GetChildrenTasks ();
 		}
 
-		public IDisposable BeginTask (string name, int totalWork)
+		public IDisposable BeginTask (string? name, int totalWork)
 		{
 			var t = new ProgressTask (this, name, totalWork);
 			if (openStepWork != -1) {
@@ -292,7 +302,7 @@ namespace MonoDevelop.Core
 			Step (null, work);
 		}
 
-		public void Step (string message, int work = 1)
+		public void Step (string? message, int work = 1)
 		{
 			if (currentTask == null) {
 				LoggingService.LogError ("Task not started in progress monitor");
@@ -318,7 +328,7 @@ namespace MonoDevelop.Core
 					m.Step (message, work);
 			}
 
-			void MonitorStep (ProgressMonitor mon, string msg, int work1)
+			static void MonitorStep (ProgressMonitor mon, string? msg, int work1)
 			{
 				mon.OnStep (msg, work1);
 				mon.ReportProgressChanged ();
@@ -330,7 +340,7 @@ namespace MonoDevelop.Core
 			BeginStep (null, work);
 		}
 
-		public void BeginStep (string message, int work = 1)
+		public void BeginStep (string? message, int work = 1)
 		{
 			if (currentTask == null)
 				throw new InvalidOperationException ("Task not started in progress monitor");
@@ -357,7 +367,7 @@ namespace MonoDevelop.Core
 					m.BeginStep (message, work);
 			}
 
-			void MonitorBeginStep (ProgressMonitor mon, string msg, int work1)
+			static void MonitorBeginStep (ProgressMonitor mon, string? msg, int work1)
 			{
 				mon.OnBeginStep (msg, work1);
 				mon.ReportProgressChanged ();
@@ -377,7 +387,7 @@ namespace MonoDevelop.Core
 		void ConsumePendingWork ()
 		{
 			if (openStepWork != -1) {
-				currentTask.Step (null, openStepWork);
+				currentTask!.Step (null, openStepWork);
 				openStepWork = -1;
 			}
 		}
@@ -389,11 +399,16 @@ namespace MonoDevelop.Core
 
 		class BeginAsyncStepState
 		{
-			public ProgressMonitor FromMonitor;
-			public ProgressMonitor ResultMonitor;
+			public BeginAsyncStepState(ProgressMonitor from)
+			{
+				FromMonitor = from;
+			}
+
+			public ProgressMonitor FromMonitor { get; }
+			public ProgressMonitor? ResultMonitor;
 		}
 
-		public ProgressMonitor BeginAsyncStep (string message, int work)
+		public ProgressMonitor BeginAsyncStep (string? message, int work)
 		{
 			if (currentTask == null)
 				throw new InvalidOperationException ("Task not started in progress monitor");
@@ -404,16 +419,16 @@ namespace MonoDevelop.Core
 			if (message != null)
 				currentTask.Step (message, 0);
 
-			ProgressMonitor m = null;
+			ProgressMonitor? m = null;
 			if (context != null) {
-				var state = new BeginAsyncStepState { FromMonitor = this, };
+				var state = new BeginAsyncStepState (this);
 
 				context.Send ((o) => {
 					var bass = (BeginAsyncStepState)o;
 					bass.ResultMonitor = bass.FromMonitor.CreateAsyncStepMonitor ();
 				}, state);
 
-				m = state.ResultMonitor;
+				m = state.ResultMonitor!;
 			} else
 				m = CreateAsyncStepMonitor ();
 
@@ -434,7 +449,7 @@ namespace MonoDevelop.Core
 			}
 			return m;
 
-			void MonitorBeginStepAsync (ProgressMonitor mon, string msg, int work1, ProgressMonitor stepMonitor)
+			static void MonitorBeginStepAsync (ProgressMonitor mon, string? msg, int work1, ProgressMonitor stepMonitor)
 			{
 				mon.OnBeginAsyncStep (msg, work1, stepMonitor);
 				mon.ReportProgressChanged ();
@@ -511,7 +526,7 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public void ReportError (string message, Exception exception = null)
+		public void ReportError (string? message, Exception? exception = null)
 		{
 			if (ReportGlobalDataToParent && parentMonitor != null)
 				parentMonitor.ReportError (message, exception);
@@ -629,7 +644,7 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		CancellationTokenSource cancellationTokenSource;
+		CancellationTokenSource? cancellationTokenSource;
 
 		protected CancellationTokenSource CancellationTokenSource {
 			get {
@@ -641,23 +656,23 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		protected virtual void OnBeginTask (string name, int totalWork, int stepWork)
+		protected virtual void OnBeginTask (string? name, int totalWork, int stepWork)
 		{
 		}
 
-		protected virtual void OnEndTask (string name, int totalWork, int stepWork)
+		protected virtual void OnEndTask (string? name, int totalWork, int stepWork)
 		{
 		}
 
-		protected virtual void OnStep (string message, int work)
+		protected virtual void OnStep (string? message, int work)
 		{
 		}
 
-		protected virtual void OnBeginStep (string message, int work)
+		protected virtual void OnBeginStep (string? message, int work)
 		{
 		}
 
-		protected virtual void OnBeginAsyncStep (string message, int work, ProgressMonitor stepMonitor)
+		protected virtual void OnBeginAsyncStep (string? message, int work, ProgressMonitor stepMonitor)
 		{
 		}
 
@@ -678,7 +693,7 @@ namespace MonoDevelop.Core
 		{
 		}
 
-		protected virtual void OnErrorReported (string message, Exception exception)
+		protected virtual void OnErrorReported (string? message, Exception? exception)
 		{
 		}
 
@@ -693,13 +708,13 @@ namespace MonoDevelop.Core
 				MonitorDumpLog (this, logChain);
             }
 
-			void MonitorDumpLog (ProgressMonitor mon, LogChunk chain)
+			static void MonitorDumpLog (ProgressMonitor mon, LogChunk? chain)
 			{
 				while (chain != null) {
 					if (chain is ObjectLogChunk objectLogChain) {
 						mon.DoWriteLogObject (objectLogChain.Object);
 					} else {
-						var stringLogChunk = chain as StringLogChunk;
+						var stringLogChunk = (StringLogChunk)chain;
 						if (stringLogChunk.IsError)
 							mon.DoWriteErrorLog (stringLogChunk.Log.ToString ());
 						else
@@ -737,19 +752,19 @@ namespace MonoDevelop.Core
 				firstCachedLogChunk = lastCachedLogChunk = new StringLogChunk { IsError = error };
 			else if ((lastCachedLogChunk as StringLogChunk)?.IsError != error) {
 				var newChunk = new StringLogChunk { IsError = error };
-				lastCachedLogChunk.Next = newChunk;
+				lastCachedLogChunk!.Next = newChunk;
 				lastCachedLogChunk = newChunk;
 			}
-			((StringLogChunk)lastCachedLogChunk).Log.Append (message);
+			((StringLogChunk)lastCachedLogChunk!).Log.Append (message);
         }
 
 		void AppendLogObject (object logObject)
 		{
 			if (firstCachedLogChunk == null)
-				firstCachedLogChunk = lastCachedLogChunk = new ObjectLogChunk { Object = logObject };
+				firstCachedLogChunk = lastCachedLogChunk = new ObjectLogChunk (logObject);
 			else {
-				var newChunk = new ObjectLogChunk { Object = logObject };
-				lastCachedLogChunk.Next = newChunk;
+				var newChunk = new ObjectLogChunk(logObject);
+				lastCachedLogChunk!.Next = newChunk;
 				lastCachedLogChunk = newChunk;
 			}
 		}
@@ -794,7 +809,7 @@ namespace MonoDevelop.Core
 		double completedChildrenWork;
 		ProgressMonitor monitor;
 
-		internal ProgressTask (ProgressMonitor monitor, string name, int totalWork)
+		internal ProgressTask (ProgressMonitor monitor, string? name, int totalWork)
 		{
 			this.monitor = monitor;
 			Name = name;
@@ -808,15 +823,15 @@ namespace MonoDevelop.Core
 			get { return StepWork != -1; }
 		}
 
-		public string Name { get; private set; }
+		public string? Name { get; }
 
 		public double Progress { get; private set; }
 
-		public string StatusMessage { get; internal set; }
+		public string? StatusMessage { get; internal set; }
 
 		public int TotalWork { get; private set; }
 
-		public ProgressTask ParentTask { get; private set; }
+		public ProgressTask? ParentTask { get; private set; }
 
 		public ProgressTask[] GetChildrenTasks ()
 		{
@@ -839,7 +854,7 @@ namespace MonoDevelop.Core
 				childrenTasks.Add (task);
 		}
 
-		internal void Step (string message, double work)
+		internal void Step (string? message, double work)
 		{
 			if (message != null)
 				StatusMessage = message;
@@ -895,26 +910,17 @@ namespace MonoDevelop.Core
 
 	public class ProgressError
 	{
-		Exception ex;
-		string message;
-
-		public ProgressError (string message, Exception ex)
+		public ProgressError (string? message, Exception? ex)
 		{
-			this.ex = ex;
-			this.message = message;
+			Exception = ex;
+			Message = message;
 		}
 
-		public string Message {
-			get { return message; }
-		}
+		public string? Message { get; }
 
-		public Exception Exception {
-			get { return ex; }
-		}
+		public Exception? Exception { get; }
 
-		public string DisplayMessage {
-			get { return ErrorHelper.GetErrorMessage (message, ex); }
-		}
+		public string? DisplayMessage => ErrorHelper.GetErrorMessage (Message, Exception);
 	}
 }
 
