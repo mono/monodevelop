@@ -80,6 +80,18 @@ namespace Gtk
 		bool disposeViewOnGtkDestroy;
 		bool sizeAllocated;
 
+		protected override void OnShown ()
+		{
+			view.Hidden = false;
+			base.OnShown ();
+		}
+
+		protected override void OnHidden ()
+		{
+			view.Hidden = true;
+			base.OnHidden ();
+		}
+
 		public GtkNSViewHost (NSView view)
 			: this (view, disposeViewOnGtkDestroy: false)
 		{

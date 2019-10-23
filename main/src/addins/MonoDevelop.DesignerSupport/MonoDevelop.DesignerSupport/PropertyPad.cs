@@ -104,10 +104,14 @@ namespace MonoDevelop.DesignerSupport
 
 			propertyGrid.SetToolbarProvider (toolbarProvider);
 
+#if MAC
 			//native cocoa needs content shown to initialize stuff
 			if (isNative) {
 				container.PadContentShown += Window_PadContentShown;
+				container.PadContentHidden += Window_PadContentHidden;
 			}
+#endif
+
 			this.container = container;
 			DesignerSupport.Service.SetPad (this);
 		}
@@ -127,6 +131,7 @@ namespace MonoDevelop.DesignerSupport
 #if MAC
 			if (isNative) {
 				container.PadContentShown -= Window_PadContentShown;
+				container.PadContentHidden -= Window_PadContentHidden;
 				nativeGrid.PropertyGridChanged -= Grid_Changed;
 			} else {
 #endif
@@ -181,10 +186,23 @@ namespace MonoDevelop.DesignerSupport
 			CommandRouteOrigin = null;
 		}
 
+#if MAC
 		void Window_PadContentShown (object sender, EventArgs e)
 		{
 			propertyGrid.OnPadContentShown ();
+
+			if (customWidget && frame.Child is GtkNSViewHost viewHost) {
+				viewHost.Visible = true;
+			}
 		}
+
+		void Window_PadContentHidden (object sender, EventArgs e)
+		{
+			if (customWidget && frame.Child is GtkNSViewHost viewHost) {
+				viewHost.Visible = false;
+			}
+		}
+#endif
 
 		void AttachToolbarIfCustomWidget ()
 		{
@@ -212,7 +230,10 @@ namespace MonoDevelop.DesignerSupport
 			customWidget = true;
 			frame.Remove (frame.Child);
 			frame.Add (widget);
-			widget.Show ();			
+			widget.Show ();
+			if (container != null) {
+				widget.Visible = container.ContentVisible;
+			}
 		}
 		
 		void ClearToolbar ()
