@@ -1895,6 +1895,9 @@ namespace MonoDevelop.Projects
 
 		public void RegisterError(string errorCode)
 		{
+			if (errorCode == null)
+				return;
+
 			if (errors == null) {
 				errors = new Dictionary<string, int> ();
 				SetProperty (errors, "Errors");
