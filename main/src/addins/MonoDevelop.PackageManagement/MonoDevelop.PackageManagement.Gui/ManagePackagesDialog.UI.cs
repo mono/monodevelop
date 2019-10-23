@@ -47,7 +47,11 @@ namespace MonoDevelop.PackageManagement
 		Label packageAuthor;
 		Label packagePublishedDate;
 		Label packageDownloads;
+		Label packageLicenseLabel;
 		LinkLabel packageLicenseLink;
+		VBox packageLicenseMetadataWarningsVBox;
+		HBox packageLicenseMetadataHBox;
+		Label packageLicenseMetadataLabel;
 		LinkLabel packageProjectPageLink;
 		Label packageDependenciesList;
 		HBox packageDependenciesHBox;
@@ -346,7 +350,7 @@ namespace MonoDevelop.PackageManagement
 			var packageLicenseHBox = new HBox ();
 			packageInfoVBox.PackStart (packageLicenseHBox);
 
-			var packageLicenseLabel = new Label ();
+			packageLicenseLabel = new Label ();
 			packageLicenseLabel.Text = GettextCatalog.GetString ("License");
 			packageLicenseLabel.Font = packageInfoBoldFont;
 			packageLicenseHBox.PackStart (packageLicenseLabel);
@@ -355,6 +359,21 @@ namespace MonoDevelop.PackageManagement
 			packageLicenseLink.Text = GettextCatalog.GetString ("View License");
 			packageLicenseLink.Font = packageInfoSmallFont;
 			packageLicenseHBox.PackEnd (packageLicenseLink);
+
+			packageLicenseMetadataWarningsVBox = new VBox ();
+			packageLicenseMetadataWarningsVBox.Visible = false;
+			packageInfoVBox.PackStart (packageLicenseMetadataWarningsVBox);
+
+			packageLicenseMetadataHBox = new HBox ();
+			packageLicenseMetadataHBox.Visible = false;
+			packageInfoVBox.PackStart (packageLicenseMetadataHBox);
+
+			packageLicenseMetadataLabel = new Label ();
+			packageLicenseMetadataLabel.Wrap = WrapMode.Word;
+			packageLicenseMetadataLabel.MarginLeft = 5;
+			packageLicenseMetadataLabel.Font = packageInfoSmallFont;
+			packageLicenseMetadataLabel.Accessible.LabelWidget = packageLicenseLabel;
+			packageLicenseMetadataHBox.PackStart (packageLicenseMetadataLabel, true);
 
 			// Package project page.
 			var packageProjectPageHBox = new HBox ();

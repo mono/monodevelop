@@ -27,10 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement.Gui;
 using MonoDevelop.Projects;
+using NuGet.PackageManagement.UI;
 using NuGet.Versioning;
 using Xwt;
 using Xwt.Drawing;
@@ -98,6 +101,8 @@ namespace MonoDevelop.PackageManagement
 			LoadViewModel (initialSearch);
 
 			closeButton.Clicked += CloseButtonClicked;
+			packageLicenseLink.NavigateToUrl += PackageLicenseNavigateToUrl;
+			packageLicenseMetadataLabel.LinkClicked += PackageLicenseLinkClicked;
 			showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
 			packageSourceComboBox.SelectionChanged += PackageSourceChanged;
 			addPackagesButton.Clicked += AddPackagesButtonClicked;
@@ -147,6 +152,8 @@ namespace MonoDevelop.PackageManagement
 		protected override void Dispose (bool disposing)
 		{
 			closeButton.Clicked -= CloseButtonClicked;
+			packageLicenseLink.NavigateToUrl -= PackageLicenseNavigateToUrl;
+			packageLicenseMetadataLabel.LinkClicked -= PackageLicenseLinkClicked;
 			currentPackageVersionLabel.BoundsChanged -= PackageVersionLabelBoundsChanged;
 
 			showPrereleaseCheckBox.Clicked -= ShowPrereleaseCheckBoxClicked;
@@ -477,6 +484,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			bool consolidate = viewModel.IsConsolidatePageSelected;
 
+			foreach (Widget child in packageInfoVBox.Children) {
+				child.Visible = !consolidate;
+			}
+
 			if (consolidate) {
 				projectsListViewLabel.Text = GettextCatalog.GetString ("Select projects and a version for a consolidation.");
 			} else {
@@ -491,7 +502,7 @@ namespace MonoDevelop.PackageManagement
 				this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
 				ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
 				ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
-				ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
+				ShowLicense (packageViewModel);
 
 				PopulatePackageDependencies (packageViewModel);
 			}
@@ -509,10 +520,6 @@ namespace MonoDevelop.PackageManagement
 				currentPackageVersionHBox.Visible = false;
 				PopulatePackageVersions (packageViewModel);
 				packageVersionsHBox.Visible = true;
-			}
-
-			foreach (Widget child in packageInfoVBox.Children) {
-				child.Visible = !consolidate;
 			}
 
 			if (consolidate) {
@@ -1042,6 +1049,7 @@ namespace MonoDevelop.PackageManagement
 				} else {
 					if (!viewModel.IsConsolidatePageSelected) {
 						packagePublishedDate.Text = viewModel.SelectedPackage.GetLastPublishedDisplayText ();
+						ShowLicense (viewModel.SelectedPackage);
 						PopulatePackageDependencies (viewModel.SelectedPackage);
 					}
 				}
@@ -1283,6 +1291,160 @@ namespace MonoDevelop.PackageManagement
 			selectedProject.IsChecked = !selectedProject.IsChecked;
 
 			UpdateAddPackagesButton ();
+		}
+
+		void ShowLicense (ManagePackagesSearchResultViewModel packageViewModel)
+		{
+			if (packageViewModel.HasLicenseMetadata) {
+				ShowLicenseMetadata (packageViewModel);
+			} else {
+				packageLicenseMetadataHBox.Visible = false;
+				packageLicenseMetadataWarningsVBox.Visible = false;
+				ShowUri (packageLicenseLink, packageViewModel.LicenseUrl, GettextCatalog.GetString ("View License"));
+			}
+		}
+
+		static string GetUriMarkup (Uri uri, string text)
+		{
+			return string.Format (
+				"<a href=\"{0}\">{1}</a>",
+				uri != null ? SecurityElement.Escape (uri.ToString ()) : string.Empty,
+				SecurityElement.Escape (text));
+		}
+
+		void PackageLicenseNavigateToUrl (object sender, NavigateToUrlEventArgs e)
+		{
+			if (ShowLicenseFile (e.Uri)) {
+				e.SetHandled ();
+			}
+		}
+
+		bool ShowLicenseFile (Uri uri)
+		{
+			if (!uri.IsFile)
+				return false;
+
+			if (uri.Fragment?.Length > 0) {
+				if (int.TryParse (uri.Fragment.Substring (1), out int fileNumber)) {
+					ShowLicenseFile (fileNumber);
+					return true;
+				}
+			}
+			return false;
+		}
+
+		void PackageLicenseLinkClicked (object sender, LinkEventArgs e)
+		{
+			if (ShowLicenseFile (e.Target)) {
+				e.SetHandled ();
+			}
+		}
+
+		void ShowLicenseMetadata (ManagePackagesSearchResultViewModel packageViewModel)
+		{
+			List<WarningText> warnings = null;
+			var textLinks = packageViewModel.GetLicenseLinks ();
+
+			if (textLinks.Count == 0) {
+				packageLicenseLink.Visible = false;
+				packageLicenseMetadataHBox.Visible = false;
+				packageLicenseMetadataWarningsVBox.Visible = false;
+				return;
+			}
+
+			// Single link - show this on the same line as the License label.
+			if (textLinks.Count == 1) {
+				packageLicenseLink.Visible = true;
+				packageLicenseMetadataHBox.Visible = false;
+				packageLicenseMetadataWarningsVBox.Visible = false;
+
+				IText textLink = textLinks [0];
+				if (textLink is LicenseText licenseText) {
+					packageLicenseLink.Text = licenseText.Text;
+					packageLicenseLink.Uri = licenseText.Link;
+					return;
+				} else if (textLink is LicenseFileText licenseFileText) {
+					packageLicenseLink.Text = GettextCatalog.GetString ("View License");
+					packageLicenseLink.Uri = CreateLicenseFileUri (licenseFileText, 1);
+					return;
+				} else {
+					// Warning or plain text - handled below.
+				}
+			}
+
+			// Multiple text links. We need to allow these to wrap so show these below the license label.
+			var markupBuilder = StringBuilderCache.Allocate ();
+
+			int fileLicenseCount = 0; // Should be one but handle multiple.
+			foreach (IText textLink in textLinks) {
+				if (textLink is LicenseText licenseText) {
+					markupBuilder.Append (GetUriMarkup (licenseText.Link, licenseText.Text));
+				} else if (textLink is LicenseFileText licenseFileText) {
+					fileLicenseCount++;
+					markupBuilder.Append (GetUriMarkup (CreateLicenseFileUri (licenseFileText, fileLicenseCount), licenseFileText.Text));
+				} else if (textLink is WarningText warning) {
+					warnings ??= new List<WarningText> ();
+					warnings.Add (warning);
+				} else {
+					markupBuilder.Append (textLink.Text);
+				}
+			}
+
+			packageLicenseLink.Visible = false;
+			packageLicenseMetadataHBox.Visible = true;
+			packageLicenseMetadataLabel.Markup = StringBuilderCache.ReturnAndFree (markupBuilder);
+
+			if (warnings != null) {
+				AddWarnings (warnings);
+			} else {
+				packageLicenseMetadataWarningsVBox.Visible = false;
+			}
+		}
+
+		Uri CreateLicenseFileUri (LicenseFileText licenseFileText, int licenseCount)
+		{
+			return new Uri ($"file:///{licenseFileText.Text}#{licenseCount}");
+		}
+
+		void AddWarnings (List<WarningText> warnings)
+		{
+			foreach (Widget child in packageLicenseMetadataWarningsVBox.Children.ToArray ()) {
+				packageLicenseMetadataWarningsVBox.Remove (child);
+				child.Dispose ();
+			}
+
+			foreach (WarningText warning in warnings) {
+				var hbox = new HBox ();
+				var image = new ImageView {
+					Image = ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu),
+					MarginLeft = packageLicenseMetadataLabel.MarginLeft,
+					VerticalPlacement = WidgetPlacement.Start,
+				};
+				image.Accessible.RoleDescription = GettextCatalog.GetString ("Warning Icon");
+				hbox.PackStart (image);
+
+				var label = new Label {
+					Text = warning.Text,
+					Font = packageLicenseMetadataLabel.Font,
+					Wrap = WrapMode.Word
+				};
+				image.Accessible.LabelWidget = label;
+				label.Accessible.LabelWidget = packageLicenseLabel;
+				hbox.PackStart (label, true, true);
+
+				packageLicenseMetadataWarningsVBox.PackStart (hbox);
+			}
+
+			packageLicenseMetadataWarningsVBox.Visible = true;
+		}
+
+		void ShowLicenseFile (int fileNumber)
+		{
+			LicenseFileText licenseFileText = viewModel.SelectedPackage.GetLicenseFile (fileNumber);
+			if (licenseFileText != null) {
+				var dialog = new LicenseFileDialog (licenseFileText);
+				dialog.Run (this);
+			}
 		}
 	}
 }

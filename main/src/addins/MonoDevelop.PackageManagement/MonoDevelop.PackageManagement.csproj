@@ -369,6 +369,13 @@
     <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceMaintainerCollection.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPluginFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetResourceProviderFactory.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\Models\FreeText.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\Models\IText.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\Models\LicenseFileText.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\Models\LicenseText.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\Models\WarningText.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageLicenseUtilities.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseFileDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
