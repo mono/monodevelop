@@ -1607,11 +1607,17 @@ namespace MonoDevelop.Projects
 
 			metadata.FirstBuild = IsFirstBuild;
 
-			bool success = false;
+			bool success = true;
 			bool cancelled = false;
 
 			if (result != null) {
-				success = !result.Errors.Any (error => !error.IsWarning);
+				foreach (var error in result.Errors) {
+					bool isError = !error.IsWarning;
+					if (isError) {
+						success = false;
+						metadata.RegisterError (error.Code);
+					}
+				}
 
 				if (!success) {
 					cancelled = result.Errors [0].Message == "Build cancelled";
