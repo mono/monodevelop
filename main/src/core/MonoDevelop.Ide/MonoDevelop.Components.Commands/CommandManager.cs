@@ -511,14 +511,19 @@ namespace MonoDevelop.Components.Commands
 				view != window.ContentView) {
 
 				if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-					view = FindValidKeyView (view);
+
+					var expectedKeyView = FindValidKeyView (view);
 					AppKit.NSView next = null;
 					if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
-						next = view.PreviousValidKeyView;
+						next = expectedKeyView.PreviousValidKeyView;
 					} else {
-						next = view.NextValidKeyView;
+						next = expectedKeyView.NextValidKeyView;
 					}
-					window.MakeFirstResponder (next);
+
+					view.KeyDown (currentEvent);
+					if (next != null && window?.FirstResponder != next) {
+						window.MakeFirstResponder (next);
+					}
 				} else {
 					view.KeyDown (currentEvent);
 				}
