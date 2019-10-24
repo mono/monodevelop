@@ -84,6 +84,9 @@
           ],
           ".yarnrc": [
             "package.json"
+          ],
+          "package-lock.json": [
+            "package.json"
           ]
         }
       },
