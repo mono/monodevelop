@@ -285,6 +285,7 @@ namespace MonoDevelop.VersionControl.Git
 			FileService.ThawEvents ();
 		}
 
+		object repositoryDisposeLock = new object ();
 		protected override void Dispose (bool disposing)
 		{
 			if (IsDisposed)
@@ -296,20 +297,24 @@ namespace MonoDevelop.VersionControl.Git
 				gitLock?.Dispose ();
 				if (rootRepository != null) {
 					DedicatedOperationFactory.StartNew (() => {
-						try {
-							rootRepository?.Dispose ();
-						} catch (Exception e) {
-							LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
-						}
-						if (cachedSubmodules != null) {
-							foreach (var submodule in cachedSubmodules) {
-								if (submodule?.Item2 != null) {
-									try {
-										submodule?.Item2.Dispose ();
-									} catch (Exception e) {
-										LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+						lock (repositoryDisposeLock) {
+							try {
+								rootRepository?.Dispose ();
+								rootRepository = null;
+							} catch (Exception e) {
+								LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+							}
+							if (cachedSubmodules != null) {
+								foreach (var submodule in cachedSubmodules) {
+									if (submodule?.Item2 != null) {
+										try {
+											submodule?.Item2.Dispose ();
+										} catch (Exception e) {
+											LoggingService.LogInternalError ("Disposing LibGit2Sharp.Repository failed", e);
+										}
 									}
 								}
+								cachedSubmodules = null;
 							}
 						}
 					}).Wait ();
@@ -322,8 +327,6 @@ namespace MonoDevelop.VersionControl.Git
 			base.Dispose (disposing);
 
 			watcher = null;
-			rootRepository = null;
-			cachedSubmodules = null;
 		}
 
 		public override string[] SupportedProtocols {
