@@ -102,11 +102,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> definitions)
-		{
-			widget.EnsureDefinitionsLoaded (definitions);
-		}
-
 		protected override void OnDispose ()
 		{
 			if (cts != null) {

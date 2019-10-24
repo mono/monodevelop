@@ -918,7 +918,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			try {
-				Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
+				Task.WhenAll (this.definitions.Select (d => d.LoadingTask).Where (t => t != null)).ContinueWith (d => {
 					// At least one of them failed.
 					if (d.IsFaulted) {
 						LoggingService.LogError ("Failed to load assemblies", d.Exception);
@@ -1245,12 +1245,11 @@ namespace MonoDevelop.AssemblyBrowser
 		public NavigationPoint BuildNavigationPoint ()
 		{
 			var node = TreeView.GetSelectedNode ();
-			var selectedEntity = node?.DataItem as INamedElement;
+			var selectedEntity = node?.DataItem as IEntity;
 			AssemblyLoader loader = null;
 			if (selectedEntity != null) {
 				loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof (AssemblyLoader), true);
-				// TODO: fix this
-				return new AssemblyBrowserNavigationPoint (definitions, loader, selectedEntity.ReflectionName);
+				return new AssemblyBrowserNavigationPoint (definitions, loader, selectedEntity.GetIdString ());
 			}
 			loader = node?.DataItem as AssemblyLoader;
 			if (loader != null)
@@ -1258,30 +1257,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 		#endregion
-
-		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> ensuredDefinitions)
-		{
-			if (ensuredDefinitions == null)
-				throw new ArgumentNullException (nameof (ensuredDefinitions));
-
-			Runtime.RunInMainThread (() => {
-				foreach (var def in ensuredDefinitions) {
-					try {
-						if (!definitions.Contains (def)) {
-							definitions = definitions.Add (def);
-							var peFile = def.Assembly;
-							if (ensuredDefinitions.Count + projects.Count == 1) {
-								TreeView.LoadTree (peFile);
-							} else {
-								TreeView.AddChild (peFile);
-							}
-						}
-					} catch (Exception e) {
-						LoggingService.LogInternalError ($"Can't load definition {def}. File name: {def?.FileName}", e);
-					}
-				}
-			});
-		}
 	}
 }
 
