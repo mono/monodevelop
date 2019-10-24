@@ -84,6 +84,7 @@ namespace MonoDevelop.AspNetCore.Tests
 				files.Add (("template.cs", "template.tt"));
 				files.Add (("template.doc", "template.tt"));
 				files.Add ((".bowerrc", "bower.json"));
+				files.Add (("package-lock.json", "package.json"));
 
 				var project = sol.GetAllProjectsWithFlavor<AspNetCoreProjectExtension> ().FirstOrDefault ();
 
