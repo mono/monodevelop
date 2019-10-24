@@ -179,7 +179,9 @@ namespace MonoDevelop.Debugger
 			get { return base.BackgroundStyle; }
 			set {
 				base.BackgroundStyle = value;
-				UpdateContents ();
+
+				if (Superview != null)
+					UpdateContents ();
 			}
 		}
 
