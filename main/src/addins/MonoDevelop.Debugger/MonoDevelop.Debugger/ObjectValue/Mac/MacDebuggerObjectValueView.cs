@@ -133,13 +133,13 @@ namespace MonoDevelop.Debugger
 				evaluateStatusIcon = Ide.Gui.Stock.Warning;
 			} else if (Node.IsError || Node.IsNotSupported) {
 				evaluateStatusIcon = Ide.Gui.Stock.Warning;
-				strval = Node.Value;
+				strval = Node.Value ?? string.Empty;
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueErrorText));
 			} else if (Node.IsImplicitNotSupported) {
-				strval = "";//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
+				strval = string.Empty;//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
 				if (Node.CanRefresh)
 					valueButtonText = GettextCatalog.GetString ("Show Value");
@@ -154,7 +154,7 @@ namespace MonoDevelop.Debugger
 				} else {
 					valueButtonText = GettextCatalog.GetString ("Show Values");
 				}
-				strval = "";
+				strval = string.Empty;
 			} else if (Node is AddNewExpressionObjectValueNode) {
 				strval = string.Empty;
 				editable = false;
@@ -222,7 +222,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			// Second Item: Color Preview
-			if (previewColor != null) {
+			if (previewColor.HasValue) {
 				colorPreview.Layer.BackgroundColor = GetCGColor (previewColor.Value);
 
 				if (!colorPreviewVisible) {
