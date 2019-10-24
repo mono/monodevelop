@@ -120,7 +120,7 @@ namespace MonoDevelop.DesignerSupport
 		NSTableView internalTableView;
 		NSView border;
 
-		void ShowToolbar (bool enabled)
+		void ShowHeader (bool enabled)
 		{
 			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
 			propertyEditorPanel.RemoveConstraint (topConstraint);
@@ -141,7 +141,7 @@ namespace MonoDevelop.DesignerSupport
 			get => !header.Hidden;
 			set {
 				//we ensure remove current constraints from proppy
-				ShowToolbar (value);
+				ShowHeader (value);
 			}
 		}
 
