@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (radioStartProject = new RadioButton (GettextCatalog.GetString ("Start project")), 0, 0);
 			table.Add (radioStartApp = new RadioButton (GettextCatalog.GetString ("Start external program:")), 0, 1);
 			table.Add (appEntry = new Xwt.FileSelector (), 1, 1, hexpand: true);
+			appEntry.Accessible.Label = GettextCatalog.GetString ("this file selector is to select a file and set as an external program");
 			table.Add (appEntryInfoIcon = new InformationPopoverWidget (), 2, 1);
 			appEntryInfoIcon.Hide ();
 			radioStartProject.Group = radioStartApp.Group;
@@ -107,10 +108,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
+			argumentsEntry.Accessible.Description = GettextCatalog.GetString ("This text entry is to set additional arguments");
 
 			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-		
+			workingDir.Accessible.Label = GettextCatalog.GetString ("this folder selector is to select the folder to use as a working directory");
+
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
