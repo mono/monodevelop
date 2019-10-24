@@ -201,5 +201,16 @@ namespace PerformanceDiagnosticsAddIn
 			Thread.Sleep (TimeSpan.FromMinutes(2));
 		}
 	}
+
+	class InduceNativePInvokeCrashHandler : CommandHandler
+	{
+		[DllImport ("libdebugcrash.dylib")]
+		static extern void debug_trigger_sigsegv ();
+
+		protected override void Run ()
+		{
+			debug_trigger_sigsegv ();
+		}
+	}
 #endif
 }

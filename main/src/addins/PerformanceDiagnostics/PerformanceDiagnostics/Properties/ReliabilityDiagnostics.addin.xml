@@ -15,6 +15,9 @@
 		<Command id="PerformanceDiagnosticsAddIn.InduceHang"
 			defaultHandler="PerformanceDiagnosticsAddIn.InduceHangHandler"
 			_label="Induce Hang" />
+		<Command id="PerformanceDiagnosticsAddIn.InduceNativePInvokeCrash"
+			defaultHandler="PerformanceDiagnosticsAddIn.InduceNativePInvokeCrashHandler"
+			_label="Induce PInvoke Crash" />
 		
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
@@ -24,6 +27,7 @@
 			<CommandItem id="PerformanceDiagnosticsAddIn.InduceManagedCrash" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.InduceNativeCrash" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.InduceHang" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.InduceNativePInvokeCrash" />
 			
 		</ItemSet>
 	</Extension>
