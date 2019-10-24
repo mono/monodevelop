@@ -83,7 +83,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IReadOnlyList<string>> GetHandlersAsync (IEventInfo ev) => Task.FromResult(defaultHandlerList);
 
-		public Task<string> GetNameAsync () => Task.FromResult ((string) null);
+		public Task<string> GetNameAsync () => Task.FromResult<string> (null);
 
 		public Task<IReadOnlyCollection<PropertyVariation>> GetPropertyVariantsAsync (IPropertyInfo property)
 			=> Task.FromResult<IReadOnlyCollection<PropertyVariation>> (Array.Empty<PropertyVariation> ());
