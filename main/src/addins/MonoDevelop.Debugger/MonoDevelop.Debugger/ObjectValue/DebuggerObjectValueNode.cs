@@ -172,7 +172,9 @@ namespace MonoDevelop.Debugger
 
 		void OnDebuggerValueChanged (object sender, EventArgs e)
 		{
-			OnValueChanged (e);
+			Runtime.RunInMainThread (() => {
+				OnValueChanged (e);
+			}).Ignore ();
 		}
 
 		bool GetCanEdit ()
