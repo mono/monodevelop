@@ -36,12 +36,15 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyBrowserNavigationPoint : DocumentNavigationPoint
 	{
-		ImmutableList<AssemblyLoader> definitions;
+		List<string> definitions = new List<string> ();
 		string idString;
 
 		public AssemblyBrowserNavigationPoint (ImmutableList<AssemblyLoader> definitions, AssemblyLoader assembly, string idString) : base (assembly?.FileName)
 		{
-			this.definitions = definitions;
+			foreach (var def in definitions) {
+				if (def != null)
+					this.definitions.Add (def.FileName);
+			}
 			this.idString = idString;
 		}
 
@@ -52,12 +55,13 @@ namespace MonoDevelop.AssemblyBrowser
 			if (idString != null) {
 				var view = result.GetContent<AssemblyBrowserViewContent> ();
 				view.Widget.suspendNavigation = true;
-				view.EnsureDefinitionsLoaded (definitions);
+				foreach (var def in definitions) {
+					view.Widget.AddReferenceByFileName (def);
+				}
 				view.Open (idString, expandNode: false);
 			} else if (FileName != null) {
 				var view = result.GetContent<AssemblyBrowserViewContent> ();
 				view.Widget.suspendNavigation = true;
-				view.EnsureDefinitionsLoaded (definitions);
 				view.Load (FileName);
 			}
 			return result;
