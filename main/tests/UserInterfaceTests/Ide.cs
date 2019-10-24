@@ -52,8 +52,12 @@ namespace UserInterfaceTests
 
 		public static void CloseAll (bool exit = true)
 		{
-			Session.ExecuteCommand (FileCommands.SaveAll);
-			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			Session.RunAndWaitForTimer (() => {
+				Session.ExecuteCommand (FileCommands.SaveAll);
+			}, "Ide.Shell.SaveAll");
+			Session.RunAndWaitForTimer (() => {
+				Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			}, "Ide.Shell.CloseWorkspace");
 			if (exit)
 				Session.ExitApp ();
 		}
