@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			// Set up the list store so the test framework can work out the correct columns
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateCategoriesListStore__Name", "templateCategoriesListStore__Icon", "templateCategoriesListStore__Category");
 			TypeDescriptor.AddAttributes (templateCategoriesTreeStore, modelAttr);
-			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Icon", "templateListStore__Template");
+			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Category", "templateListStore__Icon", "templateListStore__Template");
 			TypeDescriptor.AddAttributes (templatesTreeStore, modelAttr);
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Projects
 			var templateTextRenderer = (GtkTemplateCellRenderer)renderer;
 			templateTextRenderer.Template = template;
 			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Xwt.Drawing.Image;
-			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
+			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateCategoryPathColumn) as string;
 		}
 
 		static void SetLanguageCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
@@ -392,13 +392,15 @@ namespace MonoDevelop.Ide.Projects
 				var iter = templatesTreeStore.AppendValues (
 					MarkupTopLevelCategoryName (subCategory.Name),
 					null,
+					null,
 					null);
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
 					if (template.HasProjects || controller.IsNewSolution) {
 						templatesTreeStore.AppendValues (
 							iter,
-							template.Name,
+							template.Name + "\n" + template.Description,
+							null,
 							GetIcon (template.IconId, IconSize.Dnd),
 							template);
 					}
@@ -412,14 +414,17 @@ namespace MonoDevelop.Ide.Projects
 			templateTextRenderer.RenderRecentTemplate = true;
 			languageCellRenderer.RenderRecentTemplate = true;
 			var iter = templatesTreeStore.AppendValues (
-				MarkupTopLevelCategoryName (Core.GettextCatalog.GetString ("Recently used templates")),
+				MarkupTopLevelCategoryName (GettextCatalog.GetString ("Recently used templates")),
+				null,
 				null,
 				null);
 			foreach (SolutionTemplate template in controller.RecentTemplates) {
 				if (template.HasProjects || controller.IsNewSolution) {
+					var category = controller.GetCategoryPathText (template);
 					templatesTreeStore.AppendValues (
 						iter,
-						controller.GetCategoryPathText (template),
+						template.Name + "\n" + category + "\n" + template.Description,
+						category,
 						GetIcon (template.IconId, IconSize.Dnd),
 						template);
 				}

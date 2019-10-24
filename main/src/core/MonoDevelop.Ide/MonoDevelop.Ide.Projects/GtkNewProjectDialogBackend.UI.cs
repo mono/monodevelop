@@ -59,10 +59,11 @@ namespace MonoDevelop.Ide.Projects
 			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
-		const int TemplateIconColumn = 1;
-		const int TemplateColumn = 2;
+		const int TemplateCategoryPathColumn = 1;
+		const int TemplateIconColumn = 2;
+		const int TemplateColumn = 3;
 		TreeStore templatesTreeStore =
-			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
+			new TreeStore(typeof (string), typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
 		VBox templateVBox;
 		ImageView templateImage;
 		Label templateNameLabel;
