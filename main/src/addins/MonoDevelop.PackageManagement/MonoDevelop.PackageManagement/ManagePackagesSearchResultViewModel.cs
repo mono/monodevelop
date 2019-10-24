@@ -479,20 +479,6 @@ namespace MonoDevelop.PackageManagement
 			licenseLinks ??= new List<IText> ();
 			return licenseLinks;
 		}
-
-		public LicenseFileText GetLicenseFile (int fileNumber)
-		{
-			int currentFileNumber = 0;
-			foreach (IText text in GetLicenseLinks ()) {
-				if (text is LicenseFileText licenseFileText) {
-					currentFileNumber++;
-					if (currentFileNumber == fileNumber) {
-						return licenseFileText;
-					}
-				}
-			}
-			return null;
-		}
 	}
 }
 

@@ -31,6 +31,7 @@ using System;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using NuGet.PackageManagement.UI;
 using Xwt;
 
 namespace MonoDevelop.PackageManagement
@@ -46,7 +47,6 @@ namespace MonoDevelop.PackageManagement
 		public LicenseAcceptanceDialog (LicenseAcceptanceViewModel viewModel)
 		{
 			Height = 350;
-			Resizable = false;
 			Padding = 0;
 			Title = GettextCatalog.GetString ("License Acceptance");
 			this.viewModel = viewModel;
@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 			packagesList.Spacing = 0;
 
 			scroll = new ScrollView (packagesList);
-			scroll.HorizontalScrollPolicy = ScrollPolicy.Never;
+			scroll.HorizontalScrollPolicy = ScrollPolicy.Automatic;
 			scroll.VerticalScrollPolicy = ScrollPolicy.Automatic;
 			scroll.BorderVisible = false;
 			scroll.BackgroundColor = Ide.Gui.Styles.BackgroundColor;
@@ -107,23 +107,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		protected override void OnShown ()
-		{
-			var count = packagesList.Children.Count ();
-			if (count > 0 && count < 4) {
-				scroll.VerticalScrollPolicy = ScrollPolicy.Never;
-				var firstRow = packagesList.Children.First ();
-				var rowHeight = firstRow.Size.Height;
-				Height -= (rowHeight + firstRow.MarginTop + firstRow.MarginBottom) * (4 - count);
-			} else if (count == 4) {
-				scroll.VerticalScrollPolicy = ScrollPolicy.Never;
-			} else if (count > 4) {
-				scroll.VerticalScrollPolicy = ScrollPolicy.Automatic;
-				Height += rowMargin.Top + rowMargin.Bottom;
-			}
-			base.OnShown ();
-		}
-
 		void AddPackage (PackageLicenseViewModel package)
 		{
 			var titleBox = new VBox ();
@@ -132,10 +115,7 @@ namespace MonoDevelop.PackageManagement
 			titleBox.PackStart (new Label {
 				Markup = string.Format ("<span weight='bold'>{0}</span> – {1}", package.Id, package.Author),
 			});
-			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
-			licenseLabel.Uri = package.LicenseUrl;
-			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
-			titleBox.PackStart (licenseLabel);
+			AddLicenseInfo (package, titleBox);
 
 			var rowBox = new HBox ();
 			rowBox.Margin = rowMargin;
@@ -151,6 +131,85 @@ namespace MonoDevelop.PackageManagement
 			packagesList.PackStart (rowBox);
 		}
 
+		static void AddLicenseInfo (PackageLicenseViewModel package, VBox parentVBox)
+		{
+			if (package.LicenseLinks.Any ()) {
+				if (package.LicenseLinks.Count == 1) {
+					IText textLink = package.LicenseLinks [0];
+					if (textLink is LicenseText licenseText) {
+						AddLicenseLinkLabel (licenseText.Link, licenseText.Text, parentVBox);
+						return;
+					} else if (textLink is LicenseFileText licenseFileText) {
+						AddFileLicenseLinkLabel (licenseFileText, parentVBox);
+						return;
+					} else {
+						// Warning or free text fallback to showing an expression which will handle this.
+					}
+				}
+				AddLicenseExpressionLabel (package, parentVBox);
+			} else {
+				AddLicenseLinkLabel (package.LicenseUrl, GettextCatalog.GetString ("View License"), parentVBox);
+			}
+		}
+
+		static void AddLicenseExpressionLabel (PackageLicenseViewModel package, VBox parentVBox)
+		{
+			var licenseLabel = new Label ();
+			var builder = new LicenseLinkMarkupBuilder ();
+			licenseLabel.Markup = builder.GetMarkup (package.LicenseLinks);
+			licenseLabel.Wrap = WrapMode.None;
+
+			// Does not work. LabelBackend for Xamarin.Mac implementation does not ILabelEventSink.OnLinkClicked
+			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
+
+			foreach (WarningText warning in builder.Warnings) {
+				AddLicenseWarningLabel (warning, parentVBox);
+			}
+
+			var hbox = new HBox ();
+			hbox.PackStart (licenseLabel, true);
+
+			parentVBox.PackStart (hbox);
+		}
+
+		static void AddLicenseWarningLabel (WarningText warning, VBox parentVBox)
+		{
+			var hbox = new HBox ();
+			var image = new ImageView {
+				Image = ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu),
+				VerticalPlacement = WidgetPlacement.Start,
+			};
+			image.Accessible.RoleDescription = GettextCatalog.GetString ("Warning Icon");
+
+			hbox.PackStart (image);
+
+			var label = new Label {
+				Text = warning.Text,
+				Wrap = WrapMode.None
+			};
+			image.Accessible.LabelWidget = label;
+			hbox.PackStart (label, true);
+
+			parentVBox.PackStart (hbox);
+		}
+
+		static void AddFileLicenseLinkLabel (LicenseFileText licenseFileText, VBox parentVBox)
+		{
+			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
+			licenseLabel.Uri = licenseFileText.CreateLicenseFileUri (1);
+			licenseLabel.Tag = licenseFileText;
+			licenseLabel.NavigateToUrl += (sender, e) => ShowFileDialog ((LinkLabel)sender);
+			parentVBox.PackStart (licenseLabel);
+		}
+
+		static void AddLicenseLinkLabel (Uri licenseUrl, string labelText, VBox parentVBox)
+		{
+			var licenseLabel = new LinkLabel (labelText);
+			licenseLabel.Uri = licenseUrl;
+			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
+			parentVBox.PackStart (licenseLabel);
+		}
+
 		public new bool Run (WindowFrame parentWindow)
 		{
 			return base.Run (parentWindow) == Command.Ok;
@@ -161,6 +220,13 @@ namespace MonoDevelop.PackageManagement
 			if (disposing)
 				imageLoader.Dispose ();
 			base.Dispose (disposing);
+		}
+
+		static void ShowFileDialog (LinkLabel label)
+		{
+			var licenseFileText = (LicenseFileText)label.Tag;
+			var dialog = new LicenseFileDialog (licenseFileText);
+			dialog.Run (label.ParentWindow);
 		}
 	}
 }

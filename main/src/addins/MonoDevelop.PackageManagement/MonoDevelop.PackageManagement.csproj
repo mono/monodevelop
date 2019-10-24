@@ -376,6 +376,8 @@
     <Compile Include="NuGet.PackageManagement.UI\Models\WarningText.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageLicenseUtilities.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseFileDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseLinkMarkupBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseFileTextExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -31,7 +31,6 @@ using System.Security;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.PackageManagement.Gui;
 using MonoDevelop.Projects;
 using NuGet.PackageManagement.UI;
 using NuGet.Versioning;
@@ -1304,33 +1303,11 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		static string GetUriMarkup (Uri uri, string text)
-		{
-			return string.Format (
-				"<a href=\"{0}\">{1}</a>",
-				uri != null ? SecurityElement.Escape (uri.ToString ()) : string.Empty,
-				SecurityElement.Escape (text));
-		}
-
 		void PackageLicenseNavigateToUrl (object sender, NavigateToUrlEventArgs e)
 		{
 			if (ShowLicenseFile (e.Uri)) {
 				e.SetHandled ();
 			}
-		}
-
-		bool ShowLicenseFile (Uri uri)
-		{
-			if (!uri.IsFile)
-				return false;
-
-			if (uri.Fragment?.Length > 0) {
-				if (int.TryParse (uri.Fragment.Substring (1), out int fileNumber)) {
-					ShowLicenseFile (fileNumber);
-					return true;
-				}
-			}
-			return false;
 		}
 
 		void PackageLicenseLinkClicked (object sender, LinkEventArgs e)
@@ -1340,9 +1317,16 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		bool ShowLicenseFile (Uri uri)
+		{
+			return LicenseFileDialog.ShowDialog (
+				uri,
+				viewModel.SelectedPackage.GetLicenseLinks (),
+				this);
+		}
+
 		void ShowLicenseMetadata (ManagePackagesSearchResultViewModel packageViewModel)
 		{
-			List<WarningText> warnings = null;
 			var textLinks = packageViewModel.GetLicenseLinks ();
 
 			if (textLinks.Count == 0) {
@@ -1365,7 +1349,7 @@ namespace MonoDevelop.PackageManagement
 					return;
 				} else if (textLink is LicenseFileText licenseFileText) {
 					packageLicenseLink.Text = GettextCatalog.GetString ("View License");
-					packageLicenseLink.Uri = CreateLicenseFileUri (licenseFileText, 1);
+					packageLicenseLink.Uri = licenseFileText.CreateLicenseFileUri (1);
 					return;
 				} else {
 					// Warning or plain text - handled below.
@@ -1373,40 +1357,20 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			// Multiple text links. We need to allow these to wrap so show these below the license label.
-			var markupBuilder = StringBuilderCache.Allocate ();
-
-			int fileLicenseCount = 0; // Should be one but handle multiple.
-			foreach (IText textLink in textLinks) {
-				if (textLink is LicenseText licenseText) {
-					markupBuilder.Append (GetUriMarkup (licenseText.Link, licenseText.Text));
-				} else if (textLink is LicenseFileText licenseFileText) {
-					fileLicenseCount++;
-					markupBuilder.Append (GetUriMarkup (CreateLicenseFileUri (licenseFileText, fileLicenseCount), licenseFileText.Text));
-				} else if (textLink is WarningText warning) {
-					warnings ??= new List<WarningText> ();
-					warnings.Add (warning);
-				} else {
-					markupBuilder.Append (textLink.Text);
-				}
-			}
+			var markupBuilder = new LicenseLinkMarkupBuilder ();
+			packageLicenseMetadataLabel.Markup = markupBuilder.GetMarkup (textLinks);
 
 			packageLicenseLink.Visible = false;
 			packageLicenseMetadataHBox.Visible = true;
-			packageLicenseMetadataLabel.Markup = StringBuilderCache.ReturnAndFree (markupBuilder);
 
-			if (warnings != null) {
-				AddWarnings (warnings);
+			if (markupBuilder.Warnings.Any ()) {
+				AddWarnings (markupBuilder.Warnings);
 			} else {
 				packageLicenseMetadataWarningsVBox.Visible = false;
 			}
 		}
 
-		Uri CreateLicenseFileUri (LicenseFileText licenseFileText, int licenseCount)
-		{
-			return new Uri ($"file:///{licenseFileText.Text}#{licenseCount}");
-		}
-
-		void AddWarnings (List<WarningText> warnings)
+		void AddWarnings (IEnumerable<WarningText> warnings)
 		{
 			foreach (Widget child in packageLicenseMetadataWarningsVBox.Children.ToArray ()) {
 				packageLicenseMetadataWarningsVBox.Remove (child);
@@ -1436,15 +1400,6 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			packageLicenseMetadataWarningsVBox.Visible = true;
-		}
-
-		void ShowLicenseFile (int fileNumber)
-		{
-			LicenseFileText licenseFileText = viewModel.SelectedPackage.GetLicenseFile (fileNumber);
-			if (licenseFileText != null) {
-				var dialog = new LicenseFileDialog (licenseFileText);
-				dialog.Run (this);
-			}
 		}
 	}
 }
