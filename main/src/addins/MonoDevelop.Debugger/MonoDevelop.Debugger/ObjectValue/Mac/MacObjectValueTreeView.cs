@@ -653,7 +653,7 @@ namespace MonoDevelop.Debugger
 			if (rowView != null) {
 				var pinView = (MacDebuggerObjectPinView) rowView.ViewAtColumn (ColumnCount - 1);
 
-				pinView.SetMouseHover (hover);
+				pinView?.SetMouseHover (hover);
 			}
 		}
 
