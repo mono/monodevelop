@@ -101,7 +101,6 @@ namespace MonoDevelop.PackageManagement
 
 			closeButton.Clicked += CloseButtonClicked;
 			packageLicenseLink.NavigateToUrl += PackageLicenseNavigateToUrl;
-			packageLicenseMetadataLabel.LinkClicked += PackageLicenseLinkClicked;
 			showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
 			packageSourceComboBox.SelectionChanged += PackageSourceChanged;
 			addPackagesButton.Clicked += AddPackagesButtonClicked;
@@ -152,7 +151,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			closeButton.Clicked -= CloseButtonClicked;
 			packageLicenseLink.NavigateToUrl -= PackageLicenseNavigateToUrl;
-			packageLicenseMetadataLabel.LinkClicked -= PackageLicenseLinkClicked;
 			currentPackageVersionLabel.BoundsChanged -= PackageVersionLabelBoundsChanged;
 
 			showPrereleaseCheckBox.Clicked -= ShowPrereleaseCheckBoxClicked;
@@ -1294,6 +1292,7 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowLicense (ManagePackagesSearchResultViewModel packageViewModel)
 		{
+			packageLicenseLink.Tag = null;
 			if (packageViewModel.HasLicenseMetadata) {
 				ShowLicenseMetadata (packageViewModel);
 			} else {
@@ -1305,24 +1304,12 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageLicenseNavigateToUrl (object sender, NavigateToUrlEventArgs e)
 		{
-			if (ShowLicenseFile (e.Uri)) {
+			var licenseFileText = packageLicenseLink.Tag as LicenseFileText;
+			if (licenseFileText != null) {
 				e.SetHandled ();
+				var dialog = new LicenseFileDialog (licenseFileText);
+				dialog.Run (this);
 			}
-		}
-
-		void PackageLicenseLinkClicked (object sender, LinkEventArgs e)
-		{
-			if (ShowLicenseFile (e.Target)) {
-				e.SetHandled ();
-			}
-		}
-
-		bool ShowLicenseFile (Uri uri)
-		{
-			return LicenseFileDialog.ShowDialog (
-				uri,
-				viewModel.SelectedPackage.GetLicenseLinks (),
-				this);
 		}
 
 		void ShowLicenseMetadata (ManagePackagesSearchResultViewModel packageViewModel)
@@ -1349,7 +1336,8 @@ namespace MonoDevelop.PackageManagement
 					return;
 				} else if (textLink is LicenseFileText licenseFileText) {
 					packageLicenseLink.Text = GettextCatalog.GetString ("View License");
-					packageLicenseLink.Uri = licenseFileText.CreateLicenseFileUri (1);
+					packageLicenseLink.Uri = licenseFileText.CreateLicenseFileUri ();
+					packageLicenseLink.Tag = licenseFileText;
 					return;
 				} else {
 					// Warning or plain text - handled below.

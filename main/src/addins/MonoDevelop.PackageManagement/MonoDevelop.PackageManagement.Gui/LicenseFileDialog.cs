@@ -79,42 +79,5 @@ namespace MonoDevelop.PackageManagement
 				licenseFileText.PropertyChanged -= LicenseFileTextPropertyChanged;
 			}
 		}
-
-		public static bool ShowDialog (Uri uri, IReadOnlyList<IText> licenseLinks, Dialog parent)
-		{
-			if (!uri.IsFile)
-				return false;
-
-			if (uri.Fragment?.Length > 0) {
-				if (int.TryParse (uri.Fragment.Substring (1), out int fileNumber)) {
-					ShowLicenseFile (fileNumber, licenseLinks, parent);
-					return true;
-				}
-			}
-			return false;
-		}
-
-		static void ShowLicenseFile (int fileNumber, IReadOnlyList<IText> licenseLinks, Dialog parent)
-		{
-			LicenseFileText licenseFileText = GetLicenseFile (fileNumber, licenseLinks);
-			if (licenseFileText != null) {
-				var dialog = new LicenseFileDialog (licenseFileText);
-				dialog.Run (parent);
-			}
-		}
-
-		static LicenseFileText GetLicenseFile (int fileNumber, IReadOnlyList<IText> licenseLinks)
-		{
-			int currentFileNumber = 0;
-			foreach (IText text in licenseLinks) {
-				if (text is LicenseFileText licenseFileText) {
-					currentFileNumber++;
-					if (currentFileNumber == fileNumber) {
-						return licenseFileText;
-					}
-				}
-			}
-			return null;
-		}
 	}
 }

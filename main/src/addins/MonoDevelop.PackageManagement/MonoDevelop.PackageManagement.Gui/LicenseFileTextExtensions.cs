@@ -31,9 +31,9 @@ namespace MonoDevelop.PackageManagement
 {
 	static class LicenseFileTextExtensions
 	{
-		public static Uri CreateLicenseFileUri  (this LicenseFileText licenseFileText, int licenseCount)
+		public static Uri CreateLicenseFileUri  (this LicenseFileText licenseFileText)
 		{
-			return new Uri ($"file:///{licenseFileText.Text}#{licenseCount}");
+			return new Uri ($"file:///{licenseFileText.Text}");
 		}
 	}
 }

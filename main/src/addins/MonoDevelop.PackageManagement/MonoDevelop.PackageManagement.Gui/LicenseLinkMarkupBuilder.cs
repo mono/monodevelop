@@ -41,13 +41,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			var markupBuilder = StringBuilderCache.Allocate ();
 
-			int fileLicenseCount = 0; // Should be one but handle multiple.
 			foreach (IText textLink in textLinks) {
 				if (textLink is LicenseText licenseText) {
 					markupBuilder.Append (GetUriMarkup (licenseText.Link, licenseText.Text));
 				} else if (textLink is LicenseFileText licenseFileText) {
-					fileLicenseCount++;
-					markupBuilder.Append (GetUriMarkup (licenseFileText.CreateLicenseFileUri (fileLicenseCount), licenseFileText.Text));
+					// Should not happen. Building an expression should not contain a license file.
+					LoggingService.LogError ("Unexpected LicenseFileText when building markup {0}", licenseFileText.Text);
 				} else if (textLink is WarningText warning) {
 					warnings ??= new List<WarningText> ();
 					warnings.Add (warning);
