@@ -187,9 +187,14 @@ namespace MonoDevelop.Ide
 
 			if (!options.NewWindow && startupInfo.HasFiles) {
 				foreach (var file in startupInfo.RequestedFileList) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
-						options.NewWindow = true;
-						break;
+					try {
+						if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
+							options.NewWindow = true;
+							break;
+						}
+					} catch (UnauthorizedAccessException ex) {
+						LoggingService.LogError (string.Format ("Unable to check startup file is a workspace item '{0}'", file.FileName), ex);
+						return 1;
 					}
 				}
 			}
