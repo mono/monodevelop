@@ -65,7 +65,8 @@ namespace MonoDevelop.VersionControl.Views
 				this.widget.DiffChanged += Widget_DiffChanged;
 				this.fromEditor.VAdjustment.ValueChanged += VAdjustment_Changed;
 				this.toEditor.VAdjustment.ValueChanged += VAdjustment_Changed;
-				Accessible.SetRole (AtkCocoa.Roles.AXGroup, GettextCatalog.GetString ("Revert changes margin"));
+				Accessible.SetRole (AtkCocoa.Roles.AXGroup);
+				Accessible.SetTitle (GettextCatalog.GetString ("Revert changes margin"));
 			}
 
 			void VAdjustment_Changed (object sender, EventArgs e)
@@ -478,7 +479,8 @@ namespace MonoDevelop.VersionControl.Views
 					Accessible.GtkParent = widget;
 					Accessible.PerformPress += PerformPress;
 
-					Accessible.SetRole (AtkCocoa.Roles.AXButton, widget.useLeft ? GettextCatalog.GetString ("Revert left changes button") : GettextCatalog.GetString ("Revert right changes button"));
+					Accessible.SetRole (AtkCocoa.Roles.AXButton);
+					Accessible.Label = widget.useLeft ? GettextCatalog.GetString ("Revert left changes button") : GettextCatalog.GetString ("Revert right changes button");
 
 					if (hunk.Inserted > 0) {
 						Accessible.Label = GettextCatalog.GetString ("Revert {0} inserted lines starting at {1}", hunk.Inserted, hunk.InsertStart);
