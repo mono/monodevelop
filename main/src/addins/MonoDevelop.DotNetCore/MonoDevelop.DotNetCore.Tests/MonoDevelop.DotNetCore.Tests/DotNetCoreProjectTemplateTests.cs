@@ -86,7 +86,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard1x=true;Framework=netstandard1.6")]
 		public async Task NetStandard1x (string templateId, string parameters)
 		{
-			await CreateFromTemplateAndBuild ("NetStandard1x", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetStandard1x", templateId, parameters, PreBuildCommonChecks);
 		}
 
 		[Test]
@@ -116,7 +116,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore (".NET Core runtime is not installed - required by project template.");
 			}
 
-			await CreateFromTemplateAndBuild ("NetCore1x", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetCore1x", templateId, parameters, PreBuildCommonChecks);
 		}
 
 		[Test]
@@ -128,7 +128,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore (".NET Core 2 SDK is not installed - required by project template.");
 			}
 
-			await CreateFromTemplateAndBuild ("NetStandard2x", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetStandard2x", templateId, parameters, PreBuildCommonChecks);
 		}
 
 		[Test]
@@ -140,14 +140,14 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore (".NET Core 3 SDK is not installed - required by project template.");
 			}
 
-			await CreateFromTemplateAndBuild ("NetStandard21", templateId, parameters);
+			await CreateFromTemplateAndBuild ("NetStandard21", templateId, parameters, PreBuildCommonChecks);
 		}
 
 		[Test]
 		public async Task NetStandard20_VBNet ()
 		{
 			if (IsDotNetCoreSdk21Installed () || IsDotNetCoreSdk22Installed ()) {
-				await CreateFromTemplateAndBuild ("NetStandard2x", "Microsoft.Common.Library.VisualBasic", "UseNetStandard20=true");
+				await CreateFromTemplateAndBuild ("NetStandard2x", "Microsoft.Common.Library.VisualBasic", "UseNetStandard20=true", PreBuildCommonChecks);
 			} else {
 				Assert.Ignore (".NET Core >= 2.1 SDK is not installed - required by project template.");
 			}
@@ -230,7 +230,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ($".NET Core >= {sdkVersion} SDK is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ($"NetCore{sdkVersion}", templateId, parameters);
+			await CreateFromTemplateAndBuild ($"NetCore{sdkVersion}", templateId, parameters, PreBuildCommonChecks);
 		}
 
 		// 1.x
@@ -315,7 +315,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.Ignore ("Node is not installed - required by project template");
 			}
 
-			await CreateFromTemplateAndBuild ($"AspNetCore{sdkVersion}", templateId, parameters, CheckAspNetCoreNestingRules, checkExecutionTargets);
+			await CreateFromTemplateAndBuild ($"AspNetCore{sdkVersion}", templateId, parameters, PreBuildAspNetCoreChecks, checkExecutionTargets);
 		}
 
 		static bool IsDotNetCoreInstalled (string version)
@@ -333,12 +333,6 @@ namespace MonoDevelop.DotNetCore.Tests
 		static bool IsDotNetCoreSdk2xInstalled ()
 		{
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 2);
-		}
-
-		static bool IsDotNetCoreSdk20Installed ()
-		{
-			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 0) ||
-				DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 1 && version.Patch < 300);
 		}
 
 		static bool IsDotNetCoreSdk21Installed ()
@@ -385,8 +379,26 @@ namespace MonoDevelop.DotNetCore.Tests
 			}
 		}
 
-		static void CheckAspNetCoreNestingRules (Solution sol)
+		static void PreBuildCommonChecks (Solution sol)
 		{
+			foreach (var project in sol.GetAllProjects ().OfType<DotNetProject> ()) {
+				var supportedFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (project);
+				var installedFrameworks = supportedFrameworks.GetFrameworks ();
+				var knownFrameworks = supportedFrameworks.GetKnownFrameworks ();
+
+				Assert.That (installedFrameworks.Count (), Is.EqualTo (installedFrameworks.Distinct ().Count ()));
+				Assert.That (knownFrameworks.Count (), Is.EqualTo (knownFrameworks.Distinct ().Count ()));
+
+				foreach (var fx in installedFrameworks) {
+					Assert.True (knownFrameworks.Any (x => x.Id == fx.Id), $"Framework {fx.GetDisplayName ()} is installed, but we don't know about it");
+				}
+			}
+		}
+
+		static void PreBuildAspNetCoreChecks (Solution sol)
+		{
+			PreBuildCommonChecks (sol);
+
 			foreach (var p in sol.GetAllProjects ()) {
 				foreach (var si in p.Files) {
 					if (si.DependentChildren != null && si.DependentChildren.Count > 0) {
