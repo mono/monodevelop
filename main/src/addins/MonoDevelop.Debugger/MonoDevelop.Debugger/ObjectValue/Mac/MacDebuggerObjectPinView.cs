@@ -126,9 +126,9 @@ namespace MonoDevelop.Debugger
 
 		void OnLiveUpdateButtonClicked (object sender, EventArgs e)
 		{
-			if (pinned) {
+			if (Node != null && pinned) {
 				DebuggingService.SetLiveUpdateMode (TreeView.PinnedWatch, !TreeView.PinnedWatch.LiveUpdate);
-				Refresh ();
+				Node.Refresh ();
 			}
 		}
 
