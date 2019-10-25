@@ -55,6 +55,11 @@ namespace MonoDevelop.Components.AutoTest
 			return SelectorViewControl.GetActiveConfiguration()?.DisplayString;
 		}
 
+		public string GetActiveExetutionTarget ()
+		{
+			return SelectorViewControl.GetActiveRuntime ()?.DisplayString;
+		}
+
 		public  List<string> GetConfigurations ()
 		{
 			return SelectorViewControl.GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToList ();

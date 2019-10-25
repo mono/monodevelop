@@ -364,6 +364,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 		}
 
 
+		public IRuntimeMutableModel GetActiveRuntime ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveRuntime");
+			var activeRuntime = (IRuntimeModel)pinfo.GetValue (ResultObject);
+			return activeRuntime.GetMutableModel ();
+		}
 
 		public override bool SetActiveConfiguration (string configurationName)
 		{
