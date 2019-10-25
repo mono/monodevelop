@@ -349,12 +349,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return null;
 			}
 			var topModels = (IEnumerable<IRuntimeModel>)GetModelObject (pinfo);
-			var models = AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented);
-			var result = new List<IRuntimeMutableModel> ();
-			foreach (var item in models) {
-				result.Add (item.GetMutableModel ());
-			}
-			return result;
+			return AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented).Select(x => x.GetMutableModel()).ToList();
 		}
 
 		public IConfigurationModel GetActiveConfiguration ()
