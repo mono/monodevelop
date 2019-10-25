@@ -361,13 +361,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override bool SetActiveConfiguration (string configurationName)
 		{
 			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
-			Type type = ResultObject.GetType ();
-			PropertyInfo pinfo = type.GetProperty ("ConfigurationModel");
-			if (pinfo == null) {
-				return false;
-			}
 
-			IEnumerable<IConfigurationModel> model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
+			var model = GetConfigurationModels ();
 			LoggingService.LogDebug (string.Format ("Found configurations: {0}",
 				string.Join(", ", model.Select(m => $"['{m.OriginalId}' '{m.DisplayString}']"))));
 			var configuration = model.FirstOrDefault (
@@ -376,7 +371,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			pinfo = type.GetProperty ("ActiveConfiguration");
+			var pinfo = GetPropertyInfo ("ActiveConfiguration");
 			if (pinfo == null) {
 				return false;
 			}
