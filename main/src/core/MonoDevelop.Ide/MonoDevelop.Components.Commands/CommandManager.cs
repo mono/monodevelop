@@ -453,6 +453,8 @@ namespace MonoDevelop.Components.Commands
 			var window = currentEvent?.Window;
 			var firstResponder = window?.FirstResponder;
 
+			bool retVal = false;
+
 			// GTK eats FlagsChanged events and this is just to inform
 			// modifier keys changed state, hence always send it to
 			// focused view
@@ -467,10 +469,22 @@ namespace MonoDevelop.Components.Commands
 			// KeyboardShortcut[] accels = 
 			KeyBindingManager.AccelsFromKey (e.Event, out complete);
 
+			if (currentEvent != null &&
+				currentEvent.Type == AppKit.NSEventType.KeyUp &&
+				firstResponder is AppKit.NSView view &&
+				view != window.ContentView) {
+
+				view.KeyUp (currentEvent);
+
+				retVal = true;
+			}
+
 			if (!complete) {
 				// incomplete accel
 				NotifyIncompleteKeyReleased (e.Event);
 			}
+
+			e.RetVal = retVal;
 		}
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
