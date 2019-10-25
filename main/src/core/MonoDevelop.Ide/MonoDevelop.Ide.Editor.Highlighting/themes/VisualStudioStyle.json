@@ -30,7 +30,7 @@
 
 	"text": [
 		{ "name": "Plain Text", "fore": "text-black", "back": "#FFFFFF" },
-		{ "name": "Selected Text", "fore": "white", "back": "#3298FF" },
+		{ "name": "Selected Text", "fore": "white", "back": "#94CAED" },
 		{ "name": "Selected Text(Inactive)", "fore": "white", "back": "#BFCDDB" },
 
 		{ "name": "Collapsed Text", "fore": "comment-green", "back": "white" },
