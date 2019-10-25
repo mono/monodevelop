@@ -319,23 +319,44 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		#region MacPlatform.MacIntegration.MainToolbar.SelectorView
 
+
+		PropertyInfo GetPropertyInfo (string propertyName)
+		{
+			var type = ResultObject.GetType ();
+			return type.GetProperty (propertyName);
+		}
+
+		object GetModelObject(PropertyInfo propertyInfo)
+		{
+			return propertyInfo.GetValue (ResultObject, null);
+		}
+
 		public List<IConfigurationModel> GetConfigurationModels ()
 		{
 			var pinfo = GetPropertyInfo ("ConfigurationModel");
 			if (pinfo == null) {
 				return null;
 			}
-			var models = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
+			var models = (IEnumerable<IConfigurationModel>)GetModelObject (pinfo);
 
-			return models?.ToList();
+			return models?.ToList ();
 		}
 
-
-		public PropertyInfo GetPropertyInfo (string propertyName)
+		public List<IRuntimeMutableModel> GetRuntimeModels ()
 		{
-			var type = ResultObject.GetType ();
-			return type.GetProperty (propertyName);
+			var pinfo = GetPropertyInfo ("RuntimeModel");
+			if (pinfo == null) {
+				return null;
+			}
+			var topModels = (IEnumerable<IRuntimeModel>)GetModelObject (pinfo);
+			var models = AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented);
+			var result = new List<IRuntimeMutableModel> ();
+			foreach (var item in models) {
+				result.Add (item.GetMutableModel ());
+			}
+			return result;
 		}
+
 
 		public override bool SetActiveConfiguration (string configurationName)
 		{
@@ -370,21 +391,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 					return true;
 			}
 			return true;
-		}
-
-		public List<IRuntimeMutableModel> GetRuntimeModels ()
-		{
-			var pinfo = GetPropertyInfo ("RuntimeModel");
-			if (pinfo == null) {
-				return null;
-			}
-			var topModels = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
-			var models = AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented);
-			var result = new List<IRuntimeMutableModel>();
-			foreach (var item in models) {
-				result.Add (item.GetMutableModel ());
-			}
-			return result;
 		}
 
 		public override bool SetActiveRuntime (string runtimeName)
