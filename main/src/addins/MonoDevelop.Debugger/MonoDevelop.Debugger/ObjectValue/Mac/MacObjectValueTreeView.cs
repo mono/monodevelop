@@ -636,7 +636,7 @@ namespace MonoDevelop.Debugger
 			if (rowView != null) {
 				var nameView = (MacDebuggerObjectNameView) rowView.ViewAtColumn (0);
 
-				nameView.SetPreviewButtonIcon (icon);
+				nameView?.SetPreviewButtonIcon (icon);
 			}
 		}
 
