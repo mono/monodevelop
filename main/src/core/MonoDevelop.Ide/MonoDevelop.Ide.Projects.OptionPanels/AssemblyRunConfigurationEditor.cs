@@ -102,31 +102,30 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.MarginLeft = 12;
 			mainBox.PackStart (table);
 
-			appEntry.Accessible.LabelWidget = radioStartApp;
+			appEntry.Accessible.Label = GettextCatalog.GetString ("external program");
+			appEntry.Accessible.Description = GettextCatalog.GetString ("choose the external program to start the project");
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
-			var argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:"));
-			table.Add (argumentsLabel, 0, 0);
+			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
-			argumentsEntry.Accessible.LabelWidget = argumentsLabel;
+			argumentsEntry.Accessible.Label = GettextCatalog.GetString ("arguments");
+			argumentsEntry.Accessible.Description = GettextCatalog.GetString ("set any additional arguments to pass");
 
-			var runInDirectoryLabel = new Label (GettextCatalog.GetString ("Run in directory:"));
-			table.Add (runInDirectoryLabel, 0, 1);
+			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-			workingDir.Accessible.LabelWidget = runInDirectoryLabel;
-
-
+			workingDir.Accessible.Label = GettextCatalog.GetString ("run in directory");
+			workingDir.Accessible.Description = GettextCatalog.GetString ("choose the directory to run the project in");
 
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			var environmentVariablesLabel = new Label (GettextCatalog.GetString ("Environment Variables"));
-			mainBox.PackStart (environmentVariablesLabel);
+			mainBox.PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
 			envVars = new EnvironmentVariableCollectionEditor ();
-			envVars.Accessible.LabelWidget = environmentVariablesLabel;
+			envVars.Accessible.Label = GettextCatalog.GetString ("environment variables");
+			envVars.Accessible.Description = GettextCatalog.GetString ("set additional environment variables for the project");
 
 			mainBox.PackStart (envVars, true);
 
@@ -143,13 +142,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			adBox.Margin = 12;
 
 			table = new Table ();
-			var executeNetRuntimeLabel = new Label (GettextCatalog.GetString ("Execute in .NET Runtime:"));
-			table.Add (executeNetRuntimeLabel, 0, 0);
+			table.Add (new Label (GettextCatalog.GetString ("Execute in .NET Runtime:")), 0, 0);
 			table.Add (runtimesCombo = new ComboBox (), 1, 0, hexpand:true);
-			runtimesCombo.Accessible.LabelWidget = executeNetRuntimeLabel;
+			runtimesCombo.Accessible.Label = GettextCatalog.GetString (".NET Runtime");
+			runtimesCombo.Accessible.Description = GettextCatalog.GetString ("choose the .NET Runtime to execute the project with");
 
-			var runtimeSettingsLabel = new Label (GettextCatalog.GetString ("Mono runtime settings:"));
-			table.Add (runtimeSettingsLabel, 0, 1);
+			table.Add (new Label (GettextCatalog.GetString ("Mono runtime settings:")), 0, 1);
 
 			var box = new HBox ();
 			Button monoSettingsButton = new Button (GettextCatalog.GetString ("\u2026"));
@@ -158,8 +156,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			monoSettingsEntry.ReadOnly = true;
 			table.Add (box, 1, 1, hexpand: true);
 			adBox.PackStart (table);
-			monoSettingsEntry.Accessible.LabelWidget = runtimeSettingsLabel;
-			monoSettingsButton.Accessible.LabelWidget = runtimeSettingsLabel;
+			monoSettingsEntry.Accessible.Role = Xwt.Accessibility.Role.Label;
+			monoSettingsButton.Accessible.Label = GettextCatalog.GetString ("Mono runtime settings");
+			monoSettingsButton.Accessible.Description = GettextCatalog.GetString ("Set the Mono runtime settings");
 
 			if (includeAdvancedTab)
 				Add (adBox, GettextCatalog.GetString ("Advanced"));

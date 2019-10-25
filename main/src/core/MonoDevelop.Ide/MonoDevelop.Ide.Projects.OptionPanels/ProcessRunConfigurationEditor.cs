@@ -74,24 +74,24 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			mainBox.Margin = 12;
 			var table = new Table ();
 
-			var argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:"));
-			table.Add (argumentsLabel, 0, 0);
+			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
-			argumentsEntry.Accessible.LabelWidget = argumentsLabel;
+			argumentsEntry.Accessible.Label = GettextCatalog.GetString ("arguments");
+			argumentsEntry.Accessible.Description = GettextCatalog.GetString ("set any additional arguments to pass");
 
-			var runInDirectoryLabel = new Label (GettextCatalog.GetString ("Run in directory:"));
-			table.Add (runInDirectoryLabel, 0, 1);
+			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-			workingDir.Accessible.LabelWidget = runInDirectoryLabel;
+			workingDir.Accessible.Label = GettextCatalog.GetString ("run in directory");
+			workingDir.Accessible.Description = GettextCatalog.GetString ("choose the directory to run the project in");
 
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			var environmentVarsLabel = new Label (GettextCatalog.GetString ("Environment Variables"));
-			mainBox.PackStart (environmentVarsLabel);
+			mainBox.PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
 			envVars = new EnvironmentVariableCollectionEditor ();
-			envVars.Accessible.LabelWidget = environmentVarsLabel;
+			envVars.Accessible.Label = GettextCatalog.GetString ("environment variables");
+			envVars.Accessible.Description = GettextCatalog.GetString ("set additional environment variables for the project");
 
 			mainBox.PackStart (envVars, true);
 
