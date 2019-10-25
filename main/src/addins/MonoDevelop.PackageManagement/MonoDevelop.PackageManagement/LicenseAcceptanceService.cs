@@ -51,11 +51,13 @@ namespace MonoDevelop.PackageManagement
 		{
 			var res = new TaskCompletionSource<bool> ();
 			IdeApp.RunWhenIdle (() => {
-				Xwt.Toolkit.NativeEngine.Invoke (delegate {
+				// Disable use of native toolkit since hyperlinks cannot be clicked with the Xamarin.Mac LabelBackend
+				// Also scrollbars are always visible even when they are not needed.
+				//Xwt.Toolkit.NativeEngine.Invoke (delegate {
 					using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
 						res.SetResult (dialog.Run (MessageService.RootWindow));
 					}
-				});
+				//});
 			});
 			return res.Task;
 		}
