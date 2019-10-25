@@ -379,31 +379,6 @@ namespace Gtk
 			return baseCall (evnt);
 		}
 
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
-		{
-			LogEnter ();
-			try {
-				return ForwardEvent (
-					evnt,
-					(v, e) => v.KeyDown (e),
-					base.OnKeyReleaseEvent);
-			} finally {
-				LogExit ();
-			}
-		}
-
-		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
-		{
-			LogEnter ();
-			try {
-				return ForwardEvent (
-					evnt,
-					(v, e) => v.KeyUp (e),
-					base.OnKeyReleaseEvent);
-			} finally {
-				LogExit ();
-			}
-		}
 
 		#region Tracing
 
