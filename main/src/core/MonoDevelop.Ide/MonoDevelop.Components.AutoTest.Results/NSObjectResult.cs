@@ -390,7 +390,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			LoggingService.LogDebug ($"Setting the active configuration as: '{configuration.OriginalId}' '{configuration.DisplayString}'");
-			pinfo.SetValue (ResultObject, configuration);
+			SetProperty (ResultObject, "ActiveConfiguration", configuration);
 
 			var activeConfiguration = GetActiveConfiguration();
 			if (activeConfiguration != null) {
