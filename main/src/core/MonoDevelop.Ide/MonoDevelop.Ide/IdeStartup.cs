@@ -74,8 +74,20 @@ namespace MonoDevelop.Ide
 			return Task.FromResult (Run (options));
 		}
 
+		static void UnsetEnvironmentVariables()
+		{
+			Environment.SetEnvironmentVariable ("MD_DISABLE_STATIC_REGISTRAR", null);
+
+			Environment.SetEnvironmentVariable ("MONO_ENV_OPTIONS", null);
+			Environment.SetEnvironmentVariable ("MONO_GC_PARAMS", null);
+			Environment.SetEnvironmentVariable ("MONO_SLEEP_ABORT_LIMIT", null);
+			Environment.SetEnvironmentVariable ("MONO_THREADS_SUSPEND", null);
+		}
+
 		int Run (MonoDevelopOptions options)
 		{
+			UnsetEnvironmentVariables ();
+
 			CompositionManager.ConfigureUninitializedMefHandling (throwException: true);
 
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
