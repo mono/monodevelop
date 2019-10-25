@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 		public override NSObject ObjectValue {
 			get { return base.ObjectValue; }
 			set {
-				var target = ((MacObjectValueNode)value)?.Target;
+				var target = ((MacObjectValueNode) value)?.Target;
 
 				if (Node != target) {
 					if (target != null)
@@ -172,7 +172,9 @@ namespace MonoDevelop.Debugger
 		public override void ViewDidMoveToSuperview ()
 		{
 			base.ViewDidMoveToSuperview ();
-			UpdateContents ();
+
+			if (Superview != null)
+				UpdateContents ();
 		}
 
 		public override NSBackgroundStyle BackgroundStyle {
