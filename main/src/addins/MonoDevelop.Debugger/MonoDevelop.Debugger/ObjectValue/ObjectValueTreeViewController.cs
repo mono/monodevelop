@@ -431,6 +431,15 @@ namespace MonoDevelop.Debugger
 
 			return true;
 		}
+
+		public void ReEvaluateExpressions ()
+		{
+			if (!AllowWatchExpressions)
+				return;
+
+			foreach (var node in Root.Children)
+				node.Refresh ();
+		}
 		#endregion
 
 		/// <summary>
