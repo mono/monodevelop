@@ -357,6 +357,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return result;
 		}
 
+		public IConfigurationModel GetActiveConfiguration ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveConfiguration");
+			return (IConfigurationModel)pinfo.GetValue (ResultObject);
+		}
+
+
 
 		public override bool SetActiveConfiguration (string configurationName)
 		{
@@ -379,7 +386,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			LoggingService.LogDebug ($"Setting the active configuration as: '{configuration.OriginalId}' '{configuration.DisplayString}'");
 			pinfo.SetValue (ResultObject, configuration);
 
-			var activeConfiguration = (IConfigurationModel)pinfo.GetValue (ResultObject);
+			var activeConfiguration = GetActiveConfiguration();
 			if (activeConfiguration != null) {
 				LoggingService.LogDebug ($"Checking active configuration is actually set: '{configuration.OriginalId}' '{configuration.DisplayString}'");
 				if (configuration.OriginalId == activeConfiguration.OriginalId)
