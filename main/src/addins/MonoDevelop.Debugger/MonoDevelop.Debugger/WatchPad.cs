@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger
 			base.OnUpdateValues ();
 
 			if (UseNewTreeView) {
-				RestoreExpressions ();
+				controller.ReEvaluateExpressions ();
 			} else {
 				tree.Update ();
 			}
