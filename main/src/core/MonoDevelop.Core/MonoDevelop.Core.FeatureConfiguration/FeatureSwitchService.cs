@@ -46,14 +46,9 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			var controller = args.ExtensionObject as IFeatureSwitchController;
 			if (controller != null) {
 				if (args.Change == ExtensionChange.Add && !featureControllers.Contains (controller)) {
-					LoggingService.LogInfo ($"Loaded FeatureSwitchController of type {controller.GetType ()} with feature switches:");
-					foreach (var feature in controller.DescribeFeatures ()) {
-						LoggingService.LogInfo ($"\t{feature.Name} - {feature.Description} ({feature.DefaultValue})");
-					}
-
-					featureControllers = featureControllers.Add (controller);
+					RegisterController (controller);
 				} else {
-					featureControllers = featureControllers.Remove (controller);
+					UnregisterController (controller);
 				}
 			}
 		}
@@ -94,5 +89,29 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 			return null;
 		}
+
+		#region Internal API for unit tests
+
+		internal static IEnumerable<FeatureSwitch> DescribeFeatures ()
+		{
+			return featureControllers?.SelectMany (x => x.DescribeFeatures ());
+		}
+
+		internal static void RegisterController (IFeatureSwitchController controller)
+		{
+			LoggingService.LogDebug ($"Loaded FeatureSwitchController of type {controller.GetType ()} with feature switches:");
+			foreach (var feature in controller.DescribeFeatures ()) {
+				LoggingService.LogDebug ($"\t{feature.Name} - {feature.Description} (default = {feature.DefaultValue}, current = {controller.IsFeatureEnabled (feature.Name)})");
+			}
+
+			featureControllers = featureControllers.Add (controller);
+		}
+
+		internal static void UnregisterController (IFeatureSwitchController controller)
+		{
+			featureControllers = featureControllers.Remove (controller);
+		}
+
+		#endregion
 	}
 }

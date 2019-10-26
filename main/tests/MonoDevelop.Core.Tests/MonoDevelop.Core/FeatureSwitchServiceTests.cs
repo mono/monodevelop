@@ -25,9 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core.FeatureConfiguration;
 using NUnit.Framework;
-using Mono.Addins;
 using UnitTests;
 
 namespace MonoDevelop.Core
@@ -73,6 +74,61 @@ namespace MonoDevelop.Core
 			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature2") ?? true);
 			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature3") ?? true);
 			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature4") ?? true);
+		}
+
+		class TestFeatureSwitchController : IFeatureSwitchController
+		{
+			int count;
+
+			public TestFeatureSwitchController (int count)
+			{
+				this.count = count;
+			}
+
+			public IEnumerable<FeatureSwitch> DescribeFeatures ()
+			{
+				for (int i = 0; i < count; i++) {
+					yield return new FeatureSwitch ($"TestFeature{i + 1}", $"Description for TestFeature{i + 1}", count % 2 == 0);
+				}
+			}
+
+			public bool? IsFeatureEnabled (string featureName)
+			{
+				throw new NotImplementedException ();
+			}
+		}
+
+		[Test]
+		public void CanRegisterAndUnregisterFeatureSwitchControllers ()
+		{
+			for (int i = 1; i <= 10; i++) {
+				var controller = new TestFeatureSwitchController (i);
+				FeatureSwitchService.RegisterController (controller);
+
+				var switches = FeatureSwitchService.DescribeFeatures ()
+					.Where (x => x.Name.StartsWith ("TestFeature", StringComparison.OrdinalIgnoreCase))
+					.ToList ();
+				Assert.That (switches.Count, Is.GreaterThanOrEqualTo (i));
+
+				foreach (var feature in switches) {
+					Assert.That (FeatureSwitchService.IsFeatureEnabled (feature.Name).GetValueOrDefault (), Is.EqualTo (feature.DefaultValue));
+					Assert.That (switches.Count (x => x.Name == feature.Name), Is.EqualTo (1));
+
+					// Check we can bypass the controller with the environment variables
+					if (feature.DefaultValue) {
+						Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", feature.Name);
+						Assert.False (FeatureSwitchService.IsFeatureEnabled (feature.Name).GetValueOrDefault (true));
+					} else {
+						Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", feature.Name);
+						Assert.True (FeatureSwitchService.IsFeatureEnabled (feature.Name).GetValueOrDefault (false));
+					}
+
+					Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", null);
+					Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", null);
+				}
+
+				FeatureSwitchService.UnregisterController (controller);
+			}
 		}
 	}
 }
