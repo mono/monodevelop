@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.DotNetCore
@@ -37,7 +38,9 @@ namespace MonoDevelop.DotNetCore
 
 		public IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{
-			yield return new FeatureSwitch (VBNetNetCoreFeatureSwitchName, "Enable VB.NET support for .NET Core", false);
+			yield return new FeatureSwitch (VBNetNetCoreFeatureSwitchName,
+				GettextCatalog.GetString ("Enable VB.NET support for .NET Core"),
+				false);
 		}
 
 		public bool? IsFeatureEnabled (string featureName)
@@ -47,6 +50,7 @@ namespace MonoDevelop.DotNetCore
 				return false;
 			default:
 				return null;
+			}
 		}
 	}
 }

@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.Ide
@@ -39,9 +40,15 @@ namespace MonoDevelop.Ide
 
 		public IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{
-			yield return new FeatureSwitch (AlwaysUseLegacyEditorFeatureSwitchName, "Enable old editor", false);
-			yield return new FeatureSwitch (BuildOutputFeatureSwitchName, "Enable structured build output UI", false);
-			yield return new FeatureSwitch (RuntimeSelectorFeatureSwitchName, "Enable runtime selection on UI", false);
+			yield return new FeatureSwitch (AlwaysUseLegacyEditorFeatureSwitchName,
+				GettextCatalog.GetString ("Enable old editor"),
+				false);
+			yield return new FeatureSwitch (BuildOutputFeatureSwitchName,
+				GettextCatalog.GetString ("Enable structured build output UI"),
+				false);
+			yield return new FeatureSwitch (RuntimeSelectorFeatureSwitchName,
+				GettextCatalog.GetString ("Enable runtime selection on UI"),
+				false);
 		}
 
 		public bool? IsFeatureEnabled (string featureName)
