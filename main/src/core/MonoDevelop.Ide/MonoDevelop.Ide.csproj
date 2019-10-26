@@ -3079,6 +3079,8 @@
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\DynamicFileManager.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IDynamicDocumentInfoProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MiscellaneousFilesWorkspace.cs" />
     <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />

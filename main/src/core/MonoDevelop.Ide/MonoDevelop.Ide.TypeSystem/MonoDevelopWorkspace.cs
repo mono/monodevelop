@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		DocumentManager documentManager;
 		RootWorkspace workspace;
 		CompositionManager compositionManager;
+		DynamicFileManager dynamicFileManager;
 
 		// Background compiler is used to trigger compilations in the background for the solution and hold onto them
 		// so in case nothing references the solution in current stacks, they're not collected.
@@ -172,6 +173,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (MonoDevelopSolution != null) {
 				Runtime.RunInMainThread (() => desktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged).Ignore ();
 			}
+
+			this.dynamicFileManager = compositionManager.GetExportedValue<DynamicFileManager> ();
 		}
 
 		bool lowMemoryLogged;
@@ -277,6 +280,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			dynamicFileManager.UnloadWorkspace (this);
+
 			base.ClearSolutionData ();
 		}
 
@@ -337,6 +342,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var actualProject = ProjectMap.RemoveProject (projectId);
 			UnloadMonoProject (actualProject);
+			dynamicFileManager.UnloadProject (projectId);
 
 			base.ClearProjectData (projectId);
 		}
@@ -359,6 +365,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
+
+			dynamicFileManager.UnloadWorkspace (this);
 
 			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
@@ -1468,6 +1476,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			foreach (var id in GetProjectIds (project)) {
 				OnProjectRemoved (id);
+				dynamicFileManager.UnloadProject (id);
 			}
 		}
 
@@ -1505,6 +1514,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								try {
 									lock (projectModifyLock) {
 										ProjectInfo newProjectContents = t.Result;
+										newProjectContents = WithDynamicDocuments (project, newProjectContents);
 										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
 										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id).ToArray ()) {
@@ -1526,6 +1536,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogInternalError (ex);
 				}
 			}
+		}
+
+		internal ProjectInfo WithDynamicDocuments (MonoDevelop.Projects.DotNetProject project, ProjectInfo projectInfo)
+		{
+			var contentItems = project.MSBuildProject.EvaluatedItems.Where(item => item.Name == "Content" && item.Include.EndsWith(".razor", StringComparison.OrdinalIgnoreCase)).Select(item => item.Include);
+
+			return dynamicFileManager.UpdateDynamicFiles(projectInfo, contentItems, this);
 		}
 
 		internal override void SetDocumentContext (DocumentId documentId)
