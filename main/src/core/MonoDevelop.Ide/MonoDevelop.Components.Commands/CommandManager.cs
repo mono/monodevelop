@@ -438,12 +438,48 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 
+		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
+		{
+			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+				var expectedKeyView = FindValidKeyView (view);
+				AppKit.NSView next = null;
+				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+					next = expectedKeyView.PreviousValidKeyView;
+				} else {
+					next = expectedKeyView.NextValidKeyView;
+				}
+
+				view.KeyDown (currentEvent);
+				if (next != null && window?.FirstResponder != next) {
+					window.MakeFirstResponder (next);
+				}
+			} else {
+				view.KeyDown (currentEvent);
+			}
+		}
+
 		private void SimulateViewKeyActionBehaviour (AppKit.NSView view, AppKit.NSEvent currentEvent)
 		{
 			if (view is AppKit.NSButton btn && (currentEvent.KeyCode == (ushort)AppKit.NSKey.Space || currentEvent.KeyCode == (ushort)AppKit.NSKey.Return)) {
 				btn.PerformClick (btn);
 			}
 		}
+
+		static AppKit.NSView FindValidKeyView (AppKit.NSView view)
+		{
+			if (view == null)
+				return null;
+
+			if (view.AcceptsFirstResponder ()) {
+				if (view.Superview?.Superview is AppKit.NSControl control && control.CurrentEditor == view) {
+					return FindValidKeyView (control);
+				}
+				return view;
+			}
+
+			return FindValidKeyView (view.Superview);
+		}
+
 #endif
 
 		[GLib.ConnectBefore]
@@ -537,41 +573,6 @@ namespace MonoDevelop.Components.Commands
 			}
 #endif
 			return false;
-		}
-
-		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
-		{
-			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-				var expectedKeyView = FindValidKeyView (view);
-				AppKit.NSView next = null;
-				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
-					next = expectedKeyView.PreviousValidKeyView;
-				} else {
-					next = expectedKeyView.NextValidKeyView;
-				}
-
-				view.KeyDown (currentEvent);
-				if (next != null && window?.FirstResponder != next) {
-					window.MakeFirstResponder (next);
-				}
-			} else {
-				view.KeyDown (currentEvent);
-			}
-		}
-
-		static AppKit.NSView FindValidKeyView (AppKit.NSView view)
-		{
-			if (view == null)
-				return null;
-
-			if (view.AcceptsFirstResponder ()) {
-				if (view.Superview?.Superview is AppKit.NSControl control && control.CurrentEditor == view) {
-					return FindValidKeyView (control);
-				}
-				return view;
-			}
-
-			return FindValidKeyView (view.Superview);
 		}
 
 		bool ProcessKeyEventCore (Gdk.EventKey ev)
