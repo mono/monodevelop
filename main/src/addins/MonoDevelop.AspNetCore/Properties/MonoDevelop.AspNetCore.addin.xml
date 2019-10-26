@@ -1,5 +1,5 @@
-﻿<ExtensionModel>
-	
+<ExtensionModel>
+
 	<Runtime>
 		<Import file = "Templates/MiddlewareClass.xft.xml" />
 		<Import file = "Templates/MiddlewareClassTemplate.cs" />
@@ -27,7 +27,7 @@
 		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
 		<Import file = "Templates/AppSettingsFile.xft.xml" />
 		<Import file = "Templates/AppSettingsFile.json" />
-		
+
 		<Import file = "Resources/AspNetCore.filenesting.json" />
 	</Runtime>
 
@@ -58,12 +58,12 @@
 		              file = "Templates/RazorPage.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreRazorPageWithPageModel"
 		              file = "Templates/RazorPageWithPageModel.xft.xml"/>
-		
+
 		<FileTemplate id   = "AspNetCoreAppSettingsFile"
 		              file = "Templates/AppSettingsFile.xft.xml"/>
-		
+
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/netcore/app">
 		<Category id="aspnet" _name="ASP.NET Core" />
 	</Extension>
@@ -71,11 +71,11 @@
 	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="AspNetCore" class="MonoDevelop.AspNetCore.AspNetCoreExecutionHandler" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
 		<Class class="MonoDevelop.AspNetCore.AspNetCoreRunConfigurationEditor" runConfigurationType="MonoDevelop.AspNetCore.AspNetCoreRunConfiguration" />
 	</Extension>
-	
+
 	<ConditionType id="AspNetCoreSdkInstalled" type="MonoDevelop.AspNetCore.AspNetCoreSdkInstalledCondition" />
 
 	<Extension path="/MonoDevelop/Ide/Templates">
@@ -863,18 +863,36 @@
 		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNetCore.Templating.AspNetCoreFileTemplateCondition" />
 	</Extension>
 	
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder id = "AspNetCoreScaffolder" class = "MonoDevelop.AspNetCore.Commands.ScaffoldNodeExtension"/>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		
+		<ItemSet id = "Add" _label = "_Add" autohide="True">
+
+			<!--		<Condition id="ItemType" value="Project">-->
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.AspNetCore.Commands.AspNetCoreCommands.Scaffold"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				/>
+			<!--		</Condition>-->
+		</ItemSet>
+	</Extension>
 	<!-- Publish commands -->
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
-		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" 
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder"
 				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderCommandHandler"
 				_label = "Publish to Folder..." />
-		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" 
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles"
 				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfilesCommandHandler"
 				type="array"
 				_label = "Publish" />
+		<Command id = "MonoDevelop.AspNetCore.Commands.AspNetCoreCommands.Scaffold"
+				
+				_label = "New Scaffolded Item...." />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
 		<Condition id="ItemType" value="Project">
 			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
