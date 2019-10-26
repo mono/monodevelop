@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 
@@ -68,6 +69,12 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			}
 
 			return null;
+		}
+
+		public static IEnumerable<FeatureSwitch> DescribeFeatures ()
+		{
+			return AddinManager.GetExtensionObjects<IFeatureSwitchController> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks")
+				.SelectMany (x => x.DescribeFeatures ());
 		}
 	}
 }

@@ -1,10 +1,10 @@
 //
-// IFeatureSwitchEnabler.cs
+// FeatureSwitch.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft Corp. (http://www.microsoft.com)
+// Copyright (c) 2019 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
+using System;
 
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	public interface IFeatureSwitchController
+	public class FeatureSwitch
 	{
-		bool? IsFeatureEnabled (string featureName);
+		public FeatureSwitch (string name, string description, bool defaultValue)
+		{
+			Name = name;
+			Description = description;
+			DefaultValue = defaultValue;
+		}
 
-		IEnumerable<FeatureSwitch> DescribeFeatures ();
+		public string Name { get; }
+
+		public string Description { get; }
+
+		public bool DefaultValue { get; }
 	}
 }
