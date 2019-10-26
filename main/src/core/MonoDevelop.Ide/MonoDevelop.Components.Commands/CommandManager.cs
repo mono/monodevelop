@@ -437,6 +437,13 @@ namespace MonoDevelop.Components.Commands
 			}
 			return false;
 		}
+
+		private void SimulateViewKeyActionBehaviour (AppKit.NSView view, AppKit.NSEvent currentEvent)
+		{
+			if (view is AppKit.NSButton btn && (currentEvent.KeyCode == (ushort)AppKit.NSKey.Space || currentEvent.KeyCode == (ushort)AppKit.NSKey.Return)) {
+				btn.PerformClick (btn);
+			}
+		}
 #endif
 
 		[GLib.ConnectBefore]
@@ -475,7 +482,7 @@ namespace MonoDevelop.Components.Commands
 				view != window.ContentView) {
 
 				view.KeyUp (currentEvent);
-
+				SimulateViewKeyActionBehaviour (view, currentEvent);
 				retVal = true;
 			}
 
