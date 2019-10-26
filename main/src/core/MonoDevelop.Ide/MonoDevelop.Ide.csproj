@@ -10,8 +10,8 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "/>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
 
   <ItemGroup>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -3081,6 +3081,9 @@
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\DynamicFileInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\DynamicFileManager.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IDynamicFileInfoProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MiscellaneousFilesWorkspace.cs" />
     <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />

@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		DocumentManager documentManager;
 		RootWorkspace workspace;
 		CompositionManager compositionManager;
+		DynamicFileManager dynamicFileManager;
 
 		// Background compiler is used to trigger compilations in the background for the solution and hold onto them
 		// so in case nothing references the solution in current stacks, they're not collected.
@@ -114,6 +115,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.MonoDevelopSolution = solution;
 			this.serviceProvider = typeSystemService.ServiceProvider ?? Runtime.ServiceProvider;
 			this.typeSystemService = typeSystemService;
+			this.dynamicFileManager = new DynamicFileManager(this);
 			this.Id = WorkspaceId.Next ();
 
 			Projections = new ProjectionData ();
@@ -1505,6 +1507,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								try {
 									lock (projectModifyLock) {
 										ProjectInfo newProjectContents = t.Result;
+										var dynamicFileInfos = CreateDynamicFileInfos(project);
 										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
 										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id).ToArray ()) {
@@ -1526,6 +1529,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogInternalError (ex);
 				}
 			}
+		}
+
+		internal IEnumerable<DocumentInfo> CreateDynamicFileInfos(MonoDevelop.Projects.DotNetProject project)
+		{
+			var contentItems = project.MSBuildProject.EvaluatedItems.Where(item => item.Name == "Content" && item.Include.EndsWith(".razor", StringComparison.OrdinalIgnoreCase));
 		}
 
 		internal override void SetDocumentContext (DocumentId documentId)
