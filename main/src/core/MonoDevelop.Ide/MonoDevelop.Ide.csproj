@@ -4348,6 +4348,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService_WorkspaceRequestRegistration.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestToolbar.cs" />
+    <Compile Include="MonoDevelop.Ide\IdeFeatureSwitchController.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />

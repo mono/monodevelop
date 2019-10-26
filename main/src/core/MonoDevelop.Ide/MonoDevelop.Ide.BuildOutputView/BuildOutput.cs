@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutput : IDisposable
 	{
-		public static bool IsFeatureEnabled => FeatureSwitchService.IsFeatureEnabled ("IdeBuildOutputView") ?? true;
+		public static bool IsFeatureEnabled => FeatureSwitchService.IsFeatureEnabled (IdeFeatureSwitchController.BuildOutputFeatureSwitchName) ?? true;
 
 		BuildOutputProgressMonitor progressMonitor;
 		ImmutableList<BuildOutputProcessor> projects = ImmutableList<BuildOutputProcessor>.Empty;

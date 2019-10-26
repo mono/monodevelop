@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Gui
 					configs.CurrentItem = item.Item;
 			}
 
-			var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
+			var enabled = FeatureSwitchService.IsFeatureEnabled (IdeFeatureSwitchController.RuntimeSelectorFeatureSwitchName);
 
 			if (enabled.GetValueOrDefault ()) {
 				foreach (TargetRuntime tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {

@@ -879,7 +879,7 @@ namespace MonoDevelop.Ide
 			// Restore local configuration data
 			
 			try {
-				var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
+				var enabled = FeatureSwitchService.IsFeatureEnabled (IdeFeatureSwitchController.RuntimeSelectorFeatureSwitchName);
 
 				if (enabled.GetValueOrDefault ()) {
 					WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");

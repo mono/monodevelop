@@ -508,7 +508,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
+			var enabled = FeatureSwitchService.IsFeatureEnabled (IdeFeatureSwitchController.RuntimeSelectorFeatureSwitchName);
 
 			if (enabled.GetValueOrDefault () && IdeApp.Workspace.IsOpen && Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () > 1) {
 				foreach (var tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
