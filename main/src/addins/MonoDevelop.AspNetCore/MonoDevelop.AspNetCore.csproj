@@ -49,6 +49,7 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreExecutionTarget.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreTargetFrameworkExecutionTarget.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreProjectTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\ScaffoldCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
