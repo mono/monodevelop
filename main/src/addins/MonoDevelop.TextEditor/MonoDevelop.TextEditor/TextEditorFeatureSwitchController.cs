@@ -1,5 +1,5 @@
 //
-// IdeFeatureSwitchController.cs
+// TextEditorFeatureSwitchController.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
@@ -29,29 +29,24 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.TextEditor
 {
 	[Extension (typeof (IFeatureSwitchController))]
-	class IdeFeatureSwitchController : IFeatureSwitchController
+	class TextEditorFeatureSwitchController : IFeatureSwitchController
 	{
-		internal const string BuildOutputFeatureSwitchName = "IdeBuildOutputView";
-		internal const string RuntimeSelectorFeatureSwitchName = "RUNTIME_SELECTOR";
+		internal const string AlwaysUseLegacyEditorFeatureSwitchName = "AlwaysUseLegacyEditor";
 
 		public IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{
-			yield return new FeatureSwitch (BuildOutputFeatureSwitchName,
-				GettextCatalog.GetString ("Enable structured build output UI"),
-				false);
-			yield return new FeatureSwitch (RuntimeSelectorFeatureSwitchName,
-				GettextCatalog.GetString ("Enable runtime selection on UI"),
+			yield return new FeatureSwitch (AlwaysUseLegacyEditorFeatureSwitchName,
+				GettextCatalog.GetString ("Enable old editor"),
 				false);
 		}
 
 		public bool? IsFeatureEnabled (string featureName)
 		{
 			switch (featureName) {
-			case BuildOutputFeatureSwitchName:
-			case RuntimeSelectorFeatureSwitchName:
+			case AlwaysUseLegacyEditorFeatureSwitchName:
 				return false;
 			default:
 				return null;
