@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Mono.Addins;
 
@@ -33,6 +34,30 @@ namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public static class FeatureSwitchService
 	{
+		static ImmutableList<IFeatureSwitchController> featureControllers = ImmutableList<IFeatureSwitchController>.Empty;
+
+		static FeatureSwitchService ()
+		{
+			AddinManager.AddExtensionNodeHandler (typeof (IFeatureSwitchController), HandleFeatureSwitchExtension);
+		}
+
+		static void HandleFeatureSwitchExtension (object sender, ExtensionNodeEventArgs args)
+		{
+			var controller = args.ExtensionObject as IFeatureSwitchController;
+			if (controller != null) {
+				if (args.Change == ExtensionChange.Add && !featureControllers.Contains (controller)) {
+					LoggingService.LogInfo ($"Loaded FeatureSwitchController of type {controller.GetType ()} with feature switches:");
+					foreach (var feature in controller.DescribeFeatures ()) {
+						LoggingService.LogInfo ($"\t{feature.Name} - {feature.Description} ({feature.DefaultValue})");
+					}
+
+					featureControllers = featureControllers.Add (controller);
+				} else {
+					featureControllers = featureControllers.Remove (controller);
+				}
+			}
+		}
+
 		public static bool? IsFeatureEnabled (string featureName)
 		{
 			if (string.IsNullOrEmpty (featureName)) {
@@ -50,10 +75,9 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			}
 
 			// Fallback to ask extensions, enabling by default
-			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchController> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks");
-			if (extensions != null) {
+			if (featureControllers != null) {
 				bool explicitlyEnabled = false, explicitlyDisabled = false;
-				foreach (var ext in extensions) {
+				foreach (var ext in featureControllers) {
 					switch (ext.IsFeatureEnabled (featureName)) {
 					case true:
 						explicitlyEnabled = true;
@@ -69,12 +93,6 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			}
 
 			return null;
-		}
-
-		public static IEnumerable<FeatureSwitch> DescribeFeatures ()
-		{
-			return AddinManager.GetExtensionObjects<IFeatureSwitchController> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks")
-				.SelectMany (x => x.DescribeFeatures ());
 		}
 	}
 }
