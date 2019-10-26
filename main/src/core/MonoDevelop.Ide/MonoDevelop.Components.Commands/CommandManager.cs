@@ -524,29 +524,33 @@ namespace MonoDevelop.Components.Commands
 				firstResponder is AppKit.NSView view &&
 				view != window.ContentView) {
 
-				if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-
-					var expectedKeyView = FindValidKeyView (view);
-					AppKit.NSView next = null;
-					if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
-						next = expectedKeyView.PreviousValidKeyView;
-					} else {
-						next = expectedKeyView.NextValidKeyView;
-					}
-
-					view.KeyDown (currentEvent);
-					if (next != null && window?.FirstResponder != next) {
-						window.MakeFirstResponder (next);
-					}
-				} else {
-					view.KeyDown (currentEvent);
-				}
+				SimulateKeyDownInView (view, currentEvent, window);
+				
 				return true;
 			}
 #endif
 			return false;
 		}
 
+		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
+		{
+			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+				var expectedKeyView = FindValidKeyView (view);
+				AppKit.NSView next = null;
+				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+					next = expectedKeyView.PreviousValidKeyView;
+				} else {
+					next = expectedKeyView.NextValidKeyView;
+				}
+
+				view.KeyDown (currentEvent);
+				if (next != null && window?.FirstResponder != next) {
+					window.MakeFirstResponder (next);
+				}
+			} else {
+				view.KeyDown (currentEvent);
+			}
+		}
 
 		static AppKit.NSView FindValidKeyView (AppKit.NSView view)
 		{
