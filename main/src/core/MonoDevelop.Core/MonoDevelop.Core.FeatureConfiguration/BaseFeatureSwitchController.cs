@@ -1,10 +1,10 @@
 //
-// IdeFeatureSwitchController.cs
+// BaseFeatureSwitchController.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft, Corp. (http://microsoft.com)
+// Copyright (c) 2019 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+using System;
 using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Core.FeatureConfiguration;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Core.FeatureConfiguration
 {
-	[Extension (typeof (IFeatureSwitchController))]
-	class IdeFeatureSwitchController : BaseFeatureSwitchController
+	public abstract class BaseFeatureSwitchController : IFeatureSwitchController
 	{
-		internal const string BuildOutputFeatureSwitchName = "IdeBuildOutputView";
-		internal const string RuntimeSelectorFeatureSwitchName = "RUNTIME_SELECTOR";
+		readonly Dictionary<string, FeatureSwitch> featureSwitches = new Dictionary<string, FeatureSwitch> ();
 
-		public IdeFeatureSwitchController ()
+		protected void AddFeatureSwitch (string name, string description, bool defaultValue)
 		{
-			AddFeatureSwitch (BuildOutputFeatureSwitchName,
-				GettextCatalog.GetString ("Enable structured build output UI"),
-				false);
-			AddFeatureSwitch (RuntimeSelectorFeatureSwitchName,
-				GettextCatalog.GetString ("Enable runtime selection on UI"),
-				false);
+			featureSwitches [name] = new FeatureSwitch (name, description, defaultValue);
+		}
+
+		public virtual IEnumerable<FeatureSwitch> DescribeFeatures () => featureSwitches.Values;
+
+		public virtual bool? IsFeatureEnabled (string featureName)
+		{
+			if (featureSwitches.TryGetValue (featureName, out var featureSwitch)) {
+				return featureSwitch.DefaultValue;
+			}
+
+			return null;
 		}
 	}
 }

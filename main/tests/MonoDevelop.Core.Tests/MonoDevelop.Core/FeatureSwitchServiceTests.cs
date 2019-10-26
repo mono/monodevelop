@@ -76,25 +76,13 @@ namespace MonoDevelop.Core
 			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature4") ?? true);
 		}
 
-		class TestFeatureSwitchController : IFeatureSwitchController
+		class TestFeatureSwitchController : BaseFeatureSwitchController
 		{
-			int count;
-
 			public TestFeatureSwitchController (int count)
 			{
-				this.count = count;
-			}
-
-			public IEnumerable<FeatureSwitch> DescribeFeatures ()
-			{
 				for (int i = 0; i < count; i++) {
-					yield return new FeatureSwitch ($"TestFeature{i + 1}", $"Description for TestFeature{i + 1}", count % 2 == 0);
+					AddFeatureSwitch ($"TestFeature{i + 1}", $"Description for TestFeature{i + 1}", count % 2 == 0);
 				}
-			}
-
-			public bool? IsFeatureEnabled (string featureName)
-			{
-				throw new NotImplementedException ();
 			}
 		}
 

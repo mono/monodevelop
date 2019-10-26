@@ -746,6 +746,7 @@
     <Compile Include="MonoDevelop.Core\DedicatedThreadScheduler.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.Extensions.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitch.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\BaseFeatureSwitchController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
@@ -32,25 +31,15 @@ using MonoDevelop.Core.FeatureConfiguration;
 namespace MonoDevelop.TextEditor
 {
 	[Extension (typeof (IFeatureSwitchController))]
-	class TextEditorFeatureSwitchController : IFeatureSwitchController
+	class TextEditorFeatureSwitchController : BaseFeatureSwitchController
 	{
 		internal const string AlwaysUseLegacyEditorFeatureSwitchName = "AlwaysUseLegacyEditor";
 
-		public IEnumerable<FeatureSwitch> DescribeFeatures ()
+		public TextEditorFeatureSwitchController ()
 		{
-			yield return new FeatureSwitch (AlwaysUseLegacyEditorFeatureSwitchName,
+			AddFeatureSwitch (AlwaysUseLegacyEditorFeatureSwitchName,
 				GettextCatalog.GetString ("Enable old editor"),
 				false);
-		}
-
-		public bool? IsFeatureEnabled (string featureName)
-		{
-			switch (featureName) {
-			case AlwaysUseLegacyEditorFeatureSwitchName:
-				return false;
-			default:
-				return null;
-			}
 		}
 	}
 }

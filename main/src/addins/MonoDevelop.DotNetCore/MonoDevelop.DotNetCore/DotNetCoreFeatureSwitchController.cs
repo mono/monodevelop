@@ -32,25 +32,15 @@ using MonoDevelop.Core.FeatureConfiguration;
 namespace MonoDevelop.DotNetCore
 {
 	[Extension (typeof (IFeatureSwitchController))]
-	class DotNetCoreFeatureSwitchController : IFeatureSwitchController
+	class DotNetCoreFeatureSwitchController : BaseFeatureSwitchController
 	{
 		const string VBNetDotnetCoreTemplatesFeatureSwitchName = "VBNetDotnetCoreTemplates";
 
-		public IEnumerable<FeatureSwitch> DescribeFeatures ()
+		public DotNetCoreFeatureSwitchController ()
 		{
-			yield return new FeatureSwitch (VBNetDotnetCoreTemplatesFeatureSwitchName,
+			AddFeatureSwitch (VBNetDotnetCoreTemplatesFeatureSwitchName,
 				GettextCatalog.GetString ("Enable VB.NET support for .NET Core"),
 				false);
-		}
-
-		public bool? IsFeatureEnabled (string featureName)
-		{
-			switch (featureName) {
-			case VBNetDotnetCoreTemplatesFeatureSwitchName:
-				return false;
-			default:
-				return null;
-			}
 		}
 	}
 }
