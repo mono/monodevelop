@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -46,7 +47,7 @@ namespace MonoDevelop.AspNetCore
 		readonly object fileLocker = new object ();
 		public IDictionary<string, JToken> GlobalSettings { get; private set; }
 		internal JObject ProfilesObject { get; private set; }
-		public ConcurrentDictionary<string, LaunchProfileData> Profiles { get; set; }
+		public ConcurrentDictionary<string, LaunchProfileData> Profiles { get; private set; }
 		internal string LaunchSettingsJsonPath => Path.Combine (baseDirectory, "Properties", "launchSettings.json");
 		const string DefaultGlobalSettings = @"{
     						""windowsAuthentication"": false,
@@ -58,12 +59,11 @@ namespace MonoDevelop.AspNetCore
 
 		public LaunchProfileData DefaultProfile {
 			get {
-				if (!Profiles.ContainsKey (defaultNamespace)) {
-					var defaultProfile = CreateDefaultProfile ();
+				if (!Profiles.TryGetValue (defaultNamespace, out var defaultProfile)) {
+					defaultProfile = CreateDefaultProfile ();
 					Profiles [defaultNamespace] = defaultProfile;
-					return defaultProfile;
 				}
-				return Profiles [defaultNamespace];
+				return defaultProfile;
 			}
 		}
 
@@ -242,9 +242,7 @@ namespace MonoDevelop.AspNetCore
 			if (Profiles == null)
 				Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 
-			var newProfile = CreateProfile (name);
-			Profiles [name] = newProfile;
-			return newProfile;
+			return Profiles [name] = CreateProfile (name);
 		}
 
 		public LaunchProfileData CreateDefaultProfile () => CreateProfile (defaultNamespace);
@@ -285,10 +283,8 @@ namespace MonoDevelop.AspNetCore
 		void CreateAndAddDefaultLaunchSettings ()
 		{
 			GlobalSettings.Add ("iisSettings", JToken.Parse (DefaultGlobalSettings));
-			var profiles = new Dictionary<string, LaunchProfileData> {
-				{ defaultNamespace, CreateDefaultProfile () }
-			};
-			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (profiles);
+			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
+			Profiles.TryAdd (defaultNamespace, CreateDefaultProfile ());
 			SaveLaunchSettings ();
 		}
 
@@ -320,7 +316,11 @@ namespace MonoDevelop.AspNetCore
 				} else if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
 					var index = project.RunConfigurations.IndexOf (runConfig);
 					aspNetCoreRunConfiguration.UpdateProfile (profile.Value);
-					project.RunConfigurations [index] = runConfig;
+					if (index >= 0) {
+						project.RunConfigurations [index] = runConfig;
+					}
+
+					Debug.Assert (index >= 0, "Didn't find expected run configuration");
 				}
 			}
 
@@ -333,7 +333,7 @@ namespace MonoDevelop.AspNetCore
 					key = project.DefaultNamespace;
 				}
 
-				if (Profiles.TryGetValue (key, out var _))
+				if (Profiles.TryGetValue (key, out _))
 					continue;
 
 				itemsRemoved.Add (config);
