@@ -108,8 +108,7 @@ namespace MonoDevelop.Ide.TypeSystem
                         dynamicFileProvider.RemoveDynamicDocumentInfo(
                             projectInfo.Id,
                             projectInfo.FilePath,
-                            document,
-                            cancellationToken: default);
+                            document);
                     }
                 }
 
@@ -122,8 +121,7 @@ namespace MonoDevelop.Ide.TypeSystem
                         var dynamicFileInfo = dynamicFileProvider.GetDynamicDocumentInfo(
                             projectInfo.Id,
                             projectInfo.FilePath,
-                            document,
-                            cancellationToken: default);
+                            document);
 
                         if (dynamicFileInfo != null)
                         {
