@@ -50,11 +50,12 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreTargetFrameworkExecutionTarget.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreProjectTemplateWizard.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\ScaffoldCommandHandler.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Commands\AndroidSDKManagerAboutDialog.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
+    <EmbeddedResource Include="Resources\aspnet-wizard-page.png" />
+    <EmbeddedResource Include="Resources\file-web-32.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\MiddlewareClass.xft.xml">
