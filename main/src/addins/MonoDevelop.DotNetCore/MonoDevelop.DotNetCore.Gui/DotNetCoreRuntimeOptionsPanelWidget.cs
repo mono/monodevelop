@@ -35,7 +35,7 @@ namespace MonoDevelop.DotNetCore.Gui
 {
 	partial class DotNetCoreRuntimeOptionsPanelWidget
 	{
-		readonly List<TargetFramework> installedFrameworks;
+		readonly List<TargetFramework> knownFrameworks;
 		readonly DotNetProject project;
 		readonly DotNetCoreProjectExtension dotNetCoreProject;
 
@@ -56,8 +56,8 @@ namespace MonoDevelop.DotNetCore.Gui
 			} else {
 				dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
 				var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (project);
-				installedFrameworks = supportedTargetFrameworks.GetFrameworks ().ToList ();
-				var knownFrameworks = supportedTargetFrameworks.GetKnownFrameworks ()
+				var installedFrameworks = supportedTargetFrameworks.GetFrameworks ().ToList ();
+				knownFrameworks = supportedTargetFrameworks.GetKnownFrameworks ()
 					.Concat (installedFrameworks)
 					.Distinct ()
 					.ToList ();
@@ -96,10 +96,10 @@ namespace MonoDevelop.DotNetCore.Gui
 			if (project == null || runtimeVersionCombo.Active == -1 || project.HasMultipleTargetFrameworks)
 				return;
 
-			TargetFramework framework = installedFrameworks [runtimeVersionCombo.Active];
+			TargetFramework framework = knownFrameworks [runtimeVersionCombo.Active];
 
 			if (framework != project.TargetFramework) {
-				project.TargetFramework = installedFrameworks [runtimeVersionCombo.Active];
+				project.TargetFramework = knownFrameworks [runtimeVersionCombo.Active];
 			}
 		}
 	}
