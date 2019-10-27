@@ -80,6 +80,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		Type Type { get; }
 		string DisplayName { get; }
 
+		string Value { get; set; }
+
 		public ScaffolderField (string commandLineName, string displayName, Type type)
 		{
 			CommandLineName = commandLineName;

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using MonoDevelop.AspNetCore.Scaffolding;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -16,9 +14,9 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.AspNetCore.Commands
 {
 	enum AspNetCoreCommands
-	{ 
+	{
 		Scaffold
-    }
+	}
 
 	class ScaffoldNodeExtension : NodeBuilderExtension
 	{
@@ -49,7 +47,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		{
 			var w = new ScaffolderWizard ("Add New Scaffolded Item", new ScaffolderTemplateSelect ());
 			//Xwt.Toolkit.NativeEngine.Invoke (() => {
-				var res = w.RunWizard ();
+			var res = w.RunWizard ();
 			//});
 
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
@@ -95,14 +93,6 @@ namespace MonoDevelop.AspNetCore.Commands
 
 			info.Enabled = info.Visible = IsAspNetCoreProject (project);
 		}
-		
-		//[CommandUpdateHandler (AspNetCoreCommands.Scaffold)]
-		//protected override void Update (CommandInfo info)
-		//{
-		//	var project = CurrentNode.GetParentDataItem (typeof (DotNetProject), true) as DotNetProject;
-
-		//	info.Enabled = info.Visible = IsAspNetCoreProject (project);
-		//}
 
 		bool IsAspNetCoreProject (Project project)
 		{
