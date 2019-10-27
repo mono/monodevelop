@@ -3083,7 +3083,7 @@
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\DynamicFileInfo.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\DynamicFileManager.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\IDynamicFileInfoProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IDynamicDocumentInfoProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MiscellaneousFilesWorkspace.cs" />
     <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />

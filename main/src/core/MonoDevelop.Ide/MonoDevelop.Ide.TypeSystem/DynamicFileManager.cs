@@ -2,49 +2,97 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Host.Mef;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+    [Export]
     class DynamicFileManager
     {
-        private readonly MonoDevelopWorkspace monoDevelopWorkspace;
-        private readonly ConcurrentDictionary<string, ProjectDynamicFileContext> projectContexts = new ConcurrentDictionary<string, ProjectDynamicFileContext>();
+        readonly ConcurrentDictionary<ProjectId, ProjectDynamicFileContext> projectContexts = new ConcurrentDictionary<ProjectId, ProjectDynamicFileContext>();
 
-        internal ILookup<string, Lazy<IDynamicFileInfoProvider>> DynamicFileProvidersByExtension { get; set; }
+        internal ILookup<string, Lazy<IDynamicDocumentInfoProvider>> DynamicFileProvidersByExtension { get; set; }
 
-        public DynamicFileManager(MonoDevelopWorkspace monoDevelopWorkspace)
+        [ImportMany]
+        private IEnumerable<Lazy<IDynamicDocumentInfoProvider, FileExtensionsMetadata>> DynamicFileProviders
         {
-            this.monoDevelopWorkspace = monoDevelopWorkspace;
+            set
+            {
+                DynamicFileProvidersByExtension = value
+                    .Select(lazy => (lazyProvider: Wrap(lazy), extensions: lazy.Metadata.Extensions))
+                    .SelectMany(t => t.extensions.Select(extension => (t.lazyProvider, extension: "." + extension)))
+                    .ToLookup(t => t.extension, t => t.lazyProvider, StringComparer.OrdinalIgnoreCase);
+            }
         }
 
-        IEnumerable<IDynamicFileInfoProvider> GetDynamicFileProviders(string filePath)
+        public ProjectInfo UpdateDynamicFiles(ProjectInfo projectInfo, IEnumerable<string> dynamicSourceFiles, Workspace workspace)
+        {
+            var projectContext = projectContexts.GetOrAdd(projectInfo.Id, _ => new ProjectDynamicFileContext(this, workspace));
+            return projectContext.UpdateDynamicFiles(projectInfo, dynamicSourceFiles);
+        }
+
+        public void UnloadWorkspace(Workspace workspace)
+        {
+            foreach (var projectContextEntry in projectContexts.ToList())
+            {
+                if (projectContextEntry.Value.Workspace == workspace)
+                {
+                    UnloadProject(projectContextEntry.Key);
+                }
+            }
+        }
+
+        public void UnloadProject(ProjectId projectId)
+        {
+            projectContexts.TryRemove(projectId, out _);
+        }
+
+        IEnumerable<IDynamicDocumentInfoProvider> GetDynamicFileProviders(string filePath)
         {
             return DynamicFileProvidersByExtension[Path.GetExtension(filePath) ?? string.Empty]
                 .Select(lazy => lazy.Value);
         }
 
-        public Task<ProjectInfo> UpdateDynamicFilesAsync(ProjectInfo projectInfo, IEnumerable<string> dynamicSourceFiles)
+        private Lazy<IDynamicDocumentInfoProvider> Wrap(Lazy<IDynamicDocumentInfoProvider> lazyProvider)
         {
-            var projectContext = projectContexts.GetOrAdd(projectInfo.FilePath, _ => new ProjectDynamicFileContext(this));
-            return projectContext.UpdateDynamicFilesAsync(projectInfo, dynamicSourceFiles);
+            return new Lazy<IDynamicDocumentInfoProvider>(() =>
+            {
+                var provider = lazyProvider.Value;
+                provider.Updated += OnDynamicDocumentUpdated;
+                return provider;
+            });
+        }
+
+        private void OnDynamicDocumentUpdated(DocumentInfo document)
+        {
+            if (projectContexts.TryGetValue(document.Id.ProjectId, out var projectContext))
+            {
+                if (projectContext.Workspace.IsDocumentOpen(document.Id))
+                {
+                    return;
+                }
+
+                projectContext.Workspace.OnDocumentReloaded(document);
+            }
         }
 
         private class ProjectDynamicFileContext
         {
             private ImmutableHashSet<string> dynamicSourceFiles = ImmutableHashSet<string>.Empty;
             private DynamicFileManager dynamicFileManager;
+            public Workspace Workspace { get; }
 
-            public ProjectDynamicFileContext(DynamicFileManager dynamicFileManager)
+            public ProjectDynamicFileContext(DynamicFileManager dynamicFileManager, Workspace workspace)
             {
                 this.dynamicFileManager = dynamicFileManager;
+                this.Workspace = workspace;
             }
 
-            public async Task<ProjectInfo> UpdateDynamicFilesAsync(ProjectInfo projectInfo, IEnumerable<string> currentDynamicSourceFiles)
+            public ProjectInfo UpdateDynamicFiles(ProjectInfo projectInfo, IEnumerable<string> currentDynamicSourceFiles)
             {
                 var oldFiles = dynamicSourceFiles;
                 var newFiles = currentDynamicSourceFiles.ToImmutableHashSet();
@@ -57,7 +105,7 @@ namespace MonoDevelop.Ide.TypeSystem
                 {
                     foreach (var dynamicFileProvider in dynamicFileManager.GetDynamicFileProviders(document))
                     {
-                        await dynamicFileProvider.RemoveDynamicFileInfoAsync(
+                        dynamicFileProvider.RemoveDynamicDocumentInfo(
                             projectInfo.Id,
                             projectInfo.FilePath,
                             document,
@@ -71,23 +119,16 @@ namespace MonoDevelop.Ide.TypeSystem
                 {
                     foreach (var dynamicFileProvider in dynamicFileManager.GetDynamicFileProviders(document))
                     {
-                        var dynamicFileInfo = await dynamicFileProvider.GetDynamicFileInfoAsync(
+                        var dynamicFileInfo = dynamicFileProvider.GetDynamicDocumentInfo(
                             projectInfo.Id,
                             projectInfo.FilePath,
                             document,
                             cancellationToken: default);
 
-                        var docId = DocumentId.CreateNewId(projectInfo.Id, debugName: dynamicFileInfo.FilePath);
-
-                        documents.Add(DocumentInfo.Create(
-                                docId,
-                                name: Path.GetFileName(document),
-                                folders: null,
-                                sourceCodeKind: dynamicFileInfo.SourceCodeKind,
-                                loader: dynamicFileInfo.TextLoader,
-                                filePath: dynamicFileInfo.FilePath,
-                                isGenerated: true,
-                                documentServiceProvider: dynamicFileInfo.DocumentServiceProvider);
+                        if (dynamicFileInfo != null)
+                        {
+                            documents.Add(dynamicFileInfo);
+                        }
                     }
                 }
 

@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.MonoDevelopSolution = solution;
 			this.serviceProvider = typeSystemService.ServiceProvider ?? Runtime.ServiceProvider;
 			this.typeSystemService = typeSystemService;
-			this.dynamicFileManager = new DynamicFileManager(this);
+			this.dynamicFileManager = compositionManager.GetExportedValue<DynamicFileManager> ();
 			this.Id = WorkspaceId.Next ();
 
 			Projections = new ProjectionData ();
@@ -279,6 +279,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			dynamicFileManager.UnloadWorkspace (this);
+
 			base.ClearSolutionData ();
 		}
 
@@ -339,6 +341,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var actualProject = ProjectMap.RemoveProject (projectId);
 			UnloadMonoProject (actualProject);
+			dynamicFileManager.UnloadProject (projectId);
 
 			base.ClearProjectData (projectId);
 		}
@@ -361,6 +364,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
+
+			dynamicFileManager.UnloadWorkspace (this);
 
 			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
@@ -1470,6 +1475,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			foreach (var id in GetProjectIds (project)) {
 				OnProjectRemoved (id);
+				dynamicFileManager.UnloadProject (id);
 			}
 		}
 
@@ -1507,7 +1513,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								try {
 									lock (projectModifyLock) {
 										ProjectInfo newProjectContents = t.Result;
-										var dynamicFileInfos = CreateDynamicFileInfos(project);
+										newProjectContents = WithDynamicDocuments (project, newProjectContents);
 										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
 										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id).ToArray ()) {
@@ -1531,9 +1537,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal IEnumerable<DocumentInfo> CreateDynamicFileInfos(MonoDevelop.Projects.DotNetProject project)
+		internal ProjectInfo WithDynamicDocuments (MonoDevelop.Projects.DotNetProject project, ProjectInfo projectInfo)
 		{
-			var contentItems = project.MSBuildProject.EvaluatedItems.Where(item => item.Name == "Content" && item.Include.EndsWith(".razor", StringComparison.OrdinalIgnoreCase));
+			var contentItems = project.MSBuildProject.EvaluatedItems.Where(item => item.Name == "Content" && item.Include.EndsWith(".razor", StringComparison.OrdinalIgnoreCase)).Select(item => item.Include);
+
+			return dynamicFileManager.UpdateDynamicFiles(projectInfo, contentItems, this);
 		}
 
 		internal override void SetDocumentContext (DocumentId documentId)
