@@ -11,6 +11,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
+using Scaffolder;
+using Xamarin.Installer.AndroidSDK.Manager;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -47,14 +49,23 @@ namespace MonoDevelop.AspNetCore.Commands
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
 		public async void Scaffold ()
 		{
+			var w = new ScaffolderWizard ("hello", new ScaffolderTemplateSelect ());
+			var res = w.RunWizard ();
+
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (project == null)
 				return;
 
 			var dotnet = DotNetCoreRuntime.FileName;
+			var argBuilder = new ProcessArgumentBuilder ();
+			argBuilder.Add ("aspnet-codegenerator");
+			argBuilder.Add ("--project");
+			argBuilder.AddQuoted (project.FileName);
+			argBuilder.Add ("controller");
+			argBuilder.Add ("-name");
+			argBuilder.Add ("Geno");
 
-			var args = $"aspnet-codegenerator --project {project.FileName} controller -name Generated";
-
+			var args = argBuilder.ToString ();
 			var folder = CurrentNode.GetParentDataItem (typeof (ProjectFolder), true) as ProjectFolder;
 			string path = folder?.Path ?? project.BaseDirectory;
 
