@@ -37,9 +37,9 @@ using Xwt.Drawing;
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderArgs
-	{ 
-    
-    }
+	{
+
+	}
 
 	abstract class ScaffolderWizardPageBase : WizardDialogPageBase
 	{
@@ -56,10 +56,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public ScaffolderArgs Args { get; }
 
-        protected override Control CreateControl()
-        {
-            var icon = new Xwt.ImageView(StockIcons.Information);
-            var mainBox = new VBox { Spacing = 0 };
+		protected override Control CreateControl ()
+		{
+			var icon = new Xwt.ImageView (StockIcons.Information);
+			var mainBox = new VBox { Spacing = 0 };
 			var label = new Label (subSubTitle);
 			label.Font = label.Font.WithSize (18);
 			mainBox.PackStart (label, margin: 30);
@@ -75,25 +75,25 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	}
 
 	class ScaffolderField
-	{ 
-        string CommandLineName { get; }
+	{
+		string CommandLineName { get; }
 		Type Type { get; }
-        string DisplayName { get; }
+		string DisplayName { get; }
 
-		public ScaffolderField(string commandLineName, string displayName, Type type)
+		public ScaffolderField (string commandLineName, string displayName, Type type)
 		{
 			CommandLineName = commandLineName;
 			DisplayName = displayName;
 			Type = type;
 		}
-    }
+	}
 
 	interface IScaffolder
 	{
 		string Name { get; }
 		string CommandLineName { get; }
 		IEnumerable<ScaffolderField> Fields { get; }
-    }
+	}
 
 	class EmptyMvcControllerScaffolder : IScaffolder
 	{
@@ -186,7 +186,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	}
 
 	class ScaffolderTemplateSelect : ScaffolderWizardPageBase
-    {
+	{
 		public ScaffolderTemplateSelect () : base (new ScaffolderArgs ())
 		{
 			this.CanGoBack = true;
@@ -196,8 +196,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.SubSubTitle = "Select Scaffolder SUB";
 		}
 
-		private Lazy<IScaffolder[]> GetScaffolders()
-		{ 
+		private Lazy<IScaffolder []> GetScaffolders ()
+		{
 			var scaffolders = new IScaffolder [] {
 				new EmptyMvcControllerScaffolder(),
 				new MvcControllerWithActionsScaffolder(),
@@ -210,17 +210,17 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				new IdentityScaffolder(),
 				new LayoutScaffolder()
 			};
-			return new Lazy<IScaffolder[]>(() => scaffolders);
-        }
+			return new Lazy<IScaffolder []> (() => scaffolders);
+		}
 
-        protected override Widget GetMainControl()
-        {
+		protected override Widget GetMainControl ()
+		{
 			var icon = new DataField<Image> ();
 			var name = new DataField<string> ();
 
 			var listStore = new ListStore (icon, name);
 
-			foreach (var scaffolder in GetScaffolders().Value) {
+			foreach (var scaffolder in GetScaffolders ().Value) {
 				var row = listStore.AddRow ();
 				var png = Image.FromResource ("file-web-32.png");
 				listStore.SetValue (row, icon, png);
@@ -248,21 +248,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			//listBox.ExpandVertical = true;
 			//mainBox. = new WidgetSpacing (20, 20, 20, 20);
 			return listBox;
-        }
-    }
+		}
+	}
 
-    class ScaffolderWizard : WizardDialogController
-    {
-        public ScaffolderWizard(string title, IWizardDialogPage firstPage) : base(title, StockIcons.Information, null, firstPage)
-        {
+	class ScaffolderWizard : WizardDialogController
+	{
+		public ScaffolderWizard (string title, IWizardDialogPage firstPage) : base (title, StockIcons.Information, null, firstPage)
+		{
 			this.DefaultPageSize = new Size (600, 500);
 
-			var rightSideImage = new Xwt.ImageView(Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png"));
-            var rightSideWidget = new Xwt.FrameBox (rightSideImage);
+			var rightSideImage = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png"));
+			var rightSideWidget = new Xwt.FrameBox (rightSideImage);
 			rightSideWidget.BackgroundColor = MonoDevelop.Ide.Gui.Styles.Wizard.PageBackgroundColor;
 			////rightSideWidget.ExpandHorizontal = true;
 			//rightSideWidget.ExpandVertical = true;
 			this.RightSideWidget = new XwtControl (rightSideWidget);
 		}
-    }
+	}
 }
