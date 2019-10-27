@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.AspNetCore.Scaffolding;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -11,8 +12,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
-using Scaffolder;
-using Xamarin.Installer.AndroidSDK.Manager;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -30,7 +29,6 @@ namespace MonoDevelop.AspNetCore.Commands
 		public override bool CanBuildNode (Type dataType)
 		{
 			return true;
-			//return typeof (ProjectFile).IsAssignableFrom (dataType);
 		}
 	}
 
@@ -49,8 +47,10 @@ namespace MonoDevelop.AspNetCore.Commands
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
 		public async void Scaffold ()
 		{
-			var w = new ScaffolderWizard ("hello", new ScaffolderTemplateSelect ());
-			var res = w.RunWizard ();
+			var w = new ScaffolderWizard ("Add New Scaffolded Item", new ScaffolderTemplateSelect ());
+			//Xwt.Toolkit.NativeEngine.Invoke (() => {
+				var res = w.RunWizard ();
+			//});
 
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (project == null)
