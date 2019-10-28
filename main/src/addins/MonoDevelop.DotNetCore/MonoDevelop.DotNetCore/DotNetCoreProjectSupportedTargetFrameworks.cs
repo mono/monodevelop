@@ -60,6 +60,40 @@ namespace MonoDevelop.DotNetCore
 			return new TargetFramework [0];
 		}
 
+		static string [] supportedNetStandardVersions = {
+			"2.1", "2.0", "1.6", "1.5", "1.4", "1.3", "1.2", "1.1", "1.0"
+		};
+		static string [] supportedNetCoreAppVersions = {
+			"3.1", "3.0", "2.2", "2.1", "2.0", "1.1", "1.0"
+		};
+
+		public IEnumerable<TargetFramework> GetKnownFrameworks ()
+		{
+			static IEnumerable<TargetFramework> GetKnownNetStandardFrameworks ()
+			{
+				foreach (var v in supportedNetStandardVersions) {
+					yield return CreateTargetFramework (".NETStandard", v);
+				}
+			}
+
+			static IEnumerable<TargetFramework> GetKnownNetCoreAppFrameworks ()
+			{
+				foreach (var v in supportedNetCoreAppVersions) {
+					yield return CreateTargetFramework (".NETCoreApp", v);
+				}
+			}
+
+			if (framework.IsNetStandard ()) {
+				return GetKnownNetStandardFrameworks ();
+			} else if (framework.IsNetCoreApp ()) {
+				return GetKnownNetCoreAppFrameworks ();
+			} else if (framework.IsNetFramework ()) {
+				return GetNetFrameworkTargetFrameworks ();
+			}
+
+			return new TargetFramework [0];
+		}
+
 		public static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
 			if (DotNetCoreRuntime.IsNetCore30Installed () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard21 ())
