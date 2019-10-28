@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
@@ -35,12 +36,41 @@ namespace MonoDevelop.VersionControl
 			Fill ();
 			UpdateControls ();
 			updating = false;
+			SetupAccessibility ();
 		}
-		
+
 		Control IRepositoryEditor.Widget {
 			get { return this; }
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			repositoryUrlEntry.SetCommonAccessibilityAttributes ("UrlBasedRepositoryEditor.repositoryUrlEntry", "",
+											GettextCatalog.GetString ("Enter the repository url"));
+			repositoryUrlEntry.SetAccessibilityLabelRelationship (label4);
+
+			repositoryUrlEntry.SetCommonAccessibilityAttributes ("UrlBasedRepositoryEditor.comboProtocol", "",
+											GettextCatalog.GetString ("Enter the protocol to use"));
+			comboProtocol.SetAccessibilityLabelRelationship (label5);
+
+			repositoryServerEntry.SetCommonAccessibilityAttributes ("UrlBasedRepositoryEditor.repositoryServerEntry", "",
+								GettextCatalog.GetString ("Enter the server"));
+			repositoryServerEntry.SetAccessibilityLabelRelationship (label11);
+
+			repositoryPortSpin.SetCommonAccessibilityAttributes ("UrlBasedRepositoryEditor.repositoryPortSpin", "",
+					GettextCatalog.GetString ("Enter the port"));
+			repositoryPortSpin.SetAccessibilityLabelRelationship (label6);
+
+			repositoryPathEntry.SetCommonAccessibilityAttributes ("UrlBasedRepositoryEditor.repositoryPathEntry", "",
+					GettextCatalog.GetString ("Enter the path"));
+			repositoryPathEntry.SetAccessibilityLabelRelationship (label7);
+
+			repositoryUserEntry.SetCommonAccessibilityAttributes ("UrlBasedRepositoryEditor.repositoryUserEntry", "",
+					GettextCatalog.GetString ("Enter the user"));
+			repositoryUserEntry.SetAccessibilityLabelRelationship (label8);
+		}
+
+
 		public bool Validate ()
 		{
 			if (!repo.IsUrlValid (repositoryUrlEntry.Text) || !CanCreateUri ()) {

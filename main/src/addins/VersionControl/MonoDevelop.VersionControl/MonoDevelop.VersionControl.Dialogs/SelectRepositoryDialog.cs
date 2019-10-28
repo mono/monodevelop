@@ -7,6 +7,7 @@ using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Collections.Generic;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -78,8 +79,20 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 
 			repoContainer.SetFlag (WidgetFlags.NoWindow);
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			repCombo.SetCommonAccessibilityAttributes ("SelectRepositoryDialog.repCombo", "",
+								GettextCatalog.GetString ("Select the repository type"));
+			repCombo.SetAccessibilityLabelRelationship (label3);
+
+			entryFolder.SetCommonAccessibilityAttributes ("SelectRepositoryDialog.entryFolder", "",
+								GettextCatalog.GetString ("Enter the target directory"));
+			entryFolder.SetAccessibilityLabelRelationship (labelTargetDir);
+		}
+
 		public Repository Repository {
 			get {
 				if (notebook.Page == 0)
