@@ -25,6 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -72,24 +73,24 @@ namespace MonoDevelop.AssemblyBrowser
 		MonoDevelop.Components.SearchEntry searchentry1;
 		Gtk.ComboBox languageCombobox;
 
-		public AssemblyBrowserTreeView TreeView {
+		public AssemblyBrowserTreeView? TreeView {
 			get;
 			private set;
 		}
 		
 		public bool PublicApiOnly {
 			get {
-				return TreeView.PublicApiOnly;
+				return TreeView != null ? TreeView.PublicApiOnly : false;
 			}
 			set {
 				comboboxVisibilty.Active = value ? 0 : 1;
 			}
 		}
 		
-		DocumentationPanel documentationPanel = new DocumentationPanel ();
+		DocumentationPanel? documentationPanel = new DocumentationPanel ();
 		readonly TextEditor inspectEditor;
 
-		static string GetLink (ReferenceSegment referencedSegment, out bool? isNotPublic)
+		static string? GetLink (ReferenceSegment referencedSegment, out bool? isNotPublic)
 		{
 			isNotPublic = null;
 			if (referencedSegment == null)
@@ -116,7 +117,8 @@ namespace MonoDevelop.AssemblyBrowser
 			comboboxVisibilty.InsertText (1, GettextCatalog.GetString ("All members"));
 			comboboxVisibilty.Active = Math.Min (1, Math.Max (0, PropertyService.Get ("AssemblyBrowser.MemberSelection", 0)));
 			comboboxVisibilty.Changed += delegate {
-				TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
+				if (TreeView != null)
+					TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
 				PropertyService.Set ("AssemblyBrowser.MemberSelection", comboboxVisibilty.Active);
 				GenerateOutput (); 
 			};
@@ -302,7 +304,7 @@ namespace MonoDevelop.AssemblyBrowser
 		void SearchTreeviewhandleRowActivated (object o, RowActivatedArgs args)
 		{
 			TreeIter selectedIter;
-			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
+			if (searchTreeview.Selection.GetSelected (out selectedIter) && resultListStore != null) {
 				var member = resultListStore.GetValue (selectedIter, 0) as IEntity;
 				if (member == null)
 					return;
@@ -327,7 +329,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 
-		public IEntity ActiveMember  {
+		public IEntity? ActiveMember  {
 			get;
 			set;
 		}
@@ -335,16 +337,19 @@ namespace MonoDevelop.AssemblyBrowser
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			TreeView.GrabFocus ();
+			if (TreeView != null)
+				TreeView.GrabFocus ();
 		}
 		
-		ITreeNavigator SearchMember (IEntity entity, bool expandNode = true)
+		ITreeNavigator? SearchMember (IEntity entity, bool expandNode = true)
 		{
 			return SearchMember (entity.GetIdString (), expandNode);
 		}
 			
-		ITreeNavigator SearchMember (string helpUrl, bool expandNode = true)
+		ITreeNavigator? SearchMember (string helpUrl, bool expandNode = true)
 		{
+			if (TreeView == null)
+				return null;
 			var nav = SearchMember (TreeView.GetRootNode (), helpUrl, expandNode);
 			if (nav != null)
 				return nav;
@@ -393,7 +398,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		bool expandedMember = true;
-		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl, bool expandNode = true)
+		ITreeNavigator? SearchMember (ITreeNavigator nav, string helpUrl, bool expandNode = true)
 		{
 			if (nav == null)
 				return null;
@@ -411,7 +416,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				if (!SkipChildren (nav, helpUrl, searchType) && nav.HasChildren ()) {
 					nav.MoveToFirstChild ();
-					ITreeNavigator result = SearchMember (nav, helpUrl, expandNode);
+					ITreeNavigator? result = SearchMember (nav, helpUrl, expandNode);
 					if (result != null)
 						return result;
 					
@@ -431,7 +436,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		SearchMode searchMode = SearchMode.Type;
-		Gtk.ListStore resultListStore;
+		Gtk.ListStore? resultListStore;
 		
 		void CreateColumns ()
 		{
@@ -525,7 +530,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (entity is ITypeDefinition type) {
 					ct.Text = type.Namespace;
 				} else {
-					ct.Text = entity.DeclaringType.Namespace;
+					ct.Text = entity.DeclaringType?.Namespace ?? "";
 				}
 			}
 		}
@@ -596,7 +601,7 @@ namespace MonoDevelop.AssemblyBrowser
 		       	IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
-			resultListStore.Clear ();
+			resultListStore?.Clear ();
 			var token = searchTokenSource.Token;
 			var updater = new SearchIdleRunner (this, query, token);
 			updater.Update ();
@@ -644,8 +649,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (node is XmlText) {
 				sb.Append (FormatText (node.InnerText));
-			} else if (node is XmlElement) {
-				XmlElement el = node as XmlElement;
+			} else if (node is XmlElement el) {
 				switch (el.Name) {
 					case "block":
 						switch (el.GetAttribute ("type")) {
@@ -742,7 +746,7 @@ namespace MonoDevelop.AssemblyBrowser
 			OutputChilds (sb, node);
 		}
 		
-		static string TransformDocumentation (XmlNode docNode)
+		static string? TransformDocumentation (XmlNode docNode)
 		{ 
 			// after 3 hours to try it with xsl-t I decided to do the transformation in code.
 			if (docNode == null)
@@ -804,7 +808,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 	 
-		List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
+		List<ReferenceSegment>? ReferencedSegments = new List<ReferenceSegment>();
 		List<ITextSegmentMarker> underlineMarkers = new List<ITextSegmentMarker> ();
 		
 		public void ClearReferenceSegment ()
@@ -817,7 +821,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void SetReferencedSegments (List<ReferenceSegment> refs)
 		{
 			ReferencedSegments = refs;
-			if (ReferencedSegments == null || IsDestroyed)
+			if (ReferencedSegments == null || IsDestroyed || TreeView == null)
 				return;
 			foreach (var _seg in refs) {
 				var seg = _seg;
@@ -844,7 +848,7 @@ namespace MonoDevelop.AssemblyBrowser
 							if (nav == null)
 								PublicApiOnly = false;
 						}
-						var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ()?.GetParentDataItem (typeof (AssemblyLoader), true);
+						var loader = this.TreeView.GetSelectedNode ()?.GetParentDataItem (typeof (AssemblyLoader), true) as AssemblyLoader;
 						// args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
 						if (request == LinkRequest.RequestNewView) {
 							var assemblyBrowserView = new AssemblyBrowserViewContent ();
@@ -868,10 +872,12 @@ namespace MonoDevelop.AssemblyBrowser
 
 		void GenerateOutput ()
 		{
-			ITreeNavigator nav = TreeView.GetSelectedNode ();
+			if (TreeView == null)
+				return;
+			var nav = TreeView.GetSelectedNode ();
 			if (nav == null)
 				return;
-			IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
+			var builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 			if (builder == null) {
 				this.inspectEditor.Text = "";
 				return;
@@ -915,10 +921,10 @@ namespace MonoDevelop.AssemblyBrowser
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
 		
-		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
+		internal void Open (string url, AssemblyLoader? currentAssembly = null, bool expandNode = true)
 		{
 			try {
-				Task.WhenAll (this.definitions.Select (d => d.LoadingTask).Where (t => t != null)).ContinueWith (d => {
+				Task.WhenAll (this.definitions.Select (d => d.LoadingTask)).ContinueWith (d => {
 					// At least one of them failed.
 					if (d.IsFaulted) {
 						LoggingService.LogError ("Failed to load assemblies", d.Exception);
@@ -928,7 +934,7 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 
 					suspendNavigation = false;
-					ITreeNavigator nav = SearchMember (url, expandNode);
+					var nav = SearchMember (url, expandNode);
 					if (definitions.Count == 0) // we've been disposed
 						return;
 					if (nav != null)
@@ -956,9 +962,9 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 
 			int i = 0;
-			System.Action loadNext = null;
 			var references = cecilObject.AssemblyReferences;
-			loadNext = () => {
+			void LoadNext ()
+			{
 				var reference = references [i];
 				string fileName = currentAssembly.LookupAssembly (reference.FullName);
 				if (string.IsNullOrEmpty (fileName)) {
@@ -966,7 +972,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (++i == references.Length)
 						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
 					else
-						loadNext ();
+						LoadNext ();
 					return;
 				}
 				var result = AddReferenceByFileName (fileName, expandNode);
@@ -980,7 +986,7 @@ namespace MonoDevelop.AssemblyBrowser
 						if (++i == references.Length)
 							LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
 						else
-							loadNext ();
+							LoadNext ();
 					}
 				}, Runtime.MainTaskScheduler).Ignore ();
 			};
@@ -1031,7 +1037,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		internal void SelectAssembly (PEFile cu)
 		{
-			ITreeNavigator nav = TreeView.GetRootNode ();
+			var nav = TreeView?.GetRootNode ();
 			if (nav == null)
 				return;
 
@@ -1054,7 +1060,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (nav == null)
 				return;
-			T d = nav.DataItem as T;
+			T? d = nav.DataItem as T;
 			if (d != null) 
 				d.Dispose ();
 			if (nav.HasChildren ()) {
@@ -1134,12 +1140,12 @@ namespace MonoDevelop.AssemblyBrowser
 		ImmutableList<AssemblyLoader> definitions = ImmutableList<AssemblyLoader>.Empty;
 		HashSet<Project> projects = new HashSet<Project> ();
 		
-		internal AssemblyLoader AddReferenceByAssemblyName (PEFile reference, bool expand = false)
+		internal AssemblyLoader? AddReferenceByAssemblyName (PEFile reference, bool expand = false)
 		{
 			return AddReferenceByAssemblyName (reference.FullName, expand, querySearch: false);
 		}
 		
-		internal AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool expand = false, bool querySearch = true)
+		internal AssemblyLoader? AddReferenceByAssemblyName (string assemblyFullName, bool expand = false, bool querySearch = true)
 		{
 			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
@@ -1155,7 +1161,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return AddReferenceByFileName (assemblyFile, expand, querySearch);
 		}
 
-		internal AssemblyLoader AddReferenceByFileName (string fileName, bool expand = false, bool querySearch = true)
+		internal AssemblyLoader? AddReferenceByFileName (string fileName, bool expand = false, bool querySearch = true)
 		{
 			foreach (var def in definitions) {
 				if (FilePath.PathComparer.Equals (fileName, def.FileName))
@@ -1203,6 +1209,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
+			if (TreeView == null)
+				return;
 
 			if (!projects.Add (project)) {
 				// Select the project.
@@ -1216,7 +1224,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			}
 
-			ITreeBuilder builder;
+			ITreeBuilder? builder;
 			if (definitions.Count + projects.Count == 1) {
 				builder = TreeView.LoadTree (project);
 			} else {
@@ -1233,6 +1241,8 @@ namespace MonoDevelop.AssemblyBrowser
 		internal bool suspendNavigation;
 		void HandleCursorChanged (object sender, EventArgs e)
 		{
+			if (TreeView == null)
+				return;
 			if (!suspendNavigation) {
 				var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IEntity;
 				if (selectedEntity != null)
@@ -1242,11 +1252,13 @@ namespace MonoDevelop.AssemblyBrowser
 			GenerateOutput ();
 		}
 
-		public NavigationPoint BuildNavigationPoint ()
+		public NavigationPoint? BuildNavigationPoint ()
 		{
+			if (TreeView == null)
+				return null;
 			var node = TreeView.GetSelectedNode ();
 			var selectedEntity = node?.DataItem as IEntity;
-			AssemblyLoader loader = null;
+			AssemblyLoader? loader = null;
 			if (selectedEntity != null) {
 				loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof (AssemblyLoader), true);
 				return new AssemblyBrowserNavigationPoint (definitions, loader, selectedEntity.GetIdString ());
