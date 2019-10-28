@@ -46,11 +46,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderArgs
 	{
-		public ScaffolderArgs ()
-		{
-			//TODO: Get the scaffolder from the wizard
-			Scaffolder = new EmptyMvcControllerScaffolder ();
-		}
 		public IScaffolder Scaffolder { get; set; }
 
 		public override int GetHashCode ()
@@ -87,7 +82,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			mainBox.PackStart (separator);
 
 			mainBox.PackStart (GetMainControl (), margin: 20);
-			//mainBox.ExpandVertical = true;
 			return new XwtControl (mainBox);
 		}
 
@@ -98,15 +92,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public string CommandLineName { get; }
         public string DisplayName { get; }
-
-        string val;
-		public string SelectedValue {
-			get { return val; }
-			set {
-				val = value;
-				Console.WriteLine ("Value = " + value);
-			}
-		}
+		public string SelectedValue { get; set; }
 
 		public ScaffolderField (string commandLineName, string displayName)
 		{
@@ -255,7 +241,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			// Pages are used as dictionary keys in WizardDialog.cs
 			return unchecked(
-				base.GetHashCode () + 37 * Args.Scaffolder.Name.GetHashCode ()
+				base.GetHashCode () + 37 * Args.GetHashCode ()
 			);
 		}
 	}
@@ -419,6 +405,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			}
 
 			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
+			argBuilder.Add ("-outDir");
+            argBuilder.AddQuoted(parentFolder);
+
 			var commandLineArgs = argBuilder.ToString ();
 
 			using (var progressMonitor = CreateProgressMonitor ()) {
