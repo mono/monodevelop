@@ -69,5 +69,14 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			return SelectorViewControl.GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
 		}
+		public bool SetActiveConfiguration (string configuration)
+		{
+			bool success = false;
+			session.ExecuteOnIdle (() => {
+				success = SelectorViewControl.SetActiveConfiguration (configuration);
+			}, true);
+
+			return success;
+		}
 	}
 }
