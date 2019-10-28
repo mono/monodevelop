@@ -81,19 +81,24 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		protected abstract Widget GetMainControl ();
 	}
 
-	class ScaffolderField
+	abstract class ScaffolderField
 	{
 		public string CommandLineName { get; }
-		public Type Type { get; }
 		public string DisplayName { get; }
 
-		public string Value { get; set; }
+		public string SelectedValue { get; set; }
 
-		public ScaffolderField (string commandLineName, string displayName, Type type)
+		public ScaffolderField (string commandLineName, string displayName)
 		{
 			CommandLineName = commandLineName;
 			DisplayName = displayName;
-			Type = type;
+		}
+	}
+
+	class StringField : ScaffolderField
+	{
+		public StringField (string commandLineName, string displayName) : base (commandLineName, displayName)
+		{
 		}
 	}
 
@@ -110,7 +115,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class MvcControllerWithActionsScaffolder : IScaffolder
@@ -119,7 +124,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class EmptyApiControllerScaffolder : IScaffolder
@@ -128,7 +133,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class ApiControllerWithActionsScaffolder : IScaffolder
@@ -137,7 +142,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class ApiControllerEntityFrameworkScaffolder : IScaffolder
@@ -146,7 +151,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class RazorPageScaffolder : IScaffolder
@@ -155,7 +160,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class RazorPageEntityFrameworkScaffolder : IScaffolder
@@ -164,7 +169,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class RazorPageEntityFrameworkCrudScaffolder : IScaffolder
@@ -173,7 +178,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class IdentityScaffolder : IScaffolder
@@ -182,7 +187,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class LayoutScaffolder : IScaffolder
@@ -191,7 +196,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
+			new [] { new StringField ("name", "Name") };
 	}
 
 	class ScaffolderTemplateConfigurePage : ScaffolderWizardPageBase
@@ -208,15 +213,19 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			var vbox = new VBox ();
 			foreach(var field in scaffolder.Fields) {
-				var hbox = new HBox ();
-				var input = new TextEntry ();
-				input.HeightRequest = 30;
-				hbox.PackEnd (input);
-				var label = new Label ();
-				label.Font = label.Font.WithSize (15);
-				label.Text = field.DisplayName;
-				hbox.PackEnd (label);
-				vbox.PackStart (hbox);
+				switch (field) {
+				case StringField s:
+                    var hbox = new HBox ();
+                    var input = new TextEntry ();
+                    input.HeightRequest = 30;
+                    hbox.PackEnd (input);
+                    var label = new Label ();
+                    label.Font = label.Font.WithSize (15);
+                    label.Text = s.DisplayName;
+                    hbox.PackEnd (label);
+                    vbox.PackStart (hbox);
+					break;
+                }
             }
 			return vbox;
 		}
