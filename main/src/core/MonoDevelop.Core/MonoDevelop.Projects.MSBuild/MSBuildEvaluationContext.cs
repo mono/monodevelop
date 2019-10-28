@@ -1017,7 +1017,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static readonly Dictionary<string, MethodInfo[]> cachedIntrinsicFunctions = typeof (IntrinsicFunctions)
 			.GetMethods (BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.Static)
 			.ToLookup (x => x.Name)
-			.ToDictionary(x => x.Key, x => x.ToArray ());
+			.ToDictionary(x => x.Key, x => x.ToArray (), StringComparer.OrdinalIgnoreCase);
 
 		MemberInfo[] ResolveMember (Type type, string memberName, bool isStatic, MemberTypes memberTypes)
 		{
