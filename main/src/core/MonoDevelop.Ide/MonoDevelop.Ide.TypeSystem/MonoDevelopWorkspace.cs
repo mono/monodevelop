@@ -115,7 +115,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.MonoDevelopSolution = solution;
 			this.serviceProvider = typeSystemService.ServiceProvider ?? Runtime.ServiceProvider;
 			this.typeSystemService = typeSystemService;
-			this.dynamicFileManager = compositionManager.GetExportedValue<DynamicFileManager> ();
 			this.Id = WorkspaceId.Next ();
 
 			Projections = new ProjectionData ();
@@ -174,6 +173,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (MonoDevelopSolution != null) {
 				Runtime.RunInMainThread (() => desktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged).Ignore ();
 			}
+
+			this.dynamicFileManager = compositionManager.GetExportedValue<DynamicFileManager> ();
 		}
 
 		bool lowMemoryLogged;
