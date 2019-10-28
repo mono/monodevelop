@@ -476,11 +476,15 @@ namespace MonoDevelop.VersionControl.Views
 			this.diffRenderer.Lines = null;
 			this.scrolledwindowFileContents.Accessible.Description = GettextCatalog.GetString ("empty");
 
-			if (!this.treeviewFiles.Selection.GetSelected (out var model, out var iter))
+			if (!this.treeviewFiles.Selection.GetSelected (out var model, out var iter)) {
+				labelFilePathName.Text = "";
 				return;
-
+			}
 			this.diffRenderer.Lines = new string [] { GettextCatalog.GetString ("Loading data…") };
-			string path = (string)changedpathstore.GetValue (iter, colPath);
+			FilePath path = (string)changedpathstore.GetValue (iter, colPath);
+			FilePath personal = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+
+			labelFilePathName.Text = path.IsChildPathOf (personal) ? "~/" + path.ToRelative (personal) : path.ToString ();
 			var rev = SelectedRevision;
 			Task.Run (async delegate {
 				string text = "";
