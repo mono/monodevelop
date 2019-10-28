@@ -91,7 +91,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	abstract class ScaffolderField
 	{
 		public string CommandLineName { get; }
-        public string DisplayName { get; }
+		public string DisplayName { get; }
 		public string SelectedValue { get; set; }
 
 		public ScaffolderField (string commandLineName, string displayName)
@@ -108,36 +108,46 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		}
 	}
 
+	class ComboField : ScaffolderField
+	{
+		public ComboField (string commandLineName, string displayName, string [] options) : base (commandLineName, displayName)
+		{
+			Options = options;
+		}
+
+		public string [] Options { get; }
+	}
+
 	abstract class IScaffolder
 	{
 		public virtual string Name { get; }
 		public virtual string CommandLineName { get; }
-        public virtual string[] DefaultArgs => Array.Empty<string> (); 
+		public virtual string [] DefaultArgs => Array.Empty<string> ();
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
 	}
 
 	class EmptyMvcControllerScaffolder : IScaffolder
 	{
-//Generator Options:
-  //--controllerName|-name              : Name of the controller
-  //--useAsyncActions|-async            : Switch to indicate whether to generate async controller actions
-  //--noViews|-nv                       : Switch to indicate whether to generate CRUD views
-  //--restWithNoViews|-api              : Specify this switch to generate a Controller with REST style API, noViews is assumed and any view related options are ignored
-  //--readWriteActions|-actions         : Specify this switch to generate Controller with read/write actions when a Model class is not used
-  //--model|-m                          : Model class to use
-  //--dataContext|-dc                   : DbContext class to use
-  //--referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
-  //--layout|-l                         : Custom Layout page to use
-  //--useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
-  //--force|-f                          : Use this option to overwrite existing files
-  //--relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
-  //--controllerNamespace|-namespace    : Specify the name of the namespace to use for the generated controller
+		//Generator Options:
+		//--controllerName|-name              : Name of the controller
+		//--useAsyncActions|-async            : Switch to indicate whether to generate async controller actions
+		//--noViews|-nv                       : Switch to indicate whether to generate CRUD views
+		//--restWithNoViews|-api              : Specify this switch to generate a Controller with REST style API, noViews is assumed and any view related options are ignored
+		//--readWriteActions|-actions         : Specify this switch to generate Controller with read/write actions when a Model class is not used
+		//--model|-m                          : Model class to use
+		//--dataContext|-dc                   : DbContext class to use
+		//--referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
+		//--layout|-l                         : Custom Layout page to use
+		//--useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
+		//--force|-f                          : Use this option to overwrite existing files
+		//--relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
+		//--controllerNamespace|-namespace    : Specify the name of the namespace to use for the generated controller
 
 
 		public override string Name => "MVC Controller - Empty";
 		public override string CommandLineName => "controller";
 
-		static StringField[] stringField = new [] { new StringField ("-name", "Name") };
+		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
@@ -146,7 +156,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public override string Name => "MVC Controller with read / write actions";
 		public override string CommandLineName => "controller";
 		public override string [] DefaultArgs => new [] { "--readWriteActions" };
-		static StringField[] stringField = new [] { new StringField ("-name", "Name") };
+		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
@@ -154,18 +164,18 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public override string Name => "API Controller - Empty";
 		public override string CommandLineName => "controller";
-
-		public override IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		public override string [] DefaultArgs => new [] { "--restWithNoViews" };
+		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
 	class ApiControllerWithActionsScaffolder : IScaffolder
 	{
 		public override string Name => "API Controller with read / write actions";
 		public override string CommandLineName => "controller";
-
-		public override IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		public override string [] DefaultArgs => new [] { "--restWithNoViews", "--readWriteActions" };
+		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
 	class ApiControllerEntityFrameworkScaffolder : IScaffolder
@@ -173,17 +183,40 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public override string Name => "API Controller with actions using Entity Framework";
 		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class RazorPageScaffolder : IScaffolder
 	{
-		public override string Name => "Razor Page";
-		public override string CommandLineName => "controller";
 
-		public override IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		//		Generator Arguments:
+		//  razorPageName : Name of the Razor Page
+		//  templateName  : The template to use, supported view templates: 'Empty|Create|Edit|Delete|Details|List'
+
+		//Generator Options:
+		//  --model|-m                          : Model class to use
+		//  --dataContext|-dc                   : DbContext class to use
+		//  --referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
+		//  --layout|-l                         : Custom Layout page to use
+		//  --useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
+		//  --force|-f                          : Use this option to overwrite existing files
+		//  --relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
+		//  --namespaceName|-namespace          : Specify the name of the namespace to use for the generated PageModel
+		//  --partialView|-partial              : Generate a partial view, other layout options (-l and -udl) are ignored if this is specified
+		//  --noPageModel|-npm                  : Switch to not generate a PageModel class for Empty template
+
+		public override string Name => "Razor Page";
+		public override string CommandLineName => "razorpage";
+
+		static string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
+		static ScaffolderField [] fields =
+			new ScaffolderField[] {
+				new StringField ("", "Name of the Razor Page"),
+				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
+			 };
+
+		public override IEnumerable<ScaffolderField> Fields => fields;
 	}
 
 	class RazorPageEntityFrameworkScaffolder : IScaffolder
@@ -236,18 +269,35 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			var vbox = new VBox ();
 			foreach (var field in scaffolder.Fields) {
+				var hbox = new HBox ();
+				var label = new Label ();
+                    
 				switch (field) {
 				case StringField s:
-					var hbox = new HBox ();
 					var input = new TextEntry ();
 					input.HeightRequest = 30;
 					hbox.PackEnd (input);
-					var label = new Label ();
 					label.Font = label.Font.WithSize (15);
 					label.Text = s.DisplayName;
 					hbox.PackEnd (label);
 					vbox.PackStart (hbox);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
+					break;
+				case ComboField comboField:
+					var comboBox = new ComboBox ();
+
+					foreach(var option in comboField.Options) {
+						comboBox.Items.Add (option);
+                    }
+
+					comboBox.HeightRequest = 30;
+					hbox.PackEnd (comboBox);
+					label.Font = label.Font.WithSize (15);
+					label.Text = comboField.DisplayName;
+					hbox.PackEnd (label);
+					vbox.PackStart (hbox);
+					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
+					comboBox.SelectedIndex = 0;
 					break;
 				}
 			}
@@ -358,18 +408,17 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
-		ScaffolderTemplateConfigurePage GetConfigurePage(ScaffolderArgs args)
+		ScaffolderTemplateConfigurePage GetConfigurePage (ScaffolderArgs args)
 		{
 			// we want to return the same instance for the same args
-			if(cachedPages.ContainsKey(args)) {
+			if (cachedPages.ContainsKey (args)) {
 				return cachedPages [args];
-            }
-			else {
+			} else {
 				var page = new ScaffolderTemplateConfigurePage (args);
 				cachedPages.Add (args, page);
 				return page;
-            }
-        }
+			}
+		}
 
 		protected override Task<IWizardDialogPage> OnGoNext (CancellationToken token)
 		{
@@ -378,19 +427,19 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				IWizardDialogPage configPage = GetConfigurePage (args);
 				return Task.FromResult (configPage);
 			}
-			return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
+			return Task.FromException<IWizardDialogPage> (new InvalidOperationException ());
 		}
 
 		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
 		{
 			IWizardDialogPage firstPage = pages [0];
-			return Task.FromResult(firstPage);
+			return Task.FromResult (firstPage);
 		}
 	}
 
 	class ScaffolderWizard : ScaffolderDialogController
 	{
-		static readonly ScaffolderArgs args = new ScaffolderArgs();
+		static readonly ScaffolderArgs args = new ScaffolderArgs ();
 		readonly DotNetProject project;
 		readonly FilePath parentFolder;
 
@@ -402,13 +451,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			var rightSideWidget = new FrameBox (rightSideImage);
 			rightSideWidget.BackgroundColor = Styles.Wizard.PageBackgroundColor;
 			this.RightSideWidget = new XwtControl (rightSideWidget);
-			this.Completed += (sender, e) => Task.Run(() => OnCompletedAsync());
+			this.Completed += (sender, e) => Task.Run (() => OnCompletedAsync ());
 			this.project = project;
 			this.parentFolder = parentFolder;
 		}
 
 		async Task OnCompletedAsync ()
-		{ 
+		{
 			var dotnet = DotNetCoreRuntime.FileName;
 			var argBuilder = new ProcessArgumentBuilder ();
 			argBuilder.Add ("aspnet-codegenerator");
@@ -416,20 +465,20 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			argBuilder.AddQuoted (project.FileName);
 			argBuilder.Add (args.Scaffolder.CommandLineName);
 
-			foreach(var field in args.Scaffolder.Fields) {
+			foreach (var field in args.Scaffolder.Fields) {
 				argBuilder.Add (field.CommandLineName);
 				argBuilder.Add (field.SelectedValue);
 			}
 
 			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
 			argBuilder.Add ("-outDir");
-            argBuilder.AddQuoted(parentFolder);
+			argBuilder.AddQuoted (parentFolder);
 			//TODO: does this apply to every scaffolder or just Controller?
-			argBuilder.Add ("-namespace", project.GetDefaultNamespace (parentFolder.Combine("file.cs")));
+			argBuilder.Add ("-namespace", project.GetDefaultNamespace (parentFolder.Combine ("file.cs")));
 
-			foreach(var arg in args.Scaffolder.DefaultArgs) {
+			foreach (var arg in args.Scaffolder.DefaultArgs) {
 				argBuilder.Add (arg);
-            }
+			}
 
 			var commandLineArgs = argBuilder.ToString ();
 
@@ -450,7 +499,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
 				}
 			}
-        }
+		}
 
 		static OutputProgressMonitor CreateProgressMonitor ()
 		{
