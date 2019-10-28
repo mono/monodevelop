@@ -32,7 +32,13 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.DotNetCore;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Wizard;
+using MonoDevelop.Projects;
 using Xwt;
 using Xwt.Drawing;
 
@@ -86,9 +92,16 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	abstract class ScaffolderField
 	{
 		public string CommandLineName { get; }
-		public string DisplayName { get; }
+        public string DisplayName { get; }
 
-		public string SelectedValue { get; set; }
+        string val;
+		public string SelectedValue {
+			get { return val; }
+			set {
+				val = value;
+				Console.WriteLine ("Value = " + value);
+			}
+		}
 
 		public ScaffolderField (string commandLineName, string displayName)
 		{
@@ -116,8 +129,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public string Name => "MVC Controller - Empty";
 		public string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		static StringField[] stringField = new [] { new StringField ("name", "Name") };
+		public IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
 	class MvcControllerWithActionsScaffolder : IScaffolder
@@ -226,6 +239,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					label.Text = s.DisplayName;
 					hbox.PackEnd (label);
 					vbox.PackStart (hbox);
+					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					break;
 				}
 			}
@@ -279,6 +293,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			var listStore = new ListStore (icon, name);
 
 			var scaffolders = GetScaffolders ().Value;
+
 			foreach (var scaffolder in scaffolders) {
 				var row = listStore.AddRow ();
 				var png = Image.FromResource ("file-web-32.png");
@@ -365,17 +380,66 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 	class ScaffolderWizard : ScaffolderDialogController
 	{
-		static ScaffolderArgs args = new ScaffolderArgs();
-		public ScaffolderWizard () : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages (), args)
+		static readonly ScaffolderArgs args = new ScaffolderArgs();
+		readonly DotNetProject project;
+		readonly string parentFolder;
+
+		public ScaffolderWizard (DotNetProject project, string parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages (), args)
 		{
 			this.DefaultPageSize = new Size (600, 500);
 
-			var rightSideImage = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png"));
-			var rightSideWidget = new Xwt.FrameBox (rightSideImage);
-			rightSideWidget.BackgroundColor = MonoDevelop.Ide.Gui.Styles.Wizard.PageBackgroundColor;
-			////rightSideWidget.ExpandHorizontal = true;
-			//rightSideWidget.ExpandVertical = true;
+			var rightSideImage = new Xwt.ImageView (Image.FromResource ("aspnet-wizard-page.png"));
+			var rightSideWidget = new FrameBox (rightSideImage);
+			rightSideWidget.BackgroundColor = Styles.Wizard.PageBackgroundColor;
 			this.RightSideWidget = new XwtControl (rightSideWidget);
+			this.Completed += (sender, e) => Task.Run(() => OnCompletedAsync());
+			this.project = project;
+			this.parentFolder = parentFolder;
+		}
+
+		async Task OnCompletedAsync ()
+		{ 
+			var dotnet = DotNetCoreRuntime.FileName;
+			var argBuilder = new ProcessArgumentBuilder ();
+			argBuilder.Add ("aspnet-codegenerator");
+			argBuilder.Add ("--project");
+			argBuilder.AddQuoted (project.FileName);
+			argBuilder.Add (args.Scaffolder.CommandLineName);
+
+			foreach(var field in args.Scaffolder.Fields) {
+				argBuilder.Add ("-" + field.CommandLineName);
+				argBuilder.Add (field.SelectedValue);
+			}
+
+			var commandLineArgs = argBuilder.ToString ();
+
+			using (var progressMonitor = CreateProgressMonitor ()) {
+				try {
+					var process = Runtime.ProcessService.StartConsoleProcess (
+						dotnet,
+						commandLineArgs,
+						parentFolder,
+						progressMonitor.Console
+					);
+
+					await process.Task;
+				} catch (OperationCanceledException) {
+					throw;
+				} catch (Exception ex) {
+					await progressMonitor.Log.WriteLineAsync (ex.Message);
+					LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
+				}
+			}
+        }
+
+		static OutputProgressMonitor CreateProgressMonitor ()
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				"AspNetCoreScaffolder",
+				GettextCatalog.GetString ("ASP.NET Core Scaffolder"),
+				Stock.Console,
+				false,
+				true);
 		}
 
 		static IReadOnlyCollection<IWizardDialogPage> GetPages ()
