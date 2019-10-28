@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Core.Assemblies
@@ -51,6 +52,11 @@ namespace MonoDevelop.Core.Assemblies
 			if (currentRuntime != null) {
 				yield return new MonoTargetRuntime (currentRuntime);
 			}
+
+			if (!FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR").GetValueOrDefault ()) {
+				yield break;
+			}
+
 			if (Platform.IsWindows) {
 				string progs = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
 				foreach (string dir in Directory.EnumerateDirectories (progs, "Mono*")) {
