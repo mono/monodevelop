@@ -20,6 +20,7 @@
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.IndentationManager.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
@@ -74,6 +75,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.IndentationManager.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />

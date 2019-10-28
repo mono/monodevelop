@@ -70,6 +70,7 @@
     <ProjectReference Include="$(VSEditorCoreDirectory)src\TextMate\Core\Core.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DifferenceViewer\DifferenceViewerImpl.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DifferenceBuffer\DifferenceBufferImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\XPlat\IndentationManagerImpl\IndentationManagerImpl.csproj" Private="True" />
     <Reference Include="MonoDevelop.DesignerSupport">
       <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
