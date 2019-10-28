@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -201,7 +203,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 	class ScaffolderTemplateConfigurePage : ScaffolderWizardPageBase
 	{
-		private IScaffolder scaffolder;
+		IScaffolder scaffolder;
 
 		public ScaffolderTemplateConfigurePage (ScaffolderArgs args) : base (args)
 		{
@@ -212,29 +214,38 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		protected override Widget GetMainControl ()
 		{
 			var vbox = new VBox ();
-			foreach(var field in scaffolder.Fields) {
+			foreach (var field in scaffolder.Fields) {
 				switch (field) {
 				case StringField s:
-                    var hbox = new HBox ();
-                    var input = new TextEntry ();
-                    input.HeightRequest = 30;
-                    hbox.PackEnd (input);
-                    var label = new Label ();
-                    label.Font = label.Font.WithSize (15);
-                    label.Text = s.DisplayName;
-                    hbox.PackEnd (label);
-                    vbox.PackStart (hbox);
+					var hbox = new HBox ();
+					var input = new TextEntry ();
+					input.HeightRequest = 30;
+					hbox.PackEnd (input);
+					var label = new Label ();
+					label.Font = label.Font.WithSize (15);
+					label.Text = s.DisplayName;
+					hbox.PackEnd (label);
+					vbox.PackStart (hbox);
 					break;
-                }
-            }
+				}
+			}
 			return vbox;
+		}
+
+		public override int GetHashCode ()
+		{
+			// Pages are used as dictionary keys in WizardDialog.cs
+			return unchecked(
+				base.GetHashCode () + 37 * Args.Scaffolder.Name.GetHashCode ()
+			);
 		}
 	}
 
 	class ScaffolderTemplateSelectPage : ScaffolderWizardPageBase
-
 	{
-		public ScaffolderTemplateSelectPage () : base (new ScaffolderArgs ())
+		ListBox listBox;
+
+		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
 			this.CanGoBack = true;
 			this.CanGoNext = true;
@@ -243,7 +254,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.SubSubTitle = "Select Scaffolder SUB";
 		}
 
-		private Lazy<IScaffolder []> GetScaffolders ()
+		Lazy<IScaffolder []> GetScaffolders ()
 		{
 			var scaffolders = new IScaffolder [] {
 				new EmptyMvcControllerScaffolder(),
@@ -267,27 +278,95 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			var listStore = new ListStore (icon, name);
 
-			foreach (var scaffolder in GetScaffolders ().Value) {
+			var scaffolders = GetScaffolders ().Value;
+			foreach (var scaffolder in scaffolders) {
 				var row = listStore.AddRow ();
 				var png = Image.FromResource ("file-web-32.png");
 				listStore.SetValue (row, icon, png);
 				listStore.SetValue (row, name, scaffolder.Name);
 			}
 
-			var listBox = new ListBox ();
+			listBox = new ListBox ();
 			listBox.Views.Add (new ImageCellView (icon));
 			listBox.Views.Add (new TextCellView (name));
 
 			listBox.DataSource = listStore;
 			listBox.HeightRequest = 400;
 			listBox.WidthRequest = 300;
+			listBox.SelectionChanged += (sender, e) => Args.Scaffolder = scaffolders [listBox.SelectedRow];
 			return listBox;
 		}
 	}
 
-	class ScaffolderWizard : WizardDialogController
+	class ScaffolderDialogController : WizardDialogControllerBase
 	{
-		public ScaffolderWizard () : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages ())
+		// We have 2 pages, the first contains a list of templates
+		// and the 2nd is an entry form based on the selection
+		// in the first page.
+		ReadOnlyCollection<IWizardDialogPage> pages;
+		readonly ScaffolderArgs args;
+
+		public IReadOnlyCollection<IWizardDialogPage> Pages { get { return pages; } }
+
+		public override bool CanGoBack {
+			get {
+				return CurrentPage is ScaffolderTemplateConfigurePage;
+			}
+		}
+
+		public override bool CurrentPageIsLast {
+			get { return CanGoBack; }
+		}
+
+		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, IWizardDialogPage page, ScaffolderArgs args)
+			: this (title, icon, rightSideWidget, new IWizardDialogPage [] { page }, args)
+		{
+			this.args = args;
+		}
+
+		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, IEnumerable<IWizardDialogPage> pages, ScaffolderArgs args)
+			: base (title, icon, rightSideWidget, pages.FirstOrDefault ())
+		{
+			this.pages = new ReadOnlyCollection<IWizardDialogPage> (pages.ToList ());
+			if (this.pages.Count == 0)
+				throw new ArgumentException ("pages must contain at least one page.", nameof (pages));
+			this.args = args;
+		}
+
+		Lazy<ScaffolderTemplateConfigurePage> GetConfigurePage(ScaffolderArgs args)
+		{
+			// we want to return the same instance for the same args
+			return new Lazy<ScaffolderTemplateConfigurePage>(() => new ScaffolderTemplateConfigurePage (args));
+        }
+
+		protected override Task<IWizardDialogPage> OnGoNext (CancellationToken token)
+		{
+			switch (CurrentPage) {
+			case ScaffolderTemplateSelectPage _:
+				IWizardDialogPage configPage = GetConfigurePage (args).Value;
+				return Task.FromResult (configPage);
+			}
+			return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
+			//var currentIndex = pages.IndexOf (CurrentPage);
+			//if (currentIndex == pages.Count - 1)
+			//	return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
+			//else
+			//	return Task.FromResult (pages [currentIndex + 1]);
+		}
+
+		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
+		{
+			IWizardDialogPage firstPage = pages [0];
+			return Task.FromResult(firstPage);
+			//var currentIndex = pages.IndexOf (CurrentPage);
+			//return Task.FromResult (pages [currentIndex - 1]);
+		}
+	}
+
+	class ScaffolderWizard : ScaffolderDialogController
+	{
+		static ScaffolderArgs args = new ScaffolderArgs();
+		public ScaffolderWizard () : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages (), args)
 		{
 			this.DefaultPageSize = new Size (600, 500);
 
@@ -301,11 +380,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		static IReadOnlyCollection<IWizardDialogPage> GetPages ()
 		{
-			var args = new ScaffolderArgs ();
 			//TODO: Get this from wizard
 			args.Scaffolder = new EmptyMvcControllerScaffolder ();
 			return new IWizardDialogPage [] {
-					new ScaffolderTemplateSelectPage(),
+					new ScaffolderTemplateSelectPage(args),
 					new ScaffolderTemplateConfigurePage(args)
 				};
 
