@@ -19,9 +19,6 @@
 		<DebugType>portable</DebugType>
 		<WarningLevel>4</WarningLevel>
 		<Deterministic>True</Deterministic>
-		<IsMac>$([MSBuild]::IsOsPlatform('OSX'))</IsMac>
-		<IsWindows>$([MSBuild]::IsOsPlatform('Windows'))</IsWindows>
-		<IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
 	</PropertyGroup>
 
 	<!-- AddinBuildDir is shorthand for which subdir of build\Addins to build into -->
@@ -59,10 +56,16 @@
 		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<DefineConstants Condition="$(IsMac)">$(DefineConstants);MAC</DefineConstants>
-		<DefineConstants Condition="$(IsWindows)">$(DefineConstants);WIN32;WINDOWS</DefineConstants>
-		<DefineConstants Condition="$(IsLinux)">$(DefineConstants);GNOME;LINUX</DefineConstants>
+	<PropertyGroup Condition="$(Configuration.Contains('Mac'))">
+		<DefineConstants>$(DefineConstants);MAC</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('Win32'))">
+		<DefineConstants>$(DefineConstants);WIN32;WINDOWS</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('Gnome'))">
+		<DefineConstants>$(DefineConstants);GNOME;LINUX</DefineConstants>
 	</PropertyGroup>
 
 	<Target Name="RemoveNoisyAnalyzers" BeforeTargets="CoreCompile">
