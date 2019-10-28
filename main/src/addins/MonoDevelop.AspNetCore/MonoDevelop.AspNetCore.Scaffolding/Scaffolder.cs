@@ -38,7 +38,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderArgs
 	{
-
+		public ScaffolderArgs ()
+		{
+			//TODO: Get the scaffolder from the wizard
+			Scaffolder = new EmptyMvcControllerScaffolder ();
+		}
+		public IScaffolder Scaffolder { get; set; }
 	}
 
 	abstract class ScaffolderWizardPageBase : WizardDialogPageBase
@@ -47,6 +52,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		protected ScaffolderWizardPageBase (ScaffolderArgs args)
 		{
 			Args = args;
+			CanGoBack = true;
+			CanGoNext = true;
 		}
 
 		public string SubSubTitle {
@@ -76,11 +83,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 	class ScaffolderField
 	{
-		string CommandLineName { get; }
-		Type Type { get; }
-		string DisplayName { get; }
+		public string CommandLineName { get; }
+		public Type Type { get; }
+		public string DisplayName { get; }
 
-		string Value { get; set; }
+		public string Value { get; set; }
 
 		public ScaffolderField (string commandLineName, string displayName, Type type)
 		{
@@ -187,9 +194,38 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			new [] { new ScaffolderField ("name", "Name", typeof (string)) };
 	}
 
-	class ScaffolderTemplateSelect : ScaffolderWizardPageBase
+	class ScaffolderTemplateConfigurePage : ScaffolderWizardPageBase
 	{
-		public ScaffolderTemplateSelect () : base (new ScaffolderArgs ())
+		private IScaffolder scaffolder;
+
+		public ScaffolderTemplateConfigurePage (ScaffolderArgs args) : base (args)
+		{
+			scaffolder = args.Scaffolder;
+			this.SubSubTitle = scaffolder.Name;
+		}
+
+		protected override Widget GetMainControl ()
+		{
+			var vbox = new VBox ();
+			foreach(var field in scaffolder.Fields) {
+				var hbox = new HBox ();
+				var input = new TextEntry ();
+				input.HeightRequest = 30;
+				hbox.PackEnd (input);
+				var label = new Label ();
+				label.Font = label.Font.WithSize (15);
+				label.Text = field.DisplayName;
+				hbox.PackEnd (label);
+				vbox.PackStart (hbox);
+            }
+			return vbox;
+		}
+	}
+
+	class ScaffolderTemplateSelectPage : ScaffolderWizardPageBase
+
+	{
+		public ScaffolderTemplateSelectPage () : base (new ScaffolderArgs ())
 		{
 			this.CanGoBack = true;
 			this.CanGoNext = true;
@@ -234,28 +270,15 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			listBox.Views.Add (new TextCellView (name));
 
 			listBox.DataSource = listStore;
-			//listBox.Items.Add ("MVC Controller – Empty");
-			//listBox.Items.Add ("MVC Controller with read / write actions");
-			//listBox.Items.Add ("API Controller – Empty");
-			//listBox.Items.Add ("API Controller with read / write actions");
-			//listBox.Items.Add ("API Controller with actions using Entity Framework");
-			//listBox.Items.Add ("Razor Page");
-			//listBox.Items.Add ("Razor Page using Entity Framework");
-			//listBox.Items.Add ("Razor Page using Entity Framework (CRUD)");
-			//listBox.Items.Add ("Identity");
-			//listBox.Items.Add ("Layout ");
 			listBox.HeightRequest = 400;
 			listBox.WidthRequest = 300;
-			//listBox.Font = MonoDevelop.Ide.Gui.Styles.DefaultFont;
-			//listBox.ExpandVertical = true;
-			//mainBox. = new WidgetSpacing (20, 20, 20, 20);
 			return listBox;
 		}
 	}
 
 	class ScaffolderWizard : WizardDialogController
 	{
-		public ScaffolderWizard (string title, IWizardDialogPage firstPage) : base (title, StockIcons.Information, null, firstPage)
+		public ScaffolderWizard () : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages ())
 		{
 			this.DefaultPageSize = new Size (600, 500);
 
@@ -265,6 +288,18 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			////rightSideWidget.ExpandHorizontal = true;
 			//rightSideWidget.ExpandVertical = true;
 			this.RightSideWidget = new XwtControl (rightSideWidget);
+		}
+
+		static IReadOnlyCollection<IWizardDialogPage> GetPages ()
+		{
+			var args = new ScaffolderArgs ();
+			//TODO: Get this from wizard
+			args.Scaffolder = new EmptyMvcControllerScaffolder ();
+			return new IWizardDialogPage [] {
+					new ScaffolderTemplateSelectPage(),
+					new ScaffolderTemplateConfigurePage(args)
+				};
+
 		}
 	}
 }
