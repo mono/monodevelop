@@ -392,9 +392,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		static readonly ScaffolderArgs args = new ScaffolderArgs();
 		readonly DotNetProject project;
-		readonly string parentFolder;
+		readonly FilePath parentFolder;
 
-		public ScaffolderWizard (DotNetProject project, string parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages (), args)
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages (), args)
 		{
 			this.DefaultPageSize = new Size (600, 500);
 
@@ -424,6 +424,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
 			argBuilder.Add ("-outDir");
             argBuilder.AddQuoted(parentFolder);
+			//TODO: does this apply to every scaffolder or just Controller?
+			argBuilder.Add ("-namespace", project.GetDefaultNamespace (parentFolder.Combine("file.cs")));
 
 			foreach(var arg in args.Scaffolder.DefaultArgs) {
 				argBuilder.Add (arg);
