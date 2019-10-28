@@ -52,6 +52,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			Scaffolder = new EmptyMvcControllerScaffolder ();
 		}
 		public IScaffolder Scaffolder { get; set; }
+
+		public override int GetHashCode ()
+		{
+			return Scaffolder.Name.GetHashCode ();
+		}
 	}
 
 	abstract class ScaffolderWizardPageBase : WizardDialogPageBase
@@ -321,6 +326,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		ReadOnlyCollection<IWizardDialogPage> pages;
 		readonly ScaffolderArgs args;
 
+		static Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
+			= new Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> ();
 		public IReadOnlyCollection<IWizardDialogPage> Pages { get { return pages; } }
 
 		public override bool CanGoBack {
@@ -348,17 +355,24 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
-		Lazy<ScaffolderTemplateConfigurePage> GetConfigurePage(ScaffolderArgs args)
+		ScaffolderTemplateConfigurePage GetConfigurePage(ScaffolderArgs args)
 		{
 			// we want to return the same instance for the same args
-			return new Lazy<ScaffolderTemplateConfigurePage>(() => new ScaffolderTemplateConfigurePage (args));
+			if(cachedPages.ContainsKey(args)) {
+				return cachedPages [args];
+            }
+			else {
+				var page = new ScaffolderTemplateConfigurePage (args);
+				cachedPages.Add (args, page);
+				return page;
+            }
         }
 
 		protected override Task<IWizardDialogPage> OnGoNext (CancellationToken token)
 		{
 			switch (CurrentPage) {
 			case ScaffolderTemplateSelectPage _:
-				IWizardDialogPage configPage = GetConfigurePage (args).Value;
+				IWizardDialogPage configPage = GetConfigurePage (args);
 				return Task.FromResult (configPage);
 			}
 			return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
