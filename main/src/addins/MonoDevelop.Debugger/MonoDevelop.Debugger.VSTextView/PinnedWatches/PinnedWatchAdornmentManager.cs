@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			this.cocoaViewFactory = cocoaViewFactory;
 			this.textView = textView;
 
-			//this.textView.LayoutChanged += OnTextViewLayoutChanged;
+			this.textView.LayoutChanged += OnTextViewLayoutChanged;
 
 			if (DebuggingService.IsDebugging) {
 				RenderAllAdornments ();
@@ -102,11 +102,16 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			adornments.Remove (e.Watch);
 		}
 
-		void RenderAdornment (PinnedWatch watch)
+		SnapshotSpan GetSnapshotSpan (PinnedWatch watch)
 		{
 			var newSpan = textView.TextSnapshot.SpanFromMDColumnAndLine (watch.Line, watch.Column, watch.EndLine, watch.EndColumn);
 			var trackingSpan = textView.TextSnapshot.CreateTrackingSpan (newSpan, SpanTrackingMode.EdgeInclusive);
-			var span = trackingSpan.GetSpan (textView.TextSnapshot);
+			return trackingSpan.GetSpan (textView.TextSnapshot);
+		}
+
+		void RenderAdornment (PinnedWatch watch)
+		{
+			var span = GetSnapshotSpan (watch);
 
 			if (textView.TextViewLines == null)
 				return;
@@ -123,19 +128,31 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			var view = (NSView) materialView;
 			view.WantsLayer = true;
 
+			UpdateAdornmentLayout (watch, view, span);
+
+			adornments [watch] = view;
+		}
+
+		void UpdateAdornmentLayout (PinnedWatch watch, NSView view, SnapshotSpan span)
+		{
 			try {
+				if (!textView.TextViewLines.IntersectsBufferSpan (span)) {
+					layer.RemoveAdornmentsByTag (watch);
+					return;
+				}
+
 				var charBound = textView.TextViewLines.GetCharacterBounds (span.End);
 				var origin = new CGPoint (
 					Math.Round (charBound.Left),
 					Math.Round (charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2));
 				view.SetFrameOrigin (origin);
+
+				if (view.Superview == null)
+					layer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, watch, view, null);
 			} catch (Exception ex) {
 				view.SetFrameOrigin (default);
 				LoggingService.LogInternalError ("https://vsmac.dev/923058", ex);
 			}
-
-			layer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, watch, view, null);
-			adornments[watch] = view;
 		}
 
 		void RenderAllAdornments ()
@@ -163,16 +180,14 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			debugging = false;
 		}
 
-		//void OnTextViewLayoutChanged (object sender, TextViewLayoutChangedEventArgs e)
-		//{
-		//	if (!DebuggingService.IsDebugging)
-		//		return;
+		void OnTextViewLayoutChanged (object sender, TextViewLayoutChangedEventArgs e)
+		{
+			if (!DebuggingService.IsDebugging)
+				return;
 
-		//	layer.RemoveAllAdornments ();
-		//	adornments.Clear ();
-
-		//	RenderAllAdornments ();
-		//}
+			foreach (var adornmentPair in adornments)
+				UpdateAdornmentLayout (adornmentPair.Key, adornmentPair.Value, GetSnapshotSpan(adornmentPair.Key));
+		}
 
 		public void Dispose ()
 		{
@@ -184,7 +199,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
 			DebuggingService.StoppedEvent -= OnDebuggingSessionStopped;
-			//textView.LayoutChanged -= OnTextViewLayoutChanged;
+			textView.LayoutChanged -= OnTextViewLayoutChanged;
 		}
 	}
 }
