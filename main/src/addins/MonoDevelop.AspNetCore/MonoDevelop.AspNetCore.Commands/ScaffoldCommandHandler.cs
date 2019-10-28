@@ -45,7 +45,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
 		public async void Scaffold ()
 		{
-			var w = new ScaffolderWizard ("Add New Scaffolded Item", new ScaffolderTemplateSelect ());
+			var w = new ScaffolderWizard ();
 			//Xwt.Toolkit.NativeEngine.Invoke (() => {
 			var res = w.RunWizard ();
 			//});
