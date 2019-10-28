@@ -49,7 +49,7 @@ namespace MonoDevelop.PackageManagement
 			IdeApp.RunWhenIdle (() => {
 				Xwt.Toolkit.NativeEngine.Invoke (delegate {
 					using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
-						res.SetResult (dialog.Run (Xwt.MessageDialog.RootWindow));
+						res.SetResult (dialog.Run (MessageService.RootWindow));
 					}
 				});
 			});
