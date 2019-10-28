@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open) {
-				TransientFor = IdeServices.DesktopService.GetFocusedTopLevelWindow (),
+				TransientFor = MessageService.RootWindow,
 				ShowEncodingSelector = true,
 				ShowViewerSelector = true,
 			};
