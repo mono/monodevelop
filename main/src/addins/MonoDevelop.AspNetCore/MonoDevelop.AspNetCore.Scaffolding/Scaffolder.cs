@@ -362,19 +362,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				return Task.FromResult (configPage);
 			}
 			return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
-			//var currentIndex = pages.IndexOf (CurrentPage);
-			//if (currentIndex == pages.Count - 1)
-			//	return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
-			//else
-			//	return Task.FromResult (pages [currentIndex + 1]);
 		}
 
 		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
 		{
 			IWizardDialogPage firstPage = pages [0];
 			return Task.FromResult(firstPage);
-			//var currentIndex = pages.IndexOf (CurrentPage);
-			//return Task.FromResult (pages [currentIndex - 1]);
 		}
 	}
 
@@ -411,6 +404,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				argBuilder.Add (field.SelectedValue);
 			}
 
+			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
 			var commandLineArgs = argBuilder.ToString ();
 
 			using (var progressMonitor = CreateProgressMonitor ()) {
@@ -438,7 +432,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				"AspNetCoreScaffolder",
 				GettextCatalog.GetString ("ASP.NET Core Scaffolder"),
 				Stock.Console,
-				false,
+				true,
 				true);
 		}
 
