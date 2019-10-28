@@ -1613,6 +1613,8 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<CommandItem id="MonoDevelop.DotNetCore.Commands.Pack" insertbefore="Publish" />
+		<Condition id="ItemType" value="DotNetProject">
+			<CommandItem id="MonoDevelop.DotNetCore.Commands.Pack" insertbefore="Publish" />
+		</Condition>
 	</Extension>
 </ExtensionModel>
