@@ -914,7 +914,7 @@ namespace MonoDevelop.Debugger
 		{
 			enabled = SelectedRowCount > 0;
 
-			return true; 
+			return true;
 		}
 
 		[CommandUpdateHandler (DebugCommands.AddWatch)]
@@ -927,6 +927,9 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.Rename)]
 		protected void OnRename ()
 		{
+			if (SelectedRow == -1)
+				return;
+
 			var nameView = (MacDebuggerObjectNameView) GetView (0, SelectedRow, false);
 
 			nameView.TextField.BecomeFirstResponder ();
@@ -939,7 +942,7 @@ namespace MonoDevelop.Debugger
 
 		bool CanRename (out bool enabled)
 		{
-			enabled = SelectedRowCount == 1;
+			enabled = SelectedRowCount == 1 && SelectedRow != -1;
 
 			return AllowWatchExpressions;
 		}
