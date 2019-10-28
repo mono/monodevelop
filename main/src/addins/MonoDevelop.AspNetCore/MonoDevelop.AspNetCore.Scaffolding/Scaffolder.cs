@@ -108,53 +108,70 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		}
 	}
 
-	interface IScaffolder
+	abstract class IScaffolder
 	{
-		string Name { get; }
-		string CommandLineName { get; }
-		IEnumerable<ScaffolderField> Fields { get; }
+		public virtual string Name { get; }
+		public virtual string CommandLineName { get; }
+        public virtual string[] DefaultArgs => Array.Empty<string> (); 
+		public virtual IEnumerable<ScaffolderField> Fields { get; }
 	}
 
 	class EmptyMvcControllerScaffolder : IScaffolder
 	{
-		public string Name => "MVC Controller - Empty";
-		public string CommandLineName => "controller";
+//Generator Options:
+  //--controllerName|-name              : Name of the controller
+  //--useAsyncActions|-async            : Switch to indicate whether to generate async controller actions
+  //--noViews|-nv                       : Switch to indicate whether to generate CRUD views
+  //--restWithNoViews|-api              : Specify this switch to generate a Controller with REST style API, noViews is assumed and any view related options are ignored
+  //--readWriteActions|-actions         : Specify this switch to generate Controller with read/write actions when a Model class is not used
+  //--model|-m                          : Model class to use
+  //--dataContext|-dc                   : DbContext class to use
+  //--referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
+  //--layout|-l                         : Custom Layout page to use
+  //--useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
+  //--force|-f                          : Use this option to overwrite existing files
+  //--relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
+  //--controllerNamespace|-namespace    : Specify the name of the namespace to use for the generated controller
 
-		static StringField[] stringField = new [] { new StringField ("name", "Name") };
-		public IEnumerable<ScaffolderField> Fields => stringField;
+
+		public override string Name => "MVC Controller - Empty";
+		public override string CommandLineName => "controller";
+
+		static StringField[] stringField = new [] { new StringField ("-name", "Name") };
+		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
 	class MvcControllerWithActionsScaffolder : IScaffolder
 	{
-		public string Name => "MVC Controller with read / write actions";
-		public string CommandLineName => "controller";
-
-		public IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		public override string Name => "MVC Controller with read / write actions";
+		public override string CommandLineName => "controller";
+		public override string [] DefaultArgs => new [] { "--readWriteActions" };
+		static StringField[] stringField = new [] { new StringField ("-name", "Name") };
+		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
 	class EmptyApiControllerScaffolder : IScaffolder
 	{
-		public string Name => "API Controller - Empty";
-		public string CommandLineName => "controller";
+		public override string Name => "API Controller - Empty";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class ApiControllerWithActionsScaffolder : IScaffolder
 	{
-		public string Name => "API Controller with read / write actions";
-		public string CommandLineName => "controller";
+		public override string Name => "API Controller with read / write actions";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class ApiControllerEntityFrameworkScaffolder : IScaffolder
 	{
-		public string Name => "API Controller with actions using Entity Framework";
-		public string CommandLineName => "controller";
+		public override string Name => "API Controller with actions using Entity Framework";
+		public override string CommandLineName => "controller";
 
 		public IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
@@ -162,46 +179,46 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 	class RazorPageScaffolder : IScaffolder
 	{
-		public string Name => "Razor Page";
-		public string CommandLineName => "controller";
+		public override string Name => "Razor Page";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class RazorPageEntityFrameworkScaffolder : IScaffolder
 	{
-		public string Name => "Razor Page using Entity Framework";
-		public string CommandLineName => "controller";
+		public override string Name => "Razor Page using Entity Framework";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class RazorPageEntityFrameworkCrudScaffolder : IScaffolder
 	{
-		public string Name => "Razor Page using Entity Framework (CRUD)";
-		public string CommandLineName => "controller";
+		public override string Name => "Razor Page using Entity Framework (CRUD)";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class IdentityScaffolder : IScaffolder
 	{
-		public string Name => "Identity";
-		public string CommandLineName => "controller";
+		public override string Name => "Identity";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
 	class LayoutScaffolder : IScaffolder
 	{
-		public string Name => "Layout";
-		public string CommandLineName => "controller";
+		public override string Name => "Layout";
+		public override string CommandLineName => "controller";
 
-		public IEnumerable<ScaffolderField> Fields =>
+		public override IEnumerable<ScaffolderField> Fields =>
 			new [] { new StringField ("name", "Name") };
 	}
 
@@ -400,13 +417,17 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			argBuilder.Add (args.Scaffolder.CommandLineName);
 
 			foreach(var field in args.Scaffolder.Fields) {
-				argBuilder.Add ("-" + field.CommandLineName);
+				argBuilder.Add (field.CommandLineName);
 				argBuilder.Add (field.SelectedValue);
 			}
 
 			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
 			argBuilder.Add ("-outDir");
             argBuilder.AddQuoted(parentFolder);
+
+			foreach(var arg in args.Scaffolder.DefaultArgs) {
+				argBuilder.Add (arg);
+            }
 
 			var commandLineArgs = argBuilder.ToString ();
 
