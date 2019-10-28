@@ -1922,8 +1922,11 @@ namespace MonoDevelop.Projects
 
 		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
-			foreach (var pref in objs.OfType<ProjectReference> ())
+			bool referencedAdded = false;
+			foreach (var pref in objs.OfType<ProjectReference> ()) {
+				referencedAdded = true;
 				pref.SetOwnerProject (this);
+			}
 
 			base.OnItemsAdded (objs);
 
@@ -1934,13 +1937,17 @@ namespace MonoDevelop.Projects
 			foreach (var pref in objs.OfType<ProjectReference> ())
 				ProjectExtension.OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, pref));
 			
-			NotifyReferencedAssembliesChanged ();
+			if (referencedAdded)
+				NotifyReferencedAssembliesChanged ();
 		}
 
 		protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
-			foreach (var pref in objs.OfType<ProjectReference> ())
+			bool referencedRemoved = false;
+			foreach (var pref in objs.OfType<ProjectReference> ()) {
+				referencedRemoved = true;
 				pref.SetOwnerProject (null);
+			}
 
 			base.OnItemsRemoved (objs);
 
@@ -1951,7 +1958,8 @@ namespace MonoDevelop.Projects
 			foreach (var pref in objs.OfType<ProjectReference> ())
 				ProjectExtension.OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, pref));
 			
-			NotifyReferencedAssembliesChanged ();
+			if (referencedRemoved)
+				NotifyReferencedAssembliesChanged ();
 		}
 
 		internal void NotifyReferencedAssembliesChanged ()
