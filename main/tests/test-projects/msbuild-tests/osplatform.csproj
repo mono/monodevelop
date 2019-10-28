@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IsMac>$([MSBuild]::IsOsPlatform('OSX'))</IsMac>
+    <IsMac2>$([MSBuild]::IsOSPlatform('OSX'))</IsMac2>
+    <IsMac3>$([MSBuild]::isosplatform('OSX'))</IsMac3>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="$(IsMac)">MAC</DefineConstants>
+  </PropertyGroup>
+</Project>
