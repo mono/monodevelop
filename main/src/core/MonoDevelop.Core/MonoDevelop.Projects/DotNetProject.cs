@@ -438,7 +438,9 @@ namespace MonoDevelop.Projects
 				return targetFramework;
 			}
 			set {
-				if (!SupportsFramework (value))
+				// Allow all SDK style projects to be loaded even if the framework is unknown.
+				// A PackageReference may define the target framework with an imported MSBuild file (e.g. Tizen.NET projects).
+				if (!SupportsFramework (value) && !HasFlavor<SdkProjectExtension> ())
 					throw new ArgumentException ("Project does not support framework '" + value.Id.ToString () +"'");
 				if (value == null)
 					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (ToolsVersion));

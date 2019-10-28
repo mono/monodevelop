@@ -68,19 +68,6 @@ namespace MonoDevelop.Projects
 			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
-		internal protected override bool OnGetSupportsFramework (TargetFramework framework)
-		{
-			// Allow all SDK style projects to be loaded even if the framework is unknown.
-			// A PackageReference may define the target framework with an imported MSBuild file.
-			return true;
-		}
-
-		/// <summary>
-		/// Currently this project extension is enabled for all SDK style projects and
-		/// not just for .NET Core and .NET Standard projects. SDK project support
-		/// should be separated out from this extension so it can be enabled only for
-		/// .NET Core and .NET Standard projects.
-		/// </summary>
 		bool IsSdkProject (DotNetProject project)
 		{
 			return project.MSBuildProject.GetReferencedSDKs ().Length > 0;
