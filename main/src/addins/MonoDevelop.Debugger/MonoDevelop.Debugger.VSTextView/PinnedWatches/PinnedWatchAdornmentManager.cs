@@ -137,7 +137,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 		{
 			try {
 				if (!textView.TextViewLines.IntersectsBufferSpan (span)) {
-					layer.RemoveAdornmentsByTag (watch);
+					layer.RemoveAdornment (view);
 					return;
 				}
 
@@ -147,8 +147,10 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 					Math.Round (charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2));
 				view.SetFrameOrigin (origin);
 
-				if (view.Superview == null)
+				if (view.Superview == null || view.VisibleRect () == CGRect.Empty) {
+					layer.RemoveAdornment (view);
 					layer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, watch, view, null);
+				}
 			} catch (Exception ex) {
 				view.SetFrameOrigin (default);
 				LoggingService.LogInternalError ("https://vsmac.dev/923058", ex);
