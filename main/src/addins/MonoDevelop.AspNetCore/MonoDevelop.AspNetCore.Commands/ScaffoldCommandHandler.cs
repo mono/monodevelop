@@ -32,58 +32,22 @@ namespace MonoDevelop.AspNetCore.Commands
 
 	class ScaffoldCommandHandler : NodeCommandHandler
 	{
-		static OutputProgressMonitor CreateProgressMonitor ()
-		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				"AspNetCoreScaffolder",
-				GettextCatalog.GetString ("ASP.NET Core Scaffolder"),
-				Stock.Console,
-				false,
-				true);
-		}
-
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
 		public async void Scaffold ()
 		{
-			var w = new ScaffolderWizard ();
-			//Xwt.Toolkit.NativeEngine.Invoke (() => {
-			var res = w.RunWizard ();
-			//});
 
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (project == null)
 				return;
 
-			var dotnet = DotNetCoreRuntime.FileName;
-			var argBuilder = new ProcessArgumentBuilder ();
-			argBuilder.Add ("aspnet-codegenerator");
-			argBuilder.Add ("--project");
-			argBuilder.AddQuoted (project.FileName);
-			argBuilder.Add ("controller");
-			argBuilder.Add ("-name");
-			argBuilder.Add ("Geno");
-
-			var args = argBuilder.ToString ();
 			var folder = CurrentNode.GetParentDataItem (typeof (ProjectFolder), true) as ProjectFolder;
-			string path = folder?.Path ?? project.BaseDirectory;
+			string parentFolder = folder?.Path ?? project.BaseDirectory;
 
-			using (var progressMonitor = CreateProgressMonitor ()) {
-				try {
-					var process = Runtime.ProcessService.StartConsoleProcess (
-						dotnet,
-						args,
-						path,
-						progressMonitor.Console
-					);
+			var w = new ScaffolderWizard (project, parentFolder);
+			//Xwt.Toolkit.NativeEngine.Invoke (() => {
+			var res = w.RunWizard ();
+			//});
 
-					await process.Task;
-				} catch (OperationCanceledException) {
-					throw;
-				} catch (Exception ex) {
-					progressMonitor.Log.WriteLine (ex.Message);
-					LoggingService.LogError ($"Failed to run {dotnet} {args}", ex);
-				}
-			}
 		}
 
 		[CommandUpdateHandler (AspNetCoreCommands.Scaffold)]
