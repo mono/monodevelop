@@ -28,8 +28,10 @@ namespace MonoDevelop.VersionControl.Views
 		private global::Gtk.TextView textviewDetails;
 		private global::Gtk.ScrolledWindow scrolledwindowFiles;
 		private global::Gtk.ScrolledWindow scrolledwindowFileContents = new ScrolledWindow ();
-		
+		Label labelFilePathName = new Gtk.Label ();
+
 		private HPaned fileHPaned;
+		private VBox vboxFileContents;
 
 		protected virtual void Build ()
 		{
@@ -187,7 +189,11 @@ namespace MonoDevelop.VersionControl.Views
 			this.fileHPaned.Position = 333;
 
 			fileHPaned.Add (this.scrolledwindowFiles);
-			fileHPaned.Add (this.scrolledwindowFileContents);
+			vboxFileContents = new VBox ();
+			labelFilePathName.Xalign = 0f;
+			vboxFileContents.PackStart (labelFilePathName, false, true, 6);
+			vboxFileContents.PackStart (scrolledwindowFileContents, true, true, 0);
+			fileHPaned.Add (vboxFileContents);
 
 			this.vpaned1.Add (fileHPaned);
 			this.vbox1.Add (this.vpaned1);
