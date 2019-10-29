@@ -32,8 +32,6 @@ using AppKit;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
-
 namespace MonoDevelop.Debugger
 {
 	/// <summary>
@@ -43,6 +41,7 @@ namespace MonoDevelop.Debugger
 	{
 		readonly List<NSLayoutConstraint> constraints = new List<NSLayoutConstraint> ();
 		PreviewButtonIcon currentIcon;
+		bool addNewExpressionVisible;
 		bool previewIconVisible;
 		bool disposed;
 
@@ -63,6 +62,15 @@ namespace MonoDevelop.Debugger
 			AddSubview (ImageView);
 			AddSubview (TextField);
 
+			AddNewExpressionButton = new NSButton {
+				TranslatesAutoresizingMaskIntoConstraints = false,
+				AccessibilityTitle = GettextCatalog.GetString ("Add new expression"),
+				Image = GetImage ("gtk-add", Gtk.IconSize.Menu),
+				BezelStyle = NSBezelStyle.Inline,
+				Bordered = false
+			};
+			AddNewExpressionButton.Activated += OnAddNewExpressionButtonClicked;
+
 			PreviewButton = new NSButton {
 				TranslatesAutoresizingMaskIntoConstraints = false,
 				Image = GetImage ("md-empty", Gtk.IconSize.Menu),
@@ -74,6 +82,10 @@ namespace MonoDevelop.Debugger
 
 		public MacDebuggerObjectNameView (IntPtr handle) : base (handle)
 		{
+		}
+
+		public NSButton AddNewExpressionButton {
+			get; private set;
 		}
 
 		public NSButton PreviewButton {
@@ -93,19 +105,11 @@ namespace MonoDevelop.Debugger
 
 			OptimalWidth = MarginSize;
 
-			bool selected = Superview is NSTableRowView rowView && rowView.Selected;
-			var iconName = ObjectValueTreeViewController.GetIcon (Node.Flags);
-			ImageView.Image = GetImage (iconName, Gtk.IconSize.Menu, selected);
-			constraints.Add (ImageView.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
-			constraints.Add (ImageView.LeadingAnchor.ConstraintEqualToAnchor (LeadingAnchor, MarginSize));
-			constraints.Add (ImageView.WidthAnchor.ConstraintEqualToConstant (ImageSize));
-			constraints.Add (ImageView.HeightAnchor.ConstraintEqualToConstant (ImageSize));
-
-			OptimalWidth += ImageView.Image.Size.Width;
-			OptimalWidth += RowCellSpacing;
-
 			var editable = TreeView.AllowWatchExpressions && Node.Parent is RootObjectValueNode;
+			var selected = Superview is NSTableRowView rowView && rowView.Selected;
+			var iconName = ObjectValueTreeViewController.GetIcon (Node.Flags);
 			var textColor = NSColor.ControlText;
+			var showAddNewExpression = false;
 			var placeholder = string.Empty;
 			var name = Node.Name;
 
@@ -120,11 +124,41 @@ namespace MonoDevelop.Debugger
 			} else if (Node.IsEnumerable) {
 			} else if (Node is AddNewExpressionObjectValueNode) {
 				placeholder = GettextCatalog.GetString ("Add new expression");
+				showAddNewExpression = true;
 				name = string.Empty;
 				editable = true;
 			} else if (TreeView.Controller.GetNodeHasChangedSinceLastCheckpoint (Node)) {
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
 			}
+
+			NSView firstView;
+
+			if (showAddNewExpression) {
+				firstView = AddNewExpressionButton;
+
+				if (!addNewExpressionVisible) {
+					ImageView.RemoveFromSuperview ();
+					AddSubview (AddNewExpressionButton);
+					addNewExpressionVisible = true;
+				}
+			} else {
+				ImageView.Image = GetImage (iconName, Gtk.IconSize.Menu, selected);
+				firstView = ImageView;
+
+				if (addNewExpressionVisible) {
+					AddNewExpressionButton.RemoveFromSuperview ();
+					addNewExpressionVisible = false;
+					AddSubview (ImageView);
+				}
+			}
+
+			constraints.Add (firstView.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
+			constraints.Add (firstView.LeadingAnchor.ConstraintEqualToAnchor (LeadingAnchor, MarginSize));
+			constraints.Add (firstView.WidthAnchor.ConstraintEqualToConstant (ImageSize));
+			constraints.Add (firstView.HeightAnchor.ConstraintEqualToConstant (ImageSize));
+
+			OptimalWidth += ImageSize;
+			OptimalWidth += RowCellSpacing;
 
 			TextField.PlaceholderAttributedString = GetAttributedPlaceholderString (placeholder);
 			TextField.StringValue = name;
@@ -136,7 +170,7 @@ namespace MonoDevelop.Debugger
 			OptimalWidth += TextField.Frame.Width;
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
-			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (ImageView.TrailingAnchor, RowCellSpacing));
+			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (firstView.TrailingAnchor, RowCellSpacing));
 
 			if (MacObjectValueTreeView.ValidObjectForPreviewIcon (Node)) {
 				SetPreviewButtonIcon (PreviewButtonIcon.Hidden);
@@ -167,6 +201,11 @@ namespace MonoDevelop.Debugger
 				constraint.Active = true;
 
 			OptimalWidth += MarginSize;
+		}
+
+		void OnAddNewExpressionButtonClicked (object sender, EventArgs e)
+		{
+			TextField.BecomeFirstResponder ();
 		}
 
 		public void SetPreviewButtonIcon (PreviewButtonIcon icon)
@@ -218,6 +257,7 @@ namespace MonoDevelop.Debugger
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && !disposed) {
+				AddNewExpressionButton.Activated -= OnAddNewExpressionButtonClicked;
 				PreviewButton.Activated -= OnPreviewButtonClicked;
 				foreach (var constraint in constraints)
 					constraint.Dispose ();
