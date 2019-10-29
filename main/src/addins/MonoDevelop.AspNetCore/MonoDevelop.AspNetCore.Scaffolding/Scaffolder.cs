@@ -154,10 +154,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	abstract class ControllerScaffolder : IScaffolder
 	{
 		protected static StringField [] stringField = new [] { new StringField ("-name", "Name") };
-		private List<CommandLineArg> commandLineArgs;
 
 		public override string CommandLineName => "controller";
 
+		private IEnumerable<CommandLineArg> commandLineArgs;
 		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
 
 		public ControllerScaffolder (ScaffolderArgs args) : this (args, null)
@@ -167,9 +167,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public ControllerScaffolder (ScaffolderArgs args, string controllerTypeArgument)
 		{
 			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
-			commandLineArgs = new List<CommandLineArg> {
+			commandLineArgs = base.DefaultArgs.Append(
 				new CommandLineArg ("-namespace", args.Project.GetDefaultNamespace (defaultNamespace))
-			};
+			);
 
 			if (controllerTypeArgument != null)
 				commandLineArgs.Append (new CommandLineArg (controllerTypeArgument));
@@ -209,53 +209,36 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public override string CommandLineName => "controller";
 		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--readWriteActions") };
 
-		public MvcControllerWithActionsScaffolder (ScaffolderArgs args) : base (args)
-		{
-		}
+		public MvcControllerWithActionsScaffolder (ScaffolderArgs args) : base (args) { }
 
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
-	class EmptyApiControllerScaffolder : IScaffolder
+	class EmptyApiControllerScaffolder : ControllerScaffolder
 	{
 		public override string Name => "API Controller - Empty";
 		public override string CommandLineName => "controller";
 		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--restWithNoViews") };
-		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
-		private ScaffolderArgs args;
 
-		public EmptyApiControllerScaffolder (ScaffolderArgs args)
-		{
-			this.args = args;
-		}
+		public EmptyApiControllerScaffolder (ScaffolderArgs args) : base (args) { }
 
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
-	class ApiControllerWithActionsScaffolder : IScaffolder
+	class ApiControllerWithActionsScaffolder : ControllerScaffolder
 	{
 		public override string Name => "API Controller with read / write actions";
 		public override string CommandLineName => "controller";
 		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--restWithNoViews", "--readWriteActions") };
-		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
-		private ScaffolderArgs args;
 
-		public ApiControllerWithActionsScaffolder (ScaffolderArgs args)
-		{
-			this.args = args;
-		}
+		public ApiControllerWithActionsScaffolder (ScaffolderArgs args) : base (args) { }
 
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
-	class ApiControllerEntityFrameworkScaffolder : IScaffolder
+	class ApiControllerEntityFrameworkScaffolder : ControllerScaffolder
 	{
-		private ScaffolderArgs args;
-
-		public ApiControllerEntityFrameworkScaffolder (ScaffolderArgs args)
-		{
-			this.args = args;
-		}
+		public ApiControllerEntityFrameworkScaffolder (ScaffolderArgs args) : base (args) { }
 
 		public override string Name => "API Controller with actions using Entity Framework";
 		public override string CommandLineName => "controller";
@@ -455,12 +438,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		// We have 2 pages, the first contains a list of templates
 		// and the 2nd is an entry form based on the selection
 		// in the first page.
-		ReadOnlyCollection<IWizardDialogPage> pages;
 		readonly ScaffolderArgs args;
 
 		static Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
 			= new Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> ();
-		public IReadOnlyCollection<IWizardDialogPage> Pages { get { return pages; } }
 
 		public override bool CanGoBack {
 			get {
@@ -472,18 +453,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			get { return CanGoBack; }
 		}
 
-		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, IWizardDialogPage page, ScaffolderArgs args)
-			: this (title, icon, rightSideWidget, new IWizardDialogPage [] { page }, args)
+		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, ScaffolderArgs args)
+			: base (title, icon, rightSideWidget, new ScaffolderTemplateSelectPage(args))
 		{
-			this.args = args;
-		}
-
-		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, IEnumerable<IWizardDialogPage> pages, ScaffolderArgs args)
-			: base (title, icon, rightSideWidget, pages.FirstOrDefault ())
-		{
-			this.pages = new ReadOnlyCollection<IWizardDialogPage> (pages.ToList ());
-			if (this.pages.Count == 0)
-				throw new ArgumentException ("pages must contain at least one page.", nameof (pages));
 			this.args = args;
 		}
 
@@ -511,7 +483,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
 		{
-			IWizardDialogPage firstPage = pages [0];
+			IWizardDialogPage firstPage = new ScaffolderTemplateSelectPage (args);
 			return Task.FromResult (firstPage);
 		}
 	}
@@ -522,7 +494,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		readonly DotNetProject project;
 		readonly FilePath parentFolder;
 
-		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, null, GetPages (), args)
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, null, args)
 		{
 			this.DefaultPageSize = new Size (600, 500);
 
@@ -554,7 +526,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
 			argBuilder.Add ("-outDir");
 			argBuilder.AddQuoted (parentFolder);
-			argBuilder.Add ("-namespace", project.GetDefaultNamespace (parentFolder.Combine ("file.cs")));
 
 			foreach (var arg in args.Scaffolder.DefaultArgs) {
 				argBuilder.Add (arg.ToString ());
@@ -590,17 +561,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				Stock.Console,
 				true,
 				true);
-		}
-
-		static IReadOnlyCollection<IWizardDialogPage> GetPages ()
-		{
-			//TODO: Get this from wizard
-			args.Scaffolder = new EmptyMvcControllerScaffolder (args);
-			return new IWizardDialogPage [] {
-					new ScaffolderTemplateSelectPage(args),
-					new ScaffolderTemplateConfigurePage(args)
-				};
-
 		}
 	}
 }
