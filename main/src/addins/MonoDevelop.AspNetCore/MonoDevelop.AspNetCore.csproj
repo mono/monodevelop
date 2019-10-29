@@ -50,8 +50,29 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreTargetFrameworkExecutionTarget.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreProjectTemplateWizard.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\ScaffoldCommandHandler.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderArgs.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\DbSetModelVisitor.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderWizard.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderDialogController.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateSelectPage.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateConfigurePage.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\LayoutScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\IdentityScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\RazorPageEntityFrameworkCrudScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\RazorPageEntityFrameworkScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\RazorPageScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ApiControllerEntityFrameworkScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ApiControllerWithActionsScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\EmptyApiControllerScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\MvcControllerWithActionsScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\EmptyMvcControllerScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ControllerScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\CommandLineArg.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\IScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ComboField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\StringField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderWizardPageBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
