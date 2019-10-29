@@ -57,7 +57,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.parentFolder = parentFolder;
 			args.Project = project;
 			args.ParentFolder = parentFolder;
-
 		}
 
 		const string toolName = "dotnet-aspnet-codegenerator";
