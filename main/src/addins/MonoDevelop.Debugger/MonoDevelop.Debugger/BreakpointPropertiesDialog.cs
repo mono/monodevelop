@@ -106,11 +106,11 @@ namespace MonoDevelop.Debugger
 
 		// Tips labels.
 		readonly Label printMessageTip = new Label (GettextCatalog.GetString ("Place simple C# expressions within {} to interpolate them.")) {
-			Sensitive = false,
+			TextColor = Styles.BreakpointPropertiesSecondaryTextColor,
 			TextAlignment = Alignment.End
 		};
 		readonly Label conditionalExpressionTip = new Label (GettextCatalog.GetString ("A C# boolean expression. Scope is local to the breakpoint.")) {
-			Sensitive = false,
+			TextColor = Styles.BreakpointPropertiesSecondaryTextColor,
 			TextAlignment = Alignment.End
 		};
 
