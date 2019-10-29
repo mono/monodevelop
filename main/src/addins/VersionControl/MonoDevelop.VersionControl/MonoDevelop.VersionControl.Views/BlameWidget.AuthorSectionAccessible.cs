@@ -57,7 +57,8 @@ namespace MonoDevelop.VersionControl.Views
 				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
 				Accessible.GtkParent = widget;
 
-				Accessible.SetRole (AtkCocoa.Roles.AXMenuButton, GettextCatalog.GetString ("Blame annotation"));
+				Accessible.SetRole (AtkCocoa.Roles.AXMenuButton);
+				Accessible.Title = GettextCatalog.GetString ("Authors Overview");
 
 				string msg = widget.GetCommitMessage (line, false);
 
