@@ -73,11 +73,11 @@ namespace MonoDevelop.Ide.Projects
 
 		void SetAccessibilityText ()
 		{
-			if (template != null) {
-				var text = template.Name;
-				if (!string.IsNullOrEmpty (templateCategory))
-					text += ", " + templateCategory.Replace ("→", "–"); // we don't want narrators to read "right arrow"
-				Text = text;
+			Text = template?.Name ?? string.Empty;
+			if (!string.IsNullOrEmpty (templateCategory)) {
+				if (!string.IsNullOrEmpty (Text))
+					Text += ", ";
+				Text += templateCategory.Replace ("→", "–"); // we don't want narrators to read "right arrow"
 			}
 		}
 
@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Projects
 				int textPixelWidth = widget.Allocation.Width - ((int)Xpad * 2);
 				layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
 
-				layout.SetMarkup (TemplateCategory);
+				layout.SetMarkup (MarkupTopLevelCategoryName (TemplateCategory));
 
 				int w, h;
 				layout.GetPixelSize (out w, out h);
@@ -212,6 +212,11 @@ namespace MonoDevelop.Ide.Projects
 			if ((flags & CellRendererState.Selected) != 0)
 				stateType = widget.HasFocus ? StateType.Selected : StateType.Active;
 			return stateType;
+		}
+
+		static string MarkupTopLevelCategoryName (string name)
+		{
+			return "<span font_weight='bold'>" + GLib.Markup.EscapeText (name) + "</span>";
 		}
 	}
 }
