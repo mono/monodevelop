@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -41,9 +42,17 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			ParentNode = parentNode;
 		}
 
+		public FrameworkReferencesNode (TargetFrameworkNode frameworkNode)
+		{
+			FrameworkNode = frameworkNode;
+			ParentNode = frameworkNode.DependenciesNode;
+		}
+
 		internal DotNetProject Project {
 			get { return ParentNode.Project; }
 		}
+
+		internal TargetFrameworkNode FrameworkNode { get; private set; }
 
 		internal DependenciesNode ParentNode { get; private set; }
 
@@ -77,7 +86,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public IEnumerable<FrameworkReferenceNode> GetChildNodes ()
 		{
 			if (ParentNode.FrameworkReferencesCache.LoadedReferences) {
-				return ParentNode.FrameworkReferencesCache.GetFrameworkReferenceNodes ();
+				return ParentNode.FrameworkReferencesCache.GetFrameworkReferenceNodes (GetTargetFrameworkMoniker ());
 			} else {
 				return GetDefaultNodes ();
 			}
@@ -88,9 +97,19 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		/// </summary>
 		public IEnumerable<FrameworkReferenceNode> GetDefaultNodes ()
 		{
-			if (Project.TargetFramework.IsNetCoreApp ())
+			return GetDefaultNodes (GetTargetFrameworkMoniker ());
+		}
+
+		TargetFrameworkMoniker GetTargetFrameworkMoniker ()
+		{
+			return FrameworkNode?.GetTargetFrameworkMoniker () ?? Project.TargetFramework.Id;
+		}
+
+		IEnumerable<FrameworkReferenceNode> GetDefaultNodes (TargetFrameworkMoniker targetFramework)
+		{
+			if (targetFramework.IsNetCoreApp ())
 				yield return new FrameworkReferenceNode ("Microsoft.NETCore.App");
-			else if (Project.TargetFramework.IsNetStandard ())
+			else if (targetFramework.IsNetStandard ())
 				yield return new FrameworkReferenceNode ("NETStandard.Library");
 		}
 	}
