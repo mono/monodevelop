@@ -40,20 +40,22 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected override Widget GetMainControl ()
 		{
-			var vbox = new VBox ();
-			foreach (var field in scaffolder.Fields) {
-				var hbox = new HBox ();
+			var table = new Table ();
+			//TODO: may as well just make Fields an array or list
+			var fields = scaffolder.Fields.ToArray ();
+
+			for(int row = 0; row < fields.Count (); row++) {
+				var field = fields[row];
 				var label = new Label ();
 
 				switch (field) {
 				case StringField s:
 					var input = new TextEntry ();
 					input.HeightRequest = 30;
-					hbox.PackEnd (input);
 					label.Font = label.Font.WithSize (15);
 					label.Text = s.DisplayName;
-					hbox.PackEnd (label);
-					vbox.PackStart (hbox);
+					table.Add (label, 0, row, hpos:WidgetPlacement.End);
+					table.Add (input, 1, row);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					break;
 				case ComboField comboField:
@@ -69,12 +71,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					}
 
 					comboBox.HeightRequest = 30;
-					hbox.PackEnd (comboBox);
 					label.Font = label.Font.WithSize (15);
 					label.Text = comboField.DisplayName;
-					hbox.PackEnd (label);
-					vbox.PackStart (hbox);
 
+					table.Add (label, 0, row, hpos:WidgetPlacement.End);
+					table.Add (comboBox, 1, row);
 					comboField.SelectedValue = comboField.Options.FirstOrDefault ();
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
@@ -83,21 +84,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
-					hbox.PackEnd (label);
+					table.Add (label, 0, row, hpos:WidgetPlacement.End, vpos:WidgetPlacement.Start);
+					var vbox = new VBox ();
                     for(int i = 0; i < boolFieldList.Options.Count; i++) {
-						var checkHbox = new HBox ();
 						var boolField = boolFieldList.Options [i];
 						var checkbox = new CheckBox (boolField.DisplayName);
-						checkHbox.PackEnd (checkbox);
+						checkbox.HeightRequest = 15;
 						checkbox.Toggled += (sender, args) => boolField.Selected = checkbox.Active;
-						hbox.PackEnd (checkHbox);
+						vbox.PackStart (checkbox);
                     }
-					vbox.PackStart (hbox);
+					table.Add (vbox, 1, row);
 					break;
 				}
 				
 			}
-			return vbox;
+			return table;
 		}
 
 		public override int GetHashCode ()
