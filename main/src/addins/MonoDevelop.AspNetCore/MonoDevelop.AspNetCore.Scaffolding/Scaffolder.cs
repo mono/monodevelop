@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
+using MonoDevelop.DotNetCore.GlobalTools;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Wizard;
@@ -557,8 +558,18 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		}
 
+		const string toolName = "dotnet-aspnet-codegenerator";
+
 		async Task OnCompletedAsync ()
 		{
+			using var progressMonitor = CreateProgressMonitor ();
+
+			// Install the tool
+			if (!DotNetCoreGlobalToolManager.IsInstalled (toolName)) {
+				await DotNetCoreGlobalToolManager.Install (toolName, progressMonitor.CancellationToken);
+			}
+
+			// Run the tool
 			var dotnet = DotNetCoreRuntime.FileName;
 			var argBuilder = new ProcessArgumentBuilder ();
 			argBuilder.Add ("aspnet-codegenerator");
@@ -581,23 +592,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			var commandLineArgs = argBuilder.ToString ();
 
-			using (var progressMonitor = CreateProgressMonitor ()) {
-				var msg = $"Running {dotnet} {commandLineArgs}\n";
-				progressMonitor.Console.Debug (0, "", msg);
+			var msg = $"Running {dotnet} {commandLineArgs}\n";
+			progressMonitor.Console.Debug (0, "", msg);
 
-				try {
-					var process = Runtime.ProcessService.StartConsoleProcess (
-						dotnet,
-						commandLineArgs,
-						parentFolder,
-						progressMonitor.Console
-					);
+			try {
+				var process = Runtime.ProcessService.StartConsoleProcess (
+					dotnet,
+					commandLineArgs,
+					parentFolder,
+					progressMonitor.Console
+				);
 
-					await process.Task;
-				} catch (Exception ex) {
-					await progressMonitor.Log.WriteLineAsync (ex.Message);
-					LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
-				}
+				await process.Task;
+			} catch (Exception ex) {
+				await progressMonitor.Log.WriteLineAsync (ex.Message);
+				LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
 			}
 		}
 
