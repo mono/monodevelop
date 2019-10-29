@@ -69,6 +69,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			return SelectorViewControl.GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
 		}
+
 		public bool SetActiveConfiguration (string configuration)
 		{
 			bool success = false;
@@ -77,6 +78,11 @@ namespace MonoDevelop.Components.AutoTest
 			}, true);
 
 			return success;
+		}
+
+		public string GetStatusMessage ()
+		{
+			return (string)session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
 		}
 	}
 }
