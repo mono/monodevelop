@@ -9,7 +9,7 @@
 		<_Name>npm Configuration File</_Name>
 		<Icon>md-file-source</Icon>
 		<_Category>Web</_Category>
-		<_Description>npm Configuration File for package.json</_Description>
+		<_Description>Creates an npm Configuration File for package.json.</_Description>
 		<DefaultFilename>package</DefaultFilename>
 	</TemplateConfiguration>
 	

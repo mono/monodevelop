@@ -4,7 +4,7 @@
 
 	<TemplateConfiguration>
 		<_Name>Gtk# 2.0 Project</_Name>
-		<_Description>Create an F# desktop application (using Gtk# 2.0 and .NET 4.0)</_Description>
+		<_Description>Create an F# desktop application (using Gtk# 2.0 and .NET 4.0).</_Description>
 		<Category>other/net/general</Category>
 		<Icon>md-gui-project</Icon>
 		<Image id="md-gui-project" />
