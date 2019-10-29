@@ -61,8 +61,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		ScaffolderTemplateConfigurePage GetConfigurePage (ScaffolderArgs args)
 		{
-			var page2 = new ScaffolderTemplateConfigurePage (args);
-			return page2;
 			// we want to return the same instance for the same args
 			if (cachedPages.ContainsKey (args)) {
 				return cachedPages [args];
