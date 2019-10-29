@@ -56,7 +56,7 @@ namespace MonoDevelop.DotNetCore.GlobalTools
 
 			using (var progressMonitor = CreateProgressMonitor ()) {
 				try {
-					string arguments = $"install tool {packageId}";
+					string arguments = $"tool install {packageId} -g";
 					progressMonitor.Log.WriteLine ("{0} {1}", DotNetCoreRuntime.FileName, arguments);
 
 					var process = Runtime.ProcessService.StartConsoleProcess (
