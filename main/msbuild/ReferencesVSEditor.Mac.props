@@ -26,6 +26,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.IndentationManager.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
