@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using Xwt;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Components
 {
 	public class EnvironmentVariableCollectionEditor: VBox
@@ -43,6 +45,7 @@ namespace MonoDevelop.Components
 		{
 			store = new ListStore (keyField, valueField);
 			list = new ListView (store);
+			list.Accessible.Label = GettextCatalog.GetString ("Environment Variables");
 			PackStart (list, true);
 
 			TextCellView crt = new TextCellView ();
@@ -62,6 +65,7 @@ namespace MonoDevelop.Components
 			var box = new HBox ();
 
 			var btn = new Button (GettextCatalog.GetString ("Add"));
+			btn.Accessible.Description = GettextCatalog.GetString ("Add an environment variable");
 			btn.Clicked += delegate {
 				var row = store.AddRow ();
 				list.SelectRow (row);
@@ -72,6 +76,7 @@ namespace MonoDevelop.Components
 			box.PackStart (btn);
 
 			deleteButton = new Button (GettextCatalog.GetString ("Remove"));
+			deleteButton.Accessible.Description = GettextCatalog.GetString ("Remove the selected environment variable");
 			deleteButton.Clicked += delegate {
 				var row = list.SelectedRow;
 				if (row != -1) {
