@@ -306,11 +306,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			return Enumerable.Empty<string> ();
 		}
 
+		private IEnumerable<string> GetModelClasses ()
+		{
+			//TODO: make async
+			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (args.Project).Result;
+			var modelTypes = DbSetModelVisitor.FindModelTypes (compilation.Assembly);
+			return modelTypes.Select (t => t.MetadataName);
+		}
+
 		private IEnumerable<ScaffolderField> GetFields ()
 		{
 			var dbContexts = GetDbContextClasses ();
 			var dbContextField = new ComboField ("--dataContext", "DBContext class to use", dbContexts.ToArray ());
-			return fields.Append(dbContextField);
+			var dbModels = GetModelClasses ();
+			var dbModelField = new ComboField ("--model", "Model class to use", dbModels.ToArray());
+			return fields.Append(dbContextField).Append(dbModelField);
 		}
 	}
 
@@ -496,6 +506,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		ScaffolderTemplateConfigurePage GetConfigurePage (ScaffolderArgs args)
 		{
+			var page2 = new ScaffolderTemplateConfigurePage (args);
+			return page2;
 			// we want to return the same instance for the same args
 			if (cachedPages.ContainsKey (args)) {
 				return cachedPages [args];
