@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.Projects
 			var language = (string)model.GetValue (it, TemplateA11yLanguageName);
 			var languageRenderer = (LanguageCellRenderer)renderer;
 			languageRenderer.Template = template;
-			languageRenderer.SelectedLanguage = language ?? template.Language;
+			languageRenderer.SelectedLanguage = language ?? template?.Language ?? string.Empty;
 		}
 
 		void HandlePopup (SolutionTemplate template, uint eventTime)
