@@ -49,5 +49,23 @@ namespace MonoDevelop.DotNetCore
 		{
 			return framework.IsNetStandard () || framework.IsNetCoreApp ();
 		}
+
+		public static bool IsNetCoreAppOrHigher (this TargetFrameworkMoniker framework, DotNetCoreVersion version)
+		{
+			DotNetCoreVersion.TryParse (framework.Version, out var dotNetCoreVersion);
+			if (dotNetCoreVersion == null)
+				return false;
+
+			return framework.IsNetCoreApp () && dotNetCoreVersion >= version;
+		}
+
+		public static bool IsNetStandardOrHigher (this TargetFrameworkMoniker framework, DotNetCoreVersion version)
+		{
+			DotNetCoreVersion.TryParse (framework.Version, out var dotNetCoreVersion);
+			if (dotNetCoreVersion == null)
+				return false;
+
+			return framework.IsNetStandard () && dotNetCoreVersion >= version;
+		}
 	}
 }

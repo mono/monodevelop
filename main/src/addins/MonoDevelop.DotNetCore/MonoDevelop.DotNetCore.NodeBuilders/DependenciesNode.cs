@@ -119,10 +119,12 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			bool addedFrameworkReferencesNode = false;
 			if (frameworkNode != null) {
-				var frameworkReferencesNode = new FrameworkReferencesNode (this);
-				if (frameworkReferencesNode.HasChildNodes ()) {
-					addedFrameworkReferencesNode = true;
-					yield return frameworkReferencesNode;
+				if (frameworkNode.CanGetFrameworkReferences ()) {
+					var frameworkReferencesNode = new FrameworkReferencesNode (frameworkNode);
+					if (frameworkReferencesNode.HasChildNodes ()) {
+						addedFrameworkReferencesNode = true;
+						yield return frameworkReferencesNode;
+					}
 				}
 
 				var packagesNode = new PackageDependenciesNode (frameworkNode);
@@ -135,10 +137,12 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 						yield return sdkNode;
 				}
 			} else {
-				var frameworkReferencesNode = new FrameworkReferencesNode (this);
-				if (frameworkReferencesNode.HasChildNodes ()) {
-					addedFrameworkReferencesNode = true;
-					yield return frameworkReferencesNode;
+				if (FrameworkReferenceNodeCache.CanGetFrameworkReferences (Project)) {
+					var frameworkReferencesNode = new FrameworkReferencesNode (this);
+					if (frameworkReferencesNode.HasChildNodes ()) {
+						addedFrameworkReferencesNode = true;
+						yield return frameworkReferencesNode;
+					}
 				}
 
 				var packagesNode = new PackageDependenciesNode (this);

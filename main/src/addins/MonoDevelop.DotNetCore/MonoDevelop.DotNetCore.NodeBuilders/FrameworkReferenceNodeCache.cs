@@ -30,8 +30,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using NuGet.Frameworks;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
@@ -40,7 +42,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		static DotNetCoreVersion Version30 = DotNetCoreVersion.Parse ("3.0");
 		static DotNetCoreVersion Version21 = DotNetCoreVersion.Parse ("2.1");
 
-		List<FrameworkReference> references = new List<FrameworkReference> ();
+		Dictionary<string, List<FrameworkReference>> referenceMappings =
+			new Dictionary<string, List<FrameworkReference>> ();
 		CancellationTokenSource cancellationTokenSource;
 
 		public FrameworkReferenceNodeCache (DotNetProject project)
@@ -62,7 +65,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public void Refresh ()
 		{
 			try {
-				if (!CanGetFrameworkReferences ()) {
+				if (!CanGetFrameworkReferences (Project)) {
 					LoadedReferences  = true;
 					return;
 				}
@@ -74,10 +77,20 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			}
 		}
 
-		bool CanGetFrameworkReferences ()
+		public static bool CanGetFrameworkReferences (DotNetProject project)
 		{
-			return Project.TargetFramework.IsNetCoreAppOrHigher (Version30) ||
-				Project.TargetFramework.IsNetStandardOrHigher (Version21);
+			foreach (TargetFrameworkMoniker targetFramework in project.TargetFrameworkMonikers) {
+				if (CanGetFrameworkReferences (targetFramework)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static bool CanGetFrameworkReferences (TargetFrameworkMoniker targetFramework)
+		{
+			return targetFramework.IsNetCoreAppOrHigher (Version30) ||
+				targetFramework.IsNetStandardOrHigher (Version21);
 		}
 
 		void CancelCurrentRefresh ()
@@ -97,21 +110,29 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				.ContinueWith (task => OnFrameworkReferencesRead (task, tokenSource), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
-		Task<List<FrameworkReference>> GetFrameworkReferencesAsync (CancellationTokenSource tokenSource)
+		Task<Dictionary<string, List<FrameworkReference>>> GetFrameworkReferencesAsync (CancellationTokenSource tokenSource)
 		{
-			var configurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default : ConfigurationSelector.Default;
+			var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : ConfigurationSelector.Default;
 			return Task.Run (async () => {
-				var references = await Project.GetFrameworkReferences (configurationSelector, tokenSource.Token)
-					.ConfigureAwait (false);
+				var referenceMappings = new Dictionary<string, List<FrameworkReference>> ();
+				foreach (TargetFrameworkMoniker framework in Project.TargetFrameworkMonikers) {
+					if (!CanGetFrameworkReferences (framework))
+						continue;
 
-				if (!tokenSource.IsCancellationRequested)
-					return references.ToList ();
+					var frameworkConfig = new DotNetProjectFrameworkConfigurationSelector (config, framework.ShortName);
+					var references = await Project.GetFrameworkReferences (frameworkConfig, tokenSource.Token)
+						.ConfigureAwait (false);
 
-				return null;
+					if (!tokenSource.IsCancellationRequested) {
+						string key = GetMappingKey (framework);
+						referenceMappings [key] = references.ToList ();
+					}
+				}
+				return referenceMappings;
 			});
 		}
 
-		void OnFrameworkReferencesRead (Task<List<FrameworkReference>> task, CancellationTokenSource tokenSource)
+		void OnFrameworkReferencesRead (Task<Dictionary<string, List<FrameworkReference>>> task, CancellationTokenSource tokenSource)
 		{
 			try {
 				if (task.IsFaulted) {
@@ -122,7 +143,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 						LoggingService.LogError ("OnFrameworkReferencesRead error.", ex);
 					}
 				} else if (!tokenSource.IsCancellationRequested) {
-					references = task.Result;
+					referenceMappings = task.Result;
 					LoadedReferences = true;
 					OnFrameworkReferencesChanged ();
 				}
@@ -131,9 +152,25 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			}
 		}
 
-		public IEnumerable<FrameworkReferenceNode> GetFrameworkReferenceNodes ()
+		public IEnumerable<FrameworkReferenceNode> GetFrameworkReferenceNodes (TargetFrameworkMoniker framework)
 		{
-			return references.Select (reference => new FrameworkReferenceNode (reference));
+			string key = GetMappingKey (framework);
+			if (referenceMappings.TryGetValue (key, out List<FrameworkReference> references)) {
+				return references.Select (reference => new FrameworkReferenceNode (reference));
+			}
+			return Enumerable.Empty<FrameworkReferenceNode> ();
+		}
+
+		/// <summary>
+		/// Target framework versions returned from ResolvePackageDependenciesDesignTime use four part version numbers
+		/// so we cannot use TargetFrameworkMoniker as the dictionary key since this will not always match the
+		/// project's target framework. Instead generate a NuGetFramework and use that as the key since it will
+		/// normalize the version numbers.
+		/// </summary>
+		static string GetMappingKey (TargetFrameworkMoniker framework)
+		{
+			NuGetFramework nugetFramework = NuGetFramework.ParseFrameworkName (framework.ToString (), DefaultFrameworkNameProvider.Instance);
+			return nugetFramework.ToString ();
 		}
 	}
 }
