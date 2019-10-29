@@ -65,9 +65,18 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
 			 };
 
+		private IEnumerable<CommandLineArg> commandLineArgs;
+		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
+
 		public RazorPageScaffolder (ScaffolderArgs args)
 		{
 			this.args = args;
+			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
+
+			commandLineArgs = base.DefaultArgs.Append (
+	new CommandLineArg ("--namespaceName", args.Project.GetDefaultNamespace (defaultNamespace))
+);
+
 		}
 
 		public override IEnumerable<ScaffolderField> Fields => GetFields ();

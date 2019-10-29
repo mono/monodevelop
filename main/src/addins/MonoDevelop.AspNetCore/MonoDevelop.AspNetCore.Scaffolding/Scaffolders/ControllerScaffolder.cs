@@ -45,7 +45,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
 			commandLineArgs = base.DefaultArgs.Append (
-				new CommandLineArg ("-namespace", args.Project.GetDefaultNamespace (defaultNamespace))
+				new CommandLineArg ("--namespaceName", args.Project.GetDefaultNamespace (defaultNamespace))
 			);
 
 			if (controllerTypeArgument != null)
