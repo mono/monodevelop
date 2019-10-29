@@ -31,6 +31,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -266,6 +267,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		//  --partialView|-partial              : Generate a partial view, other layout options (-l and -udl) are ignored if this is specified
 		//  --noPageModel|-npm                  : Switch to not generate a PageModel class for Empty template
 
+        const string DbContextTypeName = "System.Data.Entity.DbContext";
+        const string EF7DbContextTypeName = "Microsoft.Data.Entity.DbContext";
+		const string EFCDbContextTypeName = "Microsoft.EntityFrameworkCore.DbContext";
+
+		readonly ScaffolderArgs args;
+
 		public override string Name => "Razor Page";
 		public override string CommandLineName => "razorpage";
 
@@ -276,7 +283,35 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
 			 };
 
-		public override IEnumerable<ScaffolderField> Fields => fields;
+		public RazorPageScaffolder(ScaffolderArgs args)
+		{
+			this.args = args;
+		}
+
+		public override IEnumerable<ScaffolderField> Fields => GetFields();
+
+		private IEnumerable<string> GetDbContextClasses ()
+		{
+			//TODO: make async
+			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (args.Project).Result;
+			var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
+						 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
+						 ?? compilation.GetTypeByMetadataName (EF7DbContextTypeName);
+
+
+			if (dbContext != null) {
+				var s = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
+				return s.Select (c => c.MetadataName);
+			}
+			return Enumerable.Empty<string> ();
+		}
+
+		private IEnumerable<ScaffolderField> GetFields ()
+		{
+			var dbContexts = GetDbContextClasses ();
+			var dbContextField = new ComboField ("--dataContext", "DBContext class to use", dbContexts.ToArray ());
+			return fields.Append(dbContextField);
+		}
 	}
 
 	class RazorPageEntityFrameworkScaffolder : IScaffolder
@@ -396,7 +431,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				new EmptyApiControllerScaffolder(args),
 				new ApiControllerWithActionsScaffolder(args),
 				new ApiControllerEntityFrameworkScaffolder(args),
-				new RazorPageScaffolder(),
+				new RazorPageScaffolder(args),
 				new RazorPageEntityFrameworkScaffolder(),
 				new RazorPageEntityFrameworkCrudScaffolder(),
 				new IdentityScaffolder(),
@@ -454,7 +489,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		}
 
 		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, ScaffolderArgs args)
-			: base (title, icon, rightSideWidget, new ScaffolderTemplateSelectPage(args))
+			: base (title, icon, null, new ScaffolderTemplateSelectPage(args))
 		{
 			this.args = args;
 		}
@@ -483,7 +518,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
 		{
-			IWizardDialogPage firstPage = new ScaffolderTemplateSelectPage (args);
+			IWizardDialogPage firstPage = new ScaffolderTemplateSelectPage (args); //TODO: we should return the same instance
 			return Task.FromResult (firstPage);
 		}
 	}
@@ -507,6 +542,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.parentFolder = parentFolder;
 			args.Project = project;
 			args.ParentFolder = parentFolder;
+
 		}
 
 		async Task OnCompletedAsync ()
