@@ -67,7 +67,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			// Install the tool
 			if (!DotNetCoreGlobalToolManager.IsInstalled (toolName)) {
-				await DotNetCoreGlobalToolManager.Install (toolName, progressMonitor.CancellationToken);
+				if (!await DotNetCoreGlobalToolManager.Install (toolName, progressMonitor.CancellationToken)) {
+					progressMonitor.ReportError ($"Could not install {toolName} tool");
+					return;
+				}
 			}
 
 			// Run the tool
@@ -106,7 +109,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 				await process.Task;
 			} catch (Exception ex) {
-				await progressMonitor.Log.WriteLineAsync (ex.Message);
+				progressMonitor.ReportError (ex.Message, ex);
 				LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
 			}
 		}
