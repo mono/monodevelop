@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Project p,
 			ProjectCacheInfo oldCacheInfo)
 		{
-			const int timeout = 10000; // ms
+			const int timeout = 30000; // ms
 			int howLong = 0;
 			const int interval = 200; // ms
 
@@ -527,7 +527,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// .csproj file was edited outside the IDE before it was loaded.
 		/// </summary>
 		[Test]
-		public async Task TestWorkspaceFilesCache_CacheOutOfDate_CacheUpdatedFromMSBuold ()
+		public async Task TestWorkspaceFilesCache_CacheOutOfDate_CacheUpdatedFromMSBuild ()
 		{
 			// First we create the cache by loading the solution.
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
