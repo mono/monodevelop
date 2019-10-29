@@ -26,15 +26,14 @@
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class ComboField : ScaffolderField
+	class InvertedBoolField : BoolField
 	{
-		public ComboField (string commandLineName, string displayName, string [] options, bool isEditable = false) : base (commandLineName, displayName)
+		private bool selected;
+
+		public InvertedBoolField (string commandLineName, string displayName) : base (commandLineName, displayName)
 		{
-			Options = options;
-			IsEditable = isEditable;
 		}
 
-		public bool IsEditable { get; }
-		public string [] Options { get; }
+		public new bool Selected { get => !selected; set => selected = value; }
 	}
 }

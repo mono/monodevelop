@@ -104,11 +104,28 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		IEnumerable<ScaffolderField> GetFields()
 		{
-			var fields =
-new ScaffolderField [] {
+		//  --model|-m                          : Model class to use
+		//  --dataContext|-dc                   : DbContext class to use
+		//  --referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
+		//  --layout|-l                         : Custom Layout page to use
+		//  --useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
+		//  --force|-f                          : Use this option to overwrite existing files
+		//  --relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
+		//  --namespaceName|-namespace          : Specify the name of the namespace to use for the generated PageModel
+		//  --partialView|-partial              : Generate a partial view, other layout options (-l and -udl) are ignored if this is specified
+		//  --noPageModel|-npm                  : Switch to not generate a PageModel class for Empty template
+			var options = new List<BoolField> ();
+			options.Add (new InvertedBoolField ("--noPageModel", "Generate PageModel class"));
+			options.Add (new BoolField ("--partialView", "Create as a partial view"));
+			options.Add (new BoolField ("--referenceScriptLibraries", "Reference script libraries"));
+			//TODO: --layout should get name of layout file
+			options.Add (new BoolField ("", "Use a layout page"));
+
+			var fields = new ScaffolderField [] {
 				new StringField ("", "Name of the Razor Page"),
-				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
-};
+				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions),
+				new BoolFieldList(options)
+			};
 
 			var dbContexts = GetDbContextClasses ();
 			var dbContextField = new ComboField ("--dataContext", "DbContext class to use", dbContexts.ToArray (), isEditable: true);
