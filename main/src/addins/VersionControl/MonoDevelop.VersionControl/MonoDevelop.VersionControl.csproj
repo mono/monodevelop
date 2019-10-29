@@ -480,7 +480,6 @@
     <Compile Include="MonoDevelop.VersionControl.Views\BlameView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ComparisonWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BlameWidget.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\DropDownBox.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ChangeSetView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeWidget.cs" />

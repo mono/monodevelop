@@ -98,7 +98,7 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnContentShown ()
 		{
 			info.Start ();
-			if (ComparisonWidget.originalComboBox.Text == GettextCatalog.GetString ("Local"))
+			if (ComparisonWidget.originalComboBox.Active == 0)
 				ComparisonWidget.UpdateLocalText ();
 			var textView = info.Controller.GetContent<ITextView> ();
 			if (textView != null) {
