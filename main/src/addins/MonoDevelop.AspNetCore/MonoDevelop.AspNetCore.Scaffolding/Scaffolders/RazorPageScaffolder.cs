@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.FindSymbols;
@@ -59,13 +60,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public override string CommandLineName => "razorpage";
 
 		static string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
-		static ScaffolderField [] fields =
-			new ScaffolderField [] {
-				new StringField ("", "Name of the Razor Page"),
-				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
-			 };
+		IEnumerable<CommandLineArg> commandLineArgs;
+		private IEnumerable<ScaffolderField> fields;
 
-		private IEnumerable<CommandLineArg> commandLineArgs;
 		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
 
 		public RazorPageScaffolder (ScaffolderArgs args)
@@ -79,9 +76,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		}
 
-		public override IEnumerable<ScaffolderField> Fields => GetFields ();
+		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
 
-		private IEnumerable<string> GetDbContextClasses ()
+		IEnumerable<string> GetDbContextClasses ()
 		{
 			//TODO: make async
 			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (args.Project).Result;
@@ -91,13 +88,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 
 			if (dbContext != null) {
-				var s = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
-				return s.Select (c => c.MetadataName);
+				var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
+				return result.Select (c => c.MetadataName);
 			}
 			return Enumerable.Empty<string> ();
 		}
 
-		private IEnumerable<string> GetModelClasses ()
+		IEnumerable<string> GetModelClasses ()
 		{
 			//TODO: make async
 			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (args.Project).Result;
@@ -105,13 +102,20 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			return modelTypes.Select (t => t.MetadataName);
 		}
 
-		private IEnumerable<ScaffolderField> GetFields ()
+		IEnumerable<ScaffolderField> GetFields()
 		{
+			var fields =
+new ScaffolderField [] {
+				new StringField ("", "Name of the Razor Page"),
+				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
+};
+
 			var dbContexts = GetDbContextClasses ();
-			var dbContextField = new ComboField ("--dataContext", "DBContext class to use", dbContexts.ToArray (), isEditable: true);
+			var dbContextField = new ComboField ("--dataContext", "DbContext class to use", dbContexts.ToArray (), isEditable: true);
 			var dbModels = GetModelClasses ();
 			var dbModelField = new ComboField ("--model", "Model class to use", dbModels.ToArray (), isEditable: true);
-			return fields.Append (dbContextField).Append (dbModelField);
+			this.fields = fields.Append (dbContextField).Append (dbModelField);
+			return this.fields;
 		}
 	}
 }
