@@ -58,10 +58,12 @@ namespace MonoDevelop.Ide.Navigation
 
 		void RefreshWithCurrentOffset (ITextView textView)
 		{
-			if (textView != null && offset.HasValue) {
-				var currentLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition (offset.Value);
+			if (textView != null && offset is SnapshotPoint sp) {
+				var currentSnapshot = sp.Snapshot.TextBuffer.CurrentSnapshot;
+				var position = sp.TranslateTo (currentSnapshot, PointTrackingMode.Negative).Position;
+				var currentLine = currentSnapshot.GetLineFromPosition (position);
 				line = currentLine.LineNumber;
-				column = offset.Value.Position - currentLine.Start.Position;
+				column = position - currentLine.Start.Position;
 			}
 		}
 
