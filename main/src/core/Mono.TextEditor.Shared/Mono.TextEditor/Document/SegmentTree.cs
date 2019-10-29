@@ -26,7 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.ObjectPool;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
@@ -85,7 +87,8 @@ namespace Mono.TextEditor
 			IsDirty = false;
 			tree.Clear ();
 		}
-		
+		static ObjectPool<List<T>> segmentTreeListPool = ObjectPoolUtil.CreateListPool<T> ();
+
 		public void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			IsDirty = true;
@@ -109,7 +112,9 @@ namespace Mono.TextEditor
 					continue;
 				}
 				int delta = change.ChangeDelta;
-				foreach (var segment in new List<T> (GetSegmentsOverlapping (change.Offset, change.RemovalLength))) {
+				var list = segmentTreeListPool.Get ();
+				list.AddRange (GetSegmentsOverlapping (change.Offset, change.RemovalLength));
+				foreach (var segment in list) {
 					if (segment.Offset < change.Offset) {
 						if (segment.EndOffset >= change.Offset + change.RemovalLength) {
 							segment.Length += delta;
@@ -127,6 +132,7 @@ namespace Mono.TextEditor
 						Add (segment);
 					}
 				}
+				segmentTreeListPool.Return (list);
 				var next = SearchFirstSegmentWithStartAfter (change.Offset + 1);
 
 				if (next != null) {
