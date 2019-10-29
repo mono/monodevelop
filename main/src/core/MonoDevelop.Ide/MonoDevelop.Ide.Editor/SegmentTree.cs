@@ -30,6 +30,8 @@ using MonoDevelop.Core.Text;
 using System.Text;
 using System.Web.UI.WebControls;
 using System.Diagnostics;
+using MonoDevelop.Core;
+using Microsoft.Extensions.ObjectPool;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -167,6 +169,7 @@ namespace MonoDevelop.Ide.Editor
 			ownerDocument.TextChanged -= UpdateOnTextReplace;
 			ownerDocument = null;
 		}
+		static ObjectPool<List<T>> segmentTreeListPool = ObjectPoolUtil.CreateListPool<T> ();
 
 		internal void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
@@ -186,7 +189,9 @@ namespace MonoDevelop.Ide.Editor
 					continue;
 				}
 				int delta = change.ChangeDelta;
-				foreach (var segment in new List<T> (GetSegmentsOverlapping (change.Offset, change.RemovalLength))) {
+				var list = segmentTreeListPool.Get ();
+				list.AddRange (GetSegmentsOverlapping (change.Offset, change.RemovalLength));
+				foreach (var segment in list) {
 					if (segment.Offset < change.Offset) {
 						if (segment.EndOffset >= change.Offset + change.RemovalLength) {
 							segment.Length += delta;
@@ -204,6 +209,7 @@ namespace MonoDevelop.Ide.Editor
 						InternalAdd (segment);
 					}
 				}
+				segmentTreeListPool.Return (list);
 				var next = SearchFirstSegmentWithStartAfter (change.Offset + 1);
 
 				if (next != null) {

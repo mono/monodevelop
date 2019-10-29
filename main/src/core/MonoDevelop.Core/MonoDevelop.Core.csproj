@@ -734,6 +734,7 @@
     <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
     <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
     <Compile Include="MonoDevelop.Core\PooledListPolicy.cs" />
+    <Compile Include="MonoDevelop.Core\ObjectPoolUtil.cs" />
     <Compile Include="CoreExtensions.IEnumerable.cs" />
     <Compile Include="CoreExtensions.Memoize.cs" />
     <Compile Include="CoreExtensions.EventHandlers.cs" />

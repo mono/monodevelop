@@ -241,6 +241,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public bool Focused {
+			get {
+				return false;
+			}
+			set {
+			}
+		}
+
 		public Gtk.Widget GtkParent { get; set; }
 		public Gdk.Rectangle FrameInGtkParent { get; set; }
 		public Gdk.Rectangle FrameInParent { get; set; }
@@ -261,7 +269,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		#pragma warning disable 67 // never used
+#pragma warning disable 67 // never used
 		public event EventHandler PerformCancel;
 		public event EventHandler PerformConfirm;
 		public event EventHandler PerformDecrement;
@@ -273,7 +281,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public event EventHandler PerformShowAlternateUI;
 		public event EventHandler PerformShowDefaultUI;
 		public event EventHandler PerformShowMenu;
-		#pragma warning restore 67
+#pragma warning restore 67
 
 		// For Navigable Text elements
 		public Func<string> Contents {
