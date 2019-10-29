@@ -52,6 +52,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			return Scaffolder.Name.GetHashCode ();
 		}
+
+		public DotNetProject Project { get; internal set; }
+		public FilePath ParentFolder { get; internal set; }
 	}
 
 	abstract class ScaffolderWizardPageBase : WizardDialogPageBase
@@ -122,11 +125,59 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public virtual string Name { get; }
 		public virtual string CommandLineName { get; }
-		public virtual string [] DefaultArgs => Array.Empty<string> ();
+		public virtual IEnumerable<CommandLineArg> DefaultArgs => Enumerable.Empty<CommandLineArg> ();
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
 	}
 
-	class EmptyMvcControllerScaffolder : IScaffolder
+	class CommandLineArg
+	{
+		public string CommandLineName { get; }
+		public string Value { get; }
+
+		public CommandLineArg (string commandLineName)
+		{
+			CommandLineName = commandLineName;
+		}
+
+		public CommandLineArg (string commandLineName, string value)
+		{
+			CommandLineName = commandLineName;
+			Value = value;
+		}
+
+		public override string ToString ()
+		{
+			return $"{CommandLineName} {Value}";
+		}
+	}
+
+	abstract class ControllerScaffolder : IScaffolder
+	{
+		protected static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		private List<CommandLineArg> commandLineArgs;
+
+		public override string CommandLineName => "controller";
+
+		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
+
+		public ControllerScaffolder (ScaffolderArgs args) : this (args, null)
+		{
+		}
+
+		public ControllerScaffolder (ScaffolderArgs args, string controllerTypeArgument)
+		{
+			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
+			commandLineArgs = new List<CommandLineArg> {
+				new CommandLineArg ("-namespace", args.Project.GetDefaultNamespace (defaultNamespace))
+			};
+
+			if (controllerTypeArgument != null)
+				commandLineArgs.Append (new CommandLineArg (controllerTypeArgument));
+
+		}
+	}
+
+	class EmptyMvcControllerScaffolder : ControllerScaffolder
 	{
 		//Generator Options:
 		//--controllerName|-name              : Name of the controller
@@ -145,18 +196,23 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 
 		public override string Name => "MVC Controller - Empty";
-		public override string CommandLineName => "controller";
 
-		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		public EmptyMvcControllerScaffolder (ScaffolderArgs args) : base (args) { }
+
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
-	class MvcControllerWithActionsScaffolder : IScaffolder
+
+	class MvcControllerWithActionsScaffolder : ControllerScaffolder
 	{
 		public override string Name => "MVC Controller with read / write actions";
 		public override string CommandLineName => "controller";
-		public override string [] DefaultArgs => new [] { "--readWriteActions" };
-		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--readWriteActions") };
+
+		public MvcControllerWithActionsScaffolder (ScaffolderArgs args) : base (args)
+		{
+		}
+
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
@@ -164,8 +220,15 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public override string Name => "API Controller - Empty";
 		public override string CommandLineName => "controller";
-		public override string [] DefaultArgs => new [] { "--restWithNoViews" };
+		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--restWithNoViews") };
 		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		private ScaffolderArgs args;
+
+		public EmptyApiControllerScaffolder (ScaffolderArgs args)
+		{
+			this.args = args;
+		}
+
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
@@ -173,13 +236,27 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public override string Name => "API Controller with read / write actions";
 		public override string CommandLineName => "controller";
-		public override string [] DefaultArgs => new [] { "--restWithNoViews", "--readWriteActions" };
+		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--restWithNoViews", "--readWriteActions") };
 		static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		private ScaffolderArgs args;
+
+		public ApiControllerWithActionsScaffolder (ScaffolderArgs args)
+		{
+			this.args = args;
+		}
+
 		public override IEnumerable<ScaffolderField> Fields => stringField;
 	}
 
 	class ApiControllerEntityFrameworkScaffolder : IScaffolder
 	{
+		private ScaffolderArgs args;
+
+		public ApiControllerEntityFrameworkScaffolder (ScaffolderArgs args)
+		{
+			this.args = args;
+		}
+
 		public override string Name => "API Controller with actions using Entity Framework";
 		public override string CommandLineName => "controller";
 
@@ -211,7 +288,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		static string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
 		static ScaffolderField [] fields =
-			new ScaffolderField[] {
+			new ScaffolderField [] {
 				new StringField ("", "Name of the Razor Page"),
 				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions)
 			 };
@@ -271,7 +348,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			foreach (var field in scaffolder.Fields) {
 				var hbox = new HBox ();
 				var label = new Label ();
-                    
+
 				switch (field) {
 				case StringField s:
 					var input = new TextEntry ();
@@ -286,9 +363,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				case ComboField comboField:
 					var comboBox = new ComboBox ();
 
-					foreach(var option in comboField.Options) {
+					foreach (var option in comboField.Options) {
 						comboBox.Items.Add (option);
-                    }
+					}
 
 					comboBox.HeightRequest = 30;
 					hbox.PackEnd (comboBox);
@@ -316,6 +393,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	class ScaffolderTemplateSelectPage : ScaffolderWizardPageBase
 	{
 		ListBox listBox;
+		ScaffolderArgs args;
 
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
@@ -324,16 +402,17 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.PageSubtitle = "Select Scaffolder";
 			this.PageIcon = StockIcons.Question;
 			this.SubSubTitle = "Select Scaffolder SUB";
+			this.args = args;
 		}
 
 		Lazy<IScaffolder []> GetScaffolders ()
 		{
 			var scaffolders = new IScaffolder [] {
-				new EmptyMvcControllerScaffolder(),
-				new MvcControllerWithActionsScaffolder(),
-				new EmptyApiControllerScaffolder(),
-				new ApiControllerWithActionsScaffolder(),
-				new ApiControllerEntityFrameworkScaffolder(),
+				new EmptyMvcControllerScaffolder(args),
+				new MvcControllerWithActionsScaffolder(args),
+				new EmptyApiControllerScaffolder(args),
+				new ApiControllerWithActionsScaffolder(args),
+				new ApiControllerEntityFrameworkScaffolder(args),
 				new RazorPageScaffolder(),
 				new RazorPageEntityFrameworkScaffolder(),
 				new RazorPageEntityFrameworkCrudScaffolder(),
@@ -454,6 +533,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.Completed += (sender, e) => Task.Run (() => OnCompletedAsync ());
 			this.project = project;
 			this.parentFolder = parentFolder;
+			args.Project = project;
+			args.ParentFolder = parentFolder;
 		}
 
 		async Task OnCompletedAsync ()
@@ -473,16 +554,18 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
 			argBuilder.Add ("-outDir");
 			argBuilder.AddQuoted (parentFolder);
-			//TODO: does this apply to every scaffolder or just Controller?
 			argBuilder.Add ("-namespace", project.GetDefaultNamespace (parentFolder.Combine ("file.cs")));
 
 			foreach (var arg in args.Scaffolder.DefaultArgs) {
-				argBuilder.Add (arg);
+				argBuilder.Add (arg.ToString ());
 			}
 
 			var commandLineArgs = argBuilder.ToString ();
 
 			using (var progressMonitor = CreateProgressMonitor ()) {
+				var msg = $"Running {dotnet} {commandLineArgs}\n";
+				progressMonitor.Console.Debug (0, "", msg);
+
 				try {
 					var process = Runtime.ProcessService.StartConsoleProcess (
 						dotnet,
@@ -492,8 +575,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					);
 
 					await process.Task;
-				} catch (OperationCanceledException) {
-					throw;
 				} catch (Exception ex) {
 					await progressMonitor.Log.WriteLineAsync (ex.Message);
 					LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
@@ -514,7 +595,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		static IReadOnlyCollection<IWizardDialogPage> GetPages ()
 		{
 			//TODO: Get this from wizard
-			args.Scaffolder = new EmptyMvcControllerScaffolder ();
+			args.Scaffolder = new EmptyMvcControllerScaffolder (args);
 			return new IWizardDialogPage [] {
 					new ScaffolderTemplateSelectPage(args),
 					new ScaffolderTemplateConfigurePage(args)
