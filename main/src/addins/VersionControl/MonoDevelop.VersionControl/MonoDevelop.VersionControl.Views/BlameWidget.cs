@@ -160,8 +160,6 @@ namespace MonoDevelop.VersionControl.Views
 			editor.EditorOptionsChanged += delegate {
 				overview.OptionsChanged ();
 			};
-			editor.Caret.PositionChanged += HandleCaretPositionChanged;
-			overview.Accessible.Name = GettextCatalog.GetString ("Blame margin");
 
 			editor.FocusInEvent += ComparisonWidget.EditorFocusIn;
 			editor.Document.Folded += delegate {
@@ -171,23 +169,7 @@ namespace MonoDevelop.VersionControl.Views
 				QueueDraw ();
 			};
 			editor.DoPopupMenu = ShowPopup;
-			Accessible?.SetRole (AtkCocoa.Roles.AXGroup, GettextCatalog.GetString ("Blame margin"));
 			Show ();
-		}
-
-		void HandleCaretPositionChanged(object sender, DocumentLocationEventArgs e)
-		{
-			ComparisonWidget.CaretPositionChanged (sender, e);
-			var annotation = overview.GetAnnotationFromLine (e.Location.Line);
-
-			string description;
-			if (annotation != null) {
-				var msg = overview.GetCommitMessage (e.Location.Line - 1, true);
-				description = GettextCatalog.GetString ("Author {0}, Date {1}, {2}", annotation.Author, annotation.Date, msg);
-			} else {
-				description = GettextCatalog.GetString ("No annotation available.");
-			}
-			overview.Accessible.Description = description;
 		}
 
 		internal void Reset ()
@@ -271,7 +253,6 @@ namespace MonoDevelop.VersionControl.Views
 			vScrollBar.Destroy ();
 			vAdjustment.Destroy ();
 
-			editor.Caret.PositionChanged -= HandleCaretPositionChanged;
 			editor.Destroy ();
 			overview.Destroy ();
 		}
@@ -404,6 +385,10 @@ namespace MonoDevelop.VersionControl.Views
 				layout = new Pango.Layout (PangoContext);
 				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 				OptionsChanged ();
+
+				Accessible?.SetRole (AtkCocoa.Roles.AXGroup);
+				Accessible?.SetTitle (GettextCatalog.GetString ("Authors Overview"));
+
 				Show ();
 			}
 
