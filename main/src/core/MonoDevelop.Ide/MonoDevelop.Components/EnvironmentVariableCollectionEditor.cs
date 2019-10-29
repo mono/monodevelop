@@ -45,6 +45,7 @@ namespace MonoDevelop.Components
 		{
 			store = new ListStore (keyField, valueField);
 			list = new ListView (store);
+			list.Accessible.Label = GettextCatalog.GetString ("Environment Variables");
 			PackStart (list, true);
 
 			TextCellView crt = new TextCellView ();
