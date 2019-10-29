@@ -996,6 +996,26 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				p.AccessibilityIndex = value;
 			}
 		}
+
+		public bool Focused {
+			get {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not a proxy element");
+				}
+
+				return p.AccessibilityFocused;
+			}
+
+			set {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not a proxy element");
+				}
+
+				p.AccessibilityFocused = value;
+			}
+		}
 	}
 
 	class RealAccessibilityElementProxy : NSAccessibilityElement, INSAccessibility
