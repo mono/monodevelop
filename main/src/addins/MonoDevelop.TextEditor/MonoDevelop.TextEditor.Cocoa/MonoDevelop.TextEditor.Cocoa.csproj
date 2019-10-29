@@ -91,6 +91,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.IndentationManager.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
