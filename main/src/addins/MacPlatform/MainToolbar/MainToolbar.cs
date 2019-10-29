@@ -238,6 +238,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			awesomeBar.ButtonBarContainer.ButtonBars = buttonBars;
+
+			foreach (var button in awesomeBar.ButtonBarContainer.ButtonBars) {
+				if (button.Enabled)
+					runButton.NextKeyView = button;
+			}
 		}
 
 		public bool RunButtonSensitivity {
