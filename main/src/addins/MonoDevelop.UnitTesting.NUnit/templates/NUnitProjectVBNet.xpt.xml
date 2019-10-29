@@ -7,7 +7,7 @@
 		<Category>other/net/general</Category>
 		<Icon>md-test-project</Icon>
 		<Image id="md-test-project" />
-		<_Description>Creates an NUnit library</_Description>
+		<_Description>Creates an NUnit library.</_Description>
 		<LanguageName>VBNet</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>
 		<GroupId>md-nunit-library</GroupId>

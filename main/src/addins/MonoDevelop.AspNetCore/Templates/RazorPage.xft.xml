@@ -10,7 +10,7 @@
 		<_Category>ASP.NET Core</_Category>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>Index</DefaultFilename>
-		<_Description>A Razor page without a page model</_Description>
+		<_Description>Creates a Razor page without a page model.</_Description>
 	</TemplateConfiguration>
 
 	<Conditions>

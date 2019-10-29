@@ -10,7 +10,7 @@
 		<Icon>md-solution</Icon>
 		<Image id="md-solution" />
 		<LanguageName/>
-		<_Description>A blank solution</_Description>
+		<_Description>Creates a blank solution.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

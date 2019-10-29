@@ -9,7 +9,7 @@
 		<Category>multiplat/library/general</Category>
 		<Icon>md-crossplatform-shared-project</Icon>
 		<Image id="md-crossplatform-shared-project" />
-		<_Description>Creates a project that allows sharing files between projects</_Description>
+		<_Description>Creates a project that allows sharing files between projects.</_Description>
 		<DefaultFilename>Shared</DefaultFilename>
 		<GroupId>md-project-shared-library</GroupId>
 		<LanguageName>C#</LanguageName>
