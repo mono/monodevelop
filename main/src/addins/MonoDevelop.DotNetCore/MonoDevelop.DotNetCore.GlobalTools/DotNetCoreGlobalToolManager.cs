@@ -79,7 +79,7 @@ namespace MonoDevelop.DotNetCore.GlobalTools
 					throw;
 				} catch (Exception ex) {
 					progressMonitor.Log.WriteLine (ex.Message);
-					LoggingService.LogError ("Failed to install dotnet-dev-certs.", ex);
+					LoggingService.LogError ($"Failed to install {packageId}.", ex);
 					return false;
 				}
 			}
