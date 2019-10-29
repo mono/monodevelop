@@ -81,7 +81,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 					comboBox.SelectedIndex = 0;
 					break;
+				case BoolFieldList boolFieldList:
+					label.Text = boolFieldList.DisplayName;
+					hbox.PackEnd (label);
+                    for(int i = 0; i < boolFieldList.Options.Count; i++) {
+						var checkHbox = new HBox ();
+						var boolField = boolFieldList.Options [i];
+						var checkbox = new CheckBox (boolField.DisplayName);
+						checkHbox.PackEnd (checkbox);
+						checkbox.Toggled += (sender, args) => boolField.Selected = checkbox.Active;
+						hbox.PackEnd (checkHbox);
+                    }
+					vbox.PackStart (hbox);
+					break;
 				}
+				
 			}
 			return vbox;
 		}

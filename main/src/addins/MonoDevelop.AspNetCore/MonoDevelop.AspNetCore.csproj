@@ -57,9 +57,6 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateSelectPage.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateConfigurePage.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\CommandLineArg.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ComboField.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\StringField.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderWizardPageBase.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ApiControllerEntityFrameworkScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ApiControllerWithActionsScaffolder.cs" />
@@ -73,6 +70,12 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageEntityFrameworkCrudScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageEntityFrameworkScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\BoolField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\BoolFieldList.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ComboField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\InvertedBoolField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ScaffolderField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\StringField.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
@@ -204,6 +207,7 @@
     <Folder Include="Resources\" />
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\" />
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\" />
+    <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Fields\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
