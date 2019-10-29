@@ -41,34 +41,6 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.MacIntegration
 {
-	interface ICentrablePanel
-	{
-		bool CenterToParent { get; set; }
-	}
-
-	sealed class OpenPanel : NSOpenPanel, ICentrablePanel
-	{
-	    public bool CenterToParent { get; set; }
-
-		public OpenPanel ()
-		{
-		}
-
-		internal OpenPanel (IntPtr handle) : base (handle)
-		{
-		}
-
-		public override void Center ()
-		{
-			if (ParentWindow != null && CenterToParent) {
-				MessageService.CenterWindow (this, ParentWindow);
-			} else {
-				//default behaviour
-				base.Center ();
-			}
-		}
-	}
-
 	class MacOpenFileDialogHandler : MacCommonFileDialogHandler<OpenFileDialogData, MacOpenFileDialogHandler.SaveState>, IOpenFileDialogHandler
 	{
 		internal class SaveState
@@ -90,13 +62,13 @@ namespace MonoDevelop.MacIntegration
 		protected override NSSavePanel OnCreatePanel (OpenFileDialogData data)
 		{
 			if (data.Action == FileChooserAction.Save) {
-				return new NSSavePanel ();
+				return NSSavePanel.SavePanel;
 			}
 
-			return new OpenPanel {
-				CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
-				CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
-			};
+			var openPanel = NSOpenPanel.OpenPanel;
+			openPanel.CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0;
+			openPanel.CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0;
+			return openPanel;
 		}
 
 		public bool Run (OpenFileDialogData data)
@@ -136,11 +108,8 @@ namespace MonoDevelop.MacIntegration
 					};
 
 					var parent = data.TransientFor ?? MessageService.RootWindow;
-					
-					if (panel is ICentrablePanel centrablePanel) {
-						centrablePanel.CenterToParent = data.CenterToParent;
-					}
 
+					// TODO: support for data.CenterToParent, we could use sheeting.
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
 						IdeServices.DesktopService.FocusWindow (parent);
 						return false;
