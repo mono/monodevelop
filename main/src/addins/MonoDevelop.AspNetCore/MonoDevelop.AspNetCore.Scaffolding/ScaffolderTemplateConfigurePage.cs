@@ -57,7 +57,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					break;
 				case ComboField comboField:
-					var comboBox = new ComboBox ();
+					ComboBox comboBox;
+					if (comboField.IsEditable) {
+						comboBox = new ComboBoxEntry ();
+                    } else {
+						comboBox = new ComboBox ();
+                    }
 
 					foreach (var option in comboField.Options) {
 						comboBox.Items.Add (option);
@@ -71,6 +76,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					vbox.PackStart (hbox);
 
 					comboField.SelectedValue = comboField.Options.FirstOrDefault ();
+					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 					comboBox.SelectedIndex = 0;

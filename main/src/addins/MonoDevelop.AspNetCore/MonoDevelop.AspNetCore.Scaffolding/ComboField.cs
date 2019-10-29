@@ -28,11 +28,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ComboField : ScaffolderField
 	{
-		public ComboField (string commandLineName, string displayName, string [] options) : base (commandLineName, displayName)
+		public ComboField (string commandLineName, string displayName, string [] options, bool isEditable = false) : base (commandLineName, displayName)
 		{
 			Options = options;
+			IsEditable = isEditable;
 		}
 
+		public bool IsEditable { get; }
 		public string [] Options { get; }
 	}
 }
