@@ -39,6 +39,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public SdkDependenciesNode SdkDependencies;
 		public ProjectDependenciesNode ProjectDependencies;
 		public AssemblyDependenciesNode AssemblyDependencies;
+		public FrameworkReferencesNode FrameworkReferences;
 
 		void AddChild (ITreeBuilder treeBuilder, object dataObject)
 		{
@@ -52,6 +53,8 @@ namespace MonoDevelop.DotNetCore.Tests
 				ProjectDependencies = projectDependencies;
 			} else if (dataObject is SdkDependenciesNode sdkDependencies) {
 				SdkDependencies = sdkDependencies;
+			} else if (dataObject is FrameworkReferencesNode frameworkReferences) {
+				FrameworkReferences = frameworkReferences;
 			}
 		}
 
