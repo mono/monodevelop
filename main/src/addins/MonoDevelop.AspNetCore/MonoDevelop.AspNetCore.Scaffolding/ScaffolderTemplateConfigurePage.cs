@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Linq;
 using Xwt;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
@@ -68,6 +69,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					label.Text = comboField.DisplayName;
 					hbox.PackEnd (label);
 					vbox.PackStart (hbox);
+
+					comboField.SelectedValue = comboField.Options.FirstOrDefault ();
+
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 					comboBox.SelectedIndex = 0;
 					break;
