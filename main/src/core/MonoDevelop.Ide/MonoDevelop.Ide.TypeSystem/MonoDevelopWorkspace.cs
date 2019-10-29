@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			dynamicFileManager.UnloadWorkspace (this);
+			dynamicFileManager?.UnloadWorkspace (this);
 
 			base.ClearSolutionData ();
 		}
@@ -342,7 +342,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var actualProject = ProjectMap.RemoveProject (projectId);
 			UnloadMonoProject (actualProject);
-			dynamicFileManager.UnloadProject (projectId);
+			dynamicFileManager?.UnloadProject (projectId);
 
 			base.ClearProjectData (projectId);
 		}
@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
-			dynamicFileManager.UnloadWorkspace (this);
+			dynamicFileManager?.UnloadWorkspace (this);
 
 			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
@@ -1476,7 +1476,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			foreach (var id in GetProjectIds (project)) {
 				OnProjectRemoved (id);
-				dynamicFileManager.UnloadProject (id);
+				dynamicFileManager?.UnloadProject (id);
 			}
 		}
 
@@ -1542,7 +1542,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var contentItems = project.MSBuildProject.EvaluatedItems.Where(item => item.Name == "Content" && item.Include.EndsWith(".razor", StringComparison.OrdinalIgnoreCase)).Select(item => item.Include);
 
-			return dynamicFileManager.UpdateDynamicFiles(projectInfo, contentItems, this);
+			return dynamicFileManager?.UpdateDynamicFiles(projectInfo, contentItems, this);
 		}
 
 		internal override void SetDocumentContext (DocumentId documentId)
