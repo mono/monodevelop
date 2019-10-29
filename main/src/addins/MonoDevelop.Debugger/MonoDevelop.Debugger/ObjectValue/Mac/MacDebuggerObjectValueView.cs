@@ -194,7 +194,7 @@ namespace MonoDevelop.Debugger
 				constraints.Add (statusIcon.HeightAnchor.ConstraintEqualToConstant (ImageSize));
 				views.Add (statusIcon);
 
-				OptimalWidth += statusIcon.Image.Size.Width;
+				OptimalWidth += ImageSize;
 				OptimalWidth += RowCellSpacing;
 			} else if (statusIconVisible) {
 				statusIcon.RemoveFromSuperview ();
