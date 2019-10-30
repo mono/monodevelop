@@ -118,7 +118,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			// Pages are used as dictionary keys in WizardDialog.cs
 			return unchecked(
-				base.GetHashCode () + 37 * Args.GetHashCode ()
+				base.GetHashCode () + 37 * Args.Scaffolder.Name.GetHashCode ()
 			);
 		}
 	}
