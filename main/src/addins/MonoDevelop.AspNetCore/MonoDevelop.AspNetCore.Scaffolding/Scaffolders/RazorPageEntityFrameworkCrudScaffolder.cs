@@ -36,6 +36,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
+		public override string Name => "Razor Page using Entity Framework (CRUD)";
+
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields ();
 
 		IEnumerable<ScaffolderField> GetFields ()
