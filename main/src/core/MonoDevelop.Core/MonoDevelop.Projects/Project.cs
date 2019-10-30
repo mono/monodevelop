@@ -763,15 +763,7 @@ namespace MonoDevelop.Projects
 				}
 
 				if (startTask) {
-					var coreCompileDependsOn = project.sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
-
-					if (string.IsNullOrEmpty (coreCompileDependsOn)) {
-						currentTask.SetResult (CoreCompileEvaluationResult.Empty);
-						return currentTask.Task.Result;
-					}
-
 					var result = CoreCompileEvaluationResult.Empty;
-					var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
 					try {
 						// evaluate the Compile targets
 						var ctx = new TargetEvaluationContext ();
@@ -783,12 +775,12 @@ namespace MonoDevelop.Projects
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
 
-						var evalResult = await project.RunTargetInternal (monitor, dependsList, config.Selector, ctx);
+						var evalResult = await project.RunTargetInternal (monitor, "CompileDesignTime", config.Selector, ctx);
 						if (evalResult != null && evalResult.Items != null) {
 							result = ProcessMSBuildItems (evalResult.Items, project);
 						}
 					} catch (Exception ex) {
-						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
+						LoggingService.LogInternalError (string.Format ("Error running target {0}", "CompileDesignTime"), ex);
 					}
 					currentTask.SetResult (result);
 				}
