@@ -924,7 +924,7 @@ namespace MonoDevelop.Debugger
 
 			var nameView = (MacDebuggerObjectNameView) GetView (0, SelectedRow, false);
 
-			nameView.TextField.BecomeFirstResponder ();
+			nameView.Edit ();
 		}
 
 		void OnRename (object sender, EventArgs args)

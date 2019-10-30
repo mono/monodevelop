@@ -208,6 +208,8 @@
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectPinView.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\ExpressionEventArgs.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerTextField.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerAsyncCompletionSource.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerCompletionCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
