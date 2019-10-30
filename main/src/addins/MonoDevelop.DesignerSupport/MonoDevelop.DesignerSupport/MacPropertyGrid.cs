@@ -73,9 +73,10 @@ namespace MonoDevelop.DesignerSupport
 
 			#region Header Proppy Hack
 
-			header = propertyEditorPanel.Subviews [0];
-			propertyList = propertyEditorPanel.Subviews [1];
-			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
+			var subviews = propertyEditorPanel.Subviews;
+			header = subviews [0];
+			propertyList = subviews [1];
+			internalTableView = subviews.OfType<NSScrollView> ()
 				.FirstOrDefault ().DocumentView as NSTableView;
 
 			//we need the second item constrained with the property list
