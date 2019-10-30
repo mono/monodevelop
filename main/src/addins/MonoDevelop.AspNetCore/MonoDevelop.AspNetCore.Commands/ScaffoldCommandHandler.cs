@@ -40,10 +40,9 @@ namespace MonoDevelop.AspNetCore.Commands
 			string parentFolder = folder?.Path ?? project.BaseDirectory;
 
 			var w = new ScaffolderWizard (project, parentFolder);
-			//Xwt.Toolkit.NativeEngine.Invoke(() => {
+			//Xwt.Toolkit.NativeEngine.Invoke (() => {
 				var res = w.RunWizard ();
 			//});
-
 		}
 
 		[CommandUpdateHandler (AspNetCoreCommands.Scaffold)]
