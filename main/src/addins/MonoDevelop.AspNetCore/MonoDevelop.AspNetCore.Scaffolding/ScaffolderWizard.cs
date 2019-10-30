@@ -115,6 +115,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				return;
 			}
 
+			// Build the project to make sure the just added NuGet's get all the needed bits
+			// for the next step. If the project is already built, this is a no-op
+			var buildResult = await project.Build (progressMonitor, project.DefaultConfiguration.Selector, true);
+			if (buildResult.Failed) {
+				return;
+			}
+
 			// Run the tool
 			var dotnet = DotNetCoreRuntime.FileName;
 			var argBuilder = new ProcessArgumentBuilder ();
