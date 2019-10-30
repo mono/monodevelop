@@ -76,6 +76,7 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\InvertedBoolField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ScaffolderField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\StringField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\FileField.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
