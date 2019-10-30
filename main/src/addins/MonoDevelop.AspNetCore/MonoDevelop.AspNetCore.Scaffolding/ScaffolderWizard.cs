@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			}
 
 			if (refsToAdd.Count > 0) {
-				progressMonitor.Console.Log.WriteLine ($"Adding needed NuGet packages ({string.Join (", ", refsToAdd.Select (x => x.Id))})");
+				await progressMonitor.Console.Log.WriteLineAsync ($"Adding needed NuGet packages ({string.Join (", ", refsToAdd.Select (x => x.Id))})");
 				try {
 					await PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, refsToAdd, licensesAccepted: true)
 						.ConfigureAwait (false);
