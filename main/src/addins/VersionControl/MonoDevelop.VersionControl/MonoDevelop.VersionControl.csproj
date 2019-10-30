@@ -524,6 +524,7 @@
     <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.MiddleArea.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.DiffScrollbar.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\BlameWidget.AuthorSectionAccessible.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
