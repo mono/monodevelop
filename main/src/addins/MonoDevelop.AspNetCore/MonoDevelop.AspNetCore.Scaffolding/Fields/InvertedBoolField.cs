@@ -29,8 +29,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	class InvertedBoolField : BoolField
 	{
 		private bool selected;
-
-		public InvertedBoolField (string commandLineName, string displayName) : base (commandLineName, displayName)
+		public InvertedBoolField (
+			string commandLineName,
+			string displayName,
+			bool isChecked = false,
+			bool enabled = true) : base (commandLineName, displayName, isChecked, enabled)
 		{
 		}
 

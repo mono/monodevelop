@@ -45,7 +45,7 @@ namespace MonoDevelop.AspNetCore.Commands
 
 			var w = new ScaffolderWizard (project, parentFolder);
 			//Xwt.Toolkit.NativeEngine.Invoke (() => {
-			var res = w.RunWizard ();
+				var res = w.RunWizard ();
 			//});
 
 		}

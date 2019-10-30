@@ -57,6 +57,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					table.Add (label, 0, row, hpos:WidgetPlacement.End);
 					table.Add (input, 1, row);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
+					input.SetFocus ();
 					break;
 				case ComboField comboField:
 					ComboBox comboBox;
@@ -90,6 +91,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						var boolField = boolFieldList.Options [i];
 						var checkbox = new CheckBox (boolField.DisplayName);
 						checkbox.HeightRequest = 15;
+						checkbox.Active = boolField.Selected;
+						checkbox.Sensitive = boolField.Enabled;
 						checkbox.Toggled += (sender, args) => boolField.Selected = checkbox.Active;
 						vbox.PackStart (checkbox);
                     }

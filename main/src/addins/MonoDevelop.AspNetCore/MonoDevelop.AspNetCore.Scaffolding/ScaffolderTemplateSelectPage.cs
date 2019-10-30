@@ -82,7 +82,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			listBox.Views.Add (new TextCellView (name));
 
 			listBox.DataSource = listStore;
-			listBox.HeightRequest = 400;
+			listBox.HeightRequest = 380;
 			listBox.WidthRequest = 300;
 			listBox.SelectionChanged += (sender, e) => Args.Scaffolder = scaffolders [listBox.SelectedRow];
 			return listBox;

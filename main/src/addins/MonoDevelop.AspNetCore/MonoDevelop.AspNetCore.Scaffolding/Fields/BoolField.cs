@@ -28,10 +28,17 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class BoolField : ScaffolderField
 	{
-		public BoolField (string commandLineName, string displayName) : base (commandLineName, displayName)
+		public BoolField (
+			string commandLineName,
+			string displayName,
+			bool isChecked = false,
+			bool enabled = true) : base (commandLineName, displayName)
 		{
+			Selected = isChecked;
+			Enabled = enabled;
 		}
 
 		public bool Selected { get; set; }
+		public bool Enabled { get; }
 	}
 }
