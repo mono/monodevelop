@@ -48,7 +48,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected override Control CreateControl ()
 		{
-			var icon = new Xwt.ImageView (StockIcons.Information);
 			var mainBox = new VBox { Spacing = 0 };
 			var label = new Label (subSubTitle);
 			label.Font = label.Font.WithSize (18);

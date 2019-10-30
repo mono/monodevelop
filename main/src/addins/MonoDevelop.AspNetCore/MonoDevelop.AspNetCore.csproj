@@ -63,9 +63,7 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ControllerScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\EmptyApiControllerScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\EmptyMvcControllerScaffolder.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\IdentityScaffolder.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\IScaffolder.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\LayoutScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ScaffolderBase.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\MvcControllerWithActionsScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageEntityFrameworkCrudScaffolder.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageEntityFrameworkScaffolder.cs" />

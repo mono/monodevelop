@@ -36,8 +36,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
-			this.CanGoBack = true;
-			this.CanGoNext = true;
 			this.PageSubtitle = "Select Scaffolder";
 			this.PageIcon = StockIcons.Question;
 			this.SubSubTitle = "Select Scaffolder";
@@ -55,8 +53,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				new RazorPageScaffolder(args),
 				new RazorPageEntityFrameworkScaffolder(args),
 				new RazorPageEntityFrameworkCrudScaffolder(args)
-				//new IdentityScaffolder(),
-				//new LayoutScaffolder()
 			};
 			return new Lazy<ScaffolderBase []> (() => scaffolders);
 		}

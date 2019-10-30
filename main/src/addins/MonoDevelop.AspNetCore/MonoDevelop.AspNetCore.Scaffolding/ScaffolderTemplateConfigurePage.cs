@@ -41,7 +41,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		protected override Widget GetMainControl ()
 		{
 			var table = new Table ();
-			//TODO: may as well just make Fields an array or list
 			var fields = scaffolder.Fields.ToArray ();
 
 			var rowCount = fields.Count ();
@@ -54,8 +53,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				switch (field) {
 				case StringField s:
 					var input = new TextEntry ();
-					//input.HeightRequest = 30;
-					//label.Font = label.Font.WithSize (15);
 					label.Text = s.DisplayName;
 					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
 					table.Add (input, 1, rowIndex);
@@ -74,8 +71,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						comboBox.Items.Add (option);
 					}
 
-					//comboBox.HeightRequest = 35;
-					//label.Font = label.Font.WithSize (15);
 					label.Text = comboField.DisplayName;
 
 					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
@@ -93,7 +88,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
                     for(int i = 0; i < boolFieldList.Options.Count; i++) {
 						var boolField = boolFieldList.Options [i];
 						var checkbox = new CheckBox (boolField.DisplayName);
-						//checkbox.HeightRequest = 15;
 						checkbox.Active = boolField.Selected;
 						checkbox.Sensitive = boolField.Enabled;
 						checkbox.Toggled += (sender, args) => boolField.Selected = checkbox.Active;
@@ -108,10 +102,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						var filter = new FileDialogFilter (fileField.FilterWildcard, fileField.FilterWildcard);
 						fileSelector.Filters.Add (filter);
                     }
-					//fileSelector.HeightRequest = 40;
-					//fileSelector.MinHeight = 40;
 					table.Add (fileSelector, 0, rowIndex, colspan:2);
-					//label.Font = label.Font.WithSize (15);
 					label.Text = fileField.DisplayName;
 					table.Add (label, 0, rowIndex + 1, colspan:2);
 					rowAdditionCount++;
