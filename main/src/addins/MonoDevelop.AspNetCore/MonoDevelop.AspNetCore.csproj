@@ -76,6 +76,7 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\StringField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\FileField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageScaffolderBase.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ArgumentField.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />

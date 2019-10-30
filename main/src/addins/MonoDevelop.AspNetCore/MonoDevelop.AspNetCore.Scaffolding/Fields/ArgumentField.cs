@@ -23,40 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Collections.Generic;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class RazorPageScaffolder : RazorPageScaffolderBase
+	// Field to represent a forced command line argument with no UI
+	class ArgumentField : ScaffolderField
 	{
-		public RazorPageScaffolder (ScaffolderArgs args): base(args)
+		public ArgumentField (string commandLineName) : base (commandLineName, null)
 		{
-		}
-
-		public override string Name => "Razor Page";
-
-		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
-
-		IEnumerable<ScaffolderField> GetFields()
-		{
-			var scriptLibrariesField = ReferenceScriptLibrariesField;
-			scriptLibrariesField.Enabled = false;
-
-			var options = new List<BoolField> {
-				PageModelField,
-				PartialViewField,
-				scriptLibrariesField,
-				LayoutPageField
-			};
-
-			fields = new ScaffolderField [] {
-				NameField,
-				new ArgumentField("Empty"),
-				new BoolFieldList(options),
-				CustomLayoutField
-			};
-
-			return fields;
 		}
 	}
 }
