@@ -43,7 +43,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		readonly IWizardDialogPage firstPage;
 
-		static Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
+		Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
 			= new Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> ();
 
 		public override bool CanGoBack {
