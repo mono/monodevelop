@@ -893,20 +893,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public void AddTasks (IEnumerable<TaskListEntry> tasks)
 		{
-			int n = 1;
+			Runtime.CheckMainThread ();
+
 			foreach (TaskListEntry t in tasks) {
 				AddTaskInternal (t);
-				if ((n++ % 100) == 0) {
-					// Adding many tasks is a bit slow, so refresh the
-					// ui at every block of 100.
-					DispatchService.RunPendingEvents ();
-				}
 			}
 			filter.Refilter ();
 		}
 		
 		public void AddTask (TaskListEntry t)
 		{
+			Runtime.CheckMainThread ();
+
 			AddTaskInternal (t);
 			filter.Refilter ();
 		}
@@ -939,10 +937,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			var indexOfNewLine = t.Description.IndexOfAny (new [] { '\n', '\r' });
 			if (indexOfNewLine != -1) {
-				var iter = store.AppendValues (stock, false, t, t.Description.Remove (indexOfNewLine));
-				store.AppendValues (iter, iconEmpty, false, null, t.Description);
+				var iter = store.InsertWithValues (-1, stock, false, t, t.Description.Remove (indexOfNewLine));
+				store.InsertWithValues (iter, -1, iconEmpty, false, null, t.Description);
 			} else {
-				store.AppendValues (stock, false, t, t.Description);
+				store.InsertWithValues (-1, stock, false, t, t.Description);
 			}
 
 			UpdatePadIcon ();
