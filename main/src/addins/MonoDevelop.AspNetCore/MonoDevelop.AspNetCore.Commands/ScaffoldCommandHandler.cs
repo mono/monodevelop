@@ -31,7 +31,6 @@ namespace MonoDevelop.AspNetCore.Commands
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
 		public async void Scaffold ()
 		{
-
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (project == null)
 				return;

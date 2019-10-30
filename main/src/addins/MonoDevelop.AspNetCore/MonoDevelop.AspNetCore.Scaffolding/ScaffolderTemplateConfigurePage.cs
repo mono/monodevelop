@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				switch (field) {
 				case StringField s:
 					var input = new TextEntry ();
-					input.HeightRequest = 30;
+					//input.HeightRequest = 30;
 					//label.Font = label.Font.WithSize (15);
 					label.Text = s.DisplayName;
 					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
@@ -103,6 +103,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					break;
 				case FileField fileField:
 					var fileSelector = new FileSelector ();
+					if (!string.IsNullOrEmpty (fileField.FilterWildcard)) {
+						// This doesn't work with native toolkit!
+						var filter = new FileDialogFilter (fileField.FilterWildcard, fileField.FilterWildcard);
+						fileSelector.Filters.Add (filter);
+                    }
 					//fileSelector.HeightRequest = 40;
 					//fileSelector.MinHeight = 40;
 					table.Add (fileSelector, 0, rowIndex, colspan:2);
