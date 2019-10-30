@@ -28,8 +28,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class FileField : ScaffolderField
 	{
-		public FileField (string commandLineName, string displayName) : base (commandLineName, displayName)
+		public FileField (string commandLineName, string displayName, string filterWildcard) : base (commandLineName, displayName)
 		{
+			FilterWildcard = filterWildcard;
 		}
+
+		public string FilterWildcard { get; }
 	}
 }
