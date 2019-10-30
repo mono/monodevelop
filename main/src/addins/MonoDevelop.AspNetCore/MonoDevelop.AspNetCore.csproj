@@ -71,7 +71,6 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\BoolField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\BoolFieldList.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ComboField.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\InvertedBoolField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ScaffolderField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\StringField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\FileField.cs" />
