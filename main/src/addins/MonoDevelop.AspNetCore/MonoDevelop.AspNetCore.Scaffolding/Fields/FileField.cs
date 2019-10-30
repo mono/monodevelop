@@ -34,5 +34,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		}
 
 		public string FilterWildcard { get; }
+
+		public override string SelectedValue {
+			get => string.IsNullOrWhiteSpace (base.SelectedValue) ? "" : "--layout " + base.SelectedValue;
+			set => base.SelectedValue = value;
+        }
 	}
 }
