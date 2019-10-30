@@ -117,7 +117,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			// Build the project to make sure the just added NuGet's get all the needed bits
 			// for the next step. If the project is already built, this is a no-op
-			var buildResult = await project.Build (progressMonitor, project.DefaultConfiguration.Selector, true);
+			progressMonitor.Console.Debug (0, "", "Building project...\n");
+			var buildResult = await Runtime.RunInMainThread<BuildResult> (() => IdeApp.ProjectOperations.Build (project).Task);
 			if (buildResult.Failed) {
 				return;
 			}
