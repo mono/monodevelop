@@ -76,7 +76,7 @@ namespace MonoDevelop.DesignerSupport
 			var subviews = propertyEditorPanel.Subviews;
 			header = subviews [0];
 			propertyList = subviews [1];
-			internalTableView = subviews.OfType<NSScrollView> ()
+			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
 				.FirstOrDefault ().DocumentView as NSTableView;
 
 			//we need the second item constrained with the property list
