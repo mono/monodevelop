@@ -240,6 +240,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				RebuildSegments ();
 			}
 		}
+
 		uint focusedSegment = 0; 
 		public bool IncreaseFocusIndex()
 		{
@@ -254,6 +255,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 			return result;
 		}
+
+		public bool DecreaseFocusIndex ()
+		{
+			if (focusedSegment == 0)
+				return false;
+			focusedSegment--;
+			RebuildSegments ();
+			return true;
+		}
+
 		public event EventHandler ResizeRequested;
 	}
 }
