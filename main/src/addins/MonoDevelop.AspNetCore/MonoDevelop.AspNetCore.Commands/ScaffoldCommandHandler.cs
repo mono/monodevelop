@@ -56,7 +56,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		{
 			//TODO: this only checks for SDK style project
 			return project != null
-				&& project.MSBuildProject.GetReferencedSDKs ().Any ();
+				&& (project.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) != -1) != null);
 		}
 	}
 }
