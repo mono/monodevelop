@@ -26,11 +26,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 using AppKit;
 
-using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Composition;
+
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Debugger
 {
@@ -39,11 +45,22 @@ namespace MonoDevelop.Debugger
 	/// </summary>
 	class MacDebuggerObjectNameView : MacDebuggerObjectCellViewBase
 	{
+		[Export]
+		[BaseDefinition ("text")]
+		[Name (DebuggerCompletion.ContentType)]
+		ContentTypeDefinition debuggerCompletionContentTypeDefinition;
+
 		readonly List<NSLayoutConstraint> constraints = new List<NSLayoutConstraint> ();
+		readonly ITextBufferFactoryService textBufferFactory;
+		readonly IContentType contentType;
+		readonly ICocoaTextView editor;
+		readonly NSView editorTextView;
 		PreviewButtonIcon currentIcon;
 		bool addNewExpressionVisible;
+		bool editorTextViewVisible;
 		bool previewIconVisible;
 		bool disposed;
+		bool editing;
 
 		public MacDebuggerObjectNameView (MacObjectValueTreeView treeView) : base (treeView, "name")
 		{
@@ -79,6 +96,25 @@ namespace MonoDevelop.Debugger
 				Bordered = false
 			};
 			PreviewButton.Activated += OnPreviewButtonClicked;
+
+			var contentTypeRegistry = CompositionManager.Instance.GetExportedValue<IContentTypeRegistryService> ();
+			textBufferFactory = CompositionManager.Instance.GetExportedValue<ITextBufferFactoryService> ();
+			var factory = CompositionManager.Instance.GetExportedValue<ICocoaTextEditorFactoryService> ();
+			contentType = contentTypeRegistry.GetContentType (DebuggerCompletion.ContentType);
+			var textBuffer = textBufferFactory.CreateTextBuffer ("", contentType);
+			editor = factory.CreateTextView (textBuffer);
+
+			editor.VisualElement.TranslatesAutoresizingMaskIntoConstraints = false;
+			editorTextView = new NSView { TranslatesAutoresizingMaskIntoConstraints = false, WantsLayer = true };
+			editorTextView.Layer.BackgroundColor = NSColor.White.CGColor;
+			editorTextView.AddSubview (editor.VisualElement);
+
+			editor.VisualElement.TopAnchor.ConstraintEqualToAnchor (editorTextView.TopAnchor).Active = true;
+			editor.VisualElement.LeftAnchor.ConstraintEqualToAnchor (editorTextView.LeftAnchor).Active = true;
+			editor.VisualElement.RightAnchor.ConstraintEqualToAnchor (editorTextView.RightAnchor).Active = true;
+			editor.VisualElement.BottomAnchor.ConstraintEqualToAnchor (editorTextView.BottomAnchor).Active = true;
+
+			editor.LostAggregateFocus += OnEditorLostFocus;
 		}
 
 		public MacDebuggerObjectNameView (IntPtr handle) : base (handle)
@@ -91,6 +127,54 @@ namespace MonoDevelop.Debugger
 
 		public NSButton PreviewButton {
 			get; private set;
+		}
+
+		public void Edit ()
+		{
+			if (editing)
+				return;
+
+			editing = true;
+			UpdateContents ();
+			editor.Focus ();
+			TreeView.OnStartEditing ();
+		}
+
+		public void CancelEdit ()
+		{
+			if (!editing)
+				return;
+
+			editor.LostAggregateFocus -= OnEditorLostFocus;
+			try {
+				editor.VisualElement.ResignFirstResponder ();
+			} finally {
+				editor.LostAggregateFocus += OnEditorLostFocus;
+			}
+
+			TreeView.OnEndEditing ();
+			editing = false;
+			UpdateContents ();
+		}
+
+		void CommitEdit ()
+		{
+			if (!editing)
+				return;
+
+			var newValue = editor.TextBuffer.CurrentSnapshot.GetText ();
+			var oldValue = TextField.StringValue;
+
+			TreeView.OnEndEditing ();
+			editing = false;
+			UpdateContents ();
+
+			if (Node is AddNewExpressionObjectValueNode) {
+				if (newValue.Length > 0)
+					TreeView.OnExpressionAdded (newValue);
+			} else if (newValue != oldValue) {
+				TreeView.OnExpressionEdited (Node, newValue);
+			}
 		}
 
 		protected override void UpdateContents ()
@@ -174,10 +258,37 @@ namespace MonoDevelop.Debugger
 			var textWidth = GetWidthForString (TextField.Font, value);
 			OptimalWidth += textWidth;
 
-			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
-			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (firstView.TrailingAnchor, RowCellSpacing));
+			NSView textView;
 
-			if (MacObjectValueTreeView.ValidObjectForPreviewIcon (Node)) {
+			if (editing) {
+				textView = editorTextView;
+
+				var span = editor.TextBuffer.CurrentSnapshot.GetEntireSpan ();
+				editor.TextBuffer.Replace (span, name);
+
+				if (!editorTextViewVisible) {
+					TextField.RemoveFromSuperview ();
+					editorTextViewVisible = true;
+					AddSubview (textView);
+				}
+
+				constraints.Add (textView.TopAnchor.ConstraintEqualToAnchor (TopAnchor, -1));
+				constraints.Add (textView.BottomAnchor.ConstraintEqualToAnchor (BottomAnchor, -1));
+			} else {
+				textView = TextField;
+
+				if (editorTextViewVisible) {
+					editorTextView.RemoveFromSuperview ();
+					editorTextViewVisible = false;
+					AddSubview (TextField);
+				}
+
+				constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
+			}
+
+			constraints.Add (textView.LeadingAnchor.ConstraintEqualToAnchor (firstView.TrailingAnchor, RowCellSpacing));
+
+			if (!editing && MacObjectValueTreeView.ValidObjectForPreviewIcon (Node)) {
 				SetPreviewButtonIcon (PreviewButtonIcon.Hidden);
 
 				if (!previewIconVisible) {
@@ -199,7 +310,7 @@ namespace MonoDevelop.Debugger
 					previewIconVisible = false;
 				}
 
-				constraints.Add (TextField.TrailingAnchor.ConstraintEqualToAnchor (TrailingAnchor, -MarginSize));
+				constraints.Add (textView.TrailingAnchor.ConstraintEqualToAnchor (TrailingAnchor, -MarginSize));
 			}
 
 			foreach (var constraint in constraints)
@@ -249,7 +360,7 @@ namespace MonoDevelop.Debugger
 
 		void OnAddNewExpressionButtonClicked (object sender, EventArgs e)
 		{
-			TextField.BecomeFirstResponder ();
+			Edit ();
 		}
 
 		public void SetPreviewButtonIcon (PreviewButtonIcon icon)
@@ -298,10 +409,16 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ShowPreviewVisualizer (val, IdeApp.Workbench.RootWindow, buttonArea);
 		}
 
+		void OnEditorLostFocus (object sender, EventArgs e)
+		{
+			CommitEdit ();
+		}
+
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && !disposed) {
 				AddNewExpressionButton.Activated -= OnAddNewExpressionButtonClicked;
+				editor.LostAggregateFocus -= OnEditorLostFocus;
 				PreviewButton.Activated -= OnPreviewButtonClicked;
 				foreach (var constraint in constraints)
 					constraint.Dispose ();
