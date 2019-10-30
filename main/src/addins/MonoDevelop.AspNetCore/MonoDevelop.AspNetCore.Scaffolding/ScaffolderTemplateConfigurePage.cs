@@ -30,7 +30,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderTemplateConfigurePage : ScaffolderWizardPageBase
 	{
-		IScaffolder scaffolder;
+		ScaffolderBase scaffolder;
 
 		public ScaffolderTemplateConfigurePage (ScaffolderArgs args) : base (args)
 		{

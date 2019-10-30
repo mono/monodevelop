@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	abstract class ControllerScaffolder : IScaffolder
+	abstract class ControllerScaffolder : ScaffolderBase
 	{
 		protected static StringField [] nameField = new [] { new StringField ("-name", "Controller name:") };
 

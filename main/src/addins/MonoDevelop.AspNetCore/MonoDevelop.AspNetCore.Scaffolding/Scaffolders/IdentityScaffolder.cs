@@ -27,7 +27,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class IdentityScaffolder : IScaffolder
+	class IdentityScaffolder : ScaffolderBase
 	{
 		public override string Name => "Identity";
 		public override string CommandLineName => "controller";
