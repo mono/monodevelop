@@ -92,9 +92,14 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			}
 
 			if (refsToAdd.Count > 0) {
-				progressMonitor.Console.Debug (0, "", $"Adding needed NuGet packages ({string.Join (", ", refsToAdd.Select (x => x.Id))})");
-				await PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, refsToAdd, licensesAccepted: true)
-					.ConfigureAwait (false);
+				progressMonitor.Console.Log.WriteLine ($"Adding needed NuGet packages ({string.Join (", ", refsToAdd.Select (x => x.Id))})");
+				try {
+					await PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, refsToAdd, licensesAccepted: true)
+						.ConfigureAwait (false);
+				} catch (Exception ex) {
+					progressMonitor.ReportError ($"Failed adding packages: {ex.Message}", ex);
+					return false;
+				}
 			}
 
 			return true;
