@@ -39,6 +39,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		}
 
 		public bool Selected { get; set; }
-		public bool Enabled { get; }
+		public bool Enabled { get; set; }
 	}
 }
