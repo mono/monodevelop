@@ -30,6 +30,11 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		private const string ReturnReplacementString = @"{|r|}";
 		private const string NewLineReplacementString = @"{|n|}";
 
+		private const string HTML = nameof (HTML);
+		private const string HTMLX = nameof (HTMLX);
+		private const string Razor = nameof (Razor);
+		private const string XOML = nameof (XOML);
+
 		private const char RazorExplicit = '@';
 
 		private const string CSharpRazorBlock = "{";
@@ -37,6 +42,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private const string HelperRazor = "helper";
 		private const string FunctionsRazor = "functions";
+		private const string CodeRazor = "code";
 
 		private static readonly EditOptions s_venusEditOptions = new EditOptions (new StringDifferenceOptions {
 			DifferenceType = StringDifferenceTypes.Character,
@@ -46,6 +52,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		public ITextBuffer LanguageBuffer { get; private set; }
 		public IProjectionBuffer DataBuffer { get; private set; }
 		public IMonoDevelopContainedLanguageHost ContainedLanguageHost { get; private set; }
+		private readonly HostType _hostType;
 
 		// _workspace will only be set once the Workspace is available
 		private Workspace _workspace;
@@ -82,6 +89,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 			var container = languageBuffer.CurrentSnapshot.AsText ().Container;
 			var registration = Workspace.GetWorkspaceRegistration (container);
+			_hostType = GetHostType ();
 
 			if (registration.Workspace == null)
 			{
@@ -114,6 +122,33 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			Id = document.Id;
 
 			MonoDevelopHostDocumentRegistration.Register (LanguageBuffer, this);
+		}
+
+		private HostType GetHostType ()
+		{
+			if (DataBuffer is IProjectionBuffer projectionBuffer) {
+				// RazorCSharp has an HTMLX base type but should not be associated with
+				// the HTML host type, so we check for it first.
+				if (projectionBuffer.SourceBuffers.Any (b => b.ContentType.IsOfType (Razor))) {
+					return HostType.Razor;
+				}
+
+				// For TypeScript hosted in HTML the source buffers will have type names
+				// HTMLX and TypeScript.
+				if (projectionBuffer.SourceBuffers.Any (b => b.ContentType.IsOfType (HTML) ||
+					 b.ContentType.IsOfType (HTMLX))) {
+					return HostType.HTML;
+				}
+			} else {
+				// XOML is set up differently. For XOML, the secondary buffer (i.e. SubjectBuffer)
+				// is a projection buffer, while the primary buffer (i.e. DataBuffer) is not. Instead,
+				// the primary buffer is a regular unprojected ITextBuffer with the HTML content type.
+				if (DataBuffer.CurrentSnapshot.ContentType.IsOfType (HTML)) {
+					return HostType.XOML;
+				}
+			}
+
+			throw ExceptionUtilities.Unreachable;
 		}
 
 		public ITextBuffer GetOpenTextBuffer ()
@@ -766,32 +801,55 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private int GetAdditionalIndentation (SyntaxNode root, SourceText text, TextSpan span)
 		{
-			var type = GetRazorCodeBlockType (span.Start);
+			if (_hostType == HostType.HTML) {
+				return _workspace.Options.GetOption (FormattingOptions.IndentationSize, Language);
+			}
 
-			// razor block
-			if (type == RazorCodeBlockType.Block) {
-				if (_workspace == null) {
-					// this can happen if the workspace creation isn't yet completed
-					return 0;
-				}
+			if (_hostType == HostType.Razor) {
+				var type = GetRazorCodeBlockType (span.Start);
 
-				// more workaround for csharp razor case. when } for csharp razor code block is just typed, "}" exist
-				// in both subject and surface buffer and there is no easy way to figure out who owns } just typed.
-				// in this case, we let razor owns it. later razor will remove } from subject buffer if it is something
-				// razor owns.
-				var textSpan = GetVisibleTextSpan (text, span);
-				var end = textSpan.End - 1;
-				if (end >= 0 && text[end] == '}') {
-					var token = root.FindToken (end);
-					var syntaxFact = _workspace.Services.GetLanguageServices (Language).GetService<ISyntaxFactsService> ();
-					if (token.Span.Start == end && syntaxFact != null) {
-						if (syntaxFact.TryGetCorrespondingOpenBrace (token, out var openBrace) && !textSpan.Contains (openBrace.Span)) {
-							return 0;
+				// razor block
+				if (type == RazorCodeBlockType.Block) {
+					// more workaround for csharp razor case. when } for csharp razor code block is just typed, "}" exist
+					// in both subject and surface buffer and there is no easy way to figure out who owns } just typed.
+					// in this case, we let razor owns it. later razor will remove } from subject buffer if it is something
+					// razor owns.
+					if (Language == LanguageNames.CSharp) {
+						var textSpan = GetVisibleTextSpan (text, span);
+						var end = textSpan.End - 1;
+						if (end >= 0 && text [end] == '}') {
+							var token = root.FindToken (end);
+							var syntaxFact = _workspace.Services.GetLanguageServices (Language).GetService<ISyntaxFactsService> ();
+							if (token.Span.Start == end && syntaxFact != null) {
+								if (syntaxFact.TryGetCorrespondingOpenBrace (token, out var openBrace) && !textSpan.Contains (openBrace.Span)) {
+									return 0;
+								}
+							}
 						}
 					}
-				}
 
-				return _workspace.Options.GetOption (FormattingOptions.IndentationSize, Language);
+					// same as C#, but different text is in the buffer
+					if (Language == LanguageNames.VisualBasic) {
+						var textSpan = GetVisibleTextSpan (text, span);
+						var subjectSnapshot = LanguageBuffer.CurrentSnapshot;
+						var end = textSpan.End - 1;
+						if (end >= 0) {
+							var ch = subjectSnapshot [end];
+							if (CheckCode (subjectSnapshot, textSpan.End, ch, VBRazorBlock, checkAt: false) ||
+								CheckCode (subjectSnapshot, textSpan.End, ch, FunctionsRazor, checkAt: false)) {
+								var token = root.FindToken (end, findInsideTrivia: true);
+								var syntaxFact = _workspace.Services.GetLanguageServices (Language).GetService<ISyntaxFactsService> ();
+								if (token.Span.End == textSpan.End && syntaxFact != null) {
+									if (syntaxFact.IsSkippedTokensTrivia (token.Parent)) {
+										return 0;
+									}
+								}
+							}
+						}
+					}
+
+					return _workspace.Options.GetOption (FormattingOptions.IndentationSize, Language);
+				}
 			}
 
 			return 0;
@@ -829,35 +887,45 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private bool IsCodeBlock (ITextSnapshot surfaceSnapshot, int position, char ch)
 		{
-			return CheckCode (surfaceSnapshot, position, ch, CSharpRazorBlock) ||
-					CheckCode (surfaceSnapshot, position, ch, FunctionsRazor, CSharpRazorBlock);
+			if (Language == LanguageNames.CSharp) {
+				return CheckCode (surfaceSnapshot, position, ch, CSharpRazorBlock) ||
+					   CheckCode (surfaceSnapshot, position, ch, FunctionsRazor, CSharpRazorBlock) ||
+					   CheckCode (surfaceSnapshot, position, ch, CodeRazor, CSharpRazorBlock);
+			}
+
+			if (Language == LanguageNames.VisualBasic) {
+				return CheckCode (surfaceSnapshot, position, ch, VBRazorBlock) ||
+					   CheckCode (surfaceSnapshot, position, ch, FunctionsRazor);
+			}
+
+			return false;
 		}
 
 		private bool CheckCode (ITextSnapshot snapshot, int position, char ch, string tag, bool checkAt = true)
 		{
-			if (ch != tag[tag.Length - 1] || position < tag.Length) {
+			if (ch != tag [tag.Length - 1] || position < tag.Length) {
 				return false;
 			}
 
 			var start = position - tag.Length;
 			var razorTag = snapshot.GetText (start, tag.Length);
-			return string.Equals (razorTag, tag, StringComparison.OrdinalIgnoreCase) && (!checkAt || snapshot[start - 1] == RazorExplicit);
+			return string.Equals (razorTag, tag, StringComparison.OrdinalIgnoreCase) && (!checkAt || snapshot [start - 1] == RazorExplicit);
 		}
 
 		private bool CheckCode (ITextSnapshot snapshot, int position, string tag)
 		{
-			int i = position - 1;
+			var i = position - 1;
 			if (i < 0) {
 				return false;
 			}
 
 			for (; i >= 0; i--) {
-				if (!char.IsWhiteSpace (snapshot[i])) {
+				if (!char.IsWhiteSpace (snapshot [i])) {
 					break;
 				}
 			}
 
-			var ch = snapshot[i];
+			var ch = snapshot [i];
 			position = i + 1;
 
 			return CheckCode (snapshot, position, ch, tag);
@@ -878,6 +946,13 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			Explicit,
 			Implicit,
 			Helper
+		}
+
+		private enum HostType
+		{
+			HTML,
+			Razor,
+			XOML
 		}
 	}
 }
