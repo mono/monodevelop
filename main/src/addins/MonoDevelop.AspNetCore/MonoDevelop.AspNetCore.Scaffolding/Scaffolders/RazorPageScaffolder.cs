@@ -24,36 +24,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class RazorPageScaffolder : RazorPageScaffolderBase
 	{
-		readonly ScaffolderArgs args;
-
 		public RazorPageScaffolder (ScaffolderArgs args): base(args)
 		{
-			this.args = args;
 		}
 
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
 
 		IEnumerable<ScaffolderField> GetFields()
 		{
-			var options = new List<BoolField> ();
-			options.Add (PageModelField);
-			options.Add (PartialViewField);
-			options.Add (ReferenceScriptLibrariesField);
-			options.Add (LayoutPageField);
+			var scriptLibrariesField = ReferenceScriptLibrariesField;
+			scriptLibrariesField.Enabled = false;
 
-			string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
+			var options = new List<BoolField> {
+				PageModelField,
+				PartialViewField,
+				scriptLibrariesField,
+				LayoutPageField
+			};
 
 			fields = new ScaffolderField [] {
-				new StringField ("", "Name of the Razor Page"),
-				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions),
-				GetDbContextField(args.Project),
-				GetModelField(args.Project),
+				NameField,
 				new BoolFieldList(options),
 				CustomLayoutField
 			};

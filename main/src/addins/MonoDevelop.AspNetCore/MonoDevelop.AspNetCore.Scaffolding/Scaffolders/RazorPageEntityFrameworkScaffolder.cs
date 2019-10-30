@@ -27,12 +27,38 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class RazorPageEntityFrameworkScaffolder : IScaffolder
+	class RazorPageEntityFrameworkScaffolder : RazorPageScaffolderBase
 	{
-		public override string Name => "Razor Page using Entity Framework";
-		public override string CommandLineName => "controller";
+		readonly ScaffolderArgs args;
 
-		public override IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		public RazorPageEntityFrameworkScaffolder (ScaffolderArgs args): base(args)
+		{
+			this.args = args;
+		}
+
+		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
+
+		IEnumerable<ScaffolderField> GetFields()
+		{
+			var options = new List<BoolField> {
+				PageModelField,
+				PartialViewField,
+				ReferenceScriptLibrariesField,
+				LayoutPageField
+			};
+
+			string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
+
+			fields = new ScaffolderField [] {
+				NameField,
+				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions),
+				GetModelField(args.Project),
+				GetDbContextField(args.Project),
+				new BoolFieldList(options),
+				CustomLayoutField
+			};
+
+			return fields;
+		}
 	}
 }

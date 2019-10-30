@@ -53,10 +53,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				new ApiControllerWithActionsScaffolder(args),
 				new ApiControllerEntityFrameworkScaffolder(args),
 				new RazorPageScaffolder(args),
-				new RazorPageEntityFrameworkScaffolder(),
-				new RazorPageEntityFrameworkCrudScaffolder(),
-				new IdentityScaffolder(),
-				new LayoutScaffolder()
+				new RazorPageEntityFrameworkScaffolder(args),
+				new RazorPageEntityFrameworkCrudScaffolder(args)
+				//new IdentityScaffolder(),
+				//new LayoutScaffolder()
 			};
 			return new Lazy<IScaffolder []> (() => scaffolders);
 		}

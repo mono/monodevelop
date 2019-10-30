@@ -29,12 +29,28 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ApiControllerEntityFrameworkScaffolder : ControllerScaffolder
 	{
-		public ApiControllerEntityFrameworkScaffolder (ScaffolderArgs args) : base (args) { }
+		public ApiControllerEntityFrameworkScaffolder (ScaffolderArgs args) : base (args)
+		{
+			this.args = args;
+		}
 
 		public override string Name => "API Controller with actions using Entity Framework";
 		public override string CommandLineName => "controller";
 
-		public override IEnumerable<ScaffolderField> Fields =>
-			new [] { new StringField ("name", "Name") };
+		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields ();
+		protected IEnumerable<ScaffolderField> fields;
+		readonly ScaffolderArgs args;
+
+		IEnumerable<ScaffolderField> GetFields ()
+		{
+			fields = new ScaffolderField [] {
+				GetModelField(args.Project),
+				GetDbContextField(args.Project),
+new StringField ("name", "Controller name:"),
+
+			};
+
+			return fields;
+		}
 	}
 }
