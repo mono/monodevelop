@@ -44,8 +44,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			//TODO: may as well just make Fields an array or list
 			var fields = scaffolder.Fields.ToArray ();
 
-			for(int row = 0; row < fields.Count (); row++) {
-				var field = fields[row];
+			var rowCount = fields.Count ();
+			int rowAdditionCount = 0;
+			for(int fieldIndex = 0; fieldIndex < rowCount; fieldIndex++) {
+				int rowIndex = fieldIndex + rowAdditionCount;
+				var field = fields[fieldIndex];
 				var label = new Label ();
 
 				switch (field) {
@@ -54,8 +57,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					input.HeightRequest = 30;
 					label.Font = label.Font.WithSize (15);
 					label.Text = s.DisplayName;
-					table.Add (label, 0, row, hpos:WidgetPlacement.End);
-					table.Add (input, 1, row);
+					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
+					table.Add (input, 1, rowIndex);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					input.SetFocus ();
 					break;
@@ -71,12 +74,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						comboBox.Items.Add (option);
 					}
 
-					comboBox.HeightRequest = 30;
+					comboBox.HeightRequest = 35;
 					label.Font = label.Font.WithSize (15);
 					label.Text = comboField.DisplayName;
 
-					table.Add (label, 0, row, hpos:WidgetPlacement.End);
-					table.Add (comboBox, 1, row);
+					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
+					table.Add (comboBox, 1, rowIndex);
 					comboField.SelectedValue = comboField.Options.FirstOrDefault ();
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
@@ -85,7 +88,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
-					table.Add (label, 0, row, hpos:WidgetPlacement.End, vpos:WidgetPlacement.Start);
+					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End, vpos:WidgetPlacement.Start);
 					var vbox = new VBox ();
                     for(int i = 0; i < boolFieldList.Options.Count; i++) {
 						var boolField = boolFieldList.Options [i];
@@ -96,7 +99,18 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						checkbox.Toggled += (sender, args) => boolField.Selected = checkbox.Active;
 						vbox.PackStart (checkbox);
                     }
-					table.Add (vbox, 1, row);
+					table.Add (vbox, 1, rowIndex);
+					break;
+				case FileField fileField:
+					var fileSelector = new FileSelector ();
+					fileSelector.HeightRequest = 40;
+					fileSelector.MinHeight = 40;
+					table.Add (fileSelector, 0, rowIndex, colspan:2);
+					label.Font = label.Font.WithSize (15);
+					label.Text = fileField.DisplayName;
+					table.Add (label, 0, rowIndex + 1, colspan:2);
+					rowAdditionCount++;
+					fileSelector.FileChanged += (sender, args) => fileField.SelectedValue = fileSelector.FileName;
 					break;
 				}
 				
