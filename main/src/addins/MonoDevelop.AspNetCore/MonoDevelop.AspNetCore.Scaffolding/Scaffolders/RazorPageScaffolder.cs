@@ -23,119 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.FindSymbols;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class RazorPageScaffolder : IScaffolder
+	class RazorPageScaffolder : RazorPageScaffolderBase
 	{
-
-		//		Generator Arguments:
-		//  razorPageName : Name of the Razor Page
-		//  templateName  : The template to use, supported view templates: 'Empty|Create|Edit|Delete|Details|List'
-
-		//Generator Options:
-		//  --model|-m                          : Model class to use
-		//  --dataContext|-dc                   : DbContext class to use
-		//  --referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
-		//  --layout|-l                         : Custom Layout page to use
-		//  --useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
-		//  --force|-f                          : Use this option to overwrite existing files
-		//  --relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
-		//  --namespaceName|-namespace          : Specify the name of the namespace to use for the generated PageModel
-		//  --partialView|-partial              : Generate a partial view, other layout options (-l and -udl) are ignored if this is specified
-		//  --noPageModel|-npm                  : Switch to not generate a PageModel class for Empty template
-
-		const string DbContextTypeName = "System.Data.Entity.DbContext";
-		const string EF7DbContextTypeName = "Microsoft.Data.Entity.DbContext";
-		const string EFCDbContextTypeName = "Microsoft.EntityFrameworkCore.DbContext";
-
 		readonly ScaffolderArgs args;
 
-		public override string Name => "Razor Page";
-		public override string CommandLineName => "razorpage";
-
-		static string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
-		IEnumerable<CommandLineArg> commandLineArgs;
-		private IEnumerable<ScaffolderField> fields;
-
-		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
-
-		public RazorPageScaffolder (ScaffolderArgs args)
+		public RazorPageScaffolder (ScaffolderArgs args): base(args)
 		{
 			this.args = args;
-			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
-
-			commandLineArgs = base.DefaultArgs.Append (
-	new CommandLineArg ("--namespaceName", args.Project.GetDefaultNamespace (defaultNamespace))
-);
-
 		}
 
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
 
-		IEnumerable<string> GetDbContextClasses ()
-		{
-			//TODO: make async
-			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (args.Project).Result;
-			var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
-						 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
-						 ?? compilation.GetTypeByMetadataName (EF7DbContextTypeName);
-
-
-			if (dbContext != null) {
-				var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
-				return result.Select (c => c.MetadataName);
-			}
-			return Enumerable.Empty<string> ();
-		}
-
-		IEnumerable<string> GetModelClasses ()
-		{
-			//TODO: make async
-			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (args.Project).Result;
-			var modelTypes = DbSetModelVisitor.FindModelTypes (compilation.Assembly);
-			return modelTypes.Select (t => t.MetadataName);
-		}
-
 		IEnumerable<ScaffolderField> GetFields()
 		{
-		//  --model|-m                          : Model class to use
-		//  --dataContext|-dc                   : DbContext class to use
-		//  --referenceScriptLibraries|-scripts : Switch to specify whether to reference script libraries in the generated views
-		//  --layout|-l                         : Custom Layout page to use
-		//  --useDefaultLayout|-udl             : Switch to specify that default layout should be used for the views
-		//  --force|-f                          : Use this option to overwrite existing files
-		//  --relativeFolderPath|-outDir        : Specify the relative output folder path from project where the file needs to be generated, if not specified, file will be generated in the project folder
-		//  --namespaceName|-namespace          : Specify the name of the namespace to use for the generated PageModel
-		//  --partialView|-partial              : Generate a partial view, other layout options (-l and -udl) are ignored if this is specified
-		//  --noPageModel|-npm                  : Switch to not generate a PageModel class for Empty template
 			var options = new List<BoolField> ();
-			options.Add (new InvertedBoolField ("--noPageModel", "Generate PageModel class", isChecked: true));
-			options.Add (new BoolField ("--partialView", "Create as a partial view"));
-			options.Add (new BoolField ("--referenceScriptLibraries", "Reference script libraries", isChecked:true, enabled: false));
-			options.Add (new InvertedBoolField ("--useDefaultLayout", "Use a layout page", isChecked: true));
+			options.Add (PageModelField);
+			options.Add (PartialViewField);
+			options.Add (ReferenceScriptLibrariesField);
+			options.Add (LayoutPageField);
 
-			var fields = new ScaffolderField [] {
+			string [] viewTemplateOptions = new [] { "Empty", "Create", "Edit", "Delete", "Details", "List" };
+
+			fields = new ScaffolderField [] {
 				new StringField ("", "Name of the Razor Page"),
 				new ComboField ("", "The template to use, supported view templates", viewTemplateOptions),
+				GetDbContextField(args.Project),
+				GetModelField(args.Project),
+				new BoolFieldList(options),
+				CustomLayoutField
 			};
 
-			var dbContexts = GetDbContextClasses ();
-			var dbContextField = new ComboField ("--dataContext", "DbContext class to use", dbContexts.ToArray (), isEditable: true);
-			var dbModels = GetModelClasses ();
-			var dbModelField = new ComboField ("--model", "Model class to use", dbModels.ToArray (), isEditable: true);
-			this.fields =
-				fields.Append (dbContextField)
-					  .Append (dbModelField)
-					  .Append (new BoolFieldList (options))
-					  .Append (new FileField ("--layout", "Custom Layout page to use"));
-
-			return this.fields;
+			return fields;
 		}
 	}
 }
