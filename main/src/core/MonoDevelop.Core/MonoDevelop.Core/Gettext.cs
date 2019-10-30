@@ -138,6 +138,9 @@ namespace MonoDevelop.Core
 			catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
+
+			Environment.SetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH", null);
+			Environment.SetEnvironmentVariable ("MONODEVELOP_STUB_LANGUAGE", null);
 		}
 
 		public static string UILocale { get; private set; }
