@@ -41,6 +41,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public bool CanUseAsDefault { get; set; }
 
 		/// <summary>
+		/// Change the order of document controllers and external binding if any of the document controllers flag
+		/// it prefer that document prefer to be opened in the external binding.
+		/// </summary>
+		public bool PreferExternalBinding { get; set; }
+
+		/// <summary>
 		/// Role that the new controller will have
 		/// </summary>
 		public DocumentControllerRole Role { get; set; }
