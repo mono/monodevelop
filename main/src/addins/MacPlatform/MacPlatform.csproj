@@ -116,6 +116,7 @@
     <Compile Include="MacHttpMessageHandlerProvider.cs" />
     <Compile Include="NSUrlSessionCredentialsHandler.cs" />
     <Compile Include="BasicAuthenticationHandler.cs" />
+    <Compile Include="MacIdeAppleEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MacPlatform.addin.xml" />
@@ -156,6 +157,9 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <LibXammac Include="..\..\..\external\libxammac.dylib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="query-vsmac.mm" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(LibXammac)" DestinationFiles="$(OutputPath)\libxammac.dylib" SkipUnchangedFiles="true" />
