@@ -33,7 +33,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			string displayName,
 			bool isChecked = false,
 			bool enabled = true,
-            bool isInverted = false) : base (commandLineName, displayName)
+			bool isInverted = false) : base (commandLineName, displayName)
 		{
 			Selected = isChecked;
 			Enabled = enabled;
