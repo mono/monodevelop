@@ -898,6 +898,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (TaskListEntry t in tasks) {
 				AddTaskInternal (t);
 			}
+			UpdatePadIcon ();
+			UpdateErrorsNum ();
+			UpdateWarningsNum ();
+			UpdateMessagesNum ();
+
 			filter.Refilter ();
 		}
 		
@@ -906,6 +911,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Runtime.CheckMainThread ();
 
 			AddTaskInternal (t);
+
+			UpdatePadIcon ();
+			UpdateErrorsNum ();
+			UpdateWarningsNum ();
+			UpdateMessagesNum ();
+
 			filter.Refilter ();
 		}
 
@@ -919,17 +930,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 				case TaskSeverity.Error:
 					stock = iconError;
 					errorCount++;
-					UpdateErrorsNum ();
 					break; 
 				case TaskSeverity.Warning:
 					stock = iconWarning;
 					warningCount++;
-					UpdateWarningsNum ();	
 					break;
 				default:
 					stock = iconInfo;
 					infoCount++;
-					UpdateMessagesNum ();
 					break;
 			}
 			
@@ -942,8 +950,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				store.InsertWithValues (-1, stock, false, t, t.Description);
 			}
-
-			UpdatePadIcon ();
 		}
 
 		void UpdateErrorsNum () 
