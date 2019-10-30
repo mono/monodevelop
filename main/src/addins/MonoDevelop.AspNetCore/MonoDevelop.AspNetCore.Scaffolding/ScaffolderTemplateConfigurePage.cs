@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				switch (field) {
 				case StringField s:
 					var input = new TextEntry ();
-					//input.HeightRequest = 30;
+					input.HeightRequest = 30;
 					//label.Font = label.Font.WithSize (15);
 					label.Text = s.DisplayName;
 					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
