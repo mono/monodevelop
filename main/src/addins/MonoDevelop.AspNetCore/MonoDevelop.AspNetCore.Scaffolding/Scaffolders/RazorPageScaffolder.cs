@@ -33,6 +33,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 		}
 
+		public override string Name => "Razor Page";
+
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
 
 		IEnumerable<ScaffolderField> GetFields()
