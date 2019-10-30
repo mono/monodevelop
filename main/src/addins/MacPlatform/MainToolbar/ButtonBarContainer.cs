@@ -65,21 +65,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
 				if (theEvent.ModifierFlags == (NSEventModifierMask)KeyModifierFlag.None) {
-					var success = buttonBars.FirstOrDefault ().IncreaseFocusIndex ();
-					if (success) return;
+					if (buttonBars.Count > 0) {
+						var success = buttonBars[0].IncreaseFocusIndex ();
+						if (success) return;
+					}
 				} else if (theEvent.ModifierFlags == (NSEventModifierMask)KeyModifierFlag.Shift) {
-					var success = buttonBars.FirstOrDefault ().DecreaseFocusIndex ();
-					if (success) return;
+					if (buttonBars.Count > 0) {
+						var success = buttonBars[0].DecreaseFocusIndex ();
+						if (success) return;
+					}
 				}
 			} else if (theEvent.KeyCode == (ushort)KeyCodes.Space || theEvent.KeyCode == (ushort)KeyCodes.Enter) {
-					var buttonBar = buttonBars.FirstOrDefault ();
-					buttonBar.ExecuteFocused ();
+					if (buttonBars.Count > 0) {
+						var buttonBar = buttonBars[0];
+						buttonBar.ExecuteFocused ();
+					}
 			}
 
 		   	base.KeyDown (theEvent);
 		}
 		
-
 		public override bool AcceptsFirstResponder () => buttonBars.Any ();
 
 		public override bool BecomeFirstResponder ()
