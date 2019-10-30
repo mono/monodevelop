@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			// Set up the list store so the test framework can work out the correct columns
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateCategoriesListStore__Name", "templateCategoriesListStore__Icon", "templateCategoriesListStore__Category");
 			TypeDescriptor.AddAttributes (templateCategoriesTreeStore, modelAttr);
-			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Icon", "templateListStore__Template");
+			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Icon", "templateListStore__Template", "templateListStore__Category", "templateListStore__Language");
 			TypeDescriptor.AddAttributes (templatesTreeStore, modelAttr);
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
@@ -138,14 +138,16 @@ namespace MonoDevelop.Ide.Projects
 			var templateTextRenderer = (GtkTemplateCellRenderer)renderer;
 			templateTextRenderer.Template = template;
 			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Xwt.Drawing.Image;
-			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
+			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateOwnCategoryNameColumn) as string;
 		}
 
 		static void SetLanguageCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
+			var language = (string)model.GetValue (it, TemplateA11yLanguageNameColumn);
 			var languageRenderer = (LanguageCellRenderer)renderer;
 			languageRenderer.Template = template;
+			languageRenderer.SelectedLanguage = language ?? template?.Language ?? string.Empty;
 		}
 
 		void HandlePopup (SolutionTemplate template, uint eventTime)
@@ -228,6 +230,8 @@ namespace MonoDevelop.Ide.Projects
 					languageCellRenderer.SelectedLanguage = language;
 					controller.SelectedLanguage = language;
 					templatesTreeView.QueueDraw ();
+					if (templatesTreeView.Selection.GetSelected (out var selIter))
+						templatesTreeStore.SetValue (selIter, TemplateA11yLanguageNameColumn, languageCellRenderer.SelectedLanguage);
 					ShowSelectedTemplate ();
 				};
 				menu.Items.Add (menuItem);
@@ -390,38 +394,58 @@ namespace MonoDevelop.Ide.Projects
 			languageCellRenderer.RenderRecentTemplate = false;
 			foreach (TemplateCategory subCategory in category.Categories) {
 				var iter = templatesTreeStore.AppendValues (
-					MarkupTopLevelCategoryName (subCategory.Name),
+					subCategory.Name,
 					null,
+					null,
+					subCategory.Name,
 					null);
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
 					if (template.HasProjects || controller.IsNewSolution) {
+						string language = GetLanguageForTemplate (template);
 						templatesTreeStore.AppendValues (
 							iter,
 							template.Name,
 							GetIcon (template.IconId, IconSize.Dnd),
-							template);
+							template,
+							subCategory.Name,
+							language);
 					}
 				}
 			}
 			templatesTreeView.ExpandAll ();
 		}
 
+		string GetLanguageForTemplate (SolutionTemplate template)
+		{
+			string language = controller.SelectedLanguage;
+			if (template.AvailableLanguages.Contains (language)) {
+				return language;
+			}
+
+			return template.AvailableLanguages.OrderBy (item => item).FirstOrDefault ();
+		}
+
 		void ShowRecentTemplates ()
 		{
 			templateTextRenderer.RenderRecentTemplate = true;
 			languageCellRenderer.RenderRecentTemplate = true;
+			var subCategoryName = Core.GettextCatalog.GetString ("Recently used templates");
 			var iter = templatesTreeStore.AppendValues (
-				MarkupTopLevelCategoryName (Core.GettextCatalog.GetString ("Recently used templates")),
+				subCategoryName,
 				null,
+				null,
+				subCategoryName,
 				null);
 			foreach (SolutionTemplate template in controller.RecentTemplates) {
 				if (template.HasProjects || controller.IsNewSolution) {
 					templatesTreeStore.AppendValues (
 						iter,
-						controller.GetCategoryPathText (template),
+						template.Name,
 						GetIcon (template.IconId, IconSize.Dnd),
-						template);
+						template,
+						controller.GetCategoryPathText (template),
+						template.Language);
 				}
 			}
 			templatesTreeView.ExpandAll ();
@@ -460,6 +484,13 @@ namespace MonoDevelop.Ide.Projects
 
 		void ShowTemplate (SolutionTemplate template)
 		{
+			string language = GetLanguageForTemplate (controller.SelectedTemplate);
+
+			TreeIter item;
+			if (templatesTreeView.Selection.GetSelected (out item)) {
+				templatesTreeStore.SetValue (item, TemplateA11yLanguageNameColumn, language);
+			}
+
 			templateNameLabel.Markup = MarkupTemplateName (template.Name);
 			templateDescriptionLabel.Text = template.Description;
 			templateImage.Image = controller.GetImage (template);

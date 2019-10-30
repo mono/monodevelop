@@ -58,11 +58,18 @@ namespace MonoDevelop.Ide.Projects
 		TreeStore templateCategoriesTreeStore =
 			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
+		// DO NOT REMOVE
+		// This column is not used here, but is required for
+		// external UI tests which need a plain string name inside the model
+		// This is a reminder to not remove or abuse this column for other purposes
 		const int TemplateNameColumn = 0;
+		// DO NOT REMOVE
 		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
+		const int TemplateOwnCategoryNameColumn = 3;
+		const int TemplateA11yLanguageNameColumn = 4;
 		TreeStore templatesTreeStore =
-			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
+			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate), typeof (string), typeof (string));
 		VBox templateVBox;
 		ImageView templateImage;
 		Label templateNameLabel;
