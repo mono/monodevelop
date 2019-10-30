@@ -91,16 +91,16 @@ namespace MonoDevelop.Components.AutoTest
 			return SelectorViewControl.GetActiveStartupProject ();
 		}
 
-		public Dictionary<ExecitionInfoKeys, string> GetExecutionInfo()
+		public Dictionary<ExecutionInfoKeys, string> GetExecutionInfo()
 		{
-			var info = new Dictionary<ExecitionInfoKeys, string> (3);
-			info.Add (ExecitionInfoKeys.StartupProject, GetActiveStartupProject ());
-			info.Add (ExecitionInfoKeys.ActiveConfiguration, GetActiveConfiguration ());
-			info.Add (ExecitionInfoKeys.ActiveExecitionTarget, GetActiveExetutionTarget ());
+			var info = new Dictionary<ExecutionInfoKeys, string> (3);
+			info.Add (ExecutionInfoKeys.StartupProject, GetActiveStartupProject ());
+			info.Add (ExecutionInfoKeys.ActiveConfiguration, GetActiveConfiguration ());
+			info.Add (ExecutionInfoKeys.ActiveExecitionTarget, GetActiveExetutionTarget ());
 			return info;
 		}
 
-		public enum ExecitionInfoKeys
+		public enum ExecutionInfoKeys
 		{
 			StartupProject,
 			ActiveConfiguration,
