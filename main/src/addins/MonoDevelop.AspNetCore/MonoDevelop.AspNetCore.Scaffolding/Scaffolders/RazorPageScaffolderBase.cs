@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class RazorPageScaffolderBase : IScaffolder
+	class RazorPageScaffolderBase : ScaffolderBase
 	{
 		protected InvertedBoolField PageModelField { get { return new InvertedBoolField ("--noPageModel", "Generate PageModel class", isChecked: true); } }
 		protected BoolField PartialViewField { get { return new BoolField ("--partialView", "Create as a partial view"); } }

@@ -34,7 +34,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderArgs
 	{
-		public IScaffolder Scaffolder { get; set; }
+		public ScaffolderBase Scaffolder { get; set; }
 
 		public override int GetHashCode ()
 		{

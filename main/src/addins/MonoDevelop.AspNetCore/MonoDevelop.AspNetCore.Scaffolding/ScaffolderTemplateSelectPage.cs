@@ -40,13 +40,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.CanGoNext = true;
 			this.PageSubtitle = "Select Scaffolder";
 			this.PageIcon = StockIcons.Question;
-			this.SubSubTitle = "Select Scaffolder SUB";
+			this.SubSubTitle = "Select Scaffolder";
 			this.args = args;
 		}
 
-		Lazy<IScaffolder []> GetScaffolders ()
+		Lazy<ScaffolderBase []> GetScaffolders ()
 		{
-			var scaffolders = new IScaffolder [] {
+			var scaffolders = new ScaffolderBase [] {
 				new EmptyMvcControllerScaffolder(args),
 				new MvcControllerWithActionsScaffolder(args),
 				new EmptyApiControllerScaffolder(args),
@@ -58,7 +58,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				//new IdentityScaffolder(),
 				//new LayoutScaffolder()
 			};
-			return new Lazy<IScaffolder []> (() => scaffolders);
+			return new Lazy<ScaffolderBase []> (() => scaffolders);
 		}
 
 		protected override Widget GetMainControl ()

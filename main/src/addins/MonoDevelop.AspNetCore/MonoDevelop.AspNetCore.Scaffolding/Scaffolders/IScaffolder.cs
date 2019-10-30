@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	abstract class IScaffolder
+	abstract class ScaffolderBase
 	{
 		const string DbContextTypeName = "System.Data.Entity.DbContext";
 		const string EF7DbContextTypeName = "Microsoft.Data.Entity.DbContext";
