@@ -30,7 +30,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	abstract class ControllerScaffolder : IScaffolder
 	{
-		protected static StringField [] stringField = new [] { new StringField ("-name", "Name") };
+		protected static StringField [] nameField = new [] { new StringField ("-name", "Controller name:") };
 
 		public override string CommandLineName => "controller";
 

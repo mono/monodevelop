@@ -35,6 +35,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public ApiControllerWithActionsScaffolder (ScaffolderArgs args) : base (args) { }
 
-		public override IEnumerable<ScaffolderField> Fields => stringField;
+		public override IEnumerable<ScaffolderField> Fields => nameField;
 	}
 }
