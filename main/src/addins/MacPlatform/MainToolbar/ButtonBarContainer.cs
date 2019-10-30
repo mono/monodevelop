@@ -25,10 +25,11 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AppKit;
 using CoreGraphics;
 using MonoDevelop.Ide;
-using System.Linq;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -61,21 +62,25 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public override void KeyDown (NSEvent theEvent)
-        {
-            if (theEvent.Characters == "\t" && NextKeyView != null) {
-				var success = buttonBars.FirstOrDefault ().IncreaseFocusIndex(); //TODO
-				if(!success)
-					Window.MakeFirstResponder (NextKeyView);
-				return; 
-            }
-
-			if (theEvent.Characters == " " && NextKeyView != null) {
-				var buttonBar = buttonBars.FirstOrDefault ();
-				buttonBar.ExecuteFocused ();
+		{
+			if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
+				if (theEvent.ModifierFlags == (NSEventModifierMask)KeyModifierFlag.None) {
+					var success = buttonBars.FirstOrDefault ().IncreaseFocusIndex ();
+					if (success) return;
+				} else if (theEvent.ModifierFlags == (NSEventModifierMask)KeyModifierFlag.Shift) {
+					var success = buttonBars.FirstOrDefault ().DecreaseFocusIndex ();
+					if (success) return;
+				}
+			} else if (theEvent.KeyCode == (ushort)KeyCodes.Space || theEvent.KeyCode == (ushort)KeyCodes.Enter) {
+					var buttonBar = buttonBars.FirstOrDefault ();
+					buttonBar.ExecuteFocused ();
 			}
 
-			base.KeyDown (theEvent);
-        }
+		   	base.KeyDown (theEvent);
+		}
+		
+
+		public override bool AcceptsFirstResponder () => buttonBars.Any ();
 
 		public override bool BecomeFirstResponder ()
 		{
