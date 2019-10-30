@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -32,6 +34,7 @@ using MonoDevelop.DotNetCore;
 using MonoDevelop.DotNetCore.GlobalTools;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using Xwt;
 using Xwt.Drawing;
@@ -61,16 +64,50 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		const string toolName = "dotnet-aspnet-codegenerator";
 
+		async Task<bool> InstallDotNetToolAsync (OutputProgressMonitor progressMonitor)
+		{
+			if (!DotNetCoreGlobalToolManager.IsInstalled (toolName)) {
+				if (!await DotNetCoreGlobalToolManager.Install (toolName, progressMonitor.CancellationToken)) {
+					progressMonitor.ReportError ($"Could not install {toolName} tool");
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		async Task<bool> InstallNuGetPackagesAsync (OutputProgressMonitor progressMonitor)
+		{
+			progressMonitor.Console.Debug (0, "", "Checking if needed NuGet packages are already installed...\n");
+			var refsToAdd = new List<PackageManagementPackageReference> ();
+			var installedPackages = PackageManagementServices.ProjectOperations.GetInstalledPackages (project);
+			foreach (var dep in new [] {
+				"Microsoft.EntityFrameworkCore.SqlServer",
+				"Microsoft.EntityFrameworkCore.Tools",
+				"Microsoft.Extensions.Logging.Debug",
+				"Microsoft.VisualStudio.Web.CodeGeneration.Design"}) {
+				if (installedPackages.FirstOrDefault (x => x.Id.Equals (dep, StringComparison.Ordinal)) == null) {
+					refsToAdd.Add (new PackageManagementPackageReference (dep, null));
+				}
+			}
+
+			if (refsToAdd.Count > 0) {
+				progressMonitor.Console.Debug (0, "", $"Adding needed NuGet packages ({string.Join (", ", refsToAdd.Select (x => x.Id))})");
+				await PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, refsToAdd, licensesAccepted: true)
+					.ConfigureAwait (false);
+			}
+
+			return true;
+		}
+
 		async Task OnCompletedAsync ()
 		{
 			using var progressMonitor = CreateProgressMonitor ();
 
-			// Install the tool
-			if (!DotNetCoreGlobalToolManager.IsInstalled (toolName)) {
-				if (!await DotNetCoreGlobalToolManager.Install (toolName, progressMonitor.CancellationToken)) {
-					progressMonitor.ReportError ($"Could not install {toolName} tool");
-					return;
-				}
+			// Pre-setup
+			if (!await InstallDotNetToolAsync (progressMonitor) ||
+				!await InstallNuGetPackagesAsync (progressMonitor)) {
+				return;
 			}
 
 			// Run the tool
