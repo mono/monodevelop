@@ -35,9 +35,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 
 			bool firstCategory = true;
+			widget.Accessible.Role = Xwt.Accessibility.Role.Group;
+			widget.Accessible.Label = GettextCatalog.GetString ("Dependencies");
+			widget.Accessible.IsAccessible = true;
 
 			foreach (var category in this.section.Service.Dependencies.Select (d => d.Category).Distinct ()) {
 				var categoryIcon = new ImageView (category.Icon.WithSize (IconSize.Small));
+				categoryIcon.Accessible.Label = GettextCatalog.GetString ("Category");
 				var categoryLabel = new Label (category.Name);
 				var categoryBox = new HBox ();
 
@@ -48,10 +52,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				categoryBox.PackStart (categoryLabel);
 				widget.PackStart (categoryBox);
 
+				var dependenciesGroup = new VBox () {
+					MarginLeft = category.Icon.Size.Width / 2
+				};
+				dependenciesGroup.Accessible.Role = Xwt.Accessibility.Role.Group;
+				dependenciesGroup.Accessible.LabelWidget = categoryLabel;
+				dependenciesGroup.Accessible.IsAccessible = true;
+				widget.PackStart (dependenciesGroup);
+
 				foreach (var dependency in this.section.Service.Dependencies.Where (d => d.Category == category)) {
-					widget.PackStart (new DependencyWidget (section.Service, dependency) {
-						MarginLeft = category.Icon.Size.Width / 2
-					});
+					dependenciesGroup.PackStart (new DependencyWidget (section.Service, dependency));
 				}
 
 				if (firstCategory)
@@ -93,11 +103,21 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			container.PackStart (statusIconView);
 			container.PackStart (statusLabel);
 
+			Accessible.Role = Xwt.Accessibility.Role.Group;
+			Accessible.IsAccessible = true;
+			Accessible.LabelWidget = nameLabel;
+
 			Content = container;
 			Update ();
 
 			dependency.StatusChanged += HandleDependencyStatusChange;
 			service.StatusChanged += HandleServiceStatusChanged;
+		}
+
+		void UpdateAccessibility ()
+		{
+			iconView.Accessible.LabelWidget = nameLabel;
+			statusIconView.Accessible.Label = GettextCatalog.GetString ("Status");
 		}
 
 		void SetStatusIcon (IconId stockId, double alpha = 1.0)
@@ -148,6 +168,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				else
 					SetStatusIcon (IconId.Null);
 			}
+			UpdateAccessibility ();
 		}
 
 		void HandleDependencyStatusChange (object sender, StatusChangedEventArgs e)

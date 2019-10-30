@@ -81,6 +81,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusLabel.TextColor = Styles.SecondaryTextColor;
 
 			statusImage = new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small));
+			statusImage.Accessible.LabelWidget = statusLabel;
 
 			statusBox = new HBox ();
 			statusBox.MarginLeft = 10;
@@ -93,6 +94,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			headerTitle.PackStart (expanderImage);
 			headerTitle.PackStart (titleLabel);
 			headerTitle.PackStart (statusBox);
+
+			headerTitle.Accessible.Role = Xwt.Accessibility.Role.Disclosure;
+			headerTitle.Accessible.IsAccessible = true;
+			headerTitle.Accessible.LabelWidget = titleLabel;
 
 			header.PackStart (headerTitle);
 
