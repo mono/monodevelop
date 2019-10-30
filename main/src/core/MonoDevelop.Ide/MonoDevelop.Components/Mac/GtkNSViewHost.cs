@@ -53,9 +53,6 @@ namespace Gtk
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 
 		[DllImport (LIBGTKQUARTZ)]
-		static extern IntPtr gdk_quartz_event_get_nsevent (IntPtr evnt);
-
-		[DllImport (LIBGTKQUARTZ)]
 		static extern void gdk_window_coords_to_parent (
 			IntPtr window,
 			double x,
@@ -65,15 +62,6 @@ namespace Gtk
 
 		[DllImport (LIBGTKQUARTZ)]
 		static extern bool gdk_window_has_native (IntPtr window);
-
-		static NSEvent GetNSEvent (Gdk.Event evnt)
-		{
-			if (evnt == null || evnt.Handle == IntPtr.Zero)
-				return null;
-
-			var nsEventHandle = gdk_quartz_event_get_nsevent (evnt.Handle);
-			return Runtime.GetNSObject<NSEvent> (nsEventHandle);
-		}
 
 		NSView view;
 		NSView superview;
@@ -360,25 +348,6 @@ namespace Gtk
 				LogExit ();
 			}
 		}
-
-		bool ForwardEvent<TEvent> (
-			TEvent evnt,
-			Action<NSView, NSEvent> forwardCall,
-			Func<TEvent, bool> baseCall) where TEvent : Gdk.Event
-		{
-			var acceptsFirstResponderView = GetAcceptsFirstResponderView ();
-			if (acceptsFirstResponderView == null)
-				return false;
-
-			var nsEvent = GetNSEvent (evnt);
-			if (nsEvent == null)
-				return false;
-
-			forwardCall (acceptsFirstResponderView, nsEvent);
-
-			return baseCall (evnt);
-		}
-
 
 		#region Tracing
 
