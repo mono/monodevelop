@@ -25,14 +25,58 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	abstract class IScaffolder
 	{
+		const string DbContextTypeName = "System.Data.Entity.DbContext";
+		const string EF7DbContextTypeName = "Microsoft.Data.Entity.DbContext";
+		const string EFCDbContextTypeName = "Microsoft.EntityFrameworkCore.DbContext";
+
 		public virtual string Name { get; }
 		public virtual string CommandLineName { get; }
 		public virtual IEnumerable<CommandLineArg> DefaultArgs => Enumerable.Empty<CommandLineArg> ();
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
+
+
+		protected ComboField GetDbContextField (DotNetProject project)
+		{
+			var dbContexts = GetDbContextClasses (project);
+			return new ComboField ("--dataContext", "DbContext class to use", dbContexts.ToArray (), isEditable: true);
+		}
+
+		protected ComboField GetModelField (DotNetProject project)
+		{
+			var dbModels = GetModelClasses (project);
+			return new ComboField ("--model", "Model class to use", dbModels.ToArray (), isEditable: true);
+		}
+
+		IEnumerable<string> GetDbContextClasses (DotNetProject project)
+		{
+			//TODO: make async
+			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
+			var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
+						 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
+						 ?? compilation.GetTypeByMetadataName (EF7DbContextTypeName);
+
+
+			if (dbContext != null) {
+				var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
+				return result.Select (c => c.MetadataName);
+			}
+			return Enumerable.Empty<string> ();
+		}
+
+		IEnumerable<string> GetModelClasses (DotNetProject project)
+		{
+			//TODO: make async
+			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
+			var modelTypes = DbSetModelVisitor.FindModelTypes (compilation.Assembly);
+			return modelTypes.Select (t => t.MetadataName);
+		}
 	}
 }

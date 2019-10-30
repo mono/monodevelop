@@ -2,11 +2,7 @@ using System;
 using System.Linq;
 using MonoDevelop.AspNetCore.Scaffolding;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.DotNetCore;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
@@ -44,7 +40,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			string parentFolder = folder?.Path ?? project.BaseDirectory;
 
 			var w = new ScaffolderWizard (project, parentFolder);
-			//Xwt.Toolkit.NativeEngine.Invoke (() => {
+			//Xwt.Toolkit.NativeEngine.Invoke(() => {
 				var res = w.RunWizard ();
 			//});
 
