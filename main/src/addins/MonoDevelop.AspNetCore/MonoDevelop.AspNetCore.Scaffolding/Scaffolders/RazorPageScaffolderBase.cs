@@ -30,10 +30,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class RazorPageScaffolderBase : ScaffolderBase
 	{
-		protected InvertedBoolField PageModelField { get { return new InvertedBoolField ("--noPageModel", "Generate PageModel class", isChecked: true); } }
+		protected BoolField PageModelField { get { return new BoolField ("--noPageModel", "Generate PageModel class", isChecked: true, isInverted: true); } }
 		protected BoolField PartialViewField { get { return new BoolField ("--partialView", "Create as a partial view"); } }
 		protected BoolField ReferenceScriptLibrariesField { get { return new BoolField ("--referenceScriptLibraries", "Reference script libraries", isChecked: true, enabled: true); } }
-		protected BoolField LayoutPageField { get { return new InvertedBoolField ("--useDefaultLayout", "Use a layout page", isChecked: true); } }
+		protected BoolField LayoutPageField { get { return new BoolField ("--useDefaultLayout", "Use a layout page", isChecked: true, isInverted: true); } }
 		protected FileField CustomLayoutField { get { return new FileField ("", "Leave empty if is set in a Razor _viewstart file", "*.cshtml"); } }
 		protected StringField NameField { get { return new StringField ("", "Name of the Razor Page"); } }
 

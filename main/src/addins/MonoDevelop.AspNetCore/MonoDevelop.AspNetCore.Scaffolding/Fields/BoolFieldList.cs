@@ -38,8 +38,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public List<BoolField> Options { get; }
 
-		public override string SelectedValue {
-			get => string.Join (" ", Options.Where (o => o.Selected).Select (o => o.CommandLineName));
-		}
+		bool IsSelected(BoolField field)
+		{
+			if (!field.IsInverted)
+				return field.Selected;
+			return !field.Selected;
+        }
+
+		public override string SelectedValue => string.Join (" ", Options.Where (IsSelected).Select (o => o.CommandLineName));
 	}
 }
