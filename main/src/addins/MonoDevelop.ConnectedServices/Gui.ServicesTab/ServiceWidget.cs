@@ -50,6 +50,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				service.StatusChanged += HandleServiceStatusChanged;
 
 				UpdateServiceStatus ();
+				UpdateAccessibility ();
 			}
 		}
 
@@ -151,6 +152,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			Content = container;
 			ShowDetails = showDetails;
+
+			UpdateAccessibility ();
+		}
+
+		void UpdateAccessibility ()
+		{
+			Accessible.IsAccessible = true;
+			Accessible.Role = ShowDetails ? Xwt.Accessibility.Role.Group : Xwt.Accessibility.Role.Button;
+			Accessible.LabelWidget = title;
+
+			addButton.Accessible.LabelWidget = title;
+
+			image.Accessible.Label = GettextCatalog.GetString ("Service Icon");
 		}
 
 		void HandleAddButtonClicked (object sender, EventArgs e)
