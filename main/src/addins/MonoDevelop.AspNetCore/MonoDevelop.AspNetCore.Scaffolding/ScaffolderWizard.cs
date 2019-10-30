@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, new ScaffolderTemplateSelectPage (args), args)
 		{
-			this.DefaultPageSize = new Size (600, 500);
+			this.DefaultPageSize = new Size (500, 400);
 
 			var rightSideImage = new Xwt.ImageView (Image.FromResource ("aspnet-wizard-page.png"));
 			var rightSideWidget = new FrameBox (rightSideImage);
