@@ -115,11 +115,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		//  --partialView|-partial              : Generate a partial view, other layout options (-l and -udl) are ignored if this is specified
 		//  --noPageModel|-npm                  : Switch to not generate a PageModel class for Empty template
 			var options = new List<BoolField> ();
-			options.Add (new InvertedBoolField ("--noPageModel", "Generate PageModel class"));
+			options.Add (new InvertedBoolField ("--noPageModel", "Generate PageModel class", true));
 			options.Add (new BoolField ("--partialView", "Create as a partial view"));
-			options.Add (new BoolField ("--referenceScriptLibraries", "Reference script libraries"));
+			options.Add (new BoolField ("--referenceScriptLibraries", "Reference script libraries", isChecked:true, enabled: false));
 			//TODO: --layout should get name of layout file
-			options.Add (new BoolField ("", "Use a layout page"));
+			options.Add (new BoolField ("", "Use a layout page", isChecked: true));
 
 			var fields = new ScaffolderField [] {
 				new StringField ("", "Name of the Razor Page"),
