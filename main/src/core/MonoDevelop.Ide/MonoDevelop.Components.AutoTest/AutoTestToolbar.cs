@@ -70,6 +70,7 @@ namespace MonoDevelop.Components.AutoTest
 			return SelectorViewControl.GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
 		}
 
+		//ToDo: fix this. When call from autotest it asks for serialization of class in Xamarin.Mac
 		public bool SetActiveConfiguration (string configuration)
 		{
 			bool success = false;
@@ -83,6 +84,27 @@ namespace MonoDevelop.Components.AutoTest
 		public string GetStatusMessage ()
 		{
 			return (string)session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
+		}
+
+		public string GetActiveStartupProject()
+		{
+			return SelectorViewControl.GetActiveStartupProject ();
+		}
+
+		public Dictionary<ExecitionInfoKeys, string> GetExecutionInfo()
+		{
+			var info = new Dictionary<ExecitionInfoKeys, string> (3);
+			info.Add (ExecitionInfoKeys.StartupProject, GetActiveStartupProject ());
+			info.Add (ExecitionInfoKeys.ActiveConfiguration, GetActiveConfiguration ());
+			info.Add (ExecitionInfoKeys.ActiveExecitionTarget, GetActiveExetutionTarget ());
+			return info;
+		}
+
+		public enum ExecitionInfoKeys
+		{
+			StartupProject,
+			ActiveConfiguration,
+			ActiveExecitionTarget
 		}
 	}
 }
