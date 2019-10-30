@@ -35,10 +35,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderDialogController : WizardDialogControllerBase
 	{
+
 		// We have 2 pages, the first contains a list of templates
 		// and the 2nd is an entry form based on the selection
 		// in the first page.
 		readonly ScaffolderArgs args;
+
+		readonly IWizardDialogPage firstPage;
 
 		static Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
 			= new Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> ();
@@ -53,9 +56,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			get { return CanGoBack; }
 		}
 
-		public ScaffolderDialogController (string title, Image icon, Control rightSideWidget, ScaffolderArgs args)
-			: base (title, icon, null, new ScaffolderTemplateSelectPage (args))
+		public ScaffolderDialogController (string title, Image icon, IWizardDialogPage firstPage, ScaffolderArgs args)
+			: base (title, icon, null, firstPage)
 		{
+			this.firstPage = firstPage;
 			this.args = args;
 		}
 
@@ -83,7 +87,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
 		{
-			IWizardDialogPage firstPage = new ScaffolderTemplateSelectPage (args); //TODO: we should return the same instance
 			return Task.FromResult (firstPage);
 		}
 	}
