@@ -358,11 +358,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return (IConfigurationModel)pinfo.GetValue (ResultObject);
 		}
 
-		public string GetActiveStartupProject()
+		public string GetActiveStartupProject ()
 		{
-			var pinfo = GetPropertyInfo ("ActiveRuntime");
-			var activeRuntime = (IRuntimeModel)pinfo.GetValue (ResultObject);
-			return activeRuntime.Project.Name;
+			var pinfo = GetPropertyInfo ("ActiveRunConfiguration");
+			var activeRuntime = (IRunConfigurationModel)pinfo.GetValue (ResultObject);
+			return activeRuntime.DisplayString;
 		}
 
 		public IRuntimeMutableModel GetActiveRuntime ()
