@@ -35,12 +35,11 @@ using Xamarin.PropertyEditing;
 namespace MonoDevelop.DesignerSupport
 {
 	class ComponentModelObjectEditor
-		: IObjectEditor, INameableObject, IDisposable
+		: IObjectEditor, IDisposable
 	{
 		internal const string ComboSeparatorString = "--";
 
 		private readonly ComponentModelTarget propertyItem;
-		public string Name { get; private set; }
 
 		static IReadOnlyList<string> defaultHandlerList = new List<string> ().AsReadOnly ();
 		static AssignableTypesResult defaultAssignableTypeResult = new AssignableTypesResult (new List<ITypeInfo> ().AsReadOnly ());
@@ -84,7 +83,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IReadOnlyList<string>> GetHandlersAsync (IEventInfo ev) => Task.FromResult(defaultHandlerList);
 
-		public Task<string> GetNameAsync () => Task.FromResult (Name);
+		public Task<string> GetNameAsync () => Task.FromResult<string> (null);
 
 		public Task<IReadOnlyCollection<PropertyVariation>> GetPropertyVariantsAsync (IPropertyInfo property)
 			=> Task.FromResult<IReadOnlyCollection<PropertyVariation>> (Array.Empty<PropertyVariation> ());
@@ -98,21 +97,15 @@ namespace MonoDevelop.DesignerSupport
 				return Task.FromException<ValueInfo<T>> (new ArgumentException ($"Property should be a {nameof (DescriptorPropertyInfo)}", nameof (property)));
 			}
 
-			T value = propertyInfo.GetValue<T> (this);
+			T value = propertyInfo.GetValue<T> (this.Target);
 			var valueInfo = new ValueInfo<T> {
 				Value = value,
-				Source = ValueSource.Local,
+				Source = ValueSource.Default,
 			};
 			return Task.FromResult (valueInfo);
 		}
 
 		public Task RemovePropertyVariantAsync (IPropertyInfo property, PropertyVariation variant) => Task.CompletedTask;
-
-		public Task SetNameAsync (string name)
-		{
-			Name = name;
-			return Task.CompletedTask;
-		}
 
 		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
 		{
@@ -121,7 +114,17 @@ namespace MonoDevelop.DesignerSupport
 					return Task.FromException (new ArgumentNullException (nameof (propertyInfo)));
 
 				if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
-					info.SetValue (this, value.Value);
+
+					var actualValue = info.GetValue<T> (this.Target);
+					if (info.GetValue<T> (this.Target).Equals (value.Value)) {
+						return Task.CompletedTask;
+					}
+
+					//this is an exception for null/empty cases of string
+					if (typeof (T) == typeof(string) && string.IsNullOrEmpty (actualValue as string) && string.IsNullOrEmpty (value.Value as string)) {
+						return Task.CompletedTask;
+					}
+					info.SetValue (this.Target, value.Value);
 					RaisePropertyChanged (info);
 				} else {
 					return Task.FromException<T> (new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo)));

@@ -394,6 +394,7 @@ namespace MonoDevelop.Ide
 			try {
 				Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (dialog);
 				IdeApp.DisableIdleActions ();
+				IdeApp.CommandService.RegisterTopWindow (dialog);
 				int result = GtkWorkarounds.RunDialogWithNotification (dialog);
 				// Focus parent window once the dialog is ran, as focus gets lost
 				if (parent != null) {

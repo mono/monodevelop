@@ -3,7 +3,7 @@ using System;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public interface IPropertyPad
+	public interface IPropertyPad : IDisposable
 	{
 		bool IsGridEditing { get; }
 
