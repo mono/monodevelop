@@ -23,8 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -34,9 +32,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public override string CommandLineName => "controller";
 
-		private IEnumerable<CommandLineArg> commandLineArgs;
-		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
-
 		public ControllerScaffolder (ScaffolderArgs args) : this (args, null)
 		{
 		}
@@ -44,13 +39,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public ControllerScaffolder (ScaffolderArgs args, string controllerTypeArgument)
 		{
 			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
-			commandLineArgs = base.DefaultArgs.Append (
+			DefaultArgs.Add (
 				new CommandLineArg ("--controllerNamespace", args.Project.GetDefaultNamespace (defaultNamespace))
 			);
 
 			if (controllerTypeArgument != null)
-				commandLineArgs.Append (new CommandLineArg (controllerTypeArgument));
-
+				DefaultArgs.Add (new CommandLineArg (controllerTypeArgument));
 		}
 	}
 }

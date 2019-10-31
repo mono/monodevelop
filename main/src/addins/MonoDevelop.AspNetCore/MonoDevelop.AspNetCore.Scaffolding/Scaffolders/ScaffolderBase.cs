@@ -39,7 +39,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public virtual string Name { get; }
 		public virtual string CommandLineName { get; }
-		public virtual IEnumerable<CommandLineArg> DefaultArgs => Enumerable.Empty<CommandLineArg> ();
+
+        public List<CommandLineArg> DefaultArgs { get; protected set; } = new List<CommandLineArg>();
+
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
 
 

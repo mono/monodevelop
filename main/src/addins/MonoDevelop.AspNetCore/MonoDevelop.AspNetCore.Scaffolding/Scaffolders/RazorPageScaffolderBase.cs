@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -39,18 +38,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public override string CommandLineName => "razorpage";
 
-		IEnumerable<CommandLineArg> commandLineArgs;
 		protected IEnumerable<ScaffolderField> fields;
-
-		public override IEnumerable<CommandLineArg> DefaultArgs => commandLineArgs;
 
 		public RazorPageScaffolderBase (ScaffolderArgs args)
 		{
 			var defaultNamespace = args.ParentFolder.Combine ("file.cs");
 
-			commandLineArgs = base.DefaultArgs.Append (
-	new CommandLineArg ("--namespaceName", args.Project.GetDefaultNamespace (defaultNamespace))
-);
+			DefaultArgs.Add (new CommandLineArg ("--namespaceName", args.Project.GetDefaultNamespace (defaultNamespace)));
 		}
 	}
 }
