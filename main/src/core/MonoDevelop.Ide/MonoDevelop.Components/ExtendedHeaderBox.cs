@@ -107,6 +107,7 @@ namespace MonoDevelop.Components
 				backButtonTooltip = value;
 				if (BackButtonVisible)
 					backButton.TooltipText = value;
+				backButton.Accessible.Title = value;
 			}
 		}
 
@@ -190,6 +191,7 @@ namespace MonoDevelop.Components
 				TextColor = Styles.SecondaryTextColor,
 				Font = font.WithSize (14),
 			};
+			headerSeparator.Accessible.IsAccessible = false;
 
 			headerSubtitle = new Label {
 				TextColor = Styles.SecondaryTextColor,

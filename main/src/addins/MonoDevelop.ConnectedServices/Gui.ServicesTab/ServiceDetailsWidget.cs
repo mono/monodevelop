@@ -24,6 +24,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			var container = new VBox ();
 
+			Accessible.Role = Xwt.Accessibility.Role.Group;
+			Accessible.IsAccessible = true;
+
 			details = new ServiceWidget (true);
 			details.BorderWidth = 1;
 			details.CornerRadius = new Components.RoundedFrameBox.BorderCornerRadius (6, 6, 0, 0);
@@ -80,6 +83,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			if (service.Status == Status.Added) {
 				ExpandFirstOrUnconfiguredSection ();
 			}
+
+			Accessible.Label = service.DisplayName;
 		}
 
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
