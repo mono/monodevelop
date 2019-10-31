@@ -437,6 +437,49 @@ namespace MonoDevelop.Components.Commands
 			}
 			return false;
 		}
+
+		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
+		{
+			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+				var expectedKeyView = FindValidKeyView (view);
+				AppKit.NSView next = null;
+				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+					next = expectedKeyView.PreviousValidKeyView;
+				} else {
+					next = expectedKeyView.NextValidKeyView;
+				}
+
+				view.KeyDown (currentEvent);
+				if (next != null && window?.FirstResponder != next) {
+					window.MakeFirstResponder (next);
+				}
+			} else {
+				view.KeyDown (currentEvent);
+			}
+		}
+
+		private void SimulateViewKeyActionBehaviour (AppKit.NSView view, AppKit.NSEvent currentEvent)
+		{
+			if (view is AppKit.NSButton btn && (currentEvent.KeyCode == (ushort)AppKit.NSKey.Space || currentEvent.KeyCode == (ushort)AppKit.NSKey.Return)) {
+				btn.PerformClick (btn);
+			}
+		}
+
+		static AppKit.NSView FindValidKeyView (AppKit.NSView view)
+		{
+			if (view == null)
+				return null;
+
+			if (view.AcceptsFirstResponder ()) {
+				if (view.Superview?.Superview is AppKit.NSControl control && control.CurrentEditor == view) {
+					return FindValidKeyView (control);
+				}
+				return view;
+			}
+
+			return FindValidKeyView (view.Superview);
+		}
+
 #endif
 
 		[GLib.ConnectBefore]
@@ -453,6 +496,8 @@ namespace MonoDevelop.Components.Commands
 			var window = currentEvent?.Window;
 			var firstResponder = window?.FirstResponder;
 
+			bool retVal = false;
+
 			// GTK eats FlagsChanged events and this is just to inform
 			// modifier keys changed state, hence always send it to
 			// focused view
@@ -467,10 +512,22 @@ namespace MonoDevelop.Components.Commands
 			// KeyboardShortcut[] accels = 
 			KeyBindingManager.AccelsFromKey (e.Event, out complete);
 
+			if (currentEvent != null &&
+				currentEvent.Type == AppKit.NSEventType.KeyUp &&
+				firstResponder is AppKit.NSView view &&
+				view != window.ContentView) {
+
+				view.KeyUp (currentEvent);
+				SimulateViewKeyActionBehaviour (view, currentEvent);
+				retVal = true;
+			}
+
 			if (!complete) {
 				// incomplete accel
 				NotifyIncompleteKeyReleased (e.Event);
 			}
+
+			e.RetVal = retVal;
 		}
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
@@ -507,13 +564,14 @@ namespace MonoDevelop.Components.Commands
 
 			if (currentEvent != null &&
 				currentEvent.Type == AppKit.NSEventType.KeyDown &&
-				firstResponder != null &&
-				firstResponder != window.ContentView) {
-				firstResponder.KeyDown (currentEvent);
+				firstResponder is AppKit.NSView view &&
+				view != window.ContentView) {
+
+				SimulateKeyDownInView (view, currentEvent, window);
+				
 				return true;
 			}
 #endif
-
 			return false;
 		}
 

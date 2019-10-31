@@ -145,18 +145,33 @@ namespace MonoDevelop.DesignerSupport
 
 		internal virtual T GetValue<T> (object target)
 		{
-			T converted = default;
+			var converted = default (T);
 			object value = null;
 			bool canConvert = false;
+
 			try {
+
 				value = PropertyDescriptor.GetValue (PropertyProvider);
-				var tc = PropertyDescriptor.Converter;
-				canConvert = tc.CanConvertTo (typeof (T));
-				if (canConvert) {
-					converted = (T)tc.ConvertTo (value, typeof (T));
-				} else {
-					converted = (T)value;
+				var currentType = typeof (T);
+				var underlyingType = Nullable.GetUnderlyingType (currentType);
+
+				//proppy has some editors based in nullable types
+				if (underlyingType != null) {
+					var converterNullable = new NullableConverter (currentType);
+					if (converterNullable.CanConvertFrom (underlyingType)) {
+						object notNullableValue = Convert.ChangeType (value, underlyingType);
+						return (T)converterNullable.ConvertFrom (notNullableValue);
+					}
 				}
+
+				var tc = PropertyDescriptor.Converter;
+				canConvert = tc.CanConvertTo (currentType);
+				if (canConvert) {
+					converted = (T)tc.ConvertTo (value, currentType);
+				} else {
+					converted = (T)Convert.ChangeType (value, currentType);
+				}
+			
 			} catch (Exception ex) {
 				LogInternalError ($"Error trying to get and convert value:'{value}' canconvert: {canConvert} T:{typeof (T).FullName} ", ex);
 			}
@@ -167,21 +182,22 @@ namespace MonoDevelop.DesignerSupport
 		{
 			try {
 				
-				var currentType = typeof (T) ;
+				var currentType = typeof (T);
 
 				//TODO: Proppy in Boolean types uses bool? to handle it, but this will fail using converters
 				//thats because we need ensure take the underlying type
 				currentType = Nullable.GetUnderlyingType (currentType) ?? currentType;
-				object notNulleableValue = Convert.ChangeType (value, currentType);
 
+				object notNullableValue;
 				var tc = PropertyDescriptor.Converter;
 				if (tc.CanConvertFrom (currentType)) {
-					var result = tc.ConvertFrom (notNulleableValue);
-					PropertyDescriptor.SetValue (PropertyProvider, result);
+					notNullableValue = tc.ConvertFrom (value);
 				} else {
-					notNulleableValue = Convert.ChangeType (value, this.Type);
-					PropertyDescriptor.SetValue (PropertyProvider, notNulleableValue);
+					notNullableValue = Convert.ChangeType (value, currentType);
 				}
+
+				PropertyDescriptor.SetValue (PropertyProvider, notNullableValue);
+
 			} catch (Exception ex) {
 				LogInternalError ($"Error trying to set and convert a value: {value} T:{typeof (T).FullName}", ex);
 			}

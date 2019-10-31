@@ -75,7 +75,9 @@ namespace MonoDevelop.Components.PropertyGrid
 		PropertySort propertySort = PropertySort.Categorized;
 		
 		const string PROP_HELP_KEY = "MonoDevelop.PropertyPad.ShowHelp";
-		
+
+		public Widget Widget => this;
+
 		public PropertyGrid (): this (new EditorManager ())
 		{
 		}

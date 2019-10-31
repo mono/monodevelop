@@ -36,12 +36,15 @@ using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Mac;
 using AppKit;
 using CoreGraphics;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyGrid : NSView, IPropertyGrid
+	class MacPropertyGrid : NSView
 	{
 		readonly MacPropertyEditorPanel propertyEditorPanel;
+		readonly MonoDevelopHostResourceProvider hostResourceProvider;
+
 		ComponentModelEditorProvider editorProvider;
 		ComponentModelTarget currentSelectedObject;
 
@@ -49,14 +52,38 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool IsEditing => false;
 
+		//Small hack to cover the missing Proppy feature to enable/disable the control
+		public bool Sensitive { get; set; } = true;
+		public override NSView HitTest (CGPoint aPoint)
+		{
+			if (!Sensitive) return null;
+			return base.HitTest (aPoint);
+		}
+
 		public event EventHandler PropertyGridChanged;
 
 		public MacPropertyGrid () 
 		{
-			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ()) {
+			hostResourceProvider = new MonoDevelopHostResourceProvider ();
+
+			propertyEditorPanel = new MacPropertyEditorPanel (hostResourceProvider) {
 				ShowHeader = false
 			};
 			AddSubview (propertyEditorPanel);
+
+			#region Header Proppy Hack
+
+			var subviews = propertyEditorPanel.Subviews;
+			header = subviews [0];
+			propertyList = subviews [1];
+			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
+				.FirstOrDefault ().DocumentView as NSTableView;
+
+			//we need the second item constrained with the property list
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			border = topConstraint.SecondItem as NSView;
+
+			#endregion
 
 			editorProvider = new ComponentModelEditorProvider ();
 			editorProvider.PropertyChanged += EditorProvider_PropertyChanged;
@@ -83,6 +110,44 @@ namespace MonoDevelop.DesignerSupport
 			editorProvider.Clear ();
 		}
 
+		public object CurrentObject {
+			get => currentSelectedObject.Target;
+		}
+
+		#region Header Proppy Hack
+
+		NSView header;
+		NSView propertyList;
+		NSTableView internalTableView;
+		NSView border;
+
+		void ShowHeader (bool enabled)
+		{
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			propertyEditorPanel.RemoveConstraint (topConstraint);
+
+			if (enabled) {
+				internalTableView.BackgroundColor = hostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
+				header.Hidden = false;
+				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
+			} else {
+				internalTableView.BackgroundColor = NSColor.Clear;
+				header.Hidden = true;
+				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, propertyEditorPanel, NSLayoutAttribute.Top, 1, 0));
+			}
+		}
+
+		//HACK: this 
+		public bool ToolbarVisible {
+			get => !header.Hidden;
+			set {
+				//we ensure remove current constraints from proppy
+				ShowHeader (value);
+			}
+		}
+
+		#endregion
+
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
@@ -95,21 +160,6 @@ namespace MonoDevelop.DesignerSupport
 			} else {
 				BlankPad ();
 			}
-		}
-
-		public void Populate (bool saveEditSession)
-		{
-			//not implemented
-		}
-
-		public void SetToolbarProvider (Components.PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider)
-		{
-			//not implemented
-		}
-
-		public void OnPadContentShown ()
-		{
-			//not implemented
 		}
 
 		protected override void Dispose (bool disposing)
