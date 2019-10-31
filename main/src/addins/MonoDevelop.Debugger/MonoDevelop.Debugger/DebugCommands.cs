@@ -356,7 +356,9 @@ namespace MonoDevelop.Debugger
 
 			bp = breakpoints.Toggle (IdeApp.Workbench.ActiveDocument.FileName, caretLine, caretColumn);
 
-			var msg = bp == null ? GettextCatalog.GetString ("Breakpoint removed") : GettextCatalog.GetString ("Breakpoint added");
+			var msg = bp == null
+				? GettextCatalog.GetString ("Removed breakpoint, line {0}, file {1}", caretLine, IdeApp.Workbench.ActiveDocument.FileName)
+				: GettextCatalog.GetString ("Added breakpoint, line {0}, file {1}", caretLine, IdeApp.Workbench.ActiveDocument.FileName);
 			IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (msg);
 			// If the breakpoint could not be inserted in the caret location, move the caret
 			// to the real line of the breakpoint, so that if the Toggle command is run again,
