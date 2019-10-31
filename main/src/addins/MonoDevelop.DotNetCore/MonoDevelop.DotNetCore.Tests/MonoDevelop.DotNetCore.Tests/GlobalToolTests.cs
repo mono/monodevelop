@@ -41,7 +41,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.False (DotNetCoreGlobalToolManager.IsInstalled ("fake-tool"));
 		}
 
-		[Test]
+		[Test, Ignore]
 		public async Task CanInstallMissingTools ()
 		{
 			Assert.True (await DotNetCoreGlobalToolManager.Install ("dotnet-aspnet-codegenerator", CancellationToken.None));
