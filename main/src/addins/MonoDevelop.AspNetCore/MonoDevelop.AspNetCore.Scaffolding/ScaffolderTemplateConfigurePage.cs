@@ -79,7 +79,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
-					comboBox.SelectedIndex = 0;
+					if (comboBox.Items.Count > 0)
+						comboBox.SelectedIndex = 0;
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
