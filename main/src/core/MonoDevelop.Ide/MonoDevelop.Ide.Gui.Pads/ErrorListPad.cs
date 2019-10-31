@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
-		Hashtable tasks = new Hashtable ();
+		HashSet<TaskListEntry> tasks = new HashSet<TaskListEntry> ();
 		int errorCount;
 		int warningCount;
 		int infoCount;
@@ -693,90 +693,70 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void ToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererToggle toggleRenderer = (Gtk.CellRendererToggle)cell;
-			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
-			if (task == null) {
+			if (model.GetValue (iter, DataColumns.Task) is TaskListEntry task) {
+				toggleRenderer.Active = task.Completed;
+			} else {
 				toggleRenderer.Visible = false;
-				return;
 			}
-			toggleRenderer.Active = task.Completed;
 		}
-		
+
 		static void LineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
-			if (task == null) {
-				textRenderer.Text = "";
-				return;
+			if (model.GetValue (iter, DataColumns.Task) is TaskListEntry task) {
+				SetText (textRenderer, model, iter, task, task.Line != 0 ? task.Line.ToString () : "");
 			}
-			SetText (textRenderer, model, iter, task, task.Line != 0 ? task.Line.ToString () : "");
 		}
 
 		static void DescriptionDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			var textRenderer = (CellRendererText)cell;
 			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
-			var text = model.GetValue (iter, DataColumns.Description) as string;
 			if (task == null) {
-				if (model.IterParent (out iter, iter)) {
-					task = model.GetValue (iter, DataColumns.Task) as TaskListEntry;
-					if (task == null) {
-						textRenderer.Text = "";
-						return;
-					}
-				} else {
-					textRenderer.Text = "";
+				if (!model.IterParent (out iter, iter)) {
+					return;
+				}
+				task = model.GetValue (iter, DataColumns.Task) as TaskListEntry;
+				if (task == null) {
 					return;
 				}
 			}
+			var text = model.GetValue (iter, DataColumns.Description) as string;
 			SetText (textRenderer, model, iter, task, text);
 		}
 
 		static void FileDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
-			if (task == null) {
-				textRenderer.Text = "";
-				return;
+			if (model.GetValue (iter, DataColumns.Task) is TaskListEntry task) {
+				SetText (textRenderer, model, iter, task, task.GetFile ());
 			}
-
-			SetText (textRenderer, model, iter, task, task.GetFile ());
 		}
-		
+
 		static void ProjectDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
-			if (task == null) {
-				textRenderer.Text = "";
-				return;
+			if (model.GetValue (iter, DataColumns.Task) is TaskListEntry task) {
+				SetText (textRenderer, model, iter, task, task.GetProject ());
 			}
-			SetText (textRenderer, model, iter, task, task.GetProject ());
 		}
-		
+
 		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
-			if (task == null) {
-				textRenderer.Text = "";
-				return;
+			if (model.GetValue (iter, DataColumns.Task) is TaskListEntry task) {
+				SetText (textRenderer, model, iter, task, task.GetPath ());
 			}
-			SetText (textRenderer, model, iter, task, task.GetPath ());
 		}
 
 		static void CategoryDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			var task = model.GetValue (iter, DataColumns.Task) as TaskListEntry;
-			if (task == null) {
-				textRenderer.Text = "";
-				return;
+			if (model.GetValue (iter, DataColumns.Task) is TaskListEntry task) {
+				SetText (textRenderer, model, iter, task, task.Category ?? "");
 			}
-			SetText (textRenderer, model, iter, task, task.Category ?? "");
 		}
-		
+
 		static void SetText (CellRendererText textRenderer, TreeModel model, TreeIter iter, TaskListEntry task, string text)
 		{
 			textRenderer.Text = text;
@@ -836,29 +816,32 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		bool FilterTasks (TreeModel model, TreeIter iter)
 		{
-			bool canShow = false;
-
 			try {
-				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
-				if (task == null)
+				if (!(model.GetValue (iter, DataColumns.Task) is TaskListEntry task))
 					return true;
-				if (task.Severity == TaskSeverity.Error && errorBtn.Active) canShow = true;
-				else if (task.Severity == TaskSeverity.Warning && warnBtn.Active) canShow = true;
-				else if (task.Severity == TaskSeverity.Information && msgBtn.Active) canShow = true;
 
-				if (canShow && !string.IsNullOrWhiteSpace (currentSearchPattern)) {
-					canShow = (task.Description != null && task.Description.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
+				if (task.Severity == TaskSeverity.Error && !errorBtn.Active)
+					return false;
+
+				if (task.Severity == TaskSeverity.Warning && !warnBtn.Active)
+					return false;
+
+				if (task.Severity == TaskSeverity.Information && !msgBtn.Active)
+					return false;
+
+				if (!string.IsNullOrWhiteSpace (currentSearchPattern)) {
+					return (task.Description != null && task.Description.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
 						(task.Code != null && task.Code.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
 						(task.FileName != null && task.FileName.FileName.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
 						(task.WorkspaceObject != null && task.WorkspaceObject.Name != null && task.WorkspaceObject.Name.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
 						(task.Category != null && task.Category.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1);
 				}
+
+				return true;
 			} catch {
 				//Not yet fully added
 				return false;
 			}
-			
-			return canShow;
 		}
 
 		public void ShowResults (object sender, EventArgs e)
@@ -920,9 +903,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 
+		static readonly char [] newlineCharacters = { '\n', '\r' };
+
 		void AddTaskInternal (TaskListEntry t)
 		{
-			if (tasks.Contains (t)) return;
+			if (!tasks.Add (t)) return;
 
 			Xwt.Drawing.Image stock;
 			
@@ -940,10 +925,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 					infoCount++;
 					break;
 			}
-			
-			tasks [t] = t;
 
-			var indexOfNewLine = t.Description.IndexOfAny (new [] { '\n', '\r' });
+			var indexOfNewLine = t.Description.IndexOfAny (newlineCharacters);
 			if (indexOfNewLine != -1) {
 				var iter = store.InsertWithValues (-1, stock, false, t, t.Description.Remove (indexOfNewLine));
 				store.InsertWithValues (iter, -1, iconEmpty, false, null, t.Description);
