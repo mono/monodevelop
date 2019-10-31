@@ -114,6 +114,16 @@ namespace MonoDevelop.DesignerSupport
 					return Task.FromException (new ArgumentNullException (nameof (propertyInfo)));
 
 				if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
+
+					var actualValue = info.GetValue<T> (this.Target);
+					if (info.GetValue<T> (this.Target).Equals (value.Value)) {
+						return Task.CompletedTask;
+					}
+
+					//this is an exception for null/empty cases of string
+					if (typeof (T) == typeof(string) && string.IsNullOrEmpty (actualValue as string) && string.IsNullOrEmpty (value.Value as string)) {
+						return Task.CompletedTask;
+					}
 					info.SetValue (this.Target, value.Value);
 					RaisePropertyChanged (info);
 				} else {
