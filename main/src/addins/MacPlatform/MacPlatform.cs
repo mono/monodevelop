@@ -1380,7 +1380,8 @@ namespace MonoDevelop.MacIntegration
 			return MacTelemetryDetails.CreateTelemetryDetails ();
 		}
 
-		internal override MemoryMonitor CreateMemoryMonitor () => new MacMemoryMonitor ();
+		// Disabled due to https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1008370
+		//internal override MemoryMonitor CreateMemoryMonitor () => new MacMemoryMonitor ();
 
 		internal class MacMemoryMonitor : MemoryMonitor, IDisposable
 		{

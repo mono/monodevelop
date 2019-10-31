@@ -94,6 +94,7 @@ namespace MacPlatform.Tests
 		}
 
 		[Test]
+		[Ignore("https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1008370")]
 		public void MacHasProperMonitor ()
 		{
 			Assert.That (IdeServices.DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
