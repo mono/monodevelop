@@ -52,6 +52,11 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool IsEditing => false;
 
+		public bool ToolbarVisible {
+			get => propertyEditorPanel.ToolbarVisible;
+			set => propertyEditorPanel.ToolbarVisible = value;
+		}
+
 		//Small hack to cover the missing Proppy feature to enable/disable the control
 		public bool Sensitive { get; set; } = true;
 		public override NSView HitTest (CGPoint aPoint)
@@ -71,19 +76,7 @@ namespace MonoDevelop.DesignerSupport
 			};
 			AddSubview (propertyEditorPanel);
 
-			#region Header Proppy Hack
-
-			var subviews = propertyEditorPanel.Subviews;
-			header = subviews [0];
-			propertyList = subviews [1];
-			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
-				.FirstOrDefault ().DocumentView as NSTableView;
-
-			//we need the second item constrained with the property list
-			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
-			border = topConstraint.SecondItem as NSView;
-
-			#endregion
+			propertyEditorPanel.OnInitialize ();
 
 			editorProvider = new ComponentModelEditorProvider ();
 			editorProvider.PropertyChanged += EditorProvider_PropertyChanged;
@@ -114,39 +107,6 @@ namespace MonoDevelop.DesignerSupport
 			get => currentSelectedObject.Target;
 		}
 
-		#region Header Proppy Hack
-
-		NSView header;
-		NSView propertyList;
-		NSTableView internalTableView;
-		NSView border;
-
-		void ShowHeader (bool enabled)
-		{
-			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
-			propertyEditorPanel.RemoveConstraint (topConstraint);
-
-			if (enabled) {
-				internalTableView.BackgroundColor = hostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
-				header.Hidden = false;
-				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
-			} else {
-				internalTableView.BackgroundColor = NSColor.Clear;
-				header.Hidden = true;
-				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, propertyEditorPanel, NSLayoutAttribute.Top, 1, 0));
-			}
-		}
-
-		//HACK: this 
-		public bool ToolbarVisible {
-			get => !header.Hidden;
-			set {
-				//we ensure remove current constraints from proppy
-				ShowHeader (value);
-			}
-		}
-
-		#endregion
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
@@ -182,7 +142,48 @@ namespace MonoDevelop.DesignerSupport
 		public MacPropertyEditorPanel (MonoDevelopHostResourceProvider hostResources)
 			: base (hostResources)
 		{
+		}
 
+		internal void OnInitialize ()
+		{
+			var subviews = Subviews;
+			header = subviews [0] as NSBox;
+			propertyList = subviews [1];
+			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
+				.FirstOrDefault ().DocumentView as NSTableView;
+
+			//we need the second item constrained with the property list
+			var topConstraint = Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			border = topConstraint.SecondItem as NSView;
+		}
+
+		NSBox header;
+		NSView propertyList;
+		NSTableView internalTableView;
+		NSView border;
+
+		public void ShowToolbar (bool enabled)
+		{
+			var topConstraint = Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			RemoveConstraint (topConstraint);
+
+			if (enabled) {
+				internalTableView.BackgroundColor = HostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
+				header.Hidden = false;
+				AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
+			} else {
+				internalTableView.BackgroundColor = NSColor.Clear;
+				header.Hidden = true;
+				AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, this, NSLayoutAttribute.Top, 1, 0));
+			}
+		}
+
+		public bool ToolbarVisible {
+			get => !header.Hidden;
+			set {
+				//we ensure remove current constraints from proppy
+				ShowToolbar (value);
+			}
 		}
 
 		public override bool BecomeFirstResponder ()
