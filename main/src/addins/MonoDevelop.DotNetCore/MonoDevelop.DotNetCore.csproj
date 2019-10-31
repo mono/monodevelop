@@ -7,7 +7,7 @@
     <ProjectGuid>{6868153E-41EA-43A4-A81A-C1E7256373F7}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.DotNetCore</OutputPath>
-    <TemplatesVersion1x>1.0.0-beta2-20170430-208</TemplatesVersion1x>
+    <TemplatesVersion1x>1.0.0-beta2-20170629-269</TemplatesVersion1x>
     <TemplatesVersion20>1.0.0-beta2-20170727-301</TemplatesVersion20>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
