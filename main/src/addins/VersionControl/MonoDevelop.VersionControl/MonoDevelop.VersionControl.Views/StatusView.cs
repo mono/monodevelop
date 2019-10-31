@@ -1266,7 +1266,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!ctxMenu) {
 				TreePath path;
 				GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
-				if (path != null && path.Depth == 2) {
+				if (path != null && path.Depth >= 1) {
 					vpos = Vadjustment.Value;
 					keepPos = true;
 					if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
@@ -1316,9 +1316,8 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			TreePath path;
 			GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
-
 			// Diff cells need to be redrawn so they can show the updated selected line
-			if (path != null && path.Depth == 2) {
+			if (path != null && path.Depth >= 1) {
 				CursorLocation = new Gdk.Point ((int)evnt.X, (int)evnt.Y);
 				//FIXME: we should optimize these draws
 				QueueDraw ();
