@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -31,9 +32,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public override string Name => "API Controller - Empty";
 		public override string CommandLineName => "controller";
-		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--restWithNoViews") };
 
-		public EmptyApiControllerScaffolder (ScaffolderArgs args) : base (args) { }
+		public EmptyApiControllerScaffolder (ScaffolderArgs args) : base (args)
+		{
+			DefaultArgs.Add (new CommandLineArg ("--restWithNoViews"));
+		}
 
 		public override IEnumerable<ScaffolderField> Fields => nameField;
 	}

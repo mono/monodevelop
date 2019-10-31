@@ -31,9 +31,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public override string Name => "API Controller with read / write actions";
 		public override string CommandLineName => "controller";
-		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--restWithNoViews", "--readWriteActions") };
 
-		public ApiControllerWithActionsScaffolder (ScaffolderArgs args) : base (args) { }
+		public ApiControllerWithActionsScaffolder (ScaffolderArgs args) : base (args)
+		{
+			base.DefaultArgs.Add (new CommandLineArg ("--restWithNoViews", "--readWriteActions"));
+		}
 
 		public override IEnumerable<ScaffolderField> Fields => nameField;
 	}

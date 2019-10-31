@@ -31,9 +31,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		public override string Name => "MVC Controller with read / write actions";
 		public override string CommandLineName => "controller";
-		public override IEnumerable<CommandLineArg> DefaultArgs => new [] { new CommandLineArg ("--readWriteActions") };
 
-		public MvcControllerWithActionsScaffolder (ScaffolderArgs args) : base (args) { }
+		public MvcControllerWithActionsScaffolder (ScaffolderArgs args) : base (args) { 
+            DefaultArgs.Add(new CommandLineArg ("--readWriteActions"));
+        }
 
 		public override IEnumerable<ScaffolderField> Fields => nameField;
 	}
