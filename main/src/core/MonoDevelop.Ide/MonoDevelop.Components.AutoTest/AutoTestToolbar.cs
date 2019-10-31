@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.AutoTest.Results;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -71,14 +72,14 @@ namespace MonoDevelop.Components.AutoTest
 		}
 
 		//ToDo: fix this. When call from autotest it asks for serialization of class in Xamarin.Mac
-		public bool SetActiveConfiguration (string configuration)
+		public void SetActiveConfiguration (string configuration)
 		{
-			bool success = false;
-			session.ExecuteOnIdle (() => {
-				success = SelectorViewControl.SetActiveConfiguration (configuration);
-			}, true);
+			SelectorViewControl.SetActiveConfiguration (configuration);
+		}
 
-			return success;
+		public List<string> GetStartupProjects()
+		{
+			return SelectorViewControl.GetRunConfigurationModel ();
 		}
 
 		public string GetStatusMessage ()

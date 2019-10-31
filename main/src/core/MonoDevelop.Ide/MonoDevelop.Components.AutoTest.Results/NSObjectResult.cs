@@ -372,6 +372,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return activeRuntime.GetMutableModel ();
 		}
 
+		public List<string> GetRunConfigurationModel()
+		{
+			var pinfo = GetPropertyInfo ("RunConfigurationModel");
+			var runConfigs = (IEnumerable<IRunConfigurationModel>)pinfo.GetValue (ResultObject);
+			return runConfigs.Select(x => x.DisplayString).ToList();
+		}
+
 		public override bool SetActiveConfiguration (string configurationName)
 		{
 			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
@@ -391,7 +398,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			LoggingService.LogDebug ($"Setting the active configuration as: '{configuration.OriginalId}' '{configuration.DisplayString}'");
-			SetProperty (ResultObject, "ActiveConfiguration", configuration);
+			SetProperty ("ActiveConfiguration", configuration);
 
 			var activeConfiguration = GetActiveConfiguration();
 			if (activeConfiguration != null) {

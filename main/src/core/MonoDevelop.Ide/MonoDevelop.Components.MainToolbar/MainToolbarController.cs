@@ -1170,6 +1170,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public string DisplayString { get; private set; }
 		}
 
+		[Serializable]
 		class RunConfigurationModel : IRunConfigurationModel
 		{
 			public RunConfigurationModel (SolutionRunConfiguration config)
