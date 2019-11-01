@@ -83,6 +83,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override AppResult Property (string propertyName)
+		{
+			return DisposeWithResult (GetPropertyResult (propertyName, value));
+		}
+
+		[Obsolete ("Please use Property, as querying all properties can crash on xammac")]
 		public override ObjectProperties Properties ()
 		{
 			return GetProperties (value);

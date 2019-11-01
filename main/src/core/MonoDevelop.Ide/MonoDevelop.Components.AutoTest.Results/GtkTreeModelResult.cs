@@ -130,6 +130,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return MatchProperty (propertyName, ParentWidget, value);
 		}
 
+		public override AppResult Property (string propertyName)
+		{
+			if (resultIter.HasValue) {
+				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
+				return DisposeWithResult (GetPropertyResult (propertyName, objectForProperties));
+			}
+			return null;
+		}
+
+		[Obsolete ("Please use Property, as querying all properties can crash on xammac")]
 		public override ObjectProperties Properties ()
 		{
 			if (resultIter.HasValue) {

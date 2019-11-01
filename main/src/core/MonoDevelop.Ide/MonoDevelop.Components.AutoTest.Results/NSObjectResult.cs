@@ -203,6 +203,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return base.Children(recursive);
 		}
 
+		public override AppResult Property (string propertyName)
+		{
+			return GetPropertyResult (propertyName, ResultObject);
+		}
+
+		[Obsolete ("Please use Property, as querying all properties can crash on xammac")]
 		public override ObjectProperties Properties ()
 		{
 			return GetProperties (ResultObject);

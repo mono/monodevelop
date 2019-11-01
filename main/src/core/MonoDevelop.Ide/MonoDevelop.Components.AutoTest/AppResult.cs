@@ -85,6 +85,9 @@ namespace MonoDevelop.Components.AutoTest
 		#endregion
 
 		// Inspection Operations
+		public abstract AppResult Property (string propertyName);
+
+		[Obsolete("Please use Property, as querying all properties can crash on xammac")]
 		public abstract ObjectProperties Properties ();
 		public abstract string GetResultType  ();
 
@@ -141,6 +144,31 @@ namespace MonoDevelop.Components.AutoTest
 			element.Attributes.Append (attr);
 		}
 
+		protected AppResult GetPropertyResult (string propertyName, object requestedObject)
+		{
+			var value = GetPropertyValue (propertyName, requestedObject);
+			AppResult result = null;
+
+			var gtkNotebookValue = value as Gtk.Notebook;
+			if (gtkNotebookValue != null)
+				result = new GtkNotebookResult (gtkNotebookValue);
+			var gtkTreeviewValue = value as Gtk.TreeView;
+			if (gtkTreeviewValue != null && result == null)
+				result = new GtkTreeModelResult (gtkTreeviewValue, gtkTreeviewValue.Model, 0);
+			var gtkWidgetValue = value as Gtk.Widget;
+			if (gtkWidgetValue != null && result == null)
+				result = new GtkWidgetResult (gtkWidgetValue);
+#if MAC
+			var nsObjectValue = value as Foundation.NSObject;
+			if (nsObjectValue != null && result == null)
+				result = new NSObjectResult (nsObjectValue);
+#endif
+			if (result == null)
+				result = new ObjectResult (value);
+
+			return result;
+		}
+
 		protected object GetPropertyValue (string propertyName, object requestedObject)
 		{
 			if (requestedObject == null) {
@@ -172,25 +200,7 @@ namespace MonoDevelop.Components.AutoTest
 					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 				foreach (var property in properties) {
 					try {
-						var value = GetPropertyValue (property.Name, resultObject);
-						AppResult result = null;
-
-						var gtkNotebookValue = value as Gtk.Notebook;
-						if (gtkNotebookValue != null)
-							result = new GtkNotebookResult (gtkNotebookValue);
-						var gtkTreeviewValue = value as Gtk.TreeView;
-						if (gtkTreeviewValue != null && result == null)
-							result = new GtkTreeModelResult (gtkTreeviewValue, gtkTreeviewValue.Model, 0);
-						var gtkWidgetValue = value as Gtk.Widget;
-						if (gtkWidgetValue != null && result == null)
-							result = new GtkWidgetResult (gtkWidgetValue);
-						#if MAC
-						var nsObjectValue = value as Foundation.NSObject;
-						if (nsObjectValue != null && result == null)
-							result = new NSObjectResult (nsObjectValue);
-						#endif
-						if (result == null)
-							result = new ObjectResult (value);
+						var result = GetPropertyResult (property.Name, resultObject);
 						propertiesObject.Add (property.Name, result, property);
 					} catch (Exception e) {
 						MonoDevelop.Core.LoggingService.LogInfo ("Failed to fetch property '{0}' on '{1}' with Exception: {2}", property, resultObject, e.Message);
