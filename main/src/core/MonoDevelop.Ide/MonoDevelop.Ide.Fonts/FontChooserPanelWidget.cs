@@ -29,10 +29,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.AtkCocoaHelper;
 using Gtk;
 using System.Diagnostics;
-using AppKit;
-using Foundation;
 using MonoDevelop.Components;
 using Xwt.Drawing;
+
+#if MAC
+using AppKit;
+using Foundation;
+#endif
 
 namespace MonoDevelop.Ide.Fonts
 {
