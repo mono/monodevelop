@@ -28,9 +28,9 @@ using System;
 
 namespace MonoDevelop.Debugger
 {
-	public class ExpressionEventArgs : EventArgs
+	public class ExpressionAddedEventArgs : EventArgs
 	{
-		public ExpressionEventArgs (string expression)
+		public ExpressionAddedEventArgs (string expression)
 		{
 			Expression = expression;
 		}
@@ -40,12 +40,34 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
+	public class ExpressionRemovedEventArgs : EventArgs
+	{
+		public ExpressionRemovedEventArgs (int index, string expression)
+		{
+			Expression = expression;
+			Index = index;
+		}
+
+		public string Expression {
+			get; private set;
+		}
+
+		public int Index {
+			get; private set;
+		}
+	}
+
 	public class ExpressionChangedEventArgs : EventArgs
 	{
-		public ExpressionChangedEventArgs (string oldExpression, string newExpression)
+		public ExpressionChangedEventArgs (int index, string oldExpression, string newExpression)
 		{
 			OldExpression = oldExpression;
 			NewExpression = newExpression;
+			Index = index;
+		}
+
+		public int Index {
+			get; private set;
 		}
 
 		public string OldExpression {
