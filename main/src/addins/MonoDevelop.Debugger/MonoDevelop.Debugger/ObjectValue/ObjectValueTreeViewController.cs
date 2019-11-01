@@ -298,11 +298,14 @@ namespace MonoDevelop.Debugger
 
 		void RemoveValue (ObjectValueNode node)
 		{
+			var toplevel = node.Parent is RootObjectValueNode;
+			int index = node.Parent.Children.IndexOf (node);
+
 			UnregisterNode (node);
 			OnEvaluationCompleted (node, new ObjectValueNode[0]);
 
-			if (AllowWatchExpressions && node.Parent is RootObjectValueNode)
-				ExpressionRemoved?.Invoke (this, new ExpressionEventArgs (node.Name));
+			if (AllowWatchExpressions && toplevel)
+				ExpressionRemoved?.Invoke (this, new ExpressionRemovedEventArgs (index, node.Name));
 		}
 
 		// TODO: can we improve this
@@ -374,9 +377,9 @@ namespace MonoDevelop.Debugger
 
 		#region Expressions
 
-		public event EventHandler<ExpressionEventArgs> ExpressionAdded;
+		public event EventHandler<ExpressionAddedEventArgs> ExpressionAdded;
 		public event EventHandler<ExpressionChangedEventArgs> ExpressionChanged;
-		public event EventHandler<ExpressionEventArgs> ExpressionRemoved;
+		public event EventHandler<ExpressionRemovedEventArgs> ExpressionRemoved;
 
 		public void AddExpression (string expression)
 		{
@@ -389,7 +392,7 @@ namespace MonoDevelop.Debugger
 			var node = Frame.EvaluateExpression (expression);
 			AddValue (node);
 
-			ExpressionAdded?.Invoke (this, new ExpressionEventArgs (expression));
+			ExpressionAdded?.Invoke (this, new ExpressionAddedEventArgs (expression));
 		}
 
 		public void AddExpressions (IList<string> expressions)
@@ -404,7 +407,7 @@ namespace MonoDevelop.Debugger
 				var expressionAdded = ExpressionAdded;
 				if (expressionAdded != null) {
 					foreach (var expression in expressions)
-						expressionAdded (this, new ExpressionEventArgs (expression));
+						expressionAdded (this, new ExpressionAddedEventArgs (expression));
 				}
 			}
 		}
@@ -416,18 +419,20 @@ namespace MonoDevelop.Debugger
 			if (oldExpression == newExpression)
 				return false;
 
+			int index = node.Parent.Children.IndexOf (node);
+
 			UnregisterNode (node);
 			if (string.IsNullOrEmpty (newExpression)) {
 				// we want the expression removed from the tree
 				OnEvaluationCompleted (node, new ObjectValueNode[0]);
-				ExpressionRemoved?.Invoke (this, new ExpressionEventArgs (oldExpression));
+				ExpressionRemoved?.Invoke (this, new ExpressionRemovedEventArgs (index, oldExpression));
 				return true;
 			}
 
 			var expressionNode = Frame.EvaluateExpression (newExpression);
 			RegisterNode (expressionNode);
 			OnEvaluationCompleted (node, new ObjectValueNode[] { expressionNode });
-			ExpressionChanged?.Invoke (this, new ExpressionChangedEventArgs (oldExpression, newExpression));
+			ExpressionChanged?.Invoke (this, new ExpressionChangedEventArgs (index, oldExpression, newExpression));
 
 			return true;
 		}
