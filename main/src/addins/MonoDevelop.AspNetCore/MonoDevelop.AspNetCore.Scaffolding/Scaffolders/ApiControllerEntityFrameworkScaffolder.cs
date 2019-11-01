@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			fields = new ScaffolderField [] {
 				GetModelField(args.Project),
 				GetDbContextField(args.Project),
-new StringField ("name", "Controller name:"),
+new StringField ("-name", "Controller name:"),
 
 			};
 
