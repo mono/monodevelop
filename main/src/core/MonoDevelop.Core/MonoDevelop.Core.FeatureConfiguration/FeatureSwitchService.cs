@@ -29,32 +29,40 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Core.Addins;
 
 namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public static class FeatureSwitchService
 	{
-		static ImmutableList<IFeatureSwitchController> featureControllers = ImmutableList<IFeatureSwitchController>.Empty;
+		static ImmutableDictionary<string, FeatureSwitch> featureSwitches = ImmutableDictionary<string, FeatureSwitch>.Empty;
+		static bool initialized = false;
 
-		static FeatureSwitchService ()
+		static void EnsureInitialized ()
 		{
-			AddinManager.AddExtensionNodeHandler (typeof (IFeatureSwitchController), HandleFeatureSwitchExtension);
+			if (initialized)
+				return;
+
+			initialized = true;
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/FeatureSwitches", HandleFeatureSwitchExtension);
 		}
 
 		static void HandleFeatureSwitchExtension (object sender, ExtensionNodeEventArgs args)
 		{
-			var controller = args.ExtensionObject as IFeatureSwitchController;
-			if (controller != null) {
-				if (args.Change == ExtensionChange.Add && !featureControllers.Contains (controller)) {
-					RegisterController (controller);
+			var fs = args.ExtensionNode as FeatureSwitchExtensionNode;
+			if (fs != null) {
+				if (args.Change == ExtensionChange.Add && !featureSwitches.TryGetValue (fs.Id, out _)) {
+					RegisterFeatureSwitch (fs.Id, fs.Description, fs.DefaultValue);
 				} else {
-					UnregisterController (controller);
+					UnregisterFeatureSwitch (fs.Id);
 				}
 			}
 		}
 
 		public static bool? IsFeatureEnabled (string featureName)
 		{
+			EnsureInitialized ();
+
 			if (string.IsNullOrEmpty (featureName)) {
 				return null;
 			}
@@ -70,21 +78,10 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			}
 
 			// Fallback to ask extensions, enabling by default
-			if (featureControllers != null) {
-				bool explicitlyEnabled = false, explicitlyDisabled = false;
-				foreach (var ext in featureControllers) {
-					switch (ext.IsFeatureEnabled (featureName)) {
-					case true:
-						explicitlyEnabled = true;
-						break;
-					case false:
-						explicitlyDisabled = true;
-						break;
-					}
+			if (featureSwitches != null) {
+				if (featureSwitches.TryGetValue (featureName, out var feature)) {
+					return feature.DefaultValue;
 				}
-
-				if (explicitlyDisabled) return false;
-				if (explicitlyEnabled) return true;
 			}
 
 			return null;
@@ -94,22 +91,18 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 		internal static IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{
-			return featureControllers?.SelectMany (x => x.DescribeFeatures ());
+			EnsureInitialized ();
+			return featureSwitches?.Values;
 		}
 
-		internal static void RegisterController (IFeatureSwitchController controller)
+		internal static void RegisterFeatureSwitch (string id, string description, bool defaultValue)
 		{
-			LoggingService.LogDebug ($"Loaded FeatureSwitchController of type {controller.GetType ()} with feature switches:");
-			foreach (var feature in controller.DescribeFeatures ()) {
-				LoggingService.LogDebug ($"\t{feature.Name} - {feature.Description} (default = {feature.DefaultValue}, current = {controller.IsFeatureEnabled (feature.Name)})");
-			}
-
-			featureControllers = featureControllers.Add (controller);
+			featureSwitches = featureSwitches.Add (id, new FeatureSwitch (id, description, defaultValue));
 		}
 
-		internal static void UnregisterController (IFeatureSwitchController controller)
+		internal static void UnregisterFeatureSwitch (string id)
 		{
-			featureControllers = featureControllers.Remove (controller);
+			featureSwitches = featureSwitches.Remove (id);
 		}
 
 		#endregion

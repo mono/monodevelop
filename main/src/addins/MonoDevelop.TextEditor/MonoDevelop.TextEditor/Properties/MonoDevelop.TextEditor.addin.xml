@@ -340,4 +340,8 @@
 		<Description>TextMate folder with syntax highlighting definitions, code snippets and syntax color themes</Description>
 		<ExtensionNode name="Repository" type="MonoDevelop.TextEditor.TextMateRepositoryExtensionNode"/>
 	</ExtensionPoint>
+	
+	<Extension path="/MonoDevelop/Ide/FeatureSwitches">
+		<FeatureSwitch id="AlwaysUseLegacyEditor" description="Enable old editor" defaultValue="false" />
+	</Extension>
 </ExtensionModel>

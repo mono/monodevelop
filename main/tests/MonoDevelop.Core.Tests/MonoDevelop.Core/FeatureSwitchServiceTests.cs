@@ -76,22 +76,11 @@ namespace MonoDevelop.Core
 			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature4") ?? true);
 		}
 
-		class TestFeatureSwitchController : BaseFeatureSwitchController
-		{
-			public TestFeatureSwitchController (int count)
-			{
-				for (int i = 0; i < count; i++) {
-					AddFeatureSwitch ($"TestFeature{i + 1}", $"Description for TestFeature{i + 1}", count % 2 == 0);
-				}
-			}
-		}
-
 		[Test]
 		public void CanRegisterAndUnregisterFeatureSwitchControllers ()
 		{
 			for (int i = 1; i <= 10; i++) {
-				var controller = new TestFeatureSwitchController (i);
-				FeatureSwitchService.RegisterController (controller);
+				FeatureSwitchService.RegisterFeatureSwitch ($"TestFeature{i}", "Test feature", i % 2 == 0);
 
 				var switches = FeatureSwitchService.DescribeFeatures ()
 					.Where (x => x.Name.StartsWith ("TestFeature", StringComparison.OrdinalIgnoreCase))
@@ -115,7 +104,7 @@ namespace MonoDevelop.Core
 					Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", null);
 				}
 
-				FeatureSwitchService.UnregisterController (controller);
+				FeatureSwitchService.UnregisterFeatureSwitch ($"TestFeature{i}");
 			}
 		}
 	}

@@ -251,6 +251,11 @@
 	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/OptionProviders">
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
+	
+	<ExtensionPoint path="/MonoDevelop/Ide/FeatureSwitches">
+		<Description>Feature flags to allow disabling/enabling development features.</Description>
+		<ExtensionNode name="FeatureSwitch" type="MonoDevelop.Ide.Codons.FeatureSwitchExtensionNode"/>
+	</ExtensionPoint>
 
   <!-- Extensions -->
 
@@ -436,6 +441,11 @@
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>
 		<Assembly file="MonoDevelop.Ide.dll"/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/FeatureSwitches">
+		<FeatureSwitch id="IdeBuildOutputView" description="Enable structured build output UI" defaultValue="false" />
+		<FeatureSwitch id="RUNTIME_SELECTOR" description="Enable runtime selection on UI" defaultValue="false" />
 	</Extension>
 
 </ExtensionModel>

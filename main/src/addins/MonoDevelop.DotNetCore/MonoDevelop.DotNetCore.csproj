@@ -98,7 +98,6 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeSystemInformation.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Commands\PackCommandHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.GlobalTools\DotNetCoreGlobalToolManager.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreFeatureSwitchController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

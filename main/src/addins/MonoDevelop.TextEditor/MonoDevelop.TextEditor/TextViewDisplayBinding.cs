@@ -40,7 +40,7 @@ namespace MonoDevelop.TextEditor
 			new Dictionary<(string addinId, string providerType), ILegacyEditorSupportProvider> ();
 
 		readonly Lazy<bool> alwaysUseLegacyEditor = new Lazy<bool> (
-			() => FeatureSwitchService.IsFeatureEnabled (TextEditorFeatureSwitchController.AlwaysUseLegacyEditorFeatureSwitchName).GetValueOrDefault ());
+			() => FeatureSwitchService.IsFeatureEnabled ("AlwaysUseLegacyEditor").GetValueOrDefault ());
 
 		public override string Id => "MonoDevelop.TextEditor.TextViewControllerFactory";
 

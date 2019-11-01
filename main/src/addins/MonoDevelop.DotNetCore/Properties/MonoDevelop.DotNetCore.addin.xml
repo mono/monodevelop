@@ -1617,4 +1617,8 @@
 			<CommandItem id="MonoDevelop.DotNetCore.Commands.Pack" insertbefore="Publish" />
 		</Condition>
 	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/FeatureSwitches">
+		<FeatureSwitch id="VBNetDotnetCoreTemplates" description="Enable VB.NET support for .NET Core" defaultValue="false" />
+	</Extension>
 </ExtensionModel>

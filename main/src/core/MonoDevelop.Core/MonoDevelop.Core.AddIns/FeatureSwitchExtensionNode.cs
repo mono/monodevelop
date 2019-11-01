@@ -1,10 +1,10 @@
 //
-// IdeFeatureSwitchController.cs
+// FeatureSwitchExtensionNode.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft, Corp. (http://microsoft.com)
+// Copyright (c) 2019 Microsoft Corp (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
+using System;
 using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Core.FeatureConfiguration;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Core.Addins
 {
-	[Extension (typeof (IFeatureSwitchController))]
-	class IdeFeatureSwitchController : BaseFeatureSwitchController
+	[ExtensionNode (Description = "Template information.")]
+	class FeatureSwitchExtensionNode : ExtensionNode
 	{
-		internal const string BuildOutputFeatureSwitchName = "IdeBuildOutputView";
-		internal const string RuntimeSelectorFeatureSwitchName = "RUNTIME_SELECTOR";
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
 
-		public IdeFeatureSwitchController ()
-		{
-			AddFeatureSwitch (BuildOutputFeatureSwitchName,
-				GettextCatalog.GetString ("Enable structured build output UI"),
-				false);
-			AddFeatureSwitch (RuntimeSelectorFeatureSwitchName,
-				GettextCatalog.GetString ("Enable runtime selection on UI"),
-				false);
-		}
+		[NodeAttribute ("_description", "Id of the feature switch.")]
+		public string Description { get; private set; }
+
+		[NodeAttribute ("defaultValue", "Default value.")]
+		public bool DefaultValue { get; private set; }
+
+		#pragma warning restore 649
 	}
 }
