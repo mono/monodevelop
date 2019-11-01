@@ -1296,8 +1296,7 @@ namespace MonoDevelop.PackageManagement
 			if (packageViewModel.HasLicenseMetadata) {
 				ShowLicenseMetadata (packageViewModel);
 			} else {
-				packageLicenseMetadataHBox.Visible = false;
-				packageLicenseMetadataWarningsVBox.Visible = false;
+				packageLicenseMetadataLinkLabel.Visible = false;
 				ShowUri (packageLicenseLink, packageViewModel.LicenseUrl, GettextCatalog.GetString ("View License"));
 			}
 		}
@@ -1314,20 +1313,18 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowLicenseMetadata (ManagePackagesSearchResultViewModel packageViewModel)
 		{
-			var textLinks = packageViewModel.GetLicenseLinks ();
+			packageLicenseLink.Visible = false;
+			packageLicenseMetadataLinkLabel.Visible = false;
+			packageLicenseMetadataWarningInfoPopoverWidget.Visible = false;
 
+			var textLinks = packageViewModel.GetLicenseLinks ();
 			if (textLinks.Count == 0) {
-				packageLicenseLink.Visible = false;
-				packageLicenseMetadataHBox.Visible = false;
-				packageLicenseMetadataWarningsVBox.Visible = false;
 				return;
 			}
 
 			// Single link - show this on the same line as the License label.
 			if (textLinks.Count == 1) {
 				packageLicenseLink.Visible = true;
-				packageLicenseMetadataHBox.Visible = false;
-				packageLicenseMetadataWarningsVBox.Visible = false;
 
 				IText textLink = textLinks [0];
 				if (textLink is LicenseText licenseText) {
@@ -1346,48 +1343,25 @@ namespace MonoDevelop.PackageManagement
 
 			// Multiple text links. We need to allow these to wrap so show these below the license label.
 			var markupBuilder = new LicenseLinkMarkupBuilder ();
-			packageLicenseMetadataLabel.Markup = markupBuilder.GetMarkup (textLinks);
-
-			packageLicenseLink.Visible = false;
-			packageLicenseMetadataHBox.Visible = true;
+			packageLicenseMetadataLinkLabel.Markup = markupBuilder.GetMarkup (textLinks);
+			packageLicenseMetadataLinkLabel.Visible = true;
 
 			if (markupBuilder.Warnings.Any ()) {
 				AddWarnings (markupBuilder.Warnings);
 			} else {
-				packageLicenseMetadataWarningsVBox.Visible = false;
+				packageLicenseMetadataWarningInfoPopoverWidget.Visible = false;
 			}
 		}
 
 		void AddWarnings (IEnumerable<WarningText> warnings)
 		{
-			foreach (Widget child in packageLicenseMetadataWarningsVBox.Children.ToArray ()) {
-				packageLicenseMetadataWarningsVBox.Remove (child);
-				child.Dispose ();
-			}
-
+			var warningTextBuilder = StringBuilderCache.Allocate ();
 			foreach (WarningText warning in warnings) {
-				var hbox = new HBox ();
-				var image = new ImageView {
-					Image = ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu),
-					MarginLeft = packageLicenseMetadataLabel.MarginLeft,
-					VerticalPlacement = WidgetPlacement.Start,
-				};
-				image.Accessible.RoleDescription = GettextCatalog.GetString ("Warning Icon");
-				hbox.PackStart (image);
-
-				var label = new Label {
-					Text = warning.Text,
-					Font = packageLicenseMetadataLabel.Font,
-					Wrap = WrapMode.Word
-				};
-				image.Accessible.LabelWidget = label;
-				label.Accessible.LabelWidget = packageLicenseLabel;
-				hbox.PackStart (label, true, true);
-
-				packageLicenseMetadataWarningsVBox.PackStart (hbox);
+				warningTextBuilder.Append (warning.Text);
+				warningTextBuilder.Append (' ');
 			}
-
-			packageLicenseMetadataWarningsVBox.Visible = true;
+			packageLicenseMetadataWarningInfoPopoverWidget.Message = StringBuilderCache.ReturnAndFree (warningTextBuilder).TrimEnd ();
+			packageLicenseMetadataWarningInfoPopoverWidget.Visible = true;
 		}
 	}
 }

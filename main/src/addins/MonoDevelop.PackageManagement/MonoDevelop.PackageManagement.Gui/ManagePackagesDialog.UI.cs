@@ -49,9 +49,8 @@ namespace MonoDevelop.PackageManagement
 		Label packageDownloads;
 		Label packageLicenseLabel;
 		LinkLabel packageLicenseLink;
-		VBox packageLicenseMetadataWarningsVBox;
-		HBox packageLicenseMetadataHBox;
-		Label packageLicenseMetadataLabel;
+		InformationPopoverWidget packageLicenseMetadataWarningInfoPopoverWidget;
+		Label packageLicenseMetadataLinkLabel;
 		LinkLabel packageProjectPageLink;
 		Label packageDependenciesList;
 		HBox packageDependenciesHBox;
@@ -353,27 +352,24 @@ namespace MonoDevelop.PackageManagement
 			packageLicenseLabel = new Label ();
 			packageLicenseLabel.Text = GettextCatalog.GetString ("License");
 			packageLicenseLabel.Font = packageInfoBoldFont;
-			packageLicenseHBox.PackStart (packageLicenseLabel);
+			packageLicenseHBox.PackStart (packageLicenseLabel, vpos: WidgetPlacement.Start);
 
 			packageLicenseLink = new LinkLabel ();
 			packageLicenseLink.Text = GettextCatalog.GetString ("View License");
 			packageLicenseLink.Font = packageInfoSmallFont;
-			packageLicenseHBox.PackEnd (packageLicenseLink);
+			packageLicenseLink.TextAlignment = Alignment.End;
+			packageLicenseHBox.PackStart (packageLicenseLink, true);
 
-			packageLicenseMetadataWarningsVBox = new VBox ();
-			packageLicenseMetadataWarningsVBox.Visible = false;
-			packageInfoVBox.PackStart (packageLicenseMetadataWarningsVBox);
+			packageLicenseMetadataLinkLabel = new Label ();
+			packageLicenseMetadataLinkLabel.Wrap = WrapMode.Word;
+			packageLicenseMetadataLinkLabel.Font = packageInfoSmallFont;
+			packageLicenseMetadataLinkLabel.Accessible.LabelWidget = packageLicenseLabel;
+			packageLicenseMetadataLinkLabel.TextAlignment = Alignment.End;
+			packageLicenseHBox.PackStart (packageLicenseMetadataLinkLabel, true, vpos: WidgetPlacement.Start);
 
-			packageLicenseMetadataHBox = new HBox ();
-			packageLicenseMetadataHBox.Visible = false;
-			packageInfoVBox.PackStart (packageLicenseMetadataHBox);
-
-			packageLicenseMetadataLabel = new Label ();
-			packageLicenseMetadataLabel.Wrap = WrapMode.Word;
-			packageLicenseMetadataLabel.MarginLeft = 5;
-			packageLicenseMetadataLabel.Font = packageInfoSmallFont;
-			packageLicenseMetadataLabel.Accessible.LabelWidget = packageLicenseLabel;
-			packageLicenseMetadataHBox.PackStart (packageLicenseMetadataLabel, true);
+			packageLicenseMetadataWarningInfoPopoverWidget = new InformationPopoverWidget ();
+			packageLicenseMetadataWarningInfoPopoverWidget.Severity = Ide.Tasks.TaskSeverity.Warning;
+			packageLicenseHBox.PackStart (packageLicenseMetadataWarningInfoPopoverWidget, vpos: WidgetPlacement.Start, hpos: WidgetPlacement.End);
 
 			// Package project page.
 			var packageProjectPageHBox = new HBox ();

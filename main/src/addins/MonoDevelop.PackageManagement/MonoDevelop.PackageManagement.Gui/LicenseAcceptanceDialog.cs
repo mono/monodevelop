@@ -162,33 +162,28 @@ namespace MonoDevelop.PackageManagement
 			// Does not work. LabelBackend for Xamarin.Mac implementation does not ILabelEventSink.OnLinkClicked
 			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
 
-			foreach (WarningText warning in builder.Warnings) {
-				AddLicenseWarningLabel (warning, parentVBox);
+			var hbox = new HBox ();
+
+			if (builder.Warnings.Any ()) {
+				var warningTextBuilder = StringBuilderCache.Allocate ();
+				foreach (WarningText warning in builder.Warnings) {
+					warningTextBuilder.Append (warning.Text);
+					warningTextBuilder.Append (' ');
+				}
+
+				var warningWidget = new MonoDevelop.Components.InformationPopoverWidget ();
+				warningWidget.Severity = Ide.Tasks.TaskSeverity.Warning;
+				warningWidget.Message = StringBuilderCache.ReturnAndFree (warningTextBuilder).TrimEnd ();
+
+				// Disable focus. With focus enabled the info popup ends up being displayed and focused
+				// if it is the first package license on opening the dialog. Unable to set focus to a
+				// dialog button.
+				warningWidget.CanGetFocus = false;
+
+				hbox.PackStart (warningWidget);
 			}
 
-			var hbox = new HBox ();
 			hbox.PackStart (licenseLabel, true);
-
-			parentVBox.PackStart (hbox);
-		}
-
-		static void AddLicenseWarningLabel (WarningText warning, VBox parentVBox)
-		{
-			var hbox = new HBox ();
-			var image = new ImageView {
-				Image = ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu),
-				VerticalPlacement = WidgetPlacement.Start,
-			};
-			image.Accessible.RoleDescription = GettextCatalog.GetString ("Warning Icon");
-
-			hbox.PackStart (image);
-
-			var label = new Label {
-				Text = warning.Text,
-				Wrap = WrapMode.None
-			};
-			image.Accessible.LabelWidget = label;
-			hbox.PackStart (label, true);
 
 			parentVBox.PackStart (hbox);
 		}
