@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using NuGet.PackageManagement.UI;
 using Xwt;
@@ -55,11 +53,16 @@ namespace MonoDevelop.PackageManagement
 			Width = 450;
 			Title = licenseFileText.LicenseHeader;
 
-			textView = new RichTextView ();
-			Content = textView;
+			var scrollView = new ScrollView ();
+			Content = scrollView;
 
-			Buttons.Add (Command.Ok);
-			DefaultCommand = Command.Ok;
+			textView = new RichTextView ();
+			textView.ReadOnly = true;
+			scrollView.Content = textView;
+
+			var okCommand = new Command ("Ok", Core.GettextCatalog.GetString ("OK"));
+			Buttons.Add ();
+			DefaultCommand = okCommand;
 		}
 
 		void LicenseFileTextPropertyChanged (object sender, PropertyChangedEventArgs e)
