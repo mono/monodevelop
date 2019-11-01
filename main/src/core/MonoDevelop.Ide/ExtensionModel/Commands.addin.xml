@@ -401,6 +401,13 @@
 			macShortcut = "Meta|N"
 			_description = "Create a new file"
 			icon = "md-regular-file" />
+	<Command id = "MonoDevelop.Ide.Commands.FileCommands.QuickNewFile"
+			defaultHandler = "MonoDevelop.Ide.Commands.QuickNewFileHandler"
+			_label = "Quick New File..."
+			shortcut = "Control|Alt|N"
+			macShortcut = "Meta|Alt|N"
+			_description = "Create a new file without dialog"
+			icon = "md-regular-file" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save"
 			icon = "gtk-save"
 			shortcut = "Control|S"

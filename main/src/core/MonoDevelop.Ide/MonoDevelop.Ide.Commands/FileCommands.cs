@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Desktop;
 using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -73,7 +74,8 @@ namespace MonoDevelop.Ide.Commands
 		OpenContainingFolder,
 		SetBuildAction,
 		ShowProperties,
-		CopyToOutputDirectory
+		CopyToOutputDirectory,
+		QuickNewFile
 	}
 
 	// MonoDevelop.Ide.Commands.FileCommands.OpenFile
@@ -123,6 +125,22 @@ namespace MonoDevelop.Ide.Commands
 		{
 			using (var dlg = new NewFileDialog (null, null)) // new file seems to fail if I pass the project IdeApp.ProjectOperations.CurrentSelectedProject
 				MessageService.ShowCustomDialog (dlg, IdeServices.DesktopService.GetFocusedTopLevelWindow ());
+		}
+	}
+
+	// MonoDevelop.Ide.Commands.FileCommands.QuickNewFile
+	sealed class QuickNewFileHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			const string namePrefix = "Untitled-";
+			var names = new HashSet<string> (IdeApp.Workbench.Documents.Select (d => d.Name).Where (d => d.StartsWith (namePrefix, StringComparison.Ordinal)));
+			for (int i = 1; i < int.MaxValue; i++) {
+				if (!names.Contains (namePrefix + i)) {
+					IdeApp.Workbench.NewDocument (namePrefix + i, "text/plain", "").Ignore ();
+					return;
+				}
+			}
 		}
 	}
 
