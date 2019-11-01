@@ -44,7 +44,7 @@ namespace MonoDevelop.Core.FeatureConfiguration
 				return;
 
 			initialized = true;
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/FeatureSwitches", HandleFeatureSwitchExtension);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/FeatureSwitches", HandleFeatureSwitchExtension);
 		}
 
 		static void HandleFeatureSwitchExtension (object sender, ExtensionNodeEventArgs args)
@@ -97,11 +97,13 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 		internal static void RegisterFeatureSwitch (string id, string description, bool defaultValue)
 		{
+			LoggingService.LogDebug ($"Registering feature {id} ({description} = {defaultValue})");
 			featureSwitches = featureSwitches.Add (id, new FeatureSwitch (id, description, defaultValue));
 		}
 
 		internal static void UnregisterFeatureSwitch (string id)
 		{
+			LoggingService.LogDebug ($"Unregistering feature {id}");
 			featureSwitches = featureSwitches.Remove (id);
 		}
 

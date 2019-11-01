@@ -1618,7 +1618,7 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path="/MonoDevelop/Ide/FeatureSwitches">
+	<Extension path="/MonoDevelop/Core/FeatureSwitches">
 		<FeatureSwitch id="VBNetDotnetCoreTemplates" description="Enable VB.NET support for .NET Core" defaultValue="false" />
 	</Extension>
 </ExtensionModel>
