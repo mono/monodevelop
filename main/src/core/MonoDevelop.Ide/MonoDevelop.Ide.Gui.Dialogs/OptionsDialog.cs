@@ -663,6 +663,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						LoggingService.LogInternalError ("Error while creating options panel: " + node.Id, e);
 						continue;
 					}
+					if (panel == null) {
+						LoggingService.LogWarning ("Error panel == null: " + node.Id);
+						continue;
+					}
 					pi = new PanelInstance ();
 					pi.Panel = panel;
 					pi.Node = node;
