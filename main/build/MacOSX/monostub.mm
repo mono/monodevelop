@@ -20,6 +20,8 @@
 typedef int (* mono_main) (int argc, char **argv);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
+typedef void (* mono_set_crash_chaining) (int);
+typedef void (* mono_set_signal_chaining) (int);
 typedef void (* monoeg_g_free) (void *ptr);
 typedef void (* gobject_tracker_init) (void *libmono);
 typedef void (* xamarin_initialize_cocoa_threads) (void *);
@@ -352,6 +354,12 @@ main (int argc, char **argv)
 
 		xamarin_initialize_cocoa_threads _xamarin_initialize_cocoa_threads = (xamarin_initialize_cocoa_threads)load_symbol("xamarin_initialize_cocoa_threads", libxammac, "Xamarin.Mac");
 		_xamarin_initialize_cocoa_threads (NULL);
+
+		mono_set_signal_chaining _mono_set_signal_chaining = LOAD_MONO_SYMBOL(mono_set_signal_chaining, libmono);
+		_mono_set_signal_chaining (TRUE);
+
+		mono_set_crash_chaining _mono_set_crash_chaining = LOAD_MONO_SYMBOL(mono_set_crash_chaining, libmono);
+		_mono_set_crash_chaining (TRUE);
 	}
 
 	return _mono_main (new_argc, new_argv);
