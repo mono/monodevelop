@@ -79,13 +79,24 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 			// Fallback to ask extensions, enabling by default
 			if (featureSwitches.TryGetValue (featureName, out var feature)) {
-				return feature.DefaultValue;
+				return feature.CurrentValue ?? feature.DefaultValue;
 			}
 
 			return null;
 		}
 
 		#region Internal API for unit tests
+
+		internal static void SetFeatureSwitchValue (string id, bool? value)
+		{
+			if (!featureSwitches.TryGetValue (id, out var featureSwitch)) {
+				// This feature switch is not registered, so register it now
+				featureSwitch = new FeatureSwitch (id, null, false);
+				featureSwitches.Add (id, featureSwitch);
+			}
+
+			featureSwitch.CurrentValue = value;
+		}
 
 		internal static IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{

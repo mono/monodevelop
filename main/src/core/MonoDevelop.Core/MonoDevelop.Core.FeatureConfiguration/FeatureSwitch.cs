@@ -40,5 +40,7 @@ namespace MonoDevelop.Core.FeatureConfiguration
 		public string Description { get; }
 
 		public bool DefaultValue { get; }
+
+		public bool? CurrentValue { get; set; }
 	}
 }

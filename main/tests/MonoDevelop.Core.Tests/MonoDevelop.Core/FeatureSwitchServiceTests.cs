@@ -77,15 +77,29 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
-		public void CanRegisterAndUnregisterFeatureSwitchControllers ()
+		public void CanChangeWhileRunning ()
 		{
+			string featureName = nameof (CanChangeWhileRunning);
+
+			Assert.IsNull (FeatureSwitchService.IsFeatureEnabled (featureName));
+			FeatureSwitchService.SetFeatureSwitchValue (featureName, true);
+			Assert.True (FeatureSwitchService.IsFeatureEnabled (featureName) ?? false);
+
+			FeatureSwitchService.SetFeatureSwitchValue (featureName, false);
+			Assert.False (FeatureSwitchService.IsFeatureEnabled (featureName) ?? true);
+		}
+
+		[Test]
+		public void CanRegisterAndUnregisterFeatureSwitches ()
+		{
+			string featureName = nameof (CanRegisterAndUnregisterFeatureSwitches);
+
 			for (int i = 1; i <= 10; i++) {
-				FeatureSwitchService.RegisterFeatureSwitch ($"TestFeature{i}", "Test feature", i % 2 == 0);
+				FeatureSwitchService.RegisterFeatureSwitch ($"{featureName}{i}", "Test feature", i % 2 == 0);
 
 				var switches = FeatureSwitchService.DescribeFeatures ()
-					.Where (x => x.Name.StartsWith ("TestFeature", StringComparison.OrdinalIgnoreCase))
+					.Where (x => x.Name.StartsWith (featureName, StringComparison.OrdinalIgnoreCase))
 					.ToList ();
-				Assert.That (switches.Count, Is.GreaterThanOrEqualTo (i));
 
 				foreach (var feature in switches) {
 					Assert.That (FeatureSwitchService.IsFeatureEnabled (feature.Name).GetValueOrDefault (), Is.EqualTo (feature.DefaultValue));
@@ -104,7 +118,7 @@ namespace MonoDevelop.Core
 					Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", null);
 				}
 
-				FeatureSwitchService.UnregisterFeatureSwitch ($"TestFeature{i}");
+				FeatureSwitchService.UnregisterFeatureSwitch ($"{featureName}{i}");
 			}
 		}
 	}
