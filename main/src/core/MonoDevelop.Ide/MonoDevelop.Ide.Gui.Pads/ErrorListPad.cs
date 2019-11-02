@@ -322,9 +322,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtn.Active = OutputViewVisible;
 
 			// Load existing tasks
-			foreach (TaskListEntry t in IdeServices.TaskService.Errors) {
-				AddTask (t);
-			}
+			AddTasks (IdeServices.TaskService.Errors);
 		}
 
 		public override void Dispose ()
