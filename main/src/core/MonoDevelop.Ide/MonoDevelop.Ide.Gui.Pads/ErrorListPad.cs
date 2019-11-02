@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Xwt.Drawing.Image iconWarning;
 		Xwt.Drawing.Image iconError;
 		Xwt.Drawing.Image iconInfo;
-		Xwt.Drawing.Image iconEmpty;
 
 		static readonly string restoreID = "Monodevelop.ErrorListColumns";
 		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
@@ -308,7 +307,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			iconWarning = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			iconError = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 			iconInfo = ImageService.GetIcon (Ide.Gui.Stock.Information, Gtk.IconSize.Menu);
-			iconEmpty = ImageService.GetIcon (Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 
 			control.Add1 (sw);
 
@@ -918,7 +916,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			var indexOfNewLine = t.Description.IndexOfAny (newlineCharacters);
 			if (indexOfNewLine != -1) {
 				var iter = store.InsertWithValues (-1, stock, false, t, t.Description.Remove (indexOfNewLine));
-				store.InsertWithValues (iter, -1, iconEmpty, false, null, t.Description);
+				store.InsertWithValues (iter, -1, CellRendererImage.NullImage, false, null, t.Description);
 			} else {
 				store.InsertWithValues (-1, stock, false, t, t.Description);
 			}
