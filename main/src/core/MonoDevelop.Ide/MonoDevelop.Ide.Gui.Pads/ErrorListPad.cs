@@ -767,7 +767,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			OnTaskJumpto (null, null);
 		}
-		
+
+		[Obsolete("This will be removed in future versions")]
 		public CompilerResults CompilerResults = null;
 		
 		void FilterChanged (object sender, EventArgs e)
