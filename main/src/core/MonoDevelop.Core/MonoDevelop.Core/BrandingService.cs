@@ -49,6 +49,7 @@ namespace MonoDevelop.Core
 		public static readonly string ProfileDirectoryName;
 		public static readonly string StatusSteadyIconId;
 		public static readonly string HelpAboutIconId;
+		public static readonly string CommandNameForPATH;
 
 		public static string ApplicationName {
 			get {
@@ -119,6 +120,7 @@ namespace MonoDevelop.Core
 				ProfileDirectoryName = GetString ("ProfileDirectoryName");
 				StatusSteadyIconId = GetString ("StatusAreaSteadyIcon");
 				HelpAboutIconId = GetString ("HelpAboutIcon");
+				CommandNameForPATH = GetString ("CommandNameForPATH") ?? "md";
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not read branding document", ex);
 			}

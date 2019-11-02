@@ -279,6 +279,7 @@
 		<Condition id = "Branding" value = "MonoDevelop">
 			<Class class = "MonoDevelop.Ide.LogReportingStartup"/>
 		</Condition>
+		<Class class = "MonoDevelop.Ide.Commands.InstallOrUninstallAsCommandInPATHHandler+SuggestInstallingCommandInPATH"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">

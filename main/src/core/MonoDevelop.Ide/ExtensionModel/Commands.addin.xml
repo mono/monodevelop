@@ -718,7 +718,10 @@
 
 	<!-- ToolCommands -->
 	<Category _name = "Tools" id = "Tools">
-
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.InstallOrUninstallAsCommandInPATH"
+			defaultHandler = "MonoDevelop.Ide.Commands.InstallOrUninstallAsCommandInPATHHandler"
+			_label = "Install command in PATH"
+			icon = "md-console" />
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 			defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
 			icon = "gtk-plugin"

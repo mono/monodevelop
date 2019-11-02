@@ -33,6 +33,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using MonoDevelop.Ide.Updater;
 using System.Threading.Tasks;
+using System.IO;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -44,6 +46,7 @@ namespace MonoDevelop.Ide.Commands
 		ToggleSessionRecorder,
 		ReplaySession,
 		EditCustomTools,
+		InstallOrUninstallAsCommandInPATH
 	}
 
 	internal class AddinManagerHandler : CommandHandler
@@ -173,6 +176,132 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = IdeApp.Preferences.EnableAutomatedTesting;
+		}
+	}
+
+	internal class InstallOrUninstallAsCommandInPATHHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			if (IsInstalled ()) {
+				Uninstall ();
+			} else {
+				Install ();
+			}
+		}
+
+#if MAC
+		static bool? cachedIsInstalled = null;
+		private static bool IsInstalled ()
+		{
+			if (cachedIsInstalled.HasValue)
+				return cachedIsInstalled.Value;
+			var commandPath = CommandPath ();
+			if (File.Exists (commandPath) && File.ReadAllText (commandPath) == CommandContent ()) {
+				cachedIsInstalled = true;
+				return true;
+			} else {
+				cachedIsInstalled = false;
+				return false;
+			}
+		}
+
+		private static void Install ()
+		{
+			cachedIsInstalled = null;
+			File.WriteAllText (CommandPath (), CommandContent ());
+			Mono.Unix.Native.Syscall.chmod (CommandPath (), (Mono.Unix.Native.FilePermissions)493);//equals 755
+		}
+
+		private static void Uninstall ()
+		{
+			cachedIsInstalled = null;
+			File.Delete (CommandPath ());
+		}
+
+		private static string CommandContent ()
+		{
+			return $"#!/bin/bash{Environment.NewLine}open -b {Foundation.NSBundle.MainBundle.BundleIdentifier} \"$@\"";
+		}
+
+		private static string CommandPath ()
+		{
+			return "/usr/local/bin/" + BrandingService.CommandNameForPATH;
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = info.Enabled = true;
+			if (IsInstalled ()) {
+				info.Text = GettextCatalog.GetString ("Uninstall '{0}' command from PATH", BrandingService.CommandNameForPATH);
+			} else {
+				info.Text = GettextCatalog.GetString ("Install '{0}' command in PATH", BrandingService.CommandNameForPATH);
+			}
+		}
+#else
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = false;
+			info.Enabled = false;
+		}
+
+		private static bool IsInstalled ()
+		{
+			return false;
+		}
+
+		private static void Install ()
+		{
+		}
+
+		private static void Uninstall ()
+		{
+		}
+#endif
+
+		class SuggestInstallingCommandInPATH : CommandHandler
+		{
+			protected override void Run ()
+			{
+				//Go to threadpool thread since we are in startup code
+				Task.Run (RunAsync).Ignore ();
+			}
+
+			private async Task RunAsync ()
+			{
+				//Don't run checks during startup, delay checks a bit
+				await Task.Delay (5000);
+				var dontShowAgain = ConfigurationProperty.Create ("DontShowAgain_SuggestInstallingCommandInPATH", false);
+				if (dontShowAgain.Value)
+					return;
+				if (IsInstalled ())
+					return;
+				//Only show this suggestion to power users, aka. people who ran this command in other editors/IDEs
+				//don't spam everyone with this suggestion, they can still do it via Tools->"Install '{0}' command in PATH"
+				if (!IsPowerUser ())
+					return;
+				await Runtime.RunInMainThread (() => {
+					IdeApp.Workbench.ShowInfoBar (false, new InfoBarOptions (GettextCatalog.GetString ("Would you like to install '{0}' command in PATH? This will allow you to execute '{0} HelloWorld.txt' from terminal.", BrandingService.CommandNameForPATH)) {
+						Items = new InfoBarItem [] {
+							new InfoBarItem (GettextCatalog.GetString ("Install"), InfoBarItemKind.Button, Install, true),
+							new InfoBarItem (GettextCatalog.GetString ("Don't show again"), InfoBarItemKind.Button, () => dontShowAgain.Set (true), true)}
+						}
+					);
+				});
+			}
+
+			private bool IsPowerUser ()
+			{
+#if MAC
+				if (File.Exists ("/usr/local/bin/code"))
+					return true;
+				if (File.Exists ("/usr/local/bin/code-insiders"))
+					return true;
+				if (File.Exists ("/usr/local/bin/rider"))
+					return true;
+#endif
+				return false;
+			}
 		}
 	}
 }

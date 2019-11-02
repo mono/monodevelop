@@ -253,6 +253,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
 		</ItemSet>
+		<CommandItem id="MonoDevelop.Ide.Commands.ToolCommands.InstallOrUninstallAsCommandInPATH" />
 		<SeparatorItem id = "CustomToolsSection" _label = "Custom"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.EditCustomTools" />
