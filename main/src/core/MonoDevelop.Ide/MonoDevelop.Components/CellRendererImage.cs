@@ -138,6 +138,10 @@ namespace MonoDevelop.Components
 			//
 			// Except in the solution treeview, because the Mac's default unfocused selection background is too light for the
 			// custom treeview background
+			var img = GetImage ();
+			if (img == null)
+				return;
+
 			if (!ignoreSelection.HasValue) {
 				if (Platform.IsMac) {
 					if (IdeTheme.UserInterfaceTheme == Theme.Light) {
@@ -150,10 +154,6 @@ namespace MonoDevelop.Components
 					ignoreSelection = false;
 				}
 			}
-
-			var img = GetImage ();
-			if (img == null)
-				return;
 
 			var shouldIgnoreSelection = ignoreSelection.GetValueOrDefault () && !widget.HasFocus;
 			if (!shouldIgnoreSelection && ((flags & Gtk.CellRendererState.Selected) != 0))
