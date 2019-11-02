@@ -77,13 +77,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
-		HashSet<TaskListEntry> tasks = new HashSet<TaskListEntry> ();
+		readonly HashSet<TaskListEntry> tasks = new HashSet<TaskListEntry> ();
 		int errorCount;
 		int warningCount;
 		int infoCount;
 		bool initialLogShow = true;
-
-		Clipboard clipboard;
 
 		Xwt.Drawing.Image iconWarning;
 		Xwt.Drawing.Image iconError;
@@ -583,7 +581,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 			}
 
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 			clipboard.Text = text.ToString ();
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = text.ToString ();
