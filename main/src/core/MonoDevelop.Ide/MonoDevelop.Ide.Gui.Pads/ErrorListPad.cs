@@ -185,7 +185,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn.Toggled += FilterChanged;
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			errorBtn.Accessible.Description = GettextCatalog.GetString ("Show Errors");
-			UpdateErrorsNum ();
 			toolbar.Add (errorBtn);
 
 			warnBtn = MakeButton (Stock.Warning, "toggleWarnings", ShowWarnings, out warnBtnLbl);
@@ -193,7 +192,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.Toggled += FilterChanged;
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			warnBtn.Accessible.Description = GettextCatalog.GetString ("Show Warnings");
-			UpdateWarningsNum ();
 			toolbar.Add (warnBtn);
 
 			msgBtn = MakeButton (Stock.Information, "toggleMessages", ShowMessages, out msgBtnLbl);
@@ -201,7 +199,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			msgBtn.Toggled += FilterChanged;
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			msgBtn.Accessible.Description = GettextCatalog.GetString ("Show Messages");
-			UpdateMessagesNum ();
 			toolbar.Add (msgBtn);
 
 			var sep = new SeparatorToolItem ();
@@ -248,7 +245,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			toolbar.ShowAll ();
 
-			UpdatePadIcon ();
+			UpdateLabels ();
 
 			IdeApp.ProjectOperations.StartBuild += OnBuildStarted;
 			IdeApp.ProjectOperations.StartClean += OnBuildStarted;
@@ -858,10 +855,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.ScrollToPoint (0, 0);
 			store.Clear ();
 			tasks.Clear ();
-			UpdateErrorsNum ();
-			UpdateWarningsNum ();
-			UpdateMessagesNum ();
-			UpdatePadIcon ();
+			UpdateLabels ();
 		}
 		
 		void TaskChanged (object sender, TaskEventArgs e)
@@ -887,10 +881,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.Model = sort;
 			}
 
-			UpdatePadIcon ();
-			UpdateErrorsNum ();
-			UpdateWarningsNum ();
-			UpdateMessagesNum ();
+			UpdateLabels ();
 		}
 		
 		public void AddTask (TaskListEntry t)
@@ -898,11 +889,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Runtime.CheckMainThread ();
 
 			AddTaskInternal (t);
-
-			UpdatePadIcon ();
-			UpdateErrorsNum ();
-			UpdateWarningsNum ();
-			UpdateMessagesNum ();
+			UpdateLabels ();
 		}
 
 		static readonly char [] newlineCharacters = { '\n', '\r' };
@@ -935,6 +922,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				store.InsertWithValues (-1, stock, false, t, t.Description);
 			}
+		}
+
+		void UpdateLabels()
+		{
+			UpdatePadIcon ();
+			UpdateErrorsNum ();
+			UpdateWarningsNum ();
+			UpdateMessagesNum ();
 		}
 
 		void UpdateErrorsNum () 
