@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public static class FeatureSwitchService
 	{
-		static ImmutableDictionary<string, FeatureSwitch> featureSwitches = ImmutableDictionary<string, FeatureSwitch>.Empty;
+		static Dictionary<string, FeatureSwitch> featureSwitches = new Dictionary<string, FeatureSwitch> ();
 		static bool initialized = false;
 
 		static void EnsureInitialized ()
@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.FeatureConfiguration
 		{
 			var fs = args.ExtensionNode as FeatureSwitchExtensionNode;
 			if (fs != null) {
-				if (args.Change == ExtensionChange.Add && !featureSwitches.TryGetValue (fs.Id, out _)) {
+				if (args.Change == ExtensionChange.Add) {
 					RegisterFeatureSwitch (fs.Id, fs.Description, fs.DefaultValue);
 				} else {
 					UnregisterFeatureSwitch (fs.Id);
@@ -78,10 +78,8 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			}
 
 			// Fallback to ask extensions, enabling by default
-			if (featureSwitches != null) {
-				if (featureSwitches.TryGetValue (featureName, out var feature)) {
-					return feature.DefaultValue;
-				}
+			if (featureSwitches.TryGetValue (featureName, out var feature)) {
+				return feature.DefaultValue;
 			}
 
 			return null;
@@ -92,19 +90,23 @@ namespace MonoDevelop.Core.FeatureConfiguration
 		internal static IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{
 			EnsureInitialized ();
-			return featureSwitches?.Values;
+			return featureSwitches.Values;
 		}
 
 		internal static void RegisterFeatureSwitch (string id, string description, bool defaultValue)
 		{
-			LoggingService.LogDebug ($"Registering feature {id} ({description} = {defaultValue})");
-			featureSwitches = featureSwitches.Add (id, new FeatureSwitch (id, description, defaultValue));
+			LoggingService.LogInfo ($"Registering feature {id} ({description} = {defaultValue})");
+			if (featureSwitches.TryGetValue (id, out _)) {
+				LoggingService.LogWarning ($"Feature switch {id} already registered, ignoring new registration");
+			} else {
+				featureSwitches.Add (id, new FeatureSwitch (id, description, defaultValue));
+			}
 		}
 
 		internal static void UnregisterFeatureSwitch (string id)
 		{
-			LoggingService.LogDebug ($"Unregistering feature {id}");
-			featureSwitches = featureSwitches.Remove (id);
+			LoggingService.LogInfo ($"Unregistering feature {id}");
+			featureSwitches.Remove (id);
 		}
 
 		#endregion

@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	public class FeatureSwitch
+	internal class FeatureSwitch
 	{
 		public FeatureSwitch (string name, string description, bool defaultValue)
 		{
