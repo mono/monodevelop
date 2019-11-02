@@ -927,38 +927,29 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void UpdateLabels()
 		{
 			UpdatePadIcon ();
-			UpdateErrorsNum ();
-			UpdateWarningsNum ();
-			UpdateMessagesNum ();
+			UpdateButtonLabel (errorBtnLbl, errorBtn, GettextCatalog.GetPluralString ("{0} Error", "{0} Errors", errorCount, errorCount));
+			UpdateButtonLabel (warnBtnLbl, warnBtn, GettextCatalog.GetPluralString ("{0} Warning", "{0} Warnings", warningCount, warningCount));
+			UpdateButtonLabel (msgBtnLbl, msgBtn, GettextCatalog.GetPluralString ("{0} Message", "{0} Messages", infoCount, infoCount));
+
+			static void UpdateButtonLabel (Label label, ToggleButton button, string text)
+			{
+				text = " " + text;
+				label.Text = text;
+				button.Accessible.SetTitle (text);
+			}
+
+			void UpdatePadIcon ()
+			{
+				if (errorCount > 0)
+					Window.Icon = "md-errors-list-has-errors";
+				else if (warningCount > 0)
+					Window.Icon = "md-errors-list-has-warnings";
+				else
+					Window.Icon = "md-errors-list";
+			}
 		}
 
-		void UpdateErrorsNum () 
-		{
-			errorBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
-			errorBtn.Accessible.SetTitle (errorBtnLbl.Text);
-		}
 
-		void UpdateWarningsNum ()
-		{
-			warnBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount);
-			warnBtn.Accessible.SetTitle (warnBtnLbl.Text);
-		}
-
-		void UpdateMessagesNum ()
-		{
-			msgBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
-			msgBtn.Accessible.SetTitle (msgBtnLbl.Text);
-		}
-
-		void UpdatePadIcon ()
-		{
-			if (errorCount > 0)
-				Window.Icon = "md-errors-list-has-errors";
-			else if (warningCount > 0)
-				Window.Icon = "md-errors-list-has-warnings";
-			else
-				Window.Icon = "md-errors-list";
-		}
 		
 		private void ItemToggled (object o, ToggledArgs args)
 		{
