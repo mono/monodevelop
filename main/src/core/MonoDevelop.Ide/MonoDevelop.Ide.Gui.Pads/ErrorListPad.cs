@@ -878,15 +878,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Runtime.CheckMainThread ();
 
-			foreach (TaskListEntry t in tasks) {
-				AddTaskInternal (t);
+			view.Model = null;
+			try {
+				foreach (TaskListEntry t in tasks) {
+					AddTaskInternal (t);
+				}
+			} finally {
+				view.Model = sort;
 			}
+
 			UpdatePadIcon ();
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
-
-			filter.Refilter ();
 		}
 		
 		public void AddTask (TaskListEntry t)
@@ -899,8 +903,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
-
-			filter.Refilter ();
 		}
 
 		static readonly char [] newlineCharacters = { '\n', '\r' };
