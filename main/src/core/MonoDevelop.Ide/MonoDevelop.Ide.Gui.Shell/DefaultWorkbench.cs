@@ -1053,7 +1053,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<WindowReorderedEventArgs> WindowReordered;
 
 
-		bool IsInFullViewMode {
+		internal bool IsInFullViewMode {
 			get {
 				return dock?.CurrentLayout?.EndsWith(fullViewModeTag, StringComparison.Ordinal) ?? false;
 			}

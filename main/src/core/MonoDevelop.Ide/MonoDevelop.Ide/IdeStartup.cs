@@ -339,7 +339,13 @@ namespace MonoDevelop.Ide
 					IdeApp.OpenFilesAsync (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ()).Ignore ();
 					startupInfo.OpenedFiles = startupInfo.HasFiles;
 				}
-				
+				if (!startupInfo.HasSolutionFile && startupInfo.HasFiles) {
+					//If we are opening files but no solution, start in Maximized mode
+					//so only editor is visible, without Solution, Error and other pads
+					//that are not very useful when opening files
+					IdeApp.Workbench.Maximize (true);
+				}
+
 				monitor.Step (1);
 			
 			} catch (Exception e) {
