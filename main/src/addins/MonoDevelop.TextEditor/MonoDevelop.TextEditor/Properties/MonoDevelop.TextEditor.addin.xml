@@ -342,6 +342,6 @@
 	</ExtensionPoint>
 	
 	<Extension path="/MonoDevelop/Core/FeatureSwitches">
-		<FeatureSwitch id="AlwaysUseLegacyEditor" description="Enable old editor" defaultValue="false" />
+		<FeatureSwitch id="AlwaysUseLegacyEditor" _description="Enable old editor" defaultValue="false" />
 	</Extension>
 </ExtensionModel>

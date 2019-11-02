@@ -439,8 +439,8 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/FeatureSwitches">
-		<FeatureSwitch id="IdeBuildOutputView" description="Enable structured build output UI" defaultValue="false" />
-		<FeatureSwitch id="RUNTIME_SELECTOR" description="Enable runtime selection on UI" defaultValue="false" />
+		<FeatureSwitch id="IdeBuildOutputView" _description="Enable structured build output UI" defaultValue="false" />
+		<FeatureSwitch id="RUNTIME_SELECTOR" _description="Enable runtime selection on UI" defaultValue="false" />
 	</Extension>
 
 </ExtensionModel>

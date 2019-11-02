@@ -1619,6 +1619,6 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/FeatureSwitches">
-		<FeatureSwitch id="VBNetDotnetCoreTemplates" description="Enable VB.NET support for .NET Core" defaultValue="false" />
+		<FeatureSwitch id="VBNetDotnetCoreTemplates" _description="Enable VB.NET support for .NET Core" defaultValue="false" />
 	</Extension>
 </ExtensionModel>
