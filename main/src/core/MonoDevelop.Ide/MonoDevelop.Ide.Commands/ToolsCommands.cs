@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
-	internal class InstallOrUninstallAsCommandInPATHHandler : CommandHandler
+	internal sealed class InstallOrUninstallAsCommandInPATHHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 #endif
 
-		class SuggestInstallingCommandInPATH : CommandHandler
+		sealed class SuggestInstallingCommandInPATH : CommandHandler
 		{
 			protected override void Run ()
 			{
