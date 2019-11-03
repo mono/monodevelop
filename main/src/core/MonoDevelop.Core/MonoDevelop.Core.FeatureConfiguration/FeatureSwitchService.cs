@@ -36,14 +36,9 @@ namespace MonoDevelop.Core.FeatureConfiguration
 	public static class FeatureSwitchService
 	{
 		static Dictionary<string, FeatureSwitch> featureSwitches = new Dictionary<string, FeatureSwitch> ();
-		static bool initialized = false;
 
-		static void EnsureInitialized ()
+		static FeatureSwitchService ()
 		{
-			if (initialized)
-				return;
-
-			initialized = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/FeatureSwitches", HandleFeatureSwitchExtension);
 		}
 
@@ -61,8 +56,6 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 		public static bool? IsFeatureEnabled (string featureName)
 		{
-			EnsureInitialized ();
-
 			if (string.IsNullOrEmpty (featureName)) {
 				return null;
 			}
@@ -119,7 +112,6 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 		internal static IEnumerable<FeatureSwitch> DescribeFeatures ()
 		{
-			EnsureInitialized ();
 			return featureSwitches.Values;
 		}
 
