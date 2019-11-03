@@ -30,7 +30,7 @@ using Mono.Addins;
 namespace MonoDevelop.Core.Addins
 {
 	[ExtensionNode (Description = "Feature switch information.")]
-	class FeatureSwitchExtensionNode : ExtensionNode
+	sealed class FeatureSwitchExtensionNode : ExtensionNode
 	{
 		//these fields are assigned by reflection, suppress "never assigned" warning
 		#pragma warning disable 649
