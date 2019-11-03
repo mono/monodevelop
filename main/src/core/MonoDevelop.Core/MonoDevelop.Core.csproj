@@ -746,6 +746,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.Extensions.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitch.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\FeatureSwitchExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

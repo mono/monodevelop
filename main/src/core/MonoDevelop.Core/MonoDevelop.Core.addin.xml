@@ -19,6 +19,11 @@
 	
 	<!-- Extension points -->
 	
+	<ExtensionPoint path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks" name="Feature switch checks">		
+   		<Description>Pluggable checks for feature dynamic enabling/disabling</Description>		
+   		<ExtensionNode objectType="MonoDevelop.Core.FeatureConfiguration.IFeatureSwitchController" />		
+   	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
 		<ExtensionNode name="Mode" type="MonoDevelop.Core.AddIns.ExecutionModeNode" />

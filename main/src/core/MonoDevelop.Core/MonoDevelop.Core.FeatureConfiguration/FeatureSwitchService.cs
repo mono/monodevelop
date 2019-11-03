@@ -82,6 +82,25 @@ namespace MonoDevelop.Core.FeatureConfiguration
 				return feature.CurrentValue ?? feature.DefaultValue;
 			}
 
+			// Backwards support for obsolete IFeatureSwitchController API
+			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchController> ();
+			if (extensions != null) {
+				bool explicitlyEnabled = false, explicitlyDisabled = false;
+				foreach (var ext in extensions) {
+					switch (ext.IsFeatureEnabled (featureName)) {
+					case true:
+						explicitlyEnabled = true;
+						break;
+					case false:
+						explicitlyDisabled = true;
+						break;
+					}
+				}
+
+				if (explicitlyDisabled) return false;
+				if (explicitlyEnabled) return true;
+			}
+
 			return null;
 		}
 
