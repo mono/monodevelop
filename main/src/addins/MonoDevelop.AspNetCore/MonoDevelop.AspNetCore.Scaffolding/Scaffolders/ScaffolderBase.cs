@@ -67,7 +67,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 				if (dbContext != null) {
 					var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
-					return result.Select (c => c.MetadataName);
+
+					return result.Where (ModelVisitor.IncludeTypeInAddViewModelClassDropdown).Select (c => c.MetadataName).Distinct().OrderBy (x => x);
 				}
 			}
 			return Enumerable.Empty<string> ();
@@ -80,7 +81,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			if (compilation != null) {
 
 				var modelTypes = ModelVisitor.FindModelTypes (compilation.Assembly);
-				return modelTypes.Select (t => t.MetadataName);
+				return modelTypes.Select (t => t.MetadataName).Distinct().OrderBy (x => x);
 			}
 			return Enumerable.Empty<string> ();
 		}
