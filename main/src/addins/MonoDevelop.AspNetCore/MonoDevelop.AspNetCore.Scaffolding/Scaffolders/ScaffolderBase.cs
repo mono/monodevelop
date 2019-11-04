@@ -79,7 +79,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
 			if (compilation != null) {
 
-				var modelTypes = DbSetModelVisitor.FindModelTypes (compilation.Assembly);
+				var modelTypes = ModelVisitor.FindModelTypes (compilation.Assembly);
 				return modelTypes.Select (t => t.MetadataName);
 			}
 			return Enumerable.Empty<string> ();
