@@ -229,10 +229,6 @@ namespace MonoDevelop.Ide
 			Counters.InitializationTracker.Trace ("Initializing WelcomePage service");
 			WelcomePage.WelcomePageService.Initialize (hideWelcomePage).Ignore ();
 
-			// Pump the UI thread to make the start window visible
-
-			await Task.Yield ();
-
 			Counters.InitializationTracker.Trace ("Creating Services");
 
 			var serviceInitialization = Task.WhenAll (

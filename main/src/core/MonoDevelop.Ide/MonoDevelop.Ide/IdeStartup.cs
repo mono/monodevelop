@@ -61,7 +61,6 @@ namespace MonoDevelop.Ide
 
 		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
-		static bool hideWelcomePage;
 		static StartupInfo startupInfo;
 
 		static TimeToCodeMetadata ttcMetadata;
@@ -291,7 +290,7 @@ namespace MonoDevelop.Ide
 
 			Exception error = null;
 			int reportedFailures = 0;
-
+			var hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 			try {
 				Counters.InitializationTracker.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
@@ -304,7 +303,6 @@ namespace MonoDevelop.Ide
 				// XBC #33699
 				Counters.InitializationTracker.Trace ("Initializing IdeApp");
 
-				hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				await IdeApp.Initialize (monitor, hideWelcomePage);
 
 				IdeStartupTracker.StartupTracker.MarkSection ("AppInitialization");
@@ -396,7 +394,13 @@ namespace MonoDevelop.Ide
 			IdeStartupTracker.StartupTracker.MarkSection ("PumpEventLoop");
 			IdeStartupTracker.StartupTracker.Stop (startupInfo);
 
-			GLib.Idle.Add (OnIdle);
+			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
+				IdeApp.Workbench.Present ();
+				WelcomePage.WelcomePageService.ShowWelcomePage ();
+				Counters.InitializationTracker.Trace ("Showed welcome page");
+			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
+				IdeApp.Workbench.Present ();
+			}
 
 			return 0;
 		}
@@ -454,20 +458,6 @@ namespace MonoDevelop.Ide
 			}
 
 			return null;
-		}
-
-		static bool OnIdle ()
-		{
-			// OpenDocuments appears when the app is idle.
-			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
-				IdeApp.Workbench.Present ();
-				WelcomePage.WelcomePageService.ShowWelcomePage ();
-				Counters.InitializationTracker.Trace ("Showed welcome page");
-			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
-				IdeApp.Workbench.Present ();
-			}
-
-			return false;
 		}
 
 		static DateTime lastIdle;
