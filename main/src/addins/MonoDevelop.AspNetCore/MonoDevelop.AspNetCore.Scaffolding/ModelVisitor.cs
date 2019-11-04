@@ -93,7 +93,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				Visit (type);
 			}
 
-            if(IncludeTypeInAddViewModelClassDropdown(symbol))
+			if (IncludeTypeInAddViewModelClassDropdown (symbol))
 				_types.Add (symbol);
 		}
 
@@ -111,7 +111,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		static bool IsDerivedFromFilteredBaseClass (INamedTypeSymbol t)
 		{
-			if (_filteredBaseClasses.Any (baseClass => t.GetFullMetadataName().Equals (baseClass, StringComparison.Ordinal))) {
+			if (_filteredBaseClasses.Any (baseClass => t.GetFullMetadataName ().Equals (baseClass, StringComparison.Ordinal))) {
 				return true;
 			}
 			if (t.BaseType != null) {

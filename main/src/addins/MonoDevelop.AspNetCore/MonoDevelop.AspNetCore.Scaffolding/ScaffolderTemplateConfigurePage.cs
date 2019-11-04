@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 using Xwt;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
@@ -69,21 +71,30 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						comboBox = new ComboBox ();
                     }
 
-					foreach (var option in comboField.Options) {
-						comboBox.Items.Add (option);
-					}
+					Task.Run (async () => {
+						var options = await comboField.Options.ConfigureAwait (false);
+
+						await Runtime.RunInMainThread (() =>
+						 Xwt.Toolkit.NativeEngine.Invoke (() => {
+							 foreach (var option in options) {
+								 comboBox.Items.Add (option);
+							 }
+							 comboField.SelectedValue = options.FirstOrDefault ();
+							 if (comboBox.Items.Count > 0)
+								 comboBox.SelectedIndex = 0;
+						 }));
+					});
+					
+					
 
 					label.Text = comboField.DisplayName;
 
 					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
 					table.Add (comboBox, 1, rowIndex);
-					comboField.SelectedValue = comboField.Options.FirstOrDefault ();
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
-					if (comboBox.Items.Count > 0)
-						comboBox.SelectedIndex = 0;
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
