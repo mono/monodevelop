@@ -24,17 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ModelVisitor : SymbolVisitor
 	{
-		const string DbSetTypeName = "System.Data.Entity.DbSet`1";
-		const string EF7DbSetTypeName = "Microsoft.Data.Entity.DbSet`1";
-		const string EFCDbSetTypeName = "Microsoft.EntityFrameworkCore.DbSet`1";
-
 		public static List<ITypeSymbol> FindModelTypes (IAssemblySymbol assembly)
 		{
 			var visitor = new ModelVisitor ();
@@ -67,24 +62,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public override void VisitNamedType (INamedTypeSymbol symbol)
 		{
-			foreach (var property in symbol.GetMembers ()) {
-				Visit (property);
-			}
-		}
-
-		public override void VisitProperty (IPropertySymbol symbol)
-		{
-			if (symbol.Type is INamedTypeSymbol namedTypeSymbol) {
-
-				if (namedTypeSymbol.IsGenericType) {
-					// for DbSet<MyModel>, return MyModel
-					var unboundType = namedTypeSymbol.ConstructUnboundGenericType ();
-					// TODO: check FQN
-					if (unboundType.MetadataName == "DbSet`1") {//   DbSetTypeName || unboundName == EF7DbSetTypeName || unboundName == EFCDbSetTypeName) {
-						_types.Add (namedTypeSymbol.TypeArguments.First ());
-					}
-				}
-			}
+			_types.Add (symbol);
 		}
 	}
 }
