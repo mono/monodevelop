@@ -74,8 +74,20 @@ namespace MonoDevelop.Ide
 			return Task.FromResult (Run (options));
 		}
 
+		static void UnsetEnvironmentVariables()
+		{
+			Environment.SetEnvironmentVariable ("MD_DISABLE_STATIC_REGISTRAR", null);
+
+			Environment.SetEnvironmentVariable ("MONO_ENV_OPTIONS", null);
+			Environment.SetEnvironmentVariable ("MONO_GC_PARAMS", null);
+			Environment.SetEnvironmentVariable ("MONO_SLEEP_ABORT_LIMIT", null);
+			Environment.SetEnvironmentVariable ("MONO_THREADS_SUSPEND", null);
+		}
+
 		int Run (MonoDevelopOptions options)
 		{
+			UnsetEnvironmentVariables ();
+
 			CompositionManager.ConfigureUninitializedMefHandling (throwException: true);
 
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
@@ -187,9 +199,14 @@ namespace MonoDevelop.Ide
 
 			if (!options.NewWindow && startupInfo.HasFiles) {
 				foreach (var file in startupInfo.RequestedFileList) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
-						options.NewWindow = true;
-						break;
+					try {
+						if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
+							options.NewWindow = true;
+							break;
+						}
+					} catch (UnauthorizedAccessException ex) {
+						LoggingService.LogError (string.Format ("Unable to check startup file is a workspace item '{0}'", file.FileName), ex);
+						return 1;
 					}
 				}
 			}

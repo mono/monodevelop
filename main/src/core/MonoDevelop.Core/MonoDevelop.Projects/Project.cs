@@ -782,6 +782,7 @@ namespace MonoDevelop.Projects
 						ctx.LoadReferencedProjects = false;
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
+						ctx.GlobalProperties.SetValue ("DesignTimeBuild", "true");
 
 						var evalResult = await project.RunTargetInternal (monitor, dependsList, config.Selector, ctx);
 						if (evalResult != null && evalResult.Items != null) {

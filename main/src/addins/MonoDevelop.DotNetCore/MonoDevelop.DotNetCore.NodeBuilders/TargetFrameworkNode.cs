@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
@@ -79,6 +81,16 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public IEnumerable<object> GetChildNodes ()
 		{
 			return DependenciesNode.GetChildNodes (this);
+		}
+
+		public bool CanGetFrameworkReferences ()
+		{
+			return FrameworkReferenceNodeCache.CanGetFrameworkReferences (GetTargetFrameworkMoniker ());
+		}
+
+		internal TargetFrameworkMoniker GetTargetFrameworkMoniker ()
+		{
+			return new TargetFrameworkMoniker (dependency.Name, dependency.Version);
 		}
 	}
 }

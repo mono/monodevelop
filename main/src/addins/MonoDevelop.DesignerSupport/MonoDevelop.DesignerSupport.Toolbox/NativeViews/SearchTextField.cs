@@ -33,41 +33,19 @@ using Foundation;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	enum SearchTextFieldCommand
-	{
-		InsertTab,
-		InsertBacktab
-	}
-
-	class SearchTextField : NSSearchField, INSSearchFieldDelegate
+	class SearchTextField : NSSearchField
 	{
 		public event EventHandler Focused;
-		public event EventHandler<SearchTextFieldCommand> CommandRaised;
 
 		public SearchTextField ()
 		{
-			Delegate = this;
+		
 		}
 
 		public override bool BecomeFirstResponder ()
 		{
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
-		}
-
-		[Export ("control:textView:doCommandBySelector:")]
-		bool CommandBySelector (NSControl control, NSTextField field, ObjCRuntime.Selector sel)
-		{
-			switch (sel.Name) {
-			case "insertTab:": // down arrow
-				CommandRaised?.Invoke (this, SearchTextFieldCommand.InsertTab);
-				return true;
-
-			case "insertBacktab:": // up arrow
-				CommandRaised?.Invoke (this, SearchTextFieldCommand.InsertBacktab);
-				return true;
-			}
-			return false;
 		}
 	}
 }

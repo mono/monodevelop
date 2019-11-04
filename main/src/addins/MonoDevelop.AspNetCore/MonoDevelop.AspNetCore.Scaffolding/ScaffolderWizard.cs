@@ -1,0 +1,177 @@
+﻿//
+// Scaffolder.cs
+//
+// Author:
+//       jasonimison <jaimison@microsoft.com>
+//
+// Copyright (c) 2019 Microsoft
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.DotNetCore;
+using MonoDevelop.DotNetCore.GlobalTools;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.PackageManagement;
+using MonoDevelop.Projects;
+using Xwt;
+using Xwt.Drawing;
+
+namespace MonoDevelop.AspNetCore.Scaffolding
+{
+	class ScaffolderWizard : ScaffolderDialogController
+	{
+		static readonly ScaffolderArgs args = new ScaffolderArgs ();
+		readonly DotNetProject project;
+		readonly FilePath parentFolder;
+
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, new ScaffolderTemplateSelectPage (args), args)
+		{
+			this.DefaultPageSize = new Size (500, 400);
+
+			var rightSideImage = new Xwt.ImageView (Image.FromResource ("aspnet-wizard-page.png"));
+			var rightSideWidget = new FrameBox (rightSideImage);
+			rightSideWidget.BackgroundColor = Styles.Wizard.PageBackgroundColor;
+			this.RightSideWidget = new XwtControl (rightSideWidget);
+			this.Completed += (sender, e) => Task.Run (() => OnCompletedAsync ());
+			this.project = project;
+			this.parentFolder = parentFolder;
+			args.Project = project;
+			args.ParentFolder = parentFolder;
+		}
+
+		const string toolName = "dotnet-aspnet-codegenerator";
+
+		async Task<bool> InstallDotNetToolAsync (OutputProgressMonitor progressMonitor)
+		{
+			if (!DotNetCoreGlobalToolManager.IsInstalled (toolName)) {
+				if (!await DotNetCoreGlobalToolManager.Install (toolName, progressMonitor.CancellationToken)) {
+					progressMonitor.ReportError ($"Could not install {toolName} tool");
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		async Task<bool> InstallNuGetPackagesAsync (OutputProgressMonitor progressMonitor)
+		{
+			progressMonitor.Console.Debug (0, "", "Checking if needed NuGet packages are already installed...\n");
+			var refsToAdd = new List<PackageManagementPackageReference> ();
+			var installedPackages = PackageManagementServices.ProjectOperations.GetInstalledPackages (project);
+			foreach (var dep in new [] {
+				"Microsoft.EntityFrameworkCore.SqlServer",
+				"Microsoft.EntityFrameworkCore.Tools",
+				"Microsoft.Extensions.Logging.Debug",
+				"Microsoft.VisualStudio.Web.CodeGeneration.Design"}) {
+				if (installedPackages.FirstOrDefault (x => x.Id.Equals (dep, StringComparison.Ordinal)) == null) {
+					refsToAdd.Add (new PackageManagementPackageReference (dep, null));
+				}
+			}
+
+			if (refsToAdd.Count > 0) {
+				await progressMonitor.Console.Log.WriteLineAsync ($"Adding needed NuGet packages ({string.Join (", ", refsToAdd.Select (x => x.Id))})");
+				try {
+					await PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, refsToAdd, licensesAccepted: true)
+						.ConfigureAwait (false);
+				} catch (Exception ex) {
+					progressMonitor.ReportError ($"Failed adding packages: {ex.Message}", ex);
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		async Task OnCompletedAsync ()
+		{
+			using var progressMonitor = CreateProgressMonitor ();
+
+			// Pre-setup
+			if (!await InstallDotNetToolAsync (progressMonitor) ||
+				!await InstallNuGetPackagesAsync (progressMonitor)) {
+				return;
+			}
+
+			// Build the project to make sure the just added NuGet's get all the needed bits
+			// for the next step. If the project is already built, this is a no-op
+			progressMonitor.Console.Debug (0, "", "Building project...\n");
+			var buildResult = await Runtime.RunInMainThread<BuildResult> (() => IdeApp.ProjectOperations.Build (project).Task);
+			if (buildResult.Failed) {
+				return;
+			}
+
+			// Run the tool
+			var dotnet = DotNetCoreRuntime.FileName;
+			var argBuilder = new ProcessArgumentBuilder ();
+			argBuilder.Add ("aspnet-codegenerator");
+			argBuilder.Add ("--project");
+			argBuilder.AddQuoted (project.FileName);
+			argBuilder.Add (args.Scaffolder.CommandLineName);
+
+			foreach (var field in args.Scaffolder.Fields) {
+				argBuilder.Add (field.CommandLineName);
+				argBuilder.Add (field.SelectedValue);
+			}
+
+			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
+			argBuilder.Add ("-outDir");
+			argBuilder.AddQuoted (parentFolder);
+
+			foreach (var arg in args.Scaffolder.DefaultArgs) {
+				argBuilder.Add (arg.ToString ());
+			}
+
+			var commandLineArgs = argBuilder.ToString ();
+
+			var msg = $"Running {dotnet} {commandLineArgs}\n";
+			progressMonitor.Console.Debug (0, "", msg);
+
+			try {
+				var process = Runtime.ProcessService.StartConsoleProcess (
+					dotnet,
+					commandLineArgs,
+					parentFolder,
+					progressMonitor.Console
+				);
+
+				await process.Task;
+			} catch (Exception ex) {
+				progressMonitor.ReportError (ex.Message, ex);
+				LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
+			}
+		}
+
+		static OutputProgressMonitor CreateProgressMonitor ()
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				"AspNetCoreScaffolder",
+				GettextCatalog.GetString ("ASP.NET Core Scaffolder"),
+				Stock.Console,
+				true,
+				true);
+		}
+	}
+}

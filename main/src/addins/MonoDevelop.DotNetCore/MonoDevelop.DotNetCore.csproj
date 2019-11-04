@@ -97,6 +97,7 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\FrameworkReferencesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeSystemInformation.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Commands\PackCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.GlobalTools\DotNetCoreGlobalToolManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
@@ -226,6 +227,9 @@
     <DownloadNupkg Include="Microsoft.DotNet.Common.ProjectTemplates.2.0" Version="$(TemplatesVersion20)" ExtensionDir="Templates" />
     <DownloadNupkg Include="Microsoft.DotNet.Test.ProjectTemplates.1.x" Version="$(TemplatesVersion1x)" ExtensionDir="Templates" />
     <DownloadNupkg Include="Microsoft.DotNet.Test.ProjectTemplates.2.0" Version="$(TemplatesVersion20)" ExtensionDir="Templates" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.DotNetCore.GlobalTools\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

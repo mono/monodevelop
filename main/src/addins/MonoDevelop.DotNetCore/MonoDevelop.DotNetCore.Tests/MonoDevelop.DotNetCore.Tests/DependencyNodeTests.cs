@@ -51,6 +51,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		PackageDependenciesNode nugetFolderNode;
 		FrameworkReferencesNode frameworksFolderNode;
 		TaskCompletionSource<bool> packageDependenciesChanged;
+		TaskCompletionSource<bool> frameworkReferencesChanged;
 		TestableDependenciesNodeBuilder dependenciesNodeBuilder;
 		// Ensure NuGet.Versioning assembly is loaded by the tests otherwise they fail
 		// when run from the command line with mdtool.
@@ -79,7 +80,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			dependenciesNodeBuilder = new TestableDependenciesNodeBuilder ();
 			dependenciesNode = new DependenciesNode (project, updatedNuGetPackages ?? PackageManagementServices.UpdatedPackagesInWorkspace);
 			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += PackageDependenciesChanged;
+			dependenciesNode.FrameworkReferencesCache.FrameworkReferencesChanged += FrameworkReferencesChanged;
 			packageDependenciesChanged = new TaskCompletionSource<bool> ();
+			frameworkReferencesChanged = new TaskCompletionSource<bool> ();
 
 			dependenciesNode.PackageDependencyCache.Refresh ();
 			dependenciesNode.FrameworkReferencesCache.Refresh ();
@@ -97,12 +100,25 @@ namespace MonoDevelop.DotNetCore.Tests
 			packageDependenciesChanged.TrySetResult (true);
 		}
 
+		void FrameworkReferencesChanged (object sender, EventArgs e)
+		{
+			frameworkReferencesChanged.TrySetResult (true);
+		}
+
 		async Task WaitForPackageDependenciesChanged (int millisecondsTimeout = 60000)
 		{
 			var timeoutTask = Task.Delay (millisecondsTimeout);
 			var result = await Task.WhenAny (timeoutTask, packageDependenciesChanged.Task);
 			if (result == timeoutTask)
 				Assert.Fail ("Timed out waiting for package dependencies to be updated.");
+		}
+
+		async Task WaitForFrameworkReferencesChanged (int millisecondsTimeout = 60000)
+		{
+			var timeoutTask = Task.Delay (millisecondsTimeout);
+			var result = await Task.WhenAny (timeoutTask, frameworkReferencesChanged.Task);
+			if (result == timeoutTask)
+				Assert.Fail ("Timed out waiting for framework references to be updated.");
 		}
 
 		static SdkDependenciesNode GetSdkFolder (TargetFrameworkNode frameworkNode)
@@ -158,6 +174,13 @@ namespace MonoDevelop.DotNetCore.Tests
 			var nodeBuilder = new TestableFrameworkReferencesNodeBuilder ();
 			nodeBuilder.BuildChildNodes (null, node);
 			return nodeBuilder.ChildNodesAsFrameworkReferenceNode ().ToList ();
+		}
+
+		static FrameworkReferencesNode GetFrameworkReferencesFolder (TargetFrameworkNode node)
+		{
+			var nodeBuilder = new TestableTargetFrameworkNodeBuilder ();
+			nodeBuilder.BuildChildNodes (null, node);
+			return nodeBuilder.FrameworkReferences;
 		}
 
 		static bool IsDotNetCoreSdk30OrLaterInstalled ()
@@ -506,6 +529,73 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			// No updates label.
 			Assert.AreEqual (string.Empty, frameworksFolderNode.GetSecondaryLabel ());
+		}
+
+		[Test]
+		public async Task MultiTarget_NetStandard21_NetStandard20_NetCoreApp30_NetCoreApp21 ()
+		{
+			if (!IsDotNetCoreSdk30OrLaterInstalled ()) {
+				Assert.Ignore (".NET Core 3 SDK is not installed.");
+			}
+
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandard21NetStandard20NetCore30NetCore21.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+			await WaitForFrameworkReferencesChanged ();
+
+			var frameworkNodes = GetTargetFrameworkChildDependencies ();
+			var netstandard21FrameworkNode = frameworkNodes.Single (node => node.Name == ".NETStandard" && node.GetSecondaryLabel () == "(2.1.0.0)");
+			var netstandard20FrameworkNode = frameworkNodes.Single (node => node.Name == ".NETStandard" && node.GetSecondaryLabel () == "(2.0.0.0)");
+			var netCoreApp30FrameworkNode = frameworkNodes.Single (node => node.Name == ".NETCoreApp" && node.GetSecondaryLabel () == "(3.0.0.0)");
+			var netCoreApp21FrameworkNode = frameworkNodes.Single (node => node.Name == ".NETCoreApp" && node.GetSecondaryLabel () == "(2.1.0.0)");
+
+			// .NET Standard 2.1 nodes
+			var frameworksFolder = GetFrameworkReferencesFolder (netstandard21FrameworkNode);
+			var frameworkNode = GetFrameworksFolderChildDependencies (frameworksFolder).Single ();
+			Assert.AreEqual ("NETStandard.Library", frameworkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", frameworkNode.GetLabel ());
+			Assert.IsTrue (
+				frameworkNode.GetSecondaryLabel ().StartsWith ("(2.1."),
+				"Unexpected secondary label '{0}'", frameworkNode.GetSecondaryLabel ());
+
+			var defaultNode = frameworksFolder.GetDefaultNodes ().Single ();
+			Assert.AreEqual ("NETStandard.Library", defaultNode.Name);
+			Assert.AreEqual ("NETStandard.Library", defaultNode.GetLabel ());
+
+			// .NET Standard 2.0 nodes.
+			var sdkFolder = GetSdkFolder (netstandard20FrameworkNode);
+			var packageDependency = GetSdkFolderChildDependencies (sdkFolder).Single ();
+			Assert.AreEqual ("NETStandard.Library", packageDependency.Name);
+			Assert.AreEqual ("NETStandard.Library", packageDependency.GetLabel ());
+			Assert.IsTrue (
+				packageDependency.GetSecondaryLabel ().StartsWith ("(2.0."),
+				"Unexpected secondary label '{0}'", packageDependency.GetSecondaryLabel ());
+
+			// .NET Core 3.0 nodes.
+			frameworksFolder = GetFrameworkReferencesFolder (netCoreApp30FrameworkNode);
+			frameworkNode = GetFrameworksFolderChildDependencies (frameworksFolder).Single ();
+			Assert.AreEqual ("Microsoft.NETCore.App", frameworkNode.Name);
+			Assert.AreEqual ("Microsoft.NETCore.App", frameworkNode.GetLabel ());
+			Assert.IsTrue (
+				frameworkNode.GetSecondaryLabel ().StartsWith ("(3.0."),
+				"Unexpected secondary label '{0}'", frameworkNode.GetSecondaryLabel ());
+
+			defaultNode = frameworksFolder.GetDefaultNodes ().Single ();
+			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.Name);
+			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.GetLabel ());
+
+			// .NET Core 2.1 nodes.
+			// Note that for some reason in a multi-target project a .NET Core 2.1 project also gets
+			// a .NET Standard dependency if .net standard is one of the frameworks. With a non-multi-target
+			// project this does not happen.
+			sdkFolder = GetSdkFolder (netCoreApp21FrameworkNode);
+			var packageDependencies = GetSdkFolderChildDependencies (sdkFolder);
+			packageDependency = packageDependencies.Single (p => p.Name == "Microsoft.NETCore.App");
+			Assert.AreEqual ("Microsoft.NETCore.App", packageDependency.GetLabel ());
+			Assert.IsTrue (
+				packageDependency.GetSecondaryLabel ().StartsWith ("(2.1."),
+				"Unexpected secondary label '{0}'", packageDependency.GetSecondaryLabel ());
 		}
 	}
 }

@@ -480,7 +480,6 @@
     <Compile Include="MonoDevelop.VersionControl.Views\BlameView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ComparisonWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BlameWidget.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\DropDownBox.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ChangeSetView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeWidget.cs" />
@@ -524,6 +523,8 @@
     <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.MiddleArea.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.DiffScrollbar.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\BlameWidget.AuthorSectionAccessible.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\DiffRendererWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />

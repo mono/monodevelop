@@ -90,7 +90,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			VBox mainBox = new VBox ();
 
 			mainBox.Margin = 12;
-			mainBox.PackStart (new Label { Markup = GettextCatalog.GetString ("Start Action") });
+			var startActionlabel = new Label { Markup = GettextCatalog.GetString ("Start Action") };
+			mainBox.PackStart (startActionlabel);
 			var table = new Table ();
 			
 			table.Add (radioStartProject = new RadioButton (GettextCatalog.GetString ("Start project")), 0, 0);
@@ -102,21 +103,32 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.MarginLeft = 12;
 			mainBox.PackStart (table);
 
+			radioStartProject.Accessible.LabelWidget = startActionlabel;
+			radioStartApp.Accessible.LabelWidget = startActionlabel;
+
+			appEntry.Accessible.Label = GettextCatalog.GetString ("External Program");
+
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
-			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
+			var argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:"));
+			table.Add (argumentsLabel, 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
+			argumentsEntry.Accessible.LabelWidget = argumentsLabel;
 
-			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
+			var workingDirLabel = new Label (GettextCatalog.GetString ("Run in directory:"));
+			table.Add (workingDirLabel, 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-		
+			workingDir.Accessible.LabelWidget = workingDirLabel;
+
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			mainBox.PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
+			var envVarsLabel = new Label (GettextCatalog.GetString ("Environment Variables"));
+			mainBox.PackStart (envVarsLabel);
 			envVars = new EnvironmentVariableCollectionEditor ();
+			envVars.Accessible.LabelWidget = envVarsLabel;
 
 			mainBox.PackStart (envVars, true);
 
@@ -135,16 +147,20 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table = new Table ();
 			table.Add (new Label (GettextCatalog.GetString ("Execute in .NET Runtime:")), 0, 0);
 			table.Add (runtimesCombo = new ComboBox (), 1, 0, hexpand:true);
+			runtimesCombo.Accessible.Label = GettextCatalog.GetString (".NET Runtime");
 
-			table.Add (new Label (GettextCatalog.GetString ("Mono runtime settings:")), 0, 1);
+			var monoLabel = new Label (GettextCatalog.GetString ("Mono runtime settings:"));
+			table.Add (monoLabel, 0, 1);
 
 			var box = new HBox ();
-			Button monoSettingsButton = new Button (GettextCatalog.GetString ("..."));
+			Button monoSettingsButton = new Button (GettextCatalog.GetString ("\u2026"));
 			box.PackStart (monoSettingsEntry = new TextEntry { PlaceholderText = GettextCatalog.GetString ("Default settings")}, true);
 			box.PackStart (monoSettingsButton);
 			monoSettingsEntry.ReadOnly = true;
 			table.Add (box, 1, 1, hexpand: true);
 			adBox.PackStart (table);
+
+			monoSettingsButton.Accessible.LabelWidget = monoLabel;
 
 			if (includeAdvancedTab)
 				Add (adBox, GettextCatalog.GetString ("Advanced"));

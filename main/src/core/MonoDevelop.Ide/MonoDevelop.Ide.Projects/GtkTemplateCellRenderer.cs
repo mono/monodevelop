@@ -41,14 +41,45 @@ namespace MonoDevelop.Ide.Projects
 		const int iconTextPadding = 9;
 		int groupTemplateHeadingTotalYPadding = 24;
 		int recentTemplateHeadingTotalYPadding = 30;
+		private SolutionTemplate template;
+		private string templateCategory;
+		private string selectedLanguage;
 		const int groupTemplateHeadingYOffset = 4;
 		const int categoryTextPaddingX = 4;
 
-		public SolutionTemplate Template { get; set; }
-		public string SelectedLanguage { get; set; }
+		public SolutionTemplate Template {
+			get { return template; }
+			set {
+				template = value;
+				SetAccessibilityText ();
+			}
+		}
+		public string SelectedLanguage {
+			get { return selectedLanguage; }
+			set {
+				selectedLanguage = value;
+				SetAccessibilityText ();
+			}
+		}
 		public Xwt.Drawing.Image TemplateIcon { get; set; }
-		public string TemplateCategory { get; set; }
+		public string TemplateCategory {
+			get { return templateCategory; }
+			set {
+				templateCategory = value;
+				SetAccessibilityText ();
+			}
+		}
 		public bool RenderRecentTemplate { get; set; }
+
+		void SetAccessibilityText ()
+		{
+			Text = template?.Name ?? string.Empty;
+			if (!string.IsNullOrEmpty (templateCategory)) {
+				if (!string.IsNullOrEmpty (Text))
+					Text += ", ";
+				Text += templateCategory.Replace ("→", "–"); // we don't want narrators to read "right arrow"
+			}
+		}
 
 		public GtkTemplateCellRenderer ()
 		{
@@ -102,7 +133,7 @@ namespace MonoDevelop.Ide.Projects
 				int textPixelWidth = widget.Allocation.Width - ((int)Xpad * 2);
 				layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
 
-				layout.SetMarkup (TemplateCategory);
+				layout.SetMarkup (MarkupTopLevelCategoryName (TemplateCategory));
 
 				int w, h;
 				layout.GetPixelSize (out w, out h);
@@ -181,6 +212,11 @@ namespace MonoDevelop.Ide.Projects
 			if ((flags & CellRendererState.Selected) != 0)
 				stateType = widget.HasFocus ? StateType.Selected : StateType.Active;
 			return stateType;
+		}
+
+		static string MarkupTopLevelCategoryName (string name)
+		{
+			return "<span font_weight='bold'>" + GLib.Markup.EscapeText (name) + "</span>";
 		}
 	}
 }

@@ -76,18 +76,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public void AddViews (params NSView [] views) => viewsKeyLoopOrder.AddRange (views);
 
-		public void FocusNextView (NSView view, int nextPositionInArray = 1)
+		public void RecalculeNextResponderChain ()
 		{
-			var window = view?.Window;
-			if (window == null) {
-				return;
-			}
-			var nextView = GetNextFocusableViewForView (view, nextPositionInArray);
-			if (nextView != null) {
-				window.MakeFirstResponder (nextView);
-			} else {
-				//in case of no view found we follow the next logical view
-				window.MakeFirstResponder (nextPositionInArray >= 0 ? view.NextKeyView : view.PreviousKeyView);
+			NSView currentView = viewsKeyLoopOrder.FirstOrDefault ();
+			while (currentView != null) {
+				var nextView = GetNextFocusableViewForView (currentView, 1);
+				currentView.NextKeyView = nextView;
+				currentView = nextView;
 			}
 		}
 	}
@@ -125,15 +120,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		NSTextField messageTextField;
 
-		KeyViewLoopDelegate keyViewLoopDelegate;
-
+		readonly KeyViewLoopDelegate keyViewLoopDelegate;
+		
 		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
 		{
 			WantsLayer = true;
 
 			keyViewLoopDelegate = new KeyViewLoopDelegate ();
-
-			verticalStackView = new NSStackView () {
+			
+			verticalStackView = new UnfocusableStackView () {
 				Orientation = NSUserInterfaceLayoutOrientation.Vertical,
 				Alignment = NSLayoutAttribute.Leading,
 				Spacing = 0,
@@ -165,7 +160,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.AccessibilityTitle = GettextCatalog.GetString ("Search Toolbox");
 			filterEntry.AccessibilityHelp = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
 			filterEntry.Activated += FilterTextChanged;
-			filterEntry.CommandRaised += FilterEntry_CommandRaised;
 
 			horizontalStackView.AddArrangedSubview (filterEntry);
 
@@ -178,8 +172,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
 			catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show categories");
 			catToggleButton.Activated += ToggleCategorisation;
-			catToggleButton.KeyDownPressed += OnKeyDownKeyLoop;
-
+			
 			horizontalStackView.AddArrangedSubview (catToggleButton);
 
 			catToggleButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
@@ -191,8 +184,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout");
 			compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
 			compactModeToggleButton.Activated += ToggleCompactMode;
-			compactModeToggleButton.KeyDownPressed += OnKeyDownKeyLoop;
-
 
 			horizontalStackView.AddArrangedSubview (compactModeToggleButton);
 
@@ -205,7 +196,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Activated += ToolboxAddButton_Clicked;
-			toolboxAddButton.KeyDownPressed += OnKeyDownKeyLoop;
 
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
 
@@ -218,7 +208,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				AccessibilityTitle = GettextCatalog.GetString ("Toolbox Toolbar"),
 			};
 
-			var scrollView = new NSScrollView () {
+			var scrollView = new UnfocusableScrollview () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
 				DocumentView = toolboxWidget
@@ -261,42 +251,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AddSubview (messageTextField);
 
 			keyViewLoopDelegate.AddViews (filterEntry, catToggleButton, compactModeToggleButton, toolboxAddButton, toolboxWidget);
+			keyViewLoopDelegate.RecalculeNextResponderChain ();
 		}
-
-		#region InternalKeyLoop
-
-		private void FilterEntry_CommandRaised (object sender, NativeViews.SearchTextFieldCommand e)
-		{
-			switch (e) {
-			case NativeViews.SearchTextFieldCommand.InsertBacktab:
-				keyViewLoopDelegate.FocusNextView ((NSView)sender, -1);
-				break;
-			case NativeViews.SearchTextFieldCommand.InsertTab:
-				keyViewLoopDelegate.FocusNextView ((NSView)sender, 1);
-				break;
-			}
-		}
-
-		private void OnKeyDownKeyLoop (object sender, NativeViews.NSEventArgs args)
-		{
-			if (sender is NSView view && keyViewLoopDelegate.Contains (view)) {
-				if (args.Event.KeyCode == (int)KeyCodes.Tab) {
-
-					if ((int)args.Event.ModifierFlags == (int)KeyModifierFlag.None) {
-						keyViewLoopDelegate.FocusNextView (view, 1);
-						args.Handled = true;
-						return;
-					}
-					if ((int)args.Event.ModifierFlags == (int)KeyModifierFlag.Shift) {
-						keyViewLoopDelegate.FocusNextView (view, -1);
-						args.Handled = true;
-						return;
-					}
-				}
-			}
-		}
-
-		#endregion
 
 		NSIndexPath GetFirstVisibleItemIndexPath ()
 		{
@@ -323,7 +279,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return;
 				}
 			}
-			OnKeyDownKeyLoop (sender, args);
 		}
 
 		void SetCustomMessage (string value)
@@ -482,7 +437,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#region GUI population
 
-		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
 		Dictionary<string, ToolboxWidgetCategory> categories = new Dictionary<string, ToolboxWidgetCategory> ();
 	
 		void AddItems (IEnumerable<ItemToolboxNode> nodes)
@@ -534,6 +488,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
+			keyViewLoopDelegate.RecalculeNextResponderChain ();
 
 			if (categories.Count == 0) {
 				SetCustomMessage (GettextCatalog.GetString ("There are no tools available for the current document."));
@@ -553,22 +508,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (disposing) {
 				filterEntry.Activated -= FilterTextChanged;
 
-				filterEntry.CommandRaised -= FilterEntry_CommandRaised;
-
 				catToggleButton.Activated -= ToggleCategorisation;
-				catToggleButton.KeyDownPressed -= OnKeyDownKeyLoop;
-
 				compactModeToggleButton.Activated -= ToggleCompactMode;
-				compactModeToggleButton.KeyDownPressed -= OnKeyDownKeyLoop;
-
 				toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
-				toolboxAddButton.KeyDownPressed -= OnKeyDownKeyLoop;
-
 				toolboxWidget.ActivateSelectedItem -= ToolboxWidget_ActivateSelectedItem;
 				toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
 				toolboxWidget.DragBegin -= ToolboxWidget_DragBegin;
 				toolboxWidget.RegionCollapsed -= FilterTextChanged;
-				toolboxWidget.KeyDownPressed -= OnKeyDownKeyLoop;
 
 				toolboxService.ToolboxContentsChanged -= ToolboxService_ToolboxContentsChanged;
 				toolboxService.ToolboxConsumerChanged -= ToolboxService_ToolboxConsumerChanged;
@@ -614,6 +560,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			set {
 				toolboxAddButton.Hidden = !value;
+				keyViewLoopDelegate.RecalculeNextResponderChain ();
 				toolboxAddButton.InvalidateIntrinsicContentSize ();
 			}
 		}
