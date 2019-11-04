@@ -51,7 +51,7 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreProjectTemplateWizard.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\ScaffoldCommandHandler.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderArgs.cs" />
-    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\DbSetModelVisitor.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ModelVisitor.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderWizard.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderDialogController.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateSelectPage.cs" />
