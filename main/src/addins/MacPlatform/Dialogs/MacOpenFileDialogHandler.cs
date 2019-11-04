@@ -1,4 +1,4 @@
-﻿// 
+// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -76,29 +76,29 @@ namespace MonoDevelop.MacIntegration
 			try {
 				using (var panel = CreatePanel (data, out var state)) {
 					bool pathAlreadySet = false;
-					//TODO: DidChangeToDirectory is broken on Catalina
-					if (MacSystemInformation.OsVersion < MacSystemInformation.Catalina) {
-						var panelClosedToken = panelClosedSource.Token;
-						panel.DidChangeToDirectory += (sender, e) => {
-							var directoryPath = e.NewDirectoryUrl?.AbsoluteString;
-							if (string.IsNullOrEmpty (directoryPath))
-								return;
-							var selectedPath = data.OnDirectoryChanged (this, directoryPath);
-							if (selectedPath.IsNull)
-								return;
-							data.SelectedFiles = new FilePath [] { selectedPath };
-							pathAlreadySet = true;
+					var panelClosedToken = panelClosedSource.Token;
+					panel.DidChangeToDirectory += (sender, e) => {
+						// HACK: On Catalina e.NewDirectoryUrl might be NSNull instead of null
+						if (e.NewDirectoryUrl == null || ((NSObject)e.NewDirectoryUrl) is NSNull)
+							return;
+						var directoryPath = e.NewDirectoryUrl.AbsoluteString;
+						if (string.IsNullOrEmpty (directoryPath))
+							return;
+						var selectedPath = data.OnDirectoryChanged (this, directoryPath);
+						if (selectedPath.IsNull)
+							return;
+						data.SelectedFiles = new FilePath [] { selectedPath };
+						pathAlreadySet = true;
 
-							// We need to call Cancel on 1ms delay so it's executed after DidChangeToDirectory event handler is finished
-							// this is needed because it's possible that DidChangeToDirectory event is executed while dialog is opening
-							// in that case calling .Cancel() leaves dialog in weird state...
-							// Fun fact: DidChangeToDirectory event is called from Open on 10.12 but not on 10.13
-							System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate {
-								if (!panelClosedToken.IsCancellationRequested)
-									panel.Cancel (panel);
-							}, panelClosedToken, System.Threading.Tasks.TaskContinuationOptions.None, Runtime.MainTaskScheduler);
-						};
-					}
+						// We need to call Cancel on 1ms delay so it's executed after DidChangeToDirectory event handler is finished
+						// this is needed because it's possible that DidChangeToDirectory event is executed while dialog is opening
+						// in that case calling .Cancel() leaves dialog in weird state...
+						// Fun fact: DidChangeToDirectory event is called from Open on 10.12 but not on 10.13
+						System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate {
+							if (!panelClosedToken.IsCancellationRequested)
+								panel.Cancel (panel);
+						}, panelClosedToken, System.Threading.Tasks.TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+					};
 
 					panel.SelectionDidChange += delegate {
 						var selection = MacSelectFileDialogHandler.GetSelectedFiles (panel);
