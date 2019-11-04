@@ -13,7 +13,7 @@
     <NuGetVersionAllocationAnalyzer>1.0.0.9</NuGetVersionAllocationAnalyzer>
     <NuGetVersionCecil>0.10.1</NuGetVersionCecil>
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
-    <NuGetVersionMicrosoftTemplateEngine>1.0.0-beta3-20171117-314</NuGetVersionMicrosoftTemplateEngine>
+    <NuGetVersionMicrosoftTemplateEngine>3.0.0-rc1.19464.2</NuGetVersionMicrosoftTemplateEngine>
     <NuGetVersionMicrosoftTestPlatform>15.5.0-preview-20170919-04</NuGetVersionMicrosoftTestPlatform>
     <NuGetVersionMonoDevelopAnalyzers>0.1.0.2</NuGetVersionMonoDevelopAnalyzers>
     <NuGetVersionNewtonsoftJson>12.0.2</NuGetVersionNewtonsoftJson>
