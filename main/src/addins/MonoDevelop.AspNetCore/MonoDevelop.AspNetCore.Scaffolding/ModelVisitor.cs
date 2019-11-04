@@ -29,7 +29,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
-	class DbSetModelVisitor : SymbolVisitor
+	class ModelVisitor : SymbolVisitor
 	{
 		const string DbSetTypeName = "System.Data.Entity.DbSet`1";
 		const string EF7DbSetTypeName = "Microsoft.Data.Entity.DbSet`1";
@@ -37,14 +37,14 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public static List<ITypeSymbol> FindModelTypes (IAssemblySymbol assembly)
 		{
-			var visitor = new DbSetModelVisitor ();
+			var visitor = new ModelVisitor ();
 			visitor.Visit (assembly);
 			return visitor._types;
 		}
 
 		private readonly List<ITypeSymbol> _types;
 
-		private DbSetModelVisitor ()
+		private ModelVisitor ()
 		{
 			_types = new List<ITypeSymbol> ();
 		}
