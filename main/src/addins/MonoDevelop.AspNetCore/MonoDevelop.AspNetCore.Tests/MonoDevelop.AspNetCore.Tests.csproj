@@ -26,6 +26,7 @@
     <Compile Include="MonoDevelop.AspNetCore.Tests\LaunchSettingsTests.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Tests\AspNetCoreExecutionCommandTests.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Tests\AspNetCoreProjectTests.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Tests\ScaffoldingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
