@@ -159,7 +159,7 @@ namespace MonoDevelop.Debugger
 				strval = string.Empty;
 				editable = false;
 			} else {
-				strval = TreeView.Controller.GetDisplayValueWithVisualisers (Node, out showViewerButton);
+				strval = TreeView.Controller.GetDisplayValueWithVisualisers (Node, out showViewerButton) ?? string.Empty;
 
 				if (TreeView.Controller.GetNodeHasChangedSinceLastCheckpoint (Node))
 					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
