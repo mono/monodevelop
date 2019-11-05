@@ -76,7 +76,7 @@ namespace MacPlatform
 			vm_info = new task_vm_info ();
 			int size;
 			unsafe {
-				// task_vm_info is the size in natural_t units
+				// task_vm_info's size in natural_t units
 				size = sizeof (task_vm_info) / 4;
 			}
 
