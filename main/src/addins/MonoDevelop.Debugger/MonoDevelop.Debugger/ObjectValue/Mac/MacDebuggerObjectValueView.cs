@@ -313,6 +313,9 @@ namespace MonoDevelop.Debugger
 
 		void OnValueButtonActivated (object sender, EventArgs e)
 		{
+			if (Node == null)
+				return;
+
 			if (Node.IsEnumerable) {
 				if (Node is ShowMoreValuesObjectValueNode moreNode) {
 					TreeView.LoadMoreChildren (moreNode.EnumerableNode);
