@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WebTools.Scaffolding.Core;
+using Microsoft.WebTools.Scaffolding.Core.Config;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -81,13 +83,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			progressMonitor.Console.Debug (0, "", "Checking if needed NuGet packages are already installed...\n");
 			var refsToAdd = new List<PackageManagementPackageReference> ();
 			var installedPackages = PackageManagementServices.ProjectOperations.GetInstalledPackages (project);
-			foreach (var dep in new [] {
-				"Microsoft.EntityFrameworkCore.SqlServer",
-				"Microsoft.EntityFrameworkCore.Tools",
-				"Microsoft.Extensions.Logging.Debug",
-				"Microsoft.VisualStudio.Web.CodeGeneration.Design"}) {
-				if (installedPackages.FirstOrDefault (x => x.Id.Equals (dep, StringComparison.Ordinal)) == null) {
-					refsToAdd.Add (new PackageManagementPackageReference (dep, null));
+
+			var packagesToInstall = await GetPackagesToInstallAsync ();
+			foreach (var dep in packagesToInstall) {
+				if (installedPackages.FirstOrDefault (x => x.Id.Equals (dep.PackageId, StringComparison.Ordinal)) == null) {
+					refsToAdd.Add (new PackageManagementPackageReference (dep.PackageId, dep.MaxVersion));
 				}
 			}
 
@@ -105,6 +105,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			return true;
 		}
 
+		async Task<IEnumerable<PackageDescription>> GetPackagesToInstallAsync ()
+		{
+			var scaffoldingConfig = await ScaffoldingConfig.LoadFromJsonAsync ();
+			var frameworkVersion = project.TargetFramework.Id.Version;
+
+			if (SupportPolicyVersion.TryCreateFromVersionString (frameworkVersion, out var policyVersion)) {
+				if (scaffoldingConfig.TryGetPackagesForSupportPolicyVersion (policyVersion, out PackageDescription [] packageDescriptions)) {
+					return packageDescriptions
+						// We don't support Identity scaffolders yet
+						.Where (p => !p.IsOptionalIdentityPackage);
+				}
+			}
+			return Enumerable.Empty<PackageDescription> ();
+        }
+
 		async Task OnCompletedAsync ()
 		{
 			using var progressMonitor = CreateProgressMonitor ();
@@ -118,7 +133,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			// Build the project to make sure the just added NuGet's get all the needed bits
 			// for the next step. If the project is already built, this is a no-op
 			progressMonitor.Console.Debug (0, "", "Building project...\n");
-			var buildResult = await Runtime.RunInMainThread<BuildResult> (() => IdeApp.ProjectOperations.Build (project).Task);
+			var buildResult = await Runtime.RunInMainThread (() => IdeApp.ProjectOperations.Build (project).Task);
 			if (buildResult.Failed) {
 				return;
 			}
