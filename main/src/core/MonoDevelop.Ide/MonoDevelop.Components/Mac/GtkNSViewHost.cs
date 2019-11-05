@@ -331,7 +331,7 @@ namespace Gtk
 			try {
 				if (view?.Window?.FirstResponder is NSView firstResponder &&
 					view?.AncestorSharedWithView (firstResponder) == view)
-					firstResponder.Window?.MakeFirstResponder (null);
+					firstResponder.Window?.MakeFirstResponder (firstResponder.Window.ContentView);
 				return base.OnFocusOutEvent (evnt);
 			} finally {
 				LogExit ();
