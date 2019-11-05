@@ -67,7 +67,8 @@ namespace MonoDevelop.Debugger
 			};
 
 			colorPreview = new NSView (new CGRect (0, 0, ImageSize, ImageSize)) {
-				TranslatesAutoresizingMaskIntoConstraints = false
+				TranslatesAutoresizingMaskIntoConstraints = false,
+				WantsLayer = true
 			};
 
 			valueButton = new NSButton {
