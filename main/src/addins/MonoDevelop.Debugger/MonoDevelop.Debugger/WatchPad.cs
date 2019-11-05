@@ -75,7 +75,7 @@ namespace MonoDevelop.Debugger
 
 		public void AddWatch (string expression)
 		{
-			LoggingService.LogInfo ("Adding expression '{0}'", expression);
+			//LoggingService.LogInfo ("Adding expression '{0}'", expression);
 
 			if (UseNewTreeView) {
 				controller.AddExpression (expression);
@@ -118,30 +118,32 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void OnExpressionAdded (object sender, ExpressionEventArgs e)
+		void OnExpressionAdded (object sender, ExpressionAddedEventArgs e)
 		{
-			LoggingService.LogInfo ("Expression added: {0}", e.Expression);
+			//LoggingService.LogInfo ("Expression added: '{0}'", e.Expression);
 			expressions.Add (e.Expression);
 		}
 
 		void OnExpressionChanged (object sender, ExpressionChangedEventArgs e)
 		{
-			LoggingService.LogInfo ("Expression changed: '{0}' -> '{1}'", e.OldExpression, e.NewExpression);
-			int index = expressions.IndexOf (e.OldExpression);
+			//LoggingService.LogInfo ("Expression changed @ index {0}: '{1}' -> '{2}'", e.Index, e.OldExpression, e.NewExpression);
 
-			if (index != -1) {
-				expressions[index] = e.NewExpression;
+			if (e.Index != -1) {
+				expressions[e.Index] = e.NewExpression;
 			} else {
-				LoggingService.LogWarning ("Failed to find old expression: {0}", e.OldExpression);
+				//LoggingService.LogWarning ("Failed to find old expression: '{0}'", e.OldExpression);
 				expressions.Add (e.NewExpression);
 			}
 		}
 
-		void OnExpressionRemoved (object sender, ExpressionEventArgs e)
+		void OnExpressionRemoved (object sender, ExpressionRemovedEventArgs e)
 		{
-			LoggingService.LogInfo ("Expression removed: {0}", e.Expression);
-			if (!expressions.Remove (e.Expression))
-				LoggingService.LogWarning ("Failed to remove expression: {0}", e.Expression);
+			//LoggingService.LogInfo ("Expression removed @ index {0}: '{1}'", e.Index, e.Expression);
+			if (e.Index < 0 || e.Index >= expressions.Count) {
+				//LoggingService.LogWarning ("Failed to remove expression: '{0}'", e.Expression);
+				return;
+			}
+			expressions.RemoveAt (e.Index);
 		}
 
 		public override void Dispose ()

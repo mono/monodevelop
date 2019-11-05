@@ -125,26 +125,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			// Run the tool
 			var dotnet = DotNetCoreRuntime.FileName;
-			var argBuilder = new ProcessArgumentBuilder ();
-			argBuilder.Add ("aspnet-codegenerator");
-			argBuilder.Add ("--project");
-			argBuilder.AddQuoted (project.FileName);
-			argBuilder.Add (args.Scaffolder.CommandLineName);
-
-			foreach (var field in args.Scaffolder.Fields) {
-				argBuilder.Add (field.CommandLineName);
-				argBuilder.Add (field.SelectedValue);
-			}
-
-			argBuilder.Add ("--no-build"); //TODO: when do we need to build?
-			argBuilder.Add ("-outDir");
-			argBuilder.AddQuoted (parentFolder);
-
-			foreach (var arg in args.Scaffolder.DefaultArgs) {
-				argBuilder.Add (arg.ToString ());
-			}
-
-			var commandLineArgs = argBuilder.ToString ();
+			var commandLineArgs = GetArguments (args);
 
 			var msg = $"Running {dotnet} {commandLineArgs}\n";
 			progressMonitor.Console.Debug (0, "", msg);
@@ -162,6 +143,30 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				progressMonitor.ReportError (ex.Message, ex);
 				LoggingService.LogError ($"Failed to run {dotnet} {commandLineArgs}", ex);
 			}
+		}
+
+		internal string GetArguments (ScaffolderArgs args)
+		{
+			var argBuilder = new ProcessArgumentBuilder ();
+			argBuilder.Add ("aspnet-codegenerator");
+			argBuilder.Add ("--project");
+			argBuilder.AddQuoted (project.FileName);
+			argBuilder.Add (args.Scaffolder.CommandLineName);
+
+			foreach(var field in args.Scaffolder.Fields) {
+				argBuilder.Add (field.CommandLineName);
+				argBuilder.Add (field.SelectedValue);
+			}
+
+			argBuilder.Add ("--no-build");
+			argBuilder.Add ("-outDir");
+			argBuilder.AddQuoted (parentFolder);
+
+			foreach (var arg in args.Scaffolder.DefaultArgs) {
+				argBuilder.Add (arg.ToString ());
+			}
+
+			return argBuilder.ToString ();
 		}
 
 		static OutputProgressMonitor CreateProgressMonitor ()

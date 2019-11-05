@@ -44,7 +44,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
 
-
 		protected ComboField GetDbContextField (DotNetProject project)
 		{
 			var dbContexts = GetDbContextClasses (project);
@@ -61,14 +60,15 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			//TODO: make async
 			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
-			var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
-						 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
-						 ?? compilation.GetTypeByMetadataName (EF7DbContextTypeName);
+			if (compilation != null) {
+				var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
+							 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
+							 ?? compilation.GetTypeByMetadataName (EF7DbContextTypeName);
 
-
-			if (dbContext != null) {
-				var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
-				return result.Select (c => c.MetadataName);
+				if (dbContext != null) {
+					var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
+					return result.Select (c => c.MetadataName);
+				}
 			}
 			return Enumerable.Empty<string> ();
 		}
@@ -77,8 +77,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			//TODO: make async
 			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
-			var modelTypes = DbSetModelVisitor.FindModelTypes (compilation.Assembly);
-			return modelTypes.Select (t => t.MetadataName);
+			if (compilation != null) {
+
+				var modelTypes = ModelVisitor.FindModelTypes (compilation.Assembly);
+				return modelTypes.Select (t => t.MetadataName);
+			}
+			return Enumerable.Empty<string> ();
 		}
 	}
 }

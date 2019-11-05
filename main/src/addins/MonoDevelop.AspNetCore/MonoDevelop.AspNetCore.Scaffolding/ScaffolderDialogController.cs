@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Wizard;
 using Xwt.Drawing;
 
@@ -35,7 +34,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderDialogController : WizardDialogControllerBase
 	{
-
 		// We have 2 pages, the first contains a list of templates
 		// and the 2nd is an entry form based on the selection
 		// in the first page.
