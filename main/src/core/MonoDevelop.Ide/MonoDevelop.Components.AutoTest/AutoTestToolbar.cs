@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Components.AutoTest.Results;
 
 namespace MonoDevelop.Components.AutoTest
@@ -46,6 +48,57 @@ namespace MonoDevelop.Components.AutoTest
 
 				return queryResult [0] as NSObjectResult;
 			}
+		}
+
+		public string GetActiveConfiguration ()
+		{
+			return SelectorViewControl.GetActiveConfiguration ()?.DisplayString;
+		}
+
+		public string GetActiveExetutionTarget ()
+		{
+			return SelectorViewControl.GetActiveRuntime ()?.DisplayString;
+		}
+
+		public List<string> GetConfigurations ()
+		{
+			return SelectorViewControl.GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToList ();
+		}
+
+		public List<string> GetExecutionTargets ()
+		{
+			return SelectorViewControl.GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
+		}
+
+		public List<string> GetStartupProjects ()
+		{
+			return SelectorViewControl.GetStartupProjectNames ();
+		}
+
+		public string GetStatusMessage ()
+		{
+			return (string)session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
+		}
+
+		public string GetActiveStartupProject ()
+		{
+			return SelectorViewControl.GetActiveStartupProject ();
+		}
+
+		public Dictionary<ExecutionInfoKeys, string> GetExecutionInfo ()
+		{
+			var info = new Dictionary<ExecutionInfoKeys, string> (3);
+			info.Add (ExecutionInfoKeys.StartupProject, GetActiveStartupProject ());
+			info.Add (ExecutionInfoKeys.ActiveConfiguration, GetActiveConfiguration ());
+			info.Add (ExecutionInfoKeys.ActiveExecitionTarget, GetActiveExetutionTarget ());
+			return info;
+		}
+
+		public enum ExecutionInfoKeys
+		{
+			StartupProject,
+			ActiveConfiguration,
+			ActiveExecitionTarget
 		}
 	}
 }
