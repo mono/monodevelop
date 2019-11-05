@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Microsoft.WebTools.Scaffolding.Core.Config;
 using MonoDevelop.AspNetCore.Scaffolding;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -198,6 +199,13 @@ namespace MonoDevelop.AspNetCore.Tests
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName --restWithNoViews --readWriteActions", commandLineArgs);
+		}
+
+		[Test]
+		public async void CanDeserializeConfig ()
+		{
+			var config = await ScaffoldingConfig.LoadFromJsonAsync ();
+			Assert.IsTrue (config.NetStandard20Packages.Any ());
 		}
 
 		DotNetProject CreateProject ()

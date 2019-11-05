@@ -1,0 +1,383 @@
+{
+  "Version": "3.0.0.0",
+  "LTS10Packages": [
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.3"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.8"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Mvc",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.6"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.StaticFiles",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.5"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Design",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.6"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.6"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer.Design",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.6"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.3"
+    },
+    {
+      "PackageId": "Microsoft.Extensions.Logging.Debug",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.2"
+    },
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.BrowserLink",
+      "MinVersion": "1.0.0",
+      "MaxVersion": "1.0.1"
+    }
+  ],
+  "FTS11Packages": [
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.4"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.6"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Mvc",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.7"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.StaticFiles",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.3"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Design",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.5"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.5"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer.Design",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.5"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.5"
+    },
+    {
+      "PackageId": "Microsoft.Extensions.Logging.Debug",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.2"
+    },
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.BrowserLink",
+      "MinVersion": "1.1.0",
+      "MaxVersion": "1.1.3"
+    }
+  ],
+  "NetStandard20Packages": [
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.4"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.3"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Mvc",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.4"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.StaticFiles",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.3"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Design",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.3",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.3",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.3",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.Extensions.Logging.Debug",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.2"
+    },
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.BrowserLink",
+      "MinVersion": "2.0.0",
+      "MaxVersion": "2.0.3"
+    }
+  ],
+  "NetStandard21Packages": [
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+      "MinVersion": "2.1.10",
+      "MaxVersion": "2.1.10"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Mvc",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.StaticFiles",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Design",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.Extensions.Logging.Debug",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1"
+    },
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.BrowserLink",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Identity.UI",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1",
+      "IsOptionalIdentityPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1",
+      "IsOptionalIdentityPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+      "MinVersion": "2.1.1",
+      "MaxVersion": "2.1.1",
+      "IsOptionalIdentityPackage": "true",
+      "IsOptionalEfPackage": "true"
+    }
+  ],
+  "Net22Packages": [
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+      "MinVersion": "2.2.4",
+      "MaxVersion": "2.2.4"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Mvc",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.StaticFiles",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Design",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0",
+      "IsOptionalEfPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.Extensions.Logging.Debug",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0"
+    },
+    {
+      "PackageId": "Microsoft.VisualStudio.Web.BrowserLink",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Identity.UI",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0",
+      "IsOptionalIdentityPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0",
+      "IsOptionalIdentityPackage": "true"
+    },
+    {
+      "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+      "MinVersion": "2.2.0",
+      "MaxVersion": "2.2.0",
+      "IsOptionalIdentityPackage": "true",
+      "IsOptionalEfPackage": "true"
+    }
+  ],
+  "DynamicVersionedPackages": {
+    "3.0.0": [
+      {
+        "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0"
+      },
+      {
+        "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0",
+        "IsOptionalEfPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0",
+        "IsOptionalEfPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.Extensions.Logging.Debug",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0"
+      },
+      {
+        "PackageId": "Microsoft.AspNetCore.Identity.UI",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0",
+        "IsOptionalIdentityPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0",
+        "IsOptionalIdentityPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+        "MinVersion": "3.0.0",
+        "MaxVersion": "3.0.0",
+        "IsOptionalIdentityPackage": "true",
+        "IsOptionalEfPackage": "true"
+      }
+    ],
+    "3.1.0": [
+      {
+        "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+        "MinVersion": "3.1.0-preview1-19509-03",
+        "MaxVersion": "3.1.0-preview1-19509-03"
+      },
+      {
+        "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+        "MinVersion": "3.1.0-preview1.19506.2",
+        "MaxVersion": "3.1.0-preview1.19506.2",
+        "IsOptionalEfPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+        "MinVersion": "3.1.0-preview1.19506.2",
+        "MaxVersion": "3.1.0-preview1.19506.2",
+        "IsOptionalEfPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.Extensions.Logging.Debug",
+        "MinVersion": "3.1.0-preview1.19506.1",
+        "MaxVersion": "3.1.0-preview1.19506.1"
+      },
+      {
+        "PackageId": "Microsoft.AspNetCore.Identity.UI",
+        "MinVersion": "3.1.0-preview1.19508.20",
+        "MaxVersion": "3.1.0-preview1.19508.20",
+        "IsOptionalIdentityPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+        "MinVersion": "3.1.0-preview1.19508.20",
+        "MaxVersion": "3.1.0-preview1.19508.20",
+        "IsOptionalIdentityPackage": "true"
+      },
+      {
+        "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+        "MinVersion": "3.1.0-preview1.19506.2",
+        "MaxVersion": "3.1.0-preview1.19506.2",
+        "IsOptionalIdentityPackage": "true",
+        "IsOptionalEfPackage": "true"
+      }
+    ]
+  }
+}
