@@ -116,6 +116,7 @@ namespace MonoDevelop.Debugger
 			constraints.Clear ();
 
 			bool selected = Superview is NSTableRowView rowView && rowView.Selected;
+			var wrapper = (MacObjectValueNode) ObjectValue;
 			var editable = TreeView.GetCanEditNode (Node);
 			var textColor = NSColor.ControlText;
 			string evaluateStatusIcon = null;
@@ -238,7 +239,7 @@ namespace MonoDevelop.Debugger
 				constraints.Add (colorPreview.HeightAnchor.ConstraintEqualToConstant (ImageSize));
 				views.Add (colorPreview);
 
-				OptimalWidth += colorPreview.Frame.Width;
+				OptimalWidth += ImageSize;
 				OptimalWidth += RowCellSpacing;
 			} else if (colorPreviewVisible) {
 				colorPreview.RemoveFromSuperview ();
@@ -290,7 +291,8 @@ namespace MonoDevelop.Debugger
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);
-			TextField.SizeToFit ();
+
+			OptimalWidth += GetWidthForString (TextField.Font, strval);
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			views.Add (TextField);
@@ -310,8 +312,103 @@ namespace MonoDevelop.Debugger
 			foreach (var constraint in constraints)
 				constraint.Active = true;
 
-			OptimalWidth += TextField.Frame.Width;
 			OptimalWidth += MarginSize;
+
+			wrapper.OptimalValueFont = TreeView.CustomFont;
+			wrapper.OptimalValueWidth = OptimalWidth;
+		}
+
+		public static nfloat GetOptimalWidth (MacObjectValueTreeView treeView, ObjectValueNode node, bool hideValueButton)
+		{
+			nfloat optimalWidth = MarginSize;
+
+			string evaluateStatusIcon = null;
+			string valueButtonText = null;
+			var showViewerButton = false;
+			Color? previewColor = null;
+			bool showSpinner = false;
+			string strval;
+
+			if (node.IsUnknown) {
+				if (treeView.DebuggerService.Frame != null) {
+					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", node.Name);
+				} else {
+					strval = string.Empty;
+				}
+				evaluateStatusIcon = Ide.Gui.Stock.Warning;
+			} else if (node.IsError || node.IsNotSupported) {
+				evaluateStatusIcon = Ide.Gui.Stock.Warning;
+				strval = node.Value ?? string.Empty;
+				int i = strval.IndexOf ('\n');
+				if (i != -1)
+					strval = strval.Substring (0, i);
+			} else if (node.IsImplicitNotSupported) {
+				strval = string.Empty;//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
+				if (node.CanRefresh)
+					valueButtonText = GettextCatalog.GetString ("Show Value");
+			} else if (node.IsEvaluating) {
+				strval = GettextCatalog.GetString ("Evaluating\u2026");
+				showSpinner = true;
+			} else if (node.IsEnumerable) {
+				if (node is ShowMoreValuesObjectValueNode) {
+					valueButtonText = GettextCatalog.GetString ("Show More");
+				} else {
+					valueButtonText = GettextCatalog.GetString ("Show Values");
+				}
+				strval = string.Empty;
+			} else if (node is AddNewExpressionObjectValueNode) {
+				strval = string.Empty;
+			} else {
+				strval = treeView.Controller.GetDisplayValueWithVisualisers (node, out showViewerButton);
+
+				var val = node.GetDebuggerObjectValue ();
+				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Color> (val)) {
+					try {
+						previewColor = DebuggingService.GetGetConverter<Color> (val).GetValue (val);
+					} catch {
+						previewColor = null;
+					}
+				}
+			}
+
+			strval = strval.Replace ("\r\n", " ").Replace ("\n", " ");
+
+			// First item: Status Icon -or- Spinner
+			if (evaluateStatusIcon != null) {
+				optimalWidth += ImageSize;
+				optimalWidth += RowCellSpacing;
+			}
+
+			if (showSpinner) {
+				optimalWidth += ImageSize;
+				optimalWidth += RowCellSpacing;
+			}
+
+			// Second Item: Color Preview
+			if (previewColor.HasValue) {
+				optimalWidth += ImageSize;
+				optimalWidth += RowCellSpacing;
+			}
+
+			// Third Item: Value Button
+			if (valueButtonText != null && !hideValueButton) {
+				// FIXME: what left/right padding do we need to add for the button around the button label? 6px?
+				optimalWidth += GetWidthForString (treeView.CustomFont, valueButtonText, -3) + 6;
+				optimalWidth += RowCellSpacing;
+			}
+
+			// Fourth Item: Viewer Button
+			if (showViewerButton) {
+				optimalWidth += treeView.CompactView ? CompactImageSize : ImageSize;
+				optimalWidth += RowCellSpacing;
+			}
+
+			// Fifth Item: Text Value
+			optimalWidth += GetWidthForString (treeView.CustomFont, strval);
+
+			optimalWidth += MarginSize;
+
+			return optimalWidth;
 		}
 
 		void OnValueButtonActivated (object sender, EventArgs e)

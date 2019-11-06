@@ -223,30 +223,16 @@ namespace MonoDevelop.Debugger
 			nfloat valueWidth = MinimumValueColumnWidth;
 
 			for (nint row = 0; row < RowCount; row++) {
-				var rowView = GetRowView (row, true);
+				var item = (MacObjectValueNode) ItemAtRow (row);
 
-				if (rowView == null)
-					continue;
+				item.Measure (this);
 
-				var nameView = (MacDebuggerObjectNameView) rowView.ViewAtColumn (0);
+				var totalNameWidth = item.OptimalXOffset + item.OptimalNameWidth;
+				if (totalNameWidth > nameWidth)
+					nameWidth = NMath.Min (totalNameWidth, nameColumn.MaxWidth);
 
-				if (nameView != null) {
-					// Note: the Name column's X-offset is the width of the expander which we need to take that into account
-					// when calculating the Name column's width.
-					var width = nameView.Frame.X + nameView.OptimalWidth;
-
-					if (width > nameWidth)
-						nameWidth = NMath.Min (width, nameColumn.MaxWidth);
-				}
-
-				var valueView = (MacDebuggerObjectValueView) rowView.ViewAtColumn (1);
-
-				if (valueView != null) {
-					var width = valueView.OptimalWidth;
-
-					if (width > valueWidth)
-						valueWidth = NMath.Min (width, valueColumn.MaxWidth);
-				}
+				if (item.OptimalValueWidth > valueWidth)
+					valueWidth = NMath.Min (item.OptimalValueWidth, valueColumn.MaxWidth);
 			}
 
 			bool changed = false;
@@ -262,7 +248,14 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (changed) {
-				SizeToFit ();
+				var optimalWidth = nameColumn.Width + valueColumn.Width + pinColumn.Width;
+				Console.WriteLine ("OptimizeColumnWidths: optimal width = {0}", optimalWidth);
+
+				var size = Frame.Size;
+				size.Width = optimalWidth;
+				SetFrameSize (size);
+
+				//SizeToFit ();
 
 				if (emitResized)
 					OnResized ();
