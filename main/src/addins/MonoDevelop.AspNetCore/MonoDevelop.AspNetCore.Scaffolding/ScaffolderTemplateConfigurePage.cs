@@ -75,15 +75,20 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 					Task.Run (async () => {
 						var options = await comboField.Options;
-						await Runtime.RunInMainThread (() =>
-						 Xwt.Toolkit.NativeEngine.Invoke (() => {
-							 foreach (var option in options) {
-								 comboBox.Items.Add (option);
-							 }
-							 comboField.SelectedValue = options.FirstOrDefault ();
-							 if (comboBox.Items.Count > 0)
-								 comboBox.SelectedIndex = 0;
-						 }));
+						await Runtime.RunInMainThread (() => {
+							if (Args.CancellationToken.IsCancellationRequested) {
+								return;
+							}
+							Xwt.Toolkit.NativeEngine.Invoke (() => {
+								foreach (var option in options) {
+									comboBox.Items.Add (option);
+								}
+								comboField.SelectedValue = options.FirstOrDefault ();
+								if (comboBox.Items.Count > 0)
+									comboBox.SelectedIndex = 0;
+							});
+
+						});
 					}, Args.CancellationToken);
 
 					label.Text = comboField.DisplayName;
