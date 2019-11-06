@@ -200,7 +200,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var pb = GetProject (msg.ProjectId);
 			if (pb != null) {
 				var logger = msg.LogWriterId != -1 ? (IEngineLogWriter) new LogWriter (msg.LogWriterId, msg.EnabledLogEvents) : (IEngineLogWriter) new NullLogWriter ();
-				var res = pb.Run (msg.Configurations, logger, msg.Verbosity, msg.RunTargets, msg.EvaluateItems, msg.EvaluateProperties, msg.GlobalProperties, msg.TaskId);
+				var res = pb.Run (msg.Configurations, logger, msg.Verbosity, msg.BinLogFilePath, msg.RunTargets, msg.EvaluateItems, msg.EvaluateProperties, msg.GlobalProperties, msg.TaskId);
 				return new RunProjectResponse { Result = res };
 			}
 			return msg.CreateResponse ();

@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public MSBuildResult Run (
-			ProjectConfigurationInfo[] configurations, IEngineLogWriter logWriter, MSBuildVerbosity verbosity,
+			ProjectConfigurationInfo[] configurations, IEngineLogWriter logWriter, MSBuildVerbosity verbosity, string binLogFilePath,
 			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId)
 		{
 			if (runTargets == null || runTargets.Length == 0)
@@ -71,8 +71,16 @@ namespace MonoDevelop.Projects.MSBuild
 				if (buildEngine.BuildOperationStarted) {
 					loggerAdapter = buildEngine.StartProjectSessionBuild (logWriter);
 				}
-				else
+				else {
 					loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
+					if (!string.IsNullOrEmpty (binLogFilePath)) {
+						var binaryLogger = new BinaryLogger {
+							Parameters = binLogFilePath,
+							Verbosity = LoggerVerbosity.Diagnostic
+						};
+						loggerAdapter.AddLogger (binaryLogger);
+					}
+				}
 
 				try {
 					project = SetupProject (configurations);
