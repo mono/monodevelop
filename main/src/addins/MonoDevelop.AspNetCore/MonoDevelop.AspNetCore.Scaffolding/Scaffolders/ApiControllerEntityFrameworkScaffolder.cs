@@ -44,8 +44,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		IEnumerable<ScaffolderField> GetFields ()
 		{
 			fields = new ScaffolderField [] {
-				GetModelField(args.Project),
-				GetDbContextField(args.Project),
+				GetModelField(args),
+				GetDbContextField(args),
 new StringField ("-name", "Controller name:"),
 
 			};

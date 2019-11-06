@@ -23,8 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -44,43 +47,41 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
 
-		protected ComboField GetDbContextField (DotNetProject project)
+		protected ComboField GetDbContextField (ScaffolderArgs args)
 		{
-			var dbContexts = GetDbContextClasses (project);
-			return new ComboField ("--dataContext", "DbContext class to use", dbContexts.ToArray (), isEditable: true);
+			return new ComboField ("--dataContext", "DbContext class to use", GetDbContextClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
-		protected ComboField GetModelField (DotNetProject project)
+		protected ComboField GetModelField (ScaffolderArgs args)
 		{
-			var dbModels = GetModelClasses (project);
-			return new ComboField ("--model", "Model class to use", dbModels.ToArray (), isEditable: true);
+			return new ComboField ("--model", "Model class to use", GetModelClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
-		IEnumerable<string> GetDbContextClasses (DotNetProject project)
+		async Task<IEnumerable<string>> GetDbContextClassesAsync (DotNetProject project, CancellationToken token)
 		{
-			//TODO: make async
-			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
+			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project, token);
 			if (compilation != null) {
 				var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
 							 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
 							 ?? compilation.GetTypeByMetadataName (EF7DbContextTypeName);
 
 				if (dbContext != null) {
-					var result = SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution).Result;
-					return result.Select (c => c.MetadataName);
+					var result = await SymbolFinder.FindDerivedClassesAsync (dbContext, IdeApp.TypeSystemService.Workspace.CurrentSolution);
+
+					return result.Where (ModelVisitor.IncludeTypeInAddViewModelClassDropdown).Select (c => c.MetadataName).Distinct().OrderBy (x => x);
 				}
 			}
+
 			return Enumerable.Empty<string> ();
 		}
 
-		IEnumerable<string> GetModelClasses (DotNetProject project)
+		async Task<IEnumerable<string>> GetModelClassesAsync (DotNetProject project, CancellationToken token)
 		{
-			//TODO: make async
-			var compilation = IdeApp.TypeSystemService.GetCompilationAsync (project).Result;
+			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project, token);
 			if (compilation != null) {
-
 				var modelTypes = ModelVisitor.FindModelTypes (compilation.Assembly);
-				return modelTypes.Select (t => t.MetadataName);
+				var dbContextTypes = await GetDbContextClassesAsync (project, token);
+				return modelTypes.Select (t => t.MetadataName).Except(dbContextTypes).Distinct().OrderBy (x => x);
 			}
 			return Enumerable.Empty<string> ();
 		}

@@ -23,10 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using MonoDevelop.Components;
+using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -43,5 +40,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public DotNetProject Project { get; internal set; }
 		public FilePath ParentFolder { get; internal set; }
+		public CancellationToken CancellationToken { get; internal set; }
 	}
 }

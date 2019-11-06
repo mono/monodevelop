@@ -1,4 +1,4 @@
-﻿//
+//
 // Scaffolder.cs
 //
 // Author:
@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -153,7 +154,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			argBuilder.AddQuoted (project.FileName);
 			argBuilder.Add (args.Scaffolder.CommandLineName);
 
-			foreach(var field in args.Scaffolder.Fields) {
+			foreach (var field in args.Scaffolder.Fields) {
 				argBuilder.Add (field.CommandLineName);
 				argBuilder.Add (field.SelectedValue);
 			}
