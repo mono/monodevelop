@@ -1,4 +1,4 @@
-﻿// 
+// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
 using AppKit;
 using Foundation;
 using MonoDevelop.Components;
@@ -72,11 +72,16 @@ namespace MonoDevelop.MacIntegration
 
 		public bool Run (OpenFileDialogData data)
 		{
+			var panelClosedSource = MacSystemInformation.OsVersion < MacSystemInformation.Catalina ? new CancellationTokenSource () : null;
 			try {
 				using (var panel = CreatePanel (data, out var state)) {
 					bool pathAlreadySet = false;
+					var panelClosedToken = panelClosedSource.Token;
 					panel.DidChangeToDirectory += (sender, e) => {
-						var directoryPath = e.NewDirectoryUrl?.AbsoluteString;
+						// HACK: On Catalina e.NewDirectoryUrl might be NSNull instead of null
+						if (e.NewDirectoryUrl == null || ((NSObject)e.NewDirectoryUrl) is NSNull)
+							return;
+						var directoryPath = e.NewDirectoryUrl.AbsoluteString;
 						if (string.IsNullOrEmpty (directoryPath))
 							return;
 						var selectedPath = data.OnDirectoryChanged (this, directoryPath);
@@ -89,7 +94,10 @@ namespace MonoDevelop.MacIntegration
 						// this is needed because it's possible that DidChangeToDirectory event is executed while dialog is opening
 						// in that case calling .Cancel() leaves dialog in weird state...
 						// Fun fact: DidChangeToDirectory event is called from Open on 10.12 but not on 10.13
-						System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate { panel.Cancel (panel); }, Runtime.MainTaskScheduler);
+						System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate {
+							if (!panelClosedToken.IsCancellationRequested)
+								panel.Cancel (panel);
+						}, panelClosedToken, System.Threading.Tasks.TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 					};
 
 					panel.SelectionDidChange += delegate {
@@ -110,9 +118,11 @@ namespace MonoDevelop.MacIntegration
 
 					// TODO: support for data.CenterToParent, we could use sheeting.
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
+						panelClosedSource?.Cancel ();
 						IdeServices.DesktopService.FocusWindow (parent);
 						return false;
 					}
+					panelClosedSource?.Cancel ();
 					if (!pathAlreadySet)
 						data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 
@@ -130,6 +140,8 @@ namespace MonoDevelop.MacIntegration
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error in Open File dialog", ex);
+			} finally {
+				panelClosedSource?.Dispose ();
 			}
 			return true;
 		}
