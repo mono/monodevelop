@@ -23,10 +23,11 @@ namespace PerformanceDiagnosticsAddIn
 			var outputDirectoryHBox = new Gtk.HBox();
 			outputDirectoryHBox.BorderWidth = 10;
 			outputDirectoryHBox.Spacing = 6;
-			var outputDirectoryLabel = new Gtk.Label(GettextCatalog.GetString("Output directory:"));
+			var outputDirectoryLabel = new Gtk.Label (GettextCatalog.GetString ("Output directory:"));
 			outputDirectoryLabel.Xalign = 0;
 			outputDirectoryHBox.PackStart(outputDirectoryLabel, false, false, 0);
 			folderEntry.Path = Options.OutputPath.Value;
+			folderEntry.SetEntryAccessibleTitleUIElement (outputDirectoryLabel.Accessible);
 			outputDirectoryHBox.PackStart(folderEntry, true, true, 0);
 
 			vbox.PackStart(outputDirectoryHBox, false, false, 0);
