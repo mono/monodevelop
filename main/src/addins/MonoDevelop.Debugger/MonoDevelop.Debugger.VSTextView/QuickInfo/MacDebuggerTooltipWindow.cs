@@ -69,7 +69,7 @@ namespace MonoDevelop.Debugger
 				View = scrollView
 			};
 
-			widthConstraint = scrollView.WidthAnchor.ConstraintEqualToAnchor (treeView.WidthAnchor);
+			widthConstraint = scrollView.WidthAnchor.ConstraintEqualToConstant (treeView.Frame.Width); 
 			widthConstraint.Active = true;
 
 			heightConstraint = scrollView.HeightAnchor.ConstraintEqualToConstant (treeView.Frame.Height);
@@ -114,6 +114,7 @@ namespace MonoDevelop.Debugger
 			height = NMath.Min (height, maxHeight);
 
 			heightConstraint.Constant = height;
+			widthConstraint.Constant = treeView.Frame.Width;
 		}
 
 		void OnPinStatusChanged (object sender, EventArgs args)

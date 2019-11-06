@@ -325,12 +325,6 @@ namespace MonoDevelop.Debugger
 		{
 		}
 
-		public override void ViewDidMoveToSuperview ()
-		{
-			base.ViewDidMoveToSuperview ();
-			OptimizeColumnSizes ();
-		}
-
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
