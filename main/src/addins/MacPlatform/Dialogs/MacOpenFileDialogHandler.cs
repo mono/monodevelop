@@ -73,7 +73,7 @@ namespace MonoDevelop.MacIntegration
 
 		public bool Run (OpenFileDialogData data)
 		{
-			var panelClosedSource = MacSystemInformation.OsVersion < MacSystemInformation.Catalina ? new CancellationTokenSource () : null;
+			using var panelClosedSource = new CancellationTokenSource ();
 			try {
 				using (var panel = CreatePanel (data, out var state)) {
 					bool pathAlreadySet = false;
@@ -119,11 +119,11 @@ namespace MonoDevelop.MacIntegration
 
 					// TODO: support for data.CenterToParent, we could use sheeting.
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
-						panelClosedSource?.Cancel ();
+						panelClosedSource.Cancel ();
 						IdeServices.DesktopService.FocusWindow (parent);
 						return false;
 					}
-					panelClosedSource?.Cancel ();
+					panelClosedSource.Cancel ();
 					if (!pathAlreadySet)
 						data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 
@@ -141,8 +141,6 @@ namespace MonoDevelop.MacIntegration
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error in Open File dialog", ex);
-			} finally {
-				panelClosedSource?.Dispose ();
 			}
 			return true;
 		}
