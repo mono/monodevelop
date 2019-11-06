@@ -85,14 +85,14 @@ namespace MonoDevelop.Ide.FindInFiles
 		internal string GetCopyData (SearchResultWidget widget)
 		{
 			if (copyData == null)
-				FillCache (widget);
+				FillCache (widget).Ignore ();
 			return copyData;
 		}
 
 		internal string GetMarkup(SearchResultWidget widget, bool isSelected)
 		{
 			if (markup == null)
-				FillCache (widget);
+				FillCache (widget).Ignore ();
 			return isSelected ? selectedMarkup : markup;
 		}
 
@@ -112,17 +112,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		async void FillCache (SearchResultWidget widget)
+		async Task FillCache (SearchResultWidget widget)
 		{
 			FillLineCache (widget);
 			copyData = "";
 			markup = selectedMarkup = "";
 
-			var doc = GetDocument ();
-			if (doc == null) {
-				return;
-			}
 			try {
+				var doc = GetDocument ();
+				if (doc == null) {
+					return;
+				}
+
 				var lineNr = location.Value.Line;
 				var line = doc.GetLine (lineNr);
 				if (line != null) {
@@ -274,8 +275,13 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		TextEditor GetDocument ()
 		{
-			if (cachedEditor == null || cachedEditor.IsDisposed || cachedEditor.FileName != FileName || cachedEditorFileProvider != FileProvider) {
+			var fileProvider = FileProvider;
+			if (cachedEditor == null || cachedEditor.IsDisposed || cachedEditor.FileName != FileName || cachedEditorFileProvider != fileProvider) {
+				if (fileProvider == null)
+					throw new InvalidOperationException ("FileProvider == null");
 				var content = FileProvider.ReadString ();
+				if (content == null)
+					throw new InvalidOperationException ("FileProvider.ReadString () == null");
 				cachedEditor?.Dispose ();
 				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, IdeServices.DesktopService.GetMimeTypeForUri (FileName)));
 				cachedEditorFileProvider = FileProvider;
