@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 
+using AppKit;
 using Foundation;
 
 namespace MonoDevelop.Debugger
@@ -39,12 +40,47 @@ namespace MonoDevelop.Debugger
 		public readonly List<MacObjectValueNode> Children = new List<MacObjectValueNode> ();
 		public readonly MacObjectValueNode Parent;
 		public readonly ObjectValueNode Target;
+		public nfloat OptimalValueWidth;
+		public NSFont OptimalValueFont;
+		public nfloat OptimalNameWidth;
+		public NSFont OptimalNameFont;
+		public nfloat OptimalXOffset;
 		public bool HideValueButton;
 
 		public MacObjectValueNode (MacObjectValueNode parent, ObjectValueNode target)
 		{
+			OptimalValueWidth = -1.0f;
+			OptimalNameWidth = -1.0f;
+			OptimalValueFont = null;
+			OptimalNameFont = null;
+			OptimalXOffset = -1.0f;
 			Parent = parent;
 			Target = target;
+		}
+
+		public void Measure (MacObjectValueTreeView treeView)
+		{
+			if (OptimalXOffset < 0) {
+				nfloat offset = 17.0f;
+				var node = Target;
+
+				while (!(node.Parent is RootObjectValueNode)) {
+					node = node.Parent;
+					offset += 16.0f;
+				}
+
+				OptimalXOffset = offset;
+			}
+
+			if (OptimalNameFont != treeView.CustomFont || OptimalNameWidth < 0) {
+				OptimalNameWidth = MacDebuggerObjectNameView.GetOptimalWidth (treeView, Target);
+				OptimalNameFont = treeView.CustomFont;
+			}
+
+			if (OptimalValueFont != treeView.CustomFont || OptimalValueWidth < 0) {
+				OptimalValueWidth = MacDebuggerObjectValueView.GetOptimalWidth (treeView, Target, HideValueButton);
+				OptimalValueFont = treeView.CustomFont;
+			}
 		}
 	}
 }

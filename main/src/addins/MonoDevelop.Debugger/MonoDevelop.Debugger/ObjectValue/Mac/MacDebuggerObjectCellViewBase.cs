@@ -158,6 +158,22 @@ namespace MonoDevelop.Debugger
 			return new NSAttributedString (text ?? string.Empty, strokeColor: NSColor.PlaceholderTextColor);
 		}
 
+		protected static nfloat GetWidthForString (NSFont font, string text, int sizeDelta = 0)
+		{
+			NSFont modified = null;
+			nfloat width;
+
+			if (sizeDelta != 0)
+				modified = NSFont.FromDescription (font.FontDescriptor, font.PointSize + sizeDelta);
+
+			using (var str = new NSAttributedString (text, font: modified ?? font))
+				width = str.Size.Width;
+
+			modified?.Dispose ();
+
+			return width;
+		}
+
 		protected void UpdateFont (NSControl control, int sizeDelta = 0)
 		{
 			var font = TreeView.CustomFont;
