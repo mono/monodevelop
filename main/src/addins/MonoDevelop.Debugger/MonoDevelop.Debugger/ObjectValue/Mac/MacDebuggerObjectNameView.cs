@@ -103,6 +103,7 @@ namespace MonoDevelop.Debugger
 			contentType = contentTypeRegistry.GetContentType (DebuggerCompletion.ContentType);
 			var textBuffer = textBufferFactory.CreateTextBuffer ("", contentType);
 			editor = factory.CreateTextView (textBuffer);
+			editor.Options.SetOptionValue(DefaultTextViewOptions.UseVisibleWhitespaceId, false);
 
 			editor.VisualElement.TranslatesAutoresizingMaskIntoConstraints = false;
 			editorTextView = new NSView { TranslatesAutoresizingMaskIntoConstraints = false, WantsLayer = true };
