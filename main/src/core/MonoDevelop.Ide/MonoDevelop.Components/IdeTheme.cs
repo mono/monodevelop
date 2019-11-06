@@ -47,6 +47,19 @@ namespace MonoDevelop.Components
 
 		public static Theme UserInterfaceTheme { get; private set; }
 
+		static bool? highContrastThemeEnabled;
+		internal static bool HighContrastThemeEnabled {
+			get {
+				return highContrastThemeEnabled ?? false;
+			}
+			set {
+				if (highContrastThemeEnabled != value) {
+					highContrastThemeEnabled = value;
+					UpdateStyles ();
+				}
+			}
+		}
+
 		static IdeTheme ()
 		{
 			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
@@ -101,7 +114,7 @@ namespace MonoDevelop.Components
 
 		internal static void SetupXwtTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled", "error");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled", "error", "contrast");
 
 			if (Core.Platform.IsMac) {
 				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");
@@ -251,6 +264,11 @@ namespace MonoDevelop.Components
 				Xwt.Drawing.Context.SetGlobalStyle ("dark");
 			else
 				Xwt.Drawing.Context.ClearGlobalStyle ("dark");
+
+			if (HighContrastThemeEnabled)
+				Xwt.Drawing.Context.SetGlobalStyle ("contrast");
+			else
+				Xwt.Drawing.Context.ClearGlobalStyle ("contrast");
 
 			Styles.LoadStyle ();
 			UpdateXwtDefaults ();

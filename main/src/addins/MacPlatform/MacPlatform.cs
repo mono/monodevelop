@@ -568,12 +568,23 @@ namespace MonoDevelop.MacIntegration
 			};
 
 			PatchGtkTheme ();
-			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
-				delegate {
-					Styles.LoadStyle();
-					PatchGtkTheme();
-				}));
 
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Mojave) {
+				IdeTheme.HighContrastThemeEnabled = GetIsHighContrastActive ();
+				NSApplication.SharedApplication.AddObserver ("effectiveAppearance", NSKeyValueObservingOptions.New, notif =>
+					Core.Runtime.RunInMainThread (() => {
+						IdeTheme.HighContrastThemeEnabled = GetIsHighContrastActive ();
+						PatchGtkTheme ();
+					})
+				);
+			} else {
+				IdeTheme.HighContrastThemeEnabled = false;
+				NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
+					delegate {
+						Styles.LoadStyle ();
+						PatchGtkTheme ();
+					}));
+			}
 
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Mojave) { // the shared color panel has full automatic theme support on Mojave
 				Styles.Changed += (s, a) => {
@@ -592,6 +603,18 @@ namespace MonoDevelop.MacIntegration
 
 			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
+		}
+
+		static bool GetIsHighContrastActive ()
+		{
+			var highContrastAppearances = new string [] {
+							NSAppearance.NameAccessibilityHighContrastAqua,
+							NSAppearance.NameAccessibilityHighContrastDarkAqua,
+							NSAppearance.NameAccessibilityHighContrastVibrantDark,
+							NSAppearance.NameAccessibilityHighContrastVibrantLight,
+						};
+			// FindBestMatch will return the best matching a11y appearance or null if no high contrast appearance is in use
+			return NSApplication.SharedApplication.EffectiveAppearance.FindBestMatch (highContrastAppearances) != null;
 		}
 
 		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)
