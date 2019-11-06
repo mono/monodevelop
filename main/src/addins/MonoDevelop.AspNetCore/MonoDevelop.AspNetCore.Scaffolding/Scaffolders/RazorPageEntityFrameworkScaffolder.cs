@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
@@ -55,8 +56,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			fields = new ScaffolderField [] {
 				NameField,
 				new ComboField ("", "The template to use, supported view templates", Task.FromResult(viewTemplateOptions)),
-				GetModelField(args.Project),
-				GetDbContextField(args.Project),
+				GetModelField(args),
+				GetDbContextField(args),
 				new BoolFieldList(options),
 				CustomLayoutField
 			};

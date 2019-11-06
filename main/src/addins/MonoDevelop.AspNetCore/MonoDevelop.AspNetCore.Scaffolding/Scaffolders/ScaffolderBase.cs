@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Ide;
@@ -46,19 +47,19 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public virtual IEnumerable<ScaffolderField> Fields { get; }
 
-		protected ComboField GetDbContextField (DotNetProject project)
+		protected ComboField GetDbContextField (ScaffolderArgs args)
 		{
-			return new ComboField ("--dataContext", "DbContext class to use", GetDbContextClassesAsync(project), isEditable: true);
+			return new ComboField ("--dataContext", "DbContext class to use", GetDbContextClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
-		protected ComboField GetModelField (DotNetProject project)
+		protected ComboField GetModelField (ScaffolderArgs args)
 		{
-			return new ComboField ("--model", "Model class to use", GetModelClassesAsync(project), isEditable: true);
+			return new ComboField ("--model", "Model class to use", GetModelClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
-		async Task<IEnumerable<string>> GetDbContextClassesAsync (DotNetProject project)
+		async Task<IEnumerable<string>> GetDbContextClassesAsync (DotNetProject project, CancellationToken token)
 		{
-			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project);
+			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project, token);
 			if (compilation != null) {
 				var dbContext = compilation.GetTypeByMetadataName (EFCDbContextTypeName)
 							 ?? compilation.GetTypeByMetadataName (DbContextTypeName)
@@ -74,12 +75,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			return Enumerable.Empty<string> ();
 		}
 
-		async Task<IEnumerable<string>> GetModelClassesAsync (DotNetProject project)
+		async Task<IEnumerable<string>> GetModelClassesAsync (DotNetProject project, CancellationToken token)
 		{
-			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project);
+			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project, token);
 			if (compilation != null) {
 				var modelTypes = ModelVisitor.FindModelTypes (compilation.Assembly);
-				var dbContextTypes = await GetDbContextClassesAsync (project);
+				var dbContextTypes = await GetDbContextClassesAsync (project, token);
 				return modelTypes.Select (t => t.MetadataName).Except(dbContextTypes).Distinct().OrderBy (x => x);
 			}
 			return Enumerable.Empty<string> ();
