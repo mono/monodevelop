@@ -40,8 +40,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		readonly ScaffolderArgs args;
 
 		readonly IWizardDialogPage firstPage;
-
-		Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
+		readonly Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> cachedPages
 			= new Dictionary<ScaffolderArgs, ScaffolderTemplateConfigurePage> ();
 
 		public override bool CanGoBack {
@@ -61,13 +60,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
-		ScaffolderTemplateConfigurePage GetConfigurePage (ScaffolderArgs args)
+		ScaffolderTemplateConfigurePage GetConfigurePage (ScaffolderArgs args, CancellationToken token)
 		{
 			// we want to return the same instance for the same args
 			if (cachedPages.ContainsKey (args)) {
 				return cachedPages [args];
 			} else {
-				var page = new ScaffolderTemplateConfigurePage (args);
+				var page = new ScaffolderTemplateConfigurePage (args, token);
 				cachedPages.Add (args, page);
 				return page;
 			}
@@ -77,7 +76,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 			switch (CurrentPage) {
 			case ScaffolderTemplateSelectPage _:
-				IWizardDialogPage configPage = GetConfigurePage (args);
+				IWizardDialogPage configPage = GetConfigurePage (args, token);
 				return Task.FromResult (configPage);
 			}
 			return Task.FromException<IWizardDialogPage> (new InvalidOperationException ());

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -49,8 +50,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			};
 
 			fields = new ScaffolderField [] {
-				GetModelField(args.Project),
-				GetDbContextField(args.Project),
+				GetModelField(args),
+				GetDbContextField(args),
 				new BoolFieldList(options),
 				CustomLayoutField
 			};
