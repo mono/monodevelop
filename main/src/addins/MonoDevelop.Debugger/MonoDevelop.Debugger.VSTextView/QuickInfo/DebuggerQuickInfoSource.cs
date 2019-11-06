@@ -177,7 +177,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			var bounds = view.TextViewLines.GetCharacterBounds (point);
 			var rect = new CoreGraphics.CGRect (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop, bounds.Width, bounds.Height);
 
-			if (cocoaView.IsClosed) {
+			if (cocoaView.IsClosed || cocoaView.VisualElement.Window == null) {
 				LoggingService.LogWarning ("Editor window has been closed before debugger tooltip was shown. How did this happen?");
 				return;
 			}

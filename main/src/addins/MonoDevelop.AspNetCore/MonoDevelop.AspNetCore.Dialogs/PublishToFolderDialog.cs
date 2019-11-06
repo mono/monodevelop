@@ -106,6 +106,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "pathEntry",
 				Text = defaultDirectory
 			};
+			pathEntry.Accessible.LabelWidget = chooseLabel;
 			pathEntry.Changed += pathEntry_Changed;
 			pathEntry.LostFocus += PathEntry_LostFocus;
 			browseEntryHBox.PackStart (pathEntry, expand: true);
