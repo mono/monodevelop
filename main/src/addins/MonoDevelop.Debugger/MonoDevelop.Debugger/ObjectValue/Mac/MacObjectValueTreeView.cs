@@ -262,7 +262,14 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (changed) {
-				SizeToFit ();
+				var optimalWidth = nameColumn.Width + valueColumn.Width + pinColumn.Width;
+				Console.WriteLine ("OptimizeColumnWidths: optimal width = {0}", optimalWidth);
+
+				var size = Frame.Size;
+				size.Width = optimalWidth;
+				SetFrameSize (size);
+
+				//SizeToFit ();
 
 				if (emitResized)
 					OnResized ();

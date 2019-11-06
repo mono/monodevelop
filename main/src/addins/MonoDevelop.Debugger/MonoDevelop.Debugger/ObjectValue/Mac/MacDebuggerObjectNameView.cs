@@ -165,9 +165,9 @@ namespace MonoDevelop.Debugger
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);
-			TextField.SizeToFit ();
 
-			OptimalWidth += TextField.Frame.Width;
+			var value = editable && string.IsNullOrEmpty (name) ? placeholder : name;
+			OptimalWidth += GetWidthForString (TextField, value);
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (firstView.TrailingAnchor, RowCellSpacing));
@@ -187,7 +187,7 @@ namespace MonoDevelop.Debugger
 				constraints.Add (PreviewButton.HeightAnchor.ConstraintEqualToConstant (ImageSize));
 
 				OptimalWidth += RowCellSpacing;
-				OptimalWidth += PreviewButton.Frame.Width;
+				OptimalWidth += ImageSize;
 			} else {
 				if (previewIconVisible) {
 					PreviewButton.RemoveFromSuperview ();

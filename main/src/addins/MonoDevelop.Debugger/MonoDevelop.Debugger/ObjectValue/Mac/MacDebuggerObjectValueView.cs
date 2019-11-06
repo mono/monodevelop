@@ -287,7 +287,8 @@ namespace MonoDevelop.Debugger
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);
-			TextField.SizeToFit ();
+
+			OptimalWidth += GetWidthForString (TextField, strval);
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			views.Add (TextField);
@@ -307,7 +308,6 @@ namespace MonoDevelop.Debugger
 			foreach (var constraint in constraints)
 				constraint.Active = true;
 
-			OptimalWidth += TextField.Frame.Width;
 			OptimalWidth += MarginSize;
 		}
 

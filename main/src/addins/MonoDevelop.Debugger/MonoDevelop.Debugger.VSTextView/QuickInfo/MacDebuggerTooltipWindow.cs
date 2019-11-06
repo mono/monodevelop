@@ -108,6 +108,7 @@ namespace MonoDevelop.Debugger
 
 		void OnTreeViewResized (object sender, EventArgs e)
 		{
+			Console.WriteLine ("OnTreeViewResized: treeView.Frame.Width = {0}", treeView.Frame.Width);
 			var maxHeight = GetMaxHeight (treeView.Window);
 			var height = treeView.FittingSize.Height;
 
