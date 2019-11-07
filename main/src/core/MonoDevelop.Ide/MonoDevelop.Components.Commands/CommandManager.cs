@@ -635,11 +635,22 @@ namespace MonoDevelop.Components.Commands
 			if (!view.CanBecomeKeyView)
 				return false;
 
-			if (view is AppKit.NSClipView && view.Superview is AppKit.NSView parent) {
-				return parent.CanBecomeKeyView;
+			if (view is AppKit.NSScrollView) {
+				return false;
 			}
 
-			if (view is AppKit.NSScrollView) {
+			if (view is AppKit.NSClipView) {
+				return false;
+			}
+
+			//temporal property pad hacks:
+			//removes the exanders from our keyviewloop
+			if (view is AppKit.NSButton expander && expander.Superview is AppKit.NSView expanderParent && expanderParent.Superview is AppKit.NSTableRowView) {
+				return false;
+			}
+
+			//removes the FirstResponderOutline from our keyviewloop
+			if (IsFirstResponderOutlineView (view)) {
 				return false;
 			}
 
@@ -692,6 +703,9 @@ namespace MonoDevelop.Components.Commands
 			var parent = GetGtkNSViewHostContentView (nSView.Superview);
 			return parent;
 		}
+
+		const string FirstResponderOutlineViewTypeName = "<Xamarin_PropertyEditing_Mac_PropertyList_FirstResponderOutlineView:";
+		static bool IsFirstResponderOutlineView (AppKit.NSView view) => view.ToString ().StartsWith (FirstResponderOutlineViewTypeName);
 
 		const string GdkQuartzViewTypeName = "<GdkQuartzView";
 		static bool IsGtkQuartzView (AppKit.NSView view) => view.ToString ().StartsWith (GdkQuartzViewTypeName);
