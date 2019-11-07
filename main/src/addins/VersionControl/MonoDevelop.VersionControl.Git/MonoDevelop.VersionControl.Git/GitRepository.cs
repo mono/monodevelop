@@ -1888,15 +1888,17 @@ namespace MonoDevelop.VersionControl.Git
 
 		public async Task<string> GetCurrentRemoteAsync (CancellationToken cancellationToken = default)
 		{
-			var headRemote = await RunOperationAsync (() => RootRepository.Head?.RemoteName).ConfigureAwait (false);
-			if (!string.IsNullOrEmpty (headRemote))
-				return headRemote;
+			using (LinkTokenToDispose (ref cancellationToken)) {
+				var headRemote = await RunOperationAsync (() => RootRepository.Head?.RemoteName).ConfigureAwait (false);
+				if (!string.IsNullOrEmpty (headRemote))
+					return headRemote;
 
-			var remotes = await GetRemoteNamesAsync (cancellationToken).ConfigureAwait (false);
-			if (remotes.Count == 0)
-				return null;
+				var remotes = await GetRemoteNamesAsync (cancellationToken).ConfigureAwait (false);
+				if (remotes.Count == 0)
+					return null;
 
-			return remotes.Contains ("origin") ? "origin" : remotes [0];
+				return remotes.Contains ("origin") ? "origin" : remotes [0];
+			}
 		}
 
 		public async Task PushAsync (ProgressMonitor monitor, string remote, string remoteBranch)
