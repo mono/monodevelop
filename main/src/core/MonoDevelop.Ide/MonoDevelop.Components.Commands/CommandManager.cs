@@ -531,18 +531,15 @@ namespace MonoDevelop.Components.Commands
 			e.RetVal = retVal;
 		}
 
-		Gtk.Window GetGtkWindow (Gdk.Window gdkWindow)
-		{
-			foreach (var window in topLevelWindows) {
-				if (window.nativeWidget is Gtk.Window win && win.GdkWindow == gdkWindow)
-					return win;
-			}
-			return null;
-		}
+		bool isGtkLastEvent;
+
+		internal Gdk.EventKey LastGtkKeyEvent;
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
 #if MAC
+			LastGtkKeyEvent = ev;
+
 			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
 			var window = currentEvent?.Window;
 			var firstResponder = window?.FirstResponder;
@@ -578,23 +575,22 @@ namespace MonoDevelop.Components.Commands
 				view != window.ContentView) {
 
 				bool backToGtk = false;
-				var mainView = GetMainEmbededView (view);
-				var gtkNSViewHost = viewHosts.FirstOrDefault (s => s.Content == mainView);
 
+				var mainView = GetGtkNSViewHostContentView (view);
+				var gtkNSViewHost = GetGtkNSViewHostFromView (mainView);
 				if (gtkNSViewHost != null) {
 					//we are in a embeded view case
 					var expectedKeyView = FindValidKeyView (view);
 
 					if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 						if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
-
-							var isFirstView = IsFirstView (expectedKeyView);
-							if (IsFirstView (expectedKeyView)) {
+							var isFirstView = IsFirstView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
+							if (isFirstView) {
 								//if we are in first item, we change to the previous Gtk widget
 								backToGtk = true;
 							}
 						} else {
-							var isLastView = IsLastView (expectedKeyView);
+							var isLastView = IsLastView (expectedKeyView, addViewBeforeChildren: false, removeContentView: true);
 							if (isLastView) {
 								//if we are in last element we change to next Gtk widget
 								backToGtk = true;
@@ -605,33 +601,50 @@ namespace MonoDevelop.Components.Commands
 					if (!backToGtk) {
 						SimulateKeyDownInView (view, currentEvent, window);
 					} else {
-						//Un focus all views from native
-						window.MakeFirstResponder (null);
-						//Be careful! after this, native window.FirstResponder it will change from the current one
+
 						if (!gtkNSViewHost.IsFocus)
 							gtkNSViewHost.IsFocus = true;
+
+						//Unfocus all focused views in the Gtkquartzwindow
+						window.MakeFirstResponder (null);
+						//Be careful! after this, native window.FirstResponder it will change from the current one
+						
 						//gtkNSViewHost.ProcessEvent (ev);
 						//GetGtkWindow (ev.Window).Present ();
 					}
 
 					//return true brokes the current event handling from Gtk, then if we back to gtk we should return false
+					isGtkLastEvent = backToGtk;
 					return !backToGtk;
 				}
 			}
 #endif
+
+			isGtkLastEvent = true;
 			return false;
 		}
 
-		List<AppKit.NSView> GetOrderedFocusableViews (AppKit.NSView view)
+		Gtk.Window GetGtkWindow (Gdk.Window gdkWindow)
 		{
-			var mainView = GetMainEmbededView (view);
+			foreach (var window in topLevelWindows) {
+				if (window.nativeWidget is Gtk.Window win && win.GdkWindow == gdkWindow)
+					return win;
+			}
+			return null;
+		}
+
+		internal List<AppKit.NSView> GetOrderedFocusableViews (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
+		{
+			var mainView = GetGtkNSViewHostContentView (view);
 			var focusableViews = new List<AppKit.NSView> ();
-			AddRecursivelyFocusableViews (mainView, focusableViews);
+			AddRecursivelyFocusableViews (mainView, focusableViews, addViewBeforeChildren, removeContentView ? mainView : null);
 			return focusableViews;
 		}
 
-		bool IsLastView (AppKit.NSView view) => GetOrderedFocusableViews (view).LastOrDefault () == view;
-		bool IsFirstView (AppKit.NSView view) => GetOrderedFocusableViews (view).FirstOrDefault () == view;
+		bool IsLastView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).LastOrDefault () == view;
+		bool IsFirstView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).FirstOrDefault () == view;
+
+		GtkNSViewHost GetGtkNSViewHostFromView (AppKit.NSView view) => viewHosts.FirstOrDefault (s => s.Content == view);
 
 		static bool CanBecomeKeyView (AppKit.NSView view)
 		{
@@ -650,33 +663,39 @@ namespace MonoDevelop.Components.Commands
 			if (view.Hidden) {
 				return true;
 			}
+			//this views are never included in the keyloop but they can be focused, we don't want to include it
 			if (view.Superview is AppKit.NSClipView clip && clip.Superview is AppKit.NSTextField) {
 				return true;
 			}
 			return false;
 		}
 
-		static void AddRecursivelyFocusableViews (AppKit.NSView view, List<AppKit.NSView> toAddViews)
+		static void AddRecursivelyFocusableViews (AppKit.NSView view, List<AppKit.NSView> toAddViews, bool addViewBeforeChildren, AppKit.NSView contentView)
 		{
 			if (HandlesFocus (view)) {
 				return;
 			}
-			if (CanBecomeKeyView (view))
+
+			if (addViewBeforeChildren && CanBecomeKeyView (view) && contentView != view)
 				toAddViews.Add (view);
 
 			foreach (var subview in view.Subviews) {
-				AddRecursivelyFocusableViews (subview, toAddViews);
+				AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
 			}
+
+			if (!addViewBeforeChildren && CanBecomeKeyView (view) && contentView != view)
+				toAddViews.Add (view);
 		}
 
-		AppKit.NSView GetMainEmbededView (AppKit.NSView nSView)
+		//this method scales the hierarchy of a native view embedded in a GtkNSViewHost in search of the content view
+		AppKit.NSView GetGtkNSViewHostContentView (AppKit.NSView nSView)
 		{
 			if (nSView.Superview == null)
 				throw new NullReferenceException ("Cannot get the main embeded view from a view with superview = null");
 			if (nSView.Superview.ToString ().StartsWith ("<GdkQuartzView")) {
 				return nSView;
 			}
-			var parent = GetMainEmbededView (nSView.Superview);
+			var parent = GetGtkNSViewHostContentView (nSView.Superview);
 			return parent;
 		}
 
@@ -691,10 +710,7 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 
-		internal void RemoveEmbededView (GtkNSViewHost gtkNSViewHost)
-		{
-			viewHosts.Remove (gtkNSViewHost);
-		}
+		internal void RemoveEmbededView (GtkNSViewHost gtkNSViewHost) => viewHosts.Remove (gtkNSViewHost);
 
 		bool ProcessKeyEventCore (Gdk.EventKey ev)
 		{
