@@ -639,6 +639,10 @@ namespace MonoDevelop.Components.Commands
 				return parent.CanBecomeKeyView;
 			}
 
+			if (view is AppKit.NSScrollView) {
+				return false;
+			}
+
 			return true;
 		}
 
