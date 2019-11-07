@@ -401,7 +401,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 			var actionArea = new HBox (false, 0) { BorderWidth = 14 };
 
-			onlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
+			onlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code"));
 			onlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
 			onlyShowMyCodeCheckbox.Show ();
 			onlyShowMyCodeCheckbox.Active = DebuggingService.GetUserOptions ().ProjectAssembliesOnly;
