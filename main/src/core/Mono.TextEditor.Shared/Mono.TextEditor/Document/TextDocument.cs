@@ -343,7 +343,7 @@ namespace Mono.TextEditor
 			this.mimeType = mimeType;
 			var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (
 				PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (
-					text ?? string.Empty,
+					new StringReader(text ?? string.Empty),
 					GetContentTypeFromMimeType (fileName, mimeType)
 				),
 				fileName ?? string.Empty
