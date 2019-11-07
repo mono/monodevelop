@@ -2426,7 +2426,8 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Widget GetFocusedChild (Control widget)
 		{
 			Gtk.Container container;
-
+			if (widget?.nativeWidget is AppKit.NSWindow window)
+				widget = Mac.GtkMacInterop.GetGtkWindow (window)?.Child;
 			do {
 				container = widget?.nativeWidget is Gtk.Container ? widget.GetNativeWidget<Gtk.Container> () : null;
 				if (container != null) {
