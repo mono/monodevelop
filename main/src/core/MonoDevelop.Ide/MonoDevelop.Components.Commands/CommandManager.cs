@@ -442,7 +442,7 @@ namespace MonoDevelop.Components.Commands
 		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
 		{
 			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-				var expectedKeyView = FindValidKeyView (view);
+				var expectedKeyView = FindValidKeyView (view, defaultView: view);
 				AppKit.NSView next = null;
 				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
 					next = expectedKeyView.PreviousValidKeyView;
@@ -466,19 +466,22 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 
-		static AppKit.NSView FindValidKeyView (AppKit.NSView view)
+		static AppKit.NSView FindValidKeyView (AppKit.NSView view, AppKit.NSView defaultView)
 		{
 			if (view == null)
 				return null;
 
 			if (view.AcceptsFirstResponder ()) {
 				if (view.Superview?.Superview is AppKit.NSControl control && control.CurrentEditor == view) {
-					return FindValidKeyView (control);
+					return FindValidKeyView (control, defaultView);
 				}
 				return view;
 			}
 
-			return FindValidKeyView (view.Superview);
+			if (IsGtkQuartzView (view.Superview )) {
+				return defaultView;
+			}
+			return FindValidKeyView (view.Superview, defaultView);
 		}
 
 #endif
@@ -573,7 +576,7 @@ namespace MonoDevelop.Components.Commands
 				var gtkNSViewHost = GetGtkNSViewHostFromView (mainView);
 				if (gtkNSViewHost != null) {
 					//we are in a embeded view case
-					var expectedKeyView = FindValidKeyView (view);
+					var expectedKeyView = FindValidKeyView (view, defaultView: view);
 
 					if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 						if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
@@ -679,12 +682,15 @@ namespace MonoDevelop.Components.Commands
 					return null;
 				}
 			}
-			if (nSView.Superview.ToString ().StartsWith ("<GdkQuartzView")) {
+			if (IsGtkQuartzView (nSView.Superview)) {
 				return nSView;
 			}
 			var parent = GetGtkNSViewHostContentView (nSView.Superview);
 			return parent;
 		}
+
+		const string GdkQuartzViewTypeName = "<GdkQuartzView";
+		static bool IsGtkQuartzView (AppKit.NSView view) => view.ToString ().StartsWith (GdkQuartzViewTypeName);
 
 		readonly List<Gtk.GtkNSViewHost> viewHosts = new List<Gtk.GtkNSViewHost> ();
 		internal void RegisterEmbededView (Gtk.GtkNSViewHost gtkNSViewHost)
