@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						ThawChangeEvent ();
 					}
 				} else {
-					var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
+					var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (new System.IO.StringReader (text.Text), contentType);
 					var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
 					doc.Encoding = text.Encoding;
 					SetTextDocument (doc);
