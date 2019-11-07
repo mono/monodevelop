@@ -642,7 +642,7 @@ namespace MonoDevelop.Components.Commands
 			return true;
 		}
 
-		static bool HandlesFocus (AppKit.NSView view)
+		static bool AllowsRecursivityFocus (AppKit.NSView view)
 		{
 			if (view.Hidden) {
 				return true;
@@ -656,7 +656,7 @@ namespace MonoDevelop.Components.Commands
 
 		static void AddRecursivelyFocusableViews (AppKit.NSView view, List<AppKit.NSView> toAddViews, bool addViewBeforeChildren, AppKit.NSView contentView)
 		{
-			if (HandlesFocus (view)) {
+			if (AllowsRecursivityFocus (view)) {
 				return;
 			}
 
