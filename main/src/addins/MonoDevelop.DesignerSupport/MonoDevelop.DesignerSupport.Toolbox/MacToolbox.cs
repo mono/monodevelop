@@ -121,7 +121,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		NSTextField messageTextField;
 
 		readonly KeyViewLoopDelegate keyViewLoopDelegate;
-		
+
+		public override bool AcceptsFirstResponder () => false;
+
 		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
 		{
 			WantsLayer = true;
