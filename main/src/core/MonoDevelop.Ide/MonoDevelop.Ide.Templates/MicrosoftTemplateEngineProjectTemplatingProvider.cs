@@ -108,7 +108,10 @@ namespace MonoDevelop.Ide.Templates
 				if (!File.Exists (fullPath)) {
 					// Work around a bug in the templating engine with multi project templates
 					// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1016597
-					fullPath = fullPath.Replace ("NewApp", config.ProjectName);
+					var resolvedPath = result.CreationEffects.FileChanges.OfType<IFileChange2> ().FirstOrDefault (f => f.SourceRelativePath == GetPath (path));
+					if (resolvedPath != null) {
+						fullPath = Path.Combine (config.ProjectLocation, resolvedPath.TargetRelativePath);
+					}
 				}
 
 				if (Services.ProjectService.IsSolutionItemFile (fullPath))
