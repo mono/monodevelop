@@ -590,13 +590,13 @@ namespace MonoDevelop.Components.Commands
 
 							var isFirstView = IsFirstView (expectedKeyView);
 							if (IsFirstView (expectedKeyView)) {
-								//estamos en el primer item, tenemos que cambiar de elemento
+								//if we are in first item, we change to the previous Gtk widget
 								backToGtk = true;
 							}
 						} else {
 							var isLastView = IsLastView (expectedKeyView);
 							if (isLastView) {
-								//estamos en el ultimo item
+								//if we are in last element we change to next Gtk widget
 								backToGtk = true;
 							}
 						}
