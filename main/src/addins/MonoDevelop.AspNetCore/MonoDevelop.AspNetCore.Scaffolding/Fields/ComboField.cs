@@ -24,19 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ComboField : ScaffolderField
 	{
-		public ComboField (string commandLineName, string displayName, string [] options, bool isEditable = false) : base (commandLineName, displayName)
+		public ComboField (string commandLineName, string displayName, Task<IEnumerable<string>> options, bool isEditable = false) : base (commandLineName, displayName)
 		{
 			Options = options;
 			IsEditable = isEditable;
 		}
 
 		public bool IsEditable { get; }
-		public string [] Options { get; }
+		public Task<IEnumerable<string>> Options { get; }
 	}
 }

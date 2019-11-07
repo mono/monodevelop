@@ -24,18 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 using Xwt;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderTemplateConfigurePage : ScaffolderWizardPageBase
 	{
-		ScaffolderBase scaffolder;
+		readonly ScaffolderBase scaffolder;
 
-		public ScaffolderTemplateConfigurePage (ScaffolderArgs args) : base (args)
+		public ScaffolderTemplateConfigurePage (ScaffolderArgs args, CancellationToken token) : base (args)
 		{
 			scaffolder = args.Scaffolder;
-			this.SubSubTitle = scaffolder.Name;
+			SubSubTitle = scaffolder.Name;
+			args.CancellationToken = token;
 		}
 
 		protected override Widget GetMainControl ()
@@ -45,16 +49,16 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			var rowCount = fields.Count ();
 			int rowAdditionCount = 0;
-			for(int fieldIndex = 0; fieldIndex < rowCount; fieldIndex++) {
+			for (int fieldIndex = 0; fieldIndex < rowCount; fieldIndex++) {
 				int rowIndex = fieldIndex + rowAdditionCount;
-				var field = fields[fieldIndex];
+				var field = fields [fieldIndex];
 				var label = new Label ();
 
 				switch (field) {
 				case StringField s:
 					var input = new TextEntry ();
 					label.Text = s.DisplayName;
-					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
+					table.Add (label, 0, rowIndex, hpos: WidgetPlacement.End);
 					table.Add (input, 1, rowIndex);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					input.SetFocus ();
@@ -65,38 +69,50 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						var comboBoxEntry = new ComboBoxEntry ();
 						comboBoxEntry.TextEntry.Changed += (sender, args) => comboField.SelectedValue = comboBoxEntry.TextEntry.Text;
 						comboBox = comboBoxEntry;
-                    } else {
+					} else {
 						comboBox = new ComboBox ();
-                    }
-
-					foreach (var option in comboField.Options) {
-						comboBox.Items.Add (option);
 					}
+
+					Task.Run (async () => {
+						var options = await comboField.Options;
+						await Runtime.RunInMainThread (() => {
+							if (Args.CancellationToken.IsCancellationRequested) {
+								return;
+							}
+							Xwt.Toolkit.NativeEngine.Invoke (() => {
+								foreach (var option in options) {
+									comboBox.Items.Add (option);
+								}
+								comboField.SelectedValue = options.FirstOrDefault ();
+								if (comboBox.Items.Count > 0)
+									comboBox.SelectedIndex = 0;
+							});
+
+						});
+					}, Args.CancellationToken);
 
 					label.Text = comboField.DisplayName;
 
-					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End);
+					table.Add (label, 0, rowIndex, hpos: WidgetPlacement.End);
 					table.Add (comboBox, 1, rowIndex);
-					comboField.SelectedValue = comboField.Options.FirstOrDefault ();
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
 
-					if (comboBox.Items.Count > 0)
-						comboBox.SelectedIndex = 0;
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
-					table.Add (label, 0, rowIndex, hpos:WidgetPlacement.End, vpos:WidgetPlacement.Start);
+					table.Add (label, 0, rowIndex, hpos: WidgetPlacement.End, vpos: WidgetPlacement.Start);
 					var vbox = new VBox ();
-                    for(int i = 0; i < boolFieldList.Options.Count; i++) {
+					for (int i = 0; i < boolFieldList.Options.Count; i++) {
 						var boolField = boolFieldList.Options [i];
-						var checkbox = new CheckBox (boolField.DisplayName);
-						checkbox.Active = boolField.Selected;
-						checkbox.Sensitive = boolField.Enabled;
+						var checkbox = new CheckBox (boolField.DisplayName) {
+							Active = boolField.Selected,
+							Sensitive = boolField.Enabled
+						};
 						checkbox.Toggled += (sender, args) => boolField.Selected = checkbox.Active;
 						vbox.PackStart (checkbox);
-                    }
+					}
 					table.Add (vbox, 1, rowIndex);
 					break;
 				case FileField fileField:
@@ -105,15 +121,15 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						// This doesn't work with native toolkit!
 						var filter = new FileDialogFilter (fileField.FilterWildcard, fileField.FilterWildcard);
 						fileSelector.Filters.Add (filter);
-                    }
-					table.Add (fileSelector, 0, rowIndex, colspan:2);
+					}
+					table.Add (fileSelector, 0, rowIndex, colspan: 2);
 					label.Text = fileField.DisplayName;
-					table.Add (label, 0, rowIndex + 1, colspan:2);
+					table.Add (label, 0, rowIndex + 1, colspan: 2);
 					rowAdditionCount++;
 					fileSelector.FileChanged += (sender, args) => fileField.SelectedValue = fileSelector.FileName;
 					break;
 				}
-				
+
 			}
 			return table;
 		}
