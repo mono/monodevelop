@@ -2439,7 +2439,7 @@ namespace MonoDevelop.Components.Commands
 				}
 			} while (container != null);
 
-			return widget.nativeWidget is Gtk.Widget ? widget : null;
+			return widget?.nativeWidget is Gtk.Widget ? widget : null;
 		}
 
 #if MAC
