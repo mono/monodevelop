@@ -63,7 +63,7 @@ namespace MonoDevelop.Debugger
 			TextField.StringValue = value;
 			UpdateFont (TextField);
 
-			OptimalWidth = MarginSize + GetWidthForString (TextField, value) + MarginSize;
+			OptimalWidth = MarginSize + GetWidthForString (TextField.Font, value) + MarginSize;
 		}
 	}
 }

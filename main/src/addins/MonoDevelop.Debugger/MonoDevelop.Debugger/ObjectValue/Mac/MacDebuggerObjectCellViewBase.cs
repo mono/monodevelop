@@ -158,9 +158,16 @@ namespace MonoDevelop.Debugger
 			return new NSAttributedString (text ?? string.Empty, strokeColor: NSColor.PlaceholderTextColor);
 		}
 
-		protected nfloat GetWidthForString (NSControl control, string text)
+		protected static nfloat GetWidthForString (NSFont font, string text, int sizeDelta = 0)
 		{
-			var str = new NSAttributedString (text, font: control.Font);
+			NSFont modified = null;
+
+			if (sizeDelta != 0)
+				modified = NSFont.FromDescription (font.FontDescriptor, font.PointSize + sizeDelta);
+
+			var str = new NSAttributedString (text, font: modified ?? font);
+
+			modified?.Dispose ();
 
 			return str.Size.Width;
 		}

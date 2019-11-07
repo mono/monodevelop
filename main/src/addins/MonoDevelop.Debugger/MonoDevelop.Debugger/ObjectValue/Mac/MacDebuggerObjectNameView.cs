@@ -108,6 +108,7 @@ namespace MonoDevelop.Debugger
 			var editable = TreeView.AllowWatchExpressions && Node.Parent is RootObjectValueNode;
 			var selected = Superview is NSTableRowView rowView && rowView.Selected;
 			var iconName = ObjectValueTreeViewController.GetIcon (Node.Flags);
+			var wrapper = (MacObjectValueNode) ObjectValue;
 			var textColor = NSColor.ControlText;
 			var showAddNewExpression = false;
 			var placeholder = string.Empty;
@@ -167,7 +168,7 @@ namespace MonoDevelop.Debugger
 			UpdateFont (TextField);
 
 			var value = editable && string.IsNullOrEmpty (name) ? placeholder : name;
-			OptimalWidth += GetWidthForString (TextField, value);
+			OptimalWidth += GetWidthForString (TextField.Font, value);
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (firstView.TrailingAnchor, RowCellSpacing));
@@ -201,6 +202,45 @@ namespace MonoDevelop.Debugger
 				constraint.Active = true;
 
 			OptimalWidth += MarginSize;
+
+			wrapper.OptimalNameFont = TreeView.CustomFont;
+			wrapper.OptimalNameWidth = OptimalWidth;
+			wrapper.OptimalXOffset = Frame.X;
+		}
+
+		public static nfloat GetOptimalWidth (MacObjectValueTreeView treeView, ObjectValueNode node)
+		{
+			nfloat optimalWidth = MarginSize;
+
+			var editable = treeView.AllowWatchExpressions && node.Parent is RootObjectValueNode;
+			var placeholder = string.Empty;
+			var name = node.Name;
+
+			if (node.IsUnknown) {
+			} else if (node.IsError || node.IsNotSupported) {
+			} else if (node.IsImplicitNotSupported) {
+			} else if (node.IsEvaluating) {
+			} else if (node.IsEnumerable) {
+			} else if (node is AddNewExpressionObjectValueNode) {
+				placeholder = GettextCatalog.GetString ("Add new expression");
+				name = string.Empty;
+				editable = true;
+			}
+
+			optimalWidth += ImageSize;
+			optimalWidth += RowCellSpacing;
+
+			var value = editable && string.IsNullOrEmpty (name) ? placeholder : name;
+			optimalWidth += GetWidthForString (treeView.CustomFont, value);
+
+			if (MacObjectValueTreeView.ValidObjectForPreviewIcon (node)) {
+				optimalWidth += RowCellSpacing;
+				optimalWidth += ImageSize;
+			}
+
+			optimalWidth += MarginSize;
+
+			return optimalWidth;
 		}
 
 		void OnAddNewExpressionButtonClicked (object sender, EventArgs e)
