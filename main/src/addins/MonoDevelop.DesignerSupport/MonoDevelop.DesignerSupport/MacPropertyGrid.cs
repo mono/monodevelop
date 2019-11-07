@@ -137,8 +137,6 @@ namespace MonoDevelop.DesignerSupport
 
 	class MacPropertyEditorPanel : PropertyEditorPanel
 	{
-		public EventHandler Focused;
-
 		public MacPropertyEditorPanel (MonoDevelopHostResourceProvider hostResources)
 			: base (hostResources)
 		{
@@ -186,11 +184,6 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		public override bool BecomeFirstResponder ()
-		{
-			Focused?.Invoke (this, EventArgs.Empty);
-			return base.BecomeFirstResponder ();
-		}
 	}
 }
 
