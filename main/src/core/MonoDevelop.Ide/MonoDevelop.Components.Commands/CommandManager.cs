@@ -690,8 +690,14 @@ namespace MonoDevelop.Components.Commands
 		//this method scales the hierarchy of a native view embedded in a GtkNSViewHost in search of the content view
 		AppKit.NSView GetGtkNSViewHostContentView (AppKit.NSView nSView)
 		{
-			if (nSView.Superview == null)
-				throw new NullReferenceException ("Cannot get the main embeded view from a view with superview = null");
+			if (nSView.Superview == null) {
+				try {
+					throw new NullReferenceException ("Cannot get the main embeded view from a view with superview = null");
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+					return null;
+				}
+			}
 			if (nSView.Superview.ToString ().StartsWith ("<GdkQuartzView")) {
 				return nSView;
 			}
