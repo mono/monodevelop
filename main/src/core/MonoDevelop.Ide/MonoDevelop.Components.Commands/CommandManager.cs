@@ -530,16 +530,9 @@ namespace MonoDevelop.Components.Commands
 
 			e.RetVal = retVal;
 		}
-
-		bool isGtkLastEvent;
-
-		internal Gdk.EventKey LastGtkKeyEvent;
-
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
 #if MAC
-			LastGtkKeyEvent = ev;
-
 			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
 			var window = currentEvent?.Window;
 			var firstResponder = window?.FirstResponder;
@@ -614,23 +607,11 @@ namespace MonoDevelop.Components.Commands
 					}
 
 					//return true brokes the current event handling from Gtk, then if we back to gtk we should return false
-					isGtkLastEvent = backToGtk;
 					return !backToGtk;
 				}
 			}
 #endif
-
-			isGtkLastEvent = true;
 			return false;
-		}
-
-		Gtk.Window GetGtkWindow (Gdk.Window gdkWindow)
-		{
-			foreach (var window in topLevelWindows) {
-				if (window.nativeWidget is Gtk.Window win && win.GdkWindow == gdkWindow)
-					return win;
-			}
-			return null;
 		}
 
 		internal List<AppKit.NSView> GetOrderedFocusableViews (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
