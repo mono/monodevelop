@@ -43,6 +43,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
+using Gtk;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -530,6 +531,15 @@ namespace MonoDevelop.Components.Commands
 			e.RetVal = retVal;
 		}
 
+		Gtk.Window GetGtkWindow (Gdk.Window gdkWindow)
+		{
+			foreach (var window in topLevelWindows) {
+				if (window.nativeWidget is Gtk.Window win && win.GdkWindow == gdkWindow)
+					return win;
+			}
+			return null;
+		}
+
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
 #if MAC
@@ -567,12 +577,123 @@ namespace MonoDevelop.Components.Commands
 				firstResponder is AppKit.NSView view &&
 				view != window.ContentView) {
 
-				SimulateKeyDownInView (view, currentEvent, window);
-				
-				return true;
+				bool backToGtk = false;
+				var mainView = GetMainEmbededView (view);
+				var gtkNSViewHost = viewHosts.FirstOrDefault (s => s.Content == mainView);
+
+				if (gtkNSViewHost != null) {
+					//we are in a embeded view case
+					var expectedKeyView = FindValidKeyView (view);
+
+					if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+						if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+
+							var isFirstView = IsFirstView (expectedKeyView);
+							if (IsFirstView (expectedKeyView)) {
+								//estamos en el primer item, tenemos que cambiar de elemento
+								backToGtk = true;
+							}
+						} else {
+							var isLastView = IsLastView (expectedKeyView);
+							if (isLastView) {
+								//estamos en el ultimo item
+								backToGtk = true;
+							}
+						}
+					}
+
+					if (!backToGtk) {
+						SimulateKeyDownInView (view, currentEvent, window);
+					} else {
+						//Un focus all views from native
+						window.MakeFirstResponder (null);
+						//Be careful! after this, native window.FirstResponder it will change from the current one
+						if (!gtkNSViewHost.IsFocus)
+							gtkNSViewHost.IsFocus = true;
+						//gtkNSViewHost.ProcessEvent (ev);
+						//GetGtkWindow (ev.Window).Present ();
+					}
+
+					//return true brokes the current event handling from Gtk, then if we back to gtk we should return false
+					return !backToGtk;
+				}
 			}
 #endif
 			return false;
+		}
+
+		List<AppKit.NSView> GetOrderedFocusableViews (AppKit.NSView view)
+		{
+			var mainView = GetMainEmbededView (view);
+			var focusableViews = new List<AppKit.NSView> ();
+			AddRecursivelyFocusableViews (mainView, focusableViews);
+			return focusableViews;
+		}
+
+		bool IsLastView (AppKit.NSView view) => GetOrderedFocusableViews (view).LastOrDefault () == view;
+		bool IsFirstView (AppKit.NSView view) => GetOrderedFocusableViews (view).FirstOrDefault () == view;
+
+		static bool CanBecomeKeyView (AppKit.NSView view)
+		{
+			if (!view.CanBecomeKeyView)
+				return false;
+
+			if (view is AppKit.NSClipView && view.Superview is AppKit.NSView parent) {
+				return parent.CanBecomeKeyView;
+			}
+
+			return true;
+		}
+
+		static bool HandlesFocus (AppKit.NSView view)
+		{
+			if (view.Hidden) {
+				return true;
+			}
+			if (view.Superview is AppKit.NSClipView clip && clip.Superview is AppKit.NSTextField) {
+				return true;
+			}
+			return false;
+		}
+
+		static void AddRecursivelyFocusableViews (AppKit.NSView view, List<AppKit.NSView> toAddViews)
+		{
+			if (HandlesFocus (view)) {
+				return;
+			}
+			if (CanBecomeKeyView (view))
+				toAddViews.Add (view);
+
+			foreach (var subview in view.Subviews) {
+				AddRecursivelyFocusableViews (subview, toAddViews);
+			}
+		}
+
+		AppKit.NSView GetMainEmbededView (AppKit.NSView nSView)
+		{
+			if (nSView.Superview == null)
+				throw new NullReferenceException ("Cannot get the main embeded view from a view with superview = null");
+			if (nSView.Superview.ToString ().StartsWith ("<GdkQuartzView")) {
+				return nSView;
+			}
+			var parent = GetMainEmbededView (nSView.Superview);
+			return parent;
+		}
+
+		readonly List<Gtk.GtkNSViewHost> viewHosts = new List<Gtk.GtkNSViewHost> ();
+		internal void RegisterEmbededView (Gtk.GtkNSViewHost gtkNSViewHost)
+		{
+			if (gtkNSViewHost == null) {
+				throw new NullReferenceException ("cannot register a null GtkNSViewHost");
+			}
+			if (!viewHosts.Contains (gtkNSViewHost)) {
+				viewHosts.Add (gtkNSViewHost);
+			}
+		}
+
+		internal void RemoveEmbededView (GtkNSViewHost gtkNSViewHost)
+		{
+			viewHosts.Remove (gtkNSViewHost);
 		}
 
 		bool ProcessKeyEventCore (Gdk.EventKey ev)
@@ -3263,4 +3384,3 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 }
-

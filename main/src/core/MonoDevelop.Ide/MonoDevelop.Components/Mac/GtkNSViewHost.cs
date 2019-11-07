@@ -63,6 +63,7 @@ namespace Gtk
 		[DllImport (LIBGTKQUARTZ)]
 		static extern bool gdk_window_has_native (IntPtr window);
 
+		internal NSView Content => view;
 		NSView view;
 		NSView superview;
 		bool disposeViewOnGtkDestroy;
@@ -88,6 +89,9 @@ namespace Gtk
 		public GtkNSViewHost (NSView view, bool disposeViewOnGtkDestroy)
 		{
 			this.view = view ?? throw new ArgumentNullException (nameof (view));
+
+			MonoDevelop.Ide.IdeApp.CommandService.RegisterEmbededView (this);
+
 			this.disposeViewOnGtkDestroy = disposeViewOnGtkDestroy;
 
 			WidgetFlags |= WidgetFlags.NoWindow;
@@ -158,6 +162,8 @@ namespace Gtk
 			LogEnter ();
 			try {
 				view?.RemoveFromSuperview ();
+
+				MonoDevelop.Ide.IdeApp.CommandService.RemoveEmbededView (this);
 
 				if (disposeViewOnGtkDestroy)
 					view?.Dispose ();
