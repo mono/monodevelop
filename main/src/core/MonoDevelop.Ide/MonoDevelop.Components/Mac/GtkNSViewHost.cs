@@ -28,7 +28,7 @@ using AppKit;
 using CoreGraphics;
 using ObjCRuntime;
 using Foundation;
-
+using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace Gtk
@@ -321,6 +321,19 @@ namespace Gtk
 					return false;
 				}
 
+				AppKit.NSView nativeViewToFocus;
+
+				var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
+				if (currentEvent.Type == NSEventType.KeyDown && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+					if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+						nativeViewToFocus = MonoDevelop.Ide.IdeApp.CommandService.GetOrderedFocusableViews (Content, addViewBeforeChildren:false, removeContentView: true).LastOrDefault () ?? Content;
+					} else {
+						nativeViewToFocus = MonoDevelop.Ide.IdeApp.CommandService.GetOrderedFocusableViews (Content, addViewBeforeChildren:true, removeContentView: true).FirstOrDefault () ?? Content;
+					}
+					Content.Window?.MakeFirstResponder (nativeViewToFocus);
+				} else {
+					Content.Window?.MakeFirstResponder (Content);
+				}
 				UpdateViewFrame ();
 
 				return base.OnFocusInEvent (evnt);
