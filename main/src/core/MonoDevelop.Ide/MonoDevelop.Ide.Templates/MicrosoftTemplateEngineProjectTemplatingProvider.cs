@@ -105,6 +105,12 @@ namespace MonoDevelop.Ide.Templates
 			//TODO: Once templates support "D396686C-DE0E-4DE6-906D-291CD29FC5DE" use that to load projects
 			foreach (var path in result.ResultInfo.PrimaryOutputs) {
 				var fullPath = Path.Combine (config.ProjectLocation, GetPath (path));
+				if (!File.Exists (fullPath)) {
+					// Work around a bug in the templating engine with multi project templates
+					// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1016597
+					fullPath = fullPath.Replace ("NewApp", config.ProjectName);
+				}
+
 				if (Services.ProjectService.IsSolutionItemFile (fullPath))
 					workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), fullPath));
 			}
