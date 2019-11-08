@@ -439,15 +439,33 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 
-		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
+		void SimulateKeyDownInView (AppKit.NSView view, GtkNSViewHost currentGtkViewHost, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
 		{
 			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 				var expectedKeyView = FindValidKeyView (view, defaultView: view);
 				AppKit.NSView next = null;
 				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
 					next = expectedKeyView.PreviousValidKeyView;
+
+					//is our next from another embeded view? we don't allow to do that and we 
+					//we calculate what's the next keyview if there is no a valid candidate (null case) or if our
+					//previous is from another embeded view
+					bool isValidFocus = next != null
+					&& currentGtkViewHost.Content == GetGtkNSViewHostContentView (next) //is in our embeded view
+					&& CanBecomeKeyView (next);
+					if (!isValidFocus) {
+						next = GetPreviousKeyView (expectedKeyView, addViewBeforeChildren: false, removeContentView: true);
+					}
+
 				} else {
 					next = expectedKeyView.NextValidKeyView;
+					bool isValidFocus = next != null
+						&& currentGtkViewHost.Content == GetGtkNSViewHostContentView (next) //is in our embeded view
+						&& CanBecomeKeyView (next);
+					if (!isValidFocus) {
+						//we calculate what's the next keyview if there is no a valid candidate (null case)
+						next = GetNextKeyView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
+					}
 				}
 
 				view.KeyDown (currentEvent);
@@ -586,7 +604,7 @@ namespace MonoDevelop.Components.Commands
 								backToGtk = true;
 							}
 						} else {
-							var isLastView = IsLastView (expectedKeyView, addViewBeforeChildren: false, removeContentView: true);
+							var isLastView = IsLastView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
 							if (isLastView) {
 								//if we are in last element we change to next Gtk widget
 								backToGtk = true;
@@ -595,16 +613,16 @@ namespace MonoDevelop.Components.Commands
 					}
 
 					if (!backToGtk) {
-						SimulateKeyDownInView (view, currentEvent, window);
+						SimulateKeyDownInView (view, gtkNSViewHost, currentEvent, window);
 					} else {
 
 						if (!gtkNSViewHost.IsFocus)
 							gtkNSViewHost.IsFocus = true;
 
 						//Unfocus all focused views in the Gtkquartzwindow
+						//NOTE: Be careful! after this, native window.FirstResponder it will change from the current one
 						window.MakeFirstResponder (null);
-						//Be careful! after this, native window.FirstResponder it will change from the current one
-						
+					
 						//gtkNSViewHost.ProcessEvent (ev);
 						//GetGtkWindow (ev.Window).Present ();
 					}
@@ -625,6 +643,25 @@ namespace MonoDevelop.Components.Commands
 			return focusableViews;
 		}
 
+		AppKit.NSView GetNextKeyView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
+		{
+			var views = GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView);
+			var currentIndex = views.IndexOf (view);
+			if (currentIndex > -1 && currentIndex < views.Count - 1) {
+				return views [currentIndex + 1];
+			}
+			return null;
+		}
+		AppKit.NSView GetPreviousKeyView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
+		{
+			var views = GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView);
+			var currentIndex = views.IndexOf (view);
+			if (currentIndex > 0 && currentIndex < views.Count) {
+				return views [currentIndex - 1];
+			}
+			return null;
+		}
+
 		bool IsLastView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).LastOrDefault () == view;
 		bool IsFirstView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).FirstOrDefault () == view;
 
@@ -636,6 +673,10 @@ namespace MonoDevelop.Components.Commands
 				return false;
 
 			if (view is AppKit.NSScrollView) {
+				return false;
+			}
+
+			if (view is AppKit.NSScroller) {
 				return false;
 			}
 
@@ -678,8 +719,14 @@ namespace MonoDevelop.Components.Commands
 			if (addViewBeforeChildren && CanBecomeKeyView (view) && contentView != view)
 				toAddViews.Add (view);
 
-			foreach (var subview in view.Subviews) {
-				AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
+			if (view.IsFlipped) {
+				foreach (var subview in view.Subviews.OrderBy (s => s.Frame.Left).ThenBy (h => h.Frame.Top)) {
+					AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
+				}
+			} else {
+				foreach (var subview in view.Subviews.OrderBy (s => s.Frame.Left).ThenByDescending (h => h.Frame.Top)) {
+					AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
+				}
 			}
 
 			if (!addViewBeforeChildren && CanBecomeKeyView (view) && contentView != view)
