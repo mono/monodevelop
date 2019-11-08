@@ -58,6 +58,8 @@ namespace MonoDevelop.Debugger
 			treeView.EndEditing += OnEndEditing;
 			controller.AddValue (value);
 
+			treeView.GridStyleMask = NSTableViewGridStyle.SolidVerticalLine;
+
 			scrollView = new NSScrollView {
 				HasVerticalScroller = true,
 				AutohidesScrollers = true,
@@ -69,7 +71,7 @@ namespace MonoDevelop.Debugger
 				View = scrollView
 			};
 
-			widthConstraint = scrollView.WidthAnchor.ConstraintEqualToConstant (treeView.Frame.Width); 
+			widthConstraint = scrollView.WidthAnchor.ConstraintEqualToConstant (300);// treeView.Frame.Width); 
 			widthConstraint.Active = true;
 
 			heightConstraint = scrollView.HeightAnchor.ConstraintEqualToConstant (treeView.Frame.Height);
@@ -109,13 +111,27 @@ namespace MonoDevelop.Debugger
 		void OnTreeViewResized (object sender, EventArgs e)
 		{
 			Console.WriteLine ("OnTreeViewResized: treeView.Frame.Width = {0}", treeView.Frame.Width);
+			Console.WriteLine ("OnTreeViewResized: treeView.Frame.Height = {0}", treeView.Frame.Height);
 			var maxHeight = GetMaxHeight (treeView.Window);
-			var height = treeView.FittingSize.Height;
+			//var height = treeView.FittingSize.Height;
+
+			var height = (treeView.RowHeight + treeView.IntercellSpacing.Height) * treeView.RowCount;
 
 			height = NMath.Min (height, maxHeight);
 
+			Console.WriteLine ($"OnTreeViewResized ({treeView.RowCount} + {treeView.IntercellSpacing.Height}) * {treeView.RowHeight} = {height}");
+
 			heightConstraint.Constant = height;
-			widthConstraint.Constant = treeView.Frame.Width;
+
+
+			var width = treeView.TableColumns () [0].Width + treeView.IntercellSpacing.Width +
+				treeView.TableColumns () [1].Width + treeView.IntercellSpacing.Width +
+				treeView.TableColumns () [2].Width;
+			widthConstraint.Constant = width; //treeView.Frame.Width;
+			treeView.SetFrameSize (new CoreGraphics.CGSize (width, height));
+			//treeView.TableColumns() [0].Width = 100;
+			//treeView.TableColumns() [1].Width = 100;
+			//treeView.TableColumns() [2].Width = MacDebuggerObjectPinView.MinWidth;
 		}
 
 		void OnPinStatusChanged (object sender, EventArgs args)

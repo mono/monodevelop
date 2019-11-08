@@ -98,6 +98,7 @@ namespace MonoDevelop.Debugger
 			nameColumn.Title = GettextCatalog.GetString ("Name");
 			nameColumn.Width = MinimumNameColumnWidth * 2;
 			AddColumn (nameColumn);
+			//nameColumn.ResizingMask = NSTableColumnResizing.UserResizingMask;
 
 			OutlineTableColumn = nameColumn;
 
@@ -107,6 +108,7 @@ namespace MonoDevelop.Debugger
 			if (compactView)
 				valueColumn.MaxWidth = 800;
 			AddColumn (valueColumn);
+			//valueColumn.ResizingMask = NSTableColumnResizing.UserResizingMask;
 
 			if (!compactView) {
 				typeColumn = new NSTableColumn ("type") { Editable = false, MinWidth = MinimumTypeColumnWidth, ResizingMask = resizingMask };
@@ -237,23 +239,29 @@ namespace MonoDevelop.Debugger
 
 			bool changed = false;
 
+			Console.WriteLine ($"OptimizeColumnWidths - name width should be {nameWidth}, not {nameColumn.Width}");
 			if (nameColumn.Width != nameWidth) {
-				nameColumn.MinWidth = nameColumn.Width = nameWidth;
+
+				nameColumn.Width = nameWidth;
 				changed = true;
 			}
 
+			Console.WriteLine ($"OptimizeColumnWidths - value width should be {valueWidth}, not {valueColumn.Width}");
 			if (valueColumn.Width != valueWidth) {
-				valueColumn.MinWidth = valueColumn.Width = valueWidth;
+				valueColumn.Width = valueWidth;
 				changed = true;
 			}
 
+			var optimalWidth = nameColumn.Width + valueColumn.Width + pinColumn.Width;
+			Console.WriteLine ("OptimizeColumnWidths: optimal width = {0}", optimalWidth);
 			if (changed) {
-				var optimalWidth = nameColumn.Width + valueColumn.Width + pinColumn.Width;
-				Console.WriteLine ("OptimizeColumnWidths: optimal width = {0}", optimalWidth);
+				Console.WriteLine ("OptimizeColumnWidths - changed");
 
-				var size = Frame.Size;
-				size.Width = optimalWidth;
-				SetFrameSize (size);
+				//var size = Frame.Size;
+				//size.Width = optimalWidth + (ColumnCount * IntercellSpacing.Width);
+				//Console.WriteLine ("OptimizeColumnWidths: set width = {0}", size.Width);
+				//SetFrameSize (size);
+				//Console.WriteLine ("OptimizeColumnWidths: actual width = {0}", size.Width);
 
 				//SizeToFit ();
 

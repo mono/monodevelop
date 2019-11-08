@@ -416,12 +416,17 @@ namespace MonoDevelop.Debugger
 				} else {
 					// use ExpandItem to expand so we see the loading message, expanding the node will trigger a fetch of the children
 					TreeView.ExpandItem (ObjectValue, false);
+
+					// expand causes this to refresh and ObjectValue becomes null which seems a little strange
+					return;
 				}
 			} else {
 				// this is likely to support IsImplicitNotSupported
 				TreeView.Refresh (Node);
 			}
 
+
+			// FIX ME - NRE if ShowMoreValuesObjectValueNode
 			((MacObjectValueNode) ObjectValue).HideValueButton = true;
 			Refresh ();
 		}
