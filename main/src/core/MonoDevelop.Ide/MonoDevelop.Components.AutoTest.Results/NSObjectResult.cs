@@ -329,7 +329,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return propertyInfo.GetValue (ResultObject, null);
 		}
 
-		public List<IConfigurationModel> GetConfigurationModels ()
+		public IConfigurationModel[] GetConfigurationModels ()
 		{
 			var pinfo = GetPropertyInfo ("ConfigurationModel");
 			if (pinfo == null) {
@@ -337,17 +337,17 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 			var models = (IEnumerable<IConfigurationModel>)GetModelObject (pinfo);
 
-			return models?.ToList ();
+			return models?.ToArray ();
 		}
 
-		public List<IRuntimeMutableModel> GetRuntimeModels ()
+		public IRuntimeMutableModel[] GetRuntimeModels ()
 		{
 			var pinfo = GetPropertyInfo ("RuntimeModel");
 			if (pinfo == null) {
 				return null;
 			}
 			var topModels = (IEnumerable<IRuntimeModel>)GetModelObject (pinfo);
-			return AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented).Select (x => x.GetMutableModel ()).ToList ();
+			return AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented).Select (x => x.GetMutableModel ()).ToArray ();
 		}
 
 		public IConfigurationModel GetActiveConfiguration ()
