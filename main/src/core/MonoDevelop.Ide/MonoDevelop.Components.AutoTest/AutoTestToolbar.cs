@@ -40,39 +40,60 @@ namespace MonoDevelop.Components.AutoTest
 			this.session = session;
 		}
 
-		public NSObjectResult SelectorViewControl {
+		public  AppResult SelectorViewControl {
 			get {
 				var c = session.CreateNewQuery ();
 				c = selectorViewQuery (c);
 				var queryResult = session.ExecuteQuery (c);
 
-				return queryResult [0] as NSObjectResult;
+				return queryResult [0];
 			}
 		}
 
 		public string GetActiveConfiguration ()
 		{
-			return SelectorViewControl.GetActiveConfiguration ()?.DisplayString;
+			#if MAC
+			return (SelectorViewControl as NSObjectResult).GetActiveConfiguration ()?.DisplayString;
+			#else
+			return null;
+			#endif
+
 		}
 
 		public string GetActiveExetutionTarget ()
 		{
-			return SelectorViewControl.GetActiveRuntime ()?.DisplayString;
+			#if MAC
+			return (SelectorViewControl as NSObjectResult).GetActiveRuntime ()?.DisplayString;
+			#else
+			return null;
+			#endif
 		}
 
 		public List<string> GetConfigurations ()
 		{
-			return SelectorViewControl.GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToList ();
+			#if MAC
+			return (SelectorViewControl as NSObjectResult).GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToList ();
+			#else
+			return null;
+			#endif
 		}
 
 		public List<string> GetExecutionTargets ()
 		{
-			return SelectorViewControl.GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
+			#if MAC
+			return (SelectorViewControl as NSObjectResult).GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
+			#else
+			return null;
+			#endif
 		}
 
 		public List<string> GetStartupProjects ()
 		{
-			return SelectorViewControl.GetStartupProjectNames ();
+			#if MAC
+			return (SelectorViewControl as NSObjectResult).GetStartupProjectNames ();
+			#else
+			return null;
+			#endif
 		}
 
 		public string GetStatusMessage ()
@@ -82,7 +103,11 @@ namespace MonoDevelop.Components.AutoTest
 
 		public string GetActiveStartupProject ()
 		{
-			return SelectorViewControl.GetActiveStartupProject ();
+			#if MAC
+			return (SelectorViewControl as NSObjectResult).GetActiveStartupProject ();
+			#else
+			return null;
+			#endif
 		}
 
 		public Dictionary<ExecutionInfoKeys, string> GetExecutionInfo ()
