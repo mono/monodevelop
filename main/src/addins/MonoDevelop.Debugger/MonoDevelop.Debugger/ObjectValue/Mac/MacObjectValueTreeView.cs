@@ -213,11 +213,20 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		/// <summary>
+		/// Gets the optimal tooltip window width in order to display the name/value/pin columns w/o truncation.
+		/// </summary>
+		public nfloat OptimalTooltipWidth {
+			get; private set;
+		}
+
 		// Note: this resizing method is the one used by debugger tooltips and pinned watches in the editor
 		void OptimizeColumnSizes (bool emitResized = true)
 		{
 			if (!compactView || Superview == null || RowCount == 0)
 				return;
+
+			Console.WriteLine ("OptimizeColumnSizes({0})", emitResized);
 
 			nfloat nameWidth = MinimumNameColumnWidth;
 			nfloat valueWidth = MinimumValueColumnWidth;
@@ -237,31 +246,32 @@ namespace MonoDevelop.Debugger
 
 			bool changed = false;
 
-			if (nameColumn.Width != nameWidth) {
+			if ((int) nameColumn.Width != (int) nameWidth) {
 				nameColumn.MinWidth = nameColumn.Width = nameWidth;
 				changed = true;
 			}
 
-			if (valueColumn.Width != valueWidth) {
+			if ((int) valueColumn.Width != (int) valueWidth) {
 				valueColumn.MinWidth = valueColumn.Width = valueWidth;
 				changed = true;
 			}
 
+			Console.WriteLine ("\tchanged = {0}", changed);
+
 			if (changed) {
-				var optimalWidth = nameColumn.Width + valueColumn.Width + pinColumn.Width;
-				Console.WriteLine ("OptimizeColumnWidths: optimal width = {0}", optimalWidth);
+				var optimalTooltipWidth = nameWidth + valueWidth + pinColumn.Width + IntercellSpacing.Width * 2;
 
-				var size = Frame.Size;
-				size.Width = optimalWidth;
-				SetFrameSize (size);
+				Console.WriteLine ("\tOptimalTooltipWidth: old = {0}, new = {1}", OptimalTooltipWidth, optimalTooltipWidth);
 
-				//SizeToFit ();
+				OptimalTooltipWidth = optimalTooltipWidth;
 
 				if (emitResized)
 					OnResized ();
+
+				SizeToFit ();
 			}
 
-			ReloadData ();
+			//ReloadData ();
 			SetNeedsDisplayInRect (Frame);
 		}
 
@@ -321,24 +331,28 @@ namespace MonoDevelop.Debugger
 		public override void ViewDidMoveToSuperview ()
 		{
 			base.ViewDidMoveToSuperview ();
+			Console.WriteLine ("ViewDidMoveToSuperview()");
 			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
+			Console.WriteLine ("ViewDidMoveToWindow()");
 			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidEndLiveResize ()
 		{
 			base.ViewDidEndLiveResize ();
+			Console.WriteLine ("ViewDidEndLiveResize()");
 			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidUnhide ()
 		{
 			base.ViewDidHide ();
+			Console.WriteLine ("ViewDidUnhide()");
 			OptimizeColumnSizes ();
 		}
 
@@ -355,6 +369,7 @@ namespace MonoDevelop.Debugger
 
 		public override void ExpandItem (NSObject item, bool expandChildren)
 		{
+			Console.WriteLine ("ExpandItem(item, expandChildren = {0})", expandChildren);
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item, expandChildren);
@@ -365,6 +380,7 @@ namespace MonoDevelop.Debugger
 
 		public override void ExpandItem (NSObject item)
 		{
+			Console.WriteLine ("ExpandItem(item)");
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item);
@@ -385,6 +401,7 @@ namespace MonoDevelop.Debugger
 
 		public override void CollapseItem (NSObject item, bool collapseChildren)
 		{
+			Console.WriteLine ("CollapseItem(item, collapseChildren = {0})", collapseChildren);
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item, collapseChildren);
@@ -395,6 +412,7 @@ namespace MonoDevelop.Debugger
 
 		public override void CollapseItem (NSObject item)
 		{
+			Console.WriteLine ("CollapseItem(item)");
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item);
@@ -549,6 +567,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.Replace (node, replacementNodes);
+			Console.WriteLine ("OnEvaluationCompleted()");
 			OptimizeColumnSizes (false);
 			OnResized ();
 		}
@@ -564,6 +583,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.ReloadChildren (node);
+			Console.WriteLine ("OnChildrenLoaded()");
 			OptimizeColumnSizes (false);
 			OnResized ();
 		}

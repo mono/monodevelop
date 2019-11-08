@@ -126,8 +126,8 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 
 			var origin = textView.ConvertPointFromView (Frame.Location, this);
 			var maxHeight = NMath.Max (textView.Frame.Bottom - origin.Y, treeView.RowHeight * 2);
-			var height = treeView.FittingSize.Height;
-			var width = treeView.Frame.Width;
+			var height = (treeView.RowHeight + treeView.IntercellSpacing.Height) * treeView.RowCount;
+			var width = treeView.OptimalTooltipWidth;
 
 			height = NMath.Min (height, maxHeight);
 
