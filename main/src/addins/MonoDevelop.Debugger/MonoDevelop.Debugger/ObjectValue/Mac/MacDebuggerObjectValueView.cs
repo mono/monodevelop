@@ -390,7 +390,7 @@ namespace MonoDevelop.Debugger
 			// Third Item: Value Button
 			if (valueButtonText != null && !hideValueButton) {
 				// FIXME: what left/right padding do we need to add for the button around the button label? 6px?
-				optimalWidth += GetWidthForString (treeView.Font, valueButtonText, -3) + 6;
+				optimalWidth += GetWidthForString (treeView.CustomFont, valueButtonText, -3) + 6;
 				optimalWidth += RowCellSpacing;
 			}
 
@@ -401,7 +401,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			// Fifth Item: Text Value
-			optimalWidth += GetWidthForString (treeView.Font, strval);
+			optimalWidth += GetWidthForString (treeView.CustomFont, strval);
 
 			optimalWidth += MarginSize;
 
