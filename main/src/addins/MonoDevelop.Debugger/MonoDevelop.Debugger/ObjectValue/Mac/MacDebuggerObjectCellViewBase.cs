@@ -171,7 +171,7 @@ namespace MonoDevelop.Debugger
 
 			modified?.Dispose ();
 
-			return width;
+			return NMath.Ceiling (width + 2);
 		}
 
 		protected void UpdateFont (NSControl control, int sizeDelta = 0)

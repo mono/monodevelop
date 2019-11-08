@@ -319,7 +319,6 @@ namespace MonoDevelop.Debugger
 		public static nfloat GetOptimalWidth (MacObjectValueTreeView treeView, ObjectValueNode node, bool hideValueButton)
 		{
 			nfloat optimalWidth = MarginSize;
-
 			string evaluateStatusIcon = null;
 			string valueButtonText = null;
 			var showViewerButton = false;
@@ -390,8 +389,8 @@ namespace MonoDevelop.Debugger
 
 			// Third Item: Value Button
 			if (valueButtonText != null && !hideValueButton) {
-				// FIXME: what left/right padding do we need to add for the button around the button label? 6px?
-				optimalWidth += GetWidthForString (treeView.CustomFont, valueButtonText, -3) + 6;
+				// FIXME: what left/right padding do we need to add for the button around the button label? 4px?
+				optimalWidth += GetWidthForString (treeView.CustomFont, valueButtonText, -3) + 4;
 				optimalWidth += RowCellSpacing;
 			}
 
