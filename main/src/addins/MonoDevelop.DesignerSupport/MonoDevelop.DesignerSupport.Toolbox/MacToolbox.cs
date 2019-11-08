@@ -42,51 +42,6 @@ using Foundation;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	class KeyViewLoopDelegate
-	{
-		readonly List<NSView> viewsKeyLoopOrder = new List<NSView> ();
-
-		public bool Contains (NSView view) => viewsKeyLoopOrder.Contains (view);
-
-		NSView GetNextFocusableViewForView (NSView view, int nextPositionInArray = 1)
-		{
-			if (nextPositionInArray == 0)
-				return view;
-
-			var currentIndex = viewsKeyLoopOrder.IndexOf (view);
-			if (currentIndex == -1) {
-				return null;
-			}
-
-			//nextPositionInArray is the next view we want to loop
-			var initialPosition = currentIndex + nextPositionInArray;
-
-			//this next view could be hidden then we want to iterate secuentially to next in this case until end of our array
-			var increment = nextPositionInArray >= 0 ? +1 : -1;
-
-			//with the initial position and increment we return the first view which can be first responder and it's not hidden
-			for (int j = initialPosition; j >= 0 && j < viewsKeyLoopOrder.Count; j += increment) {
-				var nextView = viewsKeyLoopOrder [j];
-				if (!nextView.Hidden && nextView.AcceptsFirstResponder ()) {
-					return nextView;
-				}
-			}
-			return null;
-		}
-
-		public void AddViews (params NSView [] views) => viewsKeyLoopOrder.AddRange (views);
-
-		public void RecalculeNextResponderChain ()
-		{
-			NSView currentView = viewsKeyLoopOrder.FirstOrDefault ();
-			while (currentView != null) {
-				var nextView = GetNextFocusableViewForView (currentView, 1);
-				currentView.NextKeyView = nextView;
-				currentView = nextView;
-			}
-		}
-	}
-
 	class MacToolbox : NSView, IPropertyPadProvider, IToolboxConfiguration
 	{
 		const string ToolboxItemContextMenuCommand = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu";
@@ -120,16 +75,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		NSTextField messageTextField;
 
-		readonly KeyViewLoopDelegate keyViewLoopDelegate;
-
 		public override bool AcceptsFirstResponder () => false;
 
 		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
 		{
 			WantsLayer = true;
 
-			keyViewLoopDelegate = new KeyViewLoopDelegate ();
-			
 			verticalStackView = new UnfocusableStackView () {
 				Orientation = NSUserInterfaceLayoutOrientation.Vertical,
 				Alignment = NSLayoutAttribute.Leading,
@@ -251,9 +202,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Hidden = true
 			};
 			AddSubview (messageTextField);
-
-			keyViewLoopDelegate.AddViews (filterEntry, catToggleButton, compactModeToggleButton, toolboxAddButton, toolboxWidget);
-			keyViewLoopDelegate.RecalculeNextResponderChain ();
 		}
 
 		NSIndexPath GetFirstVisibleItemIndexPath ()
@@ -490,7 +438,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
-			keyViewLoopDelegate.RecalculeNextResponderChain ();
 
 			if (categories.Count == 0) {
 				SetCustomMessage (GettextCatalog.GetString ("There are no tools available for the current document."));
@@ -562,7 +509,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			set {
 				toolboxAddButton.Hidden = !value;
-				keyViewLoopDelegate.RecalculeNextResponderChain ();
 				toolboxAddButton.InvalidateIntrinsicContentSize ();
 			}
 		}
