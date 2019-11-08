@@ -201,6 +201,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				if ((info.ActionMask & MonitorAction.FollowerCancel) != 0)
 					info.CancellationTokenRegistration.Dispose ();
 			}
+			monitors.Clear ();
 		}
 
 		void OnFollowerCancelRequested ()
