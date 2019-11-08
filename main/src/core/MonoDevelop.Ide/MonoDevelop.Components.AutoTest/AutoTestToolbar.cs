@@ -115,7 +115,7 @@ namespace MonoDevelop.Components.AutoTest
 			var info = new Dictionary<ExecutionInfoKeys, string> (3);
 			info.Add (ExecutionInfoKeys.StartupProject, GetActiveStartupProject ());
 			info.Add (ExecutionInfoKeys.ActiveConfiguration, GetActiveConfiguration ());
-			info.Add (ExecutionInfoKeys.ActiveExecitionTarget, GetActiveExetutionTarget ());
+			info.Add (ExecutionInfoKeys.ActiveExecitionTarget, GetActiveExecutionTarget ());
 			return info;
 		}
 
