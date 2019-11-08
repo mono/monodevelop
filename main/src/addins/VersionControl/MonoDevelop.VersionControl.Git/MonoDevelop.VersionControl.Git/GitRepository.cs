@@ -93,6 +93,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		TaskFactory DedicatedOperationFactory {
 			get {
+				if (rootRepository == null)
+					throw new ObjectDisposedException ("This object is disposed.");
 				if (dedicatedOperationFactory == null)
 					dedicatedOperationFactory = new TaskFactory (GitScheduler);
 				return dedicatedOperationFactory;
