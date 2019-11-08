@@ -58,7 +58,8 @@ namespace MonoDevelop.DotNetCore.Tests
 					"    <add key=\"aspnet-aspnetcore-tooling\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json\" />\r\n" +
 					"    <add key=\"aspnet-entityframeworkcore\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json\" />\r\n" +
 					"    <add key=\"aspnet-extensions\" value=\"https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json\" />\r\n" +
-					"    <add key=\"gRPCrepository\" value=\"https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev\" />\r\n";
+					"    <add key=\"gRPCrepository\" value=\"https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev\" />\r\n" +
+					"    <add key=\"3.0.101-servicing\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/3.0.101-servicing-014344/nuget/v3/index.json\" /> \r\n";
 			}
 		}
 
