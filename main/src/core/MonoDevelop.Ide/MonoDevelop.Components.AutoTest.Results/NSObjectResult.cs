@@ -370,11 +370,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return activeRuntime.GetMutableModel ();
 		}
 
-		public List<string> GetStartupProjectNames ()
+		public string[] GetStartupProjectNames ()
 		{
 			var pinfo = GetPropertyInfo ("RunConfigurationModel");
 			var runConfigs = (IEnumerable<IRunConfigurationModel>)pinfo.GetValue (ResultObject);
-			return runConfigs.Select (x => x.DisplayString).ToList ();
+			return runConfigs.Select (x => x.DisplayString).ToArray ();
 		}
 
 		public override bool SetActiveConfiguration (string configurationName)

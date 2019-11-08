@@ -69,25 +69,25 @@ namespace MonoDevelop.Components.AutoTest
 			#endif
 		}
 
-		public List<string> GetConfigurations ()
+		public string[] GetConfigurations ()
 		{
 			#if MAC
-			return (SelectorViewControl as NSObjectResult).GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToList ();
+			return (SelectorViewControl as NSObjectResult).GetConfigurationModels ().Select (m => $"{m.DisplayString}").ToArray();
 			#else
 			return null;
 			#endif
 		}
 
-		public List<string> GetExecutionTargets ()
+		public string[] GetExecutionTargets ()
 		{
 			#if MAC
-			return (SelectorViewControl as NSObjectResult).GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToList ();
+			return (SelectorViewControl as NSObjectResult).GetRuntimeModels ().Select (m => $"{m.FullDisplayString}").ToArray ();
 			#else
 			return null;
 			#endif
 		}
 
-		public List<string> GetStartupProjects ()
+		public string[] GetStartupProjects ()
 		{
 			#if MAC
 			return (SelectorViewControl as NSObjectResult).GetStartupProjectNames ();
