@@ -20,7 +20,7 @@
     <NuGetVersionNuGet>5.3.0-rtm.6192</NuGetVersionNuGet>
     <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
     <NuGetVersionNUnit3>3.9.0</NuGetVersionNUnit3>
-    <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
+    <NuGetVersionVSCodeDebugProtocol>16.3.30820.2</NuGetVersionVSCodeDebugProtocol>
     <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
     <NuGetVersionVSEditor>16.1.28-g2ad4df7366</NuGetVersionVSEditor>
   </PropertyGroup>
