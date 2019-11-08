@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			protected set => subSubTitle = value;
 		}
 
-		public ScaffolderArgs Args { get; }
+		protected ScaffolderArgs Args { get; }
 
 		protected override Control CreateControl ()
 		{
