@@ -60,7 +60,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		}
 
-		public string GetActiveExetutionTarget ()
+		public string GetActiveExecutionTarget ()
 		{
 			#if MAC
 			return (SelectorViewControl as NSObjectResult).GetActiveRuntime ()?.DisplayString;
