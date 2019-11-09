@@ -307,6 +307,8 @@
     <EmbeddedResource Include="icons\gutter-stack-15%402x.png" />
     <EmbeddedResource Include="icons\gutter-stack-15~dark.png" />
     <EmbeddedResource Include="icons\gutter-stack-15~dark%402x.png" />
+    <EmbeddedResource Include="icons\gutter-stack-15~contrast.png" />
+    <EmbeddedResource Include="icons\gutter-stack-15~contrast%402x.png" />
     <EmbeddedResource Include="icons\gutter-tracepoint-15.png" />
     <EmbeddedResource Include="icons\gutter-tracepoint-15%402x.png" />
     <EmbeddedResource Include="icons\gutter-tracepoint-15~dark.png" />
@@ -333,6 +335,8 @@
     <EmbeddedResource Include="icons\stack-pointer-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\stack-pointer-16~contrast.png" />
+    <EmbeddedResource Include="icons\stack-pointer-16~contrast%402x.png" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\pause-16.png" />
