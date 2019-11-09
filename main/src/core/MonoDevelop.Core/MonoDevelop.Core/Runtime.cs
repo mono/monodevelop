@@ -42,6 +42,7 @@ using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Setup;
 using MonoDevelop.Core.Web;
@@ -144,6 +145,9 @@ namespace MonoDevelop.Core
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
 				LoadMSBuildLibraries ();
+
+				// Initialize extra services
+				FeatureSwitchService.Initialize ();
 				
 				initialized = true;
 				

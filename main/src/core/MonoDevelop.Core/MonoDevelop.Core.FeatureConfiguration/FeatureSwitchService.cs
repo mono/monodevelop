@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.FeatureConfiguration
 	{
 		static Dictionary<string, FeatureSwitch> featureSwitches = new Dictionary<string, FeatureSwitch> ();
 
-		static FeatureSwitchService ()
+		internal static void Initialize ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/FeatureSwitches", HandleFeatureSwitchExtension);
 		}
