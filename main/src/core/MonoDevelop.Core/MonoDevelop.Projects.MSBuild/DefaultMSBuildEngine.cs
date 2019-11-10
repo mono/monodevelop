@@ -924,7 +924,7 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (!baseDir.EndsWith ("\\", StringComparison.Ordinal))
 					baseDir += '\\';
 				var recursiveDir = baseRecursiveDir.IsNullOrEmpty ? FilePath.Null : basePath.ToRelative (baseRecursiveDir);
-				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
+				res = FastConcat (res, Directory.GetFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
 			} else {
 				// Directory specifier
 				// Look for matching directories.
@@ -933,18 +933,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (path.IndexOfAny (wildcards) != -1) {
 					foreach (var dir in Directory.EnumerateDirectories (basePath, path))
-						res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath.Slice (1), func, directoryExcludeRegex));
+						res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath.Slice (1), func, directoryExcludeRegex));
 				} else
-					res = res.Concat (ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath.Slice (1), func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath.Slice (1), func, directoryExcludeRegex));
 			}
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
 				foreach (var dir in Directory.EnumerateDirectories (basePath))
-					res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, func, directoryExcludeRegex));
 			}
 
 			return res;
+
+			static IEnumerable<T> FastConcat (IEnumerable<T> first, IEnumerable<T> maybeEmpty)
+				=> maybeEmpty == Enumerable.Empty<T> () ? first : first.Concat (maybeEmpty);
 		}
 
 		static string ExcludeToRegex (string exclude, bool excludeDirectoriesOnly = false)
