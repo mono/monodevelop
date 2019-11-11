@@ -348,6 +348,7 @@
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AccessibleSpacerCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagedPackagesSearchResultViewModelComparer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesPage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesProjectInfo.cs" />
