@@ -243,7 +243,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Initialize ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
+			MacPlatformService.AllObservers.Add (NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 
 				if (notification.Object == Window) {
@@ -252,8 +252,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							LostFocus (this, null);
 					}
 				}
-			}));
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
+			})));
+			MacPlatformService.AllObservers.Add (NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 				if (notification.Object == Window) {
 					if (IsFirstResponderOfWindow (Window)) {
@@ -261,7 +261,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							LostFocus (this, null);
 					}
 				}
-			}));
+			})));
 		}
 
 		bool IsFirstResponderOfWindow (NSWindow window)

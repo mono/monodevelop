@@ -144,7 +144,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void ViewWillMoveToSuperview (NSView newSuperview)
 		{
 			if (Superview != null && superviewFrameChangeObserver != null) {
-				NSNotificationCenter.DefaultCenter.RemoveObserver (superviewFrameChangeObserver);
+				superviewFrameChangeObserver.Dispose ();
 				superviewFrameChangeObserver = null;
 
 				Superview.PostsFrameChangedNotifications = false;
