@@ -1,5 +1,6 @@
 using System;
 using System.Composition;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -9,7 +10,10 @@ using Microsoft.CodeAnalysis.Navigation;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Editor.Projection;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.RoslynServices
@@ -19,11 +23,14 @@ namespace MonoDevelop.Ide.RoslynServices
 	{
 		private readonly IDocumentNavigationService _singleton;
 
+		[Import]
+		public IBufferGraphFactoryService BufferGraphFactoryService { get; set; }
+
 		[ImportingConstructor]
 		[Obsolete (MefConstruction.ImportingConstructorMessage, error: true)]
 		private VisualStudioDocumentNavigationServiceFactory ()
 		{
-			_singleton = new MonoDevelopDocumentNavigationService ();
+			_singleton = new MonoDevelopDocumentNavigationService (this);
 		}
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
@@ -34,6 +41,13 @@ namespace MonoDevelop.Ide.RoslynServices
 
 	class MonoDevelopDocumentNavigationService : IDocumentNavigationService
 	{
+		private VisualStudioDocumentNavigationServiceFactory factory;
+
+		public MonoDevelopDocumentNavigationService (VisualStudioDocumentNavigationServiceFactory visualStudioDocumentNavigationServiceFactory)
+		{
+			this.factory = visualStudioDocumentNavigationServiceFactory;
+		}
+
 		public bool CanNavigateToSpan (Workspace workspace, DocumentId documentId, TextSpan textSpan)
 		{
 			// Navigation should not change the context of linked files and Shared Projects.
@@ -239,7 +253,7 @@ namespace MonoDevelop.Ide.RoslynServices
 			return true;
 		}
 
-		public static bool TryMapSpanFromSecondaryBufferToPrimaryBuffer (TextSpan spanInSecondaryBuffer, Microsoft.CodeAnalysis.Workspace workspace, Document document, out TextSpan spanInPrimaryBuffer)
+		public bool TryMapSpanFromSecondaryBufferToPrimaryBuffer (TextSpan spanInSecondaryBuffer, Microsoft.CodeAnalysis.Workspace workspace, Document document, out TextSpan spanInPrimaryBuffer)
 		{
 			spanInPrimaryBuffer = default;
 
@@ -247,15 +261,25 @@ namespace MonoDevelop.Ide.RoslynServices
 			if (containedDocument == null) {
 				return false;
 			}
-			throw new NotImplementedException ();
-			//var bufferCoordinator = containedDocument.BufferCoordinator;
 
-			//var primary = new VsTextSpan [1];
-			//var hresult = bufferCoordinator.MapSecondaryToPrimarySpan (spanInSecondaryBuffer, primary);
+			var projectionBuffer = containedDocument.TopBuffer;
 
-			//spanInPrimaryBuffer = primary [0];
+			var bufferGraph = factory.BufferGraphFactoryService.CreateBufferGraph (projectionBuffer);
 
-			//return ErrorHandler.Succeeded (hresult);
+			if (document.TryGetText(out var sourceText) && sourceText.Container.TryGetTextBuffer() is ITextBuffer languageBuffer) {
+				var secondarySnapshot = languageBuffer.CurrentSnapshot;
+				var snapshotSpanInSecondaryBuffer = new SnapshotSpan (secondarySnapshot, new Span (spanInSecondaryBuffer.Start, spanInSecondaryBuffer.Length));
+				var topBufferSnapshotSpan = bufferGraph.MapUpToSnapshot (
+					snapshotSpanInSecondaryBuffer,
+					SpanTrackingMode.EdgeExclusive,
+					projectionBuffer.CurrentSnapshot).FirstOrDefault();
+				if (topBufferSnapshotSpan != default) {
+					spanInPrimaryBuffer = new TextSpan (topBufferSnapshotSpan.Start, topBufferSnapshotSpan.Length);
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private bool CanMapFromSecondaryBufferToPrimaryBuffer (Workspace workspace, Document document, TextSpan spanInSecondaryBuffer)

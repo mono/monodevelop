@@ -253,16 +253,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public async Task<Document> OpenDocument (FileOpenInformation info)
 		{
-			if (string.IsNullOrEmpty (info.FileName))
+			FilePath filePath = GetActualFilePathToOpen(info.FileName);
+			if (string.IsNullOrEmpty (filePath))
 				return null;
 
 			// Make sure composition manager is ready since ScrollToRequestedCaretLocation will use it
 			await Runtime.GetService<CompositionManager> ();
 
 			var metadata = CreateOpenDocumentTimerMetadata ();
-			var fileDescriptor = new FileDescriptor (info.FileName, null, info.Owner);
+			var fileDescriptor = new FileDescriptor (filePath, null, info.Owner);
 
-			using (var timer = Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName, metadata)) {
+			using (var timer = Counters.OpenDocumentTimer.BeginTiming ("Opening file " + filePath, metadata)) {
 				navigationHistoryManager?.LogActiveDocument ();
 				timer.Trace ("Look for open document");
 				foreach (Document doc in Documents) {
@@ -294,8 +295,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 				var progressMonitorManager = await ServiceProvider.GetService<ProgressMonitorManager> ();
 				var pm = progressMonitorManager.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Opening {0}", info.Owner is SolutionFolderItem item ?
-						info.FileName.ToRelative (item?.ParentSolution?.BaseDirectory ?? item.BaseDirectory) :
-						info.FileName),
+						filePath.ToRelative (item?.ParentSolution?.BaseDirectory ?? item.BaseDirectory) :
+						filePath),
 					Stock.StatusWorking,
 					true
 				);
@@ -315,6 +316,32 @@ namespace MonoDevelop.Ide.Gui.Documents
 				}
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Razor: Strip the .g.cs since we want to open the corresponding .cshtml or .razor document.
+		///
+		/// In Visual Studio for Windows the underlying C# buffer is added to the workspace with the
+		/// .cshtml or .razor extension (without the .g.cs) part, so they don't have to worry about
+		/// this. In our case we have an assumption somewhere that all C# documents in the workspace
+		/// have the .cs extension, so we're adding the .g.cs part that we need to strip here.
+		/// 
+		/// This is not great to hardcode application-specific logic here, but we don't anticipate
+		/// more scenarios where we want to open a different file than requested, so it doesn't
+		/// warrant an extension point at this time.
+		/// </summary>
+		FilePath GetActualFilePathToOpen (string filePath)
+		{
+			if (filePath == null) {
+				return null;
+			}
+
+			if (filePath.EndsWith (".cshtml.g.cs", StringComparison.OrdinalIgnoreCase) ||
+				filePath.EndsWith (".razor.g.cs", StringComparison.OrdinalIgnoreCase)) {
+				filePath = filePath.Substring (0, filePath.Length - ".g.cs".Length);
+			}
+
+			return filePath;
 		}
 
 		void ReuseDocument (Document doc, FileOpenInformation info)
