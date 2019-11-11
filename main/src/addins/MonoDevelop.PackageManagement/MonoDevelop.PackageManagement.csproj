@@ -146,7 +146,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewCheckBox.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProject.cs" />
