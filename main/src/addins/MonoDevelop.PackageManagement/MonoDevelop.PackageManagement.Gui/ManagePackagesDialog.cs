@@ -45,6 +45,8 @@ namespace MonoDevelop.PackageManagement
 		DataField<ManagePackagesSearchResultViewModel> packageViewModelField = new DataField<ManagePackagesSearchResultViewModel> ();
 		DataField<Image> packageImageField = new DataField<Image> ();
 		DataField<bool> packageCheckBoxField = new DataField<bool> ();
+		DataField<string> packageCheckA11yField = new DataField<string> ();
+		DataField<string> packageDescriptionA11yField = new DataField<string> ();
 		ListStore packageStore;
 		ManagePackagesCellView packageCellView;
 		CheckBoxCellView packageCheckView;
@@ -153,7 +155,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeListView ()
 		{
-			packageStore = new ListStore (packageImageField, packageViewModelField, packageCheckBoxField);
+			packageStore = new ListStore (packageImageField, packageViewModelField, packageCheckBoxField, packageCheckA11yField, packageDescriptionA11yField);
 			packagesListView.DataSource = packageStore;
 
 			AddCellViewsToListView ();
@@ -177,10 +179,13 @@ namespace MonoDevelop.PackageManagement
 			var checkColumn = new ListViewColumn (GettextCatalog.GetString ("Add Package"));
 
 			packageCheckView = new CheckBoxCellView (packageCheckBoxField) { Editable = true };
+			packageCheckView.AccessibleFields.Label = packageCheckA11yField;
 			packageCheckView.Toggled += PackageCheckCellViewPackageChecked;
 
 			// HACK: Xwt has no custom cell padding, so we need to add an empty label for spacing
-			checkColumn.Views.Add (new TextCellView ("  "));
+			var spaceText = new AccessibleSpacerCellView ();
+			spaceText.AccessibleFields.Label = packageCheckA11yField;
+			checkColumn.Views.Add (spaceText);
 			checkColumn.Views.Add (packageCheckView);
 			packagesListView.Columns.Add (checkColumn);
 
@@ -189,6 +194,7 @@ namespace MonoDevelop.PackageManagement
 				ImageField = packageImageField,
 				CellWidth = 446
 			};
+			packageCellView.AccessibleFields.Label = packageDescriptionA11yField;
 
 			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);
@@ -592,7 +598,16 @@ namespace MonoDevelop.PackageManagement
 		void AppendPackageToListView (ManagePackagesSearchResultViewModel packageViewModel)
 		{
 			int row = packageStore.AddRow ();
-			packageStore.SetValue (row, packageViewModelField, packageViewModel);
+			var accessibleDescription = StringBuilderCache.Allocate (packageViewModel.Id);
+			if (packageViewModel.HasDownloadCount)
+				accessibleDescription.Append (", ").Append (packageViewModel.GetDownloadCountDisplayText ()).Append (" ").Append (GettextCatalog.GetString ("Downloads"));
+			if (!string.IsNullOrEmpty (packageViewModel.Summary))
+				accessibleDescription.Append (", ").Append (packageViewModel.Summary);
+			packageStore.SetValues (row,
+				packageViewModelField, packageViewModel,
+				packageCheckBoxField, packageViewModel.IsChecked,
+				packageCheckA11yField, packageViewModel.Name,
+				packageDescriptionA11yField, StringBuilderCache.ReturnAndFree (accessibleDescription));
 		}
 
 		void LoadPackageImage (int row, ManagePackagesSearchResultViewModel packageViewModel)
