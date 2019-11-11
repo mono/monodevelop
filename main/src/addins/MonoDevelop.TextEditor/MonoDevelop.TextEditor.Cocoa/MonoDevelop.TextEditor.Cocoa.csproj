@@ -129,8 +129,12 @@
     <None Remove="icons\vs-find-replace-search-16%402x.png" />
     <None Remove="icons\go-up-16.png" />
     <None Remove="icons\go-up-16%402x.png" />
+    <None Remove="icons\go-up-16~contrast.png" />
+    <None Remove="icons\go-up-16~contrast%402x.png" />
     <None Remove="icons\go-down-16.png" />
     <None Remove="icons\go-down-16%402x.png" />
+    <None Remove="icons\go-down-16~contrast.png" />
+    <None Remove="icons\go-down-16~contrast%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
@@ -151,8 +155,12 @@
     <EmbeddedResource Include="icons\vs-find-replace-search-16%402x.png" />
     <EmbeddedResource Include="icons\go-up-16.png" />
     <EmbeddedResource Include="icons\go-up-16%402x.png" />
+    <EmbeddedResource Include="icons\go-up-16~contrast.png" />
+    <EmbeddedResource Include="icons\go-up-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\go-down-16.png" />
     <EmbeddedResource Include="icons\go-down-16%402x.png" />
+    <EmbeddedResource Include="icons\go-down-16~contrast.png" />
+    <EmbeddedResource Include="icons\go-down-16~contrast%402x.png" />
   </ItemGroup>
   <Target Name="BuildTextMate" BeforeTargets="Compile">
     <MSBuild Projects="$(VSEditorCoreDirectory)src\TextMate\TMRegEx\TMRegEx.proj" Targets="Build" Properties="Configuration=$(Configuration)" />
