@@ -106,9 +106,13 @@ namespace MonoDevelop.PackageManagement
 			imageLoader.Loaded += ImageLoaded;
 
 			browseLabel.ButtonPressed += BrowseLabelButtonPressed;
+			browseLabel.KeyPressed += BrowseLabelKeyPressed;
 			installedLabel.ButtonPressed += InstalledLabelButtonPressed;
+			installedLabel.KeyPressed += InstalledLabelKeyPressed;
 			updatesLabel.ButtonPressed += UpdatesLabelButtonPressed;
+			updatesLabel.KeyPressed += UpdatesLabelKeyPressed;
 			consolidateLabel.ButtonPressed += ConsolidateLabelButtonPressed;
+			consolidateLabel.KeyPressed += ConsolidateLabelKeyPressed;
 		}
 
 		public bool ShowPreferencesForPackageSources { get; private set; }
@@ -1097,28 +1101,66 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void BrowseLabelButtonPressed (object sender, ButtonEventArgs e)
+		void UpdatePackageResultsLabel (ManagePackagesPage page, Button label)
+		{
+			string text = (string)label.Tag;
+			if (page == viewModel.PageSelected) {
+				label.Markup = string.Format ("<b><u>{0}</u></b>", text);
+			} else {
+				label.Markup = text;
+			}
+		}
+
+		void BrowseLabelButtonPressed (object sender, EventArgs e)
 		{
 			viewModel.PageSelected = ManagePackagesPage.Browse;
 			OnPackageResultsPageSelected ();
 		}
 
-		void InstalledLabelButtonPressed (object sender, ButtonEventArgs e)
+		void BrowseLabelKeyPressed (object sender, KeyEventArgs e)
+		{
+			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.Return || e.Key == Key.Space || e.Key == Key.NumPadEnter)) {
+				BrowseLabelButtonPressed (sender, e);
+			}
+		}
+
+		void InstalledLabelButtonPressed (object sender, EventArgs e)
 		{
 			viewModel.PageSelected = ManagePackagesPage.Installed;
 			OnPackageResultsPageSelected ();
 		}
 
-		void UpdatesLabelButtonPressed (object sender, ButtonEventArgs e)
+		void InstalledLabelKeyPressed (object sender, KeyEventArgs e)
+		{
+			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.Return || e.Key == Key.Space || e.Key == Key.NumPadEnter)) {
+				InstalledLabelButtonPressed (sender, e);
+			}
+		}
+
+		void UpdatesLabelButtonPressed (object sender, EventArgs e)
 		{
 			viewModel.PageSelected = ManagePackagesPage.Updates;
 			OnPackageResultsPageSelected ();
 		}
 
-		void ConsolidateLabelButtonPressed (object sender, ButtonEventArgs e)
+		void UpdatesLabelKeyPressed (object sender, KeyEventArgs e)
+		{
+			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.Return || e.Key == Key.Space || e.Key == Key.NumPadEnter)) {
+				UpdatesLabelButtonPressed (sender, e);
+			}
+		}
+
+		void ConsolidateLabelButtonPressed (object sender, EventArgs e)
 		{
 			viewModel.PageSelected = ManagePackagesPage.Consolidate;
 			OnPackageResultsPageSelected ();
+		}
+
+		void ConsolidateLabelKeyPressed (object sender, KeyEventArgs e)
+		{
+			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.Return || e.Key == Key.Space || e.Key == Key.NumPadEnter)) {
+				ConsolidateLabelButtonPressed (sender, e);
+			}
 		}
 
 		void OnPackageResultsPageSelected ()
