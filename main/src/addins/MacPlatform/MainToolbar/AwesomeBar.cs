@@ -64,6 +64,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			StatusBar.SearchBar = SearchBar;
 
+			RunButton.NextKeyView = SelectorView;
+			SelectorView.NextKeyView = ButtonBarContainer;
+			ButtonBarContainer.NextKeyView = StatusBar;
+			StatusBar.NextKeyView = SearchBar;
+
 			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 		}
 

@@ -236,7 +236,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 				buttonBars.Add (bar);
 			}
-
 			awesomeBar.ButtonBarContainer.ButtonBars = buttonBars;
 		}
 
