@@ -347,7 +347,11 @@ namespace Gtk
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
 			LogEnter ();
-			return base.OnFocusOutEvent (evnt);
+			try {
+				return base.OnFocusOutEvent (evnt);
+			} finally {	
+				LogExit ();	
+			}
 		}
 
 		protected override bool OnWidgetEvent (Gdk.Event evnt)
