@@ -202,6 +202,7 @@ namespace MonoDevelop.AspNetCore.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public async void CanDeserializeConfig ()
 		{
 			var config = await ScaffoldingConfig.LoadFromJsonAsync ();
