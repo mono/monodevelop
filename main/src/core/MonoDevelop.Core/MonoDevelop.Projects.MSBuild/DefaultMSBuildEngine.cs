@@ -942,7 +942,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
 				foreach (var dir in Directory.EnumerateDirectories (basePath))
-					res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePathInput, func, directoryExcludeRegex));
 			}
 
 			return res;
