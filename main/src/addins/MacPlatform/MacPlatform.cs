@@ -156,6 +156,8 @@ namespace MonoDevelop.MacIntegration
 
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,ExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,ExtendedTitleBarDialogBackend> ();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<Xwt.Backends.ISearchTextEntryBackend,AccessibleGtkSearchEntryBackend> ();
+			
 
 			var description = XamMacBuildInfo.Value;
 			if (string.IsNullOrEmpty (description)) {

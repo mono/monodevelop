@@ -93,6 +93,7 @@
     <Compile Include="MacProxyCredentialProvider.cs" />
     <Compile Include="ExtendedTitleBarWindowBackend.cs" />
     <Compile Include="ExtendedTitleBarDialogBackend.cs" />
+    <Compile Include="AccessibleGtkSearchEntryBackend.cs" />
     <Compile Include="MainToolbar\MainToolbar.cs" />
     <Compile Include="MainToolbar\RunButton.cs" />
     <Compile Include="MainToolbar\SearchBar.cs" />
