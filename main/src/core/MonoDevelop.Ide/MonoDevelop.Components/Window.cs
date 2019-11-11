@@ -218,13 +218,7 @@ namespace MonoDevelop.Components
 		{
 			try {
 #if MAC
-				NSWindow nsWindow = null;
-				try {
-					nsWindow = parent.GetNativeWidget<NSWindow> ();
-				} catch {
-					; // nothing
-				}
-				if (nsWindow != null) {
+				if (parent.TryGetNativeWidget<NSWindow> (out var nsWindow)) {
 					var myNSWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
 					myNSWindow.ParentWindow = nsWindow;
 				} else {

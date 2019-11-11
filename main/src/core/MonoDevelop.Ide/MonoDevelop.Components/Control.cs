@@ -55,7 +55,7 @@ namespace MonoDevelop.Components
 		{
 			throw new NotSupportedException ();
 		}
-
+	
 		public T GetNativeWidget<T> () where T : class
 		{
 			if (nativeWidget == null) {
@@ -90,6 +90,16 @@ namespace MonoDevelop.Components
 				return resultWidget;
 
 			throw new NotSupportedException ($"Cannot get native widget {typeof (T)}");
+		}
+
+		public bool TryGetNativeWidget<T> (out T widget) where T : class
+		{
+			if (nativeWidget is T) {
+				widget = GetNativeWidget<T> ();
+				return true;
+			}
+			widget = null;
+			return false;
 		}
 
 		void OnGtkDestroyed (object sender, EventArgs args)
