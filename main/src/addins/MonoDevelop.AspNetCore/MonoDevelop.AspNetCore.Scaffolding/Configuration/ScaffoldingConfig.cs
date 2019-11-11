@@ -83,10 +83,12 @@ namespace Microsoft.WebTools.Scaffolding.Core.Config
 					// fallback to embedded resource
 					stream = typeof (ScaffoldingConfig).Assembly.GetManifestResourceStream ("ScaffoldingPackageVersions.json");
 				}
-				
-				using var streamReader = new StreamReader (stream);
-				var json = await streamReader.ReadToEndAsync ();
-				fetchedConfig = JsonConvert.DeserializeObject<ScaffoldingConfig> (json);
+
+				var serializer = new JsonSerializer ();
+
+				using var sr = new StreamReader (stream);
+				using var jsonTextReader = new JsonTextReader (sr);
+				return serializer.Deserialize<ScaffoldingConfig> (jsonTextReader);
 			}
 			return fetchedConfig;
 		}
