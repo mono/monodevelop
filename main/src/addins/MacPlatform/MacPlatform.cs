@@ -319,6 +319,9 @@ namespace MonoDevelop.MacIntegration
 						e.Reply = NSApplicationTerminateReply.Now;
 					}
 				};
+
+				// TODO: only attach this if coverage profiler is on
+				appDelegate.Terminate += () => Environment.Exit (0);
 				appDelegate.ShowDockMenu += AppDelegate_ShowDockMenu;
 			}
 
