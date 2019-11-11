@@ -12,7 +12,7 @@ namespace Microsoft.WebTools.Scaffolding.Core
 	/// NetStandard21 => The package versions should be 2.1.x
 	/// Net22 => The package versions should be 2.2.x
 	/// </summary>
-	class SupportPolicyVersion : IComparable
+	class SupportPolicyVersion : IComparable, IComparable<SupportPolicyVersion>
 	{
 		public static readonly SupportPolicyVersion LTS10 = new SupportPolicyVersion (new Version ("1.0.0"));
 		public static readonly SupportPolicyVersion FTS11 = new SupportPolicyVersion (new Version ("1.1.0"));
@@ -87,6 +87,11 @@ namespace Microsoft.WebTools.Scaffolding.Core
 		public override int GetHashCode ()
 		{
 			return Version.GetHashCode ();
+		}
+
+		public int CompareTo (SupportPolicyVersion other)
+		{
+			return other.Version.CompareTo (Version);
 		}
 
 		public static bool operator == (SupportPolicyVersion s1, SupportPolicyVersion s2)
