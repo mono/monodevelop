@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 
 			AddNewExpressionButton = new NSButton {
 				TranslatesAutoresizingMaskIntoConstraints = false,
-				AccessibilityTitle = GettextCatalog.GetString ("Add new expression"),
+				AccessibilityTitle = GettextCatalog.GetString ("Add item to watch"),
 				Image = GetImage ("gtk-add", Gtk.IconSize.Menu),
 				BezelStyle = NSBezelStyle.Inline,
 				Bordered = false
@@ -114,26 +114,27 @@ namespace MonoDevelop.Debugger
 			var name = Node.Name;
 
 			if (Node.IsUnknown) {
-				if (TreeView.DebuggerService.Frame != null)
+				if (!selected && TreeView.DebuggerService.Frame != null)
 					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
 			} else if (Node.IsError || Node.IsNotSupported) {
 			} else if (Node.IsImplicitNotSupported) {
 			} else if (Node.IsEvaluating) {
-				if (Node.GetIsEvaluatingGroup ())
+				if (!selected && Node.GetIsEvaluatingGroup ())
 					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
 			} else if (Node.IsEnumerable) {
 			} else if (Node is AddNewExpressionObjectValueNode) {
-				placeholder = GettextCatalog.GetString ("Add new expression");
+				placeholder = GettextCatalog.GetString ("Add item to watch");
 				showAddNewExpression = true;
 				name = string.Empty;
 				editable = true;
-			} else if (TreeView.Controller.GetNodeHasChangedSinceLastCheckpoint (Node)) {
+			} else if (!selected && TreeView.Controller.GetNodeHasChangedSinceLastCheckpoint (Node)) {
 				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
 			}
 
 			NSView firstView;
 
 			if (showAddNewExpression) {
+				AddNewExpressionButton.Image = GetImage ("gtk-add", Gtk.IconSize.Menu, selected);
 				firstView = AddNewExpressionButton;
 
 				if (!addNewExpressionVisible) {

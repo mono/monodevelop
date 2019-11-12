@@ -3056,6 +3056,10 @@
     <EmbeddedResource Include="icons\browser-16~sel.png" />
     <EmbeddedResource Include="icons\browser-16~sel%402x.png" />
     <EmbeddedResource Include="MonoDevelop.Ide.Projects.FileNesting\FileNestingExtensionModel.addin.xml" />
+    <EmbeddedResource Include="icons\add-16~dark~sel.png" />
+    <EmbeddedResource Include="icons\add-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\add-16~sel.png" />
+    <EmbeddedResource Include="icons\add-16~sel%402x.png" />
     <EmbeddedResource Include="icons\add-16~contrast.png" />
     <EmbeddedResource Include="icons\add-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\bug-16~contrast.png" />
