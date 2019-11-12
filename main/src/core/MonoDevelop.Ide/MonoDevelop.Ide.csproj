@@ -3100,6 +3100,10 @@
     <EmbeddedResource Include="icons\updates-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\workspace-16~contrast.png" />
     <EmbeddedResource Include="icons\workspace-16~contrast%402x.png" />
+    <EmbeddedResource Include="icons\add-16~dark~sel.png" />
+    <EmbeddedResource Include="icons\add-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\add-16~sel.png" />
+    <EmbeddedResource Include="icons\add-16~sel%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Components.Commands\ICustomCommandTarget.cs" />
