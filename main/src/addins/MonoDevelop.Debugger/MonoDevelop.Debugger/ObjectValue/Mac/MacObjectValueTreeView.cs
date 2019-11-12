@@ -226,8 +226,6 @@ namespace MonoDevelop.Debugger
 			if (!compactView || Superview == null || RowCount == 0)
 				return;
 
-			Console.WriteLine ("OptimizeColumnSizes({0})", emitResized);
-
 			nfloat nameWidth = MinimumNameColumnWidth;
 			nfloat valueWidth = MinimumValueColumnWidth;
 
@@ -256,20 +254,14 @@ namespace MonoDevelop.Debugger
 				changed = true;
 			}
 
-			Console.WriteLine ("\tchanged = {0}", changed);
-
 			if (changed) {
 				var optimalTooltipWidth = nameWidth + valueWidth + pinColumn.Width + IntercellSpacing.Width * 2;
-
-				Console.WriteLine ("\tOptimalTooltipWidth: old = {0}, new = {1}", OptimalTooltipWidth, optimalTooltipWidth);
-
 				OptimalTooltipWidth = optimalTooltipWidth;
 
 				if (emitResized)
 					OnResized ();
 			}
 
-			//ReloadData ();
 			SetNeedsDisplayInRect (Frame);
 		}
 
@@ -329,28 +321,24 @@ namespace MonoDevelop.Debugger
 		public override void ViewDidMoveToSuperview ()
 		{
 			base.ViewDidMoveToSuperview ();
-			Console.WriteLine ("ViewDidMoveToSuperview()");
 			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
-			Console.WriteLine ("ViewDidMoveToWindow()");
 			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidEndLiveResize ()
 		{
 			base.ViewDidEndLiveResize ();
-			Console.WriteLine ("ViewDidEndLiveResize()");
 			OptimizeColumnSizes ();
 		}
 
 		public override void ViewDidUnhide ()
 		{
 			base.ViewDidHide ();
-			Console.WriteLine ("ViewDidUnhide()");
 			OptimizeColumnSizes ();
 		}
 
@@ -367,7 +355,6 @@ namespace MonoDevelop.Debugger
 
 		public override void ExpandItem (NSObject item, bool expandChildren)
 		{
-			Console.WriteLine ("ExpandItem(item, expandChildren = {0})", expandChildren);
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item, expandChildren);
@@ -378,7 +365,6 @@ namespace MonoDevelop.Debugger
 
 		public override void ExpandItem (NSObject item)
 		{
-			Console.WriteLine ("ExpandItem(item)");
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item);
@@ -399,7 +385,6 @@ namespace MonoDevelop.Debugger
 
 		public override void CollapseItem (NSObject item, bool collapseChildren)
 		{
-			Console.WriteLine ("CollapseItem(item, collapseChildren = {0})", collapseChildren);
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item, collapseChildren);
@@ -410,7 +395,6 @@ namespace MonoDevelop.Debugger
 
 		public override void CollapseItem (NSObject item)
 		{
-			Console.WriteLine ("CollapseItem(item)");
 			NSAnimationContext.BeginGrouping ();
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item);
@@ -565,7 +549,6 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.Replace (node, replacementNodes);
-			Console.WriteLine ("OnEvaluationCompleted()");
 			OptimizeColumnSizes (false);
 			OnResized ();
 		}
@@ -581,7 +564,6 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.ReloadChildren (node);
-			Console.WriteLine ("OnChildrenLoaded()");
 			OptimizeColumnSizes (false);
 			OnResized ();
 		}
