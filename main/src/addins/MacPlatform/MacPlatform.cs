@@ -144,6 +144,8 @@ namespace MonoDevelop.MacIntegration
 			AccessibilityInUse = val.BoolValue;
 		}
 
+		MacIdeAppleEvents ideAppleEvents;
+
 		public MacPlatformService ()
 		{
 			if (initedGlobal)
@@ -355,6 +357,8 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogWarning ("Missed NSApplicationDidLaunch notification, assuming normal startup");
 				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
 			}
+
+			ideAppleEvents = new MacIdeAppleEvents ();
 
 			return loaded;
 		}
