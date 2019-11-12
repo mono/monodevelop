@@ -221,7 +221,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// Note: this resizing method is the one used by debugger tooltips and pinned watches in the editor
-		void OptimizeColumnSizes (bool emitResized = true)
+		void OptimizeColumnSizes ()
 		{
 			if (!compactView || Superview == null || RowCount == 0)
 				return;
@@ -257,11 +257,11 @@ namespace MonoDevelop.Debugger
 			if (changed) {
 				var optimalTooltipWidth = nameWidth + valueWidth + pinColumn.Width + IntercellSpacing.Width * 2;
 				OptimalTooltipWidth = optimalTooltipWidth;
-
-				if (emitResized)
-					OnResized ();
 			}
 
+			// we almost always need to recalculate the size - particularly if the widths don't
+			// change but the row count did.
+			OnResized ();
 			SetNeedsDisplayInRect (Frame);
 		}
 
@@ -318,21 +318,9 @@ namespace MonoDevelop.Debugger
 		{
 		}
 
-		public override void ViewDidMoveToSuperview ()
-		{
-			base.ViewDidMoveToSuperview ();
-			OptimizeColumnSizes ();
-		}
-
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
-			OptimizeColumnSizes ();
-		}
-
-		public override void ViewDidEndLiveResize ()
-		{
-			base.ViewDidEndLiveResize ();
 			OptimizeColumnSizes ();
 		}
 
@@ -359,8 +347,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item, expandChildren);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void ExpandItem (NSObject item)
@@ -369,8 +356,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		/// <summary>
@@ -389,8 +375,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item, collapseChildren);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void CollapseItem (NSObject item)
@@ -399,8 +384,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		/// <summary>
@@ -549,8 +533,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.Replace (node, replacementNodes);
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode[] replacementNodes)
@@ -564,8 +547,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.ReloadChildren (node);
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public void LoadNodeChildren (ObjectValueNode node, int startIndex, int count)
