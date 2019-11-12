@@ -247,12 +247,12 @@ namespace MonoDevelop.Debugger
 			bool changed = false;
 
 			if ((int) nameColumn.Width != (int) nameWidth) {
-				nameColumn.MinWidth = nameColumn.Width = nameWidth;
+				nameColumn.Width = nameWidth;
 				changed = true;
 			}
 
 			if ((int) valueColumn.Width != (int) valueWidth) {
-				valueColumn.MinWidth = valueColumn.Width = valueWidth;
+				valueColumn.Width = valueWidth;
 				changed = true;
 			}
 
@@ -267,8 +267,6 @@ namespace MonoDevelop.Debugger
 
 				if (emitResized)
 					OnResized ();
-
-				SizeToFit ();
 			}
 
 			//ReloadData ();
