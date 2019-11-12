@@ -34,6 +34,7 @@ namespace MonoDevelop.Debugger
 		public ShowMoreValuesObjectValueNode (ObjectValueNode enumerableNode) : base (string.Empty)
 		{
 			EnumerableNode = enumerableNode;
+			Parent = enumerableNode;
 		}
 
 		public override bool IsEnumerable => true;
