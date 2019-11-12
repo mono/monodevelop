@@ -84,6 +84,8 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("Nullable", DefaultValue = "")]
 		string nullableContextOptions = "";
 
+		string outputType;
+
 		protected override void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
@@ -110,6 +112,7 @@ namespace MonoDevelop.CSharp.Project
 
 			optimize = pset.GetValue ("Optimize", (bool?)null);
 			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
+			outputType = pset.GetValue ("OutputType", "Library");
 		}
 
 		static MetadataReferenceResolver CreateMetadataReferenceResolver (IMetadataService metadataService, string projectDirectory, string outputDirectory)
@@ -138,7 +141,8 @@ namespace MonoDevelop.CSharp.Project
 					ParentConfiguration.OutputDirectory
 			);
 
-			bool isLibrary = ParentProject.IsLibraryBasedProjectType;
+			var outputKind = OutputTypeToOutputKind (outputType);
+			bool isLibrary = outputKind == OutputKind.DynamicallyLinkedLibrary;
 			string mainTypeName = project.MainClass;
 			if (isLibrary || mainTypeName == string.Empty) {
 				// empty string is not accepted by Roslyn
@@ -146,7 +150,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 
 			var options = new CSharpCompilationOptions (
-				isLibrary ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
+				outputKind,
 				mainTypeName: mainTypeName,
 				scriptClassName: "Script",
 				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
@@ -168,6 +172,20 @@ namespace MonoDevelop.CSharp.Project
 			);
 
 			return options;
+		}
+
+		static OutputKind OutputTypeToOutputKind (string outputType)
+		{
+			switch (outputType.ToLowerInvariant ()) {
+			case "exe":
+				return OutputKind.ConsoleApplication;
+			case "winexe":
+				return OutputKind.WindowsApplication;
+			case "module":
+				return OutputKind.NetModule;
+			default:
+				return OutputKind.DynamicallyLinkedLibrary;
+			}
 		}
 
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()

@@ -317,7 +317,66 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SetProperty (ResultObject, propertyName, value);
 		}
 
-#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		PropertyInfo GetPropertyInfo (string propertyName)
+		{
+			var type = ResultObject.GetType ();
+			return type.GetProperty (propertyName);
+		}
+
+		object GetModelObject (PropertyInfo propertyInfo)
+		{
+			return propertyInfo.GetValue (ResultObject, null);
+		}
+
+		public IConfigurationModel[] GetConfigurationModels ()
+		{
+			var pinfo = GetPropertyInfo ("ConfigurationModel");
+			if (pinfo == null) {
+				return null;
+			}
+			var models = (IEnumerable<IConfigurationModel>)GetModelObject (pinfo);
+
+			return models?.ToArray ();
+		}
+
+		public IRuntimeMutableModel[] GetRuntimeModels ()
+		{
+			var pinfo = GetPropertyInfo ("RuntimeModel");
+			if (pinfo == null) {
+				return null;
+			}
+			var topModels = (IEnumerable<IRuntimeModel>)GetModelObject (pinfo);
+			return AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented).Select (x => x.GetMutableModel ()).ToArray ();
+		}
+
+		public IConfigurationModel GetActiveConfiguration ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveConfiguration");
+			return (IConfigurationModel)pinfo.GetValue (ResultObject);
+		}
+
+		public string GetActiveStartupProject ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveRunConfiguration");
+			var activeRuntime = (IRunConfigurationModel)pinfo.GetValue (ResultObject);
+			return activeRuntime.DisplayString;
+		}
+
+		public IRuntimeMutableModel GetActiveRuntime ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveRuntime");
+			var activeRuntime = (IRuntimeModel)pinfo.GetValue (ResultObject);
+			return activeRuntime.GetMutableModel ();
+		}
+
+		public string[] GetStartupProjectNames ()
+		{
+			var pinfo = GetPropertyInfo ("RunConfigurationModel");
+			var runConfigs = (IEnumerable<IRunConfigurationModel>)pinfo.GetValue (ResultObject);
+			return runConfigs.Select (x => x.DisplayString).ToArray ();
+		}
+
 		public override bool SetActiveConfiguration (string configurationName)
 		{
 			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
