@@ -862,7 +862,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include, file, recursiveDir);
 			};
 			MSBuildProject rootProject = pinfo.GetRootMSBuildProject ();
-			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath.AsSpan (), func, directoryExcludeRegex);
+			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, func, directoryExcludeRegex);
 		}
 
 		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path, Regex directoryExcludeRegex = null)
@@ -870,7 +870,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var subpath = SplitWildcardFilePath (path);
 
 			WildcardExpansionFunc<string> func = (file, include, recursiveDir) => include;
-			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath.AsSpan (), func, directoryExcludeRegex);
+			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, func, directoryExcludeRegex);
 		}
 
 		static string[] SplitWildcardFilePath (string path)
@@ -883,20 +883,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 		delegate T WildcardExpansionFunc<T> (string filePath, string include, string recursiveDir);
 
-		static IEnumerable<T> ExpandWildcardFilePath<T> (MSBuildProject project, FilePath basePath, FilePath baseRecursiveDir, bool recursive, Span<string> filePath, WildcardExpansionFunc<T> func, Regex directoryExcludeRegex)
+		static IEnumerable<T> ExpandWildcardFilePath<T> (MSBuildProject project, FilePath basePath, FilePath baseRecursiveDir, bool recursive, in ReadOnlySpan<string> filePathInput, WildcardExpansionFunc<T> func, Regex directoryExcludeRegex)
 		{
 			var res = Enumerable.Empty<T> ();
 
-			if (filePath.Length == 0)
+			if (filePathInput.Length == 0)
 				return res;
 
-			var path = filePath [0];
+			var path = filePathInput [0];
+			var filePath = filePathInput.Slice (1);
 
 			if (path == "..")
-				return ExpandWildcardFilePath (project, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath.Slice (1), func, directoryExcludeRegex);
+				return ExpandWildcardFilePath (project, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, func, directoryExcludeRegex);
 
 			if (path == ".")
-				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, recursive, filePath.Slice (1), func, directoryExcludeRegex);
+				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, recursive, filePath, func, directoryExcludeRegex);
 
 			if (directoryExcludeRegex != null && directoryExcludeRegex.IsMatch (basePath.ToString ().Replace ('/', '\\')))
 				return res;
@@ -906,17 +907,17 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (path == "**") {
 				// if this is the last component of the path, there isn't any file specifier, so there is no possible match
-				if (filePath.Length == 1)
+				if (filePath.Length == 0)
 					return res;
 
 				// If baseRecursiveDir has already been set, don't overwrite it.
 				if (baseRecursiveDir.IsNullOrEmpty)
 					baseRecursiveDir = basePath;
 
-				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, true, filePath.Slice (1), func, directoryExcludeRegex);
+				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, true, filePath, func, directoryExcludeRegex);
 			}
 
-			if (filePath.Length == 1) {
+			if (filePath.Length == 0) {
 				// Last path component. It has to be a file specifier.
 				string baseDir = basePath.ToRelative (project.BaseDirectory).ToString ().Replace ('/', '\\');
 				if (baseDir == ".")
@@ -924,7 +925,7 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (!baseDir.EndsWith ("\\", StringComparison.Ordinal))
 					baseDir += '\\';
 				var recursiveDir = baseRecursiveDir.IsNullOrEmpty ? FilePath.Null : basePath.ToRelative (baseRecursiveDir);
-				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
+				res = FastConcat (res, Directory.GetFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
 			} else {
 				// Directory specifier
 				// Look for matching directories.
@@ -933,18 +934,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (path.IndexOfAny (wildcards) != -1) {
 					foreach (var dir in Directory.EnumerateDirectories (basePath, path))
-						res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath.Slice (1), func, directoryExcludeRegex));
+						res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath, func, directoryExcludeRegex));
 				} else
-					res = res.Concat (ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath.Slice (1), func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath, func, directoryExcludeRegex));
 			}
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
 				foreach (var dir in Directory.EnumerateDirectories (basePath))
-					res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, func, directoryExcludeRegex));
+					res = FastConcat (res, ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePathInput, func, directoryExcludeRegex));
 			}
 
 			return res;
+
+			static IEnumerable<T> FastConcat (IEnumerable<T> first, IEnumerable<T> maybeEmpty)
+				=> maybeEmpty == Enumerable.Empty<T> () ? first : first.Concat (maybeEmpty);
 		}
 
 		static string ExcludeToRegex (string exclude, bool excludeDirectoriesOnly = false)
