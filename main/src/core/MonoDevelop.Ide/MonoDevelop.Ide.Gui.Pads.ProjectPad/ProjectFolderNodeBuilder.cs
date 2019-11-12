@@ -191,39 +191,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ITreeNavigator node in CurrentNodes)
 				folders.Add ((ProjectFolder) node.DataItem);
 			
-			var removeButton = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
 			var question = new QuestionMessage () {
-				AllowApplyToAll = folders.Count > 1,
-				SecondaryText = GettextCatalog.GetString (
-				"The Delete option permanently removes the directory and any files it contains from your hard disk. " +
-				"Click Remove from Project if you only want to remove it from your current solution.")
+				AllowApplyToAll = folders.Count > 1
 			};
-			question.Buttons.Add (AlertButton.Delete);
-			question.Buttons.Add (removeButton);
 			question.Buttons.Add (AlertButton.Cancel);
+			question.Buttons.Add (AlertButton.Delete);
 
-			var deleteOnlyQuestion = new QuestionMessage () {
-				AllowApplyToAll = folders.Count > 1,
-				SecondaryText = GettextCatalog.GetString ("The directory and any files it contains will be permanently removed from your hard disk. ")
-			};
-			deleteOnlyQuestion.Buttons.Add (AlertButton.Delete);
-			deleteOnlyQuestion.Buttons.Add (AlertButton.Cancel);
-			
 			foreach (var folder in folders) {
 				var project = folder.Project;
 
 				AlertButton result;
 
 				if (project == null) {
-					deleteOnlyQuestion.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
-					result = MessageService.AskQuestion (deleteOnlyQuestion);
+					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
+					result = MessageService.AskQuestion (question);
 					if (result == AlertButton.Delete) {
 						DeleteFolder (folder);
 						continue;
 					} else
 						break;
 				}
-
 				var folderRelativePath = folder.Path.ToRelative (project.BaseDirectory);
 				var files = project.Files.GetFilesInVirtualPath (folderRelativePath).ToList ();
 				var folderPf = project.Files.GetFileWithVirtualPath (folderRelativePath);
@@ -231,16 +218,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 				//if the parent directory has already been removed, there may be nothing to do
 				if (isProjectFolder) {
-					deleteOnlyQuestion.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
-					result = MessageService.AskQuestion (deleteOnlyQuestion);
-					if (result != AlertButton.Delete) 
+					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
+					result = MessageService.AskQuestion (question);
+					if (result != AlertButton.Delete)
 						break;
-				}
-				else {
+				} else {
 					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0} from project {1}?",
 						folder.Name, project.Name);
 					result = MessageService.AskQuestion (question);
-					if (result != removeButton && result != AlertButton.Delete) 
+					if (result != AlertButton.Delete)
 						break;
 					
 					projects.Add (project);
@@ -255,12 +241,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						project.Files.Remove (folderPf);
 				}
 				
-				if (result == AlertButton.Delete) {
-					DeleteFolder (folder);
-				} else {
-					//explictly remove the node from the tree, since it currently only tracks real folder deletions
-					folder.Remove ();
-				}
+				DeleteFolder (folder);
 				
 				if (isProjectFolder && folder.Path.ParentDirectory != project.BaseDirectory) {
 					// If it's the last item in the parent folder, make sure we keep a reference to the parent 
@@ -274,6 +255,68 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			IdeApp.ProjectOperations.SaveAsync (projects);
+		}
+
+		[CommandHandler (ProjectCommands.ExcludeFromProject)]
+		[AllowMultiSelection]
+		public void OnExcludeFoldersFromProject ()
+		{
+			var projects = new Set<SolutionItem> ();
+			var folders = new List<ProjectFolder> ();
+			foreach (ITreeNavigator node in CurrentNodes)
+				folders.Add ((ProjectFolder)node.DataItem);
+
+			foreach (var folder in folders) {
+				var project = folder.Project;
+
+				AlertButton result;
+
+				if (project == null) {
+					break;
+				}
+
+				var folderRelativePath = folder.Path.ToRelative (project.BaseDirectory);
+				var files = project.Files.GetFilesInVirtualPath (folderRelativePath).ToList ();
+				var folderPf = project.Files.GetFileWithVirtualPath (folderRelativePath);
+				bool isProjectFolder = files.Count == 0 && folderPf == null;
+
+				//if the parent directory has already been removed, there may be nothing to do
+				if (isProjectFolder) {
+					break;
+				} else {
+					projects.Add (project);
+
+					//remove the files and link files in the directory
+					foreach (var f in files)
+						project.Files.Remove (f);
+
+					// also remove the folder's own ProjectFile, if it exists 
+					// FIXME: it probably was already in the files list
+					if (folderPf != null)
+						project.Files.Remove (folderPf);
+				}
+
+				folder.Remove ();
+
+				if (isProjectFolder && folder.Path.ParentDirectory != project.BaseDirectory) {
+					// If it's the last item in the parent folder, make sure we keep a reference to the parent 
+					// folder, so it is not deleted from the tree.
+					var inParentFolder = project.Files.GetFilesInVirtualPath (folderRelativePath.ParentDirectory);
+					if (!inParentFolder.Skip (1).Any ()) {
+						project.Files.Add (new ProjectFile (folder.Path.ParentDirectory) {
+							Subtype = Subtype.Directory,
+						});
+					}
+				}
+			}
+			IdeApp.ProjectOperations.SaveAsync (projects);
+
+		}
+
+		[CommandUpdateHandler (ProjectCommands.ExcludeFromProject)]
+		public void UpdateExcludeFolders (CommandInfo info)
+		{
+			info.Enabled = CanDeleteMultipleItems ();
 		}
 
 		static void DeleteFolder (ProjectFolder folder)

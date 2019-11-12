@@ -136,6 +136,9 @@
 	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" disabledVisible="False" />
 	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" disabledVisible="False" />
 	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" disabledVisible="False" />
+    <Condition id="ItemType" value="ProjectFile|ProjectFolder">
+        <CommandItem id=  "MonoDevelop.Ide.Commands.ProjectCommands.ExcludeFromProject" />
+    </Condition>
 	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" disabledVisible="False" />
 	<SeparatorItem id = "EditSectionEnd" />
 		

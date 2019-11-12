@@ -236,6 +236,10 @@
 			_label = "Project _Options"
 			_description = "Show project options window" />
 
+	<Command id= "MonoDevelop.Ide.Commands.ProjectCommands.ExcludeFromProject"
+			defaultHandler = "MonoDevelop.Ide.Commands.ExcludeFromProjectHandler"
+			_label = "Exclude from project"
+			_description = "Exclude an item from the project" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			_description = "Add and remove project references"
 			icon = "md-reference"
