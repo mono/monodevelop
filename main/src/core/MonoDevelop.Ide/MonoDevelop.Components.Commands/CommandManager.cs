@@ -683,7 +683,7 @@ namespace MonoDevelop.Components.Commands
 		bool IsLastView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).LastOrDefault () == view;
 		bool IsFirstView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).FirstOrDefault () == view;
 
-		GtkNSViewHost GetGtkNSViewHostFromView (AppKit.NSView view) => viewHosts.FirstOrDefault (s => s.Content == view);
+		GtkNSViewHost GetGtkNSViewHostFromView (AppKit.NSView view) => view == null ? null :  viewHosts.FirstOrDefault (s => s.Content == view);
 
 		static bool CanBecomeKeyView (AppKit.NSView view)
 		{
@@ -755,12 +755,8 @@ namespace MonoDevelop.Components.Commands
 		AppKit.NSView GetGtkNSViewHostContentView (AppKit.NSView nSView)
 		{
 			if (nSView.Superview == null) {
-				try {
-					throw new NullReferenceException ("Cannot get the main embeded view from a view with superview = null");
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-					return null;
-				}
+				//this could include cases where native views are in the toolbar
+				return null;
 			}
 			if (IsGtkQuartzView (nSView.Superview)) {
 				return nSView;
