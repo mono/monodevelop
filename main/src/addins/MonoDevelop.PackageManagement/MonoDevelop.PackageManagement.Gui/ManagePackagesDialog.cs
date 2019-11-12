@@ -98,11 +98,11 @@ namespace MonoDevelop.PackageManagement
 			LoadViewModel (initialSearch);
 
 			closeButton.Clicked += CloseButtonClicked;
-			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
-			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
-			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
-			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
-			this.packageVersionComboBox.SelectionChanged += PackageVersionChanged;
+			showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
+			packageSourceComboBox.SelectionChanged += PackageSourceChanged;
+			addPackagesButton.Clicked += AddPackagesButtonClicked;
+			packageSearchEntry.Changed += PackageSearchEntryChanged;
+			packageVersionComboBox.SelectionChanged += PackageVersionChanged;
 			imageLoader.Loaded += ImageLoaded;
 
 			browseLabel.ButtonPressed += BrowseLabelButtonPressed;
@@ -121,6 +121,21 @@ namespace MonoDevelop.PackageManagement
 		{
 			closeButton.Clicked -= CloseButtonClicked;
 			currentPackageVersionLabel.BoundsChanged -= PackageVersionLabelBoundsChanged;
+
+			showPrereleaseCheckBox.Clicked -= ShowPrereleaseCheckBoxClicked;
+			packageSourceComboBox.SelectionChanged -= PackageSourceChanged;
+			addPackagesButton.Clicked -= AddPackagesButtonClicked;
+			packageSearchEntry.Changed -= PackageSearchEntryChanged;
+			packageVersionComboBox.SelectionChanged -= PackageVersionChanged;
+
+			browseLabel.ButtonPressed -= BrowseLabelButtonPressed;
+			browseLabel.KeyPressed -= BrowseLabelKeyPressed;
+			installedLabel.ButtonPressed -= InstalledLabelButtonPressed;
+			installedLabel.KeyPressed -= InstalledLabelKeyPressed;
+			updatesLabel.ButtonPressed -= UpdatesLabelButtonPressed;
+			updatesLabel.KeyPressed -= UpdatesLabelKeyPressed;
+			consolidateLabel.ButtonPressed -= ConsolidateLabelButtonPressed;
+			consolidateLabel.KeyPressed -= ConsolidateLabelKeyPressed;
 
 			imageLoader.Loaded -= ImageLoaded;
 			imageLoader.Dispose ();
