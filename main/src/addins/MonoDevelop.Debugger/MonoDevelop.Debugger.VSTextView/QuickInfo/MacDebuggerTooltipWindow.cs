@@ -113,10 +113,6 @@ namespace MonoDevelop.Debugger
 
 			height = NMath.Min (height, maxHeight);
 
-			Console.WriteLine ("OnTreeViewResized()");
-			Console.WriteLine ("\told size = {0}x{1}", widthConstraint.Constant, heightConstraint.Constant);
-			Console.WriteLine ("\tnew size = {0}x{1}", treeView.OptimalTooltipWidth, height);
-
 			widthConstraint.Constant = treeView.OptimalTooltipWidth;
 			heightConstraint.Constant = height;
 		}
