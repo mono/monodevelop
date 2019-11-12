@@ -439,10 +439,12 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 
-		void SimulateKeyDownInView (AppKit.NSView view, GtkNSViewHost currentGtkViewHost, AppKit.NSEvent currentEvent, AppKit.NSWindow window)
+		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSView expectedKeyView, GtkNSViewHost currentGtkViewHost,  AppKit.NSEvent currentEvent, AppKit.NSWindow window)
 		{
-			if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-				var expectedKeyView = FindValidKeyView (view, defaultView: view);
+			//we need a better way to allow views to handle OnKeyDown, maybe offer some interface to handle an special method to override OnIdeKeyDown ?
+			var supportsTabKey = !HandlesMakeFirstResponder (view);
+
+			if (supportsTabKey && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 				AppKit.NSView next = null;
 				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
 					next = expectedKeyView.PreviousValidKeyView;
@@ -469,12 +471,21 @@ namespace MonoDevelop.Components.Commands
 				}
 
 				view.KeyDown (currentEvent);
-				if (next != null && window?.FirstResponder != next) {
+
+				if (supportsTabKey && next != null && window?.FirstResponder != next) {
 					window.MakeFirstResponder (next);
 				}
 			} else {
 				view.KeyDown (currentEvent);
 			}
+		}
+
+		//cases from views where focus is not handled by IDe
+		bool HandlesMakeFirstResponder (AppKit.NSView view)
+		{
+			if (IsSourceEditor (view))
+				return true;
+			return false;
 		}
 
 		private void SimulateViewKeyActionBehaviour (AppKit.NSView view, AppKit.NSEvent currentEvent)
@@ -592,11 +603,14 @@ namespace MonoDevelop.Components.Commands
 
 				var mainView = GetGtkNSViewHostContentView (view);
 				var gtkNSViewHost = GetGtkNSViewHostFromView (mainView);
+				AppKit.NSView expectedKeyView;
+
 				if (gtkNSViewHost != null) {
 					//we are in a embeded view case
-					var expectedKeyView = FindValidKeyView (view, defaultView: view);
+					expectedKeyView = FindValidKeyView (view, defaultView: view);
 
-					if (currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+					//source editor doesn't allow to back to gtk presing tab (this needs to be improved)
+					if (!IsSourceEditor (view) && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 						if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
 							var isFirstView = IsFirstView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
 							if (isFirstView) {
@@ -612,8 +626,9 @@ namespace MonoDevelop.Components.Commands
 						}
 					}
 
+					//source editor doesn't allow to change focus (we need improve this)
 					if (!backToGtk) {
-						SimulateKeyDownInView (view, gtkNSViewHost, currentEvent, window);
+						SimulateKeyDownInView (view, expectedKeyView, gtkNSViewHost, currentEvent, window);
 					} else {
 
 						if (!gtkNSViewHost.IsFocus)
@@ -634,6 +649,9 @@ namespace MonoDevelop.Components.Commands
 #endif
 			return false;
 		}
+
+		const string sourceEditorTypeClass = ("Microsoft.VisualStudio.Text.Editor.Implementation.CocoaTextViewControl");
+		bool IsSourceEditor (AppKit.NSView view) => view.GetType ().FullName == sourceEditorTypeClass;
 
 		internal List<AppKit.NSView> GetOrderedFocusableViews (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
 		{
