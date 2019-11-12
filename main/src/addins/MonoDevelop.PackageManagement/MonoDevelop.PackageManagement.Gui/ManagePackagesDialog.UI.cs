@@ -105,29 +105,39 @@ namespace MonoDevelop.PackageManagement
 			browseLabel.Tag = browseLabel.Text;
 			browseLabel.MinWidth = tabLabelMinWidth;
 			browseLabel.MarginLeft = 10;
+			browseLabel.CanGetFocus = true;
+			browseLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
+
 			topHBox.PackStart (browseLabel);
 
 			installedLabel = new Label ();
 			installedLabel.Text = GettextCatalog.GetString ("Installed");
 			installedLabel.Tag = installedLabel.Text;
 			installedLabel.MinWidth = tabLabelMinWidth;
+			installedLabel.CanGetFocus = true;
+			installedLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
 			topHBox.PackStart (installedLabel);
 
 			updatesLabel = new Label ();
 			updatesLabel.Text = GettextCatalog.GetString ("Updates");
 			updatesLabel.Tag = updatesLabel.Text;
 			updatesLabel.MinWidth = tabLabelMinWidth;
+			updatesLabel.CanGetFocus = true;
+			updatesLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
 			topHBox.PackStart (updatesLabel);
 
 			consolidateLabel = new Label ();
 			consolidateLabel.Text = GettextCatalog.GetString ("Consolidate");
 			consolidateLabel.Tag = consolidateLabel.Text;
 			consolidateLabel.MinWidth = tabLabelMinWidth;
+			consolidateLabel.CanGetFocus = true;
+			consolidateLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
 			topHBox.PackStart (consolidateLabel);
 
 			packageSearchEntry = new SearchTextEntry ();
 			packageSearchEntry.Name = "managePackagesDialogSearchEntry";
 			packageSearchEntry.WidthRequest = 187;
+			packageSearchEntry.Accessible.Label = GettextCatalog.GetString ("Package Search");
 			topHBox.PackEnd (packageSearchEntry);
 
 			this.HeaderContent = topHBox;
