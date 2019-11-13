@@ -22,6 +22,6 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.razor" src="RazorComponent.razor" BuildAction="Compile" />
+		<File name="${Name}.razor" src="RazorComponent.razor" />
 	</TemplateFiles>
 </Template>

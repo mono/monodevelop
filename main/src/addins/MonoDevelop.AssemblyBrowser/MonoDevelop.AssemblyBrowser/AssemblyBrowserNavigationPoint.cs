@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
+
 using System;
 using System.Linq;
 using MonoDevelop.Core;
@@ -36,12 +38,15 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyBrowserNavigationPoint : DocumentNavigationPoint
 	{
-		ImmutableList<AssemblyLoader> definitions;
-		string idString;
+		List<string> definitions = new List<string> ();
+		string? idString;
 
-		public AssemblyBrowserNavigationPoint (ImmutableList<AssemblyLoader> definitions, AssemblyLoader assembly, string idString) : base (assembly?.FileName)
+		public AssemblyBrowserNavigationPoint (ImmutableList<AssemblyLoader> definitions, AssemblyLoader assembly, string? idString) : base (assembly?.FileName)
 		{
-			this.definitions = definitions;
+			foreach (var def in definitions) {
+				if (def != null)
+					this.definitions.Add (def.FileName);
+			}
 			this.idString = idString;
 		}
 
@@ -52,12 +57,13 @@ namespace MonoDevelop.AssemblyBrowser
 			if (idString != null) {
 				var view = result.GetContent<AssemblyBrowserViewContent> ();
 				view.Widget.suspendNavigation = true;
-				view.EnsureDefinitionsLoaded (definitions);
+				foreach (var def in definitions) {
+					view.Widget.AddReferenceByFileName (def);
+				}
 				view.Open (idString, expandNode: false);
 			} else if (FileName != null) {
 				var view = result.GetContent<AssemblyBrowserViewContent> ();
 				view.Widget.suspendNavigation = true;
-				view.EnsureDefinitionsLoaded (definitions);
 				view.Load (FileName);
 			}
 			return result;
@@ -85,7 +91,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (!string.IsNullOrEmpty (idString)) {
 					if (!string.IsNullOrEmpty (FileName))
 						return String.Format ("{0} : {1}", base.DisplayName, idString);
-					return idString;
+					return idString ?? "";
 				}
 				return base.DisplayName;
 			}

@@ -305,7 +305,7 @@ namespace MonoDevelop.Debugger
 			crtValue.Edited += OnValueEdited;
 			crtValue.EditingCanceled += OnEditingCancelled;
 
-			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
+			createMsg = GettextCatalog.GetString ("Add item to watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;

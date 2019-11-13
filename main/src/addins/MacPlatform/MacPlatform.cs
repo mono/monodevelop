@@ -144,6 +144,8 @@ namespace MonoDevelop.MacIntegration
 			AccessibilityInUse = val.BoolValue;
 		}
 
+		MacIdeAppleEvents ideAppleEvents;
+
 		public MacPlatformService ()
 		{
 			if (initedGlobal)
@@ -161,6 +163,8 @@ namespace MonoDevelop.MacIntegration
 
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,ExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,ExtendedTitleBarDialogBackend> ();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<Xwt.Backends.ISearchTextEntryBackend,AccessibleGtkSearchEntryBackend> ();
+			
 
 			var description = XamMacBuildInfo.Value;
 			if (string.IsNullOrEmpty (description)) {
@@ -353,6 +357,8 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogWarning ("Missed NSApplicationDidLaunch notification, assuming normal startup");
 				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
 			}
+
+			ideAppleEvents = new MacIdeAppleEvents ();
 
 			return loaded;
 		}

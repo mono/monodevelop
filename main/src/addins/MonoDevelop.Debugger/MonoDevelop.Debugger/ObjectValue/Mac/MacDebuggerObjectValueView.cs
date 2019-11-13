@@ -138,17 +138,19 @@ namespace MonoDevelop.Debugger
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
-				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueErrorText));
+				if (!selected)
+					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueErrorText));
 			} else if (Node.IsImplicitNotSupported) {
-				strval = string.Empty;//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
-				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
+				strval = string.Empty;
+				if (!selected)
+					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
 				if (Node.CanRefresh)
 					valueButtonText = GettextCatalog.GetString ("Show Value");
 			} else if (Node.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating\u2026");
 				showSpinner = true;
-
-				textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
+				if (!selected)
+					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueDisabledText));
 			} else if (Node.IsEnumerable) {
 				if (Node is ShowMoreValuesObjectValueNode) {
 					valueButtonText = GettextCatalog.GetString ("Show More");
@@ -162,7 +164,7 @@ namespace MonoDevelop.Debugger
 			} else {
 				strval = TreeView.Controller.GetDisplayValueWithVisualisers (Node, out showViewerButton);
 
-				if (TreeView.Controller.GetNodeHasChangedSinceLastCheckpoint (Node))
+				if (!selected && TreeView.Controller.GetNodeHasChangedSinceLastCheckpoint (Node))
 					textColor = NSColor.FromCGColor (GetCGColor (Styles.ObjectValueTreeValueModifiedText));
 
 				var val = Node.GetDebuggerObjectValue ();
