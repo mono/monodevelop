@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 
-				projectInfo = projectInfo.WithAdditionalDocuments(documents);
+				projectInfo = projectInfo.WithDocuments(projectInfo.Documents.Concat(documents));
 				return projectInfo;
 			}
 		}

@@ -1532,11 +1532,26 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal ProjectInfo WithDynamicDocuments (MonoDevelop.Projects.Project project, ProjectInfo projectInfo)
 		{
+			var projectDirectory = Path.GetDirectoryName (project.FileName);
+
 			var contentItems = project.MSBuildProject.EvaluatedItems
 				.Where (item => item.Name == "Content" && item.Include.EndsWith (".razor", StringComparison.OrdinalIgnoreCase))
-				.Select (item => item.Include);
+				.Select (item => GetAbsolutePath(item.Include))
+				.ToList ();
 
 			return dynamicFileManager?.UpdateDynamicFiles (projectInfo, contentItems, this);
+
+			string GetAbsolutePath (string relativePath)
+			{
+				if (!Path.IsPathRooted (relativePath)) {
+					relativePath = Path.Combine (projectDirectory, relativePath);
+				}
+
+				// normalize the path separator characters in case they're mixed
+				relativePath = relativePath.Replace ('\\', Path.DirectorySeparatorChar);
+
+				return relativePath;
+			}
 		}
 
 		internal override void SetDocumentContext (DocumentId documentId)
