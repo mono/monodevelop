@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 
 		[CommandUpdateHandler (ProjectCommands.ExcludeFromProject)]
-		public void UpdateExcludeFiles (CommandInfo info)
+		void UpdateExcludeFiles (CommandInfo info)
 		{
 			info.Enabled = CanDeleteMultipleItems ();
 		}
