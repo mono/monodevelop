@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		[CommandHandler (ProjectCommands.ExcludeFromProject)]
 		[AllowMultiSelection]
-		public void onExcludeFilesFromProject ()
+		void OnExcludeFilesFromProject ()
 		{
 			var projects = new Set<SolutionItem> ();
 			var files = new List<ProjectFile> ();
