@@ -75,11 +75,13 @@ namespace MonoDevelop.Debugger
 
 			parent.Children.Add (value);
 
-			foreach (var child in node.Children)
-				Add (value, child);
+			if (treeView.AllowExpanding) {
+				foreach (var child in node.Children)
+					Add (value, child);
 
-			if (node.HasChildren && !node.ChildrenLoaded)
-				Add (value, new LoadingObjectValueNode (node));
+				if (node.HasChildren && !node.ChildrenLoaded)
+					Add (value, new LoadingObjectValueNode (node));
+			}
 		}
 
 		void Insert (MacObjectValueNode parent, int index, ObjectValueNode node)
@@ -89,11 +91,13 @@ namespace MonoDevelop.Debugger
 
 			parent.Children.Insert (index, value);
 
-			foreach (var child in node.Children)
-				Add (value, child);
+			if (treeView.AllowExpanding) {
+				foreach (var child in node.Children)
+					Add (value, child);
 
-			if (node.HasChildren && !node.ChildrenLoaded)
-				Add (value, new LoadingObjectValueNode (node));
+				if (node.HasChildren && !node.ChildrenLoaded)
+					Add (value, new LoadingObjectValueNode (node));
+			}
 		}
 
 		void Remove (MacObjectValueNode node, List<MacObjectValueNode> removed)
