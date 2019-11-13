@@ -44,6 +44,8 @@ namespace MonoDevelop.Debugger
 
 		protected ObjectValueTreeViewController controller;
 		protected ObjectValueTreeView tree;
+		// this is for the new treeview
+		protected MacObjectValueTreeView _treeview;
 
 		readonly Control control;
 		PadFontChanger fontChanger;
@@ -69,6 +71,7 @@ namespace MonoDevelop.Debugger
 				if (Platform.IsMac) {
 					LoggingService.LogInfo ("Using MacObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
 					var treeView = controller.GetMacControl ();
+					_treeview = treeView;
 
 					fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
 
