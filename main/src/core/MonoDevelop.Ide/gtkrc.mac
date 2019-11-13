@@ -465,6 +465,14 @@ style "spin-button" = "wider"
 style "link-label-fix"
 {
     base[PRELIGHT] = @bg_color # disable link hover background
+    GtkWidget::focus-padding = 0
+
+    engine "xamarin" {
+        rgba = TRUE
+        roundness = 0
+        focusstyle = 2
+        focus_color = @focus_ring_color
+    }
 }
 
 
