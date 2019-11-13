@@ -282,7 +282,6 @@ namespace MonoDevelop.Ide.Projects
 		protected override void OnShown ()
 		{
 			base.OnShown ();
-			filterEntry.HasFocus = true;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
