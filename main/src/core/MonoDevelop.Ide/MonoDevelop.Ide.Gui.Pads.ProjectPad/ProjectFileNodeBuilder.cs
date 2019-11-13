@@ -324,13 +324,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			var projects = new Set<SolutionItem> ();
 			var files = new List<ProjectFile> ();
-			bool hasChildren = false;
 
 			foreach (var node in CurrentNodes) {
 				var pf = (ProjectFile)node.DataItem;
 				projects.Add (pf.Project);
-				if (pf.HasChildren || FileNestingService.HasChildren (pf))
-					hasChildren = true;
 				files.Add (pf);
 			}
 			RemoveFilesFromProject (false, files);
