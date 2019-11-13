@@ -32,12 +32,15 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 {
-	sealed class PinnedWatchView : NSScrollView
+	sealed class PinnedWatchView : NSView
 	{
+		readonly PinnedWatch watch;
+		readonly StackFrame frame;
 		readonly ObjectValueTreeViewController controller;
 		readonly NSLayoutConstraint heightConstraint;
 		readonly NSLayoutConstraint widthConstraint;
 		readonly MacObjectValueTreeView treeView;
+		MacDebuggerTooltipWindow popover;
 		NSLayoutConstraint superHeightConstraint;
 		NSLayoutConstraint superWidthConstraint;
 		ObjectValue objectValue;
@@ -45,26 +48,27 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 
 		public PinnedWatchView (PinnedWatch watch, StackFrame frame)
 		{
-			HasVerticalScroller = true;
-			AutohidesScrollers = true;
+			this.watch = watch ?? throw new ArgumentNullException (nameof (watch));
+			this.frame = frame;
 
 			controller = new ObjectValueTreeViewController ();
 			controller.SetStackFrame (frame);
 			controller.AllowEditing = true;
+			controller.AllowExpanding = false;
 
 			treeView = controller.GetMacControl (headersVisible: false, compactView: true, allowPinning: true);
 
 			controller.PinnedWatch = watch;
 
 			if (watch.Value != null)
-				controller.AddValue (watch.Value);
+				controller.AddValue (objectValue = watch.Value);
 
 			var rect = treeView.Frame;
 
 			if (rect.Height < 1)
 				treeView.Frame = new CoreGraphics.CGRect (rect.X, rect.Y, rect.Width, 19);
 
-			DocumentView = treeView;
+			AddSubview (treeView);
 			Frame = treeView.Frame;
 
 			heightConstraint = HeightAnchor.ConstraintEqualToConstant (treeView.Frame.Height);
@@ -76,6 +80,27 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			DebuggingService.ResumedEvent += OnDebuggerResumed;
 			DebuggingService.PausedEvent += OnDebuggerPaused;
 			treeView.Resized += OnTreeViewResized;
+
+			AddTrackingArea (new NSTrackingArea (
+				default,
+				NSTrackingAreaOptions.ActiveInActiveApp |
+				NSTrackingAreaOptions.InVisibleRect |
+				NSTrackingAreaOptions.MouseEnteredAndExited,
+				this,
+				null));
+		}
+
+		public override void MouseEntered (NSEvent theEvent)
+		{
+			if (popover != null && popover.Shown)
+				return;
+
+			if (objectValue != null && objectValue.HasChildren) {
+				if (popover == null)
+					popover = new MacDebuggerTooltipWindow (watch.Location, frame, objectValue, watch);
+				popover.Show (treeView.Frame, this, NSRectEdge.MaxXEdge);
+				popover.Expand ();
+			}
 		}
 
 		public void SetObjectValue (ObjectValue value)
@@ -136,41 +161,16 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 
 			superHeightConstraint.Constant = height;
 			superWidthConstraint.Constant = width;
-
-#if REPARENT_SO_SCROLLING_WORKS
-			// Find our parent CocoaEditorGridView
-			var gridView = textView.Superview;
-			while (gridView != null && gridView.GetType ().Name != CocoaEditorGridView)
-				gridView = gridView.Superview;
-
-			if (gridView == null)
-				return;
-
-			// Find the CocoaTextViewScrollView
-			NSView textViewScrollView = null;
-			foreach (var child in gridView.Subviews) {
-				if (child.GetType ().Name == CocoaTextViewScrollView) {
-					textViewScrollView = child;
-					break;
-				}
-			}
-
-			materialView.RemoveFromSuperview ();
-
-			gridView.AddSubview (materialView, NSWindowOrderingMode.Above, textViewScrollView);
-#endif
 		}
 
 		void OnDebuggerResumed (object sender, EventArgs e)
 		{
 			controller.ChangeCheckpoint ();
-			controller.AllowExpanding = false;
 			controller.AllowEditing = false;
 		}
 
 		void OnDebuggerPaused (object sender, EventArgs e)
 		{
-			controller.AllowExpanding = true;
 			controller.AllowEditing = true;
 		}
 
