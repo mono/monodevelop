@@ -69,7 +69,7 @@ namespace MonoDevelop.Debugger
 				View = scrollView
 			};
 
-			widthConstraint = scrollView.WidthAnchor.ConstraintEqualToAnchor (treeView.WidthAnchor);
+			widthConstraint = scrollView.WidthAnchor.ConstraintEqualToConstant (treeView.Frame.Width);
 			widthConstraint.Active = true;
 
 			heightConstraint = scrollView.HeightAnchor.ConstraintEqualToConstant (treeView.Frame.Height);
@@ -108,11 +108,12 @@ namespace MonoDevelop.Debugger
 
 		void OnTreeViewResized (object sender, EventArgs e)
 		{
+			var height = (treeView.RowHeight + treeView.IntercellSpacing.Height) * treeView.RowCount;
 			var maxHeight = GetMaxHeight (treeView.Window);
-			var height = treeView.FittingSize.Height;
 
 			height = NMath.Min (height, maxHeight);
 
+			widthConstraint.Constant = treeView.OptimalTooltipWidth;
 			heightConstraint.Constant = height;
 		}
 
