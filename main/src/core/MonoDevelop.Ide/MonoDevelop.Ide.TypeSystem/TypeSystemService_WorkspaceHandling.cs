@@ -564,7 +564,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject, framework);
 						if (oldProject != null) {
 							if (oldProjectIds.Remove (projectInfo.Id)) {
-								projectInfo = ws.AddVirtualDocuments (projectInfo);
 								ws.OnProjectReloaded (projectInfo);
 							} else {
 								ws.OnProjectAdded (projectInfo);
