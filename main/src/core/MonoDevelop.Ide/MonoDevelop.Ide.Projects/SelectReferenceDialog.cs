@@ -250,7 +250,6 @@ namespace MonoDevelop.Ide.Projects
 		
 		void InsertFilterEntry ()
 		{
-			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
 			filterEntry.Activated += HandleFilterEntryActivated;
 			filterEntry.Changed += delegate {
 				foreach (var p in panels)
@@ -264,15 +263,6 @@ namespace MonoDevelop.Ide.Projects
 			mainBook.ChildFocus (DirectionType.TabForward);
 		}
 
-		void HandleFilterEntryKeyPressEvent (object o, KeyPressEventArgs args)
-		{
-			if (args.Event.Key == Gdk.Key.Tab) {
-				mainBook.HasFocus = true;
-				mainBook.ChildFocus (DirectionType.TabForward);
-				args.RetVal = true;
-			}
-		}
-		
 		protected override void OnShown ()
 		{
 			base.OnShown ();
