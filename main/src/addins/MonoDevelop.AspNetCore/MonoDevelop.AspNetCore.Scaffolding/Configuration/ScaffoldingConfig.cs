@@ -75,7 +75,9 @@ namespace Microsoft.WebTools.Scaffolding.Core.Config
 		{
 			if(fetchedConfig == null) {
 				Stream stream;
-				using var httpClient = new HttpClient ();
+				using var httpClient = new HttpClient {
+					Timeout = TimeSpan.FromSeconds (2)
+				};
 
 				try {
 					stream = await httpClient.GetStreamAsync (packageVersionsUrl);
