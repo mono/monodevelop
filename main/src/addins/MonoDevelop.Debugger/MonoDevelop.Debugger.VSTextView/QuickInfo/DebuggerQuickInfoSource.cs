@@ -152,7 +152,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 #if MAC
 			var location = new PinnedWatchLocation (textDocument?.FilePath);
-			var snapshot = view.TextDataModel.DocumentBuffer.CurrentSnapshot;
+			var snapshot = textBuffer.CurrentSnapshot;
 			int line, column;
 
 			var start = debugInfo.Span.GetStartPoint (snapshot);
