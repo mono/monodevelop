@@ -54,6 +54,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		public IMonoDevelopContainedLanguageHost ContainedLanguageHost { get; private set; }
 		private readonly HostType _hostType;
 
+		public IProjectionBuffer TopBuffer => DataBuffer;
+
 		// _workspace will only be set once the Workspace is available
 		private Workspace _workspace;
 
