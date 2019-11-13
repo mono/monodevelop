@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		[CommandHandler (ProjectCommands.ExcludeFromProject)]
 		[AllowMultiSelection]
-		public void OnExcludeFoldersFromProject ()
+		void OnExcludeFoldersFromProject ()
 		{
 			var projects = new Set<SolutionItem> ();
 			var folders = new List<ProjectFolder> ();
