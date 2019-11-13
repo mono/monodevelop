@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Web;
 using Newtonsoft.Json;
 
 namespace Microsoft.WebTools.Scaffolding.Core.Config
@@ -75,9 +76,8 @@ namespace Microsoft.WebTools.Scaffolding.Core.Config
 		{
 			if(fetchedConfig == null) {
 				Stream stream;
-				using var httpClient = new HttpClient {
-					Timeout = TimeSpan.FromSeconds (2)
-				};
+				using var httpClient = HttpClientProvider.CreateHttpClient (packageVersionsUrl);
+				httpClient.Timeout = TimeSpan.FromSeconds (2);
 
 				try {
 					stream = await httpClient.GetStreamAsync (packageVersionsUrl);
