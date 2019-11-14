@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt;
@@ -37,6 +38,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		ListBox listBox;
 		ScaffolderArgs args;
 
+		public event EventHandler ScaffolderSelected;
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
 			this.SubSubTitle = GettextCatalog.GetString ("Select Scaffolder");
@@ -83,6 +85,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			listBox.HeightRequest = 300;
 			listBox.WidthRequest = 300;
 			listBox.SelectionChanged += (sender, e) => Args.Scaffolder = scaffolders [listBox.SelectedRow];
+			listBox.RowActivated += (sender, e) => ScaffolderSelected?.Invoke (sender, e);
 			listBox.SelectRow (0);
 			listBox.FocusedRow = 0;
 			listBox.SetFocus ();
