@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		readonly DotNetProject project;
 		readonly FilePath parentFolder;
 
-		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolded Item", StockIcons.Information, new ScaffolderTemplateSelectPage (args), args)
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolding", StockIcons.Information, new ScaffolderTemplateSelectPage (args), args)
 		{
 			this.DefaultPageSize = new Size (500, 400);
 
