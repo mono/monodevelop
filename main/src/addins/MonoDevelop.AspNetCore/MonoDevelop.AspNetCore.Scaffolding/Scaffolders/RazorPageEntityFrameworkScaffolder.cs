@@ -55,7 +55,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			fields = new ScaffolderField [] {
 				NameField,
-				new ComboField ("", "The template to use, supported view templates", Task.FromResult(viewTemplateOptions)),
+				new ComboField ("", "Template:", Task.FromResult(viewTemplateOptions)),
 				GetModelField(args),
 				GetDbContextField(args),
 				new BoolFieldList(options),

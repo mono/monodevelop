@@ -34,7 +34,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		protected BoolField ReferenceScriptLibrariesField { get { return new BoolField ("--referenceScriptLibraries", "Reference script libraries", isChecked: true, enabled: true); } }
 		protected BoolField LayoutPageField { get { return new BoolField ("--useDefaultLayout", "Use a layout page", isChecked: true, isInverted: true); } }
 		protected FileField CustomLayoutField { get { return new FileField ("", "Leave empty if is set in a Razor _viewstart file", "*.cshtml"); } }
-		protected StringField NameField { get { return new StringField ("", "Name of the Razor Page"); } }
+		protected StringField NameField { get { return new StringField ("", "Name of the Razor Page:"); } }
 
 		public override string CommandLineName => "razorpage";
 

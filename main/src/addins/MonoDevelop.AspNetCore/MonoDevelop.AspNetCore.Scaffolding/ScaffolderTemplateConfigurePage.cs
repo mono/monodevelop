@@ -61,6 +61,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					table.Add (label, 0, rowIndex, hpos: WidgetPlacement.End);
 					table.Add (input, 1, rowIndex);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
+					input.MinWidth = 300;
 					input.SetFocus ();
 					break;
 				case ComboField comboField:
@@ -68,11 +69,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					if (comboField.IsEditable) {
 						var comboBoxEntry = new ComboBoxEntry ();
 						comboBoxEntry.TextEntry.Changed += (sender, args) => comboField.SelectedValue = comboBoxEntry.TextEntry.Text;
+						comboBoxEntry.Items.Add ("");
 						comboBox = comboBoxEntry;
 					} else {
 						comboBox = new ComboBox ();
 					}
 
+					comboBox.MinWidth = 300;
 					Task.Run (async () => {
 						var options = await comboField.Options;
 						await Runtime.RunInMainThread (() => {
