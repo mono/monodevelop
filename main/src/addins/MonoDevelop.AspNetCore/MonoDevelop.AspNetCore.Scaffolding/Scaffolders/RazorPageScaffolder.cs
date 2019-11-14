@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -33,7 +34,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		{
 		}
 
-		public override string Name => "Razor Page";
+		public override string Name => GettextCatalog.GetString("Razor Page");
 
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
 

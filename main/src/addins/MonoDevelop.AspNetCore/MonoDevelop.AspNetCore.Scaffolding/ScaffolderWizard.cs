@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		readonly DotNetProject project;
 		readonly FilePath parentFolder;
 
-		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base ("Add New Scaffolding", new ScaffolderTemplateSelectPage (args), args)
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base (GettextCatalog.GetString ("Add New Scaffolding"), new ScaffolderTemplateSelectPage (args), args)
 		{
 			this.DefaultPageSize = new Size (500, 400);
 
@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		async Task<bool> InstallNuGetPackagesAsync (OutputProgressMonitor progressMonitor)
 		{
-			progressMonitor.Console.Debug (0, "", "Checking if needed NuGet packages are already installed...\n");
+			progressMonitor.Console.Debug (0, "", GettextCatalog.GetString ("Checking if needed NuGet packages are already installed...\n"));
 			var refsToAdd = new List<PackageManagementPackageReference> ();
 			var installedPackages = PackageManagementServices.ProjectOperations.GetInstalledPackages (project);
 
