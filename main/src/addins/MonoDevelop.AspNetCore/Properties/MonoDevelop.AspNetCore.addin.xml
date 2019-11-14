@@ -890,7 +890,7 @@
 				_label = "Publish" />
 		<Command id = "MonoDevelop.AspNetCore.Commands.AspNetCoreCommands.Scaffold"
 				
-				_label = "New Scaffolded Item...." />
+				_label = "New Scaffolding..." />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
