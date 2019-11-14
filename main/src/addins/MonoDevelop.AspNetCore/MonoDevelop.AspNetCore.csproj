@@ -76,11 +76,15 @@
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\FileField.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageScaffolderBase.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ArgumentField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\PackageDescription.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\ScaffoldingConfig.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\SupportPolicyVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
     <EmbeddedResource Include="Resources\aspnet-wizard-page.png" />
     <EmbeddedResource Include="Resources\file-web-32.png" />
+    <EmbeddedResource Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\ScaffoldingPackageVersions.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\MiddlewareClass.xft.xml">
@@ -213,6 +217,7 @@
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\" />
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\" />
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Fields\" />
+    <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
