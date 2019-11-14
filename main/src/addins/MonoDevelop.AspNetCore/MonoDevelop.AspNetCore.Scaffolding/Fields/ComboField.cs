@@ -31,13 +31,15 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ComboField : ScaffolderField
 	{
-		public ComboField (string commandLineName, string displayName, Task<IEnumerable<string>> options, bool isEditable = false) : base (commandLineName, displayName)
+		public ComboField (string commandLineName, string displayName, Task<IEnumerable<string>> options, bool isEditable = false, string placeholderText = null) : base (commandLineName, displayName)
 		{
 			Options = options;
 			IsEditable = isEditable;
+			PlaceholderText = placeholderText;
 		}
 
 		public bool IsEditable { get; }
+		public string PlaceholderText { get; }
 		public Task<IEnumerable<string>> Options { get; }
 	}
 }
