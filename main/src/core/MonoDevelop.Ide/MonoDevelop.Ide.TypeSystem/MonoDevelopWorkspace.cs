@@ -323,18 +323,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <summary>
 		/// Razor (.cshtml) needs to be able to add C# documents to a project that are not backed by a file on disk.
 		/// As these don't come from the project system, we need to keep track of these documents to readd them
-		/// manually every time the project is reloaded from disk.
+		/// manually every time the project is loaded from disk.
 		/// </summary>
-		internal ProjectInfo AddVirtualDocuments(ProjectInfo projectInfo)
+		internal IEnumerable<DocumentInfo> GetVirtualDocuments (ProjectId projectId)
 		{
 			lock (virtualDocuments) {
-				var virtualDocumentsToAdd = virtualDocuments.Where (d => d.Id.ProjectId == projectInfo.Id);
-				if (virtualDocumentsToAdd.Any ()) {
-					projectInfo = projectInfo.WithDocuments (projectInfo.Documents.Concat (virtualDocumentsToAdd));
-				}
+				return virtualDocuments.Where (d => d.Id.ProjectId == projectId).ToList ();
 			}
-
-			return projectInfo;
 		}
 
 		// This is called by OnProjectRemoved.
@@ -513,7 +508,6 @@ namespace MonoDevelop.Ide.TypeSystem
 							OnProjectAdded (projectInfo);
 						} else {
 							lock (projectModifyLock) {
-								projectInfo = AddVirtualDocuments (projectInfo);
 								OnProjectReloaded (projectInfo);
 							}
 						}
@@ -1514,8 +1508,6 @@ namespace MonoDevelop.Ide.TypeSystem
 								try {
 									lock (projectModifyLock) {
 										ProjectInfo newProjectContents = t.Result;
-										newProjectContents = WithDynamicDocuments (project, newProjectContents);
-										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
 										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id).ToArray ()) {
 											if (CurrentSolution.GetDocument (docId) == null) {
@@ -1538,11 +1530,28 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal ProjectInfo WithDynamicDocuments (MonoDevelop.Projects.DotNetProject project, ProjectInfo projectInfo)
+		internal ProjectInfo WithDynamicDocuments (MonoDevelop.Projects.Project project, ProjectInfo projectInfo)
 		{
-			var contentItems = project.MSBuildProject.EvaluatedItems.Where(item => item.Name == "Content" && item.Include.EndsWith(".razor", StringComparison.OrdinalIgnoreCase)).Select(item => item.Include);
+			var projectDirectory = Path.GetDirectoryName (project.FileName);
 
-			return dynamicFileManager?.UpdateDynamicFiles(projectInfo, contentItems, this);
+			var contentItems = project.MSBuildProject.EvaluatedItems
+				.Where (item => item.Name == "Content" && item.Include.EndsWith (".razor", StringComparison.OrdinalIgnoreCase))
+				.Select (item => GetAbsolutePath(item.Include))
+				.ToList ();
+
+			return dynamicFileManager?.UpdateDynamicFiles (projectInfo, contentItems, this);
+
+			string GetAbsolutePath (string relativePath)
+			{
+				if (!Path.IsPathRooted (relativePath)) {
+					relativePath = Path.Combine (projectDirectory, relativePath);
+				}
+
+				// normalize the path separator characters in case they're mixed
+				relativePath = relativePath.Replace ('\\', Path.DirectorySeparatorChar);
+
+				return relativePath;
+			}
 		}
 
 		internal override void SetDocumentContext (DocumentId documentId)
