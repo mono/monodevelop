@@ -78,6 +78,11 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			treeView.Resized += OnTreeViewResized;
 		}
 
+		public void Refresh()
+		{
+			controller.Root.Children [0].Refresh ();
+		}
+
 		public void SetObjectValue (ObjectValue value)
 		{
 			if (value == objectValue)

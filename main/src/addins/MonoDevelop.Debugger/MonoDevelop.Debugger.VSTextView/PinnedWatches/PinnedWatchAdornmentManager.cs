@@ -59,6 +59,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			DebuggingService.PinnedWatches.WatchRemoved += OnWatchRemoved;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
 			DebuggingService.StoppedEvent += OnDebuggingSessionStopped;
+			DebuggingService.VariableChanged += OnVariableChanged;
 
 			this.layer = textView.GetXPlatAdornmentLayer ("PinnedWatch");
 			this.cocoaViewFactory = cocoaViewFactory;
@@ -100,6 +101,17 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 
 			layer.RemoveAdornmentsByTag (e.Watch);
 			adornments.Remove (e.Watch);
+		}
+
+		private void OnVariableChanged (object sender, EventArgs e)
+		{
+			if (!debugging)
+				return;
+
+			foreach (var watch in adornments) {
+				var view = (PinnedWatchView)((ICocoaMaterialView)watch.Value).ContentView;
+				view.Refresh ();
+			}
 		}
 
 		SnapshotSpan GetSnapshotSpan (PinnedWatch watch)
@@ -201,6 +213,8 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
 			DebuggingService.StoppedEvent -= OnDebuggingSessionStopped;
+			DebuggingService.VariableChanged -= OnVariableChanged;
+
 			textView.LayoutChanged -= OnTextViewLayoutChanged;
 		}
 	}
