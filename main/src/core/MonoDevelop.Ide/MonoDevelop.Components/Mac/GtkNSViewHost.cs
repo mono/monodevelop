@@ -36,6 +36,7 @@ namespace Gtk
 	public interface IGtkViewHostContentView
 	{
 		bool CanBecomeKeyViewFromGtkViewHost (AppKit.NSView view);
+		bool HandlesNextResponder (AppKit.NSView view);
 	}
 
 	/// <summary>

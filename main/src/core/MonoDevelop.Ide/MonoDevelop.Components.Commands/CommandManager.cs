@@ -442,9 +442,9 @@ namespace MonoDevelop.Components.Commands
 		void SimulateKeyDownInView (AppKit.NSView view, AppKit.NSView expectedKeyView, GtkNSViewHost currentGtkViewHost,  AppKit.NSEvent currentEvent, AppKit.NSWindow window)
 		{
 			//we need a better way to allow views to handle OnKeyDown, maybe offer some interface to handle an special method to override OnIdeKeyDown ?
-			var supportsTabKey = !HandlesMakeFirstResponder (view);
+			var handlesNextResponder = IsSourceEditor (view) || ((currentGtkViewHost.Content as IGtkViewHostContentView)?.HandlesNextResponder (view) ?? false);
 
-			if (supportsTabKey && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+			if (!handlesNextResponder && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 				AppKit.NSView next = null;
 				if ((int)currentEvent.ModifierFlags == (int)Mac.KeyModifierFlag.Shift) {
 					next = expectedKeyView.PreviousValidKeyView;
@@ -472,20 +472,12 @@ namespace MonoDevelop.Components.Commands
 
 				view.KeyDown (currentEvent);
 
-				if (supportsTabKey && next != null && window?.FirstResponder != next) {
+				if (next != null && window?.FirstResponder != next) {
 					window.MakeFirstResponder (next);
 				}
 			} else {
 				view.KeyDown (currentEvent);
 			}
-		}
-
-		//cases from views where focus is not handled by IDe
-		static bool HandlesMakeFirstResponder (AppKit.NSView view)
-		{
-			if (IsSourceEditor (view))
-				return true;
-			return false;
 		}
 
 		private void SimulateViewKeyActionBehaviour (AppKit.NSView view, AppKit.NSEvent currentEvent)
@@ -609,8 +601,10 @@ namespace MonoDevelop.Components.Commands
 					//we are in a embeded view case
 					expectedKeyView = FindValidKeyView (view, defaultView: view);
 
+					var handlesFocus = IsSourceEditor (view) || ((mainView as IGtkViewHostContentView)?.HandlesNextResponder (view) ?? false);
+
 					//source editor doesn't allow to back to gtk presing tab (this needs to be improved)
-					if (!IsSourceEditor (view) && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
+					if (!handlesFocus && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 						if ((int)currentEvent.ModifierFlags == (int) Mac.KeyModifierFlag.Shift) {
 							var isFirstView = IsFirstView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
 							if (isFirstView) {

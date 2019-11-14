@@ -152,6 +152,7 @@ namespace MonoDevelop.DesignerSupport
 
 		const string FirstResponderOutlineViewTypeName = "<Xamarin_PropertyEditing_Mac_PropertyList_FirstResponderOutlineView:";
 		static bool IsFirstResponderOutlineView (AppKit.NSView view) => view != null && view.ToString ().StartsWith (FirstResponderOutlineViewTypeName);
+		public bool HandlesNextResponder (NSView view) => false;
 	}
 
 	class MacPropertyEditorPanel : PropertyEditorPanel
