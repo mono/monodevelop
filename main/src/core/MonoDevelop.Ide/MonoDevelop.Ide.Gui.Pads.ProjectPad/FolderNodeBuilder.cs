@@ -81,6 +81,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			string folderPrefix = folder + Path.DirectorySeparatorChar;
 
+			var visitedFiles = new HashSet<FilePath> ();
 			files = new List<ProjectFile> ();
 			folders = new List<string> ();
 			
@@ -100,7 +101,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						? project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory
 						: file.FilePath.ParentDirectory;
 						
-					if (dir == folder) {
+					if (dir == folder && !visitedFiles.Contains (file.FilePath)) {
+						visitedFiles.Add (file.FilePath);
 						files.Add (file);
 						continue;
 					}

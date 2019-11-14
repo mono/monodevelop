@@ -31,6 +31,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects.FileNesting
@@ -166,7 +167,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 		}
 
-		readonly ConcurrentDictionary<ProjectFile, ProjectFileNestingInfo> projectFiles = new ConcurrentDictionary<ProjectFile, ProjectFileNestingInfo> ();
+		readonly ConcurrentDictionary<FilePath, ProjectFileNestingInfo> projectFiles = new ConcurrentDictionary<FilePath, ProjectFileNestingInfo> ();
 		bool fileNestingEnabled;
 
 		public Project Project { get; }
@@ -195,10 +196,10 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		ProjectFileNestingInfo AddFile (ProjectFile projectFile)
 		{
-			var tmp = projectFiles.GetOrAdd (projectFile, new ProjectFileNestingInfo (projectFile));
+			var tmp = projectFiles.GetOrAdd (projectFile.FilePath, new ProjectFileNestingInfo (projectFile));
 			tmp.Parent = FileNestingService.InternalGetParentFile (projectFile);
 			if (tmp.Parent != null) {
-				var parent = projectFiles.GetOrAdd (tmp.Parent, new ProjectFileNestingInfo (tmp.Parent));
+				var parent = projectFiles.GetOrAdd (tmp.Parent.FilePath, new ProjectFileNestingInfo (tmp.Parent));
 				if (parent.Children == null) {
 					parent.Children = new ProjectFileCollection ();
 				}
@@ -207,7 +208,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 				}
 			}
 
-			projectFiles [projectFile] = tmp;
+			projectFiles [projectFile.FilePath] = tmp;
 			return tmp;
 		}
 
@@ -215,11 +216,11 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 		{
 			bool actuallyRemoveFiles = originalFilesToRemove == null;
 
-			projectFiles.TryRemove (projectFile, out var nestingInfo);
+			projectFiles.TryRemove (projectFile.FilePath, out var nestingInfo);
 
 			// Update parent
 			if (nestingInfo?.Parent != null) {
-				if (projectFiles.TryGetValue (nestingInfo.Parent, out var tmp)) {
+				if (projectFiles.TryGetValue (nestingInfo.Parent.FilePath, out var tmp)) {
 					tmp.Children.Remove (projectFile);
 				}
 			}
@@ -296,7 +297,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			if (!fileNestingEnabled)
 				return null;
 
-			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Parent : null;
+			return projectFiles.TryGetValue (inputFile.FilePath, out var nestingInfo) ? nestingInfo.Parent : null;
 		}
 
 		public ProjectFileCollection GetChildrenForFile (ProjectFile inputFile)
@@ -305,7 +306,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			if (!fileNestingEnabled)
 				return null;
 
-			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Children : null;
+			return projectFiles.TryGetValue (inputFile.FilePath, out var nestingInfo) ? nestingInfo.Children : null;
 		}
 
 		public void Dispose ()
