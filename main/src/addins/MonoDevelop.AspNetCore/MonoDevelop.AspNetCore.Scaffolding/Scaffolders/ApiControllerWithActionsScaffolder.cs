@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ApiControllerWithActionsScaffolder : ControllerScaffolder
 	{
-		public override string Name => "API Controller with read / write actions";
+		public override string Name => GettextCatalog.GetString("API Controller with read / write actions");
+
 		public override string CommandLineName => "controller";
 
 		public ApiControllerWithActionsScaffolder (ScaffolderArgs args) : base (args)

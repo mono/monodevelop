@@ -83,7 +83,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
     <EmbeddedResource Include="Resources\aspnet-wizard-page.png" />
-    <EmbeddedResource Include="Resources\file-web-32.png" />
     <EmbeddedResource Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\ScaffoldingPackageVersions.json" />
   </ItemGroup>
   <ItemGroup>
