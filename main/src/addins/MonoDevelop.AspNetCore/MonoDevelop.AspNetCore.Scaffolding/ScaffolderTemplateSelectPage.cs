@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using System.Threading;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using Xwt;
 using Xwt.Drawing;
 
@@ -38,7 +40,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
 			this.PageSubtitle = "Select Scaffolder";
-			this.PageIcon = StockIcons.Question;
 			this.SubSubTitle = "Select Scaffolder";
 			this.args = args;
 		}
@@ -69,7 +70,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			foreach (var scaffolder in scaffolders) {
 				var row = listStore.AddRow ();
-				var png = Image.FromResource ("file-web-32.png");
+				var png = ImageService.GetIcon ("md-html-file-icon", Gtk.IconSize.Dnd);
+
 				listStore.SetValue (row, icon, png);
 				listStore.SetValue (row, name, scaffolder.Name);
 			}
