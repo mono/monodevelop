@@ -380,6 +380,21 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				CurrentSelectedBinding = null;
 			}
 		}
+
+		void ResetAccelEntry ()
+		{
+			CurrentKey = string.Empty;
+			accelIncomplete = false;
+			accelComplete = false;
+			chord = null;
+		}
+
+		static bool GetIsFocusSwitchKey (Gdk.EventKey e)
+		{
+			// TAB to focus next or SHIFT+TAB to focus previous
+			return (e.Key == Gdk.Key.Tab || e.Key == Gdk.Key.ISO_Left_Tab)
+				&& (e.State == Gdk.ModifierType.None || e.State == Gdk.ModifierType.ShiftMask);
+		}
 		
 		[GLib.ConnectBefore]
 		void OnAccelEntryKeyPress (object sender, KeyPressEventArgs e)
@@ -390,13 +405,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			e.RetVal = true;
 			
 			if (accelComplete) {
-				CurrentKey = String.Empty;
-				accelIncomplete = false;
-				accelComplete = false;
-				chord = null;
-				
+				// allow Gtk to handle the TAB combo (a11y: keyboard only users need to be able to move the focus)
+				if (GetIsFocusSwitchKey (e.Event)) {
+					e.RetVal = false;
+					return;
+				}
+				ResetAccelEntry ();
 				if (key == Gdk.Key.BackSpace)
 					return;
+			}
+			// TAB / SHIFT-TAB are reserved and can not be used as chords
+			if (chord == null) {
+				if (GetIsFocusSwitchKey (e.Event)) {
+					ResetAccelEntry ();
+					// allow Gtk to handle the TAB combo (a11y: keyboard only users need to be able to move the focus)
+					e.RetVal = false;
+					return;
+				}
 			}
 			
 			accelComplete = false;
