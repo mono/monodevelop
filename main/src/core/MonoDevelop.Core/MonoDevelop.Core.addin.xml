@@ -19,10 +19,10 @@
 	
 	<!-- Extension points -->
 	
-	<ExtensionPoint path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks" name="Feature switch checks">
-  		<Description>Pluggable checks for feature dynamic enabling/disabling</Description>
-  		<ExtensionNode objectType="MonoDevelop.Core.FeatureConfiguration.IFeatureSwitchController" />
-  	</ExtensionPoint>
+	<ExtensionPoint path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks" name="Feature switch checks">		
+   		<Description>Pluggable checks for feature dynamic enabling/disabling</Description>		
+   		<ExtensionNode objectType="MonoDevelop.Core.FeatureConfiguration.IFeatureSwitchController" />		
+   	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
@@ -170,6 +170,11 @@
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportSearchPaths" name = "MSBuild project import search paths">
 		<Description>Allows defining fallback search paths for MSBuild project imports</Description>
 		<ExtensionNode name="SearchPath" type="MonoDevelop.Projects.Extensions.ImportSearchPathExtensionNode" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path="/MonoDevelop/Core/FeatureSwitches">
+		<Description>Feature flags to allow disabling/enabling development features.</Description>
+		<ExtensionNode name="FeatureSwitch" type="MonoDevelop.Core.Addins.FeatureSwitchExtensionNode"/>
 	</ExtensionPoint>
 
 	<!-- Extensions -->

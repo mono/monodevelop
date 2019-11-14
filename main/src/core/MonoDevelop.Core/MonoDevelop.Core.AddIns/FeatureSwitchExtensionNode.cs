@@ -1,10 +1,10 @@
 //
-// IFeatureSwitchController.cs
+// FeatureSwitchExtensionNode.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft Corp. (http://microsoft.com)
+// Copyright (c) 2019 Microsoft Corp (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,22 @@
 // THE SOFTWARE.
 
 using System;
+using Mono.Addins;
 
-namespace MonoDevelop.Core.FeatureConfiguration
+namespace MonoDevelop.Core.Addins
 {
-	[Obsolete ("Implement feature switches via '/MonoDevelop/Core/FeatureSwitches' extension point")]
-	public interface IFeatureSwitchController
+	[ExtensionNode (Description = "Feature switch information.")]
+	sealed class FeatureSwitchExtensionNode : ExtensionNode
 	{
-		bool? IsFeatureEnabled (string featureName);
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
+		[NodeAttribute ("_description", "Id of the feature switch.")]
+		public string Description { get; private set; }
+
+		[NodeAttribute ("defaultValue", "Default value.")]
+		public bool DefaultValue { get; private set; }
+
+		#pragma warning restore 649
 	}
 }

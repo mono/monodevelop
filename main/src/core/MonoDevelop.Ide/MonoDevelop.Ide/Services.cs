@@ -273,5 +273,11 @@ namespace MonoDevelop.Ide
 			set => SetProperty (value);
 		}
 	}
+
+	internal static class FeatureSwitches
+	{
+		public const string IdeBuildOutputViewFeatureSwitchName = "IdeBuildOutputView";
+		public const string RuntimeSelectorFeatureSwitchName = "RUNTIME_SELECTOR";
+	}
 }
 

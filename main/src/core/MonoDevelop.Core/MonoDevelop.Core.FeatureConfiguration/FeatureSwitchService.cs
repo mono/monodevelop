@@ -25,13 +25,35 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Core.Addins;
 
 namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public static class FeatureSwitchService
 	{
+		static Dictionary<string, FeatureSwitch> featureSwitches = new Dictionary<string, FeatureSwitch> ();
+
+		internal static void Initialize ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/FeatureSwitches", HandleFeatureSwitchExtension);
+		}
+
+		static void HandleFeatureSwitchExtension (object sender, ExtensionNodeEventArgs args)
+		{
+			var fs = args.ExtensionNode as FeatureSwitchExtensionNode;
+			if (fs != null) {
+				if (args.Change == ExtensionChange.Add) {
+					RegisterFeatureSwitch (fs.Id, fs.Description, fs.DefaultValue);
+				} else {
+					UnregisterFeatureSwitch (fs.Id);
+				}
+			}
+		}
+
 		public static bool? IsFeatureEnabled (string featureName)
 		{
 			if (string.IsNullOrEmpty (featureName)) {
@@ -49,7 +71,12 @@ namespace MonoDevelop.Core.FeatureConfiguration
 			}
 
 			// Fallback to ask extensions, enabling by default
-			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchController> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks");
+			if (featureSwitches.TryGetValue (featureName, out var feature)) {
+				return feature.CurrentValue ?? feature.DefaultValue;
+			}
+
+			// Backwards support for obsolete IFeatureSwitchController API
+			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchController> ();
 			if (extensions != null) {
 				bool explicitlyEnabled = false, explicitlyDisabled = false;
 				foreach (var ext in extensions) {
@@ -69,5 +96,41 @@ namespace MonoDevelop.Core.FeatureConfiguration
 
 			return null;
 		}
+
+		#region Internal API for unit tests
+
+		internal static void SetFeatureSwitchValue (string id, bool? value)
+		{
+			if (!featureSwitches.TryGetValue (id, out var featureSwitch)) {
+				// This feature switch is not registered, so register it now
+				featureSwitch = new FeatureSwitch (id, null, false);
+				featureSwitches.Add (id, featureSwitch);
+			}
+
+			featureSwitch.CurrentValue = value;
+		}
+
+		internal static IEnumerable<FeatureSwitch> DescribeFeatures ()
+		{
+			return featureSwitches.Values;
+		}
+
+		internal static void RegisterFeatureSwitch (string id, string description, bool defaultValue)
+		{
+			LoggingService.LogInfo ($"Registering feature {id} ({description} = {defaultValue})");
+			if (featureSwitches.TryGetValue (id, out _)) {
+				LoggingService.LogWarning ($"Feature switch {id} already registered, ignoring new registration");
+			} else {
+				featureSwitches.Add (id, new FeatureSwitch (id, description, defaultValue));
+			}
+		}
+
+		internal static void UnregisterFeatureSwitch (string id)
+		{
+			LoggingService.LogInfo ($"Unregistering feature {id}");
+			featureSwitches.Remove (id);
+		}
+
+		#endregion
 	}
 }
