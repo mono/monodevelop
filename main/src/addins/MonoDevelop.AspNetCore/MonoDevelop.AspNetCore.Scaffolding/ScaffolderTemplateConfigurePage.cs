@@ -68,7 +68,10 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					ComboBox comboBox;
 					if (comboField.IsEditable) {
 						var comboBoxEntry = new ComboBoxEntry ();
-						comboBoxEntry.TextEntry.Changed += (sender, args) => comboField.SelectedValue = comboBoxEntry.TextEntry.Text;
+						comboBoxEntry.TextEntry.Changed += (sender, args) => {
+							if(!string.IsNullOrWhiteSpace(comboBoxEntry.TextEntry.Text))
+								comboField.SelectedValue = comboBoxEntry.TextEntry.Text;
+						};
 						if(comboField.PlaceholderText != null)
 							comboBoxEntry.TextEntry.PlaceholderText = comboField.PlaceholderText;
 						comboBoxEntry.Items.Add ("");
