@@ -39,7 +39,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
-			this.SubSubTitle = "Select Scaffolder";
+			this.SubSubTitle = GettextCatalog.GetString ("Select Scaffolder");
 			this.args = args;
 		}
 

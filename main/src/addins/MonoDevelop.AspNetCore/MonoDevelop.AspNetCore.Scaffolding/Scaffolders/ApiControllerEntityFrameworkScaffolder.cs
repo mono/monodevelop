@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -34,7 +35,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
-		public override string Name => "API Controller with actions using Entity Framework";
+		public override string Name => GettextCatalog.GetString("API Controller with actions using Entity Framework");
 		public override string CommandLineName => "controller";
 
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields ();
@@ -46,7 +47,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			fields = new ScaffolderField [] {
 				GetModelField(args),
 				GetDbContextField(args),
-new StringField ("-name", "Controller name:"),
+new StringField ("-name", GettextCatalog.GetString("Controller name:")),
 
 			};
 

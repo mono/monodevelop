@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class EmptyApiControllerScaffolder : ControllerScaffolder
 	{
-		public override string Name => "API Controller - Empty";
+		public override string Name => GettextCatalog.GetString("API Controller - Empty");
 		public override string CommandLineName => "controller";
 
 		public EmptyApiControllerScaffolder (ScaffolderArgs args) : base (args)
