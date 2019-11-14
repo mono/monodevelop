@@ -49,8 +49,9 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		static readonly ScaffolderArgs args = new ScaffolderArgs ();
 		readonly DotNetProject project;
 		readonly FilePath parentFolder;
+		static ScaffolderTemplateSelectPage selectionPage = new ScaffolderTemplateSelectPage (args);
 
-		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base (GettextCatalog.GetString ("Add New Scaffolding"), new ScaffolderTemplateSelectPage (args), args)
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base (GettextCatalog.GetString ("Add New Scaffolding"), selectionPage, args)
 		{
 			this.DefaultPageSize = new Size (500, 400);
 
@@ -63,6 +64,14 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.parentFolder = parentFolder;
 			args.Project = project;
 			args.ParentFolder = parentFolder;
+
+			selectionPage.ScaffolderSelected += (_, __) => Task.Run (async () =>
+			 await Runtime.RunInMainThread (async () => {
+				 await Xwt.Toolkit.NativeEngine.Invoke (async () => {
+					 await this.GoNext (args.CancellationToken);
+				 });
+			 }));
+
 		}
 
 		const string toolName = "dotnet-aspnet-codegenerator";
