@@ -49,12 +49,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected ComboField GetDbContextField (ScaffolderArgs args)
 		{
-			return new ComboField ("--dataContext", "DbContext class to use", GetDbContextClassesAsync(args.Project, args.CancellationToken), isEditable: true);
+			return new ComboField ("--dataContext", "DbContext class to use:", GetDbContextClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
 		protected ComboField GetModelField (ScaffolderArgs args)
 		{
-			return new ComboField ("--model", "Model class to use", GetModelClassesAsync(args.Project, args.CancellationToken), isEditable: true);
+			return new ComboField ("--model", "Model class to use:", GetModelClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
 		async Task<IEnumerable<string>> GetDbContextClassesAsync (DotNetProject project, CancellationToken token)
