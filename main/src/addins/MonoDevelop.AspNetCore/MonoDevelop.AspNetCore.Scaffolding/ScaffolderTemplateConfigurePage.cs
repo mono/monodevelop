@@ -130,10 +130,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						var filter = new FileDialogFilter (fileField.FilterWildcard, fileField.FilterWildcard);
 						fileSelector.Filters.Add (filter);
 					}
-					table.Add (fileSelector, 0, rowIndex, colspan: 2);
+					table.Add (fileSelector, 1, rowIndex);
 					label.Text = fileField.DisplayName;
-					table.Add (label, 0, rowIndex + 1, colspan: 2);
+					table.Add (label, 1, rowIndex + 1);
 					rowAdditionCount++;
+					fileSelector.HeightRequest = 20;
 					fileSelector.FileChanged += (sender, args) => fileField.SelectedValue = fileSelector.FileName;
 					break;
 				}
