@@ -77,9 +77,13 @@ namespace MonoDevelop.Debugger
 			DebuggerLoggingService.LogMessage ("End Local Variables");
 
 			if (UseNewTreeView) {
-				controller.ClearValues ();
-				controller.AddValues (locals);
-
+				_treeview.BeginUpdates ();
+				try {
+					controller.ClearValues ();
+					controller.AddValues (locals);
+				} finally {
+					_treeview.EndUpdates ();
+				}
 #if ADD_FAKE_NODES
 				AddFakeNodes ();
 #endif

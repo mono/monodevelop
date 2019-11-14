@@ -255,10 +255,14 @@ namespace MonoDevelop.Debugger
 			var range = new NSRange (0, count);
 			var indexes = NSIndexSet.FromNSRange (range);
 
+			treeView.BeginUpdates ();
+
 			treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
 
 			for (int i = 0; i < removed.Count; i++)
 				removed[i].Dispose ();
+
+			treeView.EndUpdates ();
 		}
 
 		public void Append (ObjectValueNode node)
