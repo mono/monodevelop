@@ -78,6 +78,11 @@ namespace MonoDevelop.Debugger
 			treeView.Resized += OnTreeViewResized;
 		}
 
+		public void Expand ()
+		{
+			treeView.ExpandItem (treeView.ItemAtRow (0), false);
+		}
+
 		public DebuggerSession GetDebuggerSession ()
 		{
 			return controller.GetStackFrame ()?.DebuggerSession;

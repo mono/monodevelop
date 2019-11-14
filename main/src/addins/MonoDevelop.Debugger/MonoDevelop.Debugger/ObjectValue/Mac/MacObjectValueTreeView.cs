@@ -191,9 +191,11 @@ namespace MonoDevelop.Debugger
 		public PinnedWatch PinnedWatch {
 			get => pinnedWatch;
 			set {
-				if (pinnedWatch != value) {
+				if (pinnedWatch != value && pinColumn != null) {
 					pinnedWatch = value;
 					Runtime.RunInMainThread (() => {
+						if (pinColumn == null)
+							return;
 						if (value == null) {
 							pinColumn.MinWidth = pinColumn.MaxWidth = pinColumn.Width = MacDebuggerObjectPinView.MinWidth;
 						} else {
