@@ -19,7 +19,8 @@ selected_bg_color: #2257c9
 selected_fg_color: #fff
 tooltip_bg_color: #5a5a5a
 tooltip_fg_color: #d2d5cd
-tooltip_border_color: #b2b2b2"
+tooltip_border_color: #b2b2b2
+focus_ring_color: #45739e"
 
 gtk-button-images = 0
 gtk-menu-images = 0
@@ -137,7 +138,7 @@ style "wider" = "default" {
 }
 
 style "button" = "default" {
-    xthickness = 2
+    xthickness = 4
     ythickness = 4
 
     font_name = "-apple-system-font 12"
@@ -154,12 +155,12 @@ style "button" = "default" {
 
     GtkWidget::draw-border = { 1, 1, 1, 1 }
     GtkWidget::focus-padding = 0
-    GtkWidget::focus-line-width = 1
+    GtkWidget::focus-line-width = 2
 
     engine "xamarin" {
         rgba = FALSE
         contrast = 1.0
-        focus_color = shade(1.4, @bg_color)
+        focus_color = @focus_ring_color
         focusstyle = 3
         textstyle = 0
         highlight_shade = 1.0
@@ -171,8 +172,14 @@ style "button" = "default" {
 style "dialog-button" = "button" {
     GtkButton::inner-border = { 7, 7, 3, 4 }
 
+    text[NORMAL] = @selected_fg_color
+    text[PRELIGHT] = @selected_fg_color
+    text[SELECTED] = @selected_fg_color
+    text[INSENSITIVE] = @dim_color
+    text[ACTIVE] = @selected_fg_color
+
     engine "xamarin" {
-        default_button_color = "#397cae"
+        default_button_color = "#2d65d3"
     }
 }
 
@@ -185,7 +192,6 @@ style "toggle-button" = "button" {
         rgba = FALSE
         contrast = 1.0
         gradient_shades = {0.96, 0.918, 0.926, 0.858}
-        focus_color = shade(0.6, @bg_color)
         textstyle = 1
     }
 }
@@ -426,6 +432,14 @@ style "spin-button" = "wider"
 style "link-label-fix"
 {
     base[PRELIGHT] = @bg_color # disable link hover background
+    GtkWidget::focus-padding = 0
+
+    engine "xamarin" {
+        rgba = TRUE
+        roundness = 0
+        focusstyle = 2
+        focus_color = @focus_ring_color
+    }
 }
 
 
