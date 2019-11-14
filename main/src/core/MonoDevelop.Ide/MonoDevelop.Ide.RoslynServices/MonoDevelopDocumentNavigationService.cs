@@ -1,7 +1,7 @@
 using System;
 using System.Composition;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Navigation;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 
@@ -19,11 +20,14 @@ namespace MonoDevelop.Ide.RoslynServices
 	{
 		private readonly IDocumentNavigationService _singleton;
 
+		[Import]
+		public IBufferGraphFactoryService BufferGraphFactoryService { get; set; }
+
 		[ImportingConstructor]
 		[Obsolete (MefConstruction.ImportingConstructorMessage, error: true)]
 		private VisualStudioDocumentNavigationServiceFactory ()
 		{
-			_singleton = new MonoDevelopDocumentNavigationService ();
+			_singleton = new MonoDevelopDocumentNavigationService (this);
 		}
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
@@ -34,6 +38,13 @@ namespace MonoDevelop.Ide.RoslynServices
 
 	class MonoDevelopDocumentNavigationService : IDocumentNavigationService
 	{
+		private VisualStudioDocumentNavigationServiceFactory factory;
+
+		public MonoDevelopDocumentNavigationService (VisualStudioDocumentNavigationServiceFactory visualStudioDocumentNavigationServiceFactory)
+		{
+			this.factory = visualStudioDocumentNavigationServiceFactory;
+		}
+
 		public bool CanNavigateToSpan (Workspace workspace, DocumentId documentId, TextSpan textSpan)
 		{
 			// Navigation should not change the context of linked files and Shared Projects.
@@ -99,13 +110,12 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			Runtime.AssertMainThread ();
 
-			var document = OpenDocument (workspace, documentId, options);
+			var document = workspace.CurrentSolution.GetDocument (documentId);
 			if (document == null) {
 				return false;
 			}
 
 			var text = document.GetTextSynchronously (CancellationToken.None);
-			var textBuffer = text.Container.GetTextBuffer ();
 
 			var boundedTextSpan = GetSpanWithinDocumentBounds (textSpan, text.Length);
 			if (boundedTextSpan != textSpan) {
@@ -127,7 +137,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			Runtime.AssertMainThread ();
 
-			var document = OpenDocument (workspace, documentId, options);
+			var document = workspace.CurrentSolution.GetDocument (documentId);
 			if (document == null) {
 				return false;
 			}
@@ -149,7 +159,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			Runtime.AssertMainThread ();
 
-			var document = OpenDocument (workspace, documentId, options);
+			var document = workspace.CurrentSolution.GetDocument (documentId);
 			if (document == null) {
 				return false;
 			}
@@ -222,11 +232,39 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		private bool NavigateTo (Document document, TextSpan span)
 		{
+			string filePath = document.FilePath;
+			filePath = GetActualFilePathToOpen (filePath);
 			var proj = (document.Project.Solution.Workspace as MonoDevelopWorkspace)?.GetMonoProject (document.Project);
-			var task = IdeApp.Workbench.OpenDocument (new Gui.FileOpenInformation (document.FilePath, proj) {
+			var task = IdeApp.Workbench.OpenDocument (new Gui.FileOpenInformation (filePath, proj) {
 				Offset = span.Start
 			});
 			return true;
+		}
+
+		/// <summary>
+		/// Razor: Strip the .g.cs since we want to open the corresponding .cshtml or .razor document.
+		///
+		/// In Visual Studio for Windows the underlying C# buffer is added to the workspace with the
+		/// .cshtml or .razor extension (without the .g.cs) part, so they don't have to worry about
+		/// this. In our case we have an assumption somewhere that all C# documents in the workspace
+		/// have the .cs extension, so we're adding the .g.cs part that we need to strip here.
+		/// 
+		/// This is not great to hardcode application-specific logic here, but we don't anticipate
+		/// more scenarios where we want to open a different file than requested, so it doesn't
+		/// warrant an extension point at this time.
+		/// </summary>
+		string GetActualFilePathToOpen (string filePath)
+		{
+			if (filePath == null) {
+				return null;
+			}
+
+			if (filePath.EndsWith (".cshtml.g.cs", StringComparison.OrdinalIgnoreCase) ||
+				filePath.EndsWith (".razor.g.cs", StringComparison.OrdinalIgnoreCase)) {
+				filePath = filePath.Substring (0, filePath.Length - ".g.cs".Length);
+			}
+
+			return filePath;
 		}
 
 		private bool IsSecondaryBuffer (Workspace workspace, Document document)
@@ -239,7 +277,7 @@ namespace MonoDevelop.Ide.RoslynServices
 			return true;
 		}
 
-		public static bool TryMapSpanFromSecondaryBufferToPrimaryBuffer (TextSpan spanInSecondaryBuffer, Microsoft.CodeAnalysis.Workspace workspace, Document document, out TextSpan spanInPrimaryBuffer)
+		public bool TryMapSpanFromSecondaryBufferToPrimaryBuffer (TextSpan spanInSecondaryBuffer, Microsoft.CodeAnalysis.Workspace workspace, Document document, out TextSpan spanInPrimaryBuffer)
 		{
 			spanInPrimaryBuffer = default;
 
@@ -247,15 +285,25 @@ namespace MonoDevelop.Ide.RoslynServices
 			if (containedDocument == null) {
 				return false;
 			}
-			throw new NotImplementedException ();
-			//var bufferCoordinator = containedDocument.BufferCoordinator;
 
-			//var primary = new VsTextSpan [1];
-			//var hresult = bufferCoordinator.MapSecondaryToPrimarySpan (spanInSecondaryBuffer, primary);
+			var projectionBuffer = containedDocument.TopBuffer;
 
-			//spanInPrimaryBuffer = primary [0];
+			var bufferGraph = factory.BufferGraphFactoryService.CreateBufferGraph (projectionBuffer);
 
-			//return ErrorHandler.Succeeded (hresult);
+			if (document.TryGetText(out var sourceText) && sourceText.Container.TryGetTextBuffer() is ITextBuffer languageBuffer) {
+				var secondarySnapshot = languageBuffer.CurrentSnapshot;
+				var snapshotSpanInSecondaryBuffer = new SnapshotSpan (secondarySnapshot, new Span (spanInSecondaryBuffer.Start, spanInSecondaryBuffer.Length));
+				var topBufferSnapshotSpan = bufferGraph.MapUpToSnapshot (
+					snapshotSpanInSecondaryBuffer,
+					SpanTrackingMode.EdgeExclusive,
+					projectionBuffer.CurrentSnapshot).FirstOrDefault();
+				if (topBufferSnapshotSpan != default) {
+					spanInPrimaryBuffer = new TextSpan (topBufferSnapshotSpan.Start, topBufferSnapshotSpan.Length);
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private bool CanMapFromSecondaryBufferToPrimaryBuffer (Workspace workspace, Document document, TextSpan spanInSecondaryBuffer)
