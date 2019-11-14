@@ -354,8 +354,8 @@ namespace Gtk
 			LogEnter ();
 			try {
 				return base.OnFocusOutEvent (evnt);
-			} finally {	
-				LogExit ();	
+			} finally {
+				LogExit ();
 			}
 		}
 
