@@ -32,6 +32,8 @@ using AppKit;
 using Foundation;
 using CoreGraphics;
 
+using Mono.Debugging.Evaluation;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
@@ -784,10 +786,17 @@ namespace MonoDevelop.Debugger
 					var objVal = item.Target.GetDebuggerObjectValue ();
 
 					if (objVal != null) {
-						// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
-						var opt = DebuggerService.Frame.GetStackFrame ().DebuggerSession.Options.EvaluationOptions.Clone ();
-						opt.EllipsizeStrings = false;
-						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
+						try {
+							// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
+							var opt = DebuggerService.Frame.GetStackFrame ().DebuggerSession.Options.EvaluationOptions.Clone ();
+							opt.EllipsizeStrings = false;
+
+							var rawValue = (string) objVal.GetRawValue (opt);
+
+							value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (rawValue) + '"';
+						} catch (EvaluatorException) {
+							// fall back to using the DisplayValue that we would have used anyway...
+						}
 					}
 				}
 
