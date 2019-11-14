@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				AlertButton result;
 
 				if (project == null) {
-					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
+					question.Text = GettextCatalog.GetString ("Are you sure you want to delete directory {0}?", folder.Name);
 					result = MessageService.AskQuestion (question);
 					if (result == AlertButton.Delete) {
 						DeleteFolder (folder);
@@ -218,12 +218,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 				//if the parent directory has already been removed, there may be nothing to do
 				if (isProjectFolder) {
-					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
+					question.Text = GettextCatalog.GetString ("Are you sure you want to delete directory {0}?", folder.Name);
 					result = MessageService.AskQuestion (question);
 					if (result != AlertButton.Delete)
 						break;
 				} else {
-					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0} from project {1}?",
+					question.Text = GettextCatalog.GetString ("Are you sure you want to delete directory {0} from project {1}?",
 						folder.Name, project.Name);
 					result = MessageService.AskQuestion (question);
 					if (result != AlertButton.Delete)
@@ -335,7 +335,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void UpdateRemoveItem (CommandInfo info)
 		{
 			info.Enabled = CanDeleteMultipleItems ();
-			info.Text = GettextCatalog.GetString ("Remove");
 		}
 
 		[CommandHandler (ProjectCommands.IncludeToProject)]

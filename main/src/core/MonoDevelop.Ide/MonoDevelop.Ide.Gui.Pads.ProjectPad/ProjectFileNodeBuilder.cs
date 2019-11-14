@@ -289,18 +289,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			if (hasChildren) {
 				if (files.Count == 1)
-					question = GettextCatalog.GetString ("Remove the file {0} and " + 
+					question = GettextCatalog.GetString ("Are you sure you want to delete the file {0} and " + 
 					                                     "its code-behind children from project {1}?",
 					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
 				else
-					question = GettextCatalog.GetString ("Remove the selected files and " + 
+					question = GettextCatalog.GetString ("Are you sure you want to delete the selected files and " + 
 					                                     "their code-behind children from the project?");
 			} else {
 				if (files.Count == 1)
-					question = GettextCatalog.GetString ("Remove file {0} from project {1}?",
+					question = GettextCatalog.GetString ("Are you sure you want to delete file {0} from project {1}?",
 					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
 				else
-					question = GettextCatalog.GetString ("Remove the selected files from the project?");
+					question = GettextCatalog.GetString ("Are you sure you want to delete the selected files from the project?");
 			}
 
 			var result = MessageService.AskQuestion (question, GetDeleteConfirmationButtons (filesExist));
@@ -392,7 +392,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			//don't allow removing children from parents. The parent can be removed and will remove the whole group.
 			info.Enabled = CanDeleteMultipleItems ();
-			info.Text = GettextCatalog.GetString ("Remove");
 		}
 		
 		[CommandHandler (ViewCommands.OpenWithList)]
