@@ -167,6 +167,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 				}
 
+				IEnumerable<DocumentInfo> documents = projectDocuments.Documents;
+				var virtualDocuments = workspace.GetVirtualDocuments (projectId);
+				if (virtualDocuments.Any ()) {
+					documents = documents.Concat (virtualDocuments);
+				}
+
 				// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
 				var info = ProjectInfo.Create (
 					projectId,
@@ -180,7 +186,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					null, // defaultNamespace
 					cp?.CreateCompilationOptions (),
 					cp?.CreateParseOptions (config),
-					projectDocuments.Documents,
+					documents,
 					cacheInfo.ProjectReferences,
 					cacheInfo.References.Select (x => x.CurrentSnapshot),
 					analyzerReferences: cacheInfo.AnalyzerFiles.SelectAsArray (x => {
@@ -194,6 +200,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					hostObjectType: null,
 					hasAllInformation: true
 				);
+
+				info = workspace.WithDynamicDocuments (p, info);
+
 				return info;
 			}
 
