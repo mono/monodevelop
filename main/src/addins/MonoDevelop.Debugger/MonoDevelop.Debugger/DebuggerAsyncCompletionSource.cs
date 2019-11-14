@@ -88,10 +88,73 @@ namespace MonoDevelop.Debugger
 
 		public CompletionStartData InitializeCompletion (CompletionTrigger trigger, SnapshotPoint triggerLocation, CancellationToken token)
 		{
+			switch (trigger.Character) {
+			case '.': // we want member completion for this
+			case '<': // we want type completion for this
+			case '(': // we want parameter completion for this
+				break;
+			default:
+				if (!char.IsLetterOrDigit (trigger.Character))
+					return new CompletionStartData (CompletionParticipation.DoesNotProvideItems);
+				break;
+			}
+
 			var text = triggerLocation.Snapshot.GetText (0, triggerLocation.Position);
+
+			if (IsInsideQuotedString (text, triggerLocation.Position))
+				return new CompletionStartData (CompletionParticipation.DoesNotProvideItems);
+
 			var span = GetWordSpan (text, triggerLocation.Position);
 
 			return new CompletionStartData (CompletionParticipation.ProvidesItems, new SnapshotSpan (triggerLocation.Snapshot, span));
+		}
+
+		static bool IsInsideQuotedString (string text, int position)
+		{
+			bool quoted = false;
+			int index = 0;
+
+			do {
+				while (index < position && text[index] != '"')
+					index++;
+
+				if (index == position)
+					break;
+
+				if (index > 0 && text[index - 1] == '\'') {
+					// char literal
+					index++;
+				} else {
+					// quoted string
+					var literal = index > 0 && text[index - 1] == '@';
+					var escaped = false;
+					quoted = true;
+					index++;
+
+					while (index < position) {
+						if (text[index] == '\\') {
+							escaped = !escaped;
+						} else if (text[index] == '"') {
+							if (escaped) {
+								escaped = false;
+							} else {
+								quoted = false;
+								index++;
+
+								if (literal && index < position && text[index] == '"') {
+									quoted = true;
+								} else {
+									break;
+								}
+							}
+						}
+
+						index++;
+					}
+				}
+			} while (index < position);
+
+			return quoted;
 		}
 
 		public static Span GetWordSpan (string text, int position)
@@ -129,7 +192,7 @@ namespace MonoDevelop.Debugger
 
 	sealed class DebuggerAsyncCompletionCommitManager : IAsyncCompletionCommitManager
 	{
-		static readonly char[] CommitCharacters = new char[] { ' ', '\t', '\n', '.', ',', '<', '>', '(', ')', '[', ']' };
+		static readonly char[] CommitCharacters = new char[] { ' ', '\t', '\n', '.', ',', '<', '>', '(', ')', '[', ']', '\'', '"' };
 
 		public IEnumerable<char> PotentialCommitCharacters {
 			get { return CommitCharacters; }
@@ -142,6 +205,11 @@ namespace MonoDevelop.Debugger
 
 		public CommitResult TryCommit (IAsyncCompletionSession session, ITextBuffer buffer, CompletionItem item, char typedChar, CancellationToken token)
 		{
+			if (typedChar == '\'' || typedChar == '"') {
+				// User is entering a char or string, dismiss the completion window.
+				return new CommitResult (true, CommitBehavior.None);
+			}
+
 			// Note: Hitting Return should *always* complete the current selection, but other typed chars require examining context...
 			if (typedChar != '\0' && typedChar != '\n') {
 				var text = buffer.CurrentSnapshot.GetText ();
