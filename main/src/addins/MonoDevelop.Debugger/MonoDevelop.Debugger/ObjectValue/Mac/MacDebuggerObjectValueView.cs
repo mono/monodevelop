@@ -91,6 +91,7 @@ namespace MonoDevelop.Debugger
 
 			TextField = new MacDebuggerTextField (this) {
 				TranslatesAutoresizingMaskIntoConstraints = false,
+				LineBreakMode = NSLineBreakMode.Clipping,
 				MaximumNumberOfLines = 1,
 				DrawsBackground = false,
 				Bordered = false,
@@ -291,6 +292,7 @@ namespace MonoDevelop.Debugger
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);
+			TextField.SizeToFit ();
 
 			OptimalWidth += GetWidthForString (TextField.Font, strval);
 
@@ -391,8 +393,7 @@ namespace MonoDevelop.Debugger
 
 			// Third Item: Value Button
 			if (valueButtonText != null && !hideValueButton) {
-				// FIXME: what left/right padding do we need to add for the button around the button label? 4px?
-				optimalWidth += GetWidthForString (treeView.CustomFont, valueButtonText, -3) + 4;
+				optimalWidth += GetWidthForString (treeView.CustomFont, valueButtonText, -3);
 				optimalWidth += RowCellSpacing;
 			}
 
@@ -404,7 +405,6 @@ namespace MonoDevelop.Debugger
 
 			// Fifth Item: Text Value
 			optimalWidth += GetWidthForString (treeView.CustomFont, strval);
-
 			optimalWidth += MarginSize;
 
 			return optimalWidth;
