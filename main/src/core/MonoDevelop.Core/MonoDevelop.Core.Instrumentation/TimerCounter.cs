@@ -38,7 +38,7 @@ using System.Runtime.Serialization;
 namespace MonoDevelop.Core.Instrumentation
 {
 	[Serializable]
-	public class TimerCounter : Counter , ISerializable
+	public class TimerCounter : Counter
 	{
 		double minSeconds;
 		TimeSpan totalTime;
@@ -141,17 +141,6 @@ namespace MonoDevelop.Core.Instrumentation
 					InstrumentationService.LogMessage ("START: " + Name);
 			}
 			return c;
-		}
-
-		public override void GetObjectData (SerializationInfo info, StreamingContext context)
-		{
-			base.PopulateSerializableMembers (info, context);
-			info.AddValue (nameof (this.MinSeconds), this.MinSeconds);
-			info.AddValue (nameof (this.TotalTime), this.TotalTime);
-			info.AddValue (nameof (this.AverageTime), this.AverageTime);
-			info.AddValue (nameof (this.MinTime), this.MinTime);
-			info.AddValue (nameof (this.MaxTime), this.MaxTime);
-			info.AddValue (nameof (this.CountWithDuration), this.CountWithDuration);
 		}
 	}
 
