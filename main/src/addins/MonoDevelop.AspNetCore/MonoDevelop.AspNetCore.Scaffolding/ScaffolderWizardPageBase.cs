@@ -51,11 +51,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			var mainBox = new VBox { Spacing = 0 };
 			var label = new Label (subSubTitle);
 			label.Font = label.Font.WithSize (18);
-			mainBox.PackStart (label, margin: 30);
+			mainBox.PackStart (label, margin: 16);
 			var separator = new HSeparator ();
 			mainBox.PackStart (separator);
 
-			mainBox.PackStart (GetMainControl (), margin: 20);
+			mainBox.PackStart (GetMainControl (), margin: 16);
 			return new XwtControl (mainBox);
 		}
 
