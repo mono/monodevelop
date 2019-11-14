@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -114,7 +115,9 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 
 		public virtual CounterDisplayMode DisplayMode => CounterDisplayMode.Block;
-		
+
+		public IReadOnlyList<CounterValue> AllValues => new ReadOnlyCollection<CounterValue> (values);
+
 		public IEnumerable<CounterValue> GetValues ()
 		{
 			lock (values) {
