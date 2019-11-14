@@ -37,10 +37,11 @@ using Xamarin.PropertyEditing.Mac;
 using AppKit;
 using CoreGraphics;
 using System.Linq;
+using Gtk;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyGrid : NSView
+	class MacPropertyGrid : NSView, Gtk.IGtkViewHostContentView
 	{
 		readonly MacPropertyEditorPanel propertyEditorPanel;
 		readonly MonoDevelopHostResourceProvider hostResourceProvider;
@@ -133,6 +134,24 @@ namespace MonoDevelop.DesignerSupport
 			}
 			base.Dispose (disposing);
 		}
+
+		public bool CanBecomeKeyViewFromGtkViewHost (NSView view)
+		{
+			//temporal property pad hacks:
+			//removes the exanders from our keyviewloop
+			if (view is AppKit.NSButton expander && expander.Superview is AppKit.NSView expanderParent && expanderParent.Superview is AppKit.NSTableRowView tableRowView && IsFirstResponderOutlineView (tableRowView.Superview)) {
+				return false;
+			}
+
+			if (IsFirstResponderOutlineView (view)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		const string FirstResponderOutlineViewTypeName = "<Xamarin_PropertyEditing_Mac_PropertyList_FirstResponderOutlineView:";
+		static bool IsFirstResponderOutlineView (AppKit.NSView view) => view != null && view.ToString ().StartsWith (FirstResponderOutlineViewTypeName);
 	}
 
 	class MacPropertyEditorPanel : PropertyEditorPanel

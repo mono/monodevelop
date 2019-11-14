@@ -453,8 +453,8 @@ namespace MonoDevelop.Components.Commands
 					//we calculate what's the next keyview if there is no a valid candidate (null case) or if our
 					//previous is from another embeded view
 					bool isValidFocus = next != null
-					&& currentGtkViewHost.Content == GetGtkNSViewHostContentView (next) //is in our embeded view
-					&& CanBecomeKeyView (next);
+						&& currentGtkViewHost.Content == GetGtkNSViewHostContentView (next) //is in our embeded view
+						&& CanBecomeKeyView (next, currentGtkViewHost.Content as IGtkViewHostContentView);
 					if (!isValidFocus) {
 						next = GetPreviousKeyView (expectedKeyView, addViewBeforeChildren: false, removeContentView: true);
 					}
@@ -463,7 +463,7 @@ namespace MonoDevelop.Components.Commands
 					next = expectedKeyView.NextValidKeyView;
 					bool isValidFocus = next != null
 						&& currentGtkViewHost.Content == GetGtkNSViewHostContentView (next) //is in our embeded view
-						&& CanBecomeKeyView (next);
+						&& CanBecomeKeyView (next, currentGtkViewHost.Content as IGtkViewHostContentView);
 					if (!isValidFocus) {
 						//we calculate what's the next keyview if there is no a valid candidate (null case)
 						next = GetNextKeyView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
@@ -481,7 +481,7 @@ namespace MonoDevelop.Components.Commands
 		}
 
 		//cases from views where focus is not handled by IDe
-		bool HandlesMakeFirstResponder (AppKit.NSView view)
+		static bool HandlesMakeFirstResponder (AppKit.NSView view)
 		{
 			if (IsSourceEditor (view))
 				return true;
@@ -651,7 +651,7 @@ namespace MonoDevelop.Components.Commands
 		}
 
 		const string sourceEditorTypeClass = ("Microsoft.VisualStudio.Text.Editor.Implementation.CocoaTextViewControl");
-		bool IsSourceEditor (AppKit.NSView view) => view.GetType ().FullName == sourceEditorTypeClass;
+		static bool IsSourceEditor (AppKit.NSView view) => view.GetType ().FullName == sourceEditorTypeClass;
 
 		internal List<AppKit.NSView> GetOrderedFocusableViews (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
 		{
@@ -683,9 +683,9 @@ namespace MonoDevelop.Components.Commands
 		bool IsLastView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).LastOrDefault () == view;
 		bool IsFirstView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).FirstOrDefault () == view;
 
-		GtkNSViewHost GetGtkNSViewHostFromView (AppKit.NSView view) => view == null ? null :  viewHosts.FirstOrDefault (s => s.Content == view);
+		GtkNSViewHost GetGtkNSViewHostFromView (AppKit.NSView view) => view == null ? null : viewHosts.FirstOrDefault (s => s.Content == view);
 
-		static bool CanBecomeKeyView (AppKit.NSView view)
+		static bool CanBecomeKeyView (AppKit.NSView view, IGtkViewHostContentView gtkViewHostContentView)
 		{
 			if (!view.CanBecomeKeyView)
 				return false;
@@ -702,17 +702,9 @@ namespace MonoDevelop.Components.Commands
 				return false;
 			}
 
-			//temporal property pad hacks:
-			//removes the exanders from our keyviewloop
-			if (view is AppKit.NSButton expander && expander.Superview is AppKit.NSView expanderParent && expanderParent.Superview is AppKit.NSTableRowView) {
+			if (gtkViewHostContentView != null && !gtkViewHostContentView.CanBecomeKeyViewFromGtkViewHost (view)) {
 				return false;
 			}
-
-			//removes the FirstResponderOutline from our keyviewloop
-			if (IsFirstResponderOutlineView (view)) {
-				return false;
-			}
-
 			return true;
 		}
 
@@ -734,7 +726,7 @@ namespace MonoDevelop.Components.Commands
 				return;
 			}
 
-			if (addViewBeforeChildren && CanBecomeKeyView (view) && contentView != view)
+			if (addViewBeforeChildren && CanBecomeKeyView (view, contentView as IGtkViewHostContentView) && contentView != view)
 				toAddViews.Add (view);
 
 			if (view.IsFlipped) {
@@ -747,7 +739,7 @@ namespace MonoDevelop.Components.Commands
 				}
 			}
 
-			if (!addViewBeforeChildren && CanBecomeKeyView (view) && contentView != view)
+			if (!addViewBeforeChildren && CanBecomeKeyView (view, contentView as IGtkViewHostContentView) && contentView != view)
 				toAddViews.Add (view);
 		}
 
@@ -764,9 +756,6 @@ namespace MonoDevelop.Components.Commands
 			var parent = GetGtkNSViewHostContentView (nSView.Superview);
 			return parent;
 		}
-
-		const string FirstResponderOutlineViewTypeName = "<Xamarin_PropertyEditing_Mac_PropertyList_FirstResponderOutlineView:";
-		static bool IsFirstResponderOutlineView (AppKit.NSView view) => view.ToString ().StartsWith (FirstResponderOutlineViewTypeName);
 
 		const string GdkQuartzViewTypeName = "<GdkQuartzView";
 		static bool IsGtkQuartzView (AppKit.NSView view) => view.ToString ().StartsWith (GdkQuartzViewTypeName);

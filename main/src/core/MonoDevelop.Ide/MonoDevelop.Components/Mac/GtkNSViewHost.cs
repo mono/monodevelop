@@ -33,6 +33,11 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace Gtk
 {
+	public interface IGtkViewHostContentView
+	{
+		bool CanBecomeKeyViewFromGtkViewHost (AppKit.NSView view);
+	}
+
 	/// <summary>
 	/// This interface helps to reorganize the ZOrder of a native view inside a GdkQuarz window
 	/// </summary>
