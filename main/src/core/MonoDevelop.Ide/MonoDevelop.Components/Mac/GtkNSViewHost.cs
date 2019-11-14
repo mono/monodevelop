@@ -324,10 +324,10 @@ namespace Gtk
 				AppKit.NSView nativeViewToFocus = null;
 				var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
 				if (currentEvent.Type == NSEventType.KeyDown && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-					if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
-						nativeViewToFocus = MonoDevelop.Ide.IdeApp.CommandService.GetOrderedFocusableViews (Content, addViewBeforeChildren:false, removeContentView: true).LastOrDefault ();
-					} else {
-						nativeViewToFocus = MonoDevelop.Ide.IdeApp.CommandService.GetOrderedFocusableViews (Content, addViewBeforeChildren:true, removeContentView: true).FirstOrDefault ();
+					if ((int)currentEvent.ModifierFlags == (int)MonoDevelop.Components.Mac.KeyModifierFlag.Shift) {
+						nativeViewToFocus = MonoDevelop.Ide.IdeApp.CommandService.GetOrderedFocusableViews (Content, addViewBeforeChildren: false, removeContentView: true).LastOrDefault ();
+					} else if ((int)currentEvent.ModifierFlags == (int)MonoDevelop.Components.Mac.KeyModifierFlag.None) {
+						nativeViewToFocus = MonoDevelop.Ide.IdeApp.CommandService.GetOrderedFocusableViews (Content, addViewBeforeChildren: true, removeContentView: true).FirstOrDefault ();
 					}
 				}
 

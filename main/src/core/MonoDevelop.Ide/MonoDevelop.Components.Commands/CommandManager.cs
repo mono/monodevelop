@@ -446,7 +446,7 @@ namespace MonoDevelop.Components.Commands
 
 			if (supportsTabKey && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
 				AppKit.NSView next = null;
-				if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+				if ((int)currentEvent.ModifierFlags == (int)Mac.KeyModifierFlag.Shift) {
 					next = expectedKeyView.PreviousValidKeyView;
 
 					//is our next from another embeded view? we don't allow to do that and we 
@@ -459,7 +459,7 @@ namespace MonoDevelop.Components.Commands
 						next = GetPreviousKeyView (expectedKeyView, addViewBeforeChildren: false, removeContentView: true);
 					}
 
-				} else {
+				} else if ((int)currentEvent.ModifierFlags == (int)Mac.KeyModifierFlag.None)  {
 					next = expectedKeyView.NextValidKeyView;
 					bool isValidFocus = next != null
 						&& currentGtkViewHost.Content == GetGtkNSViewHostContentView (next) //is in our embeded view
@@ -611,13 +611,13 @@ namespace MonoDevelop.Components.Commands
 
 					//source editor doesn't allow to back to gtk presing tab (this needs to be improved)
 					if (!IsSourceEditor (view) && currentEvent.KeyCode == (ushort)AppKit.NSKey.Tab) {
-						if (currentEvent.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ShiftKeyMask)) {
+						if ((int)currentEvent.ModifierFlags == (int) Mac.KeyModifierFlag.Shift) {
 							var isFirstView = IsFirstView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
 							if (isFirstView) {
 								//if we are in first item, we change to the previous Gtk widget
 								backToGtk = true;
 							}
-						} else {
+						} else if ((int) currentEvent.ModifierFlags == (int) Mac.KeyModifierFlag.None) {
 							var isLastView = IsLastView (expectedKeyView, addViewBeforeChildren: true, removeContentView: true);
 							if (isLastView) {
 								//if we are in last element we change to next Gtk widget
