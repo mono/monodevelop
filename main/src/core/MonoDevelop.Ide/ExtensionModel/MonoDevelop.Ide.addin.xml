@@ -437,5 +437,10 @@
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>
 		<Assembly file="MonoDevelop.Ide.dll"/>
 	</Extension>
+	
+	<Extension path="/MonoDevelop/Core/FeatureSwitches">
+		<FeatureSwitch id="IdeBuildOutputView" _description="Enable structured build output UI" defaultValue="false" />
+		<FeatureSwitch id="RUNTIME_SELECTOR" _description="Enable runtime selection on UI" defaultValue="false" />
+	</Extension>
 
 </ExtensionModel>

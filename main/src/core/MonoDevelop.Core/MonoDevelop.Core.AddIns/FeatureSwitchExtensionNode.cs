@@ -1,10 +1,10 @@
-﻿//
-// Scaffolder.cs
+//
+// FeatureSwitchExtensionNode.cs
 //
 // Author:
-//       jasonimison <jaimison@microsoft.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft
+// Copyright (c) 2019 Microsoft Corp (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Wizard;
-using Xwt;
 
-namespace MonoDevelop.AspNetCore.Scaffolding
+using System;
+using Mono.Addins;
+
+namespace MonoDevelop.Core.Addins
 {
-	abstract class ScaffolderWizardPageBase : WizardDialogPageBase
+	[ExtensionNode (Description = "Feature switch information.")]
+	sealed class FeatureSwitchExtensionNode : ExtensionNode
 	{
-		string subSubTitle;
-		protected ScaffolderWizardPageBase (ScaffolderArgs args)
-		{
-			Args = args;
-			CanGoBack = true;
-			CanGoNext = true;
-		}
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
 
-		public string SubSubTitle {
-			get => subSubTitle;
-			protected set => subSubTitle = value;
-		}
+		[NodeAttribute ("_description", "Id of the feature switch.")]
+		public string Description { get; private set; }
 
-		protected ScaffolderArgs Args { get; }
+		[NodeAttribute ("defaultValue", "Default value.")]
+		public bool DefaultValue { get; private set; }
 
-		protected override Control CreateControl ()
-		{
-			var mainBox = new VBox { Spacing = 0 };
-			var label = new Label (subSubTitle);
-			label.Font = label.Font.WithSize (18);
-			mainBox.PackStart (label, margin: 16);
-			var separator = new HSeparator ();
-			mainBox.PackStart (separator);
-
-			mainBox.PackStart (GetMainControl (), margin: 16);
-			return new XwtControl (mainBox);
-		}
-
-		protected abstract Widget GetMainControl ();
+		#pragma warning restore 649
 	}
 }

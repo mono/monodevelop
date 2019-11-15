@@ -1,10 +1,10 @@
-﻿//
-// Scaffolder.cs
+//
+// FeatureSwitch.cs
 //
 // Author:
-//       jasonimison <jaimison@microsoft.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2019 Microsoft
+// Copyright (c) 2019 Microsoft, Corp. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Wizard;
-using Xwt;
 
-namespace MonoDevelop.AspNetCore.Scaffolding
+namespace MonoDevelop.Core.FeatureConfiguration
 {
-	abstract class ScaffolderWizardPageBase : WizardDialogPageBase
+	internal sealed class FeatureSwitch
 	{
-		string subSubTitle;
-		protected ScaffolderWizardPageBase (ScaffolderArgs args)
+		public FeatureSwitch (string name, string description, bool defaultValue)
 		{
-			Args = args;
-			CanGoBack = true;
-			CanGoNext = true;
+			Name = name;
+			Description = description;
+			DefaultValue = defaultValue;
 		}
 
-		public string SubSubTitle {
-			get => subSubTitle;
-			protected set => subSubTitle = value;
-		}
+		public string Name { get; }
 
-		protected ScaffolderArgs Args { get; }
+		public string Description { get; }
 
-		protected override Control CreateControl ()
-		{
-			var mainBox = new VBox { Spacing = 0 };
-			var label = new Label (subSubTitle);
-			label.Font = label.Font.WithSize (18);
-			mainBox.PackStart (label, margin: 16);
-			var separator = new HSeparator ();
-			mainBox.PackStart (separator);
+		public bool DefaultValue { get; }
 
-			mainBox.PackStart (GetMainControl (), margin: 16);
-			return new XwtControl (mainBox);
-		}
-
-		protected abstract Widget GetMainControl ();
+		public bool? CurrentValue { get; set; }
 	}
 }

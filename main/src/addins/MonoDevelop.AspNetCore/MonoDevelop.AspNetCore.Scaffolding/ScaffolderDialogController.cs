@@ -53,8 +53,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			get { return CanGoBack; }
 		}
 
-		public ScaffolderDialogController (string title, Image icon, IWizardDialogPage firstPage, ScaffolderArgs args)
-			: base (title, icon, null, firstPage)
+		public ScaffolderDialogController (string title, IWizardDialogPage firstPage, ScaffolderArgs args)
+			: base (title, null, null, firstPage)
 		{
 			this.firstPage = firstPage;
 			this.args = args;

@@ -75,11 +75,13 @@ namespace MonoDevelop.Debugger
 
 			parent.Children.Add (value);
 
-			foreach (var child in node.Children)
-				Add (value, child);
+			if (treeView.AllowExpanding) {
+				foreach (var child in node.Children)
+					Add (value, child);
 
-			if (node.HasChildren && !node.ChildrenLoaded)
-				Add (value, new LoadingObjectValueNode (node));
+				if (node.HasChildren && !node.ChildrenLoaded)
+					Add (value, new LoadingObjectValueNode (node));
+			}
 		}
 
 		void Insert (MacObjectValueNode parent, int index, ObjectValueNode node)
@@ -89,11 +91,13 @@ namespace MonoDevelop.Debugger
 
 			parent.Children.Insert (index, value);
 
-			foreach (var child in node.Children)
-				Add (value, child);
+			if (treeView.AllowExpanding) {
+				foreach (var child in node.Children)
+					Add (value, child);
 
-			if (node.HasChildren && !node.ChildrenLoaded)
-				Add (value, new LoadingObjectValueNode (node));
+				if (node.HasChildren && !node.ChildrenLoaded)
+					Add (value, new LoadingObjectValueNode (node));
+			}
 		}
 
 		void Remove (MacObjectValueNode node, List<MacObjectValueNode> removed)
@@ -255,10 +259,14 @@ namespace MonoDevelop.Debugger
 			var range = new NSRange (0, count);
 			var indexes = NSIndexSet.FromNSRange (range);
 
+			treeView.BeginUpdates ();
+
 			treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
 
 			for (int i = 0; i < removed.Count; i++)
 				removed[i].Dispose ();
+
+			treeView.EndUpdates ();
 		}
 
 		public void Append (ObjectValueNode node)

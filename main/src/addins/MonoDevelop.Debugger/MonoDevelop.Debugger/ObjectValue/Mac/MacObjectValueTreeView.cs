@@ -32,6 +32,8 @@ using AppKit;
 using Foundation;
 using CoreGraphics;
 
+using Mono.Debugging.Evaluation;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
@@ -191,9 +193,11 @@ namespace MonoDevelop.Debugger
 		public PinnedWatch PinnedWatch {
 			get => pinnedWatch;
 			set {
-				if (pinnedWatch != value) {
+				if (pinnedWatch != value && pinColumn != null) {
 					pinnedWatch = value;
 					Runtime.RunInMainThread (() => {
+						if (pinColumn == null)
+							return;
 						if (value == null) {
 							pinColumn.MinWidth = pinColumn.MaxWidth = pinColumn.Width = MacDebuggerObjectPinView.MinWidth;
 						} else {
@@ -213,8 +217,15 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		/// <summary>
+		/// Gets the optimal tooltip window width in order to display the name/value/pin columns w/o truncation.
+		/// </summary>
+		public nfloat OptimalTooltipWidth {
+			get; private set;
+		}
+
 		// Note: this resizing method is the one used by debugger tooltips and pinned watches in the editor
-		void OptimizeColumnSizes (bool emitResized = true)
+		void OptimizeColumnSizes ()
 		{
 			if (!compactView || Superview == null || RowCount == 0)
 				return;
@@ -223,52 +234,38 @@ namespace MonoDevelop.Debugger
 			nfloat valueWidth = MinimumValueColumnWidth;
 
 			for (nint row = 0; row < RowCount; row++) {
-				var rowView = GetRowView (row, true);
+				var item = (MacObjectValueNode) ItemAtRow (row);
 
-				if (rowView == null)
-					continue;
+				item.Measure (this);
 
-				var nameView = (MacDebuggerObjectNameView) rowView.ViewAtColumn (0);
+				var totalNameWidth = item.OptimalXOffset + item.OptimalNameWidth;
+				if (totalNameWidth > nameWidth)
+					nameWidth = NMath.Min (totalNameWidth, nameColumn.MaxWidth);
 
-				if (nameView != null) {
-					// Note: the Name column's X-offset is the width of the expander which we need to take that into account
-					// when calculating the Name column's width.
-					var width = nameView.Frame.X + nameView.OptimalWidth;
-
-					if (width > nameWidth)
-						nameWidth = NMath.Min (width, nameColumn.MaxWidth);
-				}
-
-				var valueView = (MacDebuggerObjectValueView) rowView.ViewAtColumn (1);
-
-				if (valueView != null) {
-					var width = valueView.OptimalWidth;
-
-					if (width > valueWidth)
-						valueWidth = NMath.Min (width, valueColumn.MaxWidth);
-				}
+				if (item.OptimalValueWidth > valueWidth)
+					valueWidth = NMath.Min (item.OptimalValueWidth, valueColumn.MaxWidth);
 			}
 
 			bool changed = false;
 
-			if (nameColumn.Width != nameWidth) {
-				nameColumn.MinWidth = nameColumn.Width = nameWidth;
+			if ((int) nameColumn.Width != (int) nameWidth) {
+				nameColumn.Width = nameWidth;
 				changed = true;
 			}
 
-			if (valueColumn.Width != valueWidth) {
-				valueColumn.MinWidth = valueColumn.Width = valueWidth;
+			if ((int) valueColumn.Width != (int) valueWidth) {
+				valueColumn.Width = valueWidth;
 				changed = true;
 			}
 
 			if (changed) {
-				SizeToFit ();
-
-				if (emitResized)
-					OnResized ();
+				var optimalTooltipWidth = nameWidth + valueWidth + pinColumn.Width + IntercellSpacing.Width * 2;
+				OptimalTooltipWidth = optimalTooltipWidth;
 			}
 
-			ReloadData ();
+			// we almost always need to recalculate the size - particularly if the widths don't
+			// change but the row count did.
+			OnResized ();
 			SetNeedsDisplayInRect (Frame);
 		}
 
@@ -325,21 +322,9 @@ namespace MonoDevelop.Debugger
 		{
 		}
 
-		public override void ViewDidMoveToSuperview ()
-		{
-			base.ViewDidMoveToSuperview ();
-			OptimizeColumnSizes ();
-		}
-
 		public override void ViewDidMoveToWindow ()
 		{
 			base.ViewDidMoveToWindow ();
-			OptimizeColumnSizes ();
-		}
-
-		public override void ViewDidEndLiveResize ()
-		{
-			base.ViewDidEndLiveResize ();
 			OptimizeColumnSizes ();
 		}
 
@@ -366,8 +351,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item, expandChildren);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void ExpandItem (NSObject item)
@@ -376,8 +360,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		/// <summary>
@@ -396,8 +379,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item, collapseChildren);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public override void CollapseItem (NSObject item)
@@ -406,8 +388,7 @@ namespace MonoDevelop.Debugger
 			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item);
 			NSAnimationContext.EndGrouping ();
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		/// <summary>
@@ -556,8 +537,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.Replace (node, replacementNodes);
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public void LoadEvaluatedNode (ObjectValueNode node, ObjectValueNode[] replacementNodes)
@@ -571,8 +551,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			dataSource.ReloadChildren (node);
-			OptimizeColumnSizes (false);
-			OnResized ();
+			OptimizeColumnSizes ();
 		}
 
 		public void LoadNodeChildren (ObjectValueNode node, int startIndex, int count)
@@ -809,10 +788,17 @@ namespace MonoDevelop.Debugger
 					var objVal = item.Target.GetDebuggerObjectValue ();
 
 					if (objVal != null) {
-						// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
-						var opt = DebuggerService.Frame.GetStackFrame ().DebuggerSession.Options.EvaluationOptions.Clone ();
-						opt.EllipsizeStrings = false;
-						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
+						try {
+							// HACK: we need a better abstraction of the stack frame, better yet would be to not really need it in the view
+							var opt = DebuggerService.Frame.GetStackFrame ().DebuggerSession.Options.EvaluationOptions.Clone ();
+							opt.EllipsizeStrings = false;
+
+							var rawValue = (string) objVal.GetRawValue (opt);
+
+							value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (rawValue) + '"';
+						} catch (EvaluatorException) {
+							// fall back to using the DisplayValue that we would have used anyway...
+						}
 					}
 				}
 
@@ -841,6 +827,11 @@ namespace MonoDevelop.Debugger
 
 			foreach (var row in selectedRows) {
 				var item = (MacObjectValueNode) ItemAtRow ((nint) row);
+
+				// The user is only allowed to delete top-level nodes. It doesn't make sense to allow
+				// deleting child nodes of anything else.
+				if (!(item.Target.Parent is RootObjectValueNode))
+					continue;
 
 				nodesToDelete.Add (item.Target);
 			}

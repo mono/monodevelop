@@ -719,7 +719,6 @@
     <Compile Include="MonoDevelop.Core.Web\IHttpCredentialsHandler.cs" />
     <Compile Include="MonoDevelop.Core.Web\DefaultHttpClientHandler.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
-    <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
     <Compile Include="MonoDevelop.Core\Service.cs" />
     <Compile Include="MonoDevelop.Core\ServiceProvider.cs" />
     <Compile Include="MonoDevelop.Core\IService.cs" />
@@ -745,6 +744,9 @@
     <Compile Include="MonoDevelop.Projects\FrameworkReference.cs" />
     <Compile Include="MonoDevelop.Core\DedicatedThreadScheduler.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.Extensions.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitch.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\FeatureSwitchExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

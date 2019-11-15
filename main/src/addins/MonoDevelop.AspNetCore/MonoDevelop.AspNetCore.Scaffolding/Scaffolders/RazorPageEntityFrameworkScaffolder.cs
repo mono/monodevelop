@@ -26,6 +26,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
-		public override string Name => "Razor Page using Entity Framework";
+		public override string Name => GettextCatalog.GetString("Razor Page using Entity Framework");
 
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields();
 
@@ -55,7 +56,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			fields = new ScaffolderField [] {
 				NameField,
-				new ComboField ("", "The template to use, supported view templates", Task.FromResult(viewTemplateOptions)),
+				new ComboField ("", GettextCatalog.GetString("Template:"), Task.FromResult(viewTemplateOptions)),
 				GetModelField(args),
 				GetDbContextField(args),
 				new BoolFieldList(options),

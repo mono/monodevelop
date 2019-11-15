@@ -58,11 +58,12 @@ namespace MonoDevelop.Debugger
 
 		protected override void UpdateContents ()
 		{
-			TextField.StringValue = Node?.TypeName ?? string.Empty;
-			UpdateFont (TextField);
-			TextField.SizeToFit ();
+			var value = Node?.TypeName ?? string.Empty;
 
-			OptimalWidth = MarginSize + TextField.Frame.Width + MarginSize;
+			TextField.StringValue = value;
+			UpdateFont (TextField);
+
+			OptimalWidth = MarginSize + GetWidthForString (TextField.Font, value) + MarginSize;
 		}
 	}
 }

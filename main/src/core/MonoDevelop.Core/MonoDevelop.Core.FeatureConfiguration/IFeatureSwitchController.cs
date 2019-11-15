@@ -1,10 +1,10 @@
 //
-// IFeatureSwitchEnabler.cs
+// IFeatureSwitchController.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft Corp. (http://www.microsoft.com)
+// Copyright (c) 2019 Microsoft Corp. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace MonoDevelop.Core.FeatureConfiguration
 {
+	[Obsolete ("Implement feature switches via '/MonoDevelop/Core/FeatureSwitches' extension point")]
 	public interface IFeatureSwitchController
 	{
 		bool? IsFeatureEnabled (string featureName);
