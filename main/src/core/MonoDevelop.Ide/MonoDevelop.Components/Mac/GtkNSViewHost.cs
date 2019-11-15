@@ -329,9 +329,10 @@ namespace Gtk
 		{
 			LogEnter ();
 			try {
-				if (view?.Window?.FirstResponder is NSView firstResponder &&
-					view?.AncestorSharedWithView (firstResponder) == view)
-					firstResponder.Window?.MakeFirstResponder (null);
+				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (AppKit.NSApplication.SharedApplication.KeyWindow);
+				if (gtkWindow != null && gtkWindow.GdkWindow == MonoDevelop.Ide.IdeApp.Workbench.RootWindow.GdkWindow) {
+					view?.Window.MakeFirstResponder (view?.Window.ContentView);
+				}
 				return base.OnFocusOutEvent (evnt);
 			} finally {
 				LogExit ();
