@@ -93,7 +93,8 @@ namespace MonoDevelop.Ide.Commands
 		Unload,
 		SetStartupProjects,
 		AddEmptyClass,
-		ToggleFileNesting
+		ToggleFileNesting,
+		ExcludeFromProject
 	}
 
 	internal class SolutionOptionsHandler : CommandHandler

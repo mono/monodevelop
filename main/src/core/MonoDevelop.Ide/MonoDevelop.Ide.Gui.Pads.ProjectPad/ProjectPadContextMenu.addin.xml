@@ -129,6 +129,10 @@
 	</Condition>
 	<SeparatorItem id = "ToolsSectionEnd" />
 	
+    <Condition id="ItemType" value="ProjectFile|ProjectFolder">
+        <CommandItem id=  "MonoDevelop.Ide.Commands.ProjectCommands.ExcludeFromProject" />
+    </Condition>
+
 	<!-- Edit section -->
 	
 	<SeparatorItem id = "EditSectionStart" />
