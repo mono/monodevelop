@@ -299,12 +299,18 @@ namespace MonoDevelop.Debugger
 		void RemoveValue (ObjectValueNode node)
 		{
 			var toplevel = node.Parent is RootObjectValueNode;
-			int index = node.Parent.Children.IndexOf (node);
+			int index;
+
+			if (node.Parent != null) {
+				index = node.Parent.Children.IndexOf (node);
+			} else {
+				index = -1;
+			}
 
 			UnregisterNode (node);
 			OnEvaluationCompleted (node, new ObjectValueNode[0]);
 
-			if (AllowWatchExpressions && toplevel)
+			if (AllowWatchExpressions && toplevel && index != -1)
 				ExpressionRemoved?.Invoke (this, new ExpressionRemovedEventArgs (index, node.Name));
 		}
 
