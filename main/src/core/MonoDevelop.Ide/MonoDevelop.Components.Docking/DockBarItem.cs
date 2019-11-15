@@ -400,8 +400,17 @@ namespace MonoDevelop.Components.Docking
 						return true;
 					if (!force) {
 						// Don't hide the item if it has the focus. Try again later.
+#if MAC
+						bool hasTopLevel = it.Widget.FocusChild != null && autoShowFrame != null &&
+						autoShowFrame.Toplevel is IdeWindow ideWindow && (
+						ideWindow.HasToplevelFocus || Mac.GtkMacInterop.GetGtkWindow (AppKit.NSApplication.SharedApplication.KeyWindow) == ideWindow);
+
+						if (hasTopLevel)
+							return true;
+#else
 						if (it.Widget.FocusChild != null && autoShowFrame != null && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
 							return true;
+#endif
 						// Don't hide the item if the mouse pointer is still inside the window. Try again later.
 						int px, py;
 						it.Widget.GetPointer (out px, out py);
