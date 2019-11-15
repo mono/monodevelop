@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 
 		public PinnedWatchAdornmentManager (ICocoaViewFactory cocoaViewFactory, ICocoaTextView textView)
 		{
-			path = textView.TextBuffer.GetFilePathOrNull ();
+			path = textView.TextDataModel.DocumentBuffer.GetFilePathOrNull ();
 
 			if (path == null)
 				return;
