@@ -29,6 +29,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -49,12 +50,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 		protected ComboField GetDbContextField (ScaffolderArgs args)
 		{
-			return new ComboField ("--dataContext", "DbContext class to use", GetDbContextClassesAsync(args.Project, args.CancellationToken), isEditable: true);
+			return new ComboField ("--dataContext", GettextCatalog.GetString("DbContext class to use:"), GetDbContextClassesAsync(args.Project, args.CancellationToken), isEditable: true, placeholderText: "Select or type DbContext class name");
 		}
 
 		protected ComboField GetModelField (ScaffolderArgs args)
 		{
-			return new ComboField ("--model", "Model class to use", GetModelClassesAsync(args.Project, args.CancellationToken), isEditable: true);
+			return new ComboField ("--model", GettextCatalog.GetString("Model class to use:"), GetModelClassesAsync(args.Project, args.CancellationToken), isEditable: true);
 		}
 
 		async Task<IEnumerable<string>> GetDbContextClassesAsync (DotNetProject project, CancellationToken token)

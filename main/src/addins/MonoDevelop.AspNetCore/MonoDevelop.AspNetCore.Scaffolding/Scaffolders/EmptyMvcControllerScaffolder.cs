@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class EmptyMvcControllerScaffolder : ControllerScaffolder
 	{
-		public override string Name => "MVC Controller - Empty";
+		public override string Name => GettextCatalog.GetString("MVC Controller - Empty");
 
 		public EmptyMvcControllerScaffolder (ScaffolderArgs args) : base (args) { }
 

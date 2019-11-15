@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.args = args;
 		}
 
-		public override string Name => "Razor Page using Entity Framework (CRUD)";
+		public override string Name => GettextCatalog.GetString("Razor Page using Entity Framework (CRUD)");
 
 		public override IEnumerable<ScaffolderField> Fields => fields ?? GetFields ();
 

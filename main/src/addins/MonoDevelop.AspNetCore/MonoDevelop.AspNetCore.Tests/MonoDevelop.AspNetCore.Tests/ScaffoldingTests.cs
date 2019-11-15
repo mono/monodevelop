@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new RazorPageScaffolder (args);
 			args.Scaffolder = scaffolder;
-			scaffolder.GetField ("Name of the Razor Page").SelectedValue = "PageName";
+			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
 			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
@@ -62,7 +62,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new RazorPageScaffolder (args);
 			args.Scaffolder = scaffolder;
-			scaffolder.GetField ("Name of the Razor Page").SelectedValue = "PageName";
+			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
 			(scaffolder.GetField ("Use a layout page") as BoolField).Selected = false;
 			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
@@ -79,7 +79,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new RazorPageScaffolder (args);
 			args.Scaffolder = scaffolder;
-			scaffolder.GetField ("Name of the Razor Page").SelectedValue = "PageName";
+			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
 			(scaffolder.GetField ("Reference script libraries") as BoolField).Selected = false;
 			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
@@ -96,9 +96,9 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new RazorPageEntityFrameworkScaffolder (args);
 			args.Scaffolder = scaffolder;
-			scaffolder.GetField ("Name of the Razor Page").SelectedValue = "PageName";
-			scaffolder.GetField ("Model class to use").SelectedValue = "ModelClass";
-			scaffolder.GetField ("DbContext class to use").SelectedValue = "DataContext";
+			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
+			scaffolder.GetField ("Model class to use:").SelectedValue = "ModelClass";
+			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
 			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
@@ -115,8 +115,8 @@ namespace MonoDevelop.AspNetCore.Tests
 			var scaffolder = new RazorPageEntityFrameworkCrudScaffolder (args);
 			args.Scaffolder = scaffolder;
 			// no name field
-			scaffolder.GetField ("Model class to use").SelectedValue = "ModelClass";
-			scaffolder.GetField ("DbContext class to use").SelectedValue = "DataContext";
+			scaffolder.GetField ("Model class to use:").SelectedValue = "ModelClass";
+			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
 			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
@@ -178,8 +178,8 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new ApiControllerEntityFrameworkScaffolder (args);
 			args.Scaffolder = scaffolder;
-			scaffolder.GetField ("Model class to use").SelectedValue = "ModelClass";
-			scaffolder.GetField ("DbContext class to use").SelectedValue = "DataContext";
+			scaffolder.GetField ("Model class to use:").SelectedValue = "ModelClass";
+			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
 			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
