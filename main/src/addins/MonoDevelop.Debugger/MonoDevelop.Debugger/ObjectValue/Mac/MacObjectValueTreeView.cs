@@ -828,6 +828,11 @@ namespace MonoDevelop.Debugger
 			foreach (var row in selectedRows) {
 				var item = (MacObjectValueNode) ItemAtRow ((nint) row);
 
+				// The user is only allowed to delete top-level nodes. It doesn't make sense to allow
+				// deleting child nodes of anything else.
+				if (!(item.Target.Parent is RootObjectValueNode))
+					continue;
+
 				nodesToDelete.Add (item.Target);
 			}
 
