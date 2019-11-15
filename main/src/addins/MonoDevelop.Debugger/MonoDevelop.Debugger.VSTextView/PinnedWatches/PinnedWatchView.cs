@@ -56,7 +56,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			controller.AllowEditing = true;
 			controller.AllowExpanding = false;
 
-			treeView = controller.GetMacControl (headersVisible: false, compactView: true, allowPinning: true);
+			treeView = controller.GetMacControl (ObjectValueTreeViewFlags.PinnedWatchFlags);
 
 			controller.PinnedWatch = watch;
 
