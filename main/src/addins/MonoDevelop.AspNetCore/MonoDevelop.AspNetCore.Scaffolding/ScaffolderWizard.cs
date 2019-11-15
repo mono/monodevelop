@@ -59,19 +59,25 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			var rightSideWidget = new FrameBox (rightSideImage);
 			rightSideWidget.BackgroundColor = Styles.Wizard.PageBackgroundColor;
 			this.RightSideWidget = new XwtControl (rightSideWidget);
-			this.Completed += (sender, e) => Task.Run (() => OnCompletedAsync ());
 			this.project = project;
 			this.parentFolder = parentFolder;
 			args.Project = project;
 			args.ParentFolder = parentFolder;
 
-			selectionPage.ScaffolderSelected += (_, __) => Task.Run (async () =>
-			 await Runtime.RunInMainThread (async () => {
-				 await Xwt.Toolkit.NativeEngine.Invoke (async () => {
-					 await this.GoNext (args.CancellationToken);
-				 });
-			 }));
+			this.Completed += (_, __) => Task.Run (() => OnCompletedAsync ());
+			selectionPage.ScaffolderSelected -= ScaffolderSelected;
+			selectionPage.ScaffolderSelected += ScaffolderSelected;
+		}
 
+		void ScaffolderSelected (object sender, EventArgs e)
+		{
+			Task.Run (async () =>
+				 await Runtime.RunInMainThread (async () => {
+					 LoggingService.LogInfo ($"{args.Scaffolder.Name} selected");
+					 await Xwt.Toolkit.NativeEngine.Invoke (async () => {
+						 await this.GoNext (args.CancellationToken);
+					 });
+				 }));
 		}
 
 		const string toolName = "dotnet-aspnet-codegenerator";
