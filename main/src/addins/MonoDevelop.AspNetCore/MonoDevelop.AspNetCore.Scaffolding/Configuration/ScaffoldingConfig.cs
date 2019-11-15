@@ -69,8 +69,8 @@ namespace Microsoft.WebTools.Scaffolding.Core.Config
 		}
 
 		static ScaffoldingConfig fetchedConfig;
-		// This url will go live for 16.4
-		static string packageVersionsUrl = "https://webpifeed.blob.core.windows.net/webpifeed/partners/scaffoldingpackageversions_2108718.json";
+		
+		static string packageVersionsUrl = "https://webpifeed.blob.core.windows.net/webpifeed/Partners/ScaffoldingPackageVersions_2108718.json";
 
 		public static async Task<ScaffoldingConfig> LoadFromJsonAsync ()
 		{
