@@ -53,6 +53,7 @@ namespace MonoDevelop.Debugger
 
 			TextField = new MacDebuggerTextField (this) {
 				TranslatesAutoresizingMaskIntoConstraints = false,
+				LineBreakMode = NSLineBreakMode.Clipping,
 				MaximumNumberOfLines = 1,
 				DrawsBackground = false,
 				Bordered = false,
@@ -167,9 +168,11 @@ namespace MonoDevelop.Debugger
 			TextField.TextColor = textColor;
 			TextField.Editable = editable;
 			UpdateFont (TextField);
+			TextField.SizeToFit ();
 
 			var value = editable && string.IsNullOrEmpty (name) ? placeholder : name;
-			OptimalWidth += GetWidthForString (TextField.Font, value);
+			var textWidth = GetWidthForString (TextField.Font, value);
+			OptimalWidth += textWidth;
 
 			constraints.Add (TextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 			constraints.Add (TextField.LeadingAnchor.ConstraintEqualToAnchor (firstView.TrailingAnchor, RowCellSpacing));
@@ -182,7 +185,7 @@ namespace MonoDevelop.Debugger
 					previewIconVisible = true;
 				}
 
-				constraints.Add (TextField.WidthAnchor.ConstraintGreaterThanOrEqualToConstant (TextField.Frame.Width));
+				constraints.Add (TextField.WidthAnchor.ConstraintGreaterThanOrEqualToConstant (textWidth));
 				constraints.Add (PreviewButton.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor));
 				constraints.Add (PreviewButton.LeadingAnchor.ConstraintEqualToAnchor (TextField.TrailingAnchor, RowCellSpacing));
 				constraints.Add (PreviewButton.WidthAnchor.ConstraintEqualToConstant (ImageSize));

@@ -171,7 +171,23 @@ namespace MonoDevelop.Debugger
 
 			modified?.Dispose ();
 
-			return NMath.Ceiling (width + 2);
+			width = NMath.Ceiling (width);
+
+			// Note: All code-paths that use sizeDelta == 0 are for NSTextField labels and the only code-path
+			// that uses sizeDelta != 0 is for the Show More label in an NSButton.
+			if (sizeDelta == 0) {
+				// Note: In order to match NSTextField.Frame.Width after calling TextField.SizeToFit(), add 4px.
+				width += 4;
+
+				// Note: NSTextField also seems to need an extra 8px to actually fit the entire text w/o clipping.
+				width += 8;
+			} else {
+				// Oddly enough, NSButton padding around the label is also +12px (matched after button.SizeToFit()
+				// and checking the resulting button.Frame.Width).
+				width += 12;
+			}
+
+			return width;
 		}
 
 		protected void UpdateFont (NSControl control, int sizeDelta = 0)
