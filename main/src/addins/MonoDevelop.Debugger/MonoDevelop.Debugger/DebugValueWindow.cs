@@ -106,7 +106,7 @@ namespace MonoDevelop.Debugger
 				controller.PinnedWatch = watch;
 				controller.PinnedWatchLocation = location;
 
-				treeView = controller.GetGtkControl (headersVisible: false, allowPinning: true, compactView: true, rootPinVisible: true);
+				treeView = controller.GetGtkControl (ObjectValueTreeViewFlags.TooltipFlags);
 
 				if (treeView is IObjectValueTreeView ovtv) {
 					ovtv.StartEditing += OnStartEditing;
