@@ -75,7 +75,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				 await Runtime.RunInMainThread (async () => {
 					 LoggingService.LogInfo ($"{args.Scaffolder.Name} selected");
 					 await Xwt.Toolkit.NativeEngine.Invoke (async () => {
-						 await this.GoNext (args.CancellationToken);
+						 if (!CurrentPageIsLast)
+							 await this.GoNext (args.CancellationToken);
 					 });
 				 }));
 		}
