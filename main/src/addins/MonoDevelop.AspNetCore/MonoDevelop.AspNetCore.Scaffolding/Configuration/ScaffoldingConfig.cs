@@ -70,7 +70,7 @@ namespace Microsoft.WebTools.Scaffolding.Core.Config
 
 		static ScaffoldingConfig fetchedConfig;
 		
-		static string packageVersionsUrl = "https://webpifeed.blob.core.windows.net/webpifeed/Partners/ScaffoldingPackageVersions_2108718.json";
+		static string packageVersionsUrl = "https://go.microsoft.com/fwlink/?LinkID=2108718&clcid=0x409";
 
 		public static async Task<ScaffoldingConfig> LoadFromJsonAsync ()
 		{
