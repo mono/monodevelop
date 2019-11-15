@@ -78,7 +78,6 @@ namespace MonoDevelop.Debugger
 		static BusyEvaluator busyEvaluator;
 		static StatusBarIcon busyStatusIcon;
 		static bool isBusy;
-		static bool noNeedUpdateFrame;
 
 		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
@@ -476,9 +475,7 @@ namespace MonoDevelop.Debugger
 					StoppedEvent (session, new EventArgs ());
 
 				NotifyCallStackChanged ();
-				if (!noNeedUpdateFrame) {
-					NotifyCurrentFrameChanged ();
-				}
+				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
 			}).ContinueWith ((t) => {
 				sessionManager.Dispose ();
@@ -969,9 +966,7 @@ namespace MonoDevelop.Debugger
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
 				NotifyCallStackChanged ();
-				if (!noNeedUpdateFrame) {
-					NotifyCurrentFrameChanged ();
-				}
+				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
 			});
 		}
@@ -1093,7 +1088,6 @@ namespace MonoDevelop.Debugger
 				pinnedWatches.InvalidateAll ();
 
 			CurrentFrameChanged?.Invoke (null, EventArgs.Empty);
-			noNeedUpdateFrame = false;
 		}
 
 		static void NotifyCallStackChanged ()
@@ -1232,7 +1226,6 @@ namespace MonoDevelop.Debugger
 					currentFrame = value;
 					Runtime.RunInMainThread (delegate {
 						NotifyCurrentFrameChanged ();
-						noNeedUpdateFrame = true;
 					});
 				} else
 					currentFrame = -1;
@@ -1271,9 +1264,7 @@ namespace MonoDevelop.Debugger
 
 			Runtime.RunInMainThread (delegate {
 				NotifyCallStackChanged ();
-				if(!noNeedUpdateFrame) {
-					NotifyCurrentFrameChanged ();
-				}
+				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
 			});
 		}

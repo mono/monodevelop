@@ -46,6 +46,7 @@ namespace MonoDevelop.Debugger
 		Document noSourceDoc;
 		NoSourceView noSourceView;
 		string symbolCachePath;
+		bool changingFrame;
 
 		protected override void Run ()
 		{
@@ -67,12 +68,19 @@ namespace MonoDevelop.Debugger
 		
 		async void OnFrameChanged (object s, EventArgs a)
 		{
+			if (changingFrame) {
+				return;
+			} else {
+				changingFrame = true;
+			}
 			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
 		
 			var frame = DebuggingService.CurrentFrame;
-			if (frame == null)
+			if (frame == null) {
+				changingFrame = false;
 				return;
+			}
 			
 			FilePath file = frame.SourceLocation.FileName;
 
@@ -80,8 +88,10 @@ namespace MonoDevelop.Debugger
 			if (line != -1) {
 				if (!file.IsNullOrEmpty && File.Exists (file)) {
 					var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
-					if (doc != null)
+					if (doc != null) {
+						changingFrame = false;
 						return;
+					}
 				}
 				bool alternateLocationExists = false;
 				if (frame.SourceLocation.FileHash != null) {
@@ -89,8 +99,10 @@ namespace MonoDevelop.Debugger
 					if (newFilePath != null && File.Exists (newFilePath)) {
 						frame.UpdateSourceFile (newFilePath);
 						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
-						if (doc != null)
+						if (doc != null) {
+							changingFrame = false;
 							return;
+						}
 					}
 				}
 				var debuggerOptions = DebuggingService.GetUserOptions ();
@@ -134,8 +146,10 @@ namespace MonoDevelop.Debugger
 						frame.UpdateSourceFile (downloadLocation);
 						doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
 					}
-					if (doc != null)
+					if (doc != null) {
+						changingFrame = false;
 						return;
+					}
 				}
 			}
 
