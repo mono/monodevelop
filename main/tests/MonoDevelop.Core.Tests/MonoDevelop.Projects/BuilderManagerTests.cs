@@ -418,6 +418,7 @@ namespace MonoDevelop.Projects
 								new StringWriter (),
 								new MSBuildLogger (),
 								MSBuildVerbosity.Quiet,
+								null,
 								new [] { "ResolveAssemblyReferences" },
 								new string [0],
 								new string [0],
