@@ -70,119 +70,117 @@ namespace MonoDevelop.Debugger
 		{
 			if (changingFrame) {
 				return;
-			} else {
+			} try {
 				changingFrame = true;
-			}
-			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
-				disassemblyView.Update ();
-		
-			var frame = DebuggingService.CurrentFrame;
-			if (frame == null) {
-				changingFrame = false;
-				return;
-			}
-			
-			FilePath file = frame.SourceLocation.FileName;
+				if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
+					disassemblyView.Update ();
 
-			int line = frame.SourceLocation.Line;
-			if (line != -1) {
-				if (!file.IsNullOrEmpty && File.Exists (file)) {
-					var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
-					if (doc != null) {
-						changingFrame = false;
-						return;
-					}
+				var frame = DebuggingService.CurrentFrame;
+				if (frame == null) {
+					return;
 				}
-				bool alternateLocationExists = false;
-				if (frame.SourceLocation.FileHash != null) {
-					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
-					if (newFilePath != null && File.Exists (newFilePath)) {
-						frame.UpdateSourceFile (newFilePath);
-						var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
+
+				FilePath file = frame.SourceLocation.FileName;
+
+				int line = frame.SourceLocation.Line;
+				if (line != -1) {
+					if (!file.IsNullOrEmpty && File.Exists (file)) {
+						var doc = await IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger);
 						if (doc != null) {
-							changingFrame = false;
+							return;
+						}
+					}
+					bool alternateLocationExists = false;
+					if (frame.SourceLocation.FileHash != null) {
+						var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
+						if (newFilePath != null && File.Exists (newFilePath)) {
+							frame.UpdateSourceFile (newFilePath);
+							var doc = await IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger);
+							if (doc != null) {
+								return;
+							}
+						}
+					}
+					var debuggerOptions = DebuggingService.GetUserOptions ();
+					var automaticSourceDownload = debuggerOptions.AutomaticSourceLinkDownload;
+
+					var sourceLink = frame.SourceLocation.SourceLink;
+					if (sourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
+						var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
+						Document doc = null;
+						// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
+						if (!File.Exists (downloadLocation)) {
+							if (automaticSourceDownload == AutomaticSourceDownload.Always) {
+								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
+							} else {
+								var hyperlink = $"<a href='{ sourceLink.Uri }'>{  Path.GetFileName (sourceLink.RelativeFilePath) }</a>";
+								var stackframeText = $"<b>{frame.FullStackframeText}</b>";
+
+								var text = GettextCatalog.GetString
+									("{0} is a call to external source code. Would you like to get '{1}' and view it?", stackframeText, hyperlink);
+								var message = new Ide.GenericMessage {
+									Text = GettextCatalog.GetString ("External source code available"),
+									SecondaryText = text
+								};
+								message.AddOption (nameof (automaticSourceDownload), GettextCatalog.GetString ("Always get source code automatically"), false);
+								message.Buttons.Add (AlertButton.Cancel);
+								message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Get and Open")));
+								message.DefaultButton = 1;
+
+								var didNotCancel = MessageService.GenericAlert (message) != AlertButton.Cancel;
+								if (didNotCancel) {
+									if (message.GetOptionValue (nameof (automaticSourceDownload))) {
+										debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
+										DebuggingService.SetUserOptions (debuggerOptions);
+									}
+									doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
+								}
+							}
+						} else {
+							// The file has previously been downloaded for a different solution.
+							// We need to map the cached location
+							frame.UpdateSourceFile (downloadLocation);
+							doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
+						}
+						if (doc != null) {
 							return;
 						}
 					}
 				}
-				var debuggerOptions = DebuggingService.GetUserOptions ();
-				var automaticSourceDownload = debuggerOptions.AutomaticSourceLinkDownload;
 
-				var sourceLink = frame.SourceLocation.SourceLink;
-				if (sourceLink != null && automaticSourceDownload != AutomaticSourceDownload.Never) {
-					var downloadLocation = sourceLink.GetDownloadLocation (symbolCachePath);
-					Document doc = null;
-					// ~/Library/Caches/VisualStudio/8.0/Symbols/org/projectname/git-sha/path/to/file.cs
-					if (!File.Exists (downloadLocation)) {
-						if (automaticSourceDownload == AutomaticSourceDownload.Always) {
-							doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
-						} else {
-							var hyperlink = $"<a href='{ sourceLink.Uri }'>{  Path.GetFileName (sourceLink.RelativeFilePath) }</a>";
-							var stackframeText = $"<b>{frame.FullStackframeText}</b>";
+				bool disassemblyNotSupported = false;
+				// If we don't have an address space, we can't disassemble
+				if (string.IsNullOrEmpty (frame.AddressSpace))
+					disassemblyNotSupported = true;
 
-							var text = GettextCatalog.GetString
-								("{0} is a call to external source code. Would you like to get '{1}' and view it?", stackframeText, hyperlink);
-							var message = new Ide.GenericMessage {
-								Text = GettextCatalog.GetString ("External source code available"),
-								SecondaryText = text
-							};
-							message.AddOption (nameof (automaticSourceDownload), GettextCatalog.GetString ("Always get source code automatically"), false);
-							message.Buttons.Add (AlertButton.Cancel);
-							message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Get and Open")));
-							message.DefaultButton = 1;
+				if (!DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly))
+					disassemblyNotSupported = true;
 
-							var didNotCancel = MessageService.GenericAlert (message) != AlertButton.Cancel;
-							if (didNotCancel) {
-								if (message.GetOptionValue (nameof (automaticSourceDownload))) {
-									debuggerOptions.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
-									DebuggingService.SetUserOptions (debuggerOptions);
-								}
-								doc = await DownloadAndOpenFileAsync (frame, line, sourceLink);
-							}
-						}
+				if (disassemblyNotSupported && disassemblyDoc != null) {
+					disassemblyDoc.Close ().Ignore ();
+					disassemblyDoc = null;
+					disassemblyView = null;
+				}
+
+				// If disassembly is open don't show NoSourceView
+				if (disassemblyDoc == null) {
+					if (noSourceDoc == null) {
+						noSourceView = new NoSourceView ();
+						noSourceView.Update (disassemblyNotSupported);
+						noSourceDoc = await IdeApp.Workbench.OpenDocument (noSourceView, true);
+						noSourceDoc.Closed += delegate {
+							noSourceDoc = null;
+							noSourceView = null;
+						};
 					} else {
-						// The file has previously been downloaded for a different solution.
-						// We need to map the cached location
-						frame.UpdateSourceFile (downloadLocation);
-						doc = await IdeApp.Workbench.OpenDocument (downloadLocation, null, line, 1, OpenDocumentOptions.Debugger);
+						noSourceView.Update (disassemblyNotSupported);
+						noSourceDoc.Select ();
 					}
-					if (doc != null) {
-						changingFrame = false;
-						return;
-					}
-				}
-			}
-
-			bool disassemblyNotSupported = false;
-			// If we don't have an address space, we can't disassemble
-			if (string.IsNullOrEmpty (frame.AddressSpace))
-				disassemblyNotSupported = true;
-
-			if (!DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly))
-				disassemblyNotSupported = true;
-
-			if (disassemblyNotSupported && disassemblyDoc != null) {
-				disassemblyDoc.Close ().Ignore ();
-				disassemblyDoc = null;
-				disassemblyView = null;
-			}
-
-			// If disassembly is open don't show NoSourceView
-			if (disassemblyDoc == null) {
-				if (noSourceDoc == null) {
-					noSourceView = new NoSourceView ();
-					noSourceView.Update (disassemblyNotSupported);
-					noSourceDoc = await IdeApp.Workbench.OpenDocument (noSourceView, true);
-					noSourceDoc.Closed += delegate {
-						noSourceDoc = null;
-						noSourceView = null;
-					};
 				} else {
-					noSourceView.Update (disassemblyNotSupported);
-					noSourceDoc.Select ();
+					disassemblyDoc.Select ();
 				}
-			} else {
-				disassemblyDoc.Select ();
+			} finally {
+				changingFrame = false;
 			}
 		}
 
