@@ -119,7 +119,7 @@ namespace MonoDevelop.Core.Instrumentation
 		public IReadOnlyList<CounterValue> AllValues {
 			get {
 				lock (values) {
-					return new ReadOnlyCollection<CounterValue> (values);
+					return new ReadOnlyCollection<CounterValue> (new List<CounterValue> (values));
 				}
 			}
 		}
