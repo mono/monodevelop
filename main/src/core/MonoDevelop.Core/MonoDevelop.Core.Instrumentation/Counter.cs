@@ -100,23 +100,29 @@ namespace MonoDevelop.Core.Instrumentation
 			get { return this.logMessages; }
 			set { this.logMessages = value; }
 		}
-		
+
 		public int Count {
 			get { return count; }
 		}
-		
+
 		public bool Disposed {
 			get { return disposed; }
 			internal set { disposed = value; }
 		}
-		
+
 		public int TotalCount {
 			get { return totalCount; }
 		}
 
 		public virtual CounterDisplayMode DisplayMode => CounterDisplayMode.Block;
 
-		public IReadOnlyList<CounterValue> AllValues => new ReadOnlyCollection<CounterValue> (values);
+		public IReadOnlyList<CounterValue> AllValues {
+			get {
+				lock (values) {
+					return new ReadOnlyCollection<CounterValue> (values);
+				}
+			}
+		}
 
 		public IEnumerable<CounterValue> GetValues ()
 		{
