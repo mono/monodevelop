@@ -25,7 +25,7 @@ CLEANFILES = render.exe monostub monostub-test
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
-export MACOSX_DEPLOYMENT_TARGET=10.12
+export MACOSX_DEPLOYMENT_TARGET=10.13
 
 # With the hardened runtime, we need to specify the location of all libraries
 # that we dlopen
