@@ -652,21 +652,22 @@ namespace MonoDevelop.Debugger
 
 			node.IsExpanded = true;
 
-			int loadedCount = 0;
+			int index = node.Children.Count;
+			int count = 0;
+
 			if (node.IsEnumerable) {
 				// if we already have some loaded, don't load more - that is a specific user gesture
-				if (node.Children.Count == 0) {
+				if (index == 0) {
 					// page the children in, instead of loading them all at once
-					loadedCount = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
+					count = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 				}
 			} else {
-				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
+				count = await FetchChildrenAsync (node, -1, cancellationTokenSource.Token);
 			}
 
 			await Runtime.RunInMainThread (() => {
 				// tell the view about the children, even if there are, in fact, none
-				view.LoadNodeChildren (node, 0, node.Children.Count);
-
+				view.LoadNodeChildren (node, index, count);
 				view.OnNodeExpanded (node);
 			});
 		}

@@ -550,7 +550,7 @@ namespace MonoDevelop.Debugger
 			if (disposed)
 				return;
 
-			dataSource.ReloadChildren (node);
+			dataSource.LoadChildren (node, startIndex, count);
 			OptimizeColumnSizes ();
 		}
 

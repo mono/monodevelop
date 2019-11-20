@@ -89,7 +89,10 @@ namespace MonoDevelop.Debugger
 			var value = new MacObjectValueNode (parent, node);
 			mapping[node] = value;
 
-			parent.Children.Insert (index, value);
+			if (index < parent.Children.Count)
+				parent.Children.Insert (index, value);
+			else
+				parent.Children.Add (value);
 
 			if (treeView.AllowExpanding) {
 				foreach (var child in node.Children)
@@ -181,7 +184,7 @@ namespace MonoDevelop.Debugger
 				removed[i].Dispose ();
 		}
 
-		public void ReloadChildren (ObjectValueNode node)
+		public void LoadChildren (ObjectValueNode node, int startIndex, int count)
 		{
 			if (!TryGetValue (node, out var parent))
 				return;
@@ -189,36 +192,66 @@ namespace MonoDevelop.Debugger
 			treeView.BeginUpdates ();
 
 			try {
-				NSIndexSet indexes;
+				int lastIndex = parent.Children.Count - 1;
+				bool needShowMore = !node.ChildrenLoaded;
+				bool haveShowMore = false;
+				NSIndexSet indexes = null;
 				NSRange range;
 
-				if (parent.Children.Count > 0) {
-					range = new NSRange (0, parent.Children.Count);
-					indexes = NSIndexSet.FromNSRange (range);
+				if (lastIndex >= 0 && parent.Children[lastIndex].Target is ShowMoreValuesObjectValueNode)
+					haveShowMore = true;
 
+				if (startIndex < parent.Children.Count) {
+					// Note: This can only happen if we have either a "Loading..." node or a "Show More" node.
 					var removed = new List<MacObjectValueNode> ();
-					foreach (var child in parent.Children)
-						Remove (child, removed);
+					int extra = parent.Children.Count - startIndex;
 
-					parent.Children.Clear ();
+					if (lastIndex == 0 && parent.Children[0].Target is LoadingObjectValueNode) {
+						// Remove the "Loading..." node
+						indexes = NSIndexSet.FromIndex (0);
+						Remove (parent.Children[0], removed);
+						parent.Children.Clear ();
+					} else if (haveShowMore && extra == 1) {
+						// Only remove the "Show More" node if we don't need it anymore...
+						if (!needShowMore) {
+							indexes = NSIndexSet.FromIndex (lastIndex);
+							Remove (parent.Children[lastIndex], removed);
+							parent.Children.RemoveAt (lastIndex);
+						}
+					} else {
+						// Unexpected, but let's try to deal with this...
+						range = new NSRange (startIndex, extra);
+						indexes = NSIndexSet.FromNSRange (range);
 
-					if (parent.Target is RootObjectValueNode)
-						treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
-					else
-						treeView.RemoveItems (indexes, parent, NSTableViewAnimation.None);
+						for (int i = parent.Children.Count - 1; i >= startIndex; i--) {
+							Remove (parent.Children[i], removed);
+							parent.Children.RemoveAt (i);
+						}
 
-					for (int i = 0; i < removed.Count; i++)
-						removed[i].Dispose ();
+						haveShowMore = false;
+					}
+
+					if (indexes != null) {
+						if (parent.Target is RootObjectValueNode)
+							treeView.RemoveItems (indexes, null, NSTableViewAnimation.None);
+						else
+							treeView.RemoveItems (indexes, parent, NSTableViewAnimation.None);
+
+						for (int i = 0; i < removed.Count; i++)
+							removed[i].Dispose ();
+					}
 				}
 
-				for (int i = 0; i < node.Children.Count; i++)
-					Add (parent, node.Children[i]);
+				for (int i = startIndex; i < startIndex + count; i++)
+					Insert (parent, i, node.Children[i]);
 
-				// if we did not load all the children, add a Show More node
-				if (!node.ChildrenLoaded)
+				// Add a "Show More" node only if we need one and don't already have one.
+				if (needShowMore && !haveShowMore) {
 					Add (parent, new ShowMoreValuesObjectValueNode (node));
+					count++;
+				}
 
-				range = new NSRange (0, parent.Children.Count);
+				range = new NSRange (startIndex, count);
 				indexes = NSIndexSet.FromNSRange (range);
 
 				if (parent.Target is RootObjectValueNode)
