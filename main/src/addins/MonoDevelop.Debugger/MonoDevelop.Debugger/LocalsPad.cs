@@ -25,12 +25,36 @@
 //
 //
 
+using System;
+
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
 	public class LocalsPad : ObjectValuePad
 	{
+		static readonly bool EnableFakeNodes;
+
+		static LocalsPad ()
+		{
+			var env = Environment.GetEnvironmentVariable ("VSMAC_DEBUGGER_TESTING");
+
+			if (!string.IsNullOrEmpty (env)) {
+				var options = env.Split (new char [] { ',' });
+
+				for (int i = 0; i < options.Length; i++) {
+					var option = options[i].Trim ();
+
+					if (option == "fake-locals") {
+						EnableFakeNodes = true;
+						return;
+					}
+				}
+			}
+
+			EnableFakeNodes = false;
+		}
+
 		public LocalsPad ()
 		{
 			if (UseNewTreeView) {
@@ -41,7 +65,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-#if ADD_FAKE_NODES
 		void AddFakeNodes ()
 		{
 			var xx = new System.Collections.Generic.List<ObjectValueNode> ();
@@ -60,7 +83,6 @@ namespace MonoDevelop.Debugger
 
 			controller.AddValues (xx);
 		}
-#endif
 
 		void ReloadValues ()
 		{
@@ -84,9 +106,10 @@ namespace MonoDevelop.Debugger
 				} finally {
 					_treeview.EndUpdates ();
 				}
-#if ADD_FAKE_NODES
-				AddFakeNodes ();
-#endif
+
+
+				if (EnableFakeNodes)
+					AddFakeNodes ();
 			} else {
 				tree.ClearValues ();
 				tree.AddValues (locals);
