@@ -919,7 +919,7 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.Rename)]
 		protected void OnRename ()
 		{
-			if (SelectedRow == -1)
+			if (SelectedRowCount != 1 || SelectedRow < 0)
 				return;
 
 			var nameView = (MacDebuggerObjectNameView) GetView (0, SelectedRow, false);
@@ -934,7 +934,13 @@ namespace MonoDevelop.Debugger
 
 		bool CanRename (out bool enabled)
 		{
-			enabled = SelectedRowCount == 1 && SelectedRow != -1;
+			if (SelectedRowCount == 1 && SelectedRow >= 0) {
+				var item = (MacObjectValueNode) ItemAtRow (SelectedRow);
+
+				enabled = item.Target.Parent is RootObjectValueNode || item.Target is AddNewExpressionObjectValueNode;
+			} else {
+				enabled = false;
+			}
 
 			return AllowWatchExpressions;
 		}
@@ -957,7 +963,9 @@ namespace MonoDevelop.Debugger
 			if (row < 0)
 				return null;
 
-			var menu = new NSMenu ();
+			var menu = new NSMenu {
+				AutoEnablesItems = false
+			};
 			bool enabled;
 
 			if (CanAddWatch (out enabled)) {
