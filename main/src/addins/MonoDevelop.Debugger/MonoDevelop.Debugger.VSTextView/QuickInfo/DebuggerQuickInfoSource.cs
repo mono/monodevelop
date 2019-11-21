@@ -110,7 +110,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 					debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (point, cancellationToken);
 				}
 
-				if (!debugInfo.IsDefault) {
+				if (!debugInfo.IsDefault && debugInfo.Text != null) {
 					await EvaluateAndShowTooltipAsync (session, view, point, debugInfo, cancellationToken);
 					return null;
 				}
