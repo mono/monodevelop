@@ -70,28 +70,25 @@ namespace MonoDevelop.Debugger
 			IObjectValueDebuggerService debuggerService,
 			ObjectValueTreeViewController controller,
 			bool allowEditing,
-			bool headersVisible,
-			bool compactView,
-			bool allowPinning,
-			bool allowPopupMenu,
-			bool rootPinVisible)
+			ObjectValueTreeViewFlags flags)
 		{
 			DebuggerService = debuggerService;
 			Controller = controller;
 
-			this.rootPinVisible = rootPinVisible;
-			this.allowPopupMenu = allowPopupMenu;
+			this.rootPinVisible = (flags & ObjectValueTreeViewFlags.RootPinVisible) != 0;
+			this.allowPopupMenu = (flags & ObjectValueTreeViewFlags.AllowPopupMenu) != 0;
+			this.compactView = (flags & ObjectValueTreeViewFlags.CompactView) != 0;
 			this.allowEditing = allowEditing;
-			this.compactView = compactView;
 
 			DataSource = dataSource = new MacObjectValueTreeViewDataSource (this, controller.Root, controller.AllowWatchExpressions);
 			Delegate = treeViewDelegate = new MacObjectValueTreeViewDelegate (this);
 			ColumnAutoresizingStyle = compactView ? NSTableViewColumnAutoresizingStyle.None : NSTableViewColumnAutoresizingStyle.Uniform;
+			AllowsSelection = (flags & ObjectValueTreeViewFlags.AllowSelection) != 0;
 			treeViewDelegate.SelectionChanged += OnSelectionChanged;
 			UsesAlternatingRowBackgroundColors = true;
 			FocusRingType = NSFocusRingType.None;
-			AutoresizesOutlineColumn = false;
 			AllowsColumnResizing = !compactView;
+			AutoresizesOutlineColumn = false;
 			SetCustomFont (null);
 
 			var resizingMask = compactView ? NSTableColumnResizing.None : NSTableColumnResizing.UserResizingMask | NSTableColumnResizing.Autoresizing;
@@ -117,13 +114,13 @@ namespace MonoDevelop.Debugger
 				AddColumn (typeColumn);
 			}
 
-			if (allowPinning) {
+			if ((flags & ObjectValueTreeViewFlags.AllowPinning) != 0) {
 				pinColumn = new NSTableColumn ("pin") { Editable = false, ResizingMask = NSTableColumnResizing.None };
 				pinColumn.MinWidth = pinColumn.MaxWidth = pinColumn.Width = MacDebuggerObjectPinView.MinWidth;
 				AddColumn (pinColumn);
 			}
 
-			if (headersVisible) {
+			if ((flags & ObjectValueTreeViewFlags.HeadersVisible) != 0) {
 				HeaderView.AlphaValue = 1.0f;
 			} else {
 				HeaderView = null;
@@ -147,6 +144,10 @@ namespace MonoDevelop.Debugger
 		}
 
 		public ObjectValueTreeViewController Controller {
+			get; private set;
+		}
+
+		public bool AllowsSelection {
 			get; private set;
 		}
 
