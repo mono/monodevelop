@@ -70,7 +70,8 @@ namespace MonoDevelop.Debugger
 		{
 			if (changingFrame) {
 				return;
-			} try {
+			} 
+			try {
 				changingFrame = true;
 				if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 					disassemblyView.Update ();
