@@ -347,19 +347,13 @@ namespace MonoDevelop.Debugger
 
 		public override void ExpandItem (NSObject item, bool expandChildren)
 		{
-			NSAnimationContext.BeginGrouping ();
-			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item, expandChildren);
-			NSAnimationContext.EndGrouping ();
 			OptimizeColumnSizes ();
 		}
 
 		public override void ExpandItem (NSObject item)
 		{
-			NSAnimationContext.BeginGrouping ();
-			NSAnimationContext.CurrentContext.Duration = 0;
 			base.ExpandItem (item);
-			NSAnimationContext.EndGrouping ();
 			OptimizeColumnSizes ();
 		}
 
@@ -375,19 +369,13 @@ namespace MonoDevelop.Debugger
 
 		public override void CollapseItem (NSObject item, bool collapseChildren)
 		{
-			NSAnimationContext.BeginGrouping ();
-			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item, collapseChildren);
-			NSAnimationContext.EndGrouping ();
 			OptimizeColumnSizes ();
 		}
 
 		public override void CollapseItem (NSObject item)
 		{
-			NSAnimationContext.BeginGrouping ();
-			NSAnimationContext.CurrentContext.Duration = 0;
 			base.CollapseItem (item);
-			NSAnimationContext.EndGrouping ();
 			OptimizeColumnSizes ();
 		}
 
