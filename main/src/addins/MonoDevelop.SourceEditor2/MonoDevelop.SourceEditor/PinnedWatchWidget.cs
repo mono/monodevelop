@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor
 				controller = new ObjectValueTreeViewController ();
 				controller.AllowEditing = true;
 
-				treeView = (TreeView) controller.GetGtkControl (headersVisible: false, compactView: true, allowPinning: true);
+				treeView = (TreeView) controller.GetGtkControl (ObjectValueTreeViewFlags.PinnedWatchFlags);
 
 				controller.PinnedWatch = watch;
 				valueTree = null;

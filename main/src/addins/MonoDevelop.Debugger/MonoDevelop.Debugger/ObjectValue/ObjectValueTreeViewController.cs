@@ -54,6 +54,24 @@ namespace MonoDevelop.Debugger
 		Task<CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
 	}
 
+	[Flags]
+	public enum ObjectValueTreeViewFlags
+	{
+		None                 = 0,
+		AllowPinning         = 1 << 0,
+		AllowPopupMenu       = 1 << 1,
+		AllowSelection       = 1 << 2,
+		CompactView          = 1 << 3,
+		HeadersVisible       = 1 << 4,
+		RootPinVisible       = 1 << 5,
+
+		// Macros
+		ObjectValuePadFlags  = AllowPopupMenu | AllowSelection | HeadersVisible,
+		TooltipFlags         = AllowPinning | AllowPopupMenu | AllowSelection | CompactView | RootPinVisible,
+		PinnedWatchFlags     = AllowPinning | AllowPopupMenu | CompactView,
+		ExceptionCaughtFlags = AllowSelection | HeadersVisible
+	}
+
 	public class ObjectValueTreeViewController : IObjectValueDebuggerService
 	{
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
@@ -174,36 +192,36 @@ namespace MonoDevelop.Debugger
 			view.NodeShowVisualiser += OnViewNodeShowVisualiser;
 		}
 
-		public GtkObjectValueTreeView GetGtkControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		public GtkObjectValueTreeView GetGtkControl (ObjectValueTreeViewFlags flags)
 		{
 			if (view != null)
 				throw new InvalidOperationException ("You can only get the control once for each controller instance");
 
-			var control = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+			var control = new GtkObjectValueTreeView (this, this, AllowEditing, flags);
 
 			ConfigureView (control);
 
 			return control;
 		}
 
-		public MacObjectValueTreeView GetMacControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		public MacObjectValueTreeView GetMacControl (ObjectValueTreeViewFlags flags)
 		{
 			if (view != null)
 				throw new InvalidOperationException ("You can only get the control once for each controller instance");
 
-			var control = new MacObjectValueTreeView (this, this, AllowEditing, headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+			var control = new MacObjectValueTreeView (this, this, AllowEditing, flags);
 
 			ConfigureView (control);
 
 			return control;
 		}
 
-		public Control GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		public Control GetControl (ObjectValueTreeViewFlags flags)
 		{
 			if (Platform.IsMac)
-				return GetMacControl (headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+				return GetMacControl (flags);
 
-			return GetGtkControl (headersVisible, compactView, allowPinning, allowPopupMenu, rootPinVisible);
+			return GetGtkControl (flags);
 		}
 
 		public void CancelAsyncTasks ()
