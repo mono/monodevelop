@@ -82,6 +82,8 @@ namespace MonoDevelop.Ide
 			Environment.SetEnvironmentVariable ("MONO_GC_PARAMS", null);
 			Environment.SetEnvironmentVariable ("MONO_SLEEP_ABORT_LIMIT", null);
 			Environment.SetEnvironmentVariable ("MONO_THREADS_SUSPEND", null);
+
+			Environment.SetEnvironmentVariable ("GTKSHARP_SLIM_STARTUP", "yes");
 		}
 
 		int Run (MonoDevelopOptions options)
