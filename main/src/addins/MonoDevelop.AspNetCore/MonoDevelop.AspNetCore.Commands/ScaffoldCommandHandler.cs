@@ -52,7 +52,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			info.Enabled = info.Visible = NodeIsFileOrFolder(CurrentNode) && IsAspNetCoreProject (project);
 		}
 
-		bool NodeIsFileOrFolder (ITreeNavigator node)
+		static bool NodeIsFileOrFolder (ITreeNavigator node)
 		{
 			return node.DataItem is ProjectFile || node.DataItem is ProjectFolder;
 		}
