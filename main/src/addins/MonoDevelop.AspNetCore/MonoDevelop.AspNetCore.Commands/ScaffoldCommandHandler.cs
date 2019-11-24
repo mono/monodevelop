@@ -30,7 +30,7 @@ namespace MonoDevelop.AspNetCore.Commands
 	class ScaffoldCommandHandler : NodeCommandHandler
 	{
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
-		public async void Scaffold ()
+		public void Scaffold ()
 		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (project == null)
