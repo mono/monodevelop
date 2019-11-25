@@ -32,7 +32,7 @@ namespace MonoDevelop.TextEditor
 		public static CommandMappings Instance { get; } = new CommandMappings ();
 
 		ImmutableDictionary<string, CommandMappingExtensionNode> mappings = ImmutableDictionary<string, CommandMappingExtensionNode>.Empty;
-		ImmutableDictionary<Type, string> reverseMapping = ImmutableDictionary<Type, string>.Empty;
+		ImmutableDictionary<string, string> reverseMapping = ImmutableDictionary<string, string>.Empty;
 
 		CommandMappings ()
 		{
@@ -45,11 +45,11 @@ namespace MonoDevelop.TextEditor
 			case ExtensionChange.Add:
 				var nx = (CommandMappingExtensionNode)args.ExtensionNode;
 				mappings = mappings.SetItem (args.ExtensionNode.Id, nx);
-				reverseMapping = reverseMapping.SetItem (nx.Type, args.ExtensionNode.Id);
+				reverseMapping = reverseMapping.SetItem (nx.ArgsType, args.ExtensionNode.Id);
 				break;
 			case ExtensionChange.Remove:
 				mappings = mappings.Remove (args.ExtensionNode.Id);
-				reverseMapping = reverseMapping.Remove (((CommandMappingExtensionNode)args.ExtensionNode).Type);
+				reverseMapping = reverseMapping.Remove (((CommandMappingExtensionNode)args.ExtensionNode).ArgsType);
 				break;
 			}
 		}
@@ -64,7 +64,7 @@ namespace MonoDevelop.TextEditor
 
 		public object GetCommandId (Type argsType)
 		{
-			if (reverseMapping.TryGetValue (argsType, out var id)) {
+			if (reverseMapping.TryGetValue (argsType.FullName, out var id)) {
 				return id;
 			}
 			return null;
@@ -81,4 +81,4 @@ namespace MonoDevelop.TextEditor
 		public abstract void Execute (IEditorCommandHandlerService service, Action nextCommandHandler);
 		public abstract CommandState GetCommandState (IEditorCommandHandlerService service, Func<CommandState> nextCommandHandler);
 	}
-}
+} 
