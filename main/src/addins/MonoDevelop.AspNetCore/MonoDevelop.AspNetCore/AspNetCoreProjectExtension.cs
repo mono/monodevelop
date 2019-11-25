@@ -178,7 +178,7 @@ namespace MonoDevelop.AspNetCore
 
 		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfig)
 		{
-			var result = new List<ExecutionTarget> ();
+			var result = new ExecutionTargetGroup (GettextCatalog.GetString ("Browser"), "MonoDevelop.AspNetCore.BrowserExecutionTargets");
 			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost", Ide.Desktop.DesktopApplicationRole.Viewer)) {
 				if (browser.IsDefault) {
 					if (Project.HasMultipleTargetFrameworks) {
@@ -195,7 +195,14 @@ namespace MonoDevelop.AspNetCore
 				}
 			}
 
-			return result.Count > 0 ? result : base.OnGetExecutionTargets (configuration);
+			if (result.Count > 0)
+				yield return result;
+			else {
+				// Fallback to base implementation
+				foreach (var target in base.OnGetExecutionTargets (ctx, configuration, runConfig)) {
+					yield return target;
+				}
+			}
 		}
 
 		IEnumerable<ExecutionTarget> GetMultipleTargetFrameworkExecutionTargets (DesktopApplication browser)
