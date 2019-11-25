@@ -231,6 +231,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		[Test]
+		public async Task NewDocumentFileNameMayNotChange ()
+		{
+			const string newName = "SomeFileName.txt";
+			var doc = await documentManager.NewDocument (newName, "text/plain", "");
+			//Since this is just "unsaved/new" file, its expected that Name and FileName are matching
+			Assert.AreEqual (doc.Name, doc.FileName.ToString ());
+		}
+
+		[Test]
 		public async Task GetDocument ()
 		{
 			documentControllerService.RegisterFactory (new TestFileControllerFactory ());

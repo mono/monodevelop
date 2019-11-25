@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.Text;
@@ -57,7 +58,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 			set {
 				if (value != filePath) {
-					filePath = value.CanonicalPath;
+					if (Path.IsPathRooted(value)) {
+						filePath = value.CanonicalPath;
+					} else {
+						filePath = value;
+					}
 					defaultMimeType = null;
 					OnFileNameChanged ();
 
