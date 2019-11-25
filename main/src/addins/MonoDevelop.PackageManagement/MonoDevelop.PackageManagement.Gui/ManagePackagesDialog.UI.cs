@@ -147,6 +147,7 @@ namespace MonoDevelop.PackageManagement
 			packageSearchEntry = new SearchTextEntry ();
 			packageSearchEntry.Name = "managePackagesDialogSearchEntry";
 			packageSearchEntry.WidthRequest = 187;
+			packageSearchEntry.PlaceholderText = GettextCatalog.GetString ("Search");
 			packageSearchEntry.Accessible.Label = GettextCatalog.GetString ("Package Search");
 			topHBox.PackEnd (packageSearchEntry);
 
