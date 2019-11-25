@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 		DockNotebookTab tab;
 		DockNotebook tabControl;
 
-		string myUntitledTitle;
 		string titleHolder = "";
 
 		bool showNotification;
@@ -270,13 +269,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (controller == null)
 				return;
 
-			string newTitle;
-			if (controller.IsNewDocument && controller is FileDocumentController fileController) {
-				if (myUntitledTitle == null)
-					myUntitledTitle = workbench.GetUniqueTabName (fileController.FilePath);
-				newTitle = myUntitledTitle;
-			} else
-				newTitle = controller.DocumentTitle;
+			var newTitle = controller.DocumentTitle;
 
 			if (newTitle != Title)
 				Title = newTitle;
