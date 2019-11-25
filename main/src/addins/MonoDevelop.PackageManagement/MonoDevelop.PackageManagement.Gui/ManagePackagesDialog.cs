@@ -249,16 +249,15 @@ namespace MonoDevelop.PackageManagement
 			projectCheckBoxCellView.ActiveField = projectCheckedField;
 			projectCheckBoxCellView.Editable = true;
 			projectCheckBoxCellView.Toggled += ProjectCheckBoxCellViewToggled;
-			var column = new ListViewColumn (string.Empty, projectCheckBoxCellView);
-			projectsListView.Columns.Add (column);
-
-			// Project column.
-			var textCellView = new TextCellView ();
-			textCellView.TextField = projectNameField;
-			column = new ListViewColumn (GettextCatalog.GetString ("Project"), textCellView) {
+			var column = new ListViewColumn (GettextCatalog.GetString ("Project"), projectCheckBoxCellView) {
 				CanResize = true,
 				SortDataField = projectNameField
 			};
+
+			// Project name.
+			var textCellView = new TextCellView ();
+			textCellView.TextField = projectNameField;
+			column.Views.Add (textCellView);
 			projectsListView.Columns.Add (column);
 
 			// Package version column
