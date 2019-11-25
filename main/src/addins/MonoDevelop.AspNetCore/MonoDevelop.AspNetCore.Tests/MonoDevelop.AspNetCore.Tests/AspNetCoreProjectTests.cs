@@ -35,6 +35,7 @@ using MonoDevelop.Projects;
 using UnitTests;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects.FileNesting;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.AspNetCore.Tests
 {
@@ -194,9 +195,10 @@ namespace MonoDevelop.AspNetCore.Tests
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName)) {
 				var project = (DotNetProject)sol.Items[0];
 
-				var targets = project.GetExecutionTargets (ConfigurationSelector.Default)
-					.Cast<AspNetCoreTargetFrameworkExecutionTarget> ()
+				var groups = project.GetExecutionTargets (ConfigurationSelector.Default)
+					.Cast<ExecutionTargetGroup> ()
 					.ToList ();
+				var targets = groups.SelectMany (x => x.ToArray ());
 
 				if (Directory.Exists ("/Applications/Safari.app")) {
 					var matchNetCoreApp21 = targets.FirstOrDefault (x => x.Name.Contains ("Safari • netcoreapp2.1"));
