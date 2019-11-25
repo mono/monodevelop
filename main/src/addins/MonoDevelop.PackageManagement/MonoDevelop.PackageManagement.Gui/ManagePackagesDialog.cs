@@ -619,8 +619,18 @@ namespace MonoDevelop.PackageManagement
 		{
 			int row = packageStore.AddRow ();
 			var accessibleDescription = StringBuilderCache.Allocate (packageViewModel.Id);
-			if (packageViewModel.HasDownloadCount)
-				accessibleDescription.Append (", ").Append (packageViewModel.GetDownloadCountDisplayText ()).Append (" ").Append (GettextCatalog.GetString ("Downloads"));
+			if (packageViewModel.HasDownloadCount) {
+				accessibleDescription.Append (", ");
+				if (packageViewModel.ShowVersionInsteadOfDownloadCount) {
+					accessibleDescription.Append (GettextCatalog.GetString ("Version"));
+					accessibleDescription.Append (" ");
+					accessibleDescription.Append (packageViewModel.GetDownloadCountOrVersionDisplayText ());
+				} else {
+					accessibleDescription.Append (packageViewModel.GetDownloadCountOrVersionDisplayText ());
+					accessibleDescription.Append (" ");
+					accessibleDescription.Append (GettextCatalog.GetString ("Downloads"));
+				}
+			}
 			if (!string.IsNullOrEmpty (packageViewModel.Summary))
 				accessibleDescription.Append (", ").Append (packageViewModel.Summary);
 			packageStore.SetValues (row,
