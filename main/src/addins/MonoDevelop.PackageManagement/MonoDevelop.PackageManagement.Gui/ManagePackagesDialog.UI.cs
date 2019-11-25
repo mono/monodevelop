@@ -285,7 +285,7 @@ namespace MonoDevelop.PackageManagement
 
 			var packageIdLabel = new Label ();
 			packageIdLabel.Font = packageInfoBoldFont;
-			packageIdLabel.Text = GettextCatalog.GetString ("Id");
+			packageIdLabel.Text = GettextCatalog.GetString ("ID");
 			packageIdHBox.PackStart (packageIdLabel);
 
 			packageId = new Label ();

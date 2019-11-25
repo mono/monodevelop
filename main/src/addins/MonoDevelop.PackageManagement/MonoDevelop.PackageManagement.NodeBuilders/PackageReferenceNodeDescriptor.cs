@@ -41,8 +41,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		[LocalizedCategory ("Package")]
-		[LocalizedDisplayName ("Id")]
-		[LocalizedDescription ("Package Id.")]
+		[LocalizedDisplayName ("ID")]
+		[LocalizedDescription ("Package ID.")]
 		public string Id {
 			get { return packageReferenceNode.Id; }
 		}
