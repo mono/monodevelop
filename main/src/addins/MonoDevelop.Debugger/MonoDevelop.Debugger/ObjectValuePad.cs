@@ -70,7 +70,7 @@ namespace MonoDevelop.Debugger
 
 				if (Platform.IsMac) {
 					LoggingService.LogInfo ("Using MacObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
-					var treeView = controller.GetMacControl ();
+					var treeView = controller.GetMacControl (ObjectValueTreeViewFlags.ObjectValuePadFlags);
 					_treeview = treeView;
 
 					fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);
@@ -102,7 +102,7 @@ namespace MonoDevelop.Debugger
 					control = host;
 				} else {
 					LoggingService.LogInfo ("Using GtkObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
-					var treeView = controller.GetGtkControl ();
+					var treeView = controller.GetGtkControl (ObjectValueTreeViewFlags.ObjectValuePadFlags);
 					treeView.Show ();
 
 					fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);

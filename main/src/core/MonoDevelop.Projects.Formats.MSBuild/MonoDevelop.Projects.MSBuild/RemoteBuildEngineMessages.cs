@@ -144,6 +144,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		[MessageDataProperty]
 		public int TaskId { get; set; }
+
+		[MessageDataProperty]
+		public string BinLogFilePath { get; set; }
 	}
 
 	[MessageDataTypeAttribute]

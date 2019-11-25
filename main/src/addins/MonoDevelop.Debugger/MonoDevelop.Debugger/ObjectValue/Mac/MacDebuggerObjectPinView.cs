@@ -35,8 +35,11 @@ namespace MonoDevelop.Debugger
 {
 	class MacDebuggerObjectPinView : MacDebuggerObjectCellViewBase
 	{
+		static readonly NSImage selectedUnpinnedImage = GetImage ("md-pin-up", Gtk.IconSize.Menu, true);
+		static readonly NSImage selectedPinnedImage = GetImage ("md-pin-down", Gtk.IconSize.Menu, true);
 		static readonly NSImage unpinnedImage = GetImage ("md-pin-up", Gtk.IconSize.Menu);
 		static readonly NSImage pinnedImage = GetImage ("md-pin-down", Gtk.IconSize.Menu);
+
 		static readonly NSImage liveUpdateOnImage = GetImage ("md-live", Gtk.IconSize.Menu);
 		static readonly NSImage liveUpdateOffImage = GetImage ("md-live", Gtk.IconSize.Menu, 0.5);
 		static readonly NSImage none = GetImage ("md-empty", Gtk.IconSize.Menu);
@@ -97,8 +100,10 @@ namespace MonoDevelop.Debugger
 			if (Node == null)
 				return;
 
+			var selected = Superview is NSTableRowView rowView && rowView.Selected;
+
 			if (TreeView.PinnedWatch != null && Node.Parent == TreeView.Controller.Root) {
-				PinButton.Image = pinnedImage;
+				PinButton.Image = selected ? selectedPinnedImage : pinnedImage;
 				pinned = true;
 			} else {
 				PinButton.Image = none;
@@ -137,7 +142,14 @@ namespace MonoDevelop.Debugger
 			if (pinned)
 				return;
 
-			PinButton.Image = hover || IdeServices.DesktopService.AccessibilityInUse ? unpinnedImage : none;
+			var selected = Superview is NSTableRowView rowView && rowView.Selected;
+
+			if (hover || IdeServices.DesktopService.AccessibilityInUse) {
+				PinButton.Image = selected ? selectedUnpinnedImage : unpinnedImage;
+			} else {
+				PinButton.Image = none;
+			}
+
 			SetNeedsDisplayInRect (PinButton.Frame);
 		}
 

@@ -171,16 +171,12 @@ namespace MonoDevelop.Debugger
 			IObjectValueDebuggerService debuggerService,
 			ObjectValueTreeViewController controller,
 			bool allowEditing,
-			bool headersVisible,
-			bool compactView,
-			bool allowPinning,
-			bool allowPopupMenu,
-			bool rootPinVisible)
+			ObjectValueTreeViewFlags flags)
 		{
-			this.compactView = compactView;
-			this.allowPinning = allowPinning;
-			this.allowPopupMenu = allowPopupMenu;
-			this.rootPinVisible = rootPinVisible;
+			this.compactView = (flags & ObjectValueTreeViewFlags.CompactView) != 0;
+			this.allowPinning = (flags & ObjectValueTreeViewFlags.AllowPinning) != 0;
+			this.allowPopupMenu = (flags & ObjectValueTreeViewFlags.AllowPopupMenu) != 0;
+			this.rootPinVisible = (flags & ObjectValueTreeViewFlags.RootPinVisible) != 0;
 
 			// ensure this is set when we set up the view, don't try and refresh just yet
 			this.allowEditing = allowEditing;
@@ -193,7 +189,7 @@ namespace MonoDevelop.Debugger
 			Model = store;
 			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
-			HeadersVisible = headersVisible;
+			HeadersVisible = (flags & ObjectValueTreeViewFlags.HeadersVisible) != 0;
 			EnableSearch = false;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			Selection.Changed += HandleSelectionChanged;

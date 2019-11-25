@@ -30,7 +30,7 @@ namespace MonoDevelop.AspNetCore.Commands
 	class ScaffoldCommandHandler : NodeCommandHandler
 	{
 		[CommandHandler (AspNetCoreCommands.Scaffold)]
-		public async void Scaffold ()
+		public void Scaffold ()
 		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (project == null)
@@ -49,8 +49,12 @@ namespace MonoDevelop.AspNetCore.Commands
 		public void ScaffoldUpdate (CommandInfo info)
 		{
 			var project = CurrentNode.GetParentDataItem (typeof (DotNetProject), true) as DotNetProject;
+			info.Enabled = info.Visible = NodeIsFileOrFolder(CurrentNode) && IsAspNetCoreProject (project);
+		}
 
-			info.Enabled = info.Visible = IsAspNetCoreProject (project);
+		static bool NodeIsFileOrFolder (ITreeNavigator node)
+		{
+			return node.DataItem is ProjectFile || node.DataItem is ProjectFolder;
 		}
 
 		bool IsAspNetCoreProject (Project project)

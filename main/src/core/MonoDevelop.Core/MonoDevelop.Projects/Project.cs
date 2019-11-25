@@ -1509,7 +1509,7 @@ namespace MonoDevelop.Projects
 				var logger = context.Loggers.Count != 1 ? new ProxyLogger (this, context.Loggers) : context.Loggers.First ();
 
 				try {
-					result = await builder.Run (configs, monitor.Log, logger, context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
+					result = await builder.Run (configs, monitor.Log, logger, context.LogVerbosity, context.BinLogFilePath, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
 				} finally {
 					builder.Dispose ();
 					t1.End ();

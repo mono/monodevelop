@@ -34,6 +34,13 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public static class MSBuildProcessService
 	{
+		public delegate ProcessWrapper StartProcessCallback (string command, string arguments, string workingDirectory, TextWriter outWriter, TextWriter errorWriter, EventHandler exited);
+
+		/// <summary>
+		/// Allows the MSBuild process start to be intercepted and monitored.
+		/// </summary>
+		public static StartProcessCallback StartProcessHandler { get; set; } = Runtime.ProcessService.StartProcess;
+
 		public static ProcessWrapper StartMSBuild (string arguments, string workingDirectory, TextWriter outWriter, TextWriter errorWriter, EventHandler exited)
 		{
 			FilePath msbuildBinPath = GetMSBuildBinPath ();
@@ -49,7 +56,7 @@ namespace MonoDevelop.Projects.MSBuild
 				arguments = argumentsBuilder.ToString ();
 			}
 
-			return Runtime.ProcessService.StartProcess (
+			return StartProcessHandler (
 				command,
 				arguments,
 				workingDirectory,

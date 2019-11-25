@@ -93,6 +93,14 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return results; }
 		}
 
+		public void AddLogger (ILogger logger)
+		{
+			var newLoggers = new ILogger [loggers.Length + 1];
+			Array.Copy (loggers, newLoggers, loggers.Length);
+			newLoggers [loggers.Length] = logger;
+			loggers = newLoggers;
+		}
+
 		void Initialize (IEventSource eventSource)
 		{
 			this.eventSource = eventSource;

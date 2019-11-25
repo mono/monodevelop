@@ -140,6 +140,11 @@ namespace MonoDevelop.Debugger
 			return node != null && node.HasChildren;
 		}
 
+		public override bool ShouldSelectItem (NSOutlineView outlineView, NSObject item)
+		{
+			return treeView.AllowsSelection;
+		}
+
 		public event EventHandler SelectionChanged;
 
 		public override void SelectionDidChange (NSNotification notification)
