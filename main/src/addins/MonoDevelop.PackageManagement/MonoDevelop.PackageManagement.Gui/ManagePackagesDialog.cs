@@ -240,7 +240,7 @@ namespace MonoDevelop.PackageManagement
 
 			projectsListView = new ListView ();
 			projectsListView.DataSource = projectStore;
-			projectsListView.Accessible.Label = GettextCatalog.GetString ("Projects and Package Versions");
+			projectsListView.Accessible.LabelWidget = projectsListViewLabel;
 
 			// Selected project check box column.
 			if (projectCheckBoxCellView != null)
