@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Composition
 				var fullTimer = System.Diagnostics.Stopwatch.StartNew ();
 				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
 
-				var mefAssemblies = ReadAssembliesFromAddins (timer);
+				var mefAssemblies = await Runtime.RunInMainThread (() => ReadAssembliesFromAddins (timer));
 				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
