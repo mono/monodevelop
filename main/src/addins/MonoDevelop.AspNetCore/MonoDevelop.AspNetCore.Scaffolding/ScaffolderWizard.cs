@@ -46,12 +46,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 {
 	class ScaffolderWizard : ScaffolderDialogController
 	{
-		static readonly ScaffolderArgs args = new ScaffolderArgs ();
 		readonly DotNetProject project;
 		readonly FilePath parentFolder;
-		static ScaffolderTemplateSelectPage selectionPage = new ScaffolderTemplateSelectPage (args);
+		readonly ScaffolderArgs args;
 
-		public ScaffolderWizard (DotNetProject project, FilePath parentFolder) : base (GettextCatalog.GetString ("Add New Scaffolding"), selectionPage, args)
+		public ScaffolderWizard (DotNetProject project, FilePath parentFolder, ScaffolderTemplateSelectPage selectPage, ScaffolderArgs args) : base (GettextCatalog.GetString ("Add New Scaffolding"), selectPage, args)
 		{
 			this.DefaultPageSize = new Size (500, 400);
 
@@ -61,12 +60,13 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			this.RightSideWidget = new XwtControl (rightSideWidget);
 			this.project = project;
 			this.parentFolder = parentFolder;
+			this.args = args;
 			args.Project = project;
 			args.ParentFolder = parentFolder;
 
 			this.Completed += (_, __) => Task.Run (() => OnCompletedAsync ());
-			selectionPage.ScaffolderSelected -= ScaffolderSelected;
-			selectionPage.ScaffolderSelected += ScaffolderSelected;
+			selectPage.ScaffolderSelected -= ScaffolderSelected;
+			selectPage.ScaffolderSelected += ScaffolderSelected;
 		}
 
 		void ScaffolderSelected (object sender, EventArgs e)

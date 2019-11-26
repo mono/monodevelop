@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			var scaffolder = new RazorPageScaffolder (args);
 			args.Scaffolder = scaffolder;
 			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage PageName Empty --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
@@ -64,7 +64,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Scaffolder = scaffolder;
 			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
 			(scaffolder.GetField ("Use a layout page") as BoolField).Selected = false;
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage PageName Empty --referenceScriptLibraries --useDefaultLayout --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
@@ -80,8 +80,8 @@ namespace MonoDevelop.AspNetCore.Tests
 			var scaffolder = new RazorPageScaffolder (args);
 			args.Scaffolder = scaffolder;
 			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
+			var wizard = CreateWizard (args, project);
 			(scaffolder.GetField ("Reference script libraries") as BoolField).Selected = false;
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage PageName Empty --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
@@ -99,7 +99,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			scaffolder.GetField ("Name of the Razor Page:").SelectedValue = "PageName";
 			scaffolder.GetField ("Model class to use:").SelectedValue = "ModelClass";
 			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage PageName --model ModelClass --dataContext DataContext --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			// no name field
 			scaffolder.GetField ("Model class to use:").SelectedValue = "ModelClass";
 			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage --model ModelClass --dataContext DataContext --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
@@ -133,7 +133,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			var scaffolder = new EmptyMvcControllerScaffolder (args);
 			args.Scaffolder = scaffolder;
 			scaffolder.GetField ("Controller name:").SelectedValue = "ControllerName";
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller -name ControllerName --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName", commandLineArgs);
@@ -148,7 +148,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new EmptyApiControllerScaffolder (args);
 			args.Scaffolder = scaffolder;
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName --restWithNoViews", commandLineArgs);
@@ -163,7 +163,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new MvcControllerWithActionsScaffolder (args);
 			args.Scaffolder = scaffolder;
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName --readWriteActions", commandLineArgs);
@@ -180,7 +180,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Scaffolder = scaffolder;
 			scaffolder.GetField ("Model class to use:").SelectedValue = "ModelClass";
 			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller --model ModelClass --dataContext DataContext -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName", commandLineArgs);
@@ -195,7 +195,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			args.Project = project;
 			var scaffolder = new ApiControllerWithActionsScaffolder (args);
 			args.Scaffolder = scaffolder;
-			var wizard = new ScaffolderWizard (project, args.ParentFolder);
+			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
 			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName --restWithNoViews --readWriteActions", commandLineArgs);
@@ -222,6 +222,12 @@ namespace MonoDevelop.AspNetCore.Tests
 
 			return (DotNetProject)Services.ProjectService.CreateProject ("C#", info, projectOptions);
 		}
+
+		static ScaffolderWizard CreateWizard (ScaffolderArgs args, DotNetProject project)
+		{
+			var selectPage = new ScaffolderTemplateSelectPage (args);
+			return new ScaffolderWizard (project, args.ParentFolder, selectPage, args);
+		}
 	}
 
 	static class ScaffolderFieldExtension
@@ -237,4 +243,6 @@ namespace MonoDevelop.AspNetCore.Tests
 			return optionList.Options.FirstOrDefault (f => f.DisplayName == displayName);
 		}
 	}
+
+
 }
