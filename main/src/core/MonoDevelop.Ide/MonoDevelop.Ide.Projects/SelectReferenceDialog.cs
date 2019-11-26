@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -157,7 +158,10 @@ namespace MonoDevelop.Ide.Projects
 			}
 			return refTreeStore.AppendValues (txt, secondaryTxt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetIcon ("md-package", IconSize.Dnd));
 		}
-		
+
+		[DllImport ("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		private static extern void gtk_notebook_set_action_widget (IntPtr notebook, IntPtr widget, int packType);
+
 		public SelectReferenceDialog ()
 		{
 			Build ();
@@ -165,8 +169,10 @@ namespace MonoDevelop.Ide.Projects
 			combinedBox = new CombinedBox ();
 			combinedBox.Show ();
 			mainBook = new Notebook ();
-			combinedBox.Add (mainBook);
-			alignment1.Add (combinedBox);
+
+			gtk_notebook_set_action_widget (mainBook.Handle, combinedBox.Handle, (int)PackType.End);
+
+			alignment1.Add (mainBook);
 			mainBook.ShowAll ();
 
 			filterEntry = combinedBox.FilterEntry;
@@ -250,7 +256,6 @@ namespace MonoDevelop.Ide.Projects
 		
 		void InsertFilterEntry ()
 		{
-			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
 			filterEntry.Activated += HandleFilterEntryActivated;
 			filterEntry.Changed += delegate {
 				foreach (var p in panels)
@@ -264,19 +269,9 @@ namespace MonoDevelop.Ide.Projects
 			mainBook.ChildFocus (DirectionType.TabForward);
 		}
 
-		void HandleFilterEntryKeyPressEvent (object o, KeyPressEventArgs args)
-		{
-			if (args.Event.Key == Gdk.Key.Tab) {
-				mainBook.HasFocus = true;
-				mainBook.ChildFocus (DirectionType.TabForward);
-				args.RetVal = true;
-			}
-		}
-		
 		protected override void OnShown ()
 		{
 			base.OnShown ();
-			filterEntry.HasFocus = true;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
@@ -538,22 +533,24 @@ namespace MonoDevelop.Ide.Projects
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
+			allocation.Y -= 2;
 			base.OnSizeAllocated (allocation);
 			RepositionFilter ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			if (Child != null)
-				requisition = Child.SizeRequest ();
-			requisition.Width += filterEntry.SizeRequest ().Width;
+			requisition = Child?.SizeRequest () ?? Requisition.Zero;
+			var entryRequest = filterEntry.SizeRequest ();
+			requisition.Width += entryRequest.Width;
+			requisition.Height = Math.Max (requisition.Height, entryRequest.Height);
 		}
 		
 		void RepositionFilter ()
 		{
-			int w = filterEntry.SizeRequest ().Width;
-			int h = filterEntry.SizeRequest ().Height;
-			filterEntry.SizeAllocate (new Gdk.Rectangle (Allocation.Width - w - 1, 0, w, h));
+			var req = filterEntry.SizeRequest ();
+			int h = Math.Min (Allocation.Height, req.Height);
+			filterEntry.SizeAllocate (new Gdk.Rectangle (Allocation.Width - req.Width - 1, 0, req.Width, h));
 		}
 	}
 
