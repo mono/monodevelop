@@ -195,14 +195,9 @@ namespace MonoDevelop.AspNetCore
 				}
 			}
 
-			if (result.Count > 0)
-				yield return result;
-			else {
-				// Fallback to base implementation
-				foreach (var target in base.OnGetExecutionTargets (ctx, configuration, runConfig)) {
-					yield return target;
-				}
-			}
+			return result.Count > 0
+				? new ExecutionTarget [] { result }
+				: base.OnGetExecutionTargets (ctx, configuration, runConfig);
 		}
 
 		IEnumerable<ExecutionTarget> GetMultipleTargetFrameworkExecutionTargets (DesktopApplication browser)
