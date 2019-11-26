@@ -52,12 +52,12 @@ namespace MonoDevelop.AspNetCore.Commands
 		public void ScaffoldUpdate (CommandInfo info)
 		{
 			var project = CurrentNode.GetParentDataItem (typeof (DotNetProject), true) as DotNetProject;
-			info.Enabled = info.Visible = NodeIsFileOrFolder(CurrentNode) && IsAspNetCoreProject (project);
+			info.Enabled = info.Visible = NodeIsProjectOrFolder(CurrentNode) && IsAspNetCoreProject (project);
 		}
 
-		static bool NodeIsFileOrFolder (ITreeNavigator node)
+		static bool NodeIsProjectOrFolder (ITreeNavigator node)
 		{
-			return node.DataItem is ProjectFile || node.DataItem is ProjectFolder;
+			return node.DataItem is Project || node.DataItem is ProjectFolder;
 		}
 
 		bool IsAspNetCoreProject (Project project)
