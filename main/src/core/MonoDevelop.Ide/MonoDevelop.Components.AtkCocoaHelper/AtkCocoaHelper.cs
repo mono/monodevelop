@@ -154,6 +154,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public enum SubRoles
 		{
 			AXCloseButton,
+			AXTabButton,
 		};
 
 		public struct Range
