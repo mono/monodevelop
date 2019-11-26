@@ -158,7 +158,7 @@ namespace MonoDevelop.AspNetCore
 				return new AspNetCoreExecutionCommand (
 					string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
 					blazorDevServerDll,
-					$"serve --applicationpath {outputFileName}"
+					$"serve --applicationpath \"{outputFileName}\""
 				) {
 					EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
 					PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
